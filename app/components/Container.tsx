@@ -13,15 +13,15 @@ const Container: React.FC<ContainerProps> = ({ children }) => {
     // Container div with responsive padding and maximum width
     <div
       className="
-        max-w-[2520px] // Maximum width for larger screens
-        mx-auto // Center align the container horizontally
-        xl:px-20 // Padding for extra-large screens
-        md:px-10 // Padding for medium screens
-        sm:px-2 // Padding for small screens
-        px-4 // Default padding
+        max-w-[2520px] 
+        mx-auto 
+        xl:px-20 
+        md:px-10 
+        sm:px-2 
+        px-4 
       "
     >
-      {children} // Render the children components inside the container
+      {children}
     </div>
   );
 };

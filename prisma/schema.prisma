@@ -68,20 +68,17 @@ model Product {
 model Listing {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
   title String
+  species String?
+  category  String 
+  stock Int?
+  quantityType String?
+  price Int
   description String
   imageSrc String
-  createdAt DateTime @default(now())
-  category  String
-  roomCount Int
-  bathroomCount Int
-  guestCount Int
   locationValue String
   userId String @db.ObjectId
-  price Int
-  subCategory String?
-  quantityType String?
-  stock Int?
   shelfLife Int?
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]

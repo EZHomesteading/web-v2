@@ -27,77 +27,77 @@ export const categories = [
   {
     label: "Fruits",
     icon: CiApple,
-    description: "This property is close to the beach!",
+    description: "",
   },
   {
     label: "Vegetables",
     icon: GiTomato,
-    description: "This property has windmills!",
+    description: "",
   },
   {
     label: "Dairy",
     icon: GiMilkCarton,
-    description: "This property is modern!",
+    description: "",
   },
   {
     label: "Bread",
     icon: GiBread,
-    description: "This property is in the countryside!",
+    description: "",
   },
   {
     label: "Poultry",
     icon: GiRoastChicken,
-    description: "This property has a beautiful pool!",
+    description: "",
   },
   {
     label: "Beef",
     icon: LuBeef,
-    description: "This property is on an island!",
+    description: "",
   },
   {
     label: "Survival",
     icon: GiBoatFishing,
-    description: "This property is near a lake!",
+    description: "",
   },
   {
     label: "Seafood",
     icon: GiFoodChain,
-    description: "This property has skiing activities!",
+    description: "",
   },
   {
     label: "Grains",
     icon: GiGrainBundle,
-    description: "This property is an ancient castle!",
+    description: "",
   },
   {
     label: "Spices",
     icon: GiCoolSpices,
-    description: "This property is in a spooky cave!",
+    description: "",
   },
   {
     label: "Nuts",
     icon: LuNut,
-    description: "This property offers camping activities!",
+    description: "",
   },
   {
     label: "Seeds",
     icon: FaSeedling,
-    description: "This property is in an arctic environment!",
+    description: "",
   },
   {
     label: "Sweets",
     icon: GiWrappedSweet,
-    description: "This property is in the desert!",
+    description: "",
   },
   {
     label: "Oils",
     icon: GiPorcelainVase,
-    description: "This property is in a barn!",
+    description: "",
   },
   {
     label: "Legumes",
     icon: GiJellyBeans,
-    description: "This property is brand new and luxurious!",
+    description: "",
   },
 ];
 
