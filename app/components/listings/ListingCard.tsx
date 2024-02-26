@@ -140,7 +140,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             {/* Price */}$ {price}
           </div>
           {!reservation && ( // Display unit if no reservation
-            <div className="font-light">night</div>
+            <div className="font-light">per lb,g,oz,etc</div>
           )}
         </div>
         {onAction &&

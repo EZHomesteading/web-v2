@@ -4,7 +4,6 @@
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { BiSearch } from "react-icons/bi";
-import { differenceInDays } from "date-fns";
 
 import useSearchModal from "@/app/hooks/useSearchModal";
 import useCountries from "@/app/hooks/useCountries";
@@ -20,9 +19,6 @@ const Search = () => {
 
   // Destructure search parameters
   const locationValue = params?.get("locationValue");
-  const startDate = params?.get("startDate");
-  const endDate = params?.get("endDate");
-  const guestCount = params?.get("guestCount");
 
   // Calculate location label
   const locationLabel = useMemo(() => {
@@ -31,30 +27,6 @@ const Search = () => {
     }
     return "Anywhere";
   }, [locationValue, getByValue]);
-
-  // Calculate duration label
-  const durationLabel = useMemo(() => {
-    if (startDate && endDate) {
-      const start = new Date(startDate as string);
-      const end = new Date(endDate as string);
-      let diff = differenceInDays(end, start);
-
-      if (diff === 0) {
-        diff = 1;
-      }
-
-      return `${diff} Days`;
-    }
-    return "Any Week";
-  }, [startDate, endDate]);
-
-  // Calculate guest label
-  const guestLabel = useMemo(() => {
-    if (guestCount) {
-      return `${guestCount} Guests`;
-    }
-    return "Add Guests";
-  }, [guestCount]);
 
   return (
     // Render the search button with interactive styling
@@ -103,7 +75,7 @@ const Search = () => {
             text-center
           "
         >
-          {durationLabel}
+          Everything
         </div>
         {/* Guest label and search icon */}
         <div
@@ -118,11 +90,10 @@ const Search = () => {
             gap-3
           "
         >
-          <div className="hidden sm:block">{guestLabel}</div>
           <div
             className="
               p-2 
-              bg-rose-500 
+              bg-green-800 
               rounded-full 
               text-white
             "

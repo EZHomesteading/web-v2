@@ -29,9 +29,8 @@ const Input: React.FC<InputProps> = ({
 }) => {
   return (
     <div className="w-full relative">
-      {" "}
       {/* Container for the input field */}
-      {formatPrice && ( // Conditional rendering if formatPrice is true
+      {formatPrice && (
         <BiDollar // Dollar symbol icon
           size={24} // Size of the icon
           className="
