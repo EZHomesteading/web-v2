@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
-  name            String?
+  name            String?   @unique
   email           String?   @unique
   emailVerified   DateTime?
   phoneNumber     String?
@@ -21,7 +21,6 @@ model User {
   state           String?
   image           String?
   hoursOfOperation String?
-  profiilePic     String?
   isCoop          Boolean?
   isProducer      Boolean?
   hashedPassword  String?
@@ -69,7 +68,6 @@ model Listing {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
   title String
   description String
-  imageSrc String
   createdAt DateTime @default(now())
   category  String
   roomCount Int
