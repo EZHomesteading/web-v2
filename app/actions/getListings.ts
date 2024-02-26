@@ -1,96 +1,108 @@
+// Importing the necessary modules and functions
 import prisma from "@/app/libs/prismadb";
 
+// Interface defining the structure of parameters accepted by the function
 export interface IListingsParams {
-  userId?: string;
-  guestCount?: number;
-  roomCount?: number;
-  bathroomCount?: number;
-  startDate?: string;
-  endDate?: string;
-  locationValue?: string;
-  category?: string;
+  userId?: string; // Optional parameter: userId
+  guestCount?: number; // Optional parameter: guestCount
+  roomCount?: number; // Optional parameter: roomCount
+  bathroomCount?: number; // Optional parameter: bathroomCount
+  startDate?: string; // Optional parameter: startDate
+  endDate?: string; // Optional parameter: endDate
+  locationValue?: string; // Optional parameter: locationValue
+  category?: string; // Optional parameter: category
 }
 
+// Function to retrieve listings based on provided parameters
 export default async function getListings(
-  params: IListingsParams
+  params: IListingsParams // Accepting parameters of type IListingsParams
 ) {
   try {
+    // Destructuring parameters
     const {
       userId,
-      roomCount, 
-      guestCount, 
-      bathroomCount, 
+      roomCount,
+      guestCount,
+      bathroomCount,
       locationValue,
       startDate,
       endDate,
       category,
     } = params;
 
+    // Initializing an empty query object
     let query: any = {};
 
+    // Adding conditions to the query based on provided parameters
+
     if (userId) {
-      query.userId = userId;
+      query.userId = userId; // Filtering by userId if provided
     }
 
     if (category) {
-      query.category = category;
+      query.category = category; // Filtering by category if provided
     }
 
     if (roomCount) {
       query.roomCount = {
-        gte: +roomCount
-      }
+        gte: +roomCount, // Filtering by roomCount greater than or equal to the provided value
+      };
     }
 
     if (guestCount) {
       query.guestCount = {
-        gte: +guestCount
-      }
+        gte: +guestCount, // Filtering by guestCount greater than or equal to the provided value
+      };
     }
 
     if (bathroomCount) {
       query.bathroomCount = {
-        gte: +bathroomCount
-      }
+        gte: +bathroomCount, // Filtering by bathroomCount greater than or equal to the provided value
+      };
     }
 
     if (locationValue) {
-      query.locationValue = locationValue;
+      query.locationValue = locationValue; // Filtering by locationValue if provided
     }
 
+    // Filtering out listings based on availability within provided dates
     if (startDate && endDate) {
       query.NOT = {
         reservations: {
           some: {
             OR: [
               {
-                endDate: { gte: startDate },
-                startDate: { lte: startDate }
+                endDate: { gte: startDate }, // Check if any reservation ends after the provided start date
+                startDate: { lte: startDate }, // Check if any reservation starts before the provided start date
               },
               {
-                startDate: { lte: endDate },
-                endDate: { gte: endDate }
-              }
-            ]
-          }
-        }
-      }
+                startDate: { lte: endDate }, // Check if any reservation starts before the provided end date
+                endDate: { gte: endDate }, // Check if any reservation ends after the provided end date
+              },
+            ],
+          },
+        },
+      };
     }
 
+    // Finding listings in the database based on the constructed query
     const listings = await prisma.listing.findMany({
-      where: query,
+      where: query, // Applying the constructed query
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: "desc", // Ordering the results by createdAt field in descending order
+      },
     });
 
+    // Mapping over the listings to ensure safe handling of data
     const safeListings = listings.map((listing) => ({
       ...listing,
-      createdAt: listing.createdAt.toISOString(),
+      createdAt: listing.createdAt.toISOString(), // Converting createdAt to ISO string
     }));
 
+    // Returning the safeListings array
     return safeListings;
   } catch (error: any) {
+    // Throwing an error if any occurs during the process
     throw new Error(error);
   }
 }

@@ -1,52 +1,58 @@
-'use client';
-
+"use client";
+// Import necessary modules and components
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
 
+// Define props interface for Modal component
 interface ModalProps {
-  isOpen?: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-  title?: string;
-  body?: React.ReactElement;
-  footer?: React.ReactElement;
-  actionLabel: string;
-  disabled?: boolean;
-  secondaryAction?: () => void;
-  secondaryActionLabel?: string;
+  isOpen?: boolean; // Optional prop indicating whether the modal is open
+  onClose: () => void; // Function to handle modal close event
+  onSubmit: () => void; // Function to handle form submission event
+  title?: string; // Optional title for the modal
+  body?: React.ReactElement; // JSX content for the modal body
+  footer?: React.ReactElement; // JSX content for the modal footer
+  actionLabel: string; // Label for the primary action button
+  disabled?: boolean; // Optional prop indicating whether the modal is disabled
+  secondaryAction?: () => void; // Function to handle secondary action button click
+  secondaryActionLabel?: string; // Label for the secondary action button
 }
 
-const Modal: React.FC<ModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  title, 
-  body, 
-  actionLabel, 
-  footer, 
+// Modal component definition
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  body,
+  actionLabel,
+  footer,
   disabled,
   secondaryAction,
-  secondaryActionLabel
+  secondaryActionLabel,
 }) => {
+  // State variable to manage modal visibility
   const [showModal, setShowModal] = useState(isOpen);
 
+  // Effect to synchronize modal visibility with isOpen prop
   useEffect(() => {
     setShowModal(isOpen);
   }, [isOpen]);
 
+  // Callback function to handle modal close event
   const handleClose = useCallback(() => {
     if (disabled) {
       return;
     }
-  
+
     setShowModal(false);
     setTimeout(() => {
       onClose();
-    }, 300)
+    }, 300);
   }, [onClose, disabled]);
 
+  // Callback function to handle form submission event
   const handleSubmit = useCallback(() => {
     if (disabled) {
       return;
@@ -55,6 +61,7 @@ const Modal: React.FC<ModalProps> = ({
     onSubmit();
   }, [onSubmit, disabled]);
 
+  // Callback function to handle secondary action button click
   const handleSecondaryAction = useCallback(() => {
     if (disabled || !secondaryAction) {
       return;
@@ -63,10 +70,12 @@ const Modal: React.FC<ModalProps> = ({
     secondaryAction();
   }, [secondaryAction, disabled]);
 
+  // If modal is not open, return null
   if (!isOpen) {
     return null;
   }
 
+  // Render the modal JSX
   return (
     <>
       <div
@@ -84,7 +93,8 @@ const Modal: React.FC<ModalProps> = ({
           bg-neutral-800/70
         "
       >
-        <div className="
+        <div
+          className="
           relative 
           w-full
           md:w-4/6
@@ -97,15 +107,18 @@ const Modal: React.FC<ModalProps> = ({
           md:h-auto
           "
         >
-          {/*content*/}
-          <div className={`
+          {/* Modal content */}
+          <div
+            className={`
             translate
             duration-300
             h-full
-            ${showModal ? 'translate-y-0' : 'translate-y-full'}
-            ${showModal ? 'opacity-100' : 'opacity-0'}
-          `}>
-            <div className="
+            ${showModal ? "translate-y-0" : "translate-y-full"}
+            ${showModal ? "opacity-100" : "opacity-0"}
+          `}
+          >
+            <div
+              className="
               translate
               h-full
               lg:h-auto
@@ -122,8 +135,9 @@ const Modal: React.FC<ModalProps> = ({
               focus:outline-none
             "
             >
-              {/*header*/}
-              <div className="
+              {/* Modal header */}
+              <div
+                className="
                 flex 
                 items-center 
                 p-6
@@ -146,17 +160,13 @@ const Modal: React.FC<ModalProps> = ({
                 >
                   <IoMdClose size={18} />
                 </button>
-                <div className="text-lg font-semibold">
-                  {title}
-                </div>
+                <div className="text-lg font-semibold">{title}</div>
               </div>
-              {/*body*/}
-              <div className="relative p-6 flex-auto">
-                {body}
-              </div>
-              {/*footer*/}
+              {/* Modal body */}
+              <div className="relative p-6 flex-auto">{body}</div>
+              {/* Modal footer */}
               <div className="flex flex-col gap-2 p-6">
-                <div 
+                <div
                   className="
                     flex 
                     flex-row 
@@ -166,16 +176,16 @@ const Modal: React.FC<ModalProps> = ({
                   "
                 >
                   {secondaryAction && secondaryActionLabel && (
-                    <Button 
-                      disabled={disabled} 
-                      label={secondaryActionLabel} 
+                    <Button
+                      disabled={disabled}
+                      label={secondaryActionLabel}
                       onClick={handleSecondaryAction}
                       outline
-                    />  
+                    />
                   )}
-                  <Button 
-                    disabled={disabled} 
-                    label={actionLabel} 
+                  <Button
+                    disabled={disabled}
+                    label={actionLabel}
                     onClick={handleSubmit}
                   />
                 </div>
@@ -187,6 +197,7 @@ const Modal: React.FC<ModalProps> = ({
       </div>
     </>
   );
-}
+};
 
+// Export the Modal component
 export default Modal;
