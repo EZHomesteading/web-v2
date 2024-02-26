@@ -10,10 +10,10 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   // Destructuring properties from the request body
-  const { email, name, password } = body;
+  const { email, name, password, role } = body;
 
   // Hashing the password using bcrypt with a cost factor of 12
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   // Creating a new user in the database with the hashed password
   const user = await prisma.user.create({
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
       email,
       name,
       hashedPassword,
+      role,
     },
   });
 

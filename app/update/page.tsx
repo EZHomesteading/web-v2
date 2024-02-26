@@ -4,22 +4,25 @@
 // create new post route for update user
 // get current user for update.
 // add new variables and fields to update.
+// route update button to update page
+
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { Label } from "@/app/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+// import getCurrentUser from "@/app/actions/getCurrentUser";
 
-import Modal from "../components/modals/Modal";
 import Input from "../components/inputs/Input";
 import Heading from "../components/Heading";
 import Button from "../components/Button";
-import { FORM_DEFAULT_STATE } from "react-hook-form/dist/constants";
-
+// const currentUser = getCurrentUser();
 // Define RegisterModal component
 const updateModal = () => {
   // Hooks for managing state and form data
   const [isLoading, setIsLoading] = useState(false);
-
+  //   console.log(currentUser);
   // Form control using react-hook-form
   const {
     register,
@@ -31,8 +34,8 @@ const updateModal = () => {
       address: "",
       zip: "",
       state: "",
-      isCoop: false,
-      isProducer: false,
+      role: "",
+      name: "",
     },
   });
 
@@ -42,7 +45,7 @@ const updateModal = () => {
 
     // Send registration data to the backend
     axios
-      .post("/api/register", data)
+      .post("/api/update", data)
       .then(() => {
         toast.success("Updated!");
       })
@@ -91,19 +94,26 @@ const updateModal = () => {
           errors={errors}
         />
         <Input
-          id="city"
+          id="name"
           label="Name"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
-        <Input
-          id="password"
-          label="Password"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
+        <RadioGroup id="role" defaultValue="Consumer">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Consumer" id="r1" />
+            <Label htmlFor="r1">Consumer</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="COOP" id="r2" />
+            <Label htmlFor="r2">CO-OP</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Producer" id="r3" />
+            <Label htmlFor="r3">Producer</Label>
+          </div>
+        </RadioGroup>
       </div>
       <div className="flex flex-col gap-4 mt-3">
         <hr />
