@@ -1,26 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
+// Define props interface for the ClientOnly component
 interface ClientOnlyProps {
-  children: React.ReactNode;
+  children: React.ReactNode; // Child components to be rendered conditionally
 }
 
-const ClientOnly: React.FC<ClientOnlyProps> = ({ 
-  children
+// ClientOnly component
+const ClientOnly: React.FC<ClientOnlyProps> = ({
+  children, // Destructure children from props
 }) => {
+  // State to track whether the component has mounted
   const [hasMounted, setHasMounted] = useState(false);
 
+  // Effect hook to set hasMounted to true when component mounts
   useEffect(() => {
-      setHasMounted(true);
-  }, [])
+    setHasMounted(true);
+  }, []);
 
+  // Render children only after the component has mounted
   if (!hasMounted) return null;
 
   return (
-    <>
-      {children}
-    </>
+    // Return the children components
+    <>{children}</>
   );
 };
 

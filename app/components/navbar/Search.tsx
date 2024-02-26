@@ -1,31 +1,38 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
-import { BiSearch } from 'react-icons/bi';
-import { differenceInDays } from 'date-fns';
+// Import necessary dependencies and hooks
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { BiSearch } from "react-icons/bi";
+import { differenceInDays } from "date-fns";
 
-import useSearchModal from '@/app/hooks/useSearchModal';
-import useCountries from '@/app/hooks/useCountries';
+import useSearchModal from "@/app/hooks/useSearchModal";
+import useCountries from "@/app/hooks/useCountries";
 
+// Search component
 const Search = () => {
+  // Custom hook to handle search modal
   const searchModal = useSearchModal();
+  // Get search parameters from URL
   const params = useSearchParams();
+  // Custom hook to get country label from value
   const { getByValue } = useCountries();
 
-  const  locationValue = params?.get('locationValue'); 
-  const  startDate = params?.get('startDate');
-  const  endDate = params?.get('endDate');
-  const  guestCount = params?.get('guestCount');
+  // Destructure search parameters
+  const locationValue = params?.get("locationValue");
+  const startDate = params?.get("startDate");
+  const endDate = params?.get("endDate");
+  const guestCount = params?.get("guestCount");
 
+  // Calculate location label
   const locationLabel = useMemo(() => {
     if (locationValue) {
       return getByValue(locationValue as string)?.label;
     }
-
-    return 'Anywhere';
+    return "Anywhere";
   }, [locationValue, getByValue]);
 
+  // Calculate duration label
   const durationLabel = useMemo(() => {
     if (startDate && endDate) {
       const start = new Date(startDate as string);
@@ -38,19 +45,19 @@ const Search = () => {
 
       return `${diff} Days`;
     }
-
-    return 'Any Week'
+    return "Any Week";
   }, [startDate, endDate]);
 
+  // Calculate guest label
   const guestLabel = useMemo(() => {
     if (guestCount) {
       return `${guestCount} Guests`;
     }
-
-    return 'Add Guests';
+    return "Add Guests";
   }, [guestCount]);
 
-  return ( 
+  return (
+    // Render the search button with interactive styling
     <div
       onClick={searchModal.onOpen}
       className="
@@ -65,7 +72,7 @@ const Search = () => {
         cursor-pointer
       "
     >
-      <div 
+      <div
         className="
           flex 
           flex-row 
@@ -73,7 +80,8 @@ const Search = () => {
           justify-between
         "
       >
-        <div 
+        {/* Location label */}
+        <div
           className="
             text-sm 
             font-semibold 
@@ -82,7 +90,8 @@ const Search = () => {
         >
           {locationLabel}
         </div>
-        <div 
+        {/* Duration label */}
+        <div
           className="
             hidden 
             sm:block 
@@ -96,7 +105,8 @@ const Search = () => {
         >
           {durationLabel}
         </div>
-        <div 
+        {/* Guest label and search icon */}
+        <div
           className="
             text-sm 
             pl-6 
@@ -109,7 +119,7 @@ const Search = () => {
           "
         >
           <div className="hidden sm:block">{guestLabel}</div>
-          <div 
+          <div
             className="
               p-2 
               bg-rose-500 
@@ -123,6 +133,6 @@ const Search = () => {
       </div>
     </div>
   );
-}
- 
+};
+
 export default Search;

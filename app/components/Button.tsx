@@ -1,25 +1,28 @@
-'use client';
-
+"use client";
+// Import necessary dependencies and interfaces
 import { IconType } from "react-icons";
 
+// Define the ButtonProps interface
 interface ButtonProps {
-  label: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  disabled?: boolean;
-  outline?: boolean;
-  small?: boolean;
-  icon?: IconType;
+  label: string; // Button label
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void; // Click event handler
+  disabled?: boolean; // Flag to disable the button
+  outline?: boolean; // Flag to render an outlined button
+  small?: boolean; // Flag to render a small-sized button
+  icon?: IconType; // Icon component type
 }
 
-const Button: React.FC<ButtonProps> = ({ 
-  label, 
-  onClick, 
-  disabled, 
+// Button component
+const Button: React.FC<ButtonProps> = ({
+  label,
+  onClick,
+  disabled,
   outline,
   small,
-  icon: Icon,
+  icon: Icon, // Destructure props
 }) => {
-  return ( 
+  return (
+    // Render the button element with conditional class names based on props
     <button
       disabled={disabled}
       onClick={onClick}
@@ -31,15 +34,16 @@ const Button: React.FC<ButtonProps> = ({
         hover:opacity-80
         transition
         w-full
-        ${outline ? 'bg-white' : 'bg-rose-500'}
-        ${outline ? 'border-black' : 'border-rose-500'}
-        ${outline ? 'text-black' : 'text-white'}
-        ${small ? 'text-sm' : 'text-md'}
-        ${small ? 'py-1' : 'py-3'}
-        ${small ? 'font-light' : 'font-semibold'}
-        ${small ? 'border-[1px]' : 'border-2'}
+        ${outline ? "bg-white" : "bg-rose-500"}
+        ${outline ? "border-black" : "border-rose-500"}
+        ${outline ? "text-black" : "text-white"}
+        ${small ? "text-sm" : "text-md"}
+        ${small ? "py-1" : "py-3"}
+        ${small ? "font-light" : "font-semibold"}
+        ${small ? "border-[1px]" : "border-2"}
       `}
     >
+      {/* Render the icon if provided */}
       {Icon && (
         <Icon
           size={24}
@@ -50,9 +54,10 @@ const Button: React.FC<ButtonProps> = ({
           "
         />
       )}
+      {/* Render the button label */}
       {label}
     </button>
-   );
-}
- 
+  );
+};
+
 export default Button;

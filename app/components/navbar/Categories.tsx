@@ -1,114 +1,122 @@
-'use client';
+"use client";
 
-import { usePathname, useSearchParams } from 'next/navigation';
-import { TbBeach, TbMountain, TbPool } from 'react-icons/tb';
-import { 
-  GiBarn, 
-  GiBoatFishing, 
-  GiCactus, 
-  GiCastle, 
-  GiCaveEntrance, 
-  GiForestCamp, 
-  GiIsland,
-  GiWindmill
-} from 'react-icons/gi';
-import { FaSkiing } from 'react-icons/fa';
-import { BsSnow } from 'react-icons/bs';
-import { IoDiamond } from 'react-icons/io5';
-import { MdOutlineVilla } from 'react-icons/md';
+// Import necessary modules and icons
+import { usePathname, useSearchParams } from "next/navigation";
+import {
+  GiBoatFishing,
+  GiRoastChicken,
+  GiFoodChain,
+  GiCoolSpices,
+  GiGrainBundle,
+  GiWrappedSweet,
+  GiPorcelainVase,
+  GiJellyBeans,
+  GiBread,
+  GiTomato,
+  GiMilkCarton,
+} from "react-icons/gi";
+import { LuNut, LuBeef } from "react-icons/lu";
+import { CiApple } from "react-icons/ci";
+import { FaSeedling } from "react-icons/fa6";
 
 import CategoryBox from "../CategoryBox";
-import Container from '../Container';
+import Container from "../Container";
 
-
+// Define an array of category objects
 export const categories = [
   {
-    label: 'Beach',
-    icon: TbBeach,
-    description: 'This property is close to the beach!',
+    label: "Fruits",
+    icon: CiApple,
+    description: "This property is close to the beach!",
   },
   {
-    label: 'Windmills',
-    icon: GiWindmill,
-    description: 'This property is has windmills!',
+    label: "Vegetables",
+    icon: GiTomato,
+    description: "This property has windmills!",
   },
   {
-    label: 'Modern',
-    icon: MdOutlineVilla,
-    description: 'This property is modern!'
+    label: "Dairy",
+    icon: GiMilkCarton,
+    description: "This property is modern!",
   },
   {
-    label: 'Countryside',
-    icon: TbMountain,
-    description: 'This property is in the countryside!'
+    label: "Bread",
+    icon: GiBread,
+    description: "This property is in the countryside!",
   },
   {
-    label: 'Pools',
-    icon: TbPool,
-    description: 'This is property has a beautiful pool!'
+    label: "Poultry",
+    icon: GiRoastChicken,
+    description: "This property has a beautiful pool!",
   },
   {
-    label: 'Islands',
-    icon: GiIsland,
-    description: 'This property is on an island!'
+    label: "Beef",
+    icon: LuBeef,
+    description: "This property is on an island!",
   },
   {
-    label: 'Lake',
+    label: "Survival",
     icon: GiBoatFishing,
-    description: 'This property is near a lake!'
+    description: "This property is near a lake!",
   },
   {
-    label: 'Skiing',
-    icon: FaSkiing,
-    description: 'This property has skiing activies!'
+    label: "Seafood",
+    icon: GiFoodChain,
+    description: "This property has skiing activities!",
   },
   {
-    label: 'Castles',
-    icon: GiCastle,
-    description: 'This property is an ancient castle!'
+    label: "Grains",
+    icon: GiGrainBundle,
+    description: "This property is an ancient castle!",
   },
   {
-    label: 'Caves',
-    icon: GiCaveEntrance,
-    description: 'This property is in a spooky cave!'
+    label: "Spices",
+    icon: GiCoolSpices,
+    description: "This property is in a spooky cave!",
   },
   {
-    label: 'Camping',
-    icon: GiForestCamp,
-    description: 'This property offers camping activities!'
+    label: "Nuts",
+    icon: LuNut,
+    description: "This property offers camping activities!",
   },
   {
-    label: 'Arctic',
-    icon: BsSnow,
-    description: 'This property is in arctic environment!'
+    label: "Seeds",
+    icon: FaSeedling,
+    description: "This property is in an arctic environment!",
   },
   {
-    label: 'Desert',
-    icon: GiCactus,
-    description: 'This property is in the desert!'
+    label: "Sweets",
+    icon: GiWrappedSweet,
+    description: "This property is in the desert!",
   },
   {
-    label: 'Barns',
-    icon: GiBarn,
-    description: 'This property is in a barn!'
+    label: "Oils",
+    icon: GiPorcelainVase,
+    description: "This property is in a barn!",
   },
   {
-    label: 'Lux',
-    icon: IoDiamond,
-    description: 'This property is brand new and luxurious!'
-  }
-]
+    label: "Legumes",
+    icon: GiJellyBeans,
+    description: "This property is brand new and luxurious!",
+  },
+];
 
+// Categories component
 const Categories = () => {
+  // Get the search parameters and current pathname
   const params = useSearchParams();
-  const category = params?.get('category');
+  const category = params?.get("category");
   const pathname = usePathname();
-  const isMainPage = pathname === '/';
 
+  // Check if it's the main page
+  const isMainPage = pathname === "/";
+
+  // If it's not the main page, return null
   if (!isMainPage) {
     return null;
   }
 
+  // Render the Categories component
   return (
     <Container>
       <div
@@ -121,8 +129,9 @@ const Categories = () => {
           overflow-x-auto
         "
       >
+        {/* Map through the categories array and render a CategoryBox for each */}
         {categories.map((item) => (
-          <CategoryBox 
+          <CategoryBox
             key={item.label}
             label={item.label}
             icon={item.icon}
@@ -132,6 +141,7 @@ const Categories = () => {
       </div>
     </Container>
   );
-}
- 
+};
+
+// Export the Categories component
 export default Categories;

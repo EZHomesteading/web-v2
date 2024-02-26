@@ -1,23 +1,26 @@
-'use client';
+"use client";
 
+// Importing necessary types from react-icons library
 import { IconType } from "react-icons";
 
+// Interface defining props accepted by the CategoryBox component
 interface CategoryBoxProps {
-  icon: IconType,
-  label: string;
-  selected?: boolean;
-  onClick: (value: string) => void;
+  icon: IconType; // Icon component for rendering icon
+  label: string; // Label for the category
+  selected?: boolean; // Optional prop indicating if the category is selected
+  onClick: (value: string) => void; // Function to handle click event
 }
 
+// CategoryBox component
 const CategoryBox: React.FC<CategoryBoxProps> = ({
-  icon: Icon,
-  label,
-  selected,
-  onClick
+  icon: Icon, // Icon component received as prop
+  label, // Label received as prop
+  selected, // Optional prop indicating if the category is selected
+  onClick, // Function to handle click event received as prop
 }) => {
-  return ( 
+  return (
     <div
-      onClick={() => onClick(label)}
+      onClick={() => onClick(label)} // Handling click event by invoking onClick function with label
       className={`
         rounded-xl
         border-2
@@ -28,15 +31,17 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         hover:border-black
         transition
         cursor-pointer
-        ${selected ? 'border-black' : 'border-neutral-200'}
+        ${
+          selected ? "border-black" : "border-neutral-200"
+        } // Applying different border color based on selected prop
       `}
     >
-      <Icon size={30} />
+      <Icon size={30} /> // Rendering the Icon component with size 30
       <div className="font-semibold">
-        {label}
+        {label} // Rendering the category label
       </div>
     </div>
-   );
-}
- 
-export default CategoryBox;
+  );
+};
+
+export default CategoryBox; // Exporting CategoryBox component

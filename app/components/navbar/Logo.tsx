@@ -1,21 +1,32 @@
-'use client';
+"use client";
 
+// Import necessary modules and components
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+// Logo component
 const Logo = () => {
+  // Get the router object
   const router = useRouter();
 
-  return ( 
+  // Render the Logo component
+  return (
     <Image
-      onClick={() => router.push('/')}
-      className="hidden md:block cursor-pointer" 
-      src="/images/logo.png" 
-      height="100" 
-      width="100" 
-      alt="Logo" 
+      // Handle click event to navigate to the home page
+      onClick={() => router.push("/")}
+      // Add cursor pointer style for interactivity
+      className="hidden md:block cursor-pointer"
+      // Specify the image source
+      src="/images/ezhs-noslogan-barn-light.png"
+      // Specify the image height
+      height="200"
+      // Specify the image width
+      width="200"
+      // Specify the alternative text for accessibility
+      alt="Logo"
     />
-   );
-}
- 
+  );
+};
+
+// Export the Logo component
 export default Logo;
