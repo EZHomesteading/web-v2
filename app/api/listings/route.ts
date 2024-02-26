@@ -22,9 +22,9 @@ export async function POST(request: Request) {
     description,
     imageSrc,
     category,
-    roomCount,
-    bathroomCount,
-    guestCount,
+    quantityType,
+    stock,
+    shelfLife,
     location,
     price,
   } = body;
@@ -43,9 +43,9 @@ export async function POST(request: Request) {
       description,
       imageSrc,
       category,
-      roomCount,
-      bathroomCount,
-      guestCount,
+      quantityType,
+      stock,
+      shelfLife,
       locationValue: location.value, // Assuming location is an object with a 'value' property
       price: parseInt(price, 10), // Parsing price to integer
       userId: currentUser.id, // Associating the listing with the current user

@@ -19,16 +19,7 @@ export default async function getListings(
 ) {
   try {
     // Destructuring parameters
-    const {
-      userId,
-      roomCount,
-      guestCount,
-      bathroomCount,
-      locationValue,
-      startDate,
-      endDate,
-      category,
-    } = params;
+    const { userId, locationValue, startDate, endDate, category } = params;
 
     // Initializing an empty query object
     let query: any = {};
@@ -41,24 +32,6 @@ export default async function getListings(
 
     if (category) {
       query.category = category; // Filtering by category if provided
-    }
-
-    if (roomCount) {
-      query.roomCount = {
-        gte: +roomCount, // Filtering by roomCount greater than or equal to the provided value
-      };
-    }
-
-    if (guestCount) {
-      query.guestCount = {
-        gte: +guestCount, // Filtering by guestCount greater than or equal to the provided value
-      };
-    }
-
-    if (bathroomCount) {
-      query.bathroomCount = {
-        gte: +bathroomCount, // Filtering by bathroomCount greater than or equal to the provided value
-      };
     }
 
     if (locationValue) {

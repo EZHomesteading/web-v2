@@ -1,12 +1,12 @@
 "use client";
 
-// Import necessary modules and components
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { Card, CardContent } from "../ui/card";
 
 import useRentModal from "@/app/hooks/useRentModal";
 
@@ -18,8 +18,14 @@ import { categories } from "../navbar/Categories";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 
-// Enum defining the steps of the rent process
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -29,15 +35,13 @@ enum STEPS {
   PRICE = 5,
 }
 
-// RentModal component
 const RentModal = () => {
-  // Hooks for managing state and navigation
   const router = useRouter();
   const rentModal = useRentModal();
+
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
 
-  // Form control using react-hook-form
   const {
     register,
     handleSubmit,
@@ -49,31 +53,31 @@ const RentModal = () => {
     defaultValues: {
       category: "",
       location: null,
-      guestCount: 1,
-      roomCount: 1,
-      bathroomCount: 1,
+      stock: 5,
+      quantityType: "kg",
+      shelfLife: 12,
       imageSrc: "",
-      price: 1,
+      price: 20,
       title: "",
       description: "",
     },
   });
 
-  // Watch form fields
   const location = watch("location");
   const category = watch("category");
-  const guestCount = watch("guestCount");
-  const roomCount = watch("roomCount");
-  const bathroomCount = watch("bathroomCount");
+  const stock = watch("stock");
+  const quantityType = watch("quantityType");
+  const shelfLife = watch("shelfLife");
   const imageSrc = watch("imageSrc");
 
-  // Dynamic import of the Map component based on location
   const Map = useMemo(
-    () => dynamic(() => import("../Map"), { ssr: false }),
+    () =>
+      dynamic(() => import("../Map"), {
+        ssr: false,
+      }),
     [location]
   );
 
-  // Function to set custom form field value
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
       shouldDirty: true,
@@ -82,17 +86,14 @@ const RentModal = () => {
     });
   };
 
-  // Function to navigate back a step
   const onBack = () => {
     setStep((value) => value - 1);
   };
 
-  // Function to navigate to the next step or submit
   const onNext = () => {
     setStep((value) => value + 1);
   };
 
-  // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     if (step !== STEPS.PRICE) {
       return onNext();
@@ -100,7 +101,6 @@ const RentModal = () => {
 
     setIsLoading(true);
 
-    // Send listing data to the backend
     axios
       .post("/api/listings", data)
       .then(() => {
@@ -118,27 +118,26 @@ const RentModal = () => {
       });
   };
 
-  // Determine the label for the primary action button
   const actionLabel = useMemo(() => {
     if (step === STEPS.PRICE) {
       return "Create";
     }
+
     return "Next";
   }, [step]);
 
-  // Determine the label for the secondary action button
   const secondaryActionLabel = useMemo(() => {
     if (step === STEPS.CATEGORY) {
       return undefined;
     }
+
     return "Back";
   }, [step]);
 
-  // Content for the modal body based on the current step
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="Which of these best describes your place?"
+        title="Which of these best describes your product?"
         subtitle="Pick a category"
       />
       <div
@@ -149,6 +148,7 @@ const RentModal = () => {
           gap-3
           max-h-[50vh]
           overflow-y-auto
+          z-10
         "
       >
         {categories.map((item) => (
@@ -165,13 +165,12 @@ const RentModal = () => {
     </div>
   );
 
-  // Update bodyContent based on the current step
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Where is your place located?"
-          subtitle="Help guests find you!"
+          title="Where is your farm or garden located?"
+          subtitle="Help local consumers find you!"
         />
         <CountrySelect
           value={location}
@@ -181,42 +180,68 @@ const RentModal = () => {
       </div>
     );
   }
+
   if (step === STEPS.INFO) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Share some basics about your place"
-          subtitle="What amenities do you have?"
-        />
+        <Heading title="Share some basics about your product" subtitle="" />
         <Counter
-          onChange={(value) => setCustomValue("guestCount", value)}
-          value={guestCount}
-          title="Guests"
-          subtitle="How many guests do you allow?"
+          onChange={(value) => setCustomValue("stock", value)}
+          value={stock}
+          title="Quantity"
+          subtitle=""
         />
         <hr />
         <Counter
-          onChange={(value) => setCustomValue("roomCount", value)}
-          value={roomCount}
-          title="Rooms"
-          subtitle="How many rooms do you have?"
+          onChange={(value) => setCustomValue("shelfLife", value)}
+          value={shelfLife}
+          title="Shelf Life in Days"
+          subtitle=""
         />
         <hr />
-        <Counter
-          onChange={(value) => setCustomValue("bathroomCount", value)}
-          value={bathroomCount}
-          title="Bathrooms"
-          subtitle="How many bathrooms do you have?"
-        />
+        <div className="flex justify-center">
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full max-w-sm "
+          >
+            <CarouselContent>
+              {[
+                "pounds",
+                "oz",
+                "none",
+                "kilograms",
+                "grams",
+                "bushel",
+                "dozen",
+                "carton",
+              ].map((word, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card>
+                      <CardContent className="flex aspect-square items-center justify-center p-6">
+                        <span className="text-md font-semibold">{word}</span>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
       </div>
     );
   }
+
   if (step === STEPS.IMAGES) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add a photo of your place"
-          subtitle="Show guests what your place looks like!"
+          title="Add a photo of your product"
+          subtitle="Show consumers what your product looks like!"
         />
         <ImageUpload
           onChange={(value) => setCustomValue("imageSrc", value)}
@@ -225,11 +250,12 @@ const RentModal = () => {
       </div>
     );
   }
+
   if (step === STEPS.DESCRIPTION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="How would you describe your place?"
+          title="How would you describe your product?"
           subtitle="Short and sweet works best!"
         />
         <Input
@@ -252,12 +278,13 @@ const RentModal = () => {
       </div>
     );
   }
+
   if (step === STEPS.PRICE) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
           title="Now, set your price"
-          subtitle="How much do you charge per night?"
+          subtitle="How much do you charge per unit? (E.g. $1/lb)"
         />
         <Input
           id="price"
@@ -273,12 +300,11 @@ const RentModal = () => {
     );
   }
 
-  // Render the RentModal component
   return (
     <Modal
       disabled={isLoading}
       isOpen={rentModal.isOpen}
-      title="Airbnb your home!"
+      title="Sell your produce & self sufficiency items!"
       actionLabel={actionLabel}
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
@@ -289,5 +315,4 @@ const RentModal = () => {
   );
 };
 
-// Export the RentModal component
 export default RentModal;

@@ -31,14 +31,14 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         hover:border-black
         transition
         cursor-pointer
-        ${
-          selected ? "border-black" : "border-neutral-200"
-        } // Applying different border color based on selected prop
+        ${selected ? "border-black" : "border-neutral-200"}
       `}
     >
-      <Icon size={30} /> // Rendering the Icon component with size 30
+      {/* Rendering the Icon component with size 30 */}
+      <Icon size={30} />
       <div className="font-semibold">
-        {label} // Rendering the category label
+        {/* Rendering the category label */}
+        {label}
       </div>
     </div>
   );
