@@ -15,7 +15,15 @@ model User {
   name            String?
   email           String?   @unique
   emailVerified   DateTime?
+  phoneNumber     String?
+  address         String?
+  zip             String?
+  state           String?
   image           String?
+  hoursOfOperation String?
+  profiilePic     String?
+  isCoop          Boolean?
+  isProducer      Boolean?
   hashedPassword  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -45,6 +53,18 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  description String?
+  productPic String
+  category String
+  subCategory String
+  suggestedUnits String
+  shelfLife Int
+  suggectPrice Int
+}
+
 model Listing {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
   title String
@@ -58,6 +78,10 @@ model Listing {
   locationValue String
   userId String @db.ObjectId
   price Int
+  subCategory String?
+  quantityType String?
+  stock Int?
+  shelfLife Int?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]
