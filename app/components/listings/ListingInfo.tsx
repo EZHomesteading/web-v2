@@ -16,9 +16,6 @@ const Map = dynamic(() => import("../Map"), {
 interface ListingInfoProps {
   user: SafeUser; // User details of the listing host
   description: string; // Description of the listing
-  guestCount: number; // Number of guests accommodated
-  roomCount: number; // Number of rooms in the listing
-  bathroomCount: number; // Number of bathrooms in the listing
   category?: {
     // Category details of the listing
     icon: IconType; // Icon representing the category
@@ -32,9 +29,6 @@ interface ListingInfoProps {
 const ListingInfo: React.FC<ListingInfoProps> = ({
   user, // User details of the listing host received as prop
   description, // Description of the listing received as prop
-  guestCount, // Number of guests accommodated received as prop
-  roomCount, // Number of rooms in the listing received as prop
-  bathroomCount, // Number of bathrooms in the listing received as prop
   category, // Category details of the listing received as prop
   locationValue, // Location value of the listing received as prop
 }) => {
@@ -60,8 +54,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             gap-2
           "
         >
-          <div>Hosted by {user?.name}</div> {/* Displaying host name */}
-          <Avatar src={user?.image} /> {/* Avatar component for host image */}
+          {/* Avatar component for host image */}
+          <div className="flex align-center">
+            <span style={{ marginRight: "5px" }}>Sold by</span>
+            <Avatar src={user?.image} />
+            <span className="ml-2">{user?.name}</span>
+          </div>
+          {/* Displaying host name */}
         </div>
         {/* Displaying guest, room, and bathroom count */}
         <div
@@ -73,11 +72,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             font-light
             text-neutral-500
           "
-        >
-          <div>{guestCount} guests</div>
-          <div>{roomCount} rooms</div>
-          <div>{bathroomCount} bathrooms</div>
-        </div>
+        ></div>
       </div>
       <hr /> {/* Horizontal divider */}
       {/* Displaying listing category if available */}

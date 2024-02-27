@@ -12,7 +12,7 @@ declare global {
 }
 
 // Cloudinary upload preset
-const uploadPreset = "pgc9ehd5";
+const uploadPreset = "ejde7bjt";
 
 // Interface defining props accepted by the ImageUpload component
 interface ImageUploadProps {
@@ -39,7 +39,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       onUpload={handleUpload} // Handling image upload
       uploadPreset={uploadPreset} // Setting upload preset
       options={{
-        maxFiles: 1, // Limiting the maximum number of files to be uploaded
+        maxFiles: 3, // Limiting the maximum number of files to be uploaded
       }}
     >
       {({ open }) => {
