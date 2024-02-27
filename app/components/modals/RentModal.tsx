@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "../ui/card";
-
+// import { Button } from "../ui/button";
 import useRentModal from "@/app/hooks/useRentModal";
 
 import Modal from "./Modal";
@@ -206,6 +206,10 @@ const RentModal = () => {
             }}
             className="w-full max-w-sm "
           >
+            {/* <Button
+              className="border-none"
+              onChange={(value) => setCustomValue("categoryType", value)}
+            > */}
             <CarouselContent>
               {[
                 "pounds",
@@ -228,6 +232,7 @@ const RentModal = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+            {/* </Button> */}
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
