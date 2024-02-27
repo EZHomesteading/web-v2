@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
-  name            String?
+  name            String?   @unique
   email           String?   @unique
   emailVerified   DateTime?
   phoneNumber     String?
@@ -21,9 +21,7 @@ model User {
   state           String?
   image           String?
   hoursOfOperation String?
-  profiilePic     String?
-  isCoop          Boolean?
-  isProducer      Boolean?
+  role           String?
   hashedPassword  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
