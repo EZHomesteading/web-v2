@@ -60,7 +60,7 @@ model Product {
   subCategory String
   suggestedUnits String
   shelfLife Int
-  suggectPrice Int
+  suggestPrice Int
 }
 
 model Listing {
