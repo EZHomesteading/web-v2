@@ -43,7 +43,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline // Use outline style for the button
             label="Remove all filters" // Button label
-            onClick={() => router.push("/")} // onClick event handler to reset filters and navigate back to the default route
+            onClick={() => router.push("/shop")} // onClick event handler to reset filters and navigate back to the default route
           />
         )}
       </div>
