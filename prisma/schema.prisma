@@ -11,21 +11,21 @@ datasource db {
 }
 
 model User {
-  id              String @id @default(auto()) @map("_id") @db.ObjectId
-  name            String?   @unique
-  email           String?   @unique
-  emailVerified   DateTime?
-  phoneNumber     String?
-  address         String?
-  zip             String?
-  state           String?
-  image           String?
-  hoursOfOperation String?
-  role           String?
-  hashedPassword  String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  favoriteIds     String[] @db.ObjectId
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  name              String?   @unique
+  email             String?   @unique
+  emailVerified     DateTime?
+  phoneNumber       String?
+  address           String?
+  zip               String?
+  state             String?
+  image             String?
+  hoursOfOperation  String?
+  role              String?
+  hashedPassword    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  favoriteIds       String[] @db.ObjectId
 
   accounts Account[]
   listings Listing[]

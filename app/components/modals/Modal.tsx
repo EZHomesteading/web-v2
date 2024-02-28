@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
+import { useTheme } from "next-themes";
 
 // Define props interface for Modal component
 interface ModalProps {
@@ -32,6 +33,17 @@ const Modal: React.FC<ModalProps> = ({
   secondaryAction,
   secondaryActionLabel,
 }) => {
+  const { theme } = useTheme(); // Get the current theme using useTheme hook
+
+  // Define CSS variables for modal background colors based on the theme
+  const modalBackgroundLight = "#ffffff"; // Light theme modal background
+  const modalBackgroundDark = "#333333"; // Dark theme modal background
+
+  // Update modal background dynamically based on the theme
+  const modalStyle = {
+    backgroundColor:
+      theme === "light" ? modalBackgroundLight : modalBackgroundDark,
+  };
   // State variable to manage modal visibility
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -129,11 +141,11 @@ const Modal: React.FC<ModalProps> = ({
               relative 
               flex 
               flex-col 
-              w-full 
-              bg-white 
+              w-full  
               outline-none 
               focus:outline-none
             "
+              style={modalStyle}
             >
               {/* Modal header */}
               <div

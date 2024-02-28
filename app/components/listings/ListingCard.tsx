@@ -5,7 +5,7 @@ import Image from "next/image"; // Image component from Next.js
 import { useRouter } from "next/navigation"; // useRouter hook from Next.js
 import { useCallback, useMemo } from "react"; // useCallback and useMemo hooks from React
 import { format } from "date-fns"; // Function for formatting dates
-
+import { useTheme } from "next-themes";
 import useCountries from "@/app/hooks/useCountries"; // Custom hook for country data
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types"; // Types for safe listing, reservation, and user data
 
@@ -36,6 +36,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const router = useRouter(); // useRouter hook from Next.js
   const { getByValue } = useCountries(); // Custom hook for getting country data
+  const { theme } = useTheme();
 
   const location = getByValue(data.locationValue); // Getting location data based on location value
 
@@ -79,6 +80,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return `${format(start, "PP")} - ${format(end, "PP")}`;
   }, [reservation]); // Dependency array includes reservation
 
+  const cardBackgroundLight = "#ffffff"; // Light theme card background
+  const cardBackgroundDark = "#666666"; // Dark theme card background
+
+  // Update card background dynamically based on the theme
+  const cardStyle = {
+    backgroundColor:
+      theme === "light" ? cardBackgroundLight : cardBackgroundDark,
+  };
+
   // Rendering the ListingCard component
   return (
     <div
@@ -96,6 +106,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             overflow-hidden 
             rounded-xl
           "
+          style={cardStyle}
         >
           <Image // Image component for listing image
             fill // Fill mode for image
