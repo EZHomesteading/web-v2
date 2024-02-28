@@ -7,8 +7,6 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
 // import getCurrentUser from "@/app/actions/getCurrentUser";
@@ -40,6 +38,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       state: currentUser?.state,
       role: currentUser?.role,
       name: currentUser?.name,
+      email: currentUser?.email,
     },
   });
 
