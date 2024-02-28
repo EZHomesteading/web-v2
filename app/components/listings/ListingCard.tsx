@@ -167,5 +167,5 @@ const ListingCard: React.FC<ListingCardProps> = ({
     </div>
   );
 };
-
+// Name, price per unit, location
 export default ListingCard; // Exporting ListingCard component
