@@ -6,6 +6,7 @@ import Container from "../Container";
 import Logo from "./Logo";
 import Search from "./Search";
 import UserMenu from "./UserMenu";
+import { ModeToggle } from "../ui/mode-toggle";
 
 // Define props interface for the Navbar component
 interface NavbarProps {
@@ -17,7 +18,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
   return (
     // Render the navbar with fixed position, white background, and shadow
-    <div className="fixed w-full bg-white z-10 shadow-sm">
+    <div className="fixed w-full z-10 shadow-sm">
       <div
         className="
           py-4 
@@ -39,10 +40,16 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
           >
             {/* Logo component */}
             <Logo />
+
             {/* Search component */}
             <Search />
             {/* UserMenu component */}
-            <UserMenu currentUser={currentUser} />
+            <div className="flex items-center justify-end">
+              <div className="mr-2">
+                <UserMenu currentUser={currentUser} />
+              </div>
+              <ModeToggle />
+            </div>
           </div>
         </Container>
       </div>

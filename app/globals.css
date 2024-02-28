@@ -4,6 +4,9 @@
 
 @layer base {
   :root {
+    --card-background-light: #ffffff; /* Light theme card background */
+    --card-background-dark: #333333; /* Dark theme card background */
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 

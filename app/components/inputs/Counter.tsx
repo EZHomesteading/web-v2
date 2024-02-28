@@ -26,7 +26,7 @@ const Counter: React.FC<CounterProps> = ({
 
   // Function to handle reduction of value
   const onReduce = useCallback(() => {
-    if (value === 1) {
+    if (value === 0) {
       return; // If value is already 1, do nothing
     }
 
@@ -51,11 +51,9 @@ const Counter: React.FC<CounterProps> = ({
             h-10
             rounded-full
             border-[1px]
-            border-neutral-400
             flex
             items-center
             justify-center
-            text-neutral-600
             cursor-pointer
             hover:opacity-80
             transition
@@ -68,7 +66,6 @@ const Counter: React.FC<CounterProps> = ({
           className="
             font-light 
             text-xl 
-            text-neutral-600
           "
         >
           {value}
@@ -81,11 +78,9 @@ const Counter: React.FC<CounterProps> = ({
             h-10
             rounded-full
             border-[1px]
-            border-neutral-400
             flex
             items-center
             justify-center
-            text-neutral-600
             cursor-pointer
             hover:opacity-80
             transition
