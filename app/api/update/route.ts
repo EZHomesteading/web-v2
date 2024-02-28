@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   // Retrieving the current user
   const currentUser = await getCurrentUser();
   const body = await request.json();
-  const { address, zip, phoneNumber, state, role, name } = body;
+  const { address, zip, phoneNumber, state, role, name, email } = body;
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       state,
       role,
       name,
+      email,
     },
   });
 

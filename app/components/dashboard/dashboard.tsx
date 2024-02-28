@@ -1,4 +1,20 @@
 "use client";
+
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { SafeUser } from "@/app/types";
+import Input from "../inputs/Input";
+import { useRouter } from "next/navigation";
+import { Button } from "../../components/ui/button";
+// import getCurrentUser from "@/app/actions/getCurrentUser";
+
+// const currentUser = getCurrentUser();
+
+interface UpdateUserProps {
+  currentUser?: SafeUser | null;
+}
+
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
@@ -88,8 +104,58 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const DashboardComp: React.FC = () => {
+const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Form control using react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      phoneNumber: currentUser?.phoneNumber,
+      email: currentUser?.email,
+      address: currentUser?.address,
+      zip: currentUser?.zip,
+      state: currentUser?.state,
+      role: currentUser?.role,
+      name: currentUser?.name,
+    },
+  });
+
+  // Function to handle form submission
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    setIsLoading(true);
+
+    // Send registration data to the backend
+    axios
+      .post("/api/update", data)
+      .then(() => {
+        toast.success("Updated!");
+      })
+      .catch((error) => {
+        toast.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const onDelete = () => {
+    axios
+      .delete(`/api/register/${currentUser?.id}`)
+      .then(() => {
+        toast.success("User deleted");
+      })
+      .catch((error) => {
+        toast.error(error?.response?.data?.error);
+      })
+      .finally(() => {
+        location.replace("/");
+      });
+  };
 
   return (
     <>
@@ -272,7 +338,7 @@ const DashboardComp: React.FC = () => {
                 <form className="md:col-span-2">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
                     <div className="col-span-full flex items-center gap-x-8">
-                      <Avatar />
+                      {/* <Avatar /> */}
                       <div>
                         <button
                           type="button"
@@ -287,21 +353,14 @@ const DashboardComp: React.FC = () => {
                     </div>
 
                     <div className="col-span-full">
-                      <label
-                        htmlFor="username"
-                        className="block text-sm font-medium leading-6"
-                      >
-                        Username
-                      </label>
                       <div className="mt-2">
-                        <div className="flex rounded-md bg-white/5 ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500">
-                          <input
-                            type="text"
-                            name="username"
-                            id="username"
-                            autoComplete="username"
-                            className="flex-1 border-0 bg-transparent py-1.5 pl-1 text-white focus:ring-0 sm:text-sm sm:leading-6"
-                            placeholder=""
+                        <div className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                          <Input
+                            id="name"
+                            label="Username"
+                            disabled={isLoading}
+                            register={register}
+                            errors={errors}
                           />
                         </div>
                       </div>
@@ -311,16 +370,74 @@ const DashboardComp: React.FC = () => {
                       <label
                         htmlFor="email"
                         className="block text-sm font-medium leading-6"
-                      >
-                        Email address
-                      </label>
+                      ></label>
                       <div className="mt-2">
-                        <input
+                        <Input
                           id="email"
-                          name="email"
-                          type="email"
-                          autoComplete="email"
-                          className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                          label="Email address"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-full">
+                      <label
+                        htmlFor="phoneNumber"
+                        className="block text-sm font-medium leading-6"
+                      ></label>
+                      <div className="mt-2">
+                        <Input
+                          id="phoneNumber"
+                          label="Phone Number"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-full">
+                      <label
+                        htmlFor="address"
+                        className="block text-sm font-medium leading-6"
+                      ></label>
+                      <div className="mt-2">
+                        <Input
+                          id="address"
+                          label="Address"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-full">
+                      <label
+                        htmlFor="zip"
+                        className="block text-sm font-medium leading-6"
+                      ></label>
+                      <div className="mt-2">
+                        <Input
+                          id="zip"
+                          label="Zip Code"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-full">
+                      <label
+                        htmlFor="state"
+                        className="block text-sm font-medium leading-6"
+                      ></label>
+                      <div className="mt-2">
+                        <Input
+                          id="state"
+                          label="State"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
                         />
                       </div>
                     </div>
@@ -353,6 +470,7 @@ const DashboardComp: React.FC = () => {
                   <div className="mt-8 flex">
                     <button
                       type="submit"
+                      onClick={handleSubmit(onSubmit)}
                       className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                     >
                       Save
@@ -495,12 +613,13 @@ const DashboardComp: React.FC = () => {
                 </div>
 
                 <form className="flex items-start md:col-span-2">
-                  <button
+                  <Button
+                    onClick={handleSubmit(onDelete)}
                     type="submit"
                     className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
                   >
                     Yes, delete my account
-                  </button>
+                  </Button>
                 </form>
               </div>
             </div>

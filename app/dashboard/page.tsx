@@ -1,7 +1,12 @@
 import DashboardComp from "../components/dashboard/dashboard";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
-const DashboardPage = () => {
-  return <DashboardComp />;
+interface IParams {
+  listingId?: string;
+}
+const DashboardPage = async ({ params }: { params: IParams }) => {
+  const currentUser = await getCurrentUser();
+  return <DashboardComp currentUser={currentUser} />;
 };
 
 export default DashboardPage;
