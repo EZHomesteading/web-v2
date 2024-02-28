@@ -1,10 +1,12 @@
 "use client";
 // Import necessary dependencies and hooks
+
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+import useBecomeCoopModal from "@/app/hooks/useBecomeCoopModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useRentModal from "@/app/hooks/useRentModal";
@@ -22,6 +24,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const router = useRouter();
 
   // Custom hooks for managing modal states
+  const becomeCoopModal = useBecomeCoopModal();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
@@ -100,7 +103,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             shadow-md
             w-[40vw]
             md:w-3/4 
-            bg-white 
             overflow-hidden 
             right-0 
             top-12 
@@ -115,6 +117,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   label="Transation History"
                   onClick={() => router.push("/trips")}
                 />
+
                 <MenuItem
                   label="My Favorites"
                   onClick={() => router.push("/favorites")}
@@ -139,6 +142,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <>
                 <MenuItem label="Login" onClick={loginModal.onOpen} />
                 <MenuItem label="Sign up" onClick={registerModal.onOpen} />
+                <MenuItem label="Sign up" onClick={registerModal.onOpen} />
+                <MenuItem
+                  label="Become a Co-Op"
+                  onClick={becomeCoopModal.onOpen}
+                />
               </>
             )}
           </div>

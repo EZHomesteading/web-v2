@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import useRegisterModal from "@/app/hooks/useRegisterModal";
+import useBecomeCoopModal from "@/app/hooks/useBecomeCoopModal";
 
 import Modal from "./Modal";
 import Input from "../inputs/Input";
@@ -17,9 +17,9 @@ import Heading from "../Heading";
 import Button from "../Button";
 
 // Define RegisterModal component
-const RegisterModal = () => {
+const BecomeCoopModal = () => {
   // Hooks for managing state and form data
-  const registerModal = useRegisterModal();
+  const becomeCoopModal = useBecomeCoopModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +33,7 @@ const RegisterModal = () => {
       name: "",
       email: "",
       password: "",
-      role: "consumer",
+      role: "coop",
     },
   });
 
@@ -43,10 +43,10 @@ const RegisterModal = () => {
 
     // Send registration data to the backend
     axios
-      .post("/api/register", data)
+      .post("/api/become", data)
       .then(() => {
-        toast.success("Registered!");
-        registerModal.onClose();
+        toast.success("Registered as a Co-Op!");
+        becomeCoopModal.onClose();
         loginModal.onOpen();
       })
       .catch((error) => {
@@ -59,17 +59,14 @@ const RegisterModal = () => {
 
   // Function to toggle between register and login modals
   const onToggle = useCallback(() => {
-    registerModal.onClose();
+    becomeCoopModal.onClose();
     loginModal.onOpen();
-  }, [registerModal, loginModal]);
+  }, [becomeCoopModal, loginModal]);
 
   // JSX content for the modal body
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading
-        title="Welcome to EZhomesteading"
-        subtitle="Create an account!"
-      />
+      <Heading title="Welcome to EZHomesteading" subtitle="Become a Co-Op!" />
       <Input
         id="email"
         label="Email"
@@ -132,10 +129,10 @@ const RegisterModal = () => {
   return (
     <Modal
       disabled={isLoading}
-      isOpen={registerModal.isOpen}
+      isOpen={becomeCoopModal.isOpen}
       title="Register"
       actionLabel="Continue"
-      onClose={registerModal.onClose}
+      onClose={becomeCoopModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
       footer={footerContent}
@@ -144,4 +141,4 @@ const RegisterModal = () => {
 };
 
 // Export the RegisterModal component
-export default RegisterModal;
+export default BecomeCoopModal;
