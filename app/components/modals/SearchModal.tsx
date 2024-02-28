@@ -66,7 +66,7 @@ const SearchModal = () => {
 
     const url = qs.stringifyUrl(
       {
-        url: "/",
+        url: "/shop",
         query: updatedQuery,
       },
       { skipNull: true }

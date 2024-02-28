@@ -109,10 +109,10 @@ const Categories = () => {
   const pathname = usePathname();
 
   // Check if it's the main page
-  const isMainPage = pathname === "/";
+  const isShopPage = pathname === "/shop";
 
   // If it's not the main page, return null
-  if (!isMainPage) {
+  if (!isShopPage) {
     return null;
   }
 
