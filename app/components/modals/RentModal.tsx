@@ -12,7 +12,6 @@ import ImageUpload from "../inputs/ImageUpload"; // Input component for image up
 import Input from "../inputs/Input"; // Generic input component
 import Heading from "../Heading"; // Custom heading component
 
-import { Montserrat } from "next/font/google";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation"; // Navigation hook from Next.js
 import { useTheme } from "next-themes";
@@ -137,17 +136,19 @@ const RentModal = () => {
     // If at the final step, submit the form
     setIsLoading(true);
 
+    const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
     const shelfLife =
       parseInt(data.shelfLifeDays, 10) +
       parseInt(data.shelfLifeWeeks, 10) * 7 +
       parseInt(data.shelfLifeMonths, 10) * 30;
 
     console.log("Calculated shelfLife:", shelfLife);
-
+    console.log("formattedPrice: ", formattedPrice);
     const formData = {
       ...data,
       stock: parseInt(data.stock, 10), // Ensure stock is an integer
       shelfLife,
+      price: formattedPrice,
     };
 
     // Submit form data via axios
@@ -389,17 +390,18 @@ const RentModal = () => {
       <div className="flex flex-col gap-8">
         <Heading
           title="Now, set your price"
-          subtitle="How much do you charge per unit? (E.g. $1/lb)"
+          subtitle="How much do you charge per unit? This isn't your total price unless you only have one."
         />
         <div style={{ color: inputColor }}>
           <Input
             id="price"
-            label="Price"
-            formatPrice
+            label="Price per unit"
             type="number"
+            step="0.01"
             disabled={isLoading}
             register={register}
             errors={errors}
+            formatPrice
             required
           />
         </div>

@@ -4,7 +4,7 @@ import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
-
+import { useTheme } from "next-themes";
 // Define the CategoryBoxProps interface
 interface CategoryBoxProps {
   icon: IconType; // Icon component type
@@ -21,6 +21,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   // Initialize router and search params hook
   const router = useRouter();
   const params = useSearchParams();
+  const { theme } = useTheme();
 
   // Handle click event
   const handleClick = useCallback(() => {
@@ -54,6 +55,26 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     // Navigate to the new URL
     router.push(url);
   }, [label, router, params]);
+
+  const baseStyles = `
+  flex 
+  flex-col 
+  items-center 
+  justify-center 
+  gap-2
+  p-3
+  border-b-2
+  transition
+  cursor-pointer
+`;
+
+  const themeStyles =
+    theme === "dark"
+      ? "text-neutral-200 hover:text-neutral-100"
+      : "text-neutral-700 hover:text-neutral-900";
+  const selectedStyles = selected
+    ? "border-b-neutral-800 dark:border-b-neutral-200"
+    : "border-transparent";
 
   return (
     // Render the category box element with conditional styles based on props

@@ -70,7 +70,7 @@ model Listing {
   category  String 
   stock Int?
   quantityType String?
-  price Int
+  price Float
   description String
   imageSrc String
   locationValue String
