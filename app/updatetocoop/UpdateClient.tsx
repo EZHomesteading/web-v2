@@ -38,7 +38,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       address: currentUser?.address,
       zip: currentUser?.zip,
       state: currentUser?.state,
-      role: currentUser?.role,
+      role: "coop",
       name: currentUser?.name,
     },
   });
@@ -84,6 +84,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          required
         />
 
         <Input
