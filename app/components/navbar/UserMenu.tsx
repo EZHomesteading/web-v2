@@ -53,7 +53,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
         {/* Add a Product button */}
-        {currentUser?.role === "coop*" ? (
+        {currentUser?.role === "coop" ? (
           <div
             onClick={onRent}
             className="
