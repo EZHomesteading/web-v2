@@ -4,7 +4,7 @@
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 import useBecomeCoopModal from "@/app/hooks/useBecomeCoopModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -14,6 +14,7 @@ import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
 import Avatar from "../Avatar";
+import { divIcon } from "leaflet";
 
 // UserMenu component
 interface UserMenuProps {
@@ -52,9 +53,28 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
         {/* Add a Product button */}
-        <div
-          onClick={onRent}
-          className="
+        {currentUser?.role === "coop*" ? (
+          <div
+            onClick={onRent}
+            className="
+                hidden
+                md:block
+                text-sm 
+                font-semibold 
+                py-3 
+                px-4 
+                rounded-full 
+                hover:bg-neutral-100 
+                transition 
+                cursor-pointer
+              "
+          >
+            Add a Product
+          </div>
+        ) : (
+          <div
+            onClick={() => router.push("/coopreg")}
+            className="
             hidden
             md:block
             text-sm 
@@ -66,9 +86,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             transition 
             cursor-pointer
           "
-        >
-          Add a Product
-        </div>
+          >
+            Add a Product
+          </div>
+        )}
+
         {/* Menu button */}
         <div
           onClick={toggleOpen}
@@ -111,13 +133,23 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
         >
           <div className="flex flex-col cursor-pointer">
             {/* Render menu items based on user authentication */}
+            {currentUser?.role === "coop" ? (
+              <div>
+                <MenuItem
+                  label="My Store"
+                  onClick={() => router.push("/properties")}
+                />
+                <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
+              </div>
+            ) : (
+              <div></div>
+            )}
             {currentUser ? (
               <>
                 <MenuItem
                   label="Transation History"
                   onClick={() => router.push("/trips")}
                 />
-
                 <MenuItem
                   label="My Favorites"
                   onClick={() => router.push("/favorites")}
@@ -126,11 +158,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   label="Current Orders"
                   onClick={() => router.push("/reservations")}
                 />
-                <MenuItem
-                  label="My Store"
-                  onClick={() => router.push("/properties")}
-                />
-                <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
+
                 <MenuItem
                   label="Update user"
                   onClick={() => router.push("/update")}
