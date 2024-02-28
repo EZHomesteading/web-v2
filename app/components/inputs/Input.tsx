@@ -14,6 +14,7 @@ interface InputProps {
   required?: boolean; // Whether the input field is required
   register: UseFormRegister<FieldValues>; // Function to register the input field with react-hook-form
   errors: FieldErrors; // Errors object from react-hook-form
+  step?: string;
 }
 
 // Input component

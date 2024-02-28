@@ -4,11 +4,6 @@ import prisma from "@/app/libs/prismadb";
 // Interface defining the structure of parameters accepted by the function
 export interface IListingsParams {
   userId?: string; // Optional parameter: userId
-  guestCount?: number; // Optional parameter: guestCount
-  roomCount?: number; // Optional parameter: roomCount
-  bathroomCount?: number; // Optional parameter: bathroomCount
-  startDate?: string; // Optional parameter: startDate
-  endDate?: string; // Optional parameter: endDate
   locationValue?: string; // Optional parameter: locationValue
   category?: string; // Optional parameter: category
 }
@@ -19,7 +14,7 @@ export default async function getListings(
 ) {
   try {
     // Destructuring parameters
-    const { userId, locationValue, startDate, endDate, category } = params;
+    const { userId, locationValue, category } = params;
 
     // Initializing an empty query object
     let query: any = {};
@@ -39,24 +34,6 @@ export default async function getListings(
     }
 
     // Filtering out listings based on availability within provided dates
-    if (startDate && endDate) {
-      query.NOT = {
-        reservations: {
-          some: {
-            OR: [
-              {
-                endDate: { gte: startDate }, // Check if any reservation ends after the provided start date
-                startDate: { lte: startDate }, // Check if any reservation starts before the provided start date
-              },
-              {
-                startDate: { lte: endDate }, // Check if any reservation starts before the provided end date
-                endDate: { gte: endDate }, // Check if any reservation ends after the provided end date
-              },
-            ],
-          },
-        },
-      };
-    }
 
     // Finding listings in the database based on the constructed query
     const listings = await prisma.listing.findMany({

@@ -33,7 +33,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
   return (
     <div>
       <Select
-        placeholder="Anywhere" // Placeholder text
+        placeholder="Where?" // Placeholder text
         isClearable // Allowing to clear the selected value
         options={getAll()} // Options for the select component fetched using the custom hook
         value={value} // Current selected value

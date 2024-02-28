@@ -18,7 +18,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
   return (
     // Render the navbar with fixed position, white background, and shadow
-    <div className="fixed w-full z-10 shadow-sm">
+    <div className="relative w-full z-10 shadow-sm">
       <div
         className="
           py-4 
