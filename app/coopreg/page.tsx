@@ -1,30 +1,22 @@
 "use client";
 // Import necessary modules and components
-
-// make radiogroup data go where its supposed to
-
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { SafeUser } from "@/app/types";
-import Container from "@/app/components/Container";
-// import getCurrentUser from "@/app/actions/getCurrentUser";
 
-import Input from "../components/inputs/Input";
-import Heading from "../components/Heading";
+import useLoginModal from "@/app/hooks/useLoginModal";
+import useRegisterModal from "@/app/hooks/useRegisterModal";
+
+import Input from "@/app/components/inputs/Input";
+import Heading from "@/app/components/Heading";
 import { Button } from "../components/ui/button";
-// const currentUser = getCurrentUser();
-
-interface UpdateUserProps {
-  currentUser?: SafeUser | null;
-}
 
 // Define RegisterModal component
-const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
+const RegisterModal = () => {
   // Hooks for managing state and form data
+  const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
 
   // Form control using react-hook-form
@@ -34,12 +26,14 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      phoneNumber: currentUser?.phoneNumber,
-      address: currentUser?.address,
-      zip: currentUser?.zip,
-      state: currentUser?.state,
-      role: currentUser?.role,
-      name: currentUser?.name,
+      name: "",
+      email: "",
+      password: "",
+      role: "coop",
+      address: "",
+      phoneNumber: "",
+      zip: "",
+      state: "",
     },
   });
 
@@ -49,9 +43,11 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
 
     // Send registration data to the backend
     axios
-      .post("/api/update", data)
+      .post("/api/registercoop", data)
       .then(() => {
-        toast.success("Updated!");
+        toast.success("Registered!");
+        registerModal.onClose();
+        loginModal.onOpen();
       })
       .catch((error) => {
         toast.error(error);
@@ -61,53 +57,86 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       });
   };
 
+  // Function to toggle between register and login modals
+  const onToggle = useCallback(() => {
+    registerModal.onClose();
+    loginModal.onOpen();
+  }, [registerModal, loginModal]);
+
   // JSX content for the modal body
   return (
-    <Container>
+    <div>
       <div className="flex flex-col gap-4">
         <Heading
-          title="Update your account info"
-          subtitle="enter details below"
+          title="Welcome to EZhomesteading"
+          subtitle="Create an account!"
         />
-
+        <Input
+          id="email"
+          label="Email"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
         <Input
           id="name"
-          label="Username"
+          label="Name"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+        <Input
+          id="password"
+          label="Password"
+          type="text"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+        <Input
+          id="address"
+          label="Address (not required)"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
-
         <Input
           id="phoneNumber"
           label="Phone Number"
           disabled={isLoading}
           register={register}
           errors={errors}
+          required
         />
-
-        <Input
-          id="address"
-          label="Address"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-
         <Input
           id="zip"
-          label="Zip Code"
+          label="Zip Code (not required)"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
         <Input
           id="state"
-          label="State"
+          label="State (not required)"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
+      </div>
+
+      <div className="text-neutral-500 text-center mt-4 font-light">
+        <p>
+          Already have an account?
+          <span
+            onClick={onToggle}
+            className="text-neutral-800 cursor-pointer hover:underline"
+          >
+            Log in
+          </span>
+        </p>
       </div>
       <div className="flex flex-col gap-4 mt-3">
         <div className="text-neutral-500 text-center mt-4 font-light">
@@ -119,9 +148,9 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
           </Button>
         </div>
       </div>
-    </Container>
+    </div>
   );
 };
 
 // Export the RegisterModal component
-export default UpdateClient;
+export default RegisterModal;
