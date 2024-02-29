@@ -1,15 +1,15 @@
 "use client";
 
-// Importing necessary modules and components
+import { useState } from "react";
 import {
   FieldErrors,
   FieldValues,
   RegisterOptions,
   UseFormRegister,
-} from "react-hook-form"; // Components and types from react-hook-form
-import { BiDollar } from "react-icons/bi"; // Icon component for dollar symbol
+} from "react-hook-form";
+import { BiDollar } from "react-icons/bi";
+import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 
-// Interface defining props accepted by the Input component
 interface InputProps {
   id: string; // ID of the input field
   label: string; // Label for the input field
@@ -35,27 +35,39 @@ const Input: React.FC<InputProps> = ({
   errors,
   validationRules,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+
   return (
-    <div className="w-full relative">
-      {/* Container for the input field */}
-      {formatPrice && (
-        <BiDollar // Dollar symbol icon
-          size={24} // Size of the icon
-          className="
-            text-neutral-700
-            absolute
-            top-5
-            left-2
-          "
-        />
-      )}
-      <input // Input field
-        id={id} // ID of the input field
-        disabled={disabled} // Whether the input field is disabled
-        {...register(id, { required, ...validationRules })} // Registering the input field with react-hook-form
-        placeholder=" " // Placeholder text
-        type={type} // Type of the input field
-        className={`
+    <>
+      <div className="w-full relative">
+        {formatPrice && (
+          <BiDollar
+            size={24}
+            className="text-neutral-700 absolute top-5 left-2"
+          />
+        )}
+        {type === "password" && (
+          <button
+            type="button"
+            onClick={toggleShowPassword}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+          >
+            {showPassword ? <PiEye size={20} /> : <PiEyeClosedThin size={20} />}
+          </button>
+        )}
+
+        <input // Input field
+          id={id}
+          type={showPassword ? "text" : type} // ID of the input field
+          disabled={disabled} // Whether the input field is disabled
+          {...register(id, {
+            required: required ? "This field is required" : false,
+            ...validationRules,
+          })} // Registering the input field with react-hook-form
+          placeholder=" " // Placeholder text
+          // type={type} // Type of the input field
+          className={`
           peer
           w-full
           p-4
@@ -78,9 +90,9 @@ const Input: React.FC<InputProps> = ({
             errors[id] ? "focus:border-rose-500" : "focus:border-black"
           } // Highlighting border in case of focus
         `}
-      />
-      <label // Label for the input field
-        className={`
+        />
+        <label // Label for the input field
+          className={`
           absolute 
           text-md
           duration-150 
@@ -100,10 +112,11 @@ const Input: React.FC<InputProps> = ({
             errors[id] ? "text-rose-500" : "text-zinc-400"
           } // Changing color in case of error
         `}
-      >
-        {label} {/* Label text */}
-      </label>
-    </div>
+        >
+          {label}
+        </label>
+      </div>
+    </>
   );
 };
 

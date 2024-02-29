@@ -38,8 +38,6 @@ const RegisterModal = () => {
       role: "",
     },
   });
-
-  const password = watch("password");
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
