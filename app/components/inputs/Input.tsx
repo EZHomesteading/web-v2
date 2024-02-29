@@ -1,7 +1,12 @@
 "use client";
 
 // Importing necessary modules and components
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"; // Components and types from react-hook-form
+import {
+  FieldErrors,
+  FieldValues,
+  RegisterOptions,
+  UseFormRegister,
+} from "react-hook-form"; // Components and types from react-hook-form
 import { BiDollar } from "react-icons/bi"; // Icon component for dollar symbol
 
 // Interface defining props accepted by the Input component
@@ -15,6 +20,7 @@ interface InputProps {
   register: UseFormRegister<FieldValues>; // Function to register the input field with react-hook-form
   errors: FieldErrors; // Errors object from react-hook-form
   step?: string;
+  validationRules?: RegisterOptions<FieldValues>;
 }
 
 // Input component
@@ -26,7 +32,8 @@ const Input: React.FC<InputProps> = ({
   formatPrice, // Whether to format the input field as a price received as prop
   register, // Function to register the input field with react-hook-form received as prop
   required, // Whether the input field is required received as prop
-  errors, // Errors object from react-hook-form received as prop
+  errors,
+  validationRules,
 }) => {
   return (
     <div className="w-full relative">
@@ -45,7 +52,7 @@ const Input: React.FC<InputProps> = ({
       <input // Input field
         id={id} // ID of the input field
         disabled={disabled} // Whether the input field is disabled
-        {...register(id, { required })} // Registering the input field with react-hook-form
+        {...register(id, { required, ...validationRules })} // Registering the input field with react-hook-form
         placeholder=" " // Placeholder text
         type={type} // Type of the input field
         className={`

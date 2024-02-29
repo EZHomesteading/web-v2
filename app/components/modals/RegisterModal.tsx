@@ -66,7 +66,6 @@ const RegisterModal = () => {
     loginModal.onOpen();
   }, [registerModal, loginModal]);
 
-  const validateConfirmPassword = (value) => value === password || "dont macth";
   // JSX content for the modal body
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -107,6 +106,10 @@ const RegisterModal = () => {
         register={register}
         errors={errors}
         required
+        validationRules={{
+          validate: (value) =>
+            value === watch("password") || "Passwords do not match",
+        }}
       />
     </div>
   );
