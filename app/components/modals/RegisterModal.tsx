@@ -27,16 +27,19 @@ const RegisterModal = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "consumer",
+      confirmPassword: "",
+      role: "",
     },
   });
 
+  const password = watch("password");
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
@@ -63,6 +66,7 @@ const RegisterModal = () => {
     loginModal.onOpen();
   }, [registerModal, loginModal]);
 
+  const validateConfirmPassword = (value) => value === password || "dont macth";
   // JSX content for the modal body
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -89,7 +93,16 @@ const RegisterModal = () => {
       <Input
         id="password"
         label="Password"
-        type="text"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
         disabled={isLoading}
         register={register}
         errors={errors}
