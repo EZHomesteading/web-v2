@@ -42,7 +42,7 @@ import Avatar from "../Avatar";
 interface NavigationItem {
   name: string;
   href: string;
-  icon: React.ComponentType<React.ComponentPropsWithoutRef<"svg">>;
+  icon: React.ElementType;
   current: boolean;
 }
 
