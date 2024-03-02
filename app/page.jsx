@@ -263,8 +263,9 @@ export default function Home() {
             How EZH Works
           </h2>
           <div className="mt-10 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0">
-            {collections.map((collection) => (
+            {collections.map((collection, index) => (
               <Link
+                key={index}
                 href={collection.href}
                 className="group block cursor-auto mb-4 mr-4"
               >
