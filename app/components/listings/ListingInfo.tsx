@@ -92,7 +92,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       </div>
       <hr /> {/* Horizontal divider */}
       {/* Map component to display location */}
-      {/* <Map center={coordinates} />  */}
+      <Map center={coordinates} />
     </div>
   );
 };
