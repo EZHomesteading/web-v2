@@ -27,16 +27,17 @@ const RegisterModal = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "consumer",
+      confirmPassword: "",
+      role: "",
     },
   });
-
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
@@ -89,11 +90,24 @@ const RegisterModal = () => {
       <Input
         id="password"
         label="Password"
-        type="text"
+        type="password"
         disabled={isLoading}
         register={register}
         errors={errors}
         required
+      />
+      <Input
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+        validationRules={{
+          validate: (value) =>
+            value === watch("password") || "Passwords do not match",
+        }}
       />
     </div>
   );

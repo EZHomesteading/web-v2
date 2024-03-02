@@ -11,9 +11,9 @@ import { SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
 // import getCurrentUser from "@/app/actions/getCurrentUser";
 
-import Input from "../components/inputs/Input";
-import Heading from "../components/Heading";
-import { Button } from "../components/ui/button";
+import Input from "../../app/components/inputs/Input";
+import Heading from "../../app/components/Heading";
+import { Button } from "../../app/components/ui/button";
 // const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
