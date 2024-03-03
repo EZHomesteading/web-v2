@@ -170,7 +170,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <>
                 <MenuItem label="Login" onClick={loginModal.onOpen} />
                 <MenuItem label="Sign up" onClick={registerModal.onOpen} />
-                <MenuItem label="Sign up" onClick={registerModal.onOpen} />
                 <MenuItem
                   label="Become a Co-Op"
                   onClick={becomeCoopModal.onOpen}
