@@ -15,6 +15,7 @@ import { SafeUser } from "@/app/types";
 import MenuItem from "./MenuItem";
 import Avatar from "../Avatar";
 import { divIcon } from "leaflet";
+import RegisterModal from "../modals/RegisterModal";
 
 // UserMenu component
 interface UserMenuProps {
@@ -169,7 +170,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             ) : (
               <>
                 <MenuItem label="Login" onClick={loginModal.onOpen} />
-                <MenuItem label="Sign up" onClick={registerModal.onOpen} />
                 <MenuItem label="Sign up" onClick={registerModal.onOpen} />
                 <MenuItem
                   label="Become a Co-Op"

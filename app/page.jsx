@@ -2,74 +2,46 @@ import Link from "next/link";
 import Image from "next/image";
 import homebg from "../public/images/home-images/ezh-home-static-bg.jpg";
 import Categories from "./components/navbar/Categories";
-import Button from ".//components/ui/button";
-
-const categories = [
-  {
-    name: "Highly Perishable",
-    href: "/shop-ezh",
-    imageSrc: "/images/home-images/milk.jpg",
-  },
-  {
-    name: "Perishable",
-    href: "/shop-ezh",
-    imageSrc: "/images/home-images/apple.jpg",
-  },
-  {
-    name: "Less Perishable",
-    href: "/shop-ezh",
-    imageSrc: "/images/home-images/potato.jpg",
-  },
-  {
-    name: "Non-Perishable",
-    href: "/shop-ezh",
-    imageSrc: "/images/home-images/honey.jpg",
-  },
-  {
-    name: "Non-Consumable",
-    href: "/shop-ezh",
-    imageSrc: "/images/home-images/candle.jpg",
-  },
-];
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./components/ui/carousel";
 
 const collections = [
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-1.jpg",
     imageAlt: "",
     description:
       "This is Edward. He is a hard-working electritian, but ever since he was a child he has loved growing tomatoes. But he always has too many at the end of a harvest for just himself!",
   },
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-2.jpg",
     imageAlt: "",
     description:
       "Instead of letting those fresh organic tomatoes go to waste, Edward uses EZ Homesteading to list hs excess tomatoes for sale.",
   },
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-3.jpg",
     imageAlt: "",
     description:
       "Edward puts his tomatoes that he has sold on EZ Homesteading out for his consumers to come by and pick up.",
   },
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-4.jpg",
     imageAlt: "",
     description:
       "This is Bella, she is having a dinner party soon and would love some truly organic fresh tomatoes, but doesnt have the time to grow them herself. So she goes on EZ Homesteading and discovers Edwards Co-Op is right around the corner!",
   },
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-5.jpg",
     imageAlt: "",
     description:
       "Edward and Bella agree on a price, and Bella swings by Edwards Co-Op on the way home from work! They never have to see eachother or exchange cash if they do not want to.",
   },
   {
-    href: "/",
     imageSrc: "/images/how-ezh-works/how-ezh-works-6.jpg",
     imageAlt: "",
     description:
@@ -114,7 +86,7 @@ export default function Home() {
           <div className="absolute inset-0" />
           <Image
             src={homebg}
-            alt="Man holding "
+            alt="Farmer Holding Basket of Vegetables"
             blurDataURL="data:..."
             placeholder="blur"
             style={{ objectFit: "contain" }}
@@ -170,7 +142,7 @@ export default function Home() {
             >
               Find Produce by Category
             </h2>
-            <Categories />
+
             <Link
               href="/shop"
               className="hidden text-sm font-semibold text-green-700 hover:text-green-500 sm:block"
@@ -180,36 +152,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-4 flow-root">
-            <div className="-my-2">
-              <div className="relative box-content h-80 overflow-x-auto py-2 xl:overflow-visible">
-                <div className="absolute flex space-x-8 px-4 sm:px-6 text-white lg:px-8 xl:relative xl:grid xl:grid-cols-5 xl:gap-x-8 xl:space-x-0 xl:px-0">
-                  {categories.map((category) => (
-                    <a
-                      key={category.name}
-                      href={category.href}
-                      className="relative flex h-80 w-56 flex-col overflow-hidden rounded-lg p-6 hover:opacity-75 xl:w-auto"
-                    >
-                      <span aria-hidden="true" className="absolute inset-0">
-                        <img
-                          src={category.imageSrc}
-                          alt=""
-                          className="h-full w-full object-cover object-center"
-                        />
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-gray-800 opacity-50"
-                      />
-                      <span className="relative mt-auto text-center text-xl font-bold">
-                        {category.name}
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <Categories />
         </section>
 
         {/* Featured section */}
@@ -262,30 +205,34 @@ export default function Home() {
           >
             How EZH Works
           </h2>
-          <div className="mt-10 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0">
-            {collections.map((collection, index) => (
-              <Link
-                key={index}
-                href={collection.href}
-                className="group block cursor-auto mb-4 mr-4"
-              >
-                <div
-                  aria-hidden="true"
-                  className="aspect-h-2 aspect-w-2 overflow-hidden rounded-lg lg:aspect-h-6 lg:aspect-w-5"
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full mb-3"
+          >
+            <CarouselContent>
+              {collections.map((collection) => (
+                <CarouselItem
+                  key={collection.imageSrc}
+                  className="md:basis-1/2 lg:basis-1/3"
                 >
                   <Image
                     src={collection.imageSrc}
                     alt={collection.imageAlt}
-                    width={500}
                     height={500}
+                    width={500}
+                    className="rounded-lg"
                   />
-                </div>
-                <p className="mt-2 mb-2 text-sm text-gray-500">
-                  {collection.description}
-                </p>
-              </Link>
-            ))}
-          </div>
+                  <span>
+                    <p>{collection.description}</p>
+                  </span>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </section>
       </main>
 
