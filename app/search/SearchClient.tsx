@@ -69,14 +69,14 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         })}
       />
 
-      <div>
+      {/* <div>
         <h1>{value?.shelfLife}</h1>
         <h1>{value?.label}</h1>
         <h1>{value?.cat}</h1>
         <h1>{value?.category}</h1>
         <h1>{value?.price}</h1>
         <h1>{value?.units}</h1>
-      </div>
+      </div> */}
     </div>
   );
 };
