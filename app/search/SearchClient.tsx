@@ -11,6 +11,10 @@ export type ProductValue = {
   cat: string; // Flag of the country
   label: string; // Name of the country
   value: string; // Value of the country
+  shelfLife: number;
+  category: string;
+  price: string;
+  units: string;
 };
 
 // Interface defining props accepted by the CountrySelect component
@@ -31,7 +35,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   return (
     <div>
       <Select
-        placeholder="Anywhere" // Placeholder text
+        placeholder="Enter A Product Name" // Placeholder text
         isClearable // Allowing to clear the selected value
         options={getAll()} // Options for the select component fetched using the custom hook
         value={value} // Current selected value
@@ -40,10 +44,10 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           <div className="flex flex-row items-center gap-3">
             {" "}
             <div>
-              {option.label}, {/* Name of the country */}
-              <span className="text-neutral-500 ml-1">
-                {option.cat} {/* Region of the country */}
-              </span>
+              {option.label} {/* Name of the country */}
+              {/* <span className="text-neutral-500 ml-1">
+                {option.cat} Region of the country */}
+              {/* </span> */}
             </div>
           </div>
         )}
@@ -64,6 +68,15 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           },
         })}
       />
+
+      <div>
+        <h1>{value?.shelfLife}</h1>
+        <h1>{value?.label}</h1>
+        <h1>{value?.cat}</h1>
+        <h1>{value?.category}</h1>
+        <h1>{value?.price}</h1>
+        <h1>{value?.units}</h1>
+      </div>
     </div>
   );
 };
