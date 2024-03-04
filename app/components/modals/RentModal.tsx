@@ -11,6 +11,7 @@ import CountrySelect from "../inputs/CountrySelect"; // Input component for sele
 import ImageUpload from "../inputs/ImageUpload"; // Input component for image upload
 import Input from "../inputs/Input"; // Generic input component
 import Heading from "../Heading"; // Custom heading component
+import SearchClient, { ProductValue } from "@/app/search/SearchClient";
 
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation"; // Navigation hook from Next.js
@@ -39,6 +40,8 @@ enum STEPS {
 
 // RentModal component definition
 const RentModal = () => {
+  const [product, setProduct] = useState<ProductValue>();
+
   const { theme } = useTheme();
 
   // Determine the color of input fields based on the theme
@@ -84,7 +87,7 @@ const RentModal = () => {
       price: 1,
       title: "",
       description: "",
-      shelfLifeDays: 0,
+      shelfLifeDays: product?.shelfLife,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
     },
@@ -195,16 +198,20 @@ const RentModal = () => {
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"
       />
-      <div style={{ color: inputColor }}>
+      <SearchClient
+        value={product}
+        onChange={(value) => setProduct(value as ProductValue)}
+      />
+      {/* <div style={{ color: inputColor }}>
         <Input
           id="title"
-          label="Title"
+          label={product?.price}
           disabled={isLoading}
           register={register}
           errors={errors}
           required
         />
-      </div>
+      </div> */}
       <hr />
       <div style={{ color: inputColor }}>
         <Input
