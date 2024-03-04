@@ -26,10 +26,14 @@ const UpdateClient: React.FC<UpdateListingProps> = ({ currentListing }) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
+      id: currentListing?.id,
       category: currentListing?.category,
       stock: currentListing?.stock,
       quantityType: currentListing?.quantityType,
       price: currentListing?.price,
+      imageSrc: currentListing?.imageSrc,
+      description: currentListing?.description,
+      shelfLife: currentListing?.shelfLife,
     },
   });
 
@@ -37,9 +41,23 @@ const UpdateClient: React.FC<UpdateListingProps> = ({ currentListing }) => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
+    const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
+    const shelfLife =
+      parseInt(data.shelfLifeDays, 10) +
+      parseInt(data.shelfLifeWeeks, 10) * 7 +
+      parseInt(data.shelfLifeMonths, 10) * 30;
+
+    const formData = {
+      ...data,
+      stock: parseInt(data.stock, 10), // Ensure stock is an integer
+      shelfLife,
+      price: formattedPrice,
+      quantityType: data.quantityType === "none" ? "" : data.quantityType,
+    };
+
     // Send registration data to the backend
     axios
-      .post("/api/updateListing", data)
+      .post("/api/updateListing", formData)
       .then(() => {
         toast.success("Updated!");
       })
@@ -82,7 +100,7 @@ const UpdateClient: React.FC<UpdateListingProps> = ({ currentListing }) => {
         />
 
         <Input
-          id="quantity"
+          id="quantityType"
           label="Units"
           disabled={isLoading}
           register={register}
