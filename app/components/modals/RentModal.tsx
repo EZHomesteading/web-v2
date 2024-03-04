@@ -263,7 +263,6 @@ const RentModal = () => {
             className="w-1/3"
           >
             <CarouselContent>
-              {/* Render items in carousel */}
               {[
                 "pounds",
                 "oz",

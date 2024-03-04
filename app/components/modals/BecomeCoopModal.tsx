@@ -27,25 +27,26 @@ const BecomeCoopModal = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "coop",
+      confirmPassword: "",
+      role: "",
     },
   });
-
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
     // Send registration data to the backend
     axios
-      .post("/api/become", data)
+      .post("/api/register", data)
       .then(() => {
-        toast.success("Registered as a Co-Op!");
+        toast.success("Registered!");
         becomeCoopModal.onClose();
         loginModal.onOpen();
       })
@@ -66,7 +67,7 @@ const BecomeCoopModal = () => {
   // JSX content for the modal body
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading title="Welcome to EZHomesteading" subtitle="Become a Co-Op!" />
+      <Heading title="Welcome to EZhomesteading" subtitle="Become a Co-Op!" />
       <Input
         id="email"
         label="Email"
@@ -86,7 +87,29 @@ const BecomeCoopModal = () => {
       <Input
         id="password"
         label="Password"
-        type="text"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+        validationRules={{
+          validate: (value) =>
+            value === watch("password") || "Passwords do not match",
+        }}
+      />
+      <Input
+        id="phone"
+        label="Phone Number"
+        type="phone"
         disabled={isLoading}
         register={register}
         errors={errors}

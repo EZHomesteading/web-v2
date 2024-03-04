@@ -15,6 +15,7 @@ import { SafeUser } from "@/app/types";
 import MenuItem from "./MenuItem";
 import Avatar from "../Avatar";
 import { divIcon } from "leaflet";
+import RegisterModal from "../modals/RegisterModal";
 
 // UserMenu component
 interface UserMenuProps {
