@@ -21,6 +21,9 @@ interface ListingCardProps {
   disabled?: boolean; // Whether the listing is disabled
   actionLabel?: string; // Label for the action button
   actionId?: string; // ID for the action
+  secondActionId?: string;
+  secondActionLabel?: string;
+  onSecondAction?: (id: string) => void;
   currentUser?: SafeUser | null; // Current user data
 }
 
@@ -32,7 +35,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
   disabled, // Whether the listing is disabled received as prop
   actionLabel, // Label for the action button received as prop
   actionId = "", // ID for the action received as prop
-  currentUser, // Current user data received as prop
+  currentUser,
+  secondActionId,
+  onSecondAction,
+  secondActionLabel,
+  // Current user data received as prop
 }) => {
   const router = useRouter(); // useRouter hook from Next.js
   const { getByValue } = useCountries(); // Custom hook for getting country data
@@ -53,6 +60,20 @@ const ListingCard: React.FC<ListingCardProps> = ({
       onAction?.(actionId); // Calling onAction function with action ID
     },
     [disabled, onAction, actionId]
+  ); // Dependency array includes disabled, onAction, and actionId
+
+  const handleSecondAction = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation(); // Stopping event propagation
+
+      if (disabled) {
+        // Checking if the listing is disabled
+        return;
+      }
+
+      onSecondAction?.(actionId); // Calling onAction function with action ID
+    },
+    [disabled, onSecondAction, secondActionId]
   ); // Dependency array includes disabled, onAction, and actionId
 
   // Memoized price based on reservation status
@@ -133,15 +154,25 @@ const ListingCard: React.FC<ListingCardProps> = ({
             />
           </div>
         </div>
-        <div className="font-semibold text-lg"> {data.title}</div>
-        <div className="font-light text-neutral-500">
+        <div className="font-semibold text-lg">
+          {" "}
+          {/* Title and location */}
           {location?.region}, {location?.label}
+        </div>
+        <div className="font-light text-neutral-500">
+          {" "}
+          {/* Reservation date or category */}
+          {reservationDate || data.category}
         </div>
         <div className="flex flex-row items-center gap-1">
           {" "}
-          <div className="font-semibold"> $ {price}</div>
-          {data.quantityType && (
-            <div className="font-light">per {data.quantityType}</div>
+          {/* Price and unit */}
+          <div className="font-semibold">
+            {" "}
+            {/* Price */}$ {price}
+          </div>
+          {!reservation && ( // Display unit if no reservation
+            <div className="font-light">per lb,g,oz,etc</div>
           )}
         </div>
         {onAction &&
@@ -151,6 +182,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
               small // Small size for the button
               label={actionLabel} // Label for the button
               onClick={handleCancel} // Click handler for the button
+            />
+          )}
+        {onSecondAction &&
+          secondActionLabel && ( // Action button if onAction and actionLabel exist
+            <Button
+              disabled={disabled} // Whether the button is disabled
+              small // Small size for the button
+              label={secondActionLabel} // Label for the button
+              onClick={handleSecondAction} // Click handler for the button
             />
           )}
       </div>
