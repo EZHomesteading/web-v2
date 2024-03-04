@@ -90,9 +90,13 @@ const products = [
 ];
 
 const formattedProducts = products.map((product) => ({
-  value: product.name && product.subCategory,
+  value: product.name,
   label: product.name,
   cat: product.subCategory,
+  shelfLife: product.shelfLife,
+  category: product.category,
+  price: product.suggestPrice,
+  units: product.suggestedUnits,
 }));
 
 const useProducts = () => {
