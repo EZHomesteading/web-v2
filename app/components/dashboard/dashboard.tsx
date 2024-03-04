@@ -346,7 +346,8 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                 <form className="md:col-span-2">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
                     <div className="col-span-full flex items-center gap-x-8">
-                      {/* <Avatar /> */}
+                      <Avatar src="" />
+                      {/* THIS NEEDS UPDATED */}
                       <div>
                         <button
                           type="button"
@@ -369,6 +370,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                             disabled={isLoading}
                             register={register}
                             errors={errors}
+                            required
                           />
                         </div>
                       </div>
@@ -386,6 +388,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
+                          required
                         />
                       </div>
                     </div>
@@ -507,7 +510,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         disabled={isLoading}
                         register={register}
                         errors={errors}
-                        required
                       />
                       <div className="mt-2">
                         <Input
@@ -517,7 +519,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
-                          required
                           validationRules={{
                             validate: (value) =>
                               value === watch("password") ||
@@ -560,7 +561,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         disabled={isLoading}
                         register={register}
                         errors={errors}
-                        required
                       />
                     </div>
                   </div>

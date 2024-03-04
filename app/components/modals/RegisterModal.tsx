@@ -7,6 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
@@ -18,6 +19,7 @@ import Button from "../Button";
 
 // Define RegisterModal component
 const RegisterModal = () => {
+  const router = useRouter();
   // Hooks for managing state and form data
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
@@ -48,7 +50,23 @@ const RegisterModal = () => {
       .then(() => {
         toast.success("Registered!");
         registerModal.onClose();
-        loginModal.onOpen();
+        signIn("credentials", {
+          ...data,
+          redirect: false,
+        }).then((callback) => {
+          // Set loading state to false
+          setIsLoading(false);
+
+          // Handle sign-in callback
+          if (callback?.ok) {
+            toast.success("Logged in");
+            router.refresh();
+          }
+
+          if (callback?.error) {
+            toast.error(callback.error);
+          }
+        });
       })
       .catch((error) => {
         toast.error(error);
