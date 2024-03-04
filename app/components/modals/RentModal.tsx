@@ -69,7 +69,8 @@ const RentModal = () => {
   };
 
   // React Hook Form hook for form management
-  const {
+
+  let {
     register,
     handleSubmit,
     setValue,
@@ -87,7 +88,7 @@ const RentModal = () => {
       price: 1,
       title: "",
       description: "",
-      shelfLifeDays: product?.shelfLife,
+      shelfLifeDays: 0,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
     },
@@ -200,12 +201,19 @@ const RentModal = () => {
       />
       <SearchClient
         value={product}
-        onChange={(value) => setProduct(value as ProductValue)}
+        onChange={(value) => {
+          setProduct(value as ProductValue);
+          setValue("title", value?.label);
+          setValue("category", value?.category);
+          setValue("quantityType", value?.units);
+          setValue("price", value?.price);
+          setValue("shelfLifeDays", value?.shelfLife);
+        }}
       />
       {/* <div style={{ color: inputColor }}>
         <Input
           id="title"
-          label={product?.price}
+          label="Title"
           disabled={isLoading}
           register={register}
           errors={errors}
