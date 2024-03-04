@@ -108,31 +108,6 @@ export default function Home() {
       </div>
 
       <main>
-        {/* Category section */}
-        <section
-          aria-labelledby="category-heading"
-          className="pt-10 sm:pt-10 xl:mx-auto xl:max-w-7xl xl:px-8"
-        >
-          <div className="px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8 xl:px-0">
-            <h2
-              id="category-heading"
-              className="text-2xl font-bold tracking-tight"
-            >
-              Find Produce by Category
-            </h2>
-
-            <Link
-              href="/shop"
-              className="hidden text-sm font-semibold text-green-700 hover:text-green-500 sm:block"
-            >
-              Browse all categories
-              <span aria-hidden="true"> &rarr;</span>
-            </Link>
-          </div>
-
-          <Categories />
-        </section>
-
         {/* Featured section */}
         <section
           aria-labelledby="social-impact-heading"
