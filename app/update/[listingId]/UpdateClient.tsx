@@ -1,27 +1,21 @@
 "use client";
-// Import necessary modules and components
-
-// make radiogroup data go where its supposed to
 
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
-// import getCurrentUser from "@/app/actions/getCurrentUser";
+import Input from "../../components/inputs/Input";
+import Heading from "../../components/Heading";
+import { Button } from "../../components/ui/button";
+import { SafeListing } from "@/app/types";
 
-import Input from "../components/inputs/Input";
-import Heading from "../components/Heading";
-import { Button } from "../components/ui/button";
-// const currentUser = getCurrentUser();
-
-interface UpdateUserProps {
-  currentUser?: SafeUser | null;
+interface UpdateListingProps {
+  currentListing?: SafeListing | null;
 }
 
 // Define RegisterModal component
-const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
+const UpdateClient: React.FC<UpdateListingProps> = ({ currentListing }) => {
   // Hooks for managing state and form data
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,13 +26,10 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      phoneNumber: currentUser?.phoneNumber,
-      address: currentUser?.address,
-      zip: currentUser?.zip,
-      state: currentUser?.state,
-      role: currentUser?.role,
-      name: currentUser?.name,
-      email: currentUser?.email,
+      category: currentListing?.category,
+      stock: currentListing?.stock,
+      quantityType: currentListing?.quantityType,
+      price: currentListing?.price,
     },
   });
 
@@ -48,7 +39,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
 
     // Send registration data to the backend
     axios
-      .post("/api/update", data)
+      .post("/api/updateListing", data)
       .then(() => {
         toast.success("Updated!");
       })
@@ -64,45 +55,35 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
   return (
     <Container>
       <div className="flex flex-col gap-4">
-        <Heading
-          title="Update your account info"
-          subtitle="enter details below"
-        />
+        <Heading title="Update your Listing" subtitle="enter details below" />
 
         <Input
-          id="name"
-          label="Username"
+          id="category"
+          label="Category"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
 
         <Input
-          id="phoneNumber"
-          label="Phone Number"
+          id="price"
+          label="Price"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
 
         <Input
-          id="address"
-          label="Address"
+          id="stock"
+          label="Stock"
           disabled={isLoading}
           register={register}
           errors={errors}
         />
 
         <Input
-          id="zip"
-          label="Zip Code"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        <Input
-          id="state"
-          label="State"
+          id="quantity"
+          label="Units"
           disabled={isLoading}
           register={register}
           errors={errors}
@@ -112,9 +93,9 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
         <div className="text-neutral-500 text-center mt-4 font-light">
           <Button
             onClick={handleSubmit(onSubmit)}
-            className="text-neutral-800 cursor-pointer hover:underline"
+            className="text-neutral-800 cursor-pointer"
           >
-            SUBMIT
+            Submit
           </Button>
         </div>
       </div>

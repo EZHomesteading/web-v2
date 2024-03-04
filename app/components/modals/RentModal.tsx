@@ -209,16 +209,6 @@ const RentModal = () => {
           setValue("shelfLifeDays", value?.shelfLife);
         }}
       />
-      <div style={{ color: inputColor }}>
-        <Input
-          id="title"
-          label="Title"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
       <hr />
       <div style={{ color: inputColor }}>
         <Input

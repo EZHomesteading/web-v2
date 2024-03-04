@@ -7,10 +7,9 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
+import { useRouter } from "next/navigation";
 // import getCurrentUser from "@/app/actions/getCurrentUser";
 
 import Input from "../components/inputs/Input";
@@ -24,6 +23,7 @@ interface UpdateUserProps {
 
 // Define RegisterModal component
 const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
+  const router = useRouter();
   // Hooks for managing state and form data
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,7 +51,8 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
     axios
       .post("/api/update", data)
       .then(() => {
-        toast.success("Updated!");
+        toast.success("You're now a Co-Op!");
+        router.refresh();
       })
       .catch((error) => {
         toast.error(error);

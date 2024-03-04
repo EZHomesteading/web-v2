@@ -5,7 +5,7 @@ const products = [
     subCategory: "Apples",
     shelfLife: 7,
     suggestPrice: 0.25,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Romaine Lettuce",
@@ -13,7 +13,7 @@ const products = [
     subCategory: "Lettuce",
     shelfLife: 3,
     suggestPrice: 1.0,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Basil",
@@ -21,7 +21,7 @@ const products = [
     subCategory: "Basil",
     shelfLife: 3,
     suggestPrice: 1.0,
-    suggestedUnits: "OZ",
+    suggestedUnits: "oz",
   },
   {
     name: "Green Beans",
@@ -29,7 +29,7 @@ const products = [
     subCategory: "Beans",
     shelfLife: 7,
     suggestPrice: 1.25,
-    suggestedUnits: "OZ",
+    suggestedUnits: "oz",
   },
   {
     name: "Head of Broccoli",
@@ -37,7 +37,7 @@ const products = [
     subCategory: "Broccoli",
     shelfLife: 7,
     suggestPrice: 1,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Pinto Beans",
@@ -45,7 +45,7 @@ const products = [
     subCategory: "Beans",
     shelfLife: 7,
     suggestPrice: 4.0,
-    suggestedUnits: "Lb",
+    suggestedUnits: "lb",
   },
   {
     name: "Pumpkin",
@@ -53,7 +53,7 @@ const products = [
     subCategory: "Pumpkins",
     shelfLife: 7,
     suggestPrice: 0.25,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Bell Pepper",
@@ -61,7 +61,7 @@ const products = [
     subCategory: "Peppers",
     shelfLife: 7,
     suggestPrice: 0.5,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Ghost Pepper",
@@ -69,7 +69,7 @@ const products = [
     subCategory: "Peppers",
     shelfLife: 7,
     suggestPrice: 0.5,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Habenero Pepper",
@@ -77,7 +77,7 @@ const products = [
     subCategory: "Peppers",
     shelfLife: 7,
     suggestPrice: 0.5,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
   {
     name: "Jalapeno Pepper",
@@ -85,7 +85,7 @@ const products = [
     subCategory: "Peppers",
     shelfLife: 7,
     suggestPrice: 0.5,
-    suggestedUnits: "EA",
+    suggestedUnits: "none",
   },
 ];
 

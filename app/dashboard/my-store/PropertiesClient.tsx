@@ -43,12 +43,14 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
     [router]
   );
 
+  const onEdit = (id: string) => {
+    id;
+    router.push(`/update/${id}`);
+  };
+
   return (
     <Container>
-      <Heading
-        title="Products"
-        subtitle="List of your homesteading & self-sufficiency items"
-      />
+      <Heading title="Properties" subtitle="List of your properties" />
       <div
         className="
           mt-10
@@ -70,6 +72,9 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
             onAction={onDelete}
             disabled={deletingId === listing.id}
             actionLabel="Delete Product"
+            secondActionId={listing.id}
+            secondActionLabel="Edit Product"
+            onSecondAction={onEdit}
             currentUser={currentUser}
           />
         ))}
