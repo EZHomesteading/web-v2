@@ -14,8 +14,6 @@ import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
 import Avatar from "../Avatar";
-import { divIcon } from "leaflet";
-import RegisterModal from "../modals/RegisterModal";
 
 // UserMenu component
 interface UserMenuProps {
@@ -138,7 +136,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <div>
                 <MenuItem
                   label="My Store"
-                  onClick={() => router.push("/properties")}
+                  onClick={() => router.push("/dashboard/properties")}
                 />
                 <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
               </div>
@@ -148,21 +146,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             {currentUser ? (
               <>
                 <MenuItem
-                  label="Transation History"
-                  onClick={() => router.push("/trips")}
+                  label="Profile Settings"
+                  onClick={() => router.push("/dashboard")}
                 />
                 <MenuItem
                   label="My Favorites"
-                  onClick={() => router.push("/favorites")}
+                  onClick={() => router.push("/dashboard/favorites")}
                 />
                 <MenuItem
                   label="Current Orders"
-                  onClick={() => router.push("/reservations")}
-                />
-
-                <MenuItem
-                  label="Update user"
-                  onClick={() => router.push("/update")}
+                  onClick={() => router.push("/dashboard/reservations")}
                 />
                 <hr />
                 <MenuItem label="Logout" onClick={() => signOut()} />
@@ -171,10 +164,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <>
                 <MenuItem label="Login" onClick={loginModal.onOpen} />
                 <MenuItem label="Sign up" onClick={registerModal.onOpen} />
-                <MenuItem
-                  label="Become a Co-Op"
-                  onClick={becomeCoopModal.onOpen}
-                />
               </>
             )}
           </div>

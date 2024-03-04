@@ -78,83 +78,36 @@ const footerNavigation = {
 
 export default function Home() {
   return (
-    <div className="">
-      {/* Hero section */}
-      <div className="relative h-screen">
-        {/* Decorative image and overlay */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0" />
-          <Image
-            src={homebg}
-            alt="Farmer Holding Basket of Vegetables"
-            blurDataURL="data:..."
-            placeholder="blur"
-            style={{ objectFit: "contain" }}
-          />
-          <Image />
-        </div>
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gray-900 opacity-20"
+    <>
+      <div className="relative h-screen flex justify-center items-center">
+        <Image
+          src={homebg}
+          alt="Farmer Holding Basket of Vegetables"
+          blurDataURL="data:..."
+          placeholder="blur"
+          fill
+          className="object-cover"
+          sizes="100vh"
         />
-
-        {/* Navigation */}
-        <header className="relative z-10">
-          <nav aria-label="Top">
-            {/* Top navigation */}
-            <div className="bg-gray-900"></div>
-
-            {/* Secondary navigation */}
-          </nav>
-        </header>
-        <div className="">
-          <div className="relative ml-40 flex max-w-3xl flex-col items-start px-6 py-32 text-start sm:py-64 lg:px-0">
-            <h1 className="text-3xl font-bold tracking-tight lg:text-1xl Fresh">
-              Fresh, Local, Organic
-            </h1>
-            <h1 className="text-4xl font-bold mt-1 tracking-tight lg:text-6xl Produce">
-              Produce Made Simple
-            </h1>
-            <p className="pHome mt-4 text-xl">
-              EZ Homesteading connects family scale farmers & gardeners with
-              people in their community.
-            </p>
-            <Link
-              href="/shop"
-              className="button-arounder mt-8 inline-block rounded-md border border-transparent px-8 py-3 text-base font-medium"
-            >
-              Find Produce Near Me
-            </Link>
-          </div>
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-20"></div>
+        <div className="absolute left-1/3 transform -translate-x-1/3 text-start">
+          <h1 className="text-3xl font-bold tracking-tight Fresh mb-2">
+            Fresh, Local, Organic
+          </h1>
+          <h1 className="text-4xl font-bold tracking-tight Produce mb-2">
+            Produce Made Simple
+          </h1>
+          <p className="text-xl mb-2">
+            EZ Homesteading connects family scale farmers & gardeners with
+            people in their community.
+          </p>
+          <Link href="/shop" className="button-arounder px-8 py-3 mb-2">
+            Find Produce Near Me
+          </Link>
         </div>
       </div>
 
       <main>
-        {/* Category section */}
-        <section
-          aria-labelledby="category-heading"
-          className="pt-10 sm:pt-10 xl:mx-auto xl:max-w-7xl xl:px-8"
-        >
-          <div className="px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8 xl:px-0">
-            <h2
-              id="category-heading"
-              className="text-2xl font-bold tracking-tight"
-            >
-              Find Produce by Category
-            </h2>
-
-            <Link
-              href="/shop"
-              className="hidden text-sm font-semibold text-green-700 hover:text-green-500 sm:block"
-            >
-              Browse all categories
-              <span aria-hidden="true"> &rarr;</span>
-            </Link>
-          </div>
-
-          <Categories />
-        </section>
-
         {/* Featured section */}
         <section
           aria-labelledby="social-impact-heading"
@@ -333,6 +286,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

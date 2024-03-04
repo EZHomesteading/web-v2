@@ -55,7 +55,7 @@ interface SecondaryNavigationItem {
 const navigation: NavigationItem[] = [
   {
     name: "Settings",
-    href: "/dashboard/settings",
+    href: "/dashboard",
     icon: Cog6ToothIcon,
     current: true,
   },
@@ -67,13 +67,13 @@ const navigation: NavigationItem[] = [
   },
   {
     name: "Current Orders",
-    href: "/dashboard/reservations",
+    href: "/dashboard/current-orders",
     icon: ServerIcon,
     current: false,
   },
   {
     name: "Transaction History",
-    href: "/dashboard/trips",
+    href: "/dashboard/transaction-history",
     icon: SignalIcon,
     current: false,
   },
@@ -321,7 +321,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                     <li key={item.name}>
                       <a
                         href={item.href}
-                        className={item.current ? "text-indigo-400" : ""}
+                        className={item.current ? "text-green-400" : ""}
                       >
                         {item.name}
                       </a>
@@ -363,7 +363,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
 
                     <div className="col-span-full">
                       <div className="mt-2">
-                        <div className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                        <div className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-green-500 sm:text-sm sm:leading-6">
                           <Input
                             id="name"
                             label="Username"
@@ -464,7 +464,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         <select
                           id="timezone"
                           name="timezone"
-                          className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6 [&_*]:text-black"
+                          className="block w-full rounded-md border-0 bg-white/5 py-1.5 shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-green-500 sm:text-sm sm:leading-6 [&_*]:text-black"
                         >
                           <option>Eastern Standard Time</option>
                           <option>Central Standard Time</option>
@@ -482,7 +482,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                     <button
                       type="submit"
                       onClick={handleSubmit(onSubmit)}
-                      className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                      className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                     >
                       Save
                     </button>
@@ -568,7 +568,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                   <div className="mt-8 flex">
                     <button
                       type="submit"
-                      className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                      className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                     >
                       Log out other sessions
                     </button>

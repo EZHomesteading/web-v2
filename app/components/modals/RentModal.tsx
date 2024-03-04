@@ -146,13 +146,12 @@ const RentModal = () => {
       parseInt(data.shelfLifeWeeks, 10) * 7 +
       parseInt(data.shelfLifeMonths, 10) * 30;
 
-    console.log("Calculated shelfLife:", shelfLife);
-    console.log("formattedPrice: ", formattedPrice);
     const formData = {
       ...data,
       stock: parseInt(data.stock, 10), // Ensure stock is an integer
       shelfLife,
       price: formattedPrice,
+      quantityType: data.quantityType === "none" ? "" : data.quantityType,
     };
 
     // Submit form data via axios
@@ -210,7 +209,7 @@ const RentModal = () => {
           setValue("shelfLifeDays", value?.shelfLife);
         }}
       />
-      {/* <div style={{ color: inputColor }}>
+      <div style={{ color: inputColor }}>
         <Input
           id="title"
           label="Title"
@@ -219,7 +218,7 @@ const RentModal = () => {
           errors={errors}
           required
         />
-      </div> */}
+      </div>
       <hr />
       <div style={{ color: inputColor }}>
         <Input
@@ -279,11 +278,11 @@ const RentModal = () => {
           >
             <CarouselContent>
               {[
-                "pounds",
+                "lb",
                 "oz",
                 "none",
-                "kilograms",
-                "grams",
+                "kg",
+                "gram",
                 "bushel",
                 "dozen",
                 "carton",
