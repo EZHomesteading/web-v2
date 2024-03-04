@@ -7,6 +7,8 @@ import useCountries from "@/app/hooks/useCountries";
 import Avatar from "../Avatar"; // Importing Avatar component
 import ListingCategory from "./ListingCategory"; // Importing ListingCategory component
 import { SafeUser } from "@/app/types";
+import Router from "next/router";
+import { useRouter } from "next/navigation";
 // Dynamically importing Map component to prevent SSR
 const Map = dynamic(() => import("../Map"), {
   ssr: false,
@@ -35,6 +37,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   const { getByValue } = useCountries(); // Using the useCountries hook to get location details
 
   const coordinates = getByValue(locationValue)?.latlng; // Getting coordinates based on location value
+  const router = useRouter();
 
   return (
     <div className="col-span-4 flex flex-col gap-8">
@@ -57,8 +60,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           {/* Avatar component for host image */}
           <div className="flex align-center">
             <span style={{ marginRight: "5px" }}>Sold by</span>
-            <Avatar src={user?.image} />
-            <span className="ml-2">{user?.name}</span>
+            <span onClick={() => router.push(`/store/${user.id}`)}>
+              <Avatar src={user?.image} />
+              <span className="ml-2">{user?.name}</span>
+            </span>
           </div>
           {/* Displaying host name */}
         </div>
