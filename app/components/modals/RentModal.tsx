@@ -202,16 +202,16 @@ const RentModal = () => {
         value={product}
         onChange={(value) => setProduct(value as ProductValue)}
       />
-      {/* <div style={{ color: inputColor }}>
+      <div style={{ color: inputColor }}>
         <Input
           id="title"
-          label={product?.price}
+          label="title"
           disabled={isLoading}
           register={register}
           errors={errors}
           required
         />
-      </div> */}
+      </div>
       <hr />
       <div style={{ color: inputColor }}>
         <Input

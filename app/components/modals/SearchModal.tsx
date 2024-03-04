@@ -21,6 +21,7 @@ enum STEPS {
 // SearchModal component
 const SearchModal = () => {
   // Hooks for managing state and navigation
+  const [title, setTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchModal = useSearchModal();
@@ -71,6 +72,7 @@ const SearchModal = () => {
     const updatedQuery: any = {
       ...currentQuery,
       locationValue: location?.value,
+      title,
     };
 
     const url = qs.stringifyUrl(
@@ -84,7 +86,7 @@ const SearchModal = () => {
     setStep(STEPS.LOCATION);
     searchModal.onClose();
     router.push(url);
-  }, [step, searchModal, location, router, onNext, params]);
+  }, [step, searchModal, location, router, onNext, title, params]);
 
   // Determine the label for the primary action button
   const actionLabel = useMemo(() => {
@@ -126,12 +128,10 @@ const SearchModal = () => {
           subtitle="Search for produce & self sufficieny items"
         />
         <div>
-          <Input
+          <input
             id="title"
-            label="Product"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
             required
           />
         </div>
