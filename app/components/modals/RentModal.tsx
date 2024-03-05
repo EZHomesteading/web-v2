@@ -201,7 +201,6 @@ const RentModal = () => {
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"
       />
-      <hr />
       <div style={{ color: inputColor }}>
         <SearchClient
           value={product}
