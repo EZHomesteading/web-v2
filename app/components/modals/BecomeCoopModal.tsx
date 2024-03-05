@@ -50,8 +50,11 @@ const BecomeCoopModal = () => {
         becomeCoopModal.onClose();
         loginModal.onOpen();
       })
-      .catch((error) => {
-        toast.error(error);
+      .catch(function (error) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+        console.log(error.response.headers);
+        toast.error("Username or Email invalid");
       })
       .finally(() => {
         setIsLoading(false);
