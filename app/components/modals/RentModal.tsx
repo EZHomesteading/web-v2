@@ -81,6 +81,7 @@ const RentModal = () => {
     // Default values for form fields
     defaultValues: {
       category: "",
+      subCategory: "",
       location: null,
       stock: "1",
       quantityType: "",
@@ -97,6 +98,7 @@ const RentModal = () => {
   // Watched form fields
   const location = watch("location");
   const category = watch("category");
+  const subCategory = watch("subCategory");
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
@@ -204,9 +206,8 @@ const RentModal = () => {
           setProduct(value as ProductValue);
           setValue("title", value?.label);
           setValue("category", value?.category);
-          setValue("quantityType", value?.units);
-          setValue("price", value?.price);
-          setValue("shelfLifeDays", value?.shelfLife);
+          setValue("imageSrc", value?.photo);
+          setValue("subCategory", value?.cat);
         }}
       />
       <hr />

@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     shelfLife,
     location,
     price,
+    subCategory,
   } = body;
 
   // Checking if any required field is missing in the request body, then return an error response
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
       quantityType,
       stock,
       shelfLife,
+      subCategory,
       locationValue: location.value, // Assuming location is an object with a 'value' property
       price, // Parsing price to integer
       userId: currentUser.id, // Associating the listing with the current user

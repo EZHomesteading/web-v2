@@ -3755,6 +3755,7 @@ const formattedProducts = products.map((product) => ({
   value: product.name,
   label: product.name,
   cat: product.subCategory,
+  photo: product.photo,
   // shelfLife: product.shelfLife,
   category: product.category,
   // price: product.suggestPrice,
