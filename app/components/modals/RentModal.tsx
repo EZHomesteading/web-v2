@@ -80,6 +80,7 @@ const RentModal = () => {
     // Default values for form fields
     defaultValues: {
       category: "",
+      subCategory: "",
       location: null,
       stock: "1",
       quantityType: "",
@@ -96,6 +97,7 @@ const RentModal = () => {
   // Watched form fields
   const location = watch("location");
   const category = watch("category");
+  const subCategory = watch("subCategory");
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
@@ -199,6 +201,7 @@ const RentModal = () => {
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"
       />
+      <hr />
       <div style={{ color: inputColor }}>
         <SearchClient
           value={product}
