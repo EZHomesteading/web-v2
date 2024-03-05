@@ -8,13 +8,11 @@ import useProduct from "@/app/hooks/useProduct";
 
 // Type definition for the value of the country select component
 export type ProductValue = {
-  cat: string; // Flag of the country
-  label: string; // Name of the country
-  value: string; // Value of the country
-  shelfLife: number;
+  cat: string; // subcategory
+  label: string; // title
+  value: string; // Value with all data
   category: string;
-  price: string;
-  units: string;
+  photo: string;
 };
 
 // Interface defining props accepted by the CountrySelect component

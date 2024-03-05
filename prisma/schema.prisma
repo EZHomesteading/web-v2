@@ -68,6 +68,7 @@ model Listing {
   title String
   species String?
   category  String 
+  subCategory String?
   stock Int?
   quantityType String?
   price Float
