@@ -41,12 +41,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         formatOptionLabel={(option: any) => (
           <div className="flex flex-row items-center gap-3">
             {" "}
-            <div>
-              {option.label} {/* Name of the country */}
-              {/* <span className="text-neutral-500 ml-1">
-                {option.cat} Region of the country */}
-              {/* </span> */}
-            </div>
+            <div>{option.label}</div>
           </div>
         )}
         classNames={{

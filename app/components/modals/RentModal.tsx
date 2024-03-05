@@ -210,16 +210,6 @@ const RentModal = () => {
           setValue("subCategory", value?.cat);
         }}
       />
-      <div style={{ color: inputColor }}>
-        <Input
-          id="title"
-          label="Title"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
       <hr />
       <div style={{ color: inputColor }}>
         <Input

@@ -37,6 +37,15 @@ import {
   SignalIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { MdOutlinePrivacyTip } from "react-icons/md";
+import { VscHistory } from "react-icons/vsc";
+import { PiCookieThin } from "react-icons/pi";
+import { GiSettingsKnobs } from "react-icons/gi";
+import { MdFavoriteBorder } from "react-icons/md";
+import { PiStorefrontThin } from "react-icons/pi";
+import { FaOpencart } from "react-icons/fa";
+import { HiOutlineDocument } from "react-icons/hi2";
+import { CgCommunity } from "react-icons/cg";
 import Avatar from "../Avatar";
 
 interface NavigationItem {
@@ -55,50 +64,56 @@ interface SecondaryNavigationItem {
 const navigation: NavigationItem[] = [
   {
     name: "Settings",
-    href: "/dashboard",
-    icon: Cog6ToothIcon,
+    href: "/dashboard/settings",
+    icon: GiSettingsKnobs,
     current: true,
   },
   {
     name: "Favorites",
     href: "/dashboard/favorites",
-    icon: FolderIcon,
+    icon: MdFavoriteBorder,
     current: false,
   },
   {
     name: "Current Orders",
-    href: "/dashboard/current-orders",
-    icon: ServerIcon,
+    href: "/dashboard/reservations",
+    icon: FaOpencart,
+    current: false,
+  },
+  {
+    name: "Store Settings",
+    href: "/dashboard/my-store",
+    icon: PiStorefrontThin,
     current: false,
   },
   {
     name: "Transaction History",
-    href: "/dashboard/transaction-history",
-    icon: SignalIcon,
+    href: "/dashboard/trips",
+    icon: VscHistory,
     current: false,
   },
   {
     name: "Privacy Policy",
     href: "/privacy-policy",
-    icon: GlobeAltIcon,
+    icon: MdOutlinePrivacyTip,
     current: false,
   },
   {
     name: "Terms of Service",
     href: "#",
-    icon: ChartBarSquareIcon,
+    icon: HiOutlineDocument,
     current: false,
   },
   {
     name: "Cookies Policy",
     href: "/cookie-policy",
-    icon: ChartBarSquareIcon,
+    icon: PiCookieThin,
     current: false,
   },
   {
     name: "Community Standards",
     href: "/community-standards",
-    icon: ChartBarSquareIcon,
+    icon: CgCommunity,
     current: false,
   },
 ];
@@ -145,7 +160,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     axios
       .post("/api/update", data)
       .then(() => {
-        toast.success("Updated!");
+        toast.success("Your account details have changed");
       })
       .catch((error) => {
         toast.error(error);
@@ -159,7 +174,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     axios
       .delete(`/api/register/${currentUser?.id}`)
       .then(() => {
-        toast.success("User deleted");
+        toast.success("Your account has been deleted");
       })
       .catch((error) => {
         toast.error(error?.response?.data?.error);
@@ -608,7 +623,11 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         </AlertDialogDescription>
                       </div>
                     </AlertDialogHeader>
-
+                    <AlertDialogCancel asChild>
+                      <Button className="bg-gray-500 hover:bg-gray-600 ...">
+                        Cancel
+                      </Button>
+                    </AlertDialogCancel>
                     <AlertDialogFooter>
                       {/* Confirm Deletion */}
                       <AlertDialogAction onClick={onDelete} asChild>
@@ -618,11 +637,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                       </AlertDialogAction>
 
                       {/* Cancel Button */}
-                      <AlertDialogCancel asChild>
-                        <Button className="bg-gray-500 hover:bg-gray-600 ...">
-                          Cancel
-                        </Button>
-                      </AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

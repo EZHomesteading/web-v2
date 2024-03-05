@@ -17,6 +17,7 @@ interface InputProps {
   disabled?: boolean; // Whether the input field is disabled
   formatPrice?: boolean; // Whether to format the input field as a price
   required?: boolean; // Whether the input field is required
+  isUsername?: boolean;
   register: UseFormRegister<FieldValues>; // Function to register the input field with react-hook-form
   errors: FieldErrors; // Errors object from react-hook-form
   step?: string;
@@ -30,11 +31,25 @@ const Input: React.FC<InputProps> = ({
   type = "text", // Type of the input field (default is "text")
   disabled, // Whether the input field is disabled received as prop
   formatPrice, // Whether to format the input field as a price received as prop
+  isUsername = false,
   register, // Function to register the input field with react-hook-form received as prop
   required, // Whether the input field is required received as prop
   errors,
   validationRules,
 }) => {
+  let registerOptions: RegisterOptions<FieldValues> = {
+    required: required ? "This field is required" : false,
+    ...validationRules,
+  };
+
+  // Conditionally add the pattern validation for usernames
+  if (isUsername) {
+    registerOptions.pattern = {
+      value: /^[a-zA-Z0-9]*$/,
+      message: "Username must not contain spaces or special characters",
+    };
+  }
+
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
 
@@ -61,10 +76,7 @@ const Input: React.FC<InputProps> = ({
           id={id}
           type={showPassword ? "text" : type} // ID of the input field
           disabled={disabled} // Whether the input field is disabled
-          {...register(id, {
-            required: required ? "This field is required" : false,
-            ...validationRules,
-          })} // Registering the input field with react-hook-form
+          {...register(id, registerOptions)} // Registering the input field with react-hook-form
           placeholder=" " // Placeholder text
           // type={type} // Type of the input field
           className={`
