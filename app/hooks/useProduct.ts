@@ -1184,8 +1184,6 @@ const products = [
   {
     name: "Imperator Carrot",
     category: "Vegetable",
-    subCategory: "Beans",
-    photo: "",
     subCategory: "Carrot",
     photo: "",
   },
@@ -1564,8 +1562,6 @@ const products = [
   {
     name: "Sprouting Broccoli",
     category: "Vegetable",
-    subCategory: "Beans",
-    photo: "",
     subCategory: "Broccoli",
     photo: "",
   },
@@ -1680,24 +1676,18 @@ const products = [
   {
     name: "Concord Grape",
     category: "Fruit",
-    subCategory: "Pumpkins",
-    photo: "",
     subCategory: "Grape",
     photo: "",
   },
   {
     name: "Thompson Seedless Grape",
     category: "Fruit",
-    subCategory: "Peppers",
-    photo: "",
     subCategory: "Grape",
     photo: "",
   },
   {
     name: "Red Globe Grape",
     category: "Fruit",
-    subCategory: "Peppers",
-    photo: "",
     subCategory: "Grape",
     photo: "",
   },
