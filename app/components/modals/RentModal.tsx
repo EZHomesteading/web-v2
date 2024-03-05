@@ -209,8 +209,8 @@ const RentModal = () => {
             setProduct(value as ProductValue);
             setValue("title", value?.label);
             setValue("category", value?.category);
-            setValue("quantityType", value?.units);
-            setValue("price", value?.price);
+            setValue("imageSrc", value?.photo);
+            setValue("subCategory", value?.cat);
           }}
         />
       </div>
