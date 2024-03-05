@@ -31,10 +31,11 @@ import {
 // Enum representing steps of the form
 enum STEPS {
   DESCRIPTION = 0,
-  INFO = 1,
-  IMAGES = 2,
-  PRICE = 3,
-  LOCATION = 4,
+  CATEGORY = 1,
+  INFO = 2,
+  IMAGES = 3,
+  PRICE = 4,
+  LOCATION = 5,
 }
 
 // RentModal component definition
@@ -164,9 +165,7 @@ const RentModal = () => {
         rentModal.onClose(); // Close the modal
       })
       .catch(() => {
-        toast.error(
-          "Please make sure you've added information for all of the fields."
-        ); // Display error message
+        toast.error("Something went wrong."); // Display error message
       })
       .finally(() => {
         setIsLoading(false); // Reset loading state
@@ -199,20 +198,19 @@ const RentModal = () => {
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"
       />
-      <div style={{ color: inputColor }}>
-        <SearchClient
-          value={product}
-          onChange={(value) => {
-            setProduct(value as ProductValue);
-            setValue("title", value?.label);
-            setValue("category", value?.category);
-            setValue("quantityType", value?.units);
-            setValue("price", value?.price);
-          }}
-        />
-      </div>
+      <SearchClient
+        value={product}
+        onChange={(value) => {
+          setProduct(value as ProductValue);
+          setValue("title", value?.label);
+          setValue("category", value?.category);
+          setValue("quantityType", value?.units);
+          setValue("price", value?.price);
+          setValue("shelfLifeDays", value?.shelfLife);
+        }}
+      />
       <hr />
-      <div style={{ color: inputColor }} className="z-0">
+      <div style={{ color: inputColor }}>
         <Input
           id="description"
           label="Description"
@@ -350,6 +348,41 @@ const RentModal = () => {
           onChange={(value) => setCustomValue("imageSrc", value)}
           value={imageSrc}
         />
+      </div>
+    );
+  }
+
+  if (step === STEPS.CATEGORY) {
+    // Form fields for selecting category
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="Which of these best describes your product?"
+          subtitle="Pick a category"
+        />
+        <div
+          className="
+          grid 
+          grid-cols-1 
+          md:grid-cols-2 
+          gap-3
+          max-h-[50vh]
+          overflow-y-auto
+          z-10
+        "
+        >
+          {/* Render category options */}
+          {categories.map((item) => (
+            <div key={item.label} className="col-span-1">
+              <CategoryInput
+                onClick={(category) => setCustomValue("category", category)}
+                selected={category === item.label}
+                label={item.label}
+                icon={item.icon}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

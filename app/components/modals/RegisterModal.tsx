@@ -69,7 +69,7 @@ const RegisterModal = () => {
         });
       })
       .catch((error) => {
-        toast.error(error);
+        toast.error("Error");
       })
       .finally(() => {
         setIsLoading(false);
@@ -97,9 +97,6 @@ const RegisterModal = () => {
         errors={errors}
         required
       />
-      <Alert>
-        <AlertDescription>Must be a valid email.</AlertDescription>
-      </Alert>
       <Input
         id="name"
         label="Name"
