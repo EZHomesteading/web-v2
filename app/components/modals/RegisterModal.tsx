@@ -16,6 +16,7 @@ import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import Button from "../Button";
+import { error } from "console";
 
 // Define RegisterModal component
 const RegisterModal = () => {
@@ -68,8 +69,11 @@ const RegisterModal = () => {
           }
         });
       })
-      .catch((error) => {
-        toast.error("Error");
+      .catch(function (error) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+        console.log(error.response.headers);
+        toast.error("Username or Email invalid");
       })
       .finally(() => {
         setIsLoading(false);
