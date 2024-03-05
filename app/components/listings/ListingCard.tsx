@@ -157,34 +157,27 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
         <div className="font-semibold text-lg">
           {" "}
-          {/* Title and location */}
-          {location?.region}, {location?.label}
-        </div>
-        <div className="font-light text-neutral-500">
-          {" "}
-          {/* Reservation date or category */}
-          {reservationDate || data.category}
+          <div className="font-semibold text-lg"> {data.title}</div>
+          <div className="font-light text-neutral-500">
+            {location?.region}, {location?.label}
+          </div>
         </div>
         <div className="flex flex-row items-center gap-1">
           {" "}
           {/* Price and unit */}
-          <div className="font-semibold">
-            {" "}
-            {/* Price */}$ {price}
-          </div>
-          {!reservation && ( // Display unit if no reservation
-            <div className="font-light">per lb,g,oz,etc</div>
+          <div className="font-semibold"> $ {price}</div>
+          {data.quantityType && (
+            <div className="font-light">per {data.quantityType}</div>
           )}
         </div>
-        {onAction &&
-          actionLabel && ( // Action button if onAction and actionLabel exist
-            <Button
-              disabled={disabled} // Whether the button is disabled
-              small // Small size for the button
-              label={actionLabel} // Label for the button
-              onClick={handleCancel} // Click handler for the button
-            />
-          )}
+        {onAction && actionLabel && (
+          <Button
+            disabled={disabled} // Whether the button is disabled
+            small // Small size for the button
+            label={actionLabel} // Label for the button
+            onClick={handleCancel} // Click handler for the button
+          />
+        )}
         {onSecondAction &&
           secondActionLabel && ( // Action button if onAction and actionLabel exist
             <Button
