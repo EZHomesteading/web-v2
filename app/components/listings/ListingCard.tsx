@@ -130,7 +130,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
           style={cardStyle}
         >
           <Image // Image component for listing image
-            fill // Fill mode for image
             className="
               object-cover 
               h-full 
@@ -140,6 +139,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
             "
             src={data.imageSrc} // Image source
             alt="Listing" // Alternative text for image
+            height={300}
+            width={300}
           />
           <div
             className="
