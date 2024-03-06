@@ -1,13 +1,16 @@
 "use client";
 
+// Import necessary modules and components
 import qs from "query-string";
+import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSearchModal from "@/app/hooks/useSearchModal";
+import Input from "../inputs/Input"; // Generic input component
 import Modal from "./Modal";
+import CountrySelect, { CountrySelectValue } from "../inputs/CountrySelect";
 import Heading from "../Heading";
 import { FieldValues, useForm } from "react-hook-form";
-import LocationSearchInput from "../map/LocationSearchInput";
 
 // Enum defining the steps of the search process
 enum STEPS {
@@ -19,7 +22,7 @@ enum STEPS {
 const SearchModal = () => {
   // Hooks for managing state and navigation
   const [title, setTitle] = useState("");
-  const [address, setAddress] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchModal = useSearchModal();
   const params = useSearchParams();
@@ -36,6 +39,13 @@ const SearchModal = () => {
 
   // State variables for managing search parameters
   const [step, setStep] = useState(STEPS.LOCATION);
+  const [location, setLocation] = useState<CountrySelectValue>();
+
+  // Dynamic import of the Map component based on location
+  const Map = useMemo(
+    () => dynamic(() => import("../Map"), { ssr: false }),
+    [location]
+  );
 
   // Function to navigate back a step
   const onBack = useCallback(() => {
@@ -61,6 +71,7 @@ const SearchModal = () => {
 
     const updatedQuery: any = {
       ...currentQuery,
+      locationValue: location?.value,
       title,
     };
 
@@ -97,7 +108,15 @@ const SearchModal = () => {
 
   // Content for the modal body based on the current step
   let bodyContent = (
-    <LocationSearchInput address={address} setAddress={setAddress} />
+    <div className="flex flex-col gap-8">
+      <Heading title="Where should we look for produce?" />
+      <CountrySelect
+        value={location}
+        onChange={(value) => setLocation(value as CountrySelectValue)}
+      />
+      <hr />
+      <Map center={location?.latlng} />
+    </div>
   );
 
   if (step === STEPS.ITEM) {
