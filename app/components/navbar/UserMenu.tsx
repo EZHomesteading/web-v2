@@ -136,7 +136,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <div>
                 <MenuItem
                   label="My Store"
-                  onClick={() => router.push("/dashboard/properties")}
+                  onClick={() => router.push("/dashboard/my-store")}
                 />
                 <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
               </div>

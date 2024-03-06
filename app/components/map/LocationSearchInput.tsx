@@ -25,7 +25,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
       onChange={handleChange}
       onSelect={handleSelect}
     >
-      {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div>
           <input
             {...getInputProps({
@@ -34,14 +34,17 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
             })}
           />
           <div className="autocomplete-dropdown-container">
-            {loading && <div>Loading...</div>}
             {suggestions.map((suggestion: Suggestion) => {
               const className = suggestion.active
                 ? "suggestion-item--active"
                 : "suggestion-item";
               // inline style for demonstration purpose
               const style = suggestion.active
-                ? { backgroundColor: "#fafafa", cursor: "pointer" }
+                ? {
+                    backgroundColor: "#fafafa",
+                    cursor: "pointer",
+                    // innerWidth: 50,
+                  }
                 : { backgroundColor: "#ffffff", cursor: "pointer" };
               return (
                 <div

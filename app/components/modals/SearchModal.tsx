@@ -97,7 +97,13 @@ const SearchModal = () => {
 
   // Content for the modal body based on the current step
   let bodyContent = (
-    <LocationSearchInput address={address} setAddress={setAddress} />
+    <>
+      <Heading
+        title="Where should we look?"
+        subtitle="We'll find produce & self-sufficiency items based on the location you enter."
+      />
+      <LocationSearchInput address={address} setAddress={setAddress} />
+    </>
   );
 
   if (step === STEPS.ITEM) {
