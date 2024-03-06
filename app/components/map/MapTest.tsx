@@ -1,3 +1,10 @@
+// pseudocode
+// import current user
+// convert current user's location info to lat, lng
+// pass into lat, lng in position const
+// create marker for user
+// if no user, dead center of virginia
+
 "use client";
 
 import React, { useEffect } from "react";
@@ -7,9 +14,8 @@ export function MapTest() {
 
   useEffect(() => {
     const initMap = async () => {
-      console.log("map init");
       const loader = new Loader({
-        apiKey: process.env.NEXT_PUBBLIC_MAPS_API_KEY as string,
+        apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
         version: "weekly", //How often map updates
       });
       const { Map } = await loader.importLibrary("maps");

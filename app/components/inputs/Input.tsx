@@ -77,7 +77,7 @@ const Input: React.FC<InputProps> = ({
           type={showPassword ? "text" : type} // ID of the input field
           disabled={disabled} // Whether the input field is disabled
           {...register(id, registerOptions)} // Registering the input field with react-hook-form
-          placeholder=" " // Placeholder text
+          placeholder="" // Placeholder text
           // type={type} // Type of the input field
           className={`
           peer
