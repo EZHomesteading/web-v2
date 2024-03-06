@@ -7,11 +7,17 @@
 
 "use client";
 
+import { SafeUser } from "@/app/types";
 import React, { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-export function MapTest() {
-  const mapRef = React.useRef<HTMLDivElement>(null);
 
+interface UpdateUserProps {
+  currentUser?: SafeUser | null;
+}
+
+const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
+  const mapRef = React.useRef<HTMLDivElement>(null);
+  console.log(currentUser?.zip);
   useEffect(() => {
     const initMap = async () => {
       const loader = new Loader({
@@ -44,4 +50,6 @@ export function MapTest() {
       ></div>
     </>
   );
-}
+};
+
+export default MapTester;

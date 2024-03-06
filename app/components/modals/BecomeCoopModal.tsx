@@ -77,6 +77,7 @@ const BecomeCoopModal = () => {
         disabled={isLoading}
         register={register}
         errors={errors}
+        isEmail={true}
         required
       />
       <Input

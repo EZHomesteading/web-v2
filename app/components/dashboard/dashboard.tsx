@@ -403,6 +403,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
+                          isEmail={true}
                           required
                         />
                       </div>

@@ -1,13 +1,14 @@
 import { Button } from "../components/ui/button";
-import { MapTest } from "../components/map/MapTest";
-
-const Home = () => {
+import MapTester from "../components/map/MapTest";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+const Home = async () => {
+  const currentUser = await getCurrentUser();
   return (
     <div>
       <main>
         <div>
           <h1>Map Test Page</h1>
-          <MapTest />
+          <MapTester currentUser={currentUser} />
         </div>
       </main>
     </div>

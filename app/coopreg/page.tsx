@@ -40,7 +40,7 @@ const RegisterModal = () => {
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
-
+    console.log(data);
     // Send registration data to the backend
     axios
       .post("/api/registercoop", data)
@@ -50,10 +50,10 @@ const RegisterModal = () => {
         loginModal.onOpen();
       })
       .catch(function (error) {
-        console.log(error.response.status);
-        console.log(error.response.data);
-        console.log(error.response.headers);
-        toast.error("Username or Email invalid");
+        // console.log(error.response.status);
+        // console.log(error.response.data);
+        // console.log(error.response.headers);
+        toast.error("Username or Email Already in use");
       })
       .finally(() => {
         setIsLoading(false);
@@ -80,6 +80,7 @@ const RegisterModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          isEmail={true}
           required
         />
         <Input
@@ -88,6 +89,7 @@ const RegisterModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          isUsername={true}
           required
         />
         <Input
