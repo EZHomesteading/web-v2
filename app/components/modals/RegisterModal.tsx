@@ -99,6 +99,7 @@ const RegisterModal = () => {
         disabled={isLoading}
         register={register}
         errors={errors}
+        isEmail={true}
         required
       />
       <Input

@@ -1,15 +1,21 @@
 "use client";
 
+import { SafeUser } from "@/app/types";
 import React, { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-export function MapTest() {
-  const mapRef = React.useRef<HTMLDivElement>(null);
 
+interface UpdateUserProps {
+  currentUser?: SafeUser | null;
+}
+
+const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
+  const mapRef = React.useRef<HTMLDivElement>(null);
+  console.log(currentUser?.zip);
   useEffect(() => {
     const initMap = async () => {
       console.log("map init");
       const loader = new Loader({
-        apiKey: process.env.NEXT_PUBBLIC_MAPS_API_KEY as string,
+        apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
         version: "weekly", //How often map updates
       });
       const { Map } = await loader.importLibrary("maps");
@@ -38,4 +44,6 @@ export function MapTest() {
       ></div>
     </>
   );
-}
+};
+
+export default MapTester;

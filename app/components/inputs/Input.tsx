@@ -1,5 +1,5 @@
 "use client";
-
+import toast from "react-hot-toast";
 import { useState } from "react";
 import {
   FieldErrors,
@@ -18,6 +18,7 @@ interface InputProps {
   formatPrice?: boolean; // Whether to format the input field as a price
   required?: boolean; // Whether the input field is required
   isUsername?: boolean;
+  isEmail?: boolean;
   register: UseFormRegister<FieldValues>; // Function to register the input field with react-hook-form
   errors: FieldErrors; // Errors object from react-hook-form
   step?: string;
@@ -32,6 +33,7 @@ const Input: React.FC<InputProps> = ({
   disabled, // Whether the input field is disabled received as prop
   formatPrice, // Whether to format the input field as a price received as prop
   isUsername = false,
+  isEmail = false,
   register, // Function to register the input field with react-hook-form received as prop
   required, // Whether the input field is required received as prop
   errors,
@@ -47,6 +49,12 @@ const Input: React.FC<InputProps> = ({
     registerOptions.pattern = {
       value: /^[a-zA-Z0-9]*$/,
       message: "Username must not contain spaces or special characters",
+    };
+  }
+  if (isEmail) {
+    registerOptions.pattern = {
+      value: /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
+      message: "Not a valid Email",
     };
   }
 
@@ -78,7 +86,6 @@ const Input: React.FC<InputProps> = ({
           disabled={disabled} // Whether the input field is disabled
           {...register(id, registerOptions)} // Registering the input field with react-hook-form
           placeholder=" " // Placeholder text
-          // type={type} // Type of the input field
           className={`
           peer
           w-full
@@ -92,18 +99,17 @@ const Input: React.FC<InputProps> = ({
           transition
           disabled:opacity-70
           disabled:cursor-not-allowed
+          ${formatPrice ? "pl-9" : "pl-4"} 
+          ${errors[id] ? "border-rose-500" : "border-neutral-300"} 
+          ${errors[id] ? "focus:border-rose-500" : "focus:border-black"} 
           ${
-            formatPrice ? "pl-9" : "pl-4"
-          } // Adding left padding if formatPrice is true
-          ${
-            errors[id] ? "border-rose-500" : "border-neutral-300"
-          } // Highlighting border in case of error
-          ${
-            errors[id] ? "focus:border-rose-500" : "focus:border-black"
-          } // Highlighting border in case of focus
+            errors[id]
+              ? toast.error("Highlighted field is invalid or required")
+              : "focus:border-black"
+          } 
         `}
         />
-        <label // Label for the input field
+        <label
           className={`
           absolute 
           text-md
