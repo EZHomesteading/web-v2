@@ -50,8 +50,7 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
           (position) => {
             if (currentUser?.address) {
               setAddress(
-                currentUser?.address
-                // `${position.coords.latitude}, ${position.coords.longitude}`
+                `${position.coords.latitude}, ${position.coords.longitude}`
               );
               setZoom(10);
             } else {
