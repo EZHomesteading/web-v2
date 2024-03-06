@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "../public/images/home-images/ezh-home-static-bg.jpg";
-import Categories from "./components/navbar/Categories";
 import {
   Carousel,
   CarouselContent,

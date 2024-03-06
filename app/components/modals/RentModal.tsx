@@ -2,12 +2,9 @@
 
 // Import necessary dependencies
 import axios from "axios";
-import dynamic from "next/dynamic"; // Dynamic import for Map component
 import useRentModal from "@/app/hooks/useRentModal"; // Custom hook for modal
 import Modal from "./Modal"; // Modal component
 import Counter from "../inputs/Counter"; // Input component for counters
-import CategoryInput from "../inputs/CategoryInput"; // Input component for categories
-import CountrySelect from "../inputs/CountrySelect"; // Input component for selecting country
 import ImageUpload from "../inputs/ImageUpload"; // Input component for image upload
 import Input from "../inputs/Input"; // Generic input component
 import Heading from "../Heading"; // Custom heading component
@@ -16,7 +13,6 @@ import SearchClient, { ProductValue } from "@/app/search/SearchClient";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation"; // Navigation hook from Next.js
 import { useTheme } from "next-themes";
-import { categories } from "../navbar/Categories"; // List of categories
 import { Label } from "../ui/label";
 import { useMemo, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -27,6 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel"; // Carousel UI components
+import LocationSearchInput from "../map/LocationSearchInput";
 
 // Enum representing steps of the form
 enum STEPS {
@@ -40,7 +37,7 @@ enum STEPS {
 // RentModal component definition
 const RentModal = () => {
   const [product, setProduct] = useState<ProductValue>();
-
+  const [address, setAddress] = useState<string>("");
   const { theme } = useTheme();
 
   // Determine the color of input fields based on the theme
@@ -94,23 +91,10 @@ const RentModal = () => {
     },
   });
 
-  // Watched form fields
-  const location = watch("location");
-  const category = watch("category");
-  const subCategory = watch("subCategory");
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
   const imageSrc = watch("imageSrc");
-
-  // Dynamically loaded Map component based on location
-  const Map = useMemo(
-    () =>
-      dynamic(() => import("../Map"), {
-        ssr: false,
-      }),
-    [location]
-  );
 
   // Function to set custom form values
   const setCustomValue = (id: string, value: any) => {
@@ -236,13 +220,13 @@ const RentModal = () => {
           title="Where is your farm or garden located?"
           subtitle="Help local consumers find you!"
         />
-        <div style={{ color: inputColor }}>
-          <CountrySelect
-            value={location}
-            onChange={(value) => setCustomValue("location", value)}
-          />
-        </div>
-        <Map center={location?.latlng} />
+        <LocationSearchInput
+          address={address}
+          setAddress={setAddress}
+          // onSelect={(address as string) => {
+          //   setValue("location", address)
+          // }}
+        />
       </div>
     );
   }
