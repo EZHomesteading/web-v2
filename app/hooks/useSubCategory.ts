@@ -449,7 +449,7 @@ const formattedProducts = products.map((product) => ({
   category: product.category,
 }));
 
-const useProducts = () => {
+const useSubCategory = () => {
   const getAll = () => formattedProducts;
 
   const getByValue = (value: string) => {
@@ -462,4 +462,4 @@ const useProducts = () => {
   };
 };
 
-export default useProducts;
+export default useSubCategory;
