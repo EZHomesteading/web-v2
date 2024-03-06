@@ -30,6 +30,7 @@ function Geocoding() {
     if (!geocodingService || !address) return;
     geocodingService.geocode({ address }, (results, status) => {
       if (results && status === "OK") {
+        // console.log(address);
         setGeocodingResult(results[0]);
       }
     });
@@ -40,7 +41,8 @@ function Geocoding() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setAddress(
-            `${position.coords.latitude}, ${position.coords.longitude}`
+            "1080 stoneham st superior colorado"
+            // `${position.coords.latitude}, ${position.coords.longitude}`
           );
         },
         (error) => {
