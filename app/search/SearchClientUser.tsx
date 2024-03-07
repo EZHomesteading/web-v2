@@ -4,51 +4,43 @@
 import Select from "react-select";
 
 // Importing custom hook to fetch countries data
-import useCountries from "@/unused/useCountries";
+import useSubCategory from "@/app/hooks/useSubCategory";
 
 // Type definition for the value of the country select component
-export type CountrySelectValue = {
-  flag: string; // Flag of the country
-  label: string; // Name of the country
-  latlng: number[]; // Latitude and longitude of the country
-  region: string; // Region of the country
-  value: string; // Value of the country
+export type ProductValue = {
+  cat: string; // subcategory
+  label: string; // title
+  value: string; // Value with all data
+  category: string;
 };
 
 // Interface defining props accepted by the CountrySelect component
-interface CountrySelectProps {
-  value?: CountrySelectValue; // Current selected value
-  onChange: (value: CountrySelectValue) => void; // Function to handle value change
+interface ProductSelectProps {
+  value?: ProductValue; // Current selected value
+  onChange: (value: ProductValue) => void; // Function to handle value change
 }
 
 // CountrySelect component
-const CountrySelect: React.FC<CountrySelectProps> = ({
+const SearchClientUser: React.FC<ProductSelectProps> = ({
   value, // Current selected value received as prop
   onChange, // Function to handle value change received as prop
 }) => {
   // Custom hook to fetch countries data
-  const { getAll } = useCountries();
+  const { getAll } = useSubCategory();
 
   // Rendering the CountrySelect component
   return (
     <div>
       <Select
-        placeholder="Where?" // Placeholder text
+        placeholder="Enter A Product Name" // Placeholder text
         isClearable // Allowing to clear the selected value
         options={getAll()} // Options for the select component fetched using the custom hook
         value={value} // Current selected value
-        onChange={(value) => onChange(value as CountrySelectValue)} // Handling value change
+        onChange={(value) => onChange(value as ProductValue)} // Handling value change
         formatOptionLabel={(option: any) => (
-          <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-3 ">
             {" "}
-            {/* Customizing option label */}
-            <div>{option.flag}</div> {/* Flag of the country */}
-            <div>
-              {option.label}, {/* Name of the country */}
-              <span className="text-neutral-500 ml-1">
-                {option.region} {/* Region of the country */}
-              </span>
-            </div>
+            <div>{option.label}</div>
           </div>
         )}
         classNames={{
@@ -72,4 +64,4 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
   );
 };
 
-export default CountrySelect; // Exporting CountrySelect component
+export default SearchClientUser; // Exporting CountrySelect component

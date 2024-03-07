@@ -1,14 +1,25 @@
-import React, { useState } from "react";
-import PlacesAutocomplete, { Suggestion } from "react-places-autocomplete";
+import PlacesAutocomplete, {
+  Suggestion,
+  geocodeByAddress,
+  getLatLng,
+} from "react-places-autocomplete";
 
 interface LocationSearchInputProps {
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
+  setStreet: React.Dispatch<React.SetStateAction<string>>;
+  setCity: React.Dispatch<React.SetStateAction<string>>;
+  setState: React.Dispatch<React.SetStateAction<string>>;
+  setZip: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
+  setStreet,
+  setCity,
+  setState,
+  setZip,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -16,7 +27,39 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
 
   const handleSelect = (address: string) => {
     setAddress(address);
-    console.log(address);
+    geocodeByAddress(address)
+      .then((results) => {
+        const addressComponents = results[0].address_components;
+        let street = "";
+        let city = "";
+        let state = "";
+        let zip = "";
+
+        addressComponents.forEach((component) => {
+          const types = component.types;
+          if (types.includes("street_number")) {
+            street += component.long_name;
+          }
+          if (types.includes("route")) {
+            street += (street ? " " : "") + component.long_name;
+          }
+          if (types.includes("locality")) {
+            city = component.long_name;
+          }
+          if (types.includes("administrative_area_level_1")) {
+            state = component.short_name;
+          }
+          if (types.includes("postal_code")) {
+            zip = component.long_name;
+          }
+        });
+
+        setCity(city);
+        setState(state);
+        setZip(zip);
+        console.log(city, zip, street, state);
+      })
+      .catch((error) => console.error("Error", error));
   };
 
   return (
@@ -29,8 +72,9 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
         <div>
           <input
             {...getInputProps({
-              placeholder: "Search Places ...",
-              className: "location-search-input",
+              placeholder: "Search by address, city, zip, and state",
+              className:
+                "peer w-full p-4 pt-6 font-light border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed",
             })}
           />
           <div className="autocomplete-dropdown-container">

@@ -8,6 +8,8 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "../map/LocationSearchInput";
+import SearchClientUser, { ProductValue } from "@/app/search/SearchClientUser";
+import { useTheme } from "next-themes";
 
 // Enum defining the steps of the search process
 enum STEPS {
@@ -19,10 +21,15 @@ enum STEPS {
 const SearchModal = () => {
   // Hooks for managing state and navigation
   const [title, setTitle] = useState("");
-  const [address, setAddress] = useState<string>("");
+  const [address, setAddress] = useState("");
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
   const router = useRouter();
   const searchModal = useSearchModal();
   const params = useSearchParams();
+  const [product, setProduct] = useState<ProductValue>();
 
   const {
     register,
@@ -33,7 +40,8 @@ const SearchModal = () => {
       title: "",
     },
   });
-
+  const { theme } = useTheme();
+  const inputColor = theme === "dark" ? "#222222" : "#222222";
   // State variables for managing search parameters
   const [step, setStep] = useState(STEPS.LOCATION);
 
@@ -46,7 +54,6 @@ const SearchModal = () => {
   const onNext = useCallback(() => {
     setStep((value) => value + 1);
   }, []);
-
   // Function to handle form submission
   const onSubmit = useCallback(async () => {
     if (step !== STEPS.ITEM) {
@@ -95,14 +102,20 @@ const SearchModal = () => {
     return "Back";
   }, [step]);
 
-  // Content for the modal body based on the current step
   let bodyContent = (
     <>
       <Heading
         title="Where should we look?"
         subtitle="We'll find produce & self-sufficiency items based on the location you enter."
       />
-      <LocationSearchInput address={address} setAddress={setAddress} />
+      <LocationSearchInput
+        address={address}
+        setAddress={setAddress}
+        setStreet={setStreet}
+        setCity={setCity}
+        setState={setState}
+        setZip={setZip}
+      />
     </>
   );
 
@@ -115,19 +128,18 @@ const SearchModal = () => {
           subtitle="Search for produce & self sufficieny items"
         />
         <div>
-          <input
-            id="title"
-            onChange={(e) => setTitle(e.target.value)}
-            value={title}
-            required
-          />
+          <div style={{ color: inputColor }}>
+            <SearchClientUser
+              value={product}
+              onChange={(e) => {
+                setTitle(e.value);
+              }}
+            />
+          </div>
         </div>
       </div>
     );
   }
-  // Update bodyContent based on the current step
-
-  // Render the SearchModal component
   return (
     <Modal
       isOpen={searchModal.isOpen}

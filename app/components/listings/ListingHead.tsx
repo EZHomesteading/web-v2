@@ -3,7 +3,7 @@
 // Importing necessary modules and components
 import Image from "next/image";
 
-import useCountries from "@/app/hooks/useCountries";
+import useCountries from "@/unused/useCountries";
 import { SafeUser } from "@/app/types";
 
 import Heading from "../Heading";

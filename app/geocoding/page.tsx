@@ -41,8 +41,7 @@ function Geocoding() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setAddress(
-            "1080 stoneham st superior colorado"
-            // `${position.coords.latitude}, ${position.coords.longitude}`
+            `${position.coords.latitude}, ${position.coords.longitude}`
           );
         },
         (error) => {
