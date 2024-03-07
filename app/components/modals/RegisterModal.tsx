@@ -8,7 +8,6 @@ import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 
@@ -16,7 +15,6 @@ import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import Button from "../Button";
-import { error } from "console";
 
 // Define RegisterModal component
 const RegisterModal = () => {
@@ -99,7 +97,6 @@ const RegisterModal = () => {
         disabled={isLoading}
         register={register}
         errors={errors}
-        isEmail={true}
         required
       />
       <Input

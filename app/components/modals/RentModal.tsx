@@ -1,6 +1,5 @@
 "use client";
 
-// Import necessary dependencies
 import axios from "axios";
 import useRentModal from "@/app/hooks/useRentModal"; // Custom hook for modal
 import Modal from "./Modal"; // Modal component
@@ -9,7 +8,7 @@ import ImageUpload from "../inputs/ImageUpload"; // Input component for image up
 import Input from "../inputs/Input"; // Generic input component
 import Heading from "../Heading"; // Custom heading component
 import SearchClient, { ProductValue } from "@/app/search/SearchClient";
-
+import { BiSearch } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation"; // Navigation hook from Next.js
 import { useTheme } from "next-themes";
@@ -24,6 +23,8 @@ import {
   CarouselPrevious,
 } from "../ui/carousel"; // Carousel UI components
 import LocationSearchInput from "../map/LocationSearchInput";
+import { PiStorefrontThin } from "react-icons/pi";
+import Button from "../Button";
 
 // Enum representing steps of the form
 enum STEPS {
@@ -36,23 +37,26 @@ enum STEPS {
 
 // RentModal component definition
 const RentModal = () => {
+  const [address, setAddress] = useState("");
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
   const [product, setProduct] = useState<ProductValue>();
-  const [address, setAddress] = useState<string>("");
   const { theme } = useTheme();
-
-  // Determine the color of input fields based on the theme
   const inputColor = theme === "dark" ? "#222222" : "#222222";
-  // Next.js router
   const router = useRouter();
-  // Custom hook for modal state
   const rentModal = useRentModal();
 
-  // State variables
+  const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [step, setStep] = useState(STEPS.DESCRIPTION); // Current step in the form
   const [quantityType, setQuantityType] = useState(""); // Add this line to manage categoryType state
 
   // Existing useForm hook and other setup code
+  const toggleLocationInput = () => {
+    setShowLocationInput(!showLocationInput);
+  };
 
   // Function to handle click on carousel item
   const handleCarouselItemClick = (word: string) => {
@@ -64,8 +68,6 @@ const RentModal = () => {
     });
   };
 
-  // React Hook Form hook for form management
-
   let {
     register,
     handleSubmit,
@@ -74,7 +76,6 @@ const RentModal = () => {
     formState: { errors },
     reset,
   } = useForm<FieldValues>({
-    // Default values for form fields
     defaultValues: {
       category: "",
       subCategory: "",
@@ -88,6 +89,10 @@ const RentModal = () => {
       shelfLifeDays: 0,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
+      street: "",
+      city: "",
+      zip: "",
+      state: "",
     },
   });
 
@@ -220,17 +225,50 @@ const RentModal = () => {
           title="Where is your farm or garden located?"
           subtitle="Help local consumers find you!"
         />
-        <LocationSearchInput
-          address={address}
-          setAddress={setAddress}
-          // onSelect={(address as string) => {
-          //   setValue("location", address)
-          // }}
-        />
+        <div className="flex flex-row justify-center space-x-4">
+          <PiStorefrontThin size="5em" className="w-1/2" />
+          <BiSearch
+            size="5em"
+            className="w-1/2"
+            onClick={toggleLocationInput}
+            style={{ cursor: "pointer" }}
+          />
+        </div>
       </div>
     );
   }
 
+  if (showLocationInput) {
+    bodyContent = (
+      <>
+        <div className="flex flex-col gap-8">
+          <Heading
+            title="Where is your farm or garden located?"
+            subtitle="Help local consumers find you!"
+          />
+          <div className="flex flex-row justify-center space-x-4">
+            <PiStorefrontThin size="5em" className="w-1/2" />
+            <BiSearch
+              size="5em"
+              className="w-1/2"
+              onClick={toggleLocationInput}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-8">
+          <LocationSearchInput
+            address={address}
+            setAddress={setAddress}
+            setStreet={setStreet}
+            setCity={setCity}
+            setState={setState}
+            setZip={setZip}
+          />
+        </div>
+      </>
+    );
+  }
   if (step === STEPS.INFO) {
     // Form fields for providing basic information about the product
     bodyContent = (

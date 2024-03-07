@@ -7,19 +7,18 @@ import PlacesAutocomplete, {
 interface LocationSearchInputProps {
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
-  setStreet: React.Dispatch<React.SetStateAction<string>>;
-  setCity: React.Dispatch<React.SetStateAction<string>>;
-  setState: React.Dispatch<React.SetStateAction<string>>;
-  setZip: React.Dispatch<React.SetStateAction<string>>;
+  onAddressParsed?: (address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  }) => void;
 }
 
 const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
-  setStreet,
-  setCity,
-  setState,
-  setZip,
+  onAddressParsed,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -54,10 +53,8 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
           }
         });
 
-        setCity(city);
-        setState(state);
-        setZip(zip);
         console.log(city, zip, street, state);
+        onAddressParsed?.({ street, city, state, zip });
       })
       .catch((error) => console.error("Error", error));
   };

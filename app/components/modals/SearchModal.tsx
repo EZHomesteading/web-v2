@@ -20,12 +20,15 @@ enum STEPS {
 // SearchModal component
 const SearchModal = () => {
   // Hooks for managing state and navigation
+
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
   const [title, setTitle] = useState("");
-  const [address, setAddress] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
   const router = useRouter();
   const searchModal = useSearchModal();
   const params = useSearchParams();
@@ -33,6 +36,8 @@ const SearchModal = () => {
 
   const {
     register,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FieldValues>({
     // Default values for form fields
@@ -40,6 +45,19 @@ const SearchModal = () => {
       title: "",
     },
   });
+
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+  };
+
   const { theme } = useTheme();
   const inputColor = theme === "dark" ? "#222222" : "#222222";
   // State variables for managing search parameters
@@ -109,12 +127,9 @@ const SearchModal = () => {
         subtitle="We'll find produce & self-sufficiency items based on the location you enter."
       />
       <LocationSearchInput
-        address={address}
-        setAddress={setAddress}
-        setStreet={setStreet}
-        setCity={setCity}
-        setState={setState}
-        setZip={setZip}
+        address={watch("address")}
+        setAddress={(address) => setValue("address", address)}
+        onAddressParsed={handleAddressSelect}
       />
     </>
   );

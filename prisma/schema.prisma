@@ -16,7 +16,8 @@ model User {
   email             String?   @unique 
   emailVerified     DateTime?
   phoneNumber       String?
-  address           String?
+  street            String?
+  city              String?
   zip               String?
   state             String?
   image             String?
@@ -74,9 +75,12 @@ model Listing {
   price Float
   description String
   imageSrc String
-  locationValue String
-  userId String @db.ObjectId
   shelfLife Int?
+  street String?
+  city String?
+  zip String?
+  state String?
+  userId String @db.ObjectId
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

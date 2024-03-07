@@ -1,10 +1,11 @@
 "use client";
 // Import necessary modules and components
+import React from "react";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-
+import LocationSearchInput from "../components/map/LocationSearchInput";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 
@@ -15,6 +16,13 @@ import { Button } from "../components/ui/button";
 // Define RegisterModal component
 const RegisterModal = () => {
   // Hooks for managing state and form data
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +31,8 @@ const RegisterModal = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
@@ -30,18 +40,29 @@ const RegisterModal = () => {
       email: "",
       password: "",
       role: "coop",
-      address: "",
       phoneNumber: "",
+      street: "",
+      city: "",
       zip: "",
       state: "",
     },
   });
 
-  // Function to handle form submission
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+  };
+
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
     console.log(data);
-    // Send registration data to the backend
     axios
       .post("/api/registercoop", data)
       .then(() => {
@@ -50,9 +71,6 @@ const RegisterModal = () => {
         loginModal.onOpen();
       })
       .catch(function (error) {
-        // console.log(error.response.status);
-        // console.log(error.response.data);
-        // console.log(error.response.headers);
         toast.error("Username or Email Already in use");
       })
       .finally(() => {
@@ -95,18 +113,24 @@ const RegisterModal = () => {
         <Input
           id="password"
           label="Password"
-          type="text"
+          type="password"
           disabled={isLoading}
           register={register}
           errors={errors}
           required
         />
         <Input
-          id="address"
-          label="Address (not required)"
+          id="confirmPassword"
+          label="Confirm Password"
+          type="password"
           disabled={isLoading}
           register={register}
           errors={errors}
+          required
+          validationRules={{
+            validate: (value) =>
+              value === watch("password") || "Passwords do not match",
+          }}
         />
         <Input
           id="phoneNumber"
@@ -116,19 +140,10 @@ const RegisterModal = () => {
           errors={errors}
           required
         />
-        <Input
-          id="zip"
-          label="Zip Code (not required)"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        <Input
-          id="state"
-          label="State (not required)"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
+        <LocationSearchInput
+          address={watch("address")}
+          setAddress={(address) => setValue("address", address)}
+          onAddressParsed={handleAddressSelect}
         />
       </div>
 

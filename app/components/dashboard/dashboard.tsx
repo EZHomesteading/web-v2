@@ -28,15 +28,7 @@ interface UpdateUserProps {
 
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  ChartBarSquareIcon,
-  Cog6ToothIcon,
-  FolderIcon,
-  GlobeAltIcon,
-  ServerIcon,
-  SignalIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { VscHistory } from "react-icons/vsc";
 import { PiCookieThin } from "react-icons/pi";
