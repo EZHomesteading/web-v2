@@ -45,8 +45,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const { getByValue } = useCountries(); // Custom hook for getting country data
   const { theme } = useTheme();
 
-  const location = getByValue(data.locationValue); // Getting location data based on location value
-
   // Function to handle cancellation action
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -159,7 +157,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           {" "}
           <div className="font-semibold text-lg"> {data.title}</div>
           <div className="font-light text-neutral-500">
-            {location?.region}, {location?.label}
+            {data?.city}, {data?.state}
           </div>
         </div>
         <div className="flex flex-row items-center gap-1">
