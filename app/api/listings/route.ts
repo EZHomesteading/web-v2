@@ -25,7 +25,10 @@ export async function POST(request: Request) {
     quantityType,
     stock,
     shelfLife,
-    location,
+    city,
+    state,
+    zip,
+    street,
     price,
     subCategory,
   } = body;
@@ -48,7 +51,10 @@ export async function POST(request: Request) {
       stock,
       shelfLife,
       subCategory,
-      locationValue: location.value, // Assuming location is an object with a 'value' property
+      city,
+      state,
+      zip,
+      street,
       price, // Parsing price to integer
       userId: currentUser.id, // Associating the listing with the current user
     },

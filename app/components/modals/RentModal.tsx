@@ -37,11 +37,13 @@ enum STEPS {
 
 // RentModal component definition
 const RentModal = () => {
-  const [address, setAddress] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
   const [product, setProduct] = useState<ProductValue>();
   const { theme } = useTheme();
   const inputColor = theme === "dark" ? "#222222" : "#222222";
@@ -164,6 +166,18 @@ const RentModal = () => {
       });
   };
 
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+  };
+
   // Determine label for primary action button based on current step
   const actionLabel = useMemo(() => {
     if (step === STEPS.LOCATION) {
@@ -258,12 +272,9 @@ const RentModal = () => {
         </div>
         <div className="flex flex-col gap-8">
           <LocationSearchInput
-            address={address}
-            setAddress={setAddress}
-            setStreet={setStreet}
-            setCity={setCity}
-            setState={setState}
-            setZip={setZip}
+            address={watch("address")}
+            setAddress={(address) => setValue("address", address)}
+            onAddressParsed={handleAddressSelect}
           />
         </div>
       </>
