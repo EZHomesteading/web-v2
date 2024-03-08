@@ -34,7 +34,6 @@ const CoopRegisterModal = () => {
     setValue,
     watch,
     formState: { errors },
-    reset,
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
@@ -42,10 +41,6 @@ const CoopRegisterModal = () => {
       password: "",
       confirmPassword: "",
       role: "coop",
-      street: "",
-      city: "",
-      zip: "",
-      state: "",
     },
   });
 
@@ -59,9 +54,6 @@ const CoopRegisterModal = () => {
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
-
-        console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
-
         return { lat, lng };
       } else {
         throw new Error("Geocoding failed");
@@ -90,7 +82,6 @@ const CoopRegisterModal = () => {
       axios
         .post("/api/registercoop", formData)
         .then(() => {
-          toast.success("Registered!");
           coopRegisterModal.onClose();
           signIn("credentials", {
             ...data,
@@ -101,7 +92,7 @@ const CoopRegisterModal = () => {
 
             // Handle sign-in callback
             if (callback?.ok) {
-              toast.success("Logged in");
+              toast.success("You're now a Co-Op!");
               router.refresh();
             }
 

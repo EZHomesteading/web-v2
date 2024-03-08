@@ -46,7 +46,7 @@ export default async function RootLayout({
             <RegisterModal />
             <CoopRegisterModal />
             <SearchModal />
-            <CoopUpdateModal />
+            {/* <CoopUpdateModal /> */}
             <RentModal />
             <Navbar currentUser={currentUser} />
           </ClientOnly>
