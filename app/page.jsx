@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "../public/images/home-images/ezh-home-static-bg.jpg";
+import SearchComponent from "./components/SearchComponent";
 import {
   Carousel,
   CarouselContent,
@@ -8,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./components/ui/carousel";
+import Search from "./components/navbar/Search";
 
 const collections = [
   {
@@ -100,9 +102,9 @@ export default function Home() {
             EZ Homesteading connects family scale farmers & gardeners with
             people in their community.
           </p>
-          <Link href="/shop" className="button-arounder px-8 py-3 mb-2">
-            Find Produce Near Me
-          </Link>
+          <div className="w-2/5">
+            <Search />
+          </div>
         </div>
       </div>
 

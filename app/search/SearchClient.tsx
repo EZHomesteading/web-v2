@@ -1,43 +1,32 @@
 "use client";
 
-// Importing necessary modules and components
 import Select from "react-select";
-
-// Importing custom hook to fetch countries data
 import useProduct from "@/app/hooks/useProduct";
 
-// Type definition for the value of the country select component
 export type ProductValue = {
-  cat: string; // subcategory
-  label: string; // title
-  value: string; // Value with all data
+  cat: string;
+  label: string;
+  value: string;
   category: string;
   photo: string;
 };
 
-// Interface defining props accepted by the CountrySelect component
 interface ProductSelectProps {
-  value?: ProductValue; // Current selected value
-  onChange: (value: ProductValue) => void; // Function to handle value change
+  value?: ProductValue;
+  onChange: (value: ProductValue) => void;
 }
 
-// CountrySelect component
-const SearchClient: React.FC<ProductSelectProps> = ({
-  value, // Current selected value received as prop
-  onChange, // Function to handle value change received as prop
-}) => {
-  // Custom hook to fetch countries data
+const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
   const { getAll } = useProduct();
 
-  // Rendering the CountrySelect component
   return (
     <div>
       <Select
-        placeholder="Enter A Product Name" // Placeholder text
-        isClearable // Allowing to clear the selected value
-        options={getAll()} // Options for the select component fetched using the custom hook
-        value={value} // Current selected value
-        onChange={(value) => onChange(value as ProductValue)} // Handling value change
+        placeholder="Enter A Product Name"
+        isClearable
+        options={getAll()}
+        value={value}
+        onChange={(value) => onChange(value as ProductValue)}
         formatOptionLabel={(option: any) => (
           <div className="flex flex-row items-center gap-3">
             {" "}
@@ -45,31 +34,20 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           </div>
         )}
         classNames={{
-          // Customizing select component styles
-          control: () => "p-3 border-2", // Style for control
-          input: () => "text-lg", // Style for input
-          option: () => "text-lg", // Style for option
+          control: () => "p-3 border-2",
+          input: () => "text-lg",
+          option: () => "text-lg",
         }}
         theme={(theme) => ({
-          // Customizing select component theme
           ...theme,
-          borderRadius: 6, // Border radius
+          borderRadius: 6,
           colors: {
             ...theme.colors,
-            primary: "black", // Primary color
-            primary25: "#ffe4e6", // Primary color with 25% opacity
+            primary: "black",
+            primary25: "#ffe4e6",
           },
         })}
       />
-
-      {/* <div>
-        <h1>{value?.shelfLife}</h1>
-        <h1>{value?.label}</h1>
-        <h1>{value?.cat}</h1>
-        <h1>{value?.category}</h1>
-        <h1>{value?.price}</h1>
-        <h1>{value?.units}</h1>
-      </div> */}
     </div>
   );
 };

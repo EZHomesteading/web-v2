@@ -11,16 +11,12 @@ import LocationSearchInput from "../map/LocationSearchInput";
 import SearchClientUser, { ProductValue } from "@/app/search/SearchClientUser";
 import { useTheme } from "next-themes";
 
-// Enum defining the steps of the search process
 enum STEPS {
   LOCATION = 0,
   ITEM = 1,
 }
 
-// SearchModal component
 const SearchModal = () => {
-  // Hooks for managing state and navigation
-
   type AddressComponents = {
     street: string;
     city: string;
@@ -40,7 +36,6 @@ const SearchModal = () => {
     setValue,
     formState: { errors },
   } = useForm<FieldValues>({
-    // Default values for form fields
     defaultValues: {
       title: "",
     },
@@ -60,19 +55,15 @@ const SearchModal = () => {
 
   const { theme } = useTheme();
   const inputColor = theme === "dark" ? "#222222" : "#222222";
-  // State variables for managing search parameters
   const [step, setStep] = useState(STEPS.LOCATION);
 
-  // Function to navigate back a step
   const onBack = useCallback(() => {
     setStep((value) => value - 1);
   }, []);
 
-  // Function to navigate to the next step
   const onNext = useCallback(() => {
     setStep((value) => value + 1);
   }, []);
-  // Function to handle form submission
   const onSubmit = useCallback(async () => {
     if (step !== STEPS.ITEM) {
       return onNext();
@@ -102,7 +93,6 @@ const SearchModal = () => {
     router.push(url);
   }, [step, searchModal, location, router, onNext, title, params]);
 
-  // Determine the label for the primary action button
   const actionLabel = useMemo(() => {
     if (step === STEPS.ITEM) {
       return "Search";
@@ -111,7 +101,6 @@ const SearchModal = () => {
     return "Next";
   }, [step]);
 
-  // Determine the label for the secondary action button
   const secondaryActionLabel = useMemo(() => {
     if (step === STEPS.LOCATION) {
       return undefined;
