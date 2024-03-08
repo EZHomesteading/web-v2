@@ -103,7 +103,6 @@ const RentModal = () => {
   const shelfLifeMonths = watch("shelfLifeMonths");
   const imageSrc = watch("imageSrc");
 
-  // Function to set custom form values
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
       shouldDirty: true,
@@ -112,25 +111,46 @@ const RentModal = () => {
     });
   };
 
-  // Function to handle back action
   const onBack = () => {
     setStep((value) => value - 1);
   };
 
-  // Function to handle next action
   const onNext = () => {
     setStep((value) => value + 1);
   };
 
-  // Form submission handler
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    // If not at the final step, proceed to the next step
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+
+        console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
+
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.LOCATION) {
       return onNext();
     }
 
-    // If at the final step, submit the form
     setIsLoading(true);
+
+    const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
+    const geoData = await getLatLngFromAddress(fullAddress);
 
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
     const shelfLife =
@@ -138,32 +158,41 @@ const RentModal = () => {
       parseInt(data.shelfLifeWeeks, 10) * 7 +
       parseInt(data.shelfLifeMonths, 10) * 30;
 
-    const formData = {
-      ...data,
-      stock: parseInt(data.stock, 10), // Ensure stock is an integer
-      shelfLife,
-      price: formattedPrice,
-      quantityType: data.quantityType === "none" ? "" : data.quantityType,
-    };
+    if (geoData) {
+      const formData = {
+        ...data,
+        stock: parseInt(data.stock, 10),
+        shelfLife,
+        price: formattedPrice,
+        quantityType: data.quantityType === "none" ? "" : data.quantityType,
+        latitude: geoData.lat,
+        longitude: geoData.lng,
+      };
 
-    // Submit form data via axios
-    axios
-      .post("/api/listings", formData)
-      .then(() => {
-        toast.success("Listing created!"); // Display success message
-        router.refresh(); // Refresh the page
-        reset(); // Reset form fields
-        setStep(STEPS.DESCRIPTION); // Reset to first step
-        rentModal.onClose(); // Close the modal
-      })
-      .catch(() => {
-        toast.error(
-          "Please make sure you've added information for all of the fields."
-        ); // Display error message
-      })
-      .finally(() => {
-        setIsLoading(false); // Reset loading state
-      });
+      axios
+        .post("/api/listings", formData)
+        .then(() => {
+          toast.success("Listing created!");
+          router.refresh();
+          reset();
+          setStep(STEPS.DESCRIPTION);
+          rentModal.onClose();
+        })
+        .catch(() => {
+          toast.error(
+            "Please make sure you've added information for all of the fields."
+          );
+        })
+        .finally(() => {
+          setIsLoading(false); // Reset loading state
+        });
+    } else {
+      // Handle geocoding failure
+      setIsLoading(false);
+      toast.error(
+        "Failed to geocode address. Please check the address and try again."
+      );
+    }
   };
 
   const handleAddressSelect = ({
@@ -178,7 +207,6 @@ const RentModal = () => {
     setValue("zip", zip);
   };
 
-  // Determine label for primary action button based on current step
   const actionLabel = useMemo(() => {
     if (step === STEPS.LOCATION) {
       return "Create";
@@ -187,7 +215,6 @@ const RentModal = () => {
     return "Next";
   }, [step]);
 
-  // Determine label for secondary action button based on current step
   const secondaryActionLabel = useMemo(() => {
     if (step === STEPS.DESCRIPTION) {
       return undefined;
@@ -196,10 +223,8 @@ const RentModal = () => {
     return "Back";
   }, [step]);
 
-  // Determine body content based on current step
   let bodyContent = (
     <div className="flex flex-col gap-8">
-      {/* Form fields for describing the product */}
       <Heading
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"

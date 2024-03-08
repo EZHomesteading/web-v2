@@ -53,35 +53,37 @@ model Account {
 }
 
 model Product {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
-  description String?
-  productPic String
-  category String
-  subCategory String
-  suggestedUnits String
-  shelfLife Int
-  suggestPrice Int
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  description       String?
+  productPic        String
+  category          String
+  subCategory       String
+  suggestedUnits    String
+  shelfLife         Int
+  suggestPrice      Int
 }
 
 model Listing {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  species String?
-  category  String 
-  subCategory String?
-  stock Int?
-  quantityType String?
-  price Float
-  description String
-  imageSrc String
-  shelfLife Int?
-  street String?
-  city String?
-  zip String?
-  state String?
-  userId String @db.ObjectId
-  createdAt DateTime @default(now())
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  species       String?
+  category      String 
+  subCategory   String?
+  stock         Int?
+  quantityType  String?
+  price         Float
+  description   String
+  imageSrc      String
+  shelfLife     Int?
+  street        String?
+  city          String?
+  zip           String?
+  state         String?
+  latitude      Float?   
+  longitude     Float?
+  userId        String @db.ObjectId
+  createdAt     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]

@@ -29,6 +29,8 @@ export async function POST(request: Request) {
     state,
     zip,
     street,
+    latitude,
+    longitude,
     price,
     subCategory,
   } = body;
@@ -51,15 +53,16 @@ export async function POST(request: Request) {
       stock,
       shelfLife,
       subCategory,
+      price,
+      street,
       city,
       state,
       zip,
-      street,
-      price, // Parsing price to integer
-      userId: currentUser.id, // Associating the listing with the current user
+      latitude,
+      longitude,
+      userId: currentUser.id,
     },
   });
 
-  // Returning a JSON response with the created listing
   return NextResponse.json(listing);
 }
