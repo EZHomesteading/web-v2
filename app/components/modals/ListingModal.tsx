@@ -1,16 +1,16 @@
 "use client";
 
 import axios from "axios";
-import useRentModal from "@/app/hooks/useRentModal"; // Custom hook for modal
-import Modal from "./Modal"; // Modal component
-import Counter from "../inputs/Counter"; // Input component for counters
-import ImageUpload from "../inputs/ImageUpload"; // Input component for image upload
-import Input from "../inputs/Input"; // Generic input component
-import Heading from "../Heading"; // Custom heading component
+import useRentModal from "@/app/hooks/useRentModal";
+import Modal from "./Modal";
+import Counter from "../inputs/Counter";
+import ImageUpload from "../inputs/ImageUpload";
+import Input from "../inputs/Input";
+import Heading from "../Heading";
 import SearchClient, { ProductValue } from "@/app/search/SearchClient";
 import { BiSearch } from "react-icons/bi";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation"; // Navigation hook from Next.js
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Label } from "../ui/label";
 import { useMemo, useState } from "react";
@@ -21,12 +21,10 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel"; // Carousel UI components
+} from "../ui/carousel";
 import LocationSearchInput from "../map/LocationSearchInput";
 import { PiStorefrontThin } from "react-icons/pi";
-import Button from "../Button";
 
-// Enum representing steps of the form
 enum STEPS {
   DESCRIPTION = 0,
   INFO = 1,
@@ -35,8 +33,7 @@ enum STEPS {
   LOCATION = 4,
 }
 
-// RentModal component definition
-const RentModal = () => {
+const ListingModal = () => {
   type AddressComponents = {
     street: string;
     city: string;
@@ -51,18 +48,16 @@ const RentModal = () => {
   const rentModal = useRentModal();
 
   const [showLocationInput, setShowLocationInput] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [step, setStep] = useState(STEPS.DESCRIPTION); // Current step in the form
-  const [quantityType, setQuantityType] = useState(""); // Add this line to manage categoryType state
+  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(STEPS.DESCRIPTION);
+  const [quantityType, setQuantityType] = useState("");
 
-  // Existing useForm hook and other setup code
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
   };
 
-  // Function to handle click on carousel item
   const handleCarouselItemClick = (word: string) => {
-    setQuantityType(word); // Update the categoryType state with the selected word
+    setQuantityType(word);
     setValue("quantityType", word, {
       shouldValidate: true,
       shouldDirty: true,
@@ -165,8 +160,10 @@ const RentModal = () => {
         shelfLife,
         price: formattedPrice,
         quantityType: data.quantityType === "none" ? "" : data.quantityType,
-        latitude: geoData.lat,
-        longitude: geoData.lng,
+        location: {
+          type: "Point",
+          coordinates: [geoData.lng, geoData.lat],
+        },
       };
 
       axios
@@ -189,9 +186,7 @@ const RentModal = () => {
     } else {
       // Handle geocoding failure
       setIsLoading(false);
-      toast.error(
-        "Failed to geocode address. Please check the address and try again."
-      );
+      toast.error("Please select or enter a valid address.");
     }
   };
 
@@ -264,14 +259,20 @@ const RentModal = () => {
           title="Where is your farm or garden located?"
           subtitle="Help local consumers find you!"
         />
-        <div className="flex flex-row justify-center space-x-4">
-          <PiStorefrontThin size="5em" className="w-1/2" />
-          <BiSearch
-            size="5em"
-            className="w-1/2"
-            onClick={toggleLocationInput}
-            style={{ cursor: "pointer" }}
-          />
+        <div className="flex flex-row justify-evenly">
+          <div className="">
+            <PiStorefrontThin size="5em" className=" hover:cursor-pointer" />
+            Default Location
+          </div>
+          <div className="">
+            <BiSearch
+              size="5em"
+              className=""
+              onClick={toggleLocationInput}
+              style={{ cursor: "pointer" }}
+            />
+            Different Location
+          </div>
         </div>
       </div>
     );
@@ -455,4 +456,4 @@ const RentModal = () => {
   );
 };
 
-export default RentModal; // Export RentModal component
+export default ListingModal; // Export RentModal component

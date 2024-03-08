@@ -29,8 +29,7 @@ export async function POST(request: Request) {
     state,
     zip,
     street,
-    latitude,
-    longitude,
+    location,
     price,
     subCategory,
   } = body;
@@ -55,11 +54,10 @@ export async function POST(request: Request) {
       subCategory,
       price,
       street,
+      location,
       city,
       state,
       zip,
-      latitude,
-      longitude,
       userId: currentUser.id,
     },
   });

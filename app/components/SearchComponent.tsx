@@ -40,7 +40,12 @@ const CombinedSearchInput = () => {
   return (
     <>
       <div className="flex flex-row">
-        <LocationSearchInput />
+        <LocationSearchInput
+          address={""}
+          setAddress={function (value: React.SetStateAction<string>): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
 
         <SearchClient onChange={setProduct} />
         <BiSearch className="cursor-pointer" size="1.5em" onClick={() => {}} />

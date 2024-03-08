@@ -1,5 +1,4 @@
 "use client";
-// Import necessary modules and components
 import axios from "axios";
 import { AiFillGithub } from "react-icons/ai";
 import { signIn } from "next-auth/react";
@@ -9,16 +8,14 @@ import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import useBecomeCoopModal from "@/app/hooks/useBecomeCoopModal";
+import useBecomeCoopModal from "@/app/hooks/useCoopRegisterModal";
 
 import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import Button from "../Button";
 
-// Define RegisterModal component
 const BecomeCoopModal = () => {
-  // Hooks for managing state and form data
   const becomeCoopModal = useBecomeCoopModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);

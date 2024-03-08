@@ -12,14 +12,15 @@ datasource db {
 
 model User {
   id                String @id @default(auto()) @map("_id") @db.ObjectId
-  name              String?   @unique
-  email             String?   @unique 
+  name              String  @unique
+  email             String  @unique 
   emailVerified     DateTime?
-  phoneNumber       String?
+  phoneNumber       String? 
   street            String?
   city              String?
   zip               String?
   state             String?
+  location          Json?
   image             String?
   hoursOfOperation  String?
   role              String?
@@ -80,8 +81,7 @@ model Listing {
   city          String?
   zip           String?
   state         String?
-  latitude      Float?   
-  longitude     Float?
+  location      Json
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
 
