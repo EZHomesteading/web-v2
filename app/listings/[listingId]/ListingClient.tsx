@@ -1,101 +1,66 @@
 "use client";
 
 import axios from "axios";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Range } from "react-date-range";
 import { useRouter } from "next/navigation";
-import { differenceInDays, eachDayOfInterval } from "date-fns";
+import { addDays, format } from "date-fns";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
+import { SafeListing, SafeUser } from "@/app/types";
 
 import Container from "@/app/components/Container";
-import { categories } from "@/app/components/navbar/Categories";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 
-const initialDateRange = {
-  startDate: new Date(),
-  endDate: new Date(),
-  key: "selection",
-};
-
 interface ListingClientProps {
-  reservations?: SafeReservation[];
   listing: SafeListing & {
     user: SafeUser;
+    shelfLife: number;
   };
   currentUser?: SafeUser | null;
 }
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
-  reservations = [],
   currentUser,
 }) => {
   const loginModal = useLoginModal();
   const router = useRouter();
 
-  const disabledDates = useMemo(() => {
-    let dates: Date[] = [];
-
-    reservations.forEach((reservation: any) => {
-      const range = eachDayOfInterval({
-        start: new Date(reservation.startDate),
-        end: new Date(reservation.endDate),
-      });
-
-      dates = [...dates, ...range];
-    });
-
-    return dates;
-  }, [reservations]);
-
-  const category = useMemo(() => {
-    return categories.find((items) => items.label === listing.category);
-  }, [listing.category]);
-
   const [isLoading, setIsLoading] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(listing.price);
-  const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
-  const onCreateReservation = useCallback(() => {
+  const onCreatePurchase = () => {
     if (!currentUser) {
       return loginModal.onOpen();
     }
     setIsLoading(true);
 
-    axios
-      .post("/api/reservations", {
-        totalPrice,
-        listingId: listing?.id,
-      })
-      .then(() => {
-        toast.success("Listing reserved!");
-        setDateRange(initialDateRange);
-        router.push("/trips");
-      })
-      .catch(() => {
-        toast.error("Something went wrong.");
-      })
+    toast
+      .promise(
+        axios.post("/api/something", {
+          listingId: listing.id,
+        }),
+        {
+          loading: "loading",
+          success: "success",
+          error: "failed",
+        }
+      )
       .finally(() => {
         setIsLoading(false);
       });
-  }, [totalPrice, dateRange, listing?.id, router, currentUser, loginModal]);
+  };
+  const shelfLifeStartDate = new Date(listing.createdAt || new Date());
+  const shelfLifeEndDate = addDays(shelfLifeStartDate, listing.shelfLife);
 
-  useEffect(() => {
-    if (dateRange.startDate && dateRange.endDate) {
-      const dayCount = differenceInDays(dateRange.endDate, dateRange.startDate);
-
-      if (dayCount && listing.price) {
-        setTotalPrice(dayCount * listing.price);
-      } else {
-        setTotalPrice(listing.price);
-      }
-    }
-  }, [dateRange, listing.price]);
+  const isDateRangeValid = shelfLifeStartDate <= shelfLifeEndDate;
+  console.log(isDateRangeValid);
+  const shelfLifeDisplay = `Best before: ${format(
+    shelfLifeEndDate,
+    "MMM dd, yyyy"
+  )}`;
 
   return (
     <Container>
@@ -109,7 +74,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
           <ListingHead
             title={listing.title}
             imageSrc={listing.imageSrc}
-            locationValue={listing.locationValue}
+            locationValue=""
             id={listing.id}
             currentUser={currentUser}
           />
@@ -124,9 +89,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
           >
             <ListingInfo
               user={listing.user}
-              category={category}
               description={listing.description}
-              locationValue={listing.locationValue}
             />
             <div
               className="
@@ -136,16 +99,17 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 md:col-span-3
               "
             >
-              <ListingReservation
-                price={listing.price}
-                totalPrice={totalPrice}
-                onChangeDate={(value) => setDateRange(value)}
-                dateRange={dateRange}
-                onSubmit={onCreateReservation}
-                disabled={isLoading}
-                disabledDates={disabledDates}
-              />
+              {/* {isDateRangeValid ? (
+                <ListingReservation
+                  product={listing}
+                  onSubmit={onCreatePurchase}
+                  disabled={isLoading}
+                />
+              ) : (
+                <p>Error: Invalid date range</p>
+              )} */}
             </div>
+            <p>{shelfLifeDisplay}</p>
           </div>
         </div>
       </div>

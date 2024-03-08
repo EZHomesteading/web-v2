@@ -3,7 +3,6 @@
 // Importing necessary modules and components
 import Image from "next/image";
 
-import useCountries from "@/unused/useCountries";
 import { SafeUser } from "@/app/types";
 
 import Heading from "../Heading";
@@ -21,27 +20,20 @@ interface ListingHeadProps {
 // ListingHead component
 const ListingHead: React.FC<ListingHeadProps> = ({
   title, // Title of the listing received as prop
-  locationValue, // Location value of the listing received as prop
   imageSrc, // Image source URL of the listing received as prop
   id, // ID of the listing received as prop
   currentUser, // Current user details received as prop
 }) => {
-  const { getByValue } = useCountries(); // Using the useCountries hook to get location details
-
-  const location = getByValue(locationValue); // Getting location details based on location value
-
   return (
     <>
       {" "}
-      {/* Fragment for grouping elements */}
-      {/* Heading component to display title and location */}
       <Heading
-        title={title} // Title of the listing
-        subtitle={`${location?.region}, ${location?.label}`} // Location of the listing
+        title={title}
+        // subtitle={`${data?.city}, ${data?.state}`}
       />
       <div
         className="
-          w-full
+          w-1/2
           h-[60vh]
           overflow-hidden 
           rounded-xl
@@ -49,13 +41,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         "
       >
         {" "}
-        {/* Container for image */}
-        {/* Image component to display listing image */}
         <Image
-          src={imageSrc} // Image source URL
-          fill // Fill mode for the image
-          className="object-cover w-full" // Styling for the image
-          alt="Image" // Alt text for the image
+          src={imageSrc}
+          width={400}
+          height={400}
+          className="object-cover w-full"
+          alt="Image"
         />
         <div
           className="
@@ -65,12 +56,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           "
         >
           {" "}
-          {/* Container for heart button */}
-          {/* HeartButton component to add listing to favorites */}
-          <HeartButton
-            listingId={id} // ID of the listing
-            currentUser={currentUser} // Current user details
-          />
+          <HeartButton listingId={id} currentUser={currentUser} />
         </div>
       </div>
     </>
