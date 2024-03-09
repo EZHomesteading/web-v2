@@ -10,6 +10,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "../map/LocationSearchInput";
 import SearchClientUser, { ProductValue } from "@/app/search/SearchClientUser";
 import { useTheme } from "next-themes";
+import SearchClient from "@/app/search/SearchClient";
 
 enum STEPS {
   LOCATION = 0,
@@ -24,7 +25,7 @@ const SearchModal = () => {
     zip: string;
   };
 
-  const [title, setTitle] = useState("");
+  const [subCategory, setSubcategory] = useState("");
   const router = useRouter();
   const searchModal = useSearchModal();
   const params = useSearchParams();
@@ -37,7 +38,7 @@ const SearchModal = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      title: "",
+      subCategory: "",
     },
   });
 
@@ -77,7 +78,7 @@ const SearchModal = () => {
 
     const updatedQuery: any = {
       ...currentQuery,
-      title,
+      subCategory,
     };
 
     const url = qs.stringifyUrl(
@@ -91,7 +92,7 @@ const SearchModal = () => {
     setStep(STEPS.LOCATION);
     searchModal.onClose();
     router.push(url);
-  }, [step, searchModal, location, router, onNext, title, params]);
+  }, [step, searchModal, location, router, onNext, subCategory, params]);
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.ITEM) {
@@ -136,7 +137,7 @@ const SearchModal = () => {
             <SearchClientUser
               value={product}
               onChange={(e) => {
-                setTitle(e.value);
+                setSubcategory(e.value);
               }}
             />
           </div>

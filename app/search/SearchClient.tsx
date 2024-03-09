@@ -52,4 +52,4 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
   );
 };
 
-export default SearchClient; // Exporting CountrySelect component
+export default SearchClient;

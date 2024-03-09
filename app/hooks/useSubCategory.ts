@@ -1,27 +1,27 @@
 const products = [
   {
     category: "Vegetables",
-    subCategory: "Tomato",
+    subCategory: "Tomatoes",
   },
   ///////////////////////////////////////////////////////
   {
     category: "Fruits",
-    subCategory: "Apple",
+    subCategory: "Apples",
   },
   ///////////////////////////////////////////////////////
   {
     category: "Fruits",
-    subCategory: "Pear",
+    subCategory: "Pears",
   },
   ///////////////////////////////////////////////////////
   {
     category: "Fruits",
-    subCategory: "Orange",
+    subCategory: "Oranges",
   },
   ///////////////////////////////////////////////////////
   {
     category: "Vegetables",
-    subCategory: "Carrot",
+    subCategory: "Carrots",
   },
   ///////////////////////////////////////////////////////
   {
@@ -34,7 +34,7 @@ const products = [
   },
   {
     category: "Fruits",
-    subCategory: "Grape",
+    subCategory: "Grapes",
   },
   ////////////////////////////////////////
   {
@@ -43,19 +43,19 @@ const products = [
   },
   {
     category: "Vegetables",
-    subCategory: "Cucumber",
+    subCategory: "Cucumbers",
   },
   {
     category: "Fruits",
-    subCategory: "Pineapple",
+    subCategory: "Pineapples",
   },
   {
     category: "Vegetables",
-    subCategory: "Beet",
+    subCategory: "Beets",
   },
   {
     category: "Fruits",
-    subCategory: "Avocado",
+    subCategory: "Avocadoes",
   },
   {
     category: "Fruits",

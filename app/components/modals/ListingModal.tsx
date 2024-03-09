@@ -173,6 +173,7 @@ const ListingModal = () => {
           router.refresh();
           reset();
           setStep(STEPS.DESCRIPTION);
+          reset;
           rentModal.onClose();
         })
         .catch(() => {
