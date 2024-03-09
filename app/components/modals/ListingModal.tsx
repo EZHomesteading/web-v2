@@ -99,6 +99,7 @@ const ListingModal = () => {
   const imageSrc = watch("imageSrc");
   const quantity = watch("stock");
   const price = watch("price");
+  const description = watch("description");
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -114,17 +115,27 @@ const ListingModal = () => {
 
   const onNext = () => {
     if (step === STEPS.DESCRIPTION && !product) {
-      toast.error("Please select a product.");
+      toast.error("Please select a product");
+      return;
+    }
+
+    if (step === STEPS.DESCRIPTION && !description) {
+      toast.error("Please write a brief description");
       return;
     }
 
     if (step === STEPS.INFO && !quantityType) {
-      toast.error("Please select a unit for your listing.");
+      toast.error("Please select a unit for your listing");
       return;
     }
 
     if (step === STEPS.INFO && (quantity <= 0 || !quantity)) {
-      toast.error("Quantity must be greater than 0.");
+      toast.error("Quantity must be greater than 0");
+      return;
+    }
+
+    if (step === STEPS.IMAGES && !imageSrc) {
+      toast.error("Please use the stock photo or upload a photo");
       return;
     }
 
@@ -277,15 +288,12 @@ const ListingModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          required
         />
       </div>
     </div>
   );
 
-  // Render different content based on step
   if (step === STEPS.LOCATION) {
-    // Form fields for specifying location
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
