@@ -38,7 +38,7 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       if (!geocodingService || !address) return;
       geocodingService.geocode({ address }, (results, status) => {
         if (results && status === "OK") {
-          // console.log(address);
+          console.log(address);
           setGeocodingResult(results[0]);
         }
       });
@@ -48,9 +48,9 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            if (currentUser?.address) {
+            if (currentUser?.street) {
               setAddress(
-                currentUser?.address
+                currentUser?.street
                 // `${position.coords.latitude}, ${position.coords.longitude}`
               );
               setZoom(10);

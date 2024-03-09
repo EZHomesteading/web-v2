@@ -53,7 +53,6 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
           }
         });
 
-        console.log(city, zip, street, state);
         onAddressParsed?.({ street, city, state, zip });
       })
       .catch((error) => console.error("Error", error));
@@ -67,37 +66,47 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
     >
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div>
-          <input
-            {...getInputProps({
-              placeholder: "Search by address, city, zip, and state",
-              className:
-                "peer w-full p-4 pt-6 font-light border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed",
-            })}
-          />
-          <div className="autocomplete-dropdown-container">
-            {suggestions.map((suggestion: Suggestion) => {
-              const className = suggestion.active
-                ? "suggestion-item--active"
-                : "suggestion-item";
-              // inline style for demonstration purpose
-              const style = suggestion.active
-                ? {
-                    backgroundColor: "#fafafa",
-                    cursor: "pointer",
-                    // innerWidth: 50,
-                  }
-                : { backgroundColor: "#ffffff", cursor: "pointer" };
-              return (
-                <div
-                  {...getSuggestionItemProps(suggestion, {
-                    className,
-                    style,
-                  })}
-                >
-                  <span>{suggestion.description}</span>
-                </div>
-              );
-            })}
+          <div style={{ position: "relative" }}>
+            <input
+              {...getInputProps({
+                placeholder: "Search by address, city, zip, and state",
+                className:
+                  "peer w-full p-4 pt-6 font-light border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed",
+              })}
+            />
+            <div
+              className="autocomplete-dropdown-container"
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+              }}
+            >
+              {suggestions.map((suggestion: Suggestion) => {
+                const className = suggestion.active
+                  ? "suggestion-item--active"
+                  : "suggestion-item";
+
+                const style = suggestion.active
+                  ? {
+                      backgroundColor: "#fafafa",
+                      cursor: "pointer",
+                    }
+                  : { backgroundColor: "#ffffff", cursor: "pointer" };
+                return (
+                  <div
+                    {...getSuggestionItemProps(suggestion, {
+                      className,
+                      style,
+                    })}
+                  >
+                    <span>{suggestion.description}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

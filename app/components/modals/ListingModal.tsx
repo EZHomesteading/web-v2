@@ -86,6 +86,7 @@ const ListingModal = () => {
       shelfLifeDays: 0,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
+      shelfLifeYears: 0,
       street: "",
       city: "",
       zip: "",
@@ -96,6 +97,7 @@ const ListingModal = () => {
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
+  const shelfLifeYears = watch("shelfLifeYears");
   const imageSrc = watch("imageSrc");
   const quantity = watch("stock");
   const price = watch("price");
@@ -143,7 +145,8 @@ const ListingModal = () => {
       step === STEPS.INFO &&
       shelfLifeDays <= 0 &&
       shelfLifeWeeks <= 0 &&
-      shelfLifeMonths <= 0
+      shelfLifeMonths <= 0 &&
+      shelfLifeYears <= 0
     ) {
       toast.error("Shelf life must be atleast 1 day");
       return;
@@ -195,6 +198,7 @@ const ListingModal = () => {
       parseInt(data.shelfLifeDays, 10) +
       parseInt(data.shelfLifeWeeks, 10) * 7 +
       parseInt(data.shelfLifeMonths, 10) * 30;
+    parseInt(data.shelfLifeYears, 10) * 365;
 
     if (geoData) {
       const formData = {
@@ -431,6 +435,14 @@ const ListingModal = () => {
                 onChange={(value) => setCustomValue("shelfLifeMonths", value)}
                 value={shelfLifeMonths}
                 title="Months"
+                subtitle=""
+              />
+            </div>
+            <div className="mb-3 text-sm">
+              <Counter
+                onChange={(value) => setCustomValue("shelfLifeYears", value)}
+                value={shelfLifeYears}
+                title="Years"
                 subtitle=""
               />
             </div>
