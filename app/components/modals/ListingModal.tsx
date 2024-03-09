@@ -111,6 +111,11 @@ const ListingModal = () => {
   };
 
   const onNext = () => {
+    if (step === STEPS.DESCRIPTION && !product) {
+      toast.error("Please select a product.");
+      return;
+    }
+
     setStep((value) => value + 1);
   };
 
