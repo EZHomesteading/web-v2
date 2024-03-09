@@ -2,28 +2,21 @@ import prisma from "@/app/libs/prismadb";
 
 interface ILocation {
   type: "Point";
-  coordinates: [number, number]; // Assuming [longitude, latitude]
+  coordinates: [number, number];
 }
 
 export interface IListingsParams {
-  userId?: string; // Optional parameter: userId
+  userId?: string;
   location?: ILocation;
   category?: string;
-  subCategory?: string; // Optional parameter: category
+  subCategory?: string;
 }
 
-// Function to retrieve listings based on provided parameters
-export default async function getListings(
-  params: IListingsParams // Accepting parameters of type IListingsParams
-) {
+export default async function getListings(params: IListingsParams) {
   try {
-    // Destructuring parameters
     const { userId, location, category, subCategory } = params;
 
-    // Initializing an empty query object
     let query: any = {};
-
-    // Adding conditions to the query based on provided parameters
 
     if (userId) {
       query.userId = userId;
