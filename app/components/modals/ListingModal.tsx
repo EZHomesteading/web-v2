@@ -97,6 +97,8 @@ const ListingModal = () => {
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
   const imageSrc = watch("imageSrc");
+  const quantity = watch("stock");
+  const price = watch("price");
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -113,6 +115,31 @@ const ListingModal = () => {
   const onNext = () => {
     if (step === STEPS.DESCRIPTION && !product) {
       toast.error("Please select a product.");
+      return;
+    }
+
+    if (step === STEPS.INFO && !quantityType) {
+      toast.error("Please select a unit for your listing.");
+      return;
+    }
+
+    if (step === STEPS.INFO && (quantity <= 0 || !quantity)) {
+      toast.error("Quantity must be greater than 0.");
+      return;
+    }
+
+    if (
+      step === STEPS.INFO &&
+      shelfLifeDays <= 0 &&
+      shelfLifeWeeks <= 0 &&
+      shelfLifeMonths <= 0
+    ) {
+      toast.error("Shelf life must be atleast 1 day");
+      return;
+    }
+
+    if (step === STEPS.PRICE && (price <= 0 || !quantity)) {
+      toast.error("Please enter a price greater than 0.");
       return;
     }
 
