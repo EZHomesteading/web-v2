@@ -14,12 +14,14 @@ interface ListingReservationProps {
   product: {
     endDate: Date | null;
     title: string;
-    price: number;
     shelfLife: number;
     imageSrc: string;
     createdAt: Date;
     city: string;
     state: string;
+    price: number;
+    quantityType: string;
+    stock: number;
   };
   onSubmit: () => void;
   disabled?: boolean;
@@ -30,13 +32,15 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   onSubmit,
   disabled,
 }) => {
+  const stock = product.stock;
+  const quantityType = product.quantityType;
+  const price = product.price;
+  const total = product.price * product.stock;
   const startDate = product.createdAt;
-  // Adjust endDate calculation based on shelfLife
   const endDate =
     product.shelfLife !== -1
       ? addDays(new Date(startDate), product.shelfLife)
       : null;
-  // For non-expiring items, no end date is calculated
   const dateRange = endDate ? { startDate, endDate, key: "selection" } : null;
   return (
     <div
@@ -49,16 +53,14 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       "
     >
       <div className="flex flex-row items-center gap-1 p-4">
-        {/* <div className="font-semibold"> $ {price}</div>
-          {data.quantityType && (
-            <div className="font-light">per {data.quantityType}</div>
-          )} */}
+        {stock} {quantityType} remaining at ${price}
+        {quantityType && <div className="font-light">per {quantityType}</div>}
       </div>
       <hr />
       {dateRange && <Calendar value={dateRange} onChange={() => {}} />}
       <hr />
       <div className="p-4">
-        <Button disabled={disabled} label="Buy Now" onClick={onSubmit} />
+        <Button disabled={disabled} label={`Message User`} onClick={onSubmit} />
       </div>
       <div></div>
       <hr />
@@ -73,8 +75,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           text-lg
         "
       >
-        <div>Price for entire stock</div>
-        {/* <div>$ price*stock</div> */}
+        <div>Buy All Now for ${total}</div>
       </div>
     </div>
   );

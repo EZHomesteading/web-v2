@@ -20,6 +20,8 @@ interface ListingClientProps {
     shelfLife: number;
     city: string;
     state: string;
+    price: number;
+    quantityType: string;
   };
   currentUser?: SafeUser | null;
 }
@@ -66,7 +68,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   const shelfLifeDisplay = adjustedListing.endDate
     ? `Best before: ${format(adjustedListing.endDate, "MMM dd, yyyy")}`
-    : "Does not expire";
+    : "This product is non-perisable";
 
   return (
     <Container>
