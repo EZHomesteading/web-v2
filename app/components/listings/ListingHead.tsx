@@ -1,6 +1,5 @@
 "use client";
 
-// Importing necessary modules and components
 import Image from "next/image";
 
 import { SafeUser } from "@/app/types";
@@ -8,32 +7,29 @@ import { SafeUser } from "@/app/types";
 import Heading from "../Heading";
 import HeartButton from "../HeartButton";
 
-// Interface defining props accepted by the ListingHead component
 interface ListingHeadProps {
-  title: string; // Title of the listing
-  locationValue: string; // Location value of the listing
-  imageSrc: string; // Image source URL of the listing
-  id: string; // ID of the listing
-  currentUser?: SafeUser | null; // Current user details
+  title: string;
+  imageSrc: string;
+  id: string;
+  city: string;
+  state: string;
+  currentUser?: SafeUser | null;
 }
 
-// ListingHead component
 const ListingHead: React.FC<ListingHeadProps> = ({
-  title, // Title of the listing received as prop
-  imageSrc, // Image source URL of the listing received as prop
-  id, // ID of the listing received as prop
-  currentUser, // Current user details received as prop
+  title,
+  imageSrc,
+  id,
+  city,
+  state,
+  currentUser,
 }) => {
   return (
     <>
       {" "}
-      <Heading
-        title={title}
-        // subtitle={`${data?.city}, ${data?.state}`}
-      />
       <div
         className="
-          w-1/2
+          w-full
           h-[60vh]
           overflow-hidden 
           rounded-xl
@@ -43,8 +39,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {" "}
         <Image
           src={imageSrc}
-          width={400}
-          height={400}
+          fill
           className="object-cover w-full"
           alt="Image"
         />
@@ -59,8 +54,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
       </div>
+      <Heading title={title} subtitle={`${city}, ${state}`} />
     </>
   );
 };
 
-export default ListingHead; // Exporting ListingHead component
+export default ListingHead;

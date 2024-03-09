@@ -26,7 +26,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   return (
     <DateRange
-      rangeColors={["#262626"]} // Customizing range color
+      rangeColors={["#4caf50"]} // Customizing range color
       ranges={[value]} // Setting current selected date range
       date={new Date()} // Setting current date
       onChange={onChange} // Handling date range change

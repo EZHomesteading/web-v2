@@ -27,13 +27,14 @@ const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
             gap-2
           "
         >
-          <div className="flex align-center">
-            <span style={{ marginRight: "5px" }}>Sold by</span>
-            <span onClick={() => router.push(`/store/${user.id}`)}>
-              <Avatar src={user?.image} />
-              <span className="ml-2">{user?.name}</span>
-            </span>
-          </div>
+          <span style={{ marginRight: "5px" }}>Sold by</span>
+          <span
+            className="flex items-center gap-2"
+            onClick={() => router.push(`/store/${user.id}`)}
+          >
+            <Avatar src={user?.image} />
+            <span className="ml-2">{user?.name}</span>
+          </span>
         </div>
         <div
           className="

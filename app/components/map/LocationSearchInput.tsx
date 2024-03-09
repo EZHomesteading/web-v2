@@ -59,58 +59,60 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   };
 
   return (
-    <PlacesAutocomplete
-      value={address}
-      onChange={handleChange}
-      onSelect={handleSelect}
-    >
-      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-        <div>
-          <div style={{ position: "relative" }}>
-            <input
-              {...getInputProps({
-                placeholder: "Search by address, city, zip, and state",
-                className:
-                  "peer w-full p-4 pt-6 font-light border-2 rounded-md outline-none transition disabled:opacity-70 disabled:cursor-not-allowed",
-              })}
-            />
-            <div
-              className="autocomplete-dropdown-container"
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                right: 0,
-                zIndex: 1000,
-              }}
-            >
-              {suggestions.map((suggestion: Suggestion) => {
-                const className = suggestion.active
-                  ? "suggestion-item--active"
-                  : "suggestion-item";
+    <>
+      <PlacesAutocomplete
+        value={address}
+        onChange={handleChange}
+        onSelect={handleSelect}
+      >
+        {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+          <div>
+            <div style={{ position: "relative" }}>
+              <input
+                {...getInputProps({
+                  placeholder: "Search by address, city, zip, and state",
+                  className:
+                    "peer w-full p-4 pt-6 font-light border-2 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed",
+                })}
+              />
 
-                const style = suggestion.active
-                  ? {
-                      backgroundColor: "#fafafa",
-                      cursor: "pointer",
-                    }
-                  : { backgroundColor: "#ffffff", cursor: "pointer" };
-                return (
-                  <div
-                    {...getSuggestionItemProps(suggestion, {
-                      className,
-                      style,
-                    })}
-                  >
-                    <span>{suggestion.description}</span>
-                  </div>
-                );
-              })}
+              <div
+                className="autocomplete-dropdown-container"
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  zIndex: 1000,
+                }}
+              >
+                {suggestions.slice(0, 3).map((suggestion: Suggestion) => {
+                  const className = suggestion.active
+                    ? "suggestion-item--active bg-green-100"
+                    : "suggestion-item bg-white";
+                  const style = {
+                    backgroundColor: suggestion.active ? "#fafafa" : "#ffffff",
+                    cursor: "pointer",
+                    padding: ".5rem",
+                    fontSize: "1rem",
+                  };
+                  return (
+                    <div
+                      {...getSuggestionItemProps(suggestion, {
+                        className,
+                        style,
+                      })}
+                    >
+                      <span>{suggestion.description}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </PlacesAutocomplete>
+        )}
+      </PlacesAutocomplete>
+    </>
   );
 };
 

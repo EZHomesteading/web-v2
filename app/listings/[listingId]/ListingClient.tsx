@@ -18,6 +18,8 @@ interface ListingClientProps {
   listing: SafeListing & {
     user: SafeUser;
     shelfLife: number;
+    city: string;
+    state: string;
   };
   currentUser?: SafeUser | null;
 }
@@ -52,15 +54,19 @@ const ListingClient: React.FC<ListingClientProps> = ({
         setIsLoading(false);
       });
   };
-  const shelfLifeStartDate = new Date(listing.createdAt || new Date());
-  const shelfLifeEndDate = addDays(shelfLifeStartDate, listing.shelfLife);
 
-  const isDateRangeValid = shelfLifeStartDate <= shelfLifeEndDate;
-  console.log(isDateRangeValid);
-  const shelfLifeDisplay = `Best before: ${format(
-    shelfLifeEndDate,
-    "MMM dd, yyyy"
-  )}`;
+  const adjustedListing = {
+    ...listing,
+    createdAt: new Date(listing.createdAt),
+    endDate:
+      listing.shelfLife !== -1
+        ? addDays(new Date(listing.createdAt), listing.shelfLife)
+        : null,
+  };
+
+  const shelfLifeDisplay = adjustedListing.endDate
+    ? `Best before: ${format(adjustedListing.endDate, "MMM dd, yyyy")}`
+    : "Does not expire";
 
   return (
     <Container>
@@ -73,8 +79,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
         <div className="flex flex-col gap-6">
           <ListingHead
             title={listing.title}
+            city={listing.city}
+            state={listing.state}
             imageSrc={listing.imageSrc}
-            locationValue=""
             id={listing.id}
             currentUser={currentUser}
           />
@@ -99,15 +106,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 md:col-span-3
               "
             >
-              {/* {isDateRangeValid ? (
-                <ListingReservation
-                  product={listing}
-                  onSubmit={onCreatePurchase}
-                  disabled={isLoading}
-                />
-              ) : (
-                <p>Error: Invalid date range</p>
-              )} */}
+              <ListingReservation
+                product={adjustedListing}
+                onSubmit={onCreatePurchase}
+                disabled={isLoading}
+              />
             </div>
             <p>{shelfLifeDisplay}</p>
           </div>

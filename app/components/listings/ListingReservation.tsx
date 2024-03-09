@@ -12,11 +12,14 @@ interface Range {
 
 interface ListingReservationProps {
   product: {
+    endDate: Date | null;
     title: string;
     price: number;
     shelfLife: number;
     imageSrc: string;
-    createdAt: string;
+    createdAt: Date;
+    city: string;
+    state: string;
   };
   onSubmit: () => void;
   disabled?: boolean;
@@ -27,14 +30,14 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   onSubmit,
   disabled,
 }) => {
-  const startDate = product.createdAt
-    ? parseISO(product.createdAt)
-    : new Date();
-  const endDate = addDays(startDate, product.shelfLife);
-
-  // If your Calendar component expects a single range object directly
-  const dateRange = { startDate, endDate, key: "selection" };
-  console.log(startDate, endDate);
+  const startDate = product.createdAt;
+  // Adjust endDate calculation based on shelfLife
+  const endDate =
+    product.shelfLife !== -1
+      ? addDays(new Date(startDate), product.shelfLife)
+      : null;
+  // For non-expiring items, no end date is calculated
+  const dateRange = endDate ? { startDate, endDate, key: "selection" } : null;
   return (
     <div
       className="
@@ -52,11 +55,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           )} */}
       </div>
       <hr />
-      <Calendar value={dateRange} onChange={() => {}} />
+      {dateRange && <Calendar value={dateRange} onChange={() => {}} />}
       <hr />
       <div className="p-4">
         <Button disabled={disabled} label="Buy Now" onClick={onSubmit} />
       </div>
+      <div></div>
       <hr />
       <div
         className="
