@@ -31,9 +31,9 @@ import { Switch } from "../ui/switch";
 enum STEPS {
   DESCRIPTION = 0,
   INFO = 1,
-  IMAGES = 2,
+  IMAGES = 4,
   PRICE = 3,
-  ORGANIC = 4,
+  ORGANIC = 2,
   LOCATION = 5,
 }
 
