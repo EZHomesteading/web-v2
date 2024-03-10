@@ -1,30 +1,38 @@
-"use client"
+import * as React from "react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
+import { CheckIcon } from "@radix-ui/react-icons";
 
-import * as React from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { CheckIcon } from "@radix-ui/react-icons"
-
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <CheckboxPrimitive.Root
-    ref={ref}
-    className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-      className
-    )}
-    {...props}
-  >
-    <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
+    label?: string; // Adding label prop for usability
+  }
+>(({ className, label, ...props }, ref) => (
+  <div className="flex items-center gap-2">
+    {" "}
+    <CheckboxPrimitive.Root
+      ref={ref}
+      className={cn(
+        "peer h-8 w-8 shrink-0 rounded-md border border-primary shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+        className
+      )}
+      {...props}
     >
-      <CheckIcon className="h-4 w-4" />
-    </CheckboxPrimitive.Indicator>
-  </CheckboxPrimitive.Root>
-))
-Checkbox.displayName = CheckboxPrimitive.Root.displayName
+      <CheckboxPrimitive.Indicator
+        className={cn("flex items-center justify-center text-current")}
+      >
+        <CheckIcon className="h-5 w-5" />{" "}
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+    {label && (
+      <label className="select-none text-sm text-gray-800 cursor-pointer">
+        {label}
+      </label>
+    )}
+  </div>
+));
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox }
+export { Checkbox };

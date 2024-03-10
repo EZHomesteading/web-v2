@@ -50,7 +50,8 @@ const ListingModal = () => {
   const inputColor = theme === "dark" ? "#222222" : "#222222";
   const router = useRouter();
   const rentModal = useRentModal();
-
+  const [coopRating, setCoopRating] = useState(1);
+  const [certificationChecked, setCertificationChecked] = useState(false);
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.DESCRIPTION);
@@ -99,6 +100,23 @@ const ListingModal = () => {
     },
   });
 
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    isCertificationCheckbox = false
+  ) => {
+    const checked = event.target.checked;
+    if (isCertificationCheckbox) {
+      setCertificationChecked(checked);
+      if (checked && coopRating === 1) {
+        setCoopRating(2);
+      }
+    } else {
+      let newRating = checked ? coopRating + 1 : coopRating - 1;
+      newRating = Math.max(1, Math.min(newRating, 5));
+      setCoopRating(newRating);
+    }
+  };
+
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
@@ -145,6 +163,11 @@ const ListingModal = () => {
       toast.error("Please use the stock photo or upload a photo");
       return;
     }
+
+    // if (step === STEPS.ORGANIC && !certificationChecked) {
+    //   toast.error("You must certify that the above information is accurate.");
+    //   return;
+    // }
 
     if (
       step === STEPS.INFO &&
@@ -483,23 +506,23 @@ const ListingModal = () => {
         />
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox />
-            <Label>My produce is not genetically modified</Label>
+            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Label>This produce is not genetically modified</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox />
-            <Label>I only use organic or no fertilizers</Label>
+            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Label>This produce was not grown with inorganic fertilizers</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox />
-            <Label>I only use organic or no pestacides</Label>
+            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Label>This produce was not grown with inorganic pestacides</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox />
-            <Label>I do not modify my produce post-harvest</Label>
+            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Label>This produce was not modified after harvest</Label>
           </div>
           <div className="flex flex-row gap-x-2 font-extrabold items-center">
-            <Checkbox />
+            <Checkbox onChange={(e) => handleCheckboxChange(e, true)} />
             <Label className="font-bold">
               I certify that all of the above information is accurate
             </Label>
