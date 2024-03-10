@@ -1,5 +1,7 @@
 "use client";
 
+import { z } from "zod";
+import { Checkbox } from "@/app/components/ui/checkbox";
 import axios from "axios";
 import useRentModal from "@/app/hooks/useRentModal";
 import Modal from "./Modal";
@@ -7,12 +9,12 @@ import Counter from "../inputs/Counter";
 import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
+import { Label } from "../ui/label";
 import SearchClient, { ProductValue } from "@/app/search/SearchClient";
 import { BiSearch } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Label } from "../ui/label";
 import { useMemo, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -24,13 +26,15 @@ import {
 } from "../ui/carousel";
 import LocationSearchInput from "../map/LocationSearchInput";
 import { PiStorefrontThin } from "react-icons/pi";
+import { Switch } from "../ui/switch";
 
 enum STEPS {
   DESCRIPTION = 0,
   INFO = 1,
   IMAGES = 2,
   PRICE = 3,
-  LOCATION = 4,
+  ORGANIC = 4,
+  LOCATION = 5,
 }
 
 const ListingModal = () => {
@@ -91,6 +95,7 @@ const ListingModal = () => {
       city: "",
       zip: "",
       state: "",
+      coopRating: 1,
     },
   });
 
@@ -464,6 +469,42 @@ const ListingModal = () => {
           onChange={(value) => setCustomValue("imageSrc", value)}
           value={imageSrc}
         />
+      </div>
+    );
+  }
+
+  if (step === STEPS.ORGANIC) {
+    // Form fields for uploading images
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="Tell us about how you grow your produce"
+          subtitle="Select all that apply to increase your EZH Organic Rating!"
+        />
+        <div className="flex flex-col gap-y-2">
+          <div className="flex flex-row gap-x-2 items-center">
+            <Checkbox />
+            <Label>My produce is not genetically modified</Label>
+          </div>
+          <div className="flex flex-row gap-x-2 items-center">
+            <Checkbox />
+            <Label>I only use organic or no fertilizers</Label>
+          </div>
+          <div className="flex flex-row gap-x-2 items-center">
+            <Checkbox />
+            <Label>I only use organic or no pestacides</Label>
+          </div>
+          <div className="flex flex-row gap-x-2 items-center">
+            <Checkbox />
+            <Label>I do not modify my produce post-harvest</Label>
+          </div>
+          <div className="flex flex-row gap-x-2 font-extrabold items-center">
+            <Checkbox />
+            <Label className="font-bold">
+              I certify that all of the above information is accurate
+            </Label>
+          </div>
+        </div>
       </div>
     );
   }

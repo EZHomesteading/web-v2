@@ -82,6 +82,7 @@ model Listing {
   zip           String?
   state         String?
   location      Json
+  coopRating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
 

@@ -7,7 +7,7 @@ import getListings from "@/app/actions/getListings";
 import StoreClient from "./StoreClient";
 
 interface StorePageProps {
-  userId: string; // Assuming ownerId is a string. Adjust the type if necessary.
+  userId: string;
 }
 
 const StorePage = async ({ userId }: StorePageProps) => {

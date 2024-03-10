@@ -67,7 +67,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
   };
 
   const shelfLifeDisplay = adjustedListing.endDate
-    ? `Best before: ${format(adjustedListing.endDate, "MMM dd, yyyy")}`
+    ? `Estimated Expiry Date: ${format(
+        adjustedListing.endDate,
+        "MMM dd, yyyy"
+      )}`
     : "This product is non-perisable";
 
   return (

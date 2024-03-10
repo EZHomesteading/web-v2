@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     location,
     price,
     subCategory,
+    coopRating,
   } = body;
 
   // Checking if any required field is missing in the request body, then return an error response
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
       city,
       state,
       zip,
+      coopRating,
       userId: currentUser.id,
     },
   });
