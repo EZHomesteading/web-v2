@@ -10,9 +10,9 @@ import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "../map/LocationSearchInput";
 import SearchClientUser, {
   ProductValue,
-} from "@/app/components/SearchClientUser";
+} from "@/app/components/client/SearchClientUser";
 import { useTheme } from "next-themes";
-import SearchClient from "@/app/components/SearchClient";
+import SearchClient from "@/app/components/client/SearchClient";
 
 enum STEPS {
   LOCATION = 0,

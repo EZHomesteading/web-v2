@@ -4,9 +4,9 @@ import React, { useState, useRef, useEffect } from "react";
 import LocationSearchInput from "./map/LocationSearchInput";
 import SearchClientUser, {
   ProductValue,
-} from "@/app/components/SearchClientUser";
+} from "@/app/components/client/SearchClientUser";
 import { BiSearch } from "react-icons/bi";
-import SearchClient from "./SearchClient";
+import SearchClient from "./client/SearchClient";
 
 const CombinedSearchInput = () => {
   const [isFocused, setIsFocused] = useState(false);

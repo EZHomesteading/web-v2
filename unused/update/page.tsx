@@ -1,6 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
-import ClientOnly from "@/app/components/ClientOnly";
+import ClientOnly from "@/app/components/client/ClientOnly";
 
 import UpdateClient from "./UpdateClient";
 

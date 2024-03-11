@@ -1,6 +1,8 @@
 "use client";
 
-import SearchClient, { ProductValue } from "../app/components/SearchClient";
+import SearchClient, {
+  ProductValue,
+} from "../app/components/client/SearchClient";
 import { useState } from "react";
 
 const SearchPage = () => {

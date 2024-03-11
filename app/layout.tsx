@@ -10,7 +10,7 @@ import RentModal from "@/app/components/modals/ListingModal";
 import ToasterProvider from "@/app/providers/ToasterProvider";
 
 import "./globals.css";
-import ClientOnly from "./components/ClientOnly";
+import ClientOnly from "./components/client/ClientOnly";
 import getCurrentUser from "./actions/getCurrentUser";
 import CoopRegisterModal from "./components/modals/CoopRegisterModal";
 import CoopUpdateModal from "./components/modals/CoopUpdateModal";

@@ -1,7 +1,7 @@
 "use client";
 
 import Select from "react-select";
-import useSubCategory from "../hooks/useSubCategory";
+import useSubCategory from "../../hooks/useSubCategory";
 
 export type ProductValue = {
   cat: string;

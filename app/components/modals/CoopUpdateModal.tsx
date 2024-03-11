@@ -1,7 +1,7 @@
 "use client";
 
 import Modal from "./Modal";
-import ClientOnly from "../ClientOnly";
+import ClientOnly from "../client/ClientOnly";
 import UpdateClient from "@/app/updatetocoop/UpdateClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { useState } from "react";
