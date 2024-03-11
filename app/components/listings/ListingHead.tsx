@@ -5,7 +5,7 @@ import Image from "next/image";
 import { SafeUser } from "@/app/types";
 
 import Heading from "../Heading";
-import HeartButton from "../HeartButton";
+import HeartButton from "../ui/HeartButton";
 
 interface ListingHeadProps {
   title: string;

@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import useCountries from "@/unused/useCountries";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 
-import HeartButton from "../HeartButton";
+import HeartButton from "../ui/HeartButton";
 import Button from "../Button";
 
 interface ListingCardProps {

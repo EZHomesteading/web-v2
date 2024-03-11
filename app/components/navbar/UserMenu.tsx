@@ -13,7 +13,7 @@ import useRentModal from "@/app/hooks/useRentModal";
 import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 
 // UserMenu component
 interface UserMenuProps {

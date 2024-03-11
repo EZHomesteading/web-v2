@@ -10,7 +10,7 @@ import ImageUpload from "../inputs/ImageUpload";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import { Label } from "../ui/label";
-import SearchClient, { ProductValue } from "@/app/search/SearchClient";
+import SearchClient, { ProductValue } from "@/app/components/SearchClient";
 import { BiSearch } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";

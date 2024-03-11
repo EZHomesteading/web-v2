@@ -5,13 +5,13 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import LocationSearchInput from "../components/map/LocationSearchInput";
+import LocationSearchInput from "../../app/components/map/LocationSearchInput";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
-import { Button } from "../components/ui/button";
+import { Button } from "../../app/components/ui/button";
 
 // Define RegisterModal component
 const RegisterModal = () => {

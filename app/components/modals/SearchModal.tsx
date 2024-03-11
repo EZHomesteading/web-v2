@@ -8,9 +8,11 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "../map/LocationSearchInput";
-import SearchClientUser, { ProductValue } from "@/app/search/SearchClientUser";
+import SearchClientUser, {
+  ProductValue,
+} from "@/app/components/SearchClientUser";
 import { useTheme } from "next-themes";
-import SearchClient from "@/app/search/SearchClient";
+import SearchClient from "@/app/components/SearchClient";
 
 enum STEPS {
   LOCATION = 0,

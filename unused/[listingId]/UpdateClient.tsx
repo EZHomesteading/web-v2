@@ -5,9 +5,9 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Container from "@/app/components/Container";
-import Input from "../../components/inputs/Input";
-import Heading from "../../components/Heading";
-import { Button } from "../../components/ui/button";
+import Input from "../../app/components/inputs/Input";
+import Heading from "../../app/components/Heading";
+import { Button } from "../../app/components/ui/button";
 import { SafeListing } from "@/app/types";
 
 interface UpdateListingProps {

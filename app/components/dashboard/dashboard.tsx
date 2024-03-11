@@ -38,7 +38,7 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 
 interface NavigationItem {
   name: string;

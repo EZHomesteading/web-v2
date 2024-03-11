@@ -1,6 +1,6 @@
 "use client";
 
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 import { SafeUser } from "@/app/types";
 import { useRouter } from "next/navigation";
 

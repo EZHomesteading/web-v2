@@ -11,7 +11,7 @@ import CountrySelect from "../inputs/CountrySelect"; // Input component for sele
 import ImageUpload from "../inputs/ImageUpload"; // Input component for image upload
 import Input from "../inputs/Input"; // Generic input component
 import Heading from "../Heading"; // Custom heading component
-import SearchClient, { ProductValue } from "@/app/search/SearchClient";
+import SearchClient, { ProductValue } from "@/app/components/SearchClient";
 
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation"; // Navigation hook from Next.js
