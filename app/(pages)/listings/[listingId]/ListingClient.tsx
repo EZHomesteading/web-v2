@@ -13,6 +13,7 @@ import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
+import ListingMap from "@/app/components/map/listingMap";
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -20,6 +21,8 @@ interface ListingClientProps {
     shelfLife: number;
     city: string;
     state: string;
+    street: string;
+    zip: string;
     price: number;
     quantityType: string;
   };
@@ -118,6 +121,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
               />
             </div>
             <p>{shelfLifeDisplay}</p>
+            <ListingMap
+              street={listing.street}
+              city={listing.city}
+              state={listing.state}
+            />
           </div>
         </div>
       </div>

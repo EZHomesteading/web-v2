@@ -13,7 +13,6 @@ import "./globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import getCurrentUser from "./actions/getCurrentUser";
 import CoopRegisterModal from "./components/modals/CoopRegisterModal";
-import CoopUpdateModal from "./components/modals/CoopUpdateModal";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -46,7 +45,6 @@ export default async function RootLayout({
             <RegisterModal />
             <CoopRegisterModal />
             <SearchModal />
-            {/* <CoopUpdateModal /> */}
             <RentModal />
             <Navbar currentUser={currentUser} />
           </ClientOnly>
