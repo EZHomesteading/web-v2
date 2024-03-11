@@ -80,7 +80,7 @@ export default function Home() {
   return (
     <>
       <div className="relative h-screen flex justify-center items-center">
-        <div className="h-3/4 w-full">
+        <div className="w-full">
           <Image
             src={homebg}
             alt="Farmer Holding Basket of Vegetables"
