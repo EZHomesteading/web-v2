@@ -1,4 +1,4 @@
-import DashboardComp from "../components/dashboard/dashboard";
+import DashboardComp from "@/app/components/dashboard/dashboard";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 interface IParams {
