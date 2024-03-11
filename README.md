@@ -58,3 +58,8 @@ Our goal is to decrease the effort it takes for a family size farm or garden to 
 └── tsconfig.json                   # TypeScript configuration
 ├── README.md                       # README file
 ```
+
+### Contributors
+
+[Zachary Short](https://zacharyshort-56e605e3dea5.herokuapp.com/)
+[Maguire Wilson](https://www.linkedin.com/in/maguire-wilson-4611012a0/)
