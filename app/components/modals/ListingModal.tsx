@@ -336,7 +336,14 @@ const ListingModal = () => {
         />
         <div className="flex flex-row justify-evenly">
           <div className="">
-            <PiStorefrontThin size="5em" className=" hover:cursor-pointer" />
+            <PiStorefrontThin
+              size="5em"
+              className=" hover:cursor-pointer"
+              onClick={() => {
+                setValue("address", "");
+                // requires middleware for fetching current user?????
+              }}
+            />
             Default Location
           </div>
           <div className="">
