@@ -51,28 +51,28 @@ const collections = [
 
 const footerNavigation = {
   shop: [
-    { name: "Highly Perishable", href: "/shop" },
-    { name: "Perishable", href: "/shop" },
-    { name: "Less Perishable", href: "/shop" },
-    { name: "Non-Perishable", href: "/shop" },
-    { name: "Non-Consumable", href: "/shop" },
+    { name: "Vegetables", href: "/shop?category=Vegetables" },
+    { name: "Fruits", href: "/shop?category=Fruits" },
+    { name: "Dairy", href: "/shop?category=Dairy" },
+    { name: "Grains", href: "/shop?category=Grains" },
+    { name: "Seeds", href: "/shop?category=Seeds" },
   ],
   company: [
-    { name: "Who we are", href: "/profile" },
-    { name: "How EZH Works", href: "/profile" },
-    { name: "Terms & Conditions", href: "/profile" },
-    { name: "Privacy", href: "/profile" },
+    { name: "Who we are", href: "/who-we-are" },
+    { name: "How EZH Works", href: "/how-ezh-works" },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
   ],
   account: [
-    { name: "Manage Account", href: "/update" },
-    { name: "Returns & Exchanges", href: "/profile" },
-    { name: "Redeem a Gift Card", href: "/profile" },
+    { name: "Settings", href: "/dashboard" },
+    { name: "Co-Ops I Follow", href: "/dashboard" },
+    { name: "Messages", href: "/dashboard" },
   ],
   connect: [
-    { name: "Contact Us", href: "/profile" },
-    { name: "Facebook", href: "/profile" },
-    { name: "Instagram", href: "/profile" },
-    { name: "Pinterest", href: "/profile" },
+    { name: "Contact Us", href: "/" },
+    { name: "Facebook", href: "/" },
+    { name: "Instagram", href: "/" },
+    { name: "Pinterest", href: "/" },
   ],
 };
 
@@ -114,7 +114,7 @@ export default function Home() {
           aria-labelledby="social-impact-heading"
           className="mx-auto max-w-7xl px-4 pt-24 sm:px-6 sm:pt-32 lg:px-8"
         >
-          <div className="relative overflow-hidden rounded-lg">
+          <div className="relative overflow-hidden rounded-xl">
             <div className="absolute inset-0">
               <button>
                 <Image
@@ -142,7 +142,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Collection section */}
         <section
           aria-labelledby="collection-heading"
           className="mx-auto sm:px-6 sm:pt-32 lg:max-w-7xl lg:px-8"
