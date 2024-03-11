@@ -2,11 +2,10 @@
 
 // Import necessary dependencies and hooks
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+// import { useMemo } from "react";
 import { BiSearch } from "react-icons/bi";
 
 import useSearchModal from "@/app/hooks/useSearchModal";
-import useCountries from "@/unused/useCountries";
 
 // Search component
 const Search = () => {
@@ -15,18 +14,17 @@ const Search = () => {
   // Get search parameters from URL
   const params = useSearchParams();
   // Custom hook to get country label from value
-  const { getByValue } = useCountries();
 
   // Destructure search parameters
-  const locationValue = params?.get("locationValue");
+  // const locationValue = params?.get("locationValue");
 
   // Calculate location label
-  const locationLabel = useMemo(() => {
-    if (locationValue) {
-      return getByValue(locationValue as string)?.label;
-    }
-    return "Anywhere";
-  }, [locationValue, getByValue]);
+  // const locationLabel = useMemo(() => {
+  //   if (locationValue) {
+  //     return getByValue(locationValue as string)?.label;
+  //   }
+  //   return "Anywhere";
+  // }, [locationValue, getByValue]);
 
   return (
     // Render the search button with interactive styling
@@ -60,7 +58,7 @@ const Search = () => {
             px-6
           "
         >
-          {locationLabel}
+          Anywhere
         </div>
         {/* Duration label */}
         <div

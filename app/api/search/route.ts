@@ -1,6 +1,6 @@
 // import { NextApiRequest, NextApiResponse } from "next";
-// // import { connectToDatabase } from "@/utils/mongodb";
-// // import { Db } from "mongodb";
+// import { connectToDatabase } from "@/utils/mongodb";
+// import { Db } from "mongodb";
 
 // interface Listing {
 //   title: string;
@@ -14,7 +14,7 @@
 //   req: NextApiRequest,
 //   res: NextApiResponse
 // ) {
-//   // const { db } = await connectToDatabase();
+//   const { db } = await connectToDatabase();
 //   const { title, lat, lng } = req.query;
 
 //   const latitude = parseFloat(lat as string);
