@@ -29,7 +29,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
         >
           <span style={{ marginRight: "5px" }}>Sold by</span>
           <span
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
             <Avatar src={user?.image} />

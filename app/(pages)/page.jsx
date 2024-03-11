@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import homebg from "../public/images/home-images/ezh-home-static-bg.jpg";
+import homebg from "@/public/images/home-images/ezh-home-static-bg.jpg";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "./components/ui/carousel";
-import Search from "./components/navbar/Search";
+} from "../components/ui/carousel";
+import Search from "../components/navbar/Search";
 
 const collections = [
   {
