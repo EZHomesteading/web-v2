@@ -12,13 +12,15 @@ datasource db {
 
 model User {
   id                String @id @default(auto()) @map("_id") @db.ObjectId
-  name              String?   @unique
-  email             String?   @unique 
+  name              String  @unique
+  email             String  @unique 
   emailVerified     DateTime?
-  phoneNumber       String?
-  address           String?
+  phoneNumber       String? 
+  street            String?
+  city              String?
   zip               String?
   state             String?
+  location          Json?
   image             String?
   hoursOfOperation  String?
   role              String?
@@ -52,32 +54,37 @@ model Account {
 }
 
 model Product {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
-  description String?
-  productPic String
-  category String
-  subCategory String
-  suggestedUnits String
-  shelfLife Int
-  suggestPrice Int
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  description       String?
+  productPic        String
+  category          String
+  subCategory       String
+  suggestedUnits    String
+  shelfLife         Int
+  suggestPrice      Int
 }
 
 model Listing {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  title String
-  species String?
-  category  String 
-  subCategory String?
-  stock Int?
-  quantityType String?
-  price Float
-  description String
-  imageSrc String
-  locationValue String
-  userId String @db.ObjectId
-  shelfLife Int?
-  createdAt DateTime @default(now())
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  species       String?
+  category      String 
+  subCategory   String?
+  stock         Int?
+  quantityType  String?
+  price         Float
+  description   String
+  imageSrc      String
+  shelfLife     Int?
+  street        String?
+  city          String?
+  zip           String?
+  state         String?
+  location      Json
+  coopRating    Int?
+  userId        String @db.ObjectId
+  createdAt     DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]

@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./components/ui/carousel";
+import Search from "./components/navbar/Search";
 
 const collections = [
   {
@@ -50,28 +51,28 @@ const collections = [
 
 const footerNavigation = {
   shop: [
-    { name: "Highly Perishable", href: "/shop" },
-    { name: "Perishable", href: "/shop" },
-    { name: "Less Perishable", href: "/shop" },
-    { name: "Non-Perishable", href: "/shop" },
-    { name: "Non-Consumable", href: "/shop" },
+    { name: "Vegetables", href: "/shop?category=Vegetables" },
+    { name: "Fruits", href: "/shop?category=Fruits" },
+    { name: "Dairy", href: "/shop?category=Dairy" },
+    { name: "Grains", href: "/shop?category=Grains" },
+    { name: "Seeds", href: "/shop?category=Seeds" },
   ],
   company: [
-    { name: "Who we are", href: "/profile" },
-    { name: "How EZH Works", href: "/profile" },
-    { name: "Terms & Conditions", href: "/profile" },
-    { name: "Privacy", href: "/profile" },
+    { name: "Who we are", href: "/who-we-are" },
+    { name: "How EZH Works", href: "/how-ezh-works" },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
   ],
   account: [
-    { name: "Manage Account", href: "/update" },
-    { name: "Returns & Exchanges", href: "/profile" },
-    { name: "Redeem a Gift Card", href: "/profile" },
+    { name: "Settings", href: "/dashboard" },
+    { name: "Co-Ops I Follow", href: "/dashboard" },
+    { name: "Messages", href: "/dashboard" },
   ],
   connect: [
-    { name: "Contact Us", href: "/profile" },
-    { name: "Facebook", href: "/profile" },
-    { name: "Instagram", href: "/profile" },
-    { name: "Pinterest", href: "/profile" },
+    { name: "Contact Us", href: "/" },
+    { name: "Facebook", href: "/" },
+    { name: "Instagram", href: "/" },
+    { name: "Pinterest", href: "/" },
   ],
 };
 
@@ -79,46 +80,49 @@ export default function Home() {
   return (
     <>
       <div className="relative h-screen flex justify-center items-center">
-        <Image
-          src={homebg}
-          alt="Farmer Holding Basket of Vegetables"
-          blurDataURL="data:..."
-          placeholder="blur"
-          fill
-          className="object-cover"
-          sizes="100vh"
-        />
-        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-20"></div>
-        <div className="absolute left-1/3 transform -translate-x-1/3 text-start">
-          <h1 className="text-3xl font-bold tracking-tight Fresh mb-2">
+        <div className="w-full">
+          <Image
+            src={homebg}
+            alt="Farmer Holding Basket of Vegetables"
+            blurDataURL="data:..."
+            placeholder="blur"
+            fill
+            className="object-cover w-full h-full"
+          />
+        </div>
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-900 opacity-50"></div>
+        <div className="absolute text-start text-white">
+          <h1 className="2xl:text-3xl text-sm font-bold tracking-tight Fresh mb-2">
             Fresh, Local, Organic
           </h1>
-          <h1 className="text-4xl font-bold tracking-tight Produce mb-2">
+          <h1 className="2xl:text-5xl text-md font-bold tracking-tight Produce mb-2">
             Produce Made Simple
           </h1>
-          <p className="text-xl mb-2">
+          <p className="2xl:text-xl text-sm mb-2">
             EZ Homesteading connects family scale farmers & gardeners with
             people in their community.
           </p>
-          <Link href="/shop" className="button-arounder px-8 py-3 mb-2">
-            Find Produce Near Me
-          </Link>
+          <div className="w-2/5">
+            <Search />
+          </div>
         </div>
       </div>
 
       <main>
-        {/* Featured section */}
         <section
           aria-labelledby="social-impact-heading"
           className="mx-auto max-w-7xl px-4 pt-24 sm:px-6 sm:pt-32 lg:px-8"
         >
-          <div className="relative overflow-hidden rounded-lg">
+          <div className="relative overflow-hidden rounded-xl">
             <div className="absolute inset-0">
-              <img
-                src="/images/home-images/become-a-co-op.jpg"
-                alt=""
-                className="h-full w-full object-cover object-center"
-              />
+              <button>
+                <Image
+                  src="/images/home-images/become-a-co-op.jpg"
+                  alt="Become a Co-Op on EZHomesteading"
+                  className="h-full w-full object-cover object-center"
+                  fill
+                />
+              </button>
             </div>
             <div className="relative bg-gray-900 bg-opacity-75 px-6 py-32 sm:px-12 sm:py-40 lg:px-16 text-white">
               <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
@@ -126,27 +130,17 @@ export default function Home() {
                   id="social-impact-heading"
                   className="text-3xl font-bold tracking-tight sm:text-4xl"
                 >
-                  <span className="block sm:inline">Become a </span>
-                  <span className="block sm:inline">Co-Op</span>
+                  <span className="block sm:inline">Become a Co-Op</span>
                 </h2>
                 <p className="mt-3 text-xl">
                   Grow or source, and then start selling. No monthly subscrition
                   or hidden fees.
-                </p>
-                <p>
-                  <Link
-                    href="/co-op-register"
-                    className="mt-8 block w-full rounded-md border border-transparent px-8 py-3 text-base font-medium hover:bg-gray-100 sm:w-auto"
-                  >
-                    Register as a Co-Op
-                  </Link>
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Collection section */}
         <section
           aria-labelledby="collection-heading"
           className="mx-auto sm:px-6 sm:pt-32 lg:max-w-7xl lg:px-8"

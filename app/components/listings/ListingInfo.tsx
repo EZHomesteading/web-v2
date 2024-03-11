@@ -1,52 +1,22 @@
 "use client";
 
-// Importing necessary modules and components
-import dynamic from "next/dynamic";
-import { IconType } from "react-icons";
-import useCountries from "@/app/hooks/useCountries";
-import Avatar from "../Avatar"; // Importing Avatar component
-import ListingCategory from "./ListingCategory"; // Importing ListingCategory component
+import Avatar from "../ui/Avatar";
 import { SafeUser } from "@/app/types";
-import Router from "next/router";
 import { useRouter } from "next/navigation";
-// Dynamically importing Map component to prevent SSR
-const Map = dynamic(() => import("../Map"), {
-  ssr: false,
-});
 
-// Interface defining props accepted by the ListingInfo component
 interface ListingInfoProps {
-  user: SafeUser; // User details of the listing host
-  description: string; // Description of the listing
-  category?: {
-    // Category details of the listing
-    icon: IconType; // Icon representing the category
-    label: string; // Label of the category
-    description: string; // Description of the category
-  };
-  locationValue: string; // Location value of the listing
+  user: SafeUser;
+  description: string;
 }
 
-// ListingInfo component
-const ListingInfo: React.FC<ListingInfoProps> = ({
-  user, // User details of the listing host received as prop
-  description, // Description of the listing received as prop
-  category, // Category details of the listing received as prop
-  locationValue, // Location value of the listing received as prop
-}) => {
-  const { getByValue } = useCountries(); // Using the useCountries hook to get location details
-
-  const coordinates = getByValue(locationValue)?.latlng; // Getting coordinates based on location value
+const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
   const router = useRouter();
 
   return (
     <div className="col-span-4 flex flex-col gap-8">
       {" "}
-      {/* Container for listing information */}
       <div className="flex flex-col gap-2">
         {" "}
-        {/* Container for host information */}
-        {/* Displaying host information */}
         <div
           className="
             text-xl 
@@ -57,17 +27,15 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             gap-2
           "
         >
-          {/* Avatar component for host image */}
-          <div className="flex align-center">
-            <span style={{ marginRight: "5px" }}>Sold by</span>
-            <span onClick={() => router.push(`/store/${user.id}`)}>
-              <Avatar src={user?.image} />
-              <span className="ml-2">{user?.name}</span>
-            </span>
-          </div>
-          {/* Displaying host name */}
+          <span style={{ marginRight: "5px" }}>Sold by</span>
+          <span
+            className="flex items-center gap-2"
+            onClick={() => router.push(`/store/${user.id}`)}
+          >
+            <Avatar src={user?.image} />
+            <span className="ml-2">{user?.name}</span>
+          </span>
         </div>
-        {/* Displaying guest, room, and bathroom count */}
         <div
           className="
             flex 
@@ -79,27 +47,16 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           "
         ></div>
       </div>
-      <hr /> {/* Horizontal divider */}
-      {/* Displaying listing category if available */}
-      {category && (
-        <ListingCategory
-          icon={category.icon}
-          label={category?.label} // Label of the category
-          description={category?.description} // Description of the category
-        />
-      )}
-      <hr /> {/* Horizontal divider */}
+      <hr />
       <div
         className="
       text-lg font-light text-neutral-500"
       >
-        {description} {/* Displaying listing description */}
+        {description}
       </div>
-      <hr /> {/* Horizontal divider */}
-      {/* Map component to display location */}
-      <Map center={coordinates} />
+      <hr />
     </div>
   );
 };
 
-export default ListingInfo; // Exporting ListingInfo component
+export default ListingInfo;

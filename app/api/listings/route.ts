@@ -25,9 +25,14 @@ export async function POST(request: Request) {
     quantityType,
     stock,
     shelfLife,
+    city,
+    state,
+    zip,
+    street,
     location,
     price,
     subCategory,
+    coopRating,
   } = body;
 
   // Checking if any required field is missing in the request body, then return an error response
@@ -48,12 +53,16 @@ export async function POST(request: Request) {
       stock,
       shelfLife,
       subCategory,
-      locationValue: location.value, // Assuming location is an object with a 'value' property
-      price, // Parsing price to integer
-      userId: currentUser.id, // Associating the listing with the current user
+      price,
+      street,
+      location,
+      city,
+      state,
+      zip,
+      coopRating,
+      userId: currentUser.id,
     },
   });
 
-  // Returning a JSON response with the created listing
   return NextResponse.json(listing);
 }

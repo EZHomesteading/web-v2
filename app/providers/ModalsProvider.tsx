@@ -2,9 +2,10 @@
 
 import LoginModal from "../components/modals/LoginModal";
 import RegisterModal from "../components/modals/RegisterModal";
-import RentModal from "../components/modals/RentModal";
+import RentModal from "../components/modals/ListingModal";
 import SearchModal from "../components/modals/SearchModal";
-import BecomeCoopModal from "../components/modals/BecomeCoopModal";
+import CoopRegisterModal from "../components/modals/CoopRegisterModal";
+import CoopUpdateModal from "../components/modals/CoopUpdateModal";
 
 const ModalsProvider = () => {
   return (
@@ -13,7 +14,8 @@ const ModalsProvider = () => {
       <RegisterModal />
       <SearchModal />
       <RentModal />
-      <BecomeCoopModal />
+      <CoopRegisterModal />
+      <CoopUpdateModal />
     </>
   );
 };

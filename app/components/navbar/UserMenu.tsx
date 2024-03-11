@@ -1,19 +1,19 @@
 "use client";
-// Import necessary dependencies and hooks
 
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-import useBecomeCoopModal from "@/app/hooks/useBecomeCoopModal";
+import useCoopRegisterModal from "@/app/hooks/useCoopRegisterModal";
+import useCoopUpdateModal from "@/app/hooks/useCoopUpdateModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useRentModal from "@/app/hooks/useRentModal";
 import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 
 // UserMenu component
 interface UserMenuProps {
@@ -24,7 +24,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const router = useRouter();
 
   // Custom hooks for managing modal states
-  const becomeCoopModal = useBecomeCoopModal();
+  const coopRegisterModal = useCoopRegisterModal();
+  const coopUpdateModal = useCoopUpdateModal();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
@@ -72,7 +73,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
           </div>
         ) : (
           <div
-            onClick={() => router.push("/coopreg")}
+            onClick={coopRegisterModal.onOpen}
             className="
             hidden
             md:block
@@ -136,7 +137,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <div>
                 <MenuItem
                   label="My Store"
-                  onClick={() => router.push("/dashboard/properties")}
+                  onClick={() => router.push("/dashboard/my-store")}
                 />
                 <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
               </div>
@@ -157,6 +158,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   label="Current Orders"
                   onClick={() => router.push("/dashboard/reservations")}
                 />
+                <MenuItem
+                  label="Become a Co-Op"
+                  onClick={coopUpdateModal.onOpen}
+                />
                 <hr />
                 <MenuItem label="Logout" onClick={() => signOut()} />
               </>
@@ -164,6 +169,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <>
                 <MenuItem label="Login" onClick={loginModal.onOpen} />
                 <MenuItem label="Sign up" onClick={registerModal.onOpen} />
+                <MenuItem
+                  label="Become a Co-Op"
+                  onClick={coopRegisterModal.onOpen}
+                />
               </>
             )}
           </div>

@@ -28,15 +28,7 @@ interface UpdateUserProps {
 
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  ChartBarSquareIcon,
-  Cog6ToothIcon,
-  FolderIcon,
-  GlobeAltIcon,
-  ServerIcon,
-  SignalIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { VscHistory } from "react-icons/vsc";
 import { PiCookieThin } from "react-icons/pi";
@@ -46,7 +38,7 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 
 interface NavigationItem {
   name: string;
@@ -270,7 +262,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                             href="#"
                             className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 hover:bg-gray-800"
                           >
-                            <img />
                             <span className="sr-only">Your profile</span>
                             <span aria-hidden="true">Name goes here</span>
                           </a>

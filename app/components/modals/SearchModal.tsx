@@ -8,46 +8,65 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "../map/LocationSearchInput";
+import SearchClientUser, {
+  ProductValue,
+} from "@/app/components/client/SearchClientUser";
+import { useTheme } from "next-themes";
+import SearchClient from "@/app/components/client/SearchClient";
 
-// Enum defining the steps of the search process
 enum STEPS {
   LOCATION = 0,
   ITEM = 1,
 }
 
-// SearchModal component
 const SearchModal = () => {
-  // Hooks for managing state and navigation
-  const [title, setTitle] = useState("");
-  const [address, setAddress] = useState<string>("");
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
+  const [subCategory, setSubcategory] = useState("");
   const router = useRouter();
   const searchModal = useSearchModal();
   const params = useSearchParams();
+  const [product, setProduct] = useState<ProductValue>();
 
   const {
     register,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FieldValues>({
-    // Default values for form fields
     defaultValues: {
-      title: "",
+      subCategory: "",
     },
   });
 
-  // State variables for managing search parameters
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+  };
+
+  const { theme } = useTheme();
+  const inputColor = theme === "dark" ? "#222222" : "#222222";
   const [step, setStep] = useState(STEPS.LOCATION);
 
-  // Function to navigate back a step
   const onBack = useCallback(() => {
     setStep((value) => value - 1);
   }, []);
 
-  // Function to navigate to the next step
   const onNext = useCallback(() => {
     setStep((value) => value + 1);
   }, []);
-
-  // Function to handle form submission
   const onSubmit = useCallback(async () => {
     if (step !== STEPS.ITEM) {
       return onNext();
@@ -61,7 +80,7 @@ const SearchModal = () => {
 
     const updatedQuery: any = {
       ...currentQuery,
-      title,
+      subCategory,
     };
 
     const url = qs.stringifyUrl(
@@ -75,9 +94,8 @@ const SearchModal = () => {
     setStep(STEPS.LOCATION);
     searchModal.onClose();
     router.push(url);
-  }, [step, searchModal, location, router, onNext, title, params]);
+  }, [step, searchModal, location, router, onNext, subCategory, params]);
 
-  // Determine the label for the primary action button
   const actionLabel = useMemo(() => {
     if (step === STEPS.ITEM) {
       return "Search";
@@ -86,7 +104,6 @@ const SearchModal = () => {
     return "Next";
   }, [step]);
 
-  // Determine the label for the secondary action button
   const secondaryActionLabel = useMemo(() => {
     if (step === STEPS.LOCATION) {
       return undefined;
@@ -95,9 +112,18 @@ const SearchModal = () => {
     return "Back";
   }, [step]);
 
-  // Content for the modal body based on the current step
   let bodyContent = (
-    <LocationSearchInput address={address} setAddress={setAddress} />
+    <>
+      <Heading
+        title="Where should we look?"
+        subtitle="We'll find produce & self-sufficiency items based on the location you enter."
+      />
+      <LocationSearchInput
+        address={watch("address")}
+        setAddress={(address) => setValue("address", address)}
+        onAddressParsed={handleAddressSelect}
+      />
+    </>
   );
 
   if (step === STEPS.ITEM) {
@@ -109,19 +135,18 @@ const SearchModal = () => {
           subtitle="Search for produce & self sufficieny items"
         />
         <div>
-          <input
-            id="title"
-            onChange={(e) => setTitle(e.target.value)}
-            value={title}
-            required
-          />
+          <div style={{ color: inputColor }}>
+            <SearchClientUser
+              value={product}
+              onChange={(e) => {
+                setSubcategory(e.value);
+              }}
+            />
+          </div>
         </div>
       </div>
     );
   }
-  // Update bodyContent based on the current step
-
-  // Render the SearchModal component
   return (
     <Modal
       isOpen={searchModal.isOpen}

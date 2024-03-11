@@ -1,31 +1,47 @@
 "use client";
 
-// Import necessary modules and components
-import { Range } from "react-date-range";
+import { addDays, parseISO } from "date-fns";
 import Button from "../Button";
 import Calendar from "../inputs/Calendar";
 
-// Define props interface for ListingReservation component
-interface ListingReservationProps {
-  price: number; // Price per night
-  dateRange: Range; // Selected date range
-  totalPrice: number; // Total price for the reservation
-  onChangeDate: (value: Range) => void; // Function to handle date range change
-  onSubmit: () => void; // Function to handle form submission
-  disabled?: boolean; // Flag to indicate if the reservation is disabled
-  disabledDates: Date[]; // Array of disabled dates
+interface Range {
+  startDate: Date;
+  endDate: Date;
+  key: string;
 }
 
-// ListingReservation component definition
+interface ListingReservationProps {
+  product: {
+    endDate: Date | null;
+    title: string;
+    shelfLife: number;
+    imageSrc: string;
+    createdAt: Date;
+    city: string;
+    state: string;
+    price: number;
+    quantityType: string;
+    stock: number;
+  };
+  onSubmit: () => void;
+  disabled?: boolean;
+}
+
 const ListingReservation: React.FC<ListingReservationProps> = ({
-  price,
-  dateRange,
-  totalPrice,
-  onChangeDate,
+  product,
   onSubmit,
   disabled,
-  disabledDates,
 }) => {
+  const stock = product.stock;
+  const quantityType = product.quantityType;
+  const price = product.price;
+  const total = product.price * product.stock;
+  const startDate = product.createdAt;
+  const endDate =
+    product.shelfLife !== -1
+      ? addDays(new Date(startDate), product.shelfLife)
+      : null;
+  const dateRange = endDate ? { startDate, endDate, key: "selection" } : null;
   return (
     <div
       className="
@@ -36,28 +52,18 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         overflow-hidden
       "
     >
-      {/* Display price per night */}
       <div className="flex flex-row items-center gap-1 p-4">
-        <div className="text-2xl font-semibold">$ {price}</div>
-        <div className="font-light text-neutral-600">night</div>
+        {stock} {quantityType} remaining at ${price}
+        {quantityType && <div className="font-light">per {quantityType}</div>}
       </div>
-      {/* Horizontal divider */}
       <hr />
-      {/* Render Calendar component for selecting dates */}
-      <Calendar
-        value={dateRange}
-        disabledDates={disabledDates}
-        onChange={(value) => onChangeDate(value.selection)}
-      />
-      {/* Horizontal divider */}
+      {dateRange && <Calendar value={dateRange} onChange={() => {}} />}
       <hr />
-      {/* Button to submit reservation */}
       <div className="p-4">
-        <Button disabled={disabled} label="Reserve" onClick={onSubmit} />
+        <Button disabled={disabled} label={`Message User`} onClick={onSubmit} />
       </div>
-      {/* Horizontal divider */}
+      <div></div>
       <hr />
-      {/* Display total price */}
       <div
         className="
           p-4 
@@ -69,8 +75,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           text-lg
         "
       >
-        <div>Total</div>
-        <div>$ {totalPrice}</div>
+        <div>Buy All Now for ${total}</div>
       </div>
     </div>
   );

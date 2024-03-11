@@ -2,15 +2,12 @@
 
 import React from "react";
 
-// Define props interface for the Container component
 interface ContainerProps {
-  children: React.ReactNode; // Child components to be wrapped by the container
+  children: React.ReactNode;
 }
 
-// Container component
 const Container: React.FC<ContainerProps> = ({ children }) => {
   return (
-    // Container div with responsive padding and maximum width
     <div
       className="
         max-w-[2520px] 

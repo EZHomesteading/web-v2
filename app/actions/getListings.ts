@@ -1,58 +1,55 @@
-// Importing the necessary modules and functions
 import prisma from "@/app/libs/prismadb";
 
-// Interface defining the structure of parameters accepted by the function
-export interface IListingsParams {
-  userId?: string; // Optional parameter: userId
-  locationValue?: string; // Optional parameter: locationValue
-  category?: string; // Optional parameter: category
+interface ILocation {
+  type: "Point";
+  coordinates: [number, number];
 }
 
-// Function to retrieve listings based on provided parameters
-export default async function getListings(
-  params: IListingsParams // Accepting parameters of type IListingsParams
-) {
-  try {
-    // Destructuring parameters
-    const { userId, locationValue, category } = params;
+export interface IListingsParams {
+  userId?: string;
+  location?: ILocation;
+  category?: string;
+  subCategory?: string;
+}
 
-    // Initializing an empty query object
+export default async function getListings(params: IListingsParams) {
+  try {
+    const { userId, location, category, subCategory } = params;
+
     let query: any = {};
 
-    // Adding conditions to the query based on provided parameters
-
     if (userId) {
-      query.userId = userId; // Filtering by userId if provided
+      query.userId = userId;
     }
 
     if (category) {
-      query.category = category; // Filtering by category if provided
+      query.category = category;
     }
 
-    if (locationValue) {
-      query.locationValue = locationValue; // Filtering by locationValue if provided
+    if (subCategory) {
+      query.subCategory = subCategory;
     }
 
-    // Filtering out listings based on availability within provided dates
+    // if (location) {
+    //   query.location {
 
-    // Finding listings in the database based on the constructed query
+    //   };
+    // }
+
     const listings = await prisma.listing.findMany({
-      where: query, // Applying the constructed query
+      where: query,
       orderBy: {
-        createdAt: "desc", // Ordering the results by createdAt field in descending order
+        createdAt: "desc",
       },
     });
 
-    // Mapping over the listings to ensure safe handling of data
     const safeListings = listings.map((listing) => ({
       ...listing,
-      createdAt: listing.createdAt.toISOString(), // Converting createdAt to ISO string
+      createdAt: listing.createdAt.toISOString(),
     }));
 
-    // Returning the safeListings array
     return safeListings;
   } catch (error: any) {
-    // Throwing an error if any occurs during the process
     throw new Error(error);
   }
 }

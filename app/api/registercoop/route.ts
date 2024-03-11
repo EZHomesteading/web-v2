@@ -10,8 +10,18 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   // Destructuring properties from the request body
-  const { email, name, password, role, address, phoneNumber, zip, state } =
-    body;
+  const {
+    email,
+    name,
+    password,
+    role,
+    city,
+    street,
+    phoneNumber,
+    zip,
+    state,
+    location,
+  } = body;
 
   // Hashing the password using bcrypt with a cost factor of 12
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,10 +33,12 @@ export async function POST(request: Request) {
       name,
       hashedPassword,
       role,
-      address,
+      city,
+      street,
       phoneNumber,
       zip,
       state,
+      location,
     },
   });
 
