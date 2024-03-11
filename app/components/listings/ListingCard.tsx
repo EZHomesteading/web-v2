@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import { useTheme } from "next-themes";
-import useCountries from "@/unused/useCountries";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 
 import HeartButton from "../ui/HeartButton";
@@ -99,7 +98,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     >
       <div className="flex flex-col gap-2 w-full">
         {" "}
-        {/* Container for listing details */}
         <div
           className="
             aspect-square 
@@ -119,7 +117,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               transition
             "
             src={data.imageSrc}
-            alt="Listing"
+            alt={data.title}
             height={300}
             width={300}
           />

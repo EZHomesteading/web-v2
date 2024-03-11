@@ -262,7 +262,6 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                             href="#"
                             className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 hover:bg-gray-800"
                           >
-                            <img />
                             <span className="sr-only">Your profile</span>
                             <span aria-hidden="true">Name goes here</span>
                           </a>

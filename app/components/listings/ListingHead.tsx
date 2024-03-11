@@ -41,7 +41,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           src={imageSrc}
           fill
           className="object-cover w-full"
-          alt="Image"
+          alt={title}
         />
         <div
           className="

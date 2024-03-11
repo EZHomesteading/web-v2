@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "../public/images/home-images/ezh-home-static-bg.jpg";
-import SearchComponent from "./components/SearchComponent";
 import {
   Carousel,
   CarouselContent,
@@ -81,17 +80,18 @@ export default function Home() {
   return (
     <>
       <div className="relative h-screen flex justify-center items-center">
-        <Image
-          src={homebg}
-          alt="Farmer Holding Basket of Vegetables"
-          blurDataURL="data:..."
-          placeholder="blur"
-          fill
-          className="object-cover"
-          sizes="100vh"
-        />
+        <div className="h-3/4">
+          <Image
+            src={homebg}
+            alt="Farmer Holding Basket of Vegetables"
+            blurDataURL="data:..."
+            placeholder="blur"
+            fill
+            className="object-cover"
+          />
+        </div>
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-20"></div>
-        <div className="absolute left-1/3 transform -translate-x-1/3 text-start">
+        <div className="top-1/3 -translate-y-1/3 left-1/3 transform -translate-x-1/3 text-start">
           <h1 className="text-3xl font-bold tracking-tight Fresh mb-2">
             Fresh, Local, Organic
           </h1>
@@ -116,11 +116,14 @@ export default function Home() {
         >
           <div className="relative overflow-hidden rounded-lg">
             <div className="absolute inset-0">
-              <img
-                src="/images/home-images/become-a-co-op.jpg"
-                alt=""
-                className="h-full w-full object-cover object-center"
-              />
+              <button>
+                <Image
+                  src="/images/home-images/become-a-co-op.jpg"
+                  alt="Become a Co-Op on EZHomesteading"
+                  className="h-full w-full object-cover object-center"
+                  fill
+                />
+              </button>
             </div>
             <div className="relative bg-gray-900 bg-opacity-75 px-6 py-32 sm:px-12 sm:py-40 lg:px-16 text-white">
               <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
@@ -128,20 +131,11 @@ export default function Home() {
                   id="social-impact-heading"
                   className="text-3xl font-bold tracking-tight sm:text-4xl"
                 >
-                  <span className="block sm:inline">Become a </span>
-                  <span className="block sm:inline">Co-Op</span>
+                  <span className="block sm:inline">Become a Co-Op</span>
                 </h2>
                 <p className="mt-3 text-xl">
                   Grow or source, and then start selling. No monthly subscrition
                   or hidden fees.
-                </p>
-                <p>
-                  <Link
-                    href="/co-op-register"
-                    className="mt-8 block w-full rounded-md border border-transparent px-8 py-3 text-base font-medium hover:bg-gray-100 sm:w-auto"
-                  >
-                    Register as a Co-Op
-                  </Link>
                 </p>
               </div>
             </div>
