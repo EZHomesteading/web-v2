@@ -92,13 +92,13 @@ export default function Home() {
         </div>
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-900 opacity-50"></div>
         <div className="absolute text-start text-white">
-          <h1 className="text-3xl font-bold tracking-tight Fresh mb-2">
+          <h1 className="2xl:text-3xl text-sm font-bold tracking-tight Fresh mb-2">
             Fresh, Local, Organic
           </h1>
-          <h1 className="text-4xl font-bold tracking-tight Produce mb-2">
+          <h1 className="2xl:text-5xl text-md font-bold tracking-tight Produce mb-2">
             Produce Made Simple
           </h1>
-          <p className="text-xl mb-2">
+          <p className="2xl:text-xl text-sm mb-2">
             EZ Homesteading connects family scale farmers & gardeners with
             people in their community.
           </p>
@@ -109,7 +109,6 @@ export default function Home() {
       </div>
 
       <main>
-        {/* Featured section */}
         <section
           aria-labelledby="social-impact-heading"
           className="mx-auto max-w-7xl px-4 pt-24 sm:px-6 sm:pt-32 lg:px-8"
