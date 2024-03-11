@@ -80,18 +80,18 @@ export default function Home() {
   return (
     <>
       <div className="relative h-screen flex justify-center items-center">
-        <div className="h-3/4">
+        <div className="h-3/4 w-full">
           <Image
             src={homebg}
             alt="Farmer Holding Basket of Vegetables"
             blurDataURL="data:..."
             placeholder="blur"
             fill
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
         </div>
-        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 opacity-20"></div>
-        <div className="top-1/3 -translate-y-1/3 left-1/3 transform -translate-x-1/3 text-start">
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-900 opacity-50"></div>
+        <div className="absolute text-start text-white">
           <h1 className="text-3xl font-bold tracking-tight Fresh mb-2">
             Fresh, Local, Organic
           </h1>
