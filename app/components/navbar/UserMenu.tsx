@@ -6,7 +6,6 @@ import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
 import useCoopRegisterModal from "@/app/hooks/useCoopRegisterModal";
-import useCoopUpdateModal from "@/app/hooks/useCoopUpdateModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useRentModal from "@/app/hooks/useRentModal";
@@ -25,7 +24,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
 
   // Custom hooks for managing modal states
   const coopRegisterModal = useCoopRegisterModal();
-  const coopUpdateModal = useCoopUpdateModal();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
@@ -160,7 +158,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 />
                 <MenuItem
                   label="Become a Co-Op"
-                  onClick={coopUpdateModal.onOpen}
+                  onClick={() => router.push("/updatetocoop")}
                 />
                 <hr />
                 <MenuItem label="Logout" onClick={() => signOut()} />

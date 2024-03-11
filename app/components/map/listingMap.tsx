@@ -3,10 +3,10 @@
 // convert current user's location info to lat, lng
 // pass into lat, lng in position const
 // create marker for user
-// if no user, dead center of USA
+// if no user, dead center of virginia
 
 "use client";
-
+import oops from "@/public/images/oops.webp";
 import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { SafeUser } from "@/app/types";
 import React, { useEffect, useState } from "react";
@@ -14,10 +14,12 @@ import { Loader } from "@googlemaps/js-api-loader";
 
 interface UpdateUserProps {
   currentUser?: SafeUser | null;
+  city: string;
+  state: string;
+  street: string;
 }
 
-const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
-  console.log(currentUser?.zip);
+const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
   const mapRef = React.useRef<HTMLDivElement>(null);
 
   function Geocoding() {
@@ -38,7 +40,7 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       if (!geocodingService || !address) return;
       geocodingService.geocode({ address }, (results, status) => {
         if (results && status === "OK") {
-          // console.log(address);
+          console.log(address);
           setGeocodingResult(results[0]);
         }
       });
@@ -48,10 +50,8 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            if (currentUser) {
-              setAddress(
-                `${position.coords.latitude}, ${position.coords.longitude}`
-              );
+            if (city) {
+              setAddress(street + city + state);
               setZoom(10);
             } else {
               setAddress("ballaire kansas");
@@ -75,10 +75,15 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
         version: "weekly", //How often map updates
       });
       const { Map } = await loader.importLibrary("maps");
+      // const { Marker } = (await loader.importLibrary(
+      //   "marker"
+      // )) as google.maps.MarkerLibrary;
+
       const position = {
         lat: geocodingResult.geometry.location.lat(),
         lng: geocodingResult.geometry.location.lng(),
       };
+
       //map options
       const mapOptions: google.maps.MapOptions = {
         center: position,
@@ -87,6 +92,25 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       };
       //map setup
       const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
+      map.setOptions({
+        draggable: false,
+        zoomControl: false,
+        scrollwheel: false,
+        disableDoubleClickZoom: true,
+      });
+      var image = {
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Red_circle_frame_transparent.svg/1200px-Red_circle_frame_transparent.svg.png",
+        size: new google.maps.Size(200, 200),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(65, 45),
+        scaledSize: new google.maps.Size(150, 150),
+      };
+      const marker = new google.maps.Marker({
+        map,
+        position: position,
+        icon: image,
+        label: "5",
+      });
     };
 
     if (!geocodingService) return <div>Loading...</div>;

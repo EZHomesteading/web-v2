@@ -48,11 +48,8 @@ const MapTester: React.FC<UpdateUserProps> = ({ currentUser }) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            if (currentUser?.street) {
-              setAddress(
-                currentUser?.street
-                // `${position.coords.latitude}, ${position.coords.longitude}`
-              );
+            if (currentUser?.zip) {
+              setAddress(currentUser?.zip);
               setZoom(10);
             } else {
               setAddress("ballaire kansas");
