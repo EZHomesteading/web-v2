@@ -1,24 +1,23 @@
-"use client";
 
 import Select from "react-select";
-import useProduct from "@/app/hooks/useProduct";
+import { SafeListing } from "@/app/types";
 
-export type ProductValue = {
+export type listingValue = {
   cat: string;
-  label: string;
   value: string;
   category: string;
-  photo: string;
+  
 };
 
 interface ProductSelectProps {
-  value?: ProductValue;
-  onChange: (value: ProductValue) => void;
+  data: listingValue;
+  value?: listingValue;
+  onChange: (value: listingValue) => void;
 }
 
-const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
-  const { getAll } = useProduct();
 
+const SearchClient: React.FC<ProductSelectProps> = ({ data, value, onChange }) => {
+const getAll = ()=> data;
   return (
     <div>
       <Select
@@ -26,11 +25,11 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
         isClearable
         options={getAll()}
         value={value}
-        onChange={(value) => onChange(value as ProductValue)}
+        onChange={(value) => onChange(value as listingValue)}
         formatOptionLabel={(option: any) => (
           <div className="flex flex-row items-center gap-3">
             {" "}
-            <div>{option.label}</div>
+            <div>{option.value}</div>
           </div>
         )}
         classNames={{
