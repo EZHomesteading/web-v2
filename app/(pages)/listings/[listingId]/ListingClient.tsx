@@ -106,7 +106,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               onSubmit={onCreatePurchase}
               disabled={isLoading}
             />
-            <div className="mt-8">
+            <div className="mt-5">
               <ListingMap
                 street={listing.street}
                 city={listing.city}
