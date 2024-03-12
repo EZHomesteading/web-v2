@@ -106,6 +106,16 @@ const SearchModal = () => {
             />
           </div>
         </div>
+        <div>
+          <div style={{ color: inputColor }}>
+            <SearchClientUser
+              value={product}
+              onChange={(e) => {
+                setSubcategory(e.value);
+              }}
+            />
+          </div>
+        </div>
         <Button
             onClick={onSubmit}
             className="text-neutral-800 cursor-pointer hover:underline"
