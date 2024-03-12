@@ -52,9 +52,9 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
           (position) => {
             if (city) {
               setAddress(street + city + state);
-              setZoom(10);
+              setZoom(12);
             } else {
-              setAddress("ballaire kansas");
+              setAddress("Norfolk, VA");
             }
           },
           (error) => {
@@ -72,12 +72,9 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
     ) => {
       const loader = new Loader({
         apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-        version: "weekly", //How often map updates
+        version: "weekly",
       });
       const { Map } = await loader.importLibrary("maps");
-      // const { Marker } = (await loader.importLibrary(
-      //   "marker"
-      // )) as google.maps.MarkerLibrary;
 
       const position = {
         lat: geocodingResult.geometry.location.lat(),
@@ -89,12 +86,13 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
         center: position,
         zoom: zoom,
         mapId: "MY_NEXTJS_MAPID",
+        zoomControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
       };
       //map setup
       const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
       map.setOptions({
-        draggable: false,
-        zoomControl: false,
         scrollwheel: false,
         disableDoubleClickZoom: true,
       });
@@ -103,18 +101,16 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
         size: new google.maps.Size(200, 200),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(65, 45),
-        scaledSize: new google.maps.Size(150, 150),
+        scaledSize: new google.maps.Size(75, 75),
       };
       const marker = new google.maps.Marker({
         map,
         position: position,
         icon: image,
-        label: "5",
+        label: "",
       });
     };
 
-    if (!geocodingService) return <div>Loading...</div>;
-    if (!geocodingResult) return <div>Geocoding...</div>;
     if (geocodingResult) {
       initMap(geocodingResult, zoom);
     }
@@ -133,8 +129,8 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
         <Geocoding />
       </APIProvider>
       <div
-        className="mx-auto"
-        style={{ height: "600px", width: "600px" }}
+        className="rounded-xl overflow-hidden mb-5"
+        style={{ height: "200px" }}
         ref={mapRef}
       ></div>
     </>

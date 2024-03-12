@@ -54,7 +54,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <HeartButton listingId={id} currentUser={currentUser} />
         </div>
       </div>
-      <Heading title={title} subtitle={`${city}, ${state}`} />
+      <div className="mt-2">
+        <Heading title={title} subtitle={`${city}, ${state}`} />
+      </div>
     </>
   );
 };
