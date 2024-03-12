@@ -10,9 +10,9 @@ import SearchClientUser, {
   ProductValue,
 } from "@/app/components/client/SearchClientUser";
 import { useTheme } from "next-themes";
-import SearchClient from "@/app/components/client/SearchClient";
+import SearchClient from "@/app/components/client/SearchClientName";
 import { Button } from "@/app/components/ui/button";
-import { listingValue } from "@/app/components/client/SearchClient";
+import { listingValue } from "@/app/components/client/SearchClientName";
 
 interface ProductSelectProps {
   data: listingValue;

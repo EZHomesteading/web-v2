@@ -79,6 +79,10 @@ const CoopRegisterModal = () => {
         },
       };
 
+      if (!data.email) {
+        console.log("email");
+      }
+
       axios
         .post("/api/registercoop", formData)
         .then(() => {
@@ -105,7 +109,7 @@ const CoopRegisterModal = () => {
           console.log(error.response.status);
           console.log(error.response.data);
           console.log(error.response.headers);
-          toast.error("Username or Email invalid");
+          toast.error("Username or Email already in use");
         })
         .finally(() => {
           setIsLoading(false);
