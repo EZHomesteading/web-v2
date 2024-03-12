@@ -8,13 +8,13 @@ interface ILocation {
 export interface IListingsParams {
   userId?: string;
   location?: ILocation;
-  category?: string;
+  search?: string;
   subCategory?: string;
 }
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { userId, location, category, subCategory } = params;
+    const { userId, location, search, subCategory } = params;
 
     let query: any = {};
 
@@ -22,8 +22,8 @@ export default async function getListings(params: IListingsParams) {
       query.userId = userId;
     }
 
-    if (category) {
-      query.category = category;
+    if (search) {
+      query.title = search;
     }
 
     if (subCategory) {

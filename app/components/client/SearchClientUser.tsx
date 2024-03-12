@@ -1,5 +1,3 @@
-"use client";
-
 import Select from "react-select";
 import useSubCategory from "../../hooks/useSubCategory";
 
@@ -25,7 +23,7 @@ const SearchClientUser: React.FC<ProductSelectProps> = ({
   return (
     <div>
       <Select
-        placeholder="Enter A Product Name"
+        placeholder="Enter A Product Category"
         isClearable
         options={getAll()}
         value={value}
