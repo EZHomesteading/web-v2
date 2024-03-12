@@ -29,6 +29,7 @@ import {
 import LocationSearchInput from "../map/LocationSearchInput";
 import { PiStorefrontThin } from "react-icons/pi";
 import { Switch } from "../ui/switch";
+import SearchClientUser from "../client/SearchClientUser";
 
 enum STEPS {
   DESCRIPTION = 0,
@@ -178,7 +179,7 @@ const ListingModal = () => {
       shelfLifeMonths <= 0 &&
       shelfLifeYears <= 0
     ) {
-      toast.error("Shelf life must be atleast 1 day");
+      toast.error("Shelf life must be at least 1 day");
       return;
     }
 

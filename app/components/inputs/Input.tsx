@@ -19,6 +19,7 @@ interface InputProps {
   required?: boolean; // Whether the input field is required
   isUsername?: boolean;
   isEmail?: boolean;
+  isNumber?: boolean;
   register: UseFormRegister<FieldValues>; // Function to register the input field with react-hook-form
   errors: FieldErrors; // Errors object from react-hook-form
   step?: string;
@@ -34,6 +35,7 @@ const Input: React.FC<InputProps> = ({
   formatPrice, // Whether to format the input field as a price received as prop
   isUsername = false,
   isEmail = false,
+  isNumber = false,
   register, // Function to register the input field with react-hook-form received as prop
   required, // Whether the input field is required received as prop
   errors,
@@ -49,6 +51,12 @@ const Input: React.FC<InputProps> = ({
     registerOptions.pattern = {
       value: /^[a-zA-Z0-9]*$/,
       message: "Username must not contain spaces or special characters",
+    };
+  }
+  if (isNumber) {
+    registerOptions.pattern = {
+      value: /^[0-9]*$/,
+      message: "Only enter numbers",
     };
   }
   if (isEmail) {

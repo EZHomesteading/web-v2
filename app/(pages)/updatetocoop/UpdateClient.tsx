@@ -35,7 +35,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
   } = useForm<FieldValues>({
     defaultValues: {
       phoneNumber: currentUser?.phoneNumber,
-      address: currentUser?.address,
+      address: currentUser?.street,
       zip: currentUser?.zip,
       state: currentUser?.state,
       role: "coop",
@@ -45,6 +45,10 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
 
   // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    if (!data.phoneNumber) {
+      toast.error("Phone Number");
+      return;
+    }
     setIsLoading(true);
 
     // Send registration data to the backend
@@ -86,6 +90,7 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
           register={register}
           errors={errors}
           required
+          isNumber
         />
 
         <Input
