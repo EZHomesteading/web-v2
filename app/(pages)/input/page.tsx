@@ -54,19 +54,27 @@ const Geocoding = () => {
               <input
                 type="text"
                 placeholder="Where?"
+                style={{
+                  transform: focus.left ? "scale(1.03)" : "scale(1)",
+                  zIndex: focus.left ? "20" : "1",
+                }}
                 className="rounded-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border
-              focus:left ? 'bg-white border-black scale-105' : 'bg-gray-100 border-gray-300' sm:w-50"
+              focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300' sm:w-50"
                 onFocus={() => setFocus({ ...focus, left: true })}
                 onBlur={() => setFocus({ ...focus, left: false })}
               />
             </div>
             <div className="relative flex items-center">
-              <BsBasket className="absolute left-2 text-lg text-gray-400" />
+              <BsBasket className="absolute left-2 text-lg text-gray-400 z-50" />
               <input
                 type="text"
                 placeholder="What?"
+                style={{
+                  transform: focus.right ? "scale(1.03)" : "scale(1)",
+                  zIndex: focus.right ? "20" : "1",
+                }}
                 className="rounded-full sm:rounded-l-none sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
-              focus:right ? 'bg-white border-black scale-105' : 'bg-gray-100 border-gray-300' sm:w-50"
+              focus:right ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300' sm:w-50"
                 onFocus={() => setFocus({ ...focus, right: true })}
                 onBlur={() => setFocus({ ...focus, right: false })}
               />
