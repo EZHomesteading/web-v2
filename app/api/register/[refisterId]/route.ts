@@ -1,15 +1,12 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import currentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
 // Interface defining the structure of parameters accepted by the function
 
 // DELETE function to delete a listing
 export async function DELETE(request: Request) {
-  // Retrieving the current user
-  const currentUser = await getCurrentUser();
-
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();

@@ -1,13 +1,10 @@
 // Importing the necessary modules and functions
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "./getCurrentUser";
+import currentUser from "./getCurrentUser";
 
 // Function to retrieve the favorite listings for the current user
 export default async function getFavoriteListings() {
   try {
-    // Getting the current user
-    const currentUser = await getCurrentUser();
-
     // If current user is not available, return an empty array
     if (!currentUser) {
       return [];

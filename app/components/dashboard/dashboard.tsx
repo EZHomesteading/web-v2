@@ -18,9 +18,6 @@ import {
   AlertDialogCancel,
   AlertDialogFooter,
 } from "../ui/alert-dialog";
-// import getCurrentUser from "@/app/actions/getCurrentUser";
-
-// const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
   currentUser?: SafeUser | null;
