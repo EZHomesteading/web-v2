@@ -11,7 +11,7 @@ import ToasterProvider from "@/app/providers/ToasterProvider";
 
 import "./globals.css";
 import ClientOnly from "./components/client/ClientOnly";
-import getCurrentUser from "./actions/getCurrentUser";
+import currentUser from "./actions/getCurrentUser";
 import CoopRegisterModal from "./components/modals/CoopRegisterModal";
 
 export const metadata = {
@@ -23,13 +23,11 @@ const font = Nunito({
   subsets: ["latin"],
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const currentUser = await getCurrentUser();
-
   return (
     <html lang="en" className={font.className}>
       <body>
