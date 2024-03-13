@@ -5,8 +5,7 @@ import RegisterModal from "../components/modals/RegisterModal";
 import RentModal from "../components/modals/ListingModal";
 import SearchModal from "../components/modals/SearchModal";
 import CoopRegisterModal from "../components/modals/CoopRegisterModal";
-// import CoopUpdateModal from "../components/modals/CoopUpdateModal";
-//now possible
+import CoopUpdateModal from "../components/modals/CoopUpdateModal";
 
 const ModalsProvider = () => {
   return (
@@ -16,7 +15,7 @@ const ModalsProvider = () => {
       <SearchModal />
       <RentModal />
       <CoopRegisterModal />
-      {/* <CoopUpdateModal /> */}
+      <CoopUpdateModal />
     </>
   );
 };

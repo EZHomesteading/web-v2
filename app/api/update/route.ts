@@ -1,12 +1,14 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
 // POST function to add a listing to favorites
 export async function POST(request: Request) {
+  // Retrieving the current user
+  const currentUser = await getCurrentUser();
   const body = await request.json();
-  const { street, city, zip, phoneNumber, state, role, name, email } = body;
+  const { address, zip, phoneNumber, state, role, name, email } = body;
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();
@@ -18,8 +20,7 @@ export async function POST(request: Request) {
       id: currentUser.id, // Updating the user based on their id
     },
     data: {
-      street,
-      city,
+      address,
       zip,
       phoneNumber,
       state,

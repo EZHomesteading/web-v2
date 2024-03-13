@@ -1,15 +1,22 @@
-import { listings } from "@/app/actions/getAllListings";
-import Search from "./client";
+import getListings, { IListingsParams } from "@/app/actions/getListings";
+import SearchModal from "./client";
 
-const searchpage = () => {
+interface HomeProps {
+  searchParams: IListingsParams;
+}
+
+const Home = async ({ searchParams }: HomeProps) => {
+  const listings = await getListings(searchParams);
   const formattedData = listings.map((listing) => ({
     value: listing.title,
+    cat: listing.subCategory,
+    category: listing.category,
   }));
-
   return (
     <>
-      <Search data={formattedData} />
+      <SearchModal data={formattedData} />
     </>
   );
 };
-export default searchpage;
+
+export default Home;

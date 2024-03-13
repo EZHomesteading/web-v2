@@ -1,4 +1,4 @@
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
 import ClientOnly from "@/app/components/client/ClientOnly";
 
@@ -9,6 +9,8 @@ interface IParams {
 }
 
 const UpdatePage = async ({ params }: { params: IParams }) => {
+  const currentUser = await getCurrentUser();
+
   return (
     <ClientOnly>
       <UpdateClient currentUser={currentUser} />

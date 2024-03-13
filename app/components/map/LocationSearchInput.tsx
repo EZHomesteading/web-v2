@@ -7,7 +7,6 @@ import PlacesAutocomplete, {
 interface LocationSearchInputProps {
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
-
   onAddressParsed?: (address: {
     street: string;
     city: string;
@@ -103,7 +102,6 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                         className,
                         style,
                       })}
-                      key={suggestion.id}
                     >
                       <span>{suggestion.description}</span>
                     </div>
