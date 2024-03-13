@@ -3,7 +3,7 @@ import ListingCard from "@/app/components/listings/ListingCard";
 import EmptyState from "@/app/components/EmptyState";
 
 import getListings, { IListingsParams } from "@/app/actions/getListings";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "../../components/client/ClientOnly";
 import Categories from "../../components/navbar/Categories";
 
@@ -13,6 +13,7 @@ interface HomeProps {
 
 const Home = async ({ searchParams }: HomeProps) => {
   const listings = await getListings(searchParams);
+  const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
     return (

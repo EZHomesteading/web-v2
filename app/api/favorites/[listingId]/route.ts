@@ -1,6 +1,6 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
 // Interface defining the structure of parameters accepted by the functions
@@ -13,6 +13,9 @@ export async function POST(
   request: Request,
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
+  // Retrieving the current user
+  const currentUser = await getCurrentUser();
+
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();
@@ -51,6 +54,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
+  // Retrieving the current user
+  const currentUser = await getCurrentUser();
+
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();

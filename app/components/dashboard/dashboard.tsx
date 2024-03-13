@@ -1,5 +1,5 @@
 "use client";
-//THIS PAGE NEEDS REWORKED FOR NEW ADDRESSES
+
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -18,6 +18,9 @@ import {
   AlertDialogCancel,
   AlertDialogFooter,
 } from "../ui/alert-dialog";
+// import getCurrentUser from "@/app/actions/getCurrentUser";
+
+// const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
   currentUser?: SafeUser | null;
@@ -133,7 +136,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     defaultValues: {
       phoneNumber: currentUser?.phoneNumber,
       email: currentUser?.email,
-      address: currentUser?.street,
+      address: currentUser?.address,
       zip: currentUser?.zip,
       state: currentUser?.state,
       role: currentUser?.role,

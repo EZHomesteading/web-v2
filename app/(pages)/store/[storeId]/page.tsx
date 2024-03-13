@@ -2,13 +2,14 @@ import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import EmptyState from "@/app/components/EmptyState";
 import getListings from "@/app/actions/getListings";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getUserById from "@/app/actions/getUserById";
 
 const StorePage = async ({ params }: { params: { storeId: string } }) => {
   const { storeId } = params;
   const listings = await getListings({ userId: storeId });
+  const currentUser = await getCurrentUser();
   const user = await getUserById({ userId: storeId });
   if (listings.length === 0) {
     return (
