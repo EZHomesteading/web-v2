@@ -516,23 +516,33 @@ const ListingModal = () => {
         />
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            //  onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce is not genetically modified</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not grown with inorganic fertilizers</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            //  onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not grown with inorganic pestacides</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not modified after harvest</Label>
           </div>
           <div className="flex flex-row gap-x-2 font-extrabold items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e, true)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e, true)}
+            />
             <Label className="font-bold">
               I certify that all of the above information is accurate
             </Label>

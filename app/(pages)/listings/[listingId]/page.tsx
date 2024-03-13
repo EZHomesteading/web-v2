@@ -1,4 +1,4 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import currentUser from "@/app/actions/getCurrentUser";
 import getListingById from "@/app/actions/getListingById";
 
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -12,7 +12,6 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
-  const currentUser = await getCurrentUser();
 
   if (!listing) {
     return (
