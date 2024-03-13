@@ -1,8 +1,6 @@
-import { Button } from "../../components/ui/button";
 import MapTester from "../../components/map/MapTestcurrent";
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import currentUser from "@/app/actions/getCurrentUser";
 const Home = async () => {
-  const currentUser = await getCurrentUser();
   return (
     <div>
       <main>

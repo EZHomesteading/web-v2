@@ -8,9 +8,10 @@ export async function getSession() {
   // Getting the server session using authentication options
   return await getServerSession(authOptions);
 }
+let currentUser = await getCurrentUser();
 
 // Default function to get the current user
-export default async function getCurrentUser() {
+async function getCurrentUser() {
   try {
     // Retrieving the session
     const session = await getSession();
@@ -44,3 +45,4 @@ export default async function getCurrentUser() {
     return null;
   }
 }
+export default currentUser;

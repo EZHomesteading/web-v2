@@ -13,12 +13,12 @@ import { useTheme } from "next-themes";
 import SearchClient from "@/app/components/client/SearchClientName";
 import { Button } from "@/app/components/ui/button";
 import { listingValue } from "@/app/components/client/SearchClientName";
-
+//data should have listingValue as type property, but causes an error unknown why.
 interface ProductSelectProps {
-  data: listingValue;
+  data: any;
 }
 
-const SearchModal: React.FC<ProductSelectProps> = ({ data }) => {
+const Search: React.FC<ProductSelectProps> = ({ data }) => {
   type AddressComponents = {
     street: string;
     city: string;
@@ -166,5 +166,4 @@ const SearchModal: React.FC<ProductSelectProps> = ({ data }) => {
   );
 };
 
-// Export the SearchModal component
-export default SearchModal;
+export default Search;
