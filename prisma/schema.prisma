@@ -70,17 +70,17 @@ model Listing {
   title         String
   species       String?
   category      String 
-  subCategory   String?
+  subCategory   String
   stock         Int?
-  quantityType  String?
+  quantityType  String
   price         Float
   description   String
   imageSrc      String
-  shelfLife     Int?
-  street        String?
-  city          String?
-  zip           String?
-  state         String?
+  shelfLife     Int
+  street        String
+  city          String
+  zip           String
+  state         String
   location      Json
   coopRating    Int?
   userId        String @db.ObjectId

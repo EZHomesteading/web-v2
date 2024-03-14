@@ -1,5 +1,5 @@
 "use client";
-
+//THIS PAGE NEEDS REWORKED FOR NEW ADDRESSES
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -133,7 +133,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     defaultValues: {
       phoneNumber: currentUser?.phoneNumber,
       email: currentUser?.email,
-      address: currentUser?.address,
+      address: currentUser?.street,
       zip: currentUser?.zip,
       state: currentUser?.state,
       role: currentUser?.role,
