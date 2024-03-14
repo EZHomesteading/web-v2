@@ -13,16 +13,16 @@ import Button from "../Button";
 interface ListingReservationProps {
   product: {
     endDate: Date | null;
-    title: string;
+    title: string | null;
     shelfLife: number;
-    imageSrc: string;
+    imageSrc: string | null;
     createdAt: Date;
     description: string;
-    city: string;
-    state: string;
-    price: number;
-    quantityType: string;
-    stock: number;
+    city: string | null;
+    state: string | null;
+    price: number | null;
+    quantityType: string | null;
+    stock: number | null;
   };
   onSubmit: () => void;
   disabled?: boolean;
