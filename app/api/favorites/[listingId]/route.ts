@@ -53,6 +53,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
+  const currentUser = await getCurrentUser();
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();
