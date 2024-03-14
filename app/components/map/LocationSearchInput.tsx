@@ -102,6 +102,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                         className,
                         style,
                       })}
+                      key={suggestion.id}
                     >
                       <span>{suggestion.description}</span>
                     </div>
