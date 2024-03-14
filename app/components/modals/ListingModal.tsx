@@ -84,11 +84,11 @@ const ListingModal = () => {
     defaultValues: {
       category: "",
       subCategory: "",
-      location: null,
-      stock: "1",
+      location: "",
+      stock: 1,
       quantityType: "",
       imageSrc: "",
-      price: 1,
+      price: 1.5,
       title: "",
       description: "",
       shelfLifeDays: 0,
@@ -233,17 +233,28 @@ const ListingModal = () => {
 
     if (geoData) {
       const formData = {
-        ...data,
-        stock: parseInt(data.stock, 10),
-        shelfLife,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        subCategory: data.subCategory,
+        coopRating: data.coopRating,
+
         price: formattedPrice,
+        imageSrc: data.imageSrc,
+        city: data.city,
+        state: data.state,
+        zip: data.zip,
+        street: data.street,
+        stock: parseInt(data.stock, 10),
+        shelfLife: shelfLife,
         quantityType: data.quantityType === "none" ? "" : data.quantityType,
         location: {
           type: "Point",
           coordinates: [geoData.lng, geoData.lat],
         },
       };
-
+      console.log(formData);
+      console.log(geoData);
       axios
         .post("/api/listings", formData)
         .then(() => {
@@ -516,23 +527,33 @@ const ListingModal = () => {
         />
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce is not genetically modified</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not grown with inorganic fertilizers</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not grown with inorganic pestacides</Label>
           </div>
           <div className="flex flex-row gap-x-2 items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e)}
+            />
             <Label>This produce was not modified after harvest</Label>
           </div>
           <div className="flex flex-row gap-x-2 font-extrabold items-center">
-            <Checkbox onChange={(e) => handleCheckboxChange(e, true)} />
+            <Checkbox
+            // onChange={(e) => handleCheckboxChange(e, true)}
+            />
             <Label className="font-bold">
               I certify that all of the above information is accurate
             </Label>

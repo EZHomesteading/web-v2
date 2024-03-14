@@ -8,7 +8,7 @@ export type listingValue = {
 };
 
 interface ProductSelectProps {
-  data: listingValue;
+  data: any;
   value?: listingValue;
   onChange: (value: listingValue) => void;
 }
@@ -18,19 +18,18 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   value,
   onChange,
 }) => {
-  const getAll = () => data;
   return (
     <div>
       <Select
         placeholder="Enter A Product Name"
         isClearable
-        options={getAll()}
+        options={data}
         value={value}
         onChange={(value) => onChange(value as listingValue)}
-        formatOptionLabel={(option: any) => (
+        formatOptionLabel={(data: any) => (
           <div className="flex flex-row items-center gap-3">
             {" "}
-            <div>{option.value}</div>
+            <div>{data.value}</div>
           </div>
         )}
         classNames={{

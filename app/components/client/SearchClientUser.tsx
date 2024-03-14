@@ -3,10 +3,8 @@ import useSubCategory from "../../hooks/useSubCategory";
 
 export type ProductValue = {
   cat: string;
-  label: string;
   value: string;
   category: string;
-  photo: string;
 };
 
 interface ProductSelectProps {

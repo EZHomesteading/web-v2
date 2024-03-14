@@ -1,10 +1,12 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUserAsync";
 
 // POST function to create a new listing
 export async function POST(request: Request) {
+  // Retrieving the current user
+  const currentUser = await getCurrentUser();
   // If current user is not available, return an error response
   if (!currentUser) {
     return NextResponse.error();
@@ -60,6 +62,6 @@ export async function POST(request: Request) {
       userId: currentUser.id,
     },
   });
-
+  console.log(currentUser);
   return NextResponse.json(listing);
 }
