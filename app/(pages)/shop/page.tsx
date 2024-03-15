@@ -1,20 +1,23 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-
-import getListings, { IListingsParams } from "@/app/actions/getListings";
+import getListings from "@/app/actions/getListings";
 import currentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "../../components/client/ClientOnly";
 
 interface ShopProps {
-  searchParams: IListingsParams;
+  userId?: string;
+  searchParams?: {
+    search?: string;
+    subCategory?: string;
+  };
 }
 
 const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
   ssr: true,
 });
 
-const ShopPage = async ({ searchParams }: ShopProps) => {
-  const listings = await getListings(searchParams);
+const ShopPage = async ({ userId, searchParams }: ShopProps) => {
+  const listings = await getListings({ userId, ...searchParams });
 
   return (
     <DynamicShop
