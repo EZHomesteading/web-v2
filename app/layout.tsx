@@ -1,5 +1,5 @@
 import { Nunito } from "next/font/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import { ThemeProvider } from "./components/theme-provider";
 import Navbar from "@/app/components/navbar/Navbar";
 import LoginModal from "@/app/components/modals/LoginModal";
@@ -47,10 +47,7 @@ export default function RootLayout({
             <Navbar currentUser={currentUser} />
           </ClientOnly>
 
-          <div className=" pt-25">
-            {children}
-            <SpeedInsights />
-          </div>
+          <div className=" pt-25">{children}</div>
         </ThemeProvider>
         <script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&libraries=places`}
