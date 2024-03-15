@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 
 export default function Component() {
   const { data: session, status } = useSession();
@@ -7,6 +6,6 @@ export default function Component() {
   if (status === "authenticated") {
     return <p>Signed in </p>;
   }
-  return <Link href="/">not signed in</Link>;
-  //   return <a href="/api/auth/signin">Sign in</a>;
+
+  return <a href="/api/auth/signin">Sign in</a>;
 }
