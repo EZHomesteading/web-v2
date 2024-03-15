@@ -1,54 +1,34 @@
-import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 
 import getListings, { IListingsParams } from "@/app/actions/getListings";
 import currentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "../../components/client/ClientOnly";
-import Categories from "../../components/navbar/Categories";
 
-interface HomeProps {
+interface ShopProps {
   searchParams: IListingsParams;
 }
 
-const Home = async ({ searchParams }: HomeProps) => {
+const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
+  ssr: true,
+});
+
+const ShopPage = async ({ searchParams }: ShopProps) => {
   const listings = await getListings(searchParams);
 
-  if (listings.length === 0) {
-    return (
-      <ClientOnly>
-        <EmptyState showReset />
-      </ClientOnly>
-    );
-  }
-
   return (
-    <ClientOnly>
-      <Container>
-        <div
-          className="
-            pt-3
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            md:grid-cols-3 
-            lg:grid-cols-4
-            xl:grid-cols-5
-            2xl:grid-cols-6
-            gap-8
-          "
-        >
-          {listings.map((listing: any) => (
-            <ListingCard
-              currentUser={currentUser}
-              key={listing.id}
-              data={listing}
-            />
-          ))}
-        </div>
-      </Container>
-    </ClientOnly>
+    <DynamicShop
+      listings={listings}
+      currentUser={currentUser}
+      emptyState={
+        listings.length === 0 ? (
+          <ClientOnly>
+            <EmptyState showReset />
+          </ClientOnly>
+        ) : null
+      }
+    />
   );
 };
 
-export default Home;
+export default ShopPage;
