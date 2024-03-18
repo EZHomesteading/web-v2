@@ -1,5 +1,4 @@
 import Select from "react-select";
-import { SafeListing } from "@/app/types";
 
 export type listingValue = {
   cat: string;
