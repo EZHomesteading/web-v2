@@ -44,26 +44,26 @@ export const categories = [
     icon: GiBread,
     description: "",
   },
+  // {
+  //   label: "Poultry",
+  //   icon: GiRoastChicken,
+  //   description: "",
+  // },
   {
-    label: "Poultry",
-    icon: GiRoastChicken,
-    description: "",
-  },
-  {
-    label: "Beef",
+    label: "Meat",
     icon: LuBeef,
     description: "",
   },
-  {
-    label: "Survival",
-    icon: GiBoatFishing,
-    description: "",
-  },
-  {
-    label: "Seafood",
-    icon: GiFoodChain,
-    description: "",
-  },
+  // {
+  //   label: "Survival",
+  //   icon: GiBoatFishing,
+  //   description: "",
+  // },
+  // {
+  //   label: "Seafood",
+  //   icon: GiFoodChain,
+  //   description: "",
+  // },
   {
     label: "Grains",
     icon: GiGrainBundle,
