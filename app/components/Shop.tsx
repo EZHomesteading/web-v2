@@ -2,13 +2,13 @@ import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "./client/ClientOnly";
 
-interface HomeProps {
+interface ShopProps {
   listings: any[];
   currentUser: any;
   emptyState: React.ReactNode;
 }
 
-const Home = ({ listings, currentUser, emptyState }: HomeProps) => {
+const Shop = ({ listings, currentUser, emptyState }: ShopProps) => {
   return (
     <ClientOnly>
       <Container>
@@ -40,4 +40,4 @@ const Home = ({ listings, currentUser, emptyState }: HomeProps) => {
   );
 };
 
-export default Home;
+export default Shop;

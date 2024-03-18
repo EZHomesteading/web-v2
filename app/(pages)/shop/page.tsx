@@ -16,8 +16,12 @@ const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
   ssr: true,
 });
 
-const ShopPage = async ({ userId, searchParams }: ShopProps) => {
-  const listings = await getListings({ userId, ...searchParams });
+const ShopPage = async ({
+  searchParams,
+}: {
+  searchParams?: ShopProps["searchParams"];
+}) => {
+  const listings = await getListings({ ...searchParams });
 
   return (
     <DynamicShop
