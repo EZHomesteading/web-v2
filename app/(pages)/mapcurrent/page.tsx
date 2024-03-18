@@ -1,6 +1,7 @@
 import MapTester from "../../components/map/MapTestcurrent";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUserAsync";
 const Home = async () => {
+  const currentUser = await getCurrentUser();
   return (
     <div>
       <main>

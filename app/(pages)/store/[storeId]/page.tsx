@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import getListings from "@/app/actions/getListings";
-import currentUser from "@/app/actions/getCurrentUser";
+import getCurrentUser from "@/app/actions/getCurrentUserAsync";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getUserById from "@/app/actions/getUserById";
 
@@ -19,6 +19,7 @@ const StorePage = async ({ params }: StorePageProps) => {
   const { storeId } = params;
   const listings = await getListings({ userId: storeId });
   const user = await getUserById({ userId: storeId });
+  const currentUser = await getCurrentUser();
 
   return (
     <DynamicStorePage

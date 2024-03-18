@@ -50,7 +50,7 @@ const Geocoding = () => {
         <div className="relative w-auto flex flex-col items-center space-y-4">
           <div className="flex flex-col sm:flex-row">
             <div className="relative flex items-center mb-2 sm:mb-0">
-              <FiMapPin className="absolute left-2 text-lg text-gray-400" />
+              <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
               <input
                 type="text"
                 placeholder="Where?"
@@ -78,7 +78,7 @@ const Geocoding = () => {
                 onFocus={() => setFocus({ ...focus, right: true })}
                 onBlur={() => setFocus({ ...focus, right: false })}
               />
-              <FiSearch className="absolute right-0 mr-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
+              <FiSearch className="absolute z-50 right-0 mr-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
             </div>
           </div>
           <button
