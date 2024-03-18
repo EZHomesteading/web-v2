@@ -50,7 +50,7 @@ export const categories = [
   //   description: "",
   // },
   {
-    label: "Meat",
+    label: "Meats",
     icon: LuBeef,
     description: "",
   },
