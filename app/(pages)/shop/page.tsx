@@ -1,54 +1,41 @@
-import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-
-import getListings, { IListingsParams } from "@/app/actions/getListings";
+import getListings from "@/app/actions/getListings";
 import currentUser from "@/app/actions/getCurrentUser";
 import ClientOnly from "../../components/client/ClientOnly";
-import Categories from "../../components/navbar/Categories";
 
-interface HomeProps {
-  searchParams: IListingsParams;
+interface ShopProps {
+  userId?: string;
+  searchParams?: {
+    search?: string;
+    subCategory?: string;
+  };
 }
 
-const Home = async ({ searchParams }: HomeProps) => {
-  const listings = await getListings(searchParams);
+const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
+  ssr: true,
+});
 
-  if (listings.length === 0) {
-    return (
-      <ClientOnly>
-        <EmptyState showReset />
-      </ClientOnly>
-    );
-  }
+const ShopPage = async ({
+  searchParams,
+}: {
+  searchParams?: ShopProps["searchParams"];
+}) => {
+  const listings = await getListings({ ...searchParams });
 
   return (
-    <ClientOnly>
-      <Container>
-        <div
-          className="
-            pt-3
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            md:grid-cols-3 
-            lg:grid-cols-4
-            xl:grid-cols-5
-            2xl:grid-cols-6
-            gap-8
-          "
-        >
-          {listings.map((listing: any) => (
-            <ListingCard
-              currentUser={currentUser}
-              key={listing.id}
-              data={listing}
-            />
-          ))}
-        </div>
-      </Container>
-    </ClientOnly>
+    <DynamicShop
+      listings={listings}
+      currentUser={currentUser}
+      emptyState={
+        listings.length === 0 ? (
+          <ClientOnly>
+            <EmptyState showReset />
+          </ClientOnly>
+        ) : null
+      }
+    />
   );
 };
 
-export default Home;
+export default ShopPage;
