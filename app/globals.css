@@ -83,3 +83,9 @@
 body::-webkit-scrollbar {
   display: none;
 }
+
+.something {
+  border-top-right-radius: 25px !important;
+  border-bottom-right-radius: 25px !important;
+  border-color: black !important;
+}

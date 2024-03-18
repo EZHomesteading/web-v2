@@ -102,29 +102,13 @@ const Geocoding: React.FC<ProductSelectProps> = ({ data }) => {
                   transform: focus.left ? "scale(1.03)" : "scale(1)",
                   zIndex: focus.left ? "20" : "1",
                 }}
-                className="rounded-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border
-              focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300' sm:w-50"
+                className="rounded-r-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border
+              focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'"
                 onFocus={() => setFocus({ ...focus, left: true })}
                 onBlur={() => setFocus({ ...focus, left: false })}
               />
             </div>
             <div className="relative flex items-center">
-              <BsBasket className="absolute left-2 text-lg text-gray-400 z-50" />
-              <input
-                type="text"
-                placeholder="What?"
-                style={{
-                  transform: focus.right ? "scale(1.03)" : "scale(1)",
-                  zIndex: focus.right ? "20" : "1",
-                }}
-                className="rounded-full sm:rounded-l-none sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
-              focus:right ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300' sm:w-50"
-                onFocus={() => setFocus({ ...focus, right: true })}
-                onBlur={() => setFocus({ ...focus, right: false })}
-              />
-              <FiSearch className="absolute z-50 right-0 mr-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
-            </div>
-            <div>
               <SearchClient
                 data={data}
                 onChange={(e) => {
@@ -132,6 +116,7 @@ const Geocoding: React.FC<ProductSelectProps> = ({ data }) => {
                 }}
               />
             </div>
+            <div></div>
           </div>
           <button
             onClick={handleNearMeClick}
