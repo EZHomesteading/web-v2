@@ -10,6 +10,7 @@ export interface IListingsParams {
   userId?: string;
   lat?: string;
   lng?: string;
+  category?: string;
   location?: ILocation;
   search?: string;
   subCategory?: string;
@@ -18,7 +19,7 @@ export interface IListingsParams {
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { userId, lat, lng, radius, search, subCategory } = params;
+    const { userId, lat, lng, radius, search, category, subCategory } = params;
 
     let query: any = {};
 
@@ -32,6 +33,9 @@ export default async function getListings(params: IListingsParams) {
 
     if (subCategory) {
       query.subCategory = subCategory;
+    }
+    if (category) {
+      query.category = category;
     }
 
     let listings = await prisma.listing.findMany({
