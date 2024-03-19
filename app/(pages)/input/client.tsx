@@ -1,8 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { FiMapPin, FiSearch } from "react-icons/fi";
-import { BsBasket } from "react-icons/bs";
+// import { BsBasket } from "react-icons/bs";
 import SearchClient from "@/app/components/client/SearchClientName";
 import { useRouter, useSearchParams } from "next/navigation";
 import qs from "query-string";

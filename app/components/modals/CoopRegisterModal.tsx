@@ -79,9 +79,9 @@ const CoopRegisterModal = () => {
         },
       };
 
-      if (!data.email) {
-        console.log("email");
-      }
+      // if (!data.email) {
+      //   console.log("email");
+      // }
 
       axios
         .post("/api/registercoop", formData)
@@ -106,9 +106,9 @@ const CoopRegisterModal = () => {
           });
         })
         .catch(function (error) {
-          console.log(error.response.status);
-          console.log(error.response.data);
-          console.log(error.response.headers);
+          // console.log(error.response.status);
+          // console.log(error.response.data);
+          // console.log(error.response.headers);
           toast.error("Username or Email already in use");
         })
         .finally(() => {
