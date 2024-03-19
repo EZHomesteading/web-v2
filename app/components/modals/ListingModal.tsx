@@ -228,8 +228,8 @@ const ListingModal = () => {
     const shelfLife =
       parseInt(data.shelfLifeDays, 10) +
       parseInt(data.shelfLifeWeeks, 10) * 7 +
-      parseInt(data.shelfLifeMonths, 10) * 30;
-    parseInt(data.shelfLifeYears, 10) * 365;
+      parseInt(data.shelfLifeMonths, 10) * 30 +
+      parseInt(data.shelfLifeYears, 10) * 365;
 
     if (geoData) {
       const formData = {

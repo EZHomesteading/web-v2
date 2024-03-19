@@ -1,4 +1,5 @@
 import prisma from "@/app/libs/prismadb";
+import haversine from "haversine-distance";
 
 interface ILocation {
   type: "Point";
@@ -7,14 +8,17 @@ interface ILocation {
 
 export interface IListingsParams {
   userId?: string;
+  lat?: string;
+  lng?: string;
   location?: ILocation;
   search?: string;
   subCategory?: string;
+  radius?: string;
 }
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { userId, location, search, subCategory } = params;
+    const { userId, lat, lng, radius, search, subCategory } = params;
 
     let query: any = {};
 
@@ -30,18 +34,33 @@ export default async function getListings(params: IListingsParams) {
       query.subCategory = subCategory;
     }
 
-    // if (location) {
-    //   query.location {
-
-    //   };
-    // }
-
-    const listings = await prisma.listing.findMany({
+    let listings = await prisma.listing.findMany({
       where: query,
       orderBy: {
         createdAt: "desc",
       },
     });
+
+    if (lat && lng && radius) {
+      const userLocation = {
+        latitude: parseFloat(lat),
+        longitude: parseFloat(lng),
+      };
+      const radiusInMeters = parseFloat(radius) * 1000;
+
+      listings = listings.filter((listing) => {
+        const listingLocation = listing.location as unknown as {
+          coordinates: [number, number];
+        };
+        const listingCoordinates = {
+          latitude: listingLocation.coordinates[1],
+          longitude: listingLocation.coordinates[0],
+        };
+
+        const distance = haversine(listingCoordinates, userLocation);
+        return distance <= radiusInMeters;
+      });
+    }
 
     const safeListings = listings.map((listing) => ({
       ...listing,
