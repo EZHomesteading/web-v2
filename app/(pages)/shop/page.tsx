@@ -1,13 +1,16 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-import getListings from "@/app/actions/getListings";
 import getCurrentUser from "@/app/actions/getCurrentUserAsync";
 import ClientOnly from "../../components/client/ClientOnly";
+import getListingsApi from "@/app/actions/getListingsApi";
 
 interface ShopProps {
   userId?: string;
   searchParams?: {
-    search?: string;
+    q?: string;
+    lat?: string;
+    lng?: string;
+    r?: string;
   };
 }
 
@@ -20,7 +23,9 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const listings = await getListings({ ...searchParams });
+  const { q = "", lat = "", lng = "", r = "30" } = searchParams || {};
+
+  const listings = await getListingsApi({ q, lat, lng, r });
   const currentUser = await getCurrentUser();
   return (
     <DynamicShop
