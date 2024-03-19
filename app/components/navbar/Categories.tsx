@@ -70,7 +70,7 @@ export const categories = [
     description: "",
   },
   {
-    label: "Spices",
+    label: "Herbs and Spices",
     icon: GiCoolSpices,
     description: "",
   },
