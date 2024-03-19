@@ -10,7 +10,7 @@ interface ShopProps {
     q?: string;
     lat?: string;
     lng?: string;
-    r?: string;
+    radius?: string;
   };
 }
 
@@ -23,9 +23,9 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const { q = "", lat = "", lng = "", r = "30" } = searchParams || {};
+  const { q = "", lat = "", lng = "", radius = "30" } = searchParams || {};
 
-  const listings = await getListingsApi({ q, lat, lng, r });
+  const listings = await getListingsApi({ q, lat, lng, radius });
   const currentUser = await getCurrentUser();
   return (
     <DynamicShop

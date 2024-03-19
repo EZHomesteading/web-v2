@@ -14,13 +14,13 @@ export interface IListingsParams {
   location?: ILocation;
   q?: string;
   subCategory?: string;
-  r?: string;
+  radius?: string;
   description?: string;
 }
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { lat, lng, r, q } = params;
+    const { lat, lng, radius, q } = params;
 
     let query: any = {};
 
@@ -34,12 +34,13 @@ export default async function getListings(params: IListingsParams) {
       },
     });
 
-    if (lat && lng && r) {
+    if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
-      const radiusKm = parseFloat(r);
+
+      const radiusInMeters = parseFloat(radius) * 1000;
 
       listings = listings.filter((listing) => {
         const listingLocation = listing.location as unknown as {
@@ -51,7 +52,7 @@ export default async function getListings(params: IListingsParams) {
         };
 
         const distance = haversine(listingCoordinates, userLocation);
-        return distance <= radiusKm;
+        return distance <= radiusInMeters;
       });
     }
 
