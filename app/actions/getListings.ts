@@ -15,11 +15,21 @@ export interface IListingsParams {
   search?: string;
   subCategory?: string;
   radius?: string;
+  description?: string;
 }
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { userId, lat, lng, radius, search, category, subCategory } = params;
+    const {
+      userId,
+      lat,
+      lng,
+      radius,
+      search,
+      category,
+      subCategory,
+      description,
+    } = params;
 
     let query: any = {};
 
@@ -29,13 +39,9 @@ export default async function getListings(params: IListingsParams) {
 
     if (search) {
       query.title = search;
-    }
-
-    if (subCategory) {
-      query.subCategory = subCategory;
-    }
-    if (category) {
-      query.category = category;
+      // query.category = search;
+      // query.subCategory = search;
+      // query.description = search;
     }
 
     let listings = await prisma.listing.findMany({

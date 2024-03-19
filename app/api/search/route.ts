@@ -1,23 +1,17 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import Fuse from "fuse.js";
 import haversine from "haversine-distance";
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("query") || "";
   const lat = searchParams.get("lat") || "";
   const lng = searchParams.get("lng") || "";
-  const radius = searchParams.get("radius") || "";
+  const radius = searchParams.get("radius") || "20000";
 
   try {
-    const listings = await prisma.listing.findMany({
-      include: {
-        user: true,
-      },
-    });
+    const listings = await prisma.listing.findMany();
 
     const nearbyListings = listings.filter((listing) => {
       const listingLocation = listing.location as {
@@ -35,20 +29,15 @@ export async function GET(request: Request) {
       return distance <= parseFloat(radius);
     });
 
-    console.log("Nearby Listings:", nearbyListings);
-
-    const fuse = new Fuse(nearbyListings, {
+    const fuseOptions = {
       keys: ["title", "category", "subCategory", "description"],
-      threshold: 0.3,
-    });
-
-    const searchResults = fuse.search(query);
-
-    console.log("Search Results:", searchResults);
-
-    return NextResponse.json(searchResults);
+    };
+    console.log("query:", query);
+    const fuse = new Fuse(nearbyListings, fuseOptions);
+    console.log("fuse", fuse);
+    const results = fuse.search(query);
+    return NextResponse.json(results);
   } catch (error) {
-    console.error("Error searching listings:", error);
     return NextResponse.json(
       { error: "An error occurred while searching listings" },
       { status: 500 }

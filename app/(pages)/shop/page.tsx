@@ -8,7 +8,6 @@ interface ShopProps {
   userId?: string;
   searchParams?: {
     search?: string;
-    subCategory?: string;
   };
 }
 

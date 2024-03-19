@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import qs from "query-string";
 import axios from "axios";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import { FiMapPin } from "react-icons/fi";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -16,7 +17,6 @@ const getLatLngFromAddress = async (address: string) => {
     const response = await axios.get(url);
     if (response.data.status === "OK") {
       const { lat, lng } = response.data.results[0].geometry.location;
-      console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
       return { lat, lng };
     } else {
       throw new Error("Geocoding failed");
@@ -66,25 +66,31 @@ export default function SearchComponent() {
 
   return (
     <div>
-      <h1>Search Listings</h1>
-      <div>
-        <input
-          type="text"
-          placeholder="Search query"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <div className="relative w-auto flex flex-col items-center space-y-4">
+          <div className="flex flex-col sm:flex-row">
+            <div className="relative flex items-center mb-2 sm:mb-0">
+              <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
+              <div>
+                <LocationSearchInput
+                  address={location}
+                  setAddress={setLocation}
+                  onAddressParsed={() => {}}
+                />
+              </div>
+            </div>
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="What?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button onClick={handleSearch}>Search</button>
+          </div>
+        </div>
       </div>
-      <div>
-        <LocationSearchInput
-          address={location}
-          setAddress={setLocation}
-          onAddressParsed={(address: any) => {
-            console.log(address);
-          }}
-        />
-      </div>
-      <button onClick={handleSearch}>Search</button>
     </div>
   );
 }
