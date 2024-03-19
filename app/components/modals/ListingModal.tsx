@@ -29,7 +29,6 @@ import {
 import LocationSearchInput from "../map/LocationSearchInput";
 import { PiStorefrontThin } from "react-icons/pi";
 import { Switch } from "../ui/switch";
-import SearchClientUser from "../client/SearchClientUser";
 
 enum STEPS {
   DESCRIPTION = 0,
@@ -202,7 +201,7 @@ const ListingModal = () => {
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
 
-        console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
+        // console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
 
         return { lat, lng };
       } else {
@@ -253,8 +252,8 @@ const ListingModal = () => {
           coordinates: [geoData.lng, geoData.lat],
         },
       };
-      console.log(formData);
-      console.log(geoData);
+      // console.log(formData);
+      // console.log(geoData);
       axios
         .post("/api/listings", formData)
         .then(() => {

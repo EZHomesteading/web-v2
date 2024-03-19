@@ -67,9 +67,9 @@ const RegisterModal = () => {
         });
       })
       .catch(function (error) {
-        console.log(error.response.status);
-        console.log(error.response.data);
-        console.log(error.response.headers);
+        // console.log(error.response.status);
+        // console.log(error.response.data);
+        // console.log(error.response.headers);
         toast.error("Username or Email Already in use");
       })
       .finally(() => {

@@ -40,7 +40,6 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
       if (!geocodingService || !address) return;
       geocodingService.geocode({ address }, (results, status) => {
         if (results && status === "OK") {
-          console.log(address);
           setGeocodingResult(results[0]);
         }
       });

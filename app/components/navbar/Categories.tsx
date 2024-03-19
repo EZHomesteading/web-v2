@@ -105,7 +105,7 @@ export const categories = [
 const Categories = () => {
   // Get the search parameters and current pathname
   const params = useSearchParams();
-  const category = params?.get("category");
+  const q = params?.get("q");
   const pathname = usePathname();
 
   // Check if it's the main page
@@ -135,7 +135,7 @@ const Categories = () => {
             key={item.label}
             label={item.label}
             icon={item.icon}
-            selected={category === item.label}
+            selected={q === item.label}
           />
         ))}
       </div>
