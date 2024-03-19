@@ -36,6 +36,7 @@ import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
 import Avatar from "../ui/Avatar";
+import LocationSearchInput from "../map/LocationSearchInput";
 
 interface NavigationItem {
   name: string;
@@ -122,41 +123,87 @@ function classNames(...classes: string[]) {
 const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [fullAddress, setFullAddress] = useState(
+    `${currentUser?.street}, ${currentUser?.city}, ${currentUser?.state}, ${currentUser?.zip}`
+  );
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
 
-  // Form control using react-hook-form
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       phoneNumber: currentUser?.phoneNumber,
       email: currentUser?.email,
-      address: currentUser?.street,
-      zip: currentUser?.zip,
-      state: currentUser?.state,
+
       role: currentUser?.role,
       name: currentUser?.name,
     },
   });
+  setValue("street", currentUser?.street);
+  setValue("city", currentUser?.city);
+  setValue("state", currentUser?.state);
+  setValue("zip", currentUser?.zip);
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
 
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
   // Function to handle form submission
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (
+      fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
+    ) {
+      setFullAddress(
+        `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
+      );
+    }
+    const geoData = await getLatLngFromAddress(fullAddress);
     setIsLoading(true);
 
-    // Send registration data to the backend
-    axios
-      .post("/api/update", data)
-      .then(() => {
-        toast.success("Your account details have changed");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (geoData) {
+      const formData = {
+        ...data,
+        location: {
+          type: "Point",
+          coordinates: [geoData.lng, geoData.lat],
+        },
+      };
+      // Send registration data to the backend
+      axios
+        .post("/api/update", data)
+        .then(() => {
+          toast.success("Your account details have changed");
+        })
+        .catch((error) => {
+          toast.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   };
 
   const onDelete = () => {
@@ -173,6 +220,17 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
       });
   };
 
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+  };
   return (
     <>
       <div>
@@ -415,44 +473,22 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                       <label
                         htmlFor="address"
                         className="block text-sm font-medium leading-6"
-                      ></label>
-                      <div className="mt-2">
-                        <Input
-                          id="address"
-                          label="Address"
-                          disabled={isLoading}
-                          register={register}
-                          errors={errors}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-full">
+                      >
+                        Current Address is: {currentUser?.street},{" "}
+                        {currentUser?.city}, {currentUser?.state},{" "}
+                        {currentUser?.zip}
+                      </label>
                       <label
-                        htmlFor="zip"
+                        htmlFor="address"
                         className="block text-sm font-medium leading-6"
-                      ></label>
+                      >
+                        To Change, Enter a new Address
+                      </label>
                       <div className="mt-2">
-                        <Input
-                          id="zip"
-                          label="Zip Code"
-                          disabled={isLoading}
-                          register={register}
-                          errors={errors}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-full">
-                      <label
-                        htmlFor="state"
-                        className="block text-sm font-medium leading-6"
-                      ></label>
-                      <div className="mt-2">
-                        <Input
-                          id="state"
-                          label="State"
-                          disabled={isLoading}
-                          register={register}
-                          errors={errors}
+                        <LocationSearchInput
+                          address={watch("address")}
+                          setAddress={(address) => setValue("address", address)}
+                          onAddressParsed={handleAddressSelect}
                         />
                       </div>
                     </div>
