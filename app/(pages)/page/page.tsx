@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
 import axios from "axios";
-import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import ListingLocationSearch from "@/app/components/map/ListingLocationSearch";
 import { FiMapPin } from "react-icons/fi";
 
 const getLatLngFromAddress = async (address: string) => {
@@ -30,6 +30,9 @@ const getLatLngFromAddress = async (address: string) => {
 export default function SearchComponent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
+  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
   const router = useRouter();
 
   const handleSearch = async () => {
@@ -41,7 +44,7 @@ export default function SearchComponent() {
         const radius = 10;
 
         const query = {
-          search: searchQuery,
+          q: searchQuery,
           lat: lat.toString(),
           lng: lng.toString(),
           radius: radius.toString(),
@@ -64,6 +67,10 @@ export default function SearchComponent() {
     }
   };
 
+  const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
+    setLatLng(latLng);
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center justify-center space-y-4">
@@ -72,10 +79,10 @@ export default function SearchComponent() {
             <div className="relative flex items-center mb-2 sm:mb-0">
               <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
               <div>
-                <LocationSearchInput
+                <ListingLocationSearch
                   address={location}
                   setAddress={setLocation}
-                  onAddressParsed={() => {}}
+                  onAddressParsed={handleAddressParsed}
                 />
               </div>
             </div>

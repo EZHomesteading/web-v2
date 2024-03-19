@@ -1,5 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import haversine from "haversine-distance";
+import Fuse from "fuse.js";
 
 interface ILocation {
   type: "Point";
@@ -7,44 +8,38 @@ interface ILocation {
 }
 
 export interface IListingsParams {
-  userId?: string;
   lat?: string;
   lng?: string;
   category?: string;
   location?: ILocation;
-  search?: string;
+  q?: string;
   subCategory?: string;
-  radius?: string;
+  r?: string;
   description?: string;
 }
 
 export default async function getListings(params: IListingsParams) {
   try {
-    const { userId, lat, lng, radius, search } = params;
+    const { lat, lng, r, q } = params;
 
     let query: any = {};
-
-    if (userId) {
-      query.userId = userId;
-    }
-
-    if (search) {
-      query.title = search;
-    }
 
     let listings = await prisma.listing.findMany({
       where: query,
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        user: true,
+      },
     });
 
-    if (lat && lng && radius) {
+    if (lat && lng && r) {
       const userLocation = {
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
-      const radiusInMeters = parseFloat(radius) * 1000;
+      const radiusKm = parseFloat(r);
 
       listings = listings.filter((listing) => {
         const listingLocation = listing.location as unknown as {
@@ -56,8 +51,18 @@ export default async function getListings(params: IListingsParams) {
         };
 
         const distance = haversine(listingCoordinates, userLocation);
-        return distance <= radiusInMeters;
+        return distance <= radiusKm;
       });
+    }
+
+    if (q) {
+      const fuseOptions = {
+        keys: ["user.name", "title", "category", "subCategory", "description"],
+        threshold: 0.3,
+      };
+      const fuse = new Fuse(listings, fuseOptions);
+      const results = fuse.search(q);
+      listings = results.map((result) => result.item);
     }
 
     const safeListings = listings.map((listing) => ({
