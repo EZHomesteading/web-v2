@@ -180,17 +180,31 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
         `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
       );
     }
-    const geoData = await getLatLngFromAddress(fullAddress);
-    setIsLoading(true);
+    if (fullAddress !== "") {
+      const geoData = await getLatLngFromAddress(fullAddress);
+      setIsLoading(true);
 
-    if (geoData) {
-      const formData = {
-        ...data,
-        location: {
-          type: "Point",
-          coordinates: [geoData.lng, geoData.lat],
-        },
-      };
+      if (geoData) {
+        const formData = {
+          ...data,
+          location: {
+            type: "Point",
+            coordinates: [geoData.lng, geoData.lat],
+          },
+        };
+        axios
+          .post("/api/update", data)
+          .then(() => {
+            toast.success("Your account details have changed");
+          })
+          .catch((error) => {
+            toast.error(error);
+          })
+          .finally(() => {
+            setIsLoading(false);
+            return;
+          });
+      }
       // Send registration data to the backend
       axios
         .post("/api/update", data)
