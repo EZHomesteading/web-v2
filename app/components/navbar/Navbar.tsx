@@ -7,7 +7,7 @@ import Logo from "./Logo";
 import Search from "./Search";
 import UserMenu from "./UserMenu";
 import { ModeToggle } from "../ui/mode-toggle";
-
+import FindListingsComponent from "@/app/components/find-listings";
 // Define props interface for the Navbar component
 interface NavbarProps {
   // Current user data or null if no user is logged in
@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
             <Logo />
 
             {/* Search component */}
-            <Search />
+            <FindListingsComponent />
             {/* UserMenu component */}
             <div className="flex items-center justify-end">
               <div className="mr-2">

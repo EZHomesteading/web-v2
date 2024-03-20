@@ -4,11 +4,11 @@ import qs from "query-string";
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSearchModal from "@/app/hooks/useSearchModal";
-import Modal from "./Modal";
-import Heading from "../Heading";
+import Modal from "@/app/components/modals/Modal";
+import Heading from "@/app/components/Heading";
 import { FieldValues, useForm } from "react-hook-form";
-import LocationSearchInput from "../map/LocationSearchInput";
-
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import FindListingsComponent from "@/app/components/find-listings";
 import { useTheme } from "next-themes";
 import SearchClient, {
   ProductValue,
