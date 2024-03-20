@@ -445,6 +445,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                             disabled={isLoading}
                             register={register}
                             errors={errors}
+                            isUsername={true}
                             required
                           />
                         </div>
@@ -480,6 +481,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
+                          isNumber={true}
                         />
                       </div>
                     </div>
