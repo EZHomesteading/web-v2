@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  FaUser,
+  FaHeart,
+  FaShoppingCart,
+  FaStore,
+  FaSignOutAlt,
+  FaSignInAlt,
+  FaUserPlus,
+} from "react-icons/fa";
+import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
@@ -13,8 +23,8 @@ import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
 import Avatar from "../ui/Avatar";
+import { CiSquarePlus } from "react-icons/ci";
 
-// UserMenu component
 interface UserMenuProps {
   currentUser?: SafeUser | null;
 }
@@ -56,7 +66,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             onClick={onRent}
             className="
                 hidden
-                md:block
+                md:flex
+                items-center
                 text-sm 
                 font-semibold 
                 py-3 
@@ -64,8 +75,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                 rounded-full 
                 hover:bg-neutral-100 
                 transition 
-                cursor-pointer
-              "
+                cursor-pointer"
           >
             Add a Product
           </div>
@@ -74,7 +84,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             onClick={coopRegisterModal.onOpen}
             className="
             hidden
-            md:block
+            md:flex
+            items-center
             text-sm 
             font-semibold 
             py-3 
@@ -121,8 +132,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             absolute 
             rounded-xl 
             shadow-md
-            w-[40vw]
-            md:w-3/4 
             overflow-hidden 
             right-0 
             top-12 
@@ -135,9 +144,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <div>
                 <MenuItem
                   label="My Store"
+                  icon={<FaStore className="mr-2" />}
                   onClick={() => router.push("/dashboard/my-store")}
                 />
-                <MenuItem label="Add a Product" onClick={rentModal.onOpen} />
+                <MenuItem
+                  label="Add a Product"
+                  icon={<CiSquarePlus className="mr-2" />}
+                  onClick={rentModal.onOpen}
+                />
               </div>
             ) : (
               <div></div>
@@ -146,30 +160,42 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
               <>
                 <MenuItem
                   label="Profile Settings"
+                  icon={<MdSettings className="mr-2" />}
                   onClick={() => router.push("/dashboard")}
                 />
                 <MenuItem
                   label="My Favorites"
+                  icon={<FaHeart className="mr-2" />}
                   onClick={() => router.push("/dashboard/favorites")}
                 />
                 <MenuItem
                   label="Current Orders"
+                  icon={<FaShoppingCart className="mr-2" />}
                   onClick={() => router.push("/dashboard/reservations")}
                 />
                 <MenuItem
                   label="Become a Co-Op"
+                  icon={<FaStore className="mr-2" />}
                   onClick={() => router.push("/updatetocoop")}
                 />
                 <hr />
-                <MenuItem label="Logout" onClick={() => signOut()} />
+                <MenuItem
+                  icon={<FaSignOutAlt className="mr-2" />}
+                  label="Logout"
+                  onClick={() => signOut()}
+                />
               </>
             ) : (
               <>
-                <MenuItem label="Login" onClick={loginModal.onOpen} />
-                <MenuItem label="Sign up" onClick={registerModal.onOpen} />
                 <MenuItem
-                  label="Become a Co-Op"
-                  onClick={coopRegisterModal.onOpen}
+                  label="Login"
+                  icon={<FaSignInAlt className="mr-2" />}
+                  onClick={loginModal.onOpen}
+                />
+                <MenuItem
+                  label="Sign up"
+                  icon={<FaUserPlus className="mr-2" />}
+                  onClick={registerModal.onOpen}
                 />
               </>
             )}

@@ -87,11 +87,13 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
-        <Button
-          disabled={disabled}
-          label={hasCart ? `Added to Cart` : "Add to Cart"}
-          onClick={toggleCart}
-        />
+        <div className="mb-1">
+          <Button
+            disabled={disabled}
+            label={hasCart ? `Added to Cart` : "Add to Cart"}
+            onClick={toggleCart}
+          />
+        </div>
         {/* {dateRange && <Calendar value={dateRange} onChange={() => {}} />} */}
         <Button disabled={disabled} label={`Buy Now`} onClick={onSubmit} />
       </div>
