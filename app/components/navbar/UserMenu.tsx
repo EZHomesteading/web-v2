@@ -173,11 +173,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   icon={<FaShoppingCart className="mr-2" />}
                   onClick={() => router.push("/dashboard/reservations")}
                 />
-                <MenuItem
-                  label="Become a Co-Op"
-                  icon={<FaStore className="mr-2" />}
-                  onClick={() => router.push("/updatetocoop")}
-                />
+                <MenuItem label="Cart" onClick={() => router.push("/cart")} />
+                {currentUser?.role === "" ? (
+                  <MenuItem
+                    label="Become a Co-Op"
+                    onClick={() => router.push("/updatetocoop")}
+                  />
+                ) : (
+                  <div></div>
+                )}
                 <hr />
                 <MenuItem
                   icon={<FaSignOutAlt className="mr-2" />}

@@ -1,6 +1,3 @@
-//pull data here (format if needed)
-//push data to client
-//render data on cart
 //checkout removes stock from listing
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -10,16 +7,19 @@ import getCartListings from "@/app/actions/getCartListings";
 
 import Cart from "./client";
 
+import { HeartFilledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+
 const SearchPage = async () => {
   const currentUser = await getCurrentUser();
   const listings = await getCartListings();
-  console.log(listings);
   if (listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
-          title="No favorites found"
-          subtitle="Looks like you have no favorite products."
+          title="No items in Cart"
+          subtitle="Looks like you have no items in your Cart."
+          showShop
         />
       </ClientOnly>
     );
