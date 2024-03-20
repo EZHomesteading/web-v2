@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "@/public/images/home-images/ezhbg2.jpg";
-import Search from "../components/navbar/Search";
 import { Indie_Flower } from "next/font/google";
+import FindListingsComponent from "@/app/components/find-listings";
+
 const footerNavigation = {
   shop: [
     { name: "Vegetables", href: "/shop?category=Vegetables" },
@@ -64,7 +65,7 @@ export default function Home() {
             people in their community.
           </p>
           <div className="w-2/5">
-            <Search />
+            <FindListingsComponent />
           </div>
         </div>
       </div>

@@ -10,12 +10,16 @@ interface LocationSearchInputProps {
   address: string;
   setAddress: (address: string) => void;
   onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
+  onFocus: () => void;
+  onBlur: () => void;
 }
 
 const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
+  onFocus,
+  onBlur,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -51,7 +55,6 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
             })}
           />
           <div className="absolute mt-1 w-full bg-white shadow-lg z-10">
-            {loading && <div>Loading...</div>}
             {suggestions.map((suggestion) => {
               const className = suggestion.active
                 ? "bg-gray-200 cursor-pointer"
