@@ -14,6 +14,7 @@ import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listingMap";
+import useCart from "@/app/hooks/useCart";
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -33,6 +34,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   listing,
   currentUser,
 }) => {
+  const listingId = listing.id;
+  const { toggleCart } = useCart({
+    listingId,
+    currentUser,
+  });
   const loginModal = useLoginModal();
   const router = useRouter();
 
@@ -102,6 +108,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
           </div>
           <div className="w-full lg:w-1/3 px-4">
             <ListingReservation
+              toggleCart={toggleCart}
+              listingId={adjustedListing.id}
+              currentUser={currentUser}
               product={adjustedListing}
               onSubmit={onCreatePurchase}
               disabled={isLoading}

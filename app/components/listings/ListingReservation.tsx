@@ -2,6 +2,8 @@
 
 import { addDays, format } from "date-fns";
 import Button from "../Button";
+import { SafeUser } from "@/app/types";
+import useCart from "@/app/hooks/useCart";
 // import Calendar from "../inputs/Calendar";
 
 // interface Range {
@@ -11,6 +13,8 @@ import Button from "../Button";
 // }
 
 interface ListingReservationProps {
+  listingId: string;
+  currentUser?: SafeUser | null;
   product: {
     endDate: Date | null;
     title: string | null;
@@ -26,13 +30,21 @@ interface ListingReservationProps {
   };
   onSubmit: () => void;
   disabled?: boolean;
+  toggleCart: any;
 }
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
   product,
   onSubmit,
   disabled,
+  listingId,
+  currentUser,
+  toggleCart,
 }) => {
+  const { hasCart } = useCart({
+    listingId,
+    currentUser,
+  });
   const description = product.description;
   const stock = product.stock;
   const quantityType = product.quantityType;
@@ -46,6 +58,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const endDateString = endDate
     ? format(endDate, "MMM dd, yyyy")
     : "No expiry date"; // const dateRange = endDate ? { startDate, endDate, key: "selection" } : null;
+
   return (
     <>
       <div
@@ -74,6 +87,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
+        <Button
+          disabled={disabled}
+          label={hasCart ? `Added to Cart` : "Add to Cart"}
+          onClick={toggleCart}
+        />
         {/* {dateRange && <Calendar value={dateRange} onChange={() => {}} />} */}
         <Button disabled={disabled} label={`Buy Now`} onClick={onSubmit} />
       </div>
