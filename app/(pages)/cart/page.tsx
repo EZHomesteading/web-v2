@@ -7,9 +7,6 @@ import getCartListings from "@/app/actions/getCartListings";
 
 import Cart from "./client";
 
-import { HeartFilledIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
-
 const SearchPage = async () => {
   const currentUser = await getCurrentUser();
   const listings = await getCartListings();
