@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "@/public/images/home-images/ezhbg2.jpg";
-import Search from "../components/navbar/Search";
 import { Indie_Flower } from "next/font/google";
 import FindListingsComponent from "@/app/components/find-listings";
 
