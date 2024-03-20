@@ -49,13 +49,13 @@ const Input: React.FC<InputProps> = ({
   // Conditionally add the pattern validation for usernames
   if (isUsername) {
     registerOptions.pattern = {
-      value: /^[a-zA-Z0-9]*$/,
+      value: /^[a-zA-Z0-9 ]*$/,
       message: "Username must not contain spaces or special characters",
     };
   }
   if (isNumber) {
     registerOptions.pattern = {
-      value: /^[0-9]*$/,
+      value: /^(1-)?\d{3}-\d{3}-\d{4}$/,
       message: "Only enter numbers",
     };
   }
