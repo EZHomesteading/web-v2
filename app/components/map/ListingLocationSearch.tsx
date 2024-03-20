@@ -55,7 +55,6 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
             })}
           />
           <div className="absolute mt-1 w-full bg-white shadow-lg z-10">
-            {loading && <div>Loading...</div>}
             {suggestions.map((suggestion) => {
               const className = suggestion.active
                 ? "bg-gray-200 cursor-pointer"

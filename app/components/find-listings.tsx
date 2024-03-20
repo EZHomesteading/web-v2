@@ -30,7 +30,7 @@ const getLatLngFromAddress = async (address: string) => {
   }
 };
 
-export default function SearchComponent() {
+const FindListingsComponent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
@@ -125,11 +125,6 @@ export default function SearchComponent() {
                 onAddressParsed={handleAddressParsed}
                 onFocus={() => setFocus({ ...focus, left: true })}
                 onBlur={() => setFocus({ ...focus, left: false })}
-                className={`w-full rounded-r-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border ${
-                  focus.left
-                    ? "bg-white border-black scale-[1.03]"
-                    : "bg-gray-100 border-gray-300"
-                }`}
               />
             </div>
             <div className="relative flex items-center mb-2 sm:mb-0">
@@ -168,4 +163,6 @@ export default function SearchComponent() {
       </div>
     </>
   );
-}
+};
+
+export default FindListingsComponent;
