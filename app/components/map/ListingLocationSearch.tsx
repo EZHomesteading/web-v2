@@ -10,12 +10,16 @@ interface LocationSearchInputProps {
   address: string;
   setAddress: (address: string) => void;
   onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
+  onFocus: () => void;
+  onBlur: () => void;
 }
 
 const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
+  onFocus,
+  onBlur,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
