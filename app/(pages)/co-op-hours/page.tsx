@@ -2,23 +2,55 @@
 import HourPicker from "./co-op-hour-select";
 import { CoOpHours, initialCoOpHours } from "./co-op-hours";
 import { useState } from "react";
+import axios from "axios";
+import Button from "@/app/components/Button";
+import { toast } from "react-hot-toast";
 
 const CoOpHoursPage = () => {
   const [coOpHours, setCoOpHours] = useState<CoOpHours[]>(initialCoOpHours);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleHourChange = (
     day: string,
     field: "open" | "close",
-    value: string
+    dbValue: string
   ) => {
     setCoOpHours((prevHours) =>
       prevHours.map((hours) => {
         if (hours.day === day) {
-          return { ...hours, [field]: value };
+          return { ...hours, [field]: dbValue };
         }
         return hours;
       })
     );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const hoursOfOperation = coOpHours.reduce((acc, hours) => {
+        acc[hours.day] = [{ start: hours.open, end: hours.close }];
+        return acc;
+      }, {} as { [key: string]: { start: string; end: string }[] });
+
+      const response = await axios.post("/api/update", {
+        hoursOfOperation,
+      });
+
+      if (response.status !== 200) {
+        throw new Error("error");
+      }
+
+      toast.success("Your co-op hours were updated!");
+    } catch (error) {
+      toast.error("We couldn't update your hours");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,18 +63,21 @@ const CoOpHoursPage = () => {
                 sideLabel={`${hours.day}`}
                 buttonLabel="Open"
                 value={hours.open}
-                onChange={(value) => handleHourChange(hours.day, "open", value)}
+                onChange={(dbValue) =>
+                  handleHourChange(hours.day, "open", dbValue)
+                }
               />
               <HourPicker
                 sideLabel=""
                 buttonLabel="Close"
                 value={hours.close}
-                onChange={(value) =>
-                  handleHourChange(hours.day, "close", value)
+                onChange={(dbValue) =>
+                  handleHourChange(hours.day, "close", dbValue)
                 }
               />
             </div>
           ))}
+          <Button onClick={handleSubmit} label="Update My Hours" />
         </div>
       </div>
     </>

@@ -21,7 +21,7 @@ type HourPickerProps = {
   sideLabel: string;
   buttonLabel: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (dbValue: string) => void;
 };
 
 const HourPicker = ({
@@ -32,14 +32,15 @@ const HourPicker = ({
 }: HourPickerProps) => {
   const [open, setOpen] = React.useState(false);
   const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
-    statuses.find((status) => status.value === value) || null
+    statuses.find((status) => status.dbValue === value) || null
   );
 
   const handleSelect = (value: string) => {
-    setSelectedStatus(
-      statuses.find((status) => status.value === value) || null
-    );
-    onChange(value);
+    const selected = statuses.find((status) => status.value === value);
+    if (selected) {
+      setSelectedStatus(selected);
+      onChange(selected.dbValue);
+    }
     setOpen(false);
   };
 
