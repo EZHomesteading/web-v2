@@ -9,12 +9,14 @@ interface EmptyStateProps {
   title?: string;
   subtitle?: string;
   showReset?: boolean;
+  showShop?: boolean;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   title = "No exact matches",
   subtitle = "Try changing or removing some of your filters.",
   showReset,
+  showShop,
 }) => {
   const router = useRouter();
 
@@ -35,6 +37,15 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline
             label="Remove all filters"
+            onClick={() => router.push("/shop")}
+          />
+        )}
+      </div>
+      <div className="w-48">
+        {showShop && (
+          <Button
+            outline
+            label="Find Produce"
             onClick={() => router.push("/shop")}
           />
         )}

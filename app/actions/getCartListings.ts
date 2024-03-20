@@ -27,7 +27,6 @@ export default async function getCartListings() {
     }));
 
     // Returning the safeFavorites array
-    console.log(safeCart);
     return safeCart;
   } catch (error: any) {
     // Throwing an error if any occurs during the process

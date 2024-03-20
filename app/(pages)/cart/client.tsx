@@ -10,12 +10,20 @@ import {
 import { SafeListing, SafeUser } from "@/app/types";
 import { addDays, format } from "date-fns";
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
 interface FavoritesClientProps {
   listings: SafeListing[];
   currentUser?: SafeUser | null;
 }
 
 const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
+  const [totalPrice, setTotalPrice] = useState(0);
+  //listings.forEach((listing) => {
+  // setTotalPrice(4);
+  //});
+  const router = useRouter();
   const shelfLife = (listing: SafeListing) => {
     const adjustedListing = {
       ...listing,
@@ -128,6 +136,10 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
                             <button
                               type="button"
                               className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+                              onClick={async () => {
+                                await axios.delete(`/api/cart/${product.id}`);
+                                router.refresh();
+                              }}
                             >
                               <span className="sr-only">Remove</span>
                               <XMarkIconMini
@@ -153,9 +165,7 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
                         )}
 
                         <span>
-                          {product.stock
-                            ? "In stock"
-                            : `Ships in ${product.id}`}
+                          {product.stock ? "In stock" : `None in Stock`}
                         </span>
                       </p>
                     </div>
@@ -179,7 +189,9 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
               <dl className="mt-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <dt className="text-sm text-gray-600">Subtotal</dt>
-                  <dd className="text-sm font-medium text-gray-900">$99.00</dd>
+                  <dd className="text-sm font-medium text-gray-900">
+                    {totalPrice}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex items-center text-sm text-gray-600">
