@@ -24,6 +24,7 @@ import { SafeUser } from "@/app/types";
 import MenuItem from "./MenuItem";
 import Avatar from "../ui/Avatar";
 import { CiSquarePlus } from "react-icons/ci";
+import { BsBasket } from "react-icons/bs";
 
 interface UserMenuProps {
   currentUser?: SafeUser | null;
@@ -173,9 +174,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   icon={<FaShoppingCart className="mr-2" />}
                   onClick={() => router.push("/dashboard/reservations")}
                 />
-                <MenuItem label="Cart" onClick={() => router.push("/cart")} />
+                <MenuItem
+                  label="Cart"
+                  icon={<BsBasket className="mr-2" />}
+                  onClick={() => router.push("/cart")}
+                />
                 {currentUser?.role === "" ? (
                   <MenuItem
+                    icon={<FaStore className="mr-2" />}
                     label="Become a Co-Op"
                     onClick={() => router.push("/updatetocoop")}
                   />
