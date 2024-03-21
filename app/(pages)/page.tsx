@@ -64,7 +64,7 @@ export default function Home() {
             EZ Homesteading connects family scale farmers & gardeners with
             people in their community.
           </p>
-          <div className="w-2/5">
+          <div className="flex items start">
             <FindListingsComponent />
           </div>
         </div>

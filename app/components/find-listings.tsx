@@ -123,59 +123,51 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center space-y-4">
-        <div className="relative w-auto flex flex-col items-center space-y-4">
-          <div className="flex flex-col sm:flex-row">
-            <div className="relative flex items-center mb-2 sm:mb-0">
-              <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
-              <ListingLocationSearch
-                address={location}
-                setAddress={setLocation}
-                onSearch={handleSearch}
-                onAddressParsed={handleAddressParsed}
-                onFocus={() => setFocus({ ...focus, left: true })}
-                onBlur={() => setFocus({ ...focus, left: false })}
-              />
-            </div>
-            <div className="relative flex items-center mb-2 sm:mb-0">
-              <BsBasket className="absolute text-lg left-2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Everything"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearch();
-                  }
-                }}
-                className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
+      <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
+      <ListingLocationSearch
+        address={location}
+        setAddress={setLocation}
+        onSearch={handleSearch}
+        onAddressParsed={handleAddressParsed}
+        onFocus={() => setFocus({ ...focus, left: true })}
+        onBlur={() => setFocus({ ...focus, left: false })}
+      />
+      <div className="relative flex items-center mb-2 sm:mb-0">
+        <BsBasket className="absolute text-lg left-2 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Everything"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+          className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
               focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'"
-                onFocus={() => setFocus({ ...focus, right: true })}
-                onBlur={() => setFocus({ ...focus, right: false })}
-              />
-              <button
-                onClick={handleSearch}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
-                <IoIosSearch className="text-2xl text-gray-400" />
-              </button>
-            </div>
-          </div>
-          <button
-            onClick={handleNearMeClick}
-            disabled={focus.right}
-            className={`absolute top-10 ${
-              focus.left
-                ? "text-black border-[.5px] border-black rounded-lg"
-                : "text-white "
-            }`}
-            style={{ width: "calc(100% - 1rem)" }}
-          >
-            Near Me
-          </button>
-        </div>
+          onFocus={() => setFocus({ ...focus, right: true })}
+          onBlur={() => setFocus({ ...focus, right: false })}
+        />
+        <button
+          onClick={handleSearch}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+        >
+          <IoIosSearch className="text-2xl text-gray-400" />
+        </button>
       </div>
+      <button
+        onClick={handleNearMeClick}
+        disabled={focus.right}
+        className={`absolute top-10 ${
+          focus.left
+            ? "text-black border-[.5px] border-black rounded-lg"
+            : "text-white "
+        }`}
+        style={{ width: "calc(100% - 1rem)" }}
+      >
+        Near Me
+      </button>
     </>
   );
 };
