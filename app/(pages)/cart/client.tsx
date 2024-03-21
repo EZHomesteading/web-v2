@@ -19,10 +19,12 @@ interface FavoritesClientProps {
 }
 
 const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
-  const [totalPrice, setTotalPrice] = useState(0);
-  //listings.forEach((listing) => {
-  // setTotalPrice(4);
-  //});
+  const [totalPrice, setTotalPrice] = useState("");
+  // listings.forEach((listing) => {
+  //   const list = listing.price.toString();
+  //   setTotalPrice(list);
+  // });
+
   const router = useRouter();
   const shelfLife = (listing: SafeListing) => {
     const adjustedListing = {
@@ -84,7 +86,7 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
                             </h3>
                           </div>
                           <div className="mt-1 flex text-sm">
-                            <p className="text-gray-500">
+                            <div className="text-gray-500">
                               {product.quantityType ? (
                                 <div>
                                   {product.stock}
@@ -93,21 +95,21 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
                               ) : (
                                 `${product.stock} in stock`
                               )}
-                            </p>
+                            </div>
                             {product.shelfLife ? (
                               <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">
                                 {shelfLife(product)}
                               </p>
                             ) : null}
                           </div>
-                          <p className="mt-1 text-sm font-medium text-gray-900">
+                          <div className="mt-1 text-sm font-medium text-gray-900">
                             ${product.price}{" "}
                             {product.quantityType ? (
                               <div> per {product.quantityType}</div>
                             ) : (
                               `per ${product.subCategory}`
                             )}
-                          </p>
+                          </div>
                         </div>
 
                         <div className="mt-4 sm:mt-0 sm:pr-9">
