@@ -67,7 +67,7 @@ const FindListingsComponent = () => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           setLatLng({ lat, lng });
-          setLocation(`${lat}, ${lng}`);
+          setLocation("Near Me");
         },
         (error) => {
           console.error("Error getting location: ", error);
@@ -131,6 +131,7 @@ const FindListingsComponent = () => {
               <ListingLocationSearch
                 address={location}
                 setAddress={setLocation}
+                onSearch={handleSearch}
                 onAddressParsed={handleAddressParsed}
                 onFocus={() => setFocus({ ...focus, left: true })}
                 onBlur={() => setFocus({ ...focus, left: false })}
@@ -143,6 +144,11 @@ const FindListingsComponent = () => {
                 placeholder="Everything"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
                 className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
               focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'"
                 onFocus={() => setFocus({ ...focus, right: true })}
@@ -152,7 +158,7 @@ const FindListingsComponent = () => {
                 onClick={handleSearch}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
-                <IoIosSearch className="text-lg text-gray-400" />
+                <IoIosSearch className="text-2xl text-gray-400" />
               </button>
             </div>
           </div>

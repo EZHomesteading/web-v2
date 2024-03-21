@@ -12,12 +12,14 @@ interface LocationSearchInputProps {
   onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
   onFocus: () => void;
   onBlur: () => void;
+  onSearch: () => void;
 }
 
 const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
+  onSearch,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -36,6 +38,21 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
       });
   };
 
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    suggestions: readonly Suggestion[]
+  ) => {
+    if (e.key === "Enter") {
+      if (suggestions.length > 0) {
+        const topSuggestion = suggestions[0].description;
+        setAddress(topSuggestion);
+        handleSelect(topSuggestion);
+      } else {
+        onSearch();
+      }
+    }
+  };
+
   return (
     <PlacesAutocomplete
       value={address}
@@ -51,6 +68,7 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
               className:
                 "w-full rounded-r-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'",
             })}
+            onKeyDown={(e) => handleKeyDown(e, suggestions)}
           />
           <div className="absolute mt-1 w-full bg-white shadow-lg z-10">
             {suggestions.map((suggestion) => {
