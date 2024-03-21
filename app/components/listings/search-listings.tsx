@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
 import axios from "axios";
-import ListingLocationSearch from "@/app/components/map/ListingLocationSearch";
-import { FiMapPin } from "react-icons/fi";
-import { IoIosSearch } from "react-icons/io";
-import { BsBasket } from "react-icons/bs";
+import SearchLocation from "@/app/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import SearchInput from "./search-input";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -123,51 +121,23 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <FiMapPin className="absolute z-50 left-2 text-lg text-gray-400" />
-      <ListingLocationSearch
+      <SearchLocation
         address={location}
         setAddress={setLocation}
         onSearch={handleSearch}
         onAddressParsed={handleAddressParsed}
         onFocus={() => setFocus({ ...focus, left: true })}
         onBlur={() => setFocus({ ...focus, left: false })}
+        focus={focus}
+        handleNearMeClick={handleNearMeClick}
       />
-      <div className="relative flex items-center mb-2 sm:mb-0">
-        <BsBasket className="absolute text-lg left-2 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Everything"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
-          }}
-          className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border
-              focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'"
-          onFocus={() => setFocus({ ...focus, right: true })}
-          onBlur={() => setFocus({ ...focus, right: false })}
-        />
-        <button
-          onClick={handleSearch}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-        >
-          <IoIosSearch className="text-2xl text-gray-400" />
-        </button>
-      </div>
-      <button
-        onClick={handleNearMeClick}
-        disabled={focus.right}
-        className={`absolute top-10 ${
-          focus.left
-            ? "text-black border-[.5px] border-black rounded-lg"
-            : "text-white "
-        }`}
-        style={{ width: "calc(100% - 1rem)" }}
-      >
-        Near Me
-      </button>
+      <SearchInput
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        handleSearch={handleSearch}
+        focus={focus}
+        setFocus={setFocus}
+      />
     </>
   );
 };

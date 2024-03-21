@@ -7,7 +7,7 @@ import Logo from "./Logo";
 import Search from "./Search";
 import UserMenu from "./UserMenu";
 import { ModeToggle } from "../ui/mode-toggle";
-import FindListingsComponent from "@/app/components/find-listings";
+import FindListingsComponent from "@/app/components/listings/search-listings";
 // Define props interface for the Navbar component
 interface NavbarProps {
   // Current user data or null if no user is logged in

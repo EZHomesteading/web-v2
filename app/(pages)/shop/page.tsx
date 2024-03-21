@@ -23,7 +23,7 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const { q = "", lat = "", lng = "", radius = "30" } = searchParams || {};
+  const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
 
   const listings = await getListingsApi({ q, lat, lng, radius });
   const currentUser = await getCurrentUser();
