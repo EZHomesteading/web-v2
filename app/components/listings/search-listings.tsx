@@ -128,9 +128,8 @@ const FindListingsComponent = () => {
         onAddressParsed={handleAddressParsed}
         onFocus={() => setFocus({ ...focus, left: true })}
         onBlur={() => setFocus({ ...focus, left: false })}
-        focus={focus}
-        handleNearMeClick={handleNearMeClick}
       />
+      <button onClick={handleNearMeClick}>Near Me</button>
       <SearchInput
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
