@@ -121,22 +121,26 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <SearchLocation
-        address={location}
-        setAddress={setLocation}
-        onSearch={handleSearch}
-        onAddressParsed={handleAddressParsed}
-        onFocus={() => setFocus({ ...focus, left: true })}
-        onBlur={() => setFocus({ ...focus, left: false })}
-      />
-      <button onClick={handleNearMeClick}>Near Me</button>
-      <SearchInput
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleSearch={handleSearch}
-        focus={focus}
-        setFocus={setFocus}
-      />
+      <div className="flex flex-col items-center">
+        <div className="flex">
+          <SearchLocation
+            address={location}
+            setAddress={setLocation}
+            onSearch={handleSearch}
+            onAddressParsed={handleAddressParsed}
+            onFocus={() => setFocus({ ...focus, left: true })}
+            onBlur={() => setFocus({ ...focus, left: false })}
+          />
+          <SearchInput
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSearch={handleSearch}
+            focus={focus}
+            setFocus={setFocus}
+          />
+        </div>
+        <button onClick={handleNearMeClick}>Near Me</button>
+      </div>
     </>
   );
 };
