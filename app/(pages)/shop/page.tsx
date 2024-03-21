@@ -14,7 +14,7 @@ interface ShopProps {
   };
 }
 
-const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
+const DynamicShop = dynamic(() => import("@/app/(pages)/shop/Shop"), {
   ssr: true,
 });
 

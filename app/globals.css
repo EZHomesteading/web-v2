@@ -1,12 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* // */
+
 @layer base {
   :root {
-    --card-background-light: #ffffff; /* Light theme card background */
-    --card-background-dark: #333333; /* Dark theme card background */
-
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -67,19 +64,4 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
-}
-
-.Fresh {
-  font-family: serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.Produce {
-  font-family: serif;
-  color: #f5b546;
-}
-
-body::-webkit-scrollbar {
-  display: none;
 }

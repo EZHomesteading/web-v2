@@ -18,8 +18,6 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
-  onFocus,
-  onBlur,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -49,7 +47,7 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
           <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
           <input
             {...getInputProps({
-              placeholder: "Where?",
+              placeholder: "Everywhere",
               className:
                 "w-full rounded-r-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'",
             })}

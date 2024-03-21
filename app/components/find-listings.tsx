@@ -64,8 +64,10 @@ const FindListingsComponent = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const userLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
-          setAddress(userLocation);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setLatLng({ lat, lng });
+          setLocation(`${lat}, ${lng}`);
         },
         (error) => {
           console.error("Error getting location: ", error);
@@ -78,31 +80,38 @@ const FindListingsComponent = () => {
 
   const handleSearch = async () => {
     try {
-      const geoData = await getLatLngFromAddress(location);
-
-      if (geoData) {
-        const { lat, lng } = geoData;
-        const radius = 10;
-
-        const query = {
-          q: searchQuery,
-          lat: lat.toString(),
-          lng: lng.toString(),
-          radius: radius.toString(),
-        };
-
-        const url = qs.stringifyUrl(
-          {
-            url: "/shop",
-            query,
-          },
-          { skipNull: true }
-        );
-
-        router.push(url);
-      } else {
-        console.error("Please enter a valid address.");
+      let lat: string | null = null;
+      let lng: string | null = null;
+      let radius: number | null = null;
+      if (latLng) {
+        lat = latLng.lat.toString();
+        lng = latLng.lng.toString();
+        radius = 10;
+      } else if (location) {
+        const geoData = await getLatLngFromAddress(location);
+        radius = 10;
+        if (geoData) {
+          lat = geoData.lat.toString();
+          lng = geoData.lng.toString();
+        }
       }
+
+      const query: Record<string, string | undefined> = {
+        ...(searchQuery ? { q: searchQuery } : {}),
+        ...(lat ? { lat: lat.toString() } : {}),
+        ...(lng ? { lng: lng.toString() } : {}),
+        ...(radius ? { radius: radius.toString() } : {}),
+      };
+
+      const url = qs.stringifyUrl(
+        {
+          url: "/shop",
+          query,
+        },
+        { skipNull: true }
+      );
+
+      router.push(url);
     } catch (error) {
       console.error("Error searching listings:", error);
     }
@@ -131,7 +140,7 @@ const FindListingsComponent = () => {
               <BsBasket className="absolute text-lg left-2 text-gray-400" />
               <input
                 type="text"
-                placeholder="What?"
+                placeholder="Everything"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border

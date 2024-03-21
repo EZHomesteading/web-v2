@@ -11,9 +11,12 @@ interface StorePageProps {
   };
 }
 
-const DynamicStorePage = dynamic(() => import("@/app/components/Store"), {
-  ssr: true,
-});
+const DynamicStorePage = dynamic(
+  () => import("@/app/(pages)/store/[storeId]/Store"),
+  {
+    ssr: true,
+  }
+);
 
 const StorePage = async ({ params }: StorePageProps) => {
   const { storeId } = params;

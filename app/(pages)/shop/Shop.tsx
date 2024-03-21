@@ -1,6 +1,7 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
-import ClientOnly from "./client/ClientOnly";
+import ClientOnly from "../../components/client/ClientOnly";
+import { SliderDemo } from "@/app/components/ui/slider-shop";
 
 interface ShopProps {
   listings: any[];
