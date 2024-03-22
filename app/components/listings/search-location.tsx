@@ -9,8 +9,8 @@ interface LocationSearchInputProps {
   address: string;
   setAddress: (address: string) => void;
   onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
-  onFocus: () => void;
-  onBlur: () => void;
+  focus: { left: boolean; right: boolean };
+  setFocus: (focus: { left: boolean; right: boolean }) => void;
   onSearch: () => void;
 }
 
@@ -19,6 +19,8 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
   setAddress,
   onAddressParsed,
   onSearch,
+  focus,
+  setFocus,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -68,6 +70,8 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
                 "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black w-full sm:w-auto",
             })}
             onKeyDown={(e) => handleKeyDown(e, suggestions)}
+            onFocus={() => setFocus({ ...focus, left: true })}
+            onBlur={() => setFocus({ ...focus, left: false })}
           />
           <div className="absolute mt-1 shadow-lg z-10">
             {suggestions.map((suggestion) => {

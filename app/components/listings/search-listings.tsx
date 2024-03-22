@@ -129,8 +129,8 @@ const FindListingsComponent = () => {
             setAddress={setLocation}
             onSearch={handleSearch}
             onAddressParsed={handleAddressParsed}
-            onFocus={() => setFocus({ ...focus, left: true })}
-            onBlur={() => setFocus({ ...focus, left: false })}
+            focus={focus}
+            setFocus={setFocus}
           />
         </div>
         <div className="w-full md:w-1/2">
@@ -142,7 +142,7 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        {!focus.right && (
+        {focus.left && (
           <button
             className="absolute top-full mt-2 py-2 px-4 bg-green-800 text-white rounded"
             style={{ width: "100%" }}
