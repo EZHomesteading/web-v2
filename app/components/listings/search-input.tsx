@@ -23,7 +23,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <div className="relative flex items-center mb-2 sm:mb-0">
+    <div className="relative flex items-center mb-2 sm:mb-0 w-full sm:w-auto">
       <BsBasket className="absolute text-lg left-2 text-gray-400" />
       <input
         type="text"

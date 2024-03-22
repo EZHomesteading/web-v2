@@ -66,6 +66,7 @@ const FindListingsComponent = () => {
           const lng = position.coords.longitude;
           setLatLng({ lat, lng });
           setLocation("Near Me");
+          setFocus({ left: false, right: true });
         },
         (error) => {
           console.error("Error getting location: ", error);
@@ -121,8 +122,8 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center">
-        <div className="flex">
+      <div className="flex flex-row items-start md:items-center">
+        <div className="w-full md:w-1/2 mb-2 md:mb-0">
           <SearchLocation
             address={location}
             setAddress={setLocation}
@@ -131,6 +132,8 @@ const FindListingsComponent = () => {
             onFocus={() => setFocus({ ...focus, left: true })}
             onBlur={() => setFocus({ ...focus, left: false })}
           />
+        </div>
+        <div className="w-full md:w-1/2">
           <SearchInput
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -139,7 +142,15 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        <button onClick={handleNearMeClick}>Near Me</button>
+        {!focus.right && (
+          <button
+            className="absolute top-full mt-2 py-2 px-4 bg-green-800 text-white rounded"
+            style={{ width: "100%" }}
+            onClick={handleNearMeClick}
+          >
+            Near Me
+          </button>
+        )}
       </div>
     </>
   );

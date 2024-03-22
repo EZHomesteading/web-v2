@@ -65,7 +65,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
             {...getInputProps({
               placeholder: "Everywhere",
               className:
-                "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black",
+                "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black w-full sm:w-auto",
             })}
             onKeyDown={(e) => handleKeyDown(e, suggestions)}
           />
@@ -77,7 +77,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
               return (
                 <div
                   {...getSuggestionItemProps(suggestion, {
-                    className: `px-4 py-2 ${className}`,
+                    className: `px-4 py-2 bg-white ${className}`,
                   })}
                   key={suggestion.id}
                 >
