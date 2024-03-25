@@ -148,7 +148,7 @@ const FindListingsComponent = () => {
         </div>
         {!focus.right && (
           <button
-            className="absolute top-full mt-[.5] py-2 px-4 bg-green-800 text-white rounded w-full"
+            className="absolute top-full mt-1 py-2 px-4 bg-green-800 text-white rounded w-full"
             onClick={handleNearMeClick}
           >
             Near Me
