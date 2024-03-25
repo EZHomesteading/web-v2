@@ -4,13 +4,6 @@ import { addDays, format } from "date-fns";
 import Button from "../Button";
 import { SafeUser } from "@/app/types";
 import useCart from "@/app/hooks/useCart";
-// import Calendar from "../inputs/Calendar";
-
-// interface Range {
-//   startDate: Date;
-//   endDate: Date;
-//   key: string;
-// }
 
 interface ListingReservationProps {
   listingId: string;
@@ -94,12 +87,10 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
             onClick={toggleCart}
           />
         </div>
-        {/* {dateRange && <Calendar value={dateRange} onChange={() => {}} />} */}
         <Button disabled={disabled} label={`Buy Now`} onClick={onSubmit} />
       </div>
     </>
   );
 };
 
-// Export ListingReservation component
 export default ListingReservation;
