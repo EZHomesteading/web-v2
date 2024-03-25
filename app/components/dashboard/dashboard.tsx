@@ -18,6 +18,7 @@ import {
   AlertDialogCancel,
   AlertDialogFooter,
 } from "../ui/alert-dialog";
+import { ModeToggle } from "../ui/mode-toggle";
 
 interface UpdateUserProps {
   currentUser?: SafeUser | null;
@@ -508,7 +509,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         />
                       </div>
                     </div>
-
+                    <ModeToggle />
                     <div className="col-span-full">
                       <label
                         htmlFor="timezone"

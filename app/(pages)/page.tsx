@@ -2,15 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import homebg from "@/public/images/home-images/ezhbg2.jpg";
 import { Indie_Flower } from "next/font/google";
-import FindListingsComponent from "@/app/components/find-listings";
+import FindListingsComponent from "@/app/components/listings/search-listings";
 
 const footerNavigation = {
   shop: [
-    { name: "Vegetables", href: "/shop?category=Vegetables" },
-    { name: "Fruits", href: "/shop?category=Fruits" },
-    { name: "Dairy", href: "/shop?category=Dairy" },
-    { name: "Grains", href: "/shop?category=Grains" },
-    { name: "Seeds", href: "/shop?category=Seeds" },
+    { name: "Vegetables", href: "/shop?q=vegetables" },
+    { name: "Fruits", href: "/shop?q=fruits" },
+    { name: "Dairy", href: "/shop?q=dairy" },
+    { name: "Grains", href: "/shop?q=grains" },
+    { name: "Seeds", href: "/shop?q=seeds" },
   ],
   company: [
     { name: "Who we are", href: "/who-we-are" },
@@ -64,7 +64,7 @@ export default function Home() {
             EZ Homesteading connects family scale farmers & gardeners with
             people in their community.
           </p>
-          <div className="w-2/5">
+          <div className="flex">
             <FindListingsComponent />
           </div>
         </div>

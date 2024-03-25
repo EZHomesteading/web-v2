@@ -79,6 +79,24 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
           >
             Add a Product
           </div>
+        ) : currentUser?.role === "producer" ? (
+          <div
+            onClick={onRent}
+            className="
+              hidden
+              md:flex
+              items-center
+              text-sm 
+              font-semibold 
+              py-3 
+              px-4 
+              rounded-full 
+              hover:bg-neutral-100 
+              transition 
+              cursor-pointer"
+          >
+            Add a Product
+          </div>
         ) : (
           <div
             onClick={coopRegisterModal.onOpen}
@@ -153,6 +171,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   onClick={rentModal.onOpen}
                 />
               </div>
+            ) : currentUser?.role === "producer" ? (
+              <div>
+                <MenuItem
+                  label="My Store"
+                  icon={<FaStore className="mr-2" />}
+                  onClick={() => router.push("/dashboard/my-store")}
+                />
+                <MenuItem
+                  label="Add a Product"
+                  icon={<CiSquarePlus className="mr-2" />}
+                  onClick={rentModal.onOpen}
+                />
+              </div>
             ) : (
               <div></div>
             )}
@@ -164,26 +195,28 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   onClick={() => router.push("/dashboard")}
                 />
                 <MenuItem
-                  label="My Favorites"
-                  icon={<FaHeart className="mr-2" />}
-                  onClick={() => router.push("/dashboard/favorites")}
-                />
-                <MenuItem
-                  label="Current Orders"
-                  icon={<FaShoppingCart className="mr-2" />}
-                  onClick={() => router.push("/dashboard/reservations")}
-                />
-                <MenuItem
                   label="Cart"
                   icon={<BsBasket className="mr-2" />}
                   onClick={() => router.push("/cart")}
                 />
+                <MenuItem
+                  label="My Favorites"
+                  icon={<FaHeart className="mr-2" />}
+                  onClick={() => router.push("/dashboard/favorites")}
+                />
                 {currentUser?.role === "" ? (
-                  <MenuItem
-                    icon={<FaStore className="mr-2" />}
-                    label="Become a Co-Op"
-                    onClick={() => router.push("/updatetocoop")}
-                  />
+                  <div>
+                    <MenuItem
+                      icon={<FaStore className="mr-2" />}
+                      label="Become a Co-Op"
+                      onClick={() => router.push("/updatetocoop")}
+                    />
+                    <MenuItem
+                      icon={<FaStore className="mr-2" />}
+                      label="Become a Producer"
+                      onClick={() => router.push("/updatetoproducer")}
+                    />
+                  </div>
                 ) : (
                   <div></div>
                 )}

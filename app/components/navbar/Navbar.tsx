@@ -1,16 +1,12 @@
-// Import necessary components and types
 import { SafeUser } from "@/app/types";
 
 import Categories from "./Categories";
 import Container from "../Container";
 import Logo from "./Logo";
-import Search from "./Search";
 import UserMenu from "./UserMenu";
-import { ModeToggle } from "../ui/mode-toggle";
-import FindListingsComponent from "@/app/components/find-listings";
-// Define props interface for the Navbar component
+import FindListingsComponent from "@/app/components/listings/search-listings";
+
 interface NavbarProps {
-  // Current user data or null if no user is logged in
   currentUser?: SafeUser | null;
 }
 
@@ -44,12 +40,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
             {/* Search component */}
             <FindListingsComponent />
             {/* UserMenu component */}
-            <div className="flex items-center justify-end">
-              <div className="mr-2">
-                <UserMenu currentUser={currentUser} />
-              </div>
-              <ModeToggle />
-            </div>
+
+            <UserMenu currentUser={currentUser} />
           </div>
         </Container>
       </div>

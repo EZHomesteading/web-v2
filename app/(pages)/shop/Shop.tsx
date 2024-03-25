@@ -1,6 +1,6 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
-import ClientOnly from "./client/ClientOnly";
+import ClientOnly from "../../components/client/ClientOnly";
 
 interface ShopProps {
   listings: any[];
@@ -15,15 +15,14 @@ const Shop = ({ listings, currentUser, emptyState }: ShopProps) => {
         {emptyState || (
           <div
             className="
-              pt-3
+              pt-2
               grid 
-              grid-cols-1 
+              grid-cols-2
               sm:grid-cols-2 
               md:grid-cols-3 
               lg:grid-cols-4
               xl:grid-cols-5
-              2xl:grid-cols-6
-              gap-8
+              gap-4
             "
           >
             {listings.map((listing: any) => (

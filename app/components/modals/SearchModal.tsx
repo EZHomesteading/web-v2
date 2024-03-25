@@ -8,7 +8,7 @@ import Modal from "@/app/components/modals/Modal";
 import Heading from "@/app/components/Heading";
 import { FieldValues, useForm } from "react-hook-form";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
-import FindListingsComponent from "@/app/components/find-listings";
+import FindListingsComponent from "@/app/components/listings/search-listings";
 import { useTheme } from "next-themes";
 import SearchClient, {
   ProductValue,
