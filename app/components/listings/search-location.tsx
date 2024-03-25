@@ -1,4 +1,3 @@
-import React from "react";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -10,16 +9,18 @@ interface LocationSearchInputProps {
   address: string;
   setAddress: (address: string) => void;
   onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
-  onFocus: () => void;
-  onBlur: () => void;
+  focus: { left: boolean; right: boolean };
+  setFocus: (focus: { left: boolean; right: boolean }) => void;
+  onSearch: () => void;
 }
 
-const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
+const SearchLocation: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
-  onFocus,
-  onBlur,
+  onSearch,
+  focus,
+  setFocus,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -38,31 +39,49 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
       });
   };
 
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    suggestions: readonly Suggestion[]
+  ) => {
+    if (e.key === "Enter") {
+      if (suggestions.length > 0) {
+        const topSuggestion = suggestions[0].description;
+        setAddress(topSuggestion);
+        handleSelect(topSuggestion);
+      } else {
+        onSearch();
+      }
+    }
+  };
+
   return (
     <PlacesAutocomplete
       value={address}
       onChange={handleChange}
       onSelect={handleSelect}
     >
-      {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div className="relative">
           <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
           <input
             {...getInputProps({
-              placeholder: "Where?",
+              placeholder: "Everywhere",
               className:
-                "w-full rounded-r-full sm:rounded-l-full sm:rounded-r-none px-4 py-2 pl-8 outline-none transition-all duration-200 border focus:left ? 'bg-white border-black scale-120' : 'bg-gray-100 border-gray-300'",
+                "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black w-full sm:w-auto",
             })}
+            onKeyDown={(e) => handleKeyDown(e, suggestions)}
+            onFocus={() => setFocus({ ...focus, left: true })}
+            onBlur={() => setFocus({ ...focus, left: false })}
           />
-          <div className="absolute mt-1 w-full bg-white shadow-lg z-10">
+          <div className="absolute mt-1 shadow-lg z-10">
             {suggestions.map((suggestion) => {
               const className = suggestion.active
-                ? "bg-gray-200 cursor-pointer"
-                : "bg-white cursor-pointer";
+                ? "cursor-pointer"
+                : "cursor-pointer";
               return (
                 <div
                   {...getSuggestionItemProps(suggestion, {
-                    className: `px-4 py-2 ${className}`,
+                    className: `px-4 py-2 bg-white ${className}`,
                   })}
                   key={suggestion.id}
                 >
@@ -77,4 +96,4 @@ const ListingLocationSearch: React.FC<LocationSearchInputProps> = ({
   );
 };
 
-export default ListingLocationSearch;
+export default SearchLocation;

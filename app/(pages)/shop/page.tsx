@@ -14,7 +14,7 @@ interface ShopProps {
   };
 }
 
-const DynamicShop = dynamic(() => import("@/app/components/Shop"), {
+const DynamicShop = dynamic(() => import("@/app/(pages)/shop/Shop"), {
   ssr: true,
 });
 
@@ -23,7 +23,7 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const { q = "", lat = "", lng = "", radius = "30" } = searchParams || {};
+  const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
 
   const listings = await getListingsApi({ q, lat, lng, radius });
   const currentUser = await getCurrentUser();

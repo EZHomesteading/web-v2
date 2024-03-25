@@ -5,7 +5,7 @@ const config = {
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
-    "./app/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -73,7 +73,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), "@tailwindcss/forms"],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
 
 export default config;
