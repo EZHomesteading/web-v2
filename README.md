@@ -1,9 +1,5 @@
 # EZHomesteading
 
-<p align="center">
-  <a href="https://ezhomesteading.com/how-ezh-works/"><img height="300" src="public/readme/ezh.png?raw=true" alt="EZ Homesteading Landing Page"></a>
-</p>
-
 - 🏚️ EZ Homesteading is a multivendor marketplace application with an emphasis on connecting family-scale farmers and gardeners with local consumers in their area.
 - 🧑‍🌾 There are currently two roles on the site. A Co-Op, which can also be thought of as a vendor, is assigned a store upon signing up.
 - 👀 Co-Ops can customize their store's appearance and functionality with a profile picture, a store banner, hours of operation, and much more.
@@ -12,15 +8,15 @@
 
 ### What Makes EZHomesteading Different?
 
-Our goal is to decrease the effort it takes for a family size farm or garden to sell their produce, while they earn as much if not more money. Farmer's markets often times charge vendors up front for their space. These vendors have to be outside watching over their items for upwards of 10 hours to sell their produce, hoping that consumers will come by looking for what they have to offer. EZHomesteading provides an easier, faster, and commitment free way for vendors to sell their fresh organic produce by connecting them with consumers in their area.
+Farmer's markets oftentimes charge vendors up front for their space. These vendors have to be outside watching over their items for upwards of 10 hours to sell their produce, hoping that consumers will come by looking for what they have to offer. EZHomesteading provides an easier, faster, and commitment-free way for these vendors to sell their fresh organic produce by connecting them with consumers in their area. EZHomesteading manages logistics and marketing for co-ops and producers. Producers are people with small gardens, a few cows, an apple tree, etc. These indidvuals do not have the time or desire to sell smaller quantities of their produce to consumers. By becoming EZH producers, these individuals can sell their excess produce in bulk to co-ops in their area. 
 
 ### Code Base Features
 
-- 🅽 [Next.js](https://nextjs.org) with App Router support
+- 🅽 [Next.js 14](https://nextjs.org) with App Router support
 - 🔍 Type checking [TypeScript](https://www.typescriptlang.org)
 - 🌀 [Tailwind CSS](https://tailwindcss.com)
 - ✅ Strict Mode for TypeScript and React 18
-- 🔒 Authentication with [NextAuth](https://next-auth.js.org/): Sign up with two different roles and privileges and sign in.
+- 🔒 Authentication with [NextAuth](https://next-auth.js.org/): Sign up as three different roles with different privileges and sign in.
 - 🔼 Type-safe ORM with Prisma
 - ⌨️ Form handling with React Hook Form
 - 🛡️ Validation library with Zod
@@ -29,6 +25,7 @@ Our goal is to decrease the effort it takes for a family size farm or garden to 
 - 💡 Absolute Imports using `@` prefix
 - 🗂 VSCode configuration: Debug, Settings, Tasks and Extensions
 - 🗺️ Google Maps API for autocomplete, nearby search, route optimization, and more
+- 📤 Cloudinary for image capture and upload
 
 ### Project Structure
 
