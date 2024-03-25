@@ -59,6 +59,7 @@ const FindListingsComponent = () => {
   const [focus, setFocus] = useState({ left: false, right: false });
 
   const handleNearMeClick = () => {
+    console.log("button click");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -85,10 +86,10 @@ const FindListingsComponent = () => {
       if (latLng) {
         lat = latLng.lat.toString();
         lng = latLng.lng.toString();
-        radius = 10;
+        radius = 20;
       } else if (location) {
         const geoData = await getLatLngFromAddress(location);
-        radius = 10;
+        radius = 20;
         if (geoData) {
           lat = geoData.lat.toString();
           lng = geoData.lng.toString();
@@ -125,7 +126,7 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <div className="flex flex-row items-start md:items-center">
+      <div className="flex flex-row items-start md:items-center relative">
         <div className="w-full md:w-1/2 mb-2 md:mb-0">
           <SearchLocation
             address={location}
@@ -145,10 +146,9 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        {focus.left && (
+        {!focus.right && (
           <button
-            className="absolute top-full mt-2 py-2 px-4 bg-green-800 text-white rounded"
-            style={{ width: "100%" }}
+            className="absolute top-full mt-[.5] py-2 px-4 bg-green-800 text-white rounded w-full"
             onClick={handleNearMeClick}
           >
             Near Me
