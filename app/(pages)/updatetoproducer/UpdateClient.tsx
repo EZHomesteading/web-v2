@@ -1,7 +1,4 @@
 "use client";
-// Import necessary modules and components
-
-// make radiogroup data go where its supposed to
 
 import axios from "axios";
 import { useState } from "react";
@@ -10,12 +7,10 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { SafeUser } from "@/app/types";
 import Container from "@/app/components/Container";
 import { useRouter } from "next/navigation";
-// import getCurrentUser from "@/app/actions/getCurrentUser";
 
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
 import { Button } from "@/app/components/ui/button";
-// const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
   currentUser?: SafeUser | null;
