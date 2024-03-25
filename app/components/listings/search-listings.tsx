@@ -112,6 +112,9 @@ const FindListingsComponent = () => {
       );
 
       router.push(url);
+      setSearchQuery("");
+      setLocation("");
+      setLatLng(null);
     } catch (error) {
       console.error("Error searching listings:", error);
     }

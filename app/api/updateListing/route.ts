@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     stock,
     shelfLife,
     price,
+    userId,
   } = body;
 
   // Checking if any required field is missing in the request body, then return an error response
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
       quantityType,
       stock,
       shelfLife,
-      price, // Parsing price to integer
+      price,
+      userId, // Parsing price to integer
     },
   });
 

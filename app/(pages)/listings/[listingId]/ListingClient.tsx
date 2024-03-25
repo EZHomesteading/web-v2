@@ -15,6 +15,7 @@ import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listingMap";
 import useCart from "@/app/hooks/useCart";
+import { GiStockpiles } from "react-icons/gi";
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -49,21 +50,72 @@ const ListingClient: React.FC<ListingClientProps> = ({
       return loginModal.onOpen();
     }
     setIsLoading(true);
+    if (listing.user.role === "producer" && currentUser.role === "coop") {
+      toast
+        .promise(
+          axios.post("/api/listings", {
+            title: listing.title,
+            description: listing.description,
+            imageSrc: listing.imageSrc,
+            category: listing.category,
+            quantityType: listing.quantityType,
+            stock: 1,
+            shelfLife: listing.shelfLife,
+            subCategory: listing.subCategory,
+            price: listing.price,
+            street: currentUser.street,
+            location: currentUser.location,
+            city: currentUser.city,
+            state: currentUser.state,
+            zip: currentUser.zip,
+            userId: currentUser.id,
+          }),
+          {
+            loading: "loading",
+            success: "success",
+            error: "failed",
+          }
+        )
 
-    toast
-      .promise(
-        axios.post("/api/something", {
-          listingId: listing.id,
-        }),
-        {
-          loading: "loading",
-          success: "success",
-          error: "failed",
-        }
-      )
-      .finally(() => {
-        setIsLoading(false);
-      });
+        .finally(() => {
+          setIsLoading(false);
+        });
+      toast
+        .promise(
+          axios.post("/api/updateListing", {
+            id: listing.id,
+            stock: listing.stock - 1,
+          }),
+          {
+            loading: "loading",
+            success: "success",
+            error: "failed",
+          }
+        )
+
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    //buy all stock
+    //{
+    // toast
+    //   .promise(
+    //     axios.post("/api/updateListing", {
+    //       id: listing.id,
+    //       userId: currentUser.id,
+    //     }),
+    //     {
+    //       loading: "loading",
+    //       success: "success",
+    //       error: "failed",
+    //     }
+    //   )
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });}
+    //}
   };
 
   const adjustedListing = {
