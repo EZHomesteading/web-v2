@@ -13,6 +13,7 @@ import "./globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import getCurrentUser from "./actions/getCurrentUserAsync";
 import CoopRegisterModal from "./components/modals/CoopRegisterModal";
+import AuthContext from "./context/AuthContext";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -47,8 +48,9 @@ export default async function RootLayout({
             <RentModal />
             <Navbar currentUser={currentUser} />
           </ClientOnly>
-
-          <div className=" pt-25">{children}</div>
+          <AuthContext>
+            <div className=" pt-25">{children}</div>
+          </AuthContext>
         </ThemeProvider>
         <script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&libraries=places`}
