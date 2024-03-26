@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
 
@@ -18,7 +18,13 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   showReset,
   showShop,
 }) => {
+  const pathname = usePathname();
+  const isMessagePage = pathname === "/messenger";
   const router = useRouter();
+  if (isMessagePage) {
+    title = "Select a chat or start a new conversation";
+    subtitle = "";
+  }
 
   return (
     <div

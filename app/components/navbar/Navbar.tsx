@@ -1,3 +1,4 @@
+"use client";
 import { SafeUser } from "@/app/types";
 
 import Categories from "./Categories";
@@ -5,6 +6,7 @@ import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
+import { usePathname } from "next/navigation";
 
 interface NavbarProps {
   currentUser?: SafeUser | null;
@@ -12,6 +14,15 @@ interface NavbarProps {
 
 // Navbar component
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith(`/conversations`)) {
+    return null;
+  }
+  if (pathname === "/messenger") {
+    return null;
+  }
+
   return (
     // Render the navbar with fixed position, white background, and shadow
     <div className="relative w-full z-10 shadow-sm">
