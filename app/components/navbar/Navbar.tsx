@@ -19,6 +19,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
   if (pathname?.startsWith(`/conversations`)) {
     return null;
   }
+  if (pathname?.startsWith(`/autochat`)) {
+    return null;
+  }
   if (pathname === "/messenger") {
     return null;
   }

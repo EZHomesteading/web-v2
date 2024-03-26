@@ -20,8 +20,15 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
 
     axios
       .post("/api/conversations", { userId: data.id })
+
       .then((data) => {
-        router.push(`/conversations/${data.data.id}`);
+        axios.post("/api/messages", {
+          message:
+            "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
+          messageOrder: "1",
+          conversationId: data.data.id,
+        });
+        router.push(`/autochat/${data.data.id}`);
       })
       .finally(() => setIsLoading(false));
   }, [data, router]);
