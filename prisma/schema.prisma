@@ -175,6 +175,7 @@ model Message {
   body String?
   image String?
   createdAt DateTime @default(now())
+  messageOrder String?
 
   seenIds String[] @db.ObjectId
   seen User[] @relation("Seen", fields: [seenIds], references: [id])

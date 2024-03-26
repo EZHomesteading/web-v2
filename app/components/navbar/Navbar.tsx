@@ -1,12 +1,24 @@
-import { currentUser } from "@/lib/auth";
+"use client";
+
+import { useCurrentUser } from "@/app/hooks/use-current-user";
 import Categories from "./Categories";
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
+import { usePathname } from "next/navigation";
 
-const Navbar = async () => {
-  const user = await currentUser();
+const Navbar = () => {
+  const user = useCurrentUser();
+  const pathname = usePathname();
+
+  if (pathname?.startsWith(`/conversations`)) {
+    return null;
+  }
+  if (pathname === "/messenger") {
+    return null;
+  }
+
   return (
     <div className="relative w-full z-10 shadow-sm">
       <div className="py-4 border-b-[1px]">
