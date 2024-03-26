@@ -1,12 +1,12 @@
-import DashboardComp from "@/app/components/dashboard/dashboard";
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { ExtendedUser } from "@/next-auth";
+import { DashboardComp } from "@/app/components/dashboard/dashboard";
 
-interface IParams {
-  listingId?: string;
+interface UserProps {
+  user?: ExtendedUser;
 }
-const DashboardPage = async ({ params }: { params: IParams }) => {
-  const currentUser = await getCurrentUser();
-  return <DashboardComp currentUser={currentUser} />;
+
+const DashboardPage = ({ user }: UserProps) => {
+  return <DashboardComp user={user} />;
 };
 
 export default DashboardPage;

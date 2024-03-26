@@ -1,12 +1,10 @@
 "use client";
-//THIS PAGE NEEDS REWORKED FOR NEW ADDRESSES
+
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { SafeUser } from "@/app/types";
 import Input from "../inputs/Input";
-import { useRouter } from "next/navigation";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -17,13 +15,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogFooter,
-} from "../ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
+
 import { ModeToggle } from "../ui/mode-toggle";
-
-interface UpdateUserProps {
-  currentUser?: SafeUser | null;
-}
-
+import { ExtendedUser } from "@/next-auth";
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -36,8 +31,12 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-import Avatar from "../ui/Avatar";
+import { Avatar } from "@/app/components/ui/avatar";
 import LocationSearchInput from "../map/LocationSearchInput";
+
+interface UserInfoProps {
+  user?: ExtendedUser;
+}
 
 interface NavigationItem {
   name: string;
@@ -121,7 +120,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
+export const DashboardComp = ({ user }: UserInfoProps) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fullAddress, setFullAddress] = useState(
@@ -142,17 +141,17 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      phoneNumber: currentUser?.phoneNumber,
-      email: currentUser?.email,
+      phoneNumber: user?.phoneNumber,
+      email: user?.email,
 
-      role: currentUser?.role,
-      name: currentUser?.name,
+      role: user?.role,
+      name: user?.name,
     },
   });
-  setValue("street", currentUser?.street);
-  setValue("city", currentUser?.city);
-  setValue("state", currentUser?.state);
-  setValue("zip", currentUser?.zip);
+  setValue("street", user?.street);
+  setValue("city", user?.city);
+  setValue("state", user?.state);
+  setValue("zip", user?.zip);
   const getLatLngFromAddress = async (address: string) => {
     const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -223,7 +222,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
 
   const onDelete = () => {
     axios
-      .delete(`/api/register/${currentUser?.id}`)
+      .delete(`/api/register/${user?.id}`)
       .then(() => {
         toast.success("Your account has been deleted");
       })
@@ -422,7 +421,7 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                 <form className="md:col-span-2">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
                     <div className="col-span-full flex items-center gap-x-8">
-                      <Avatar src="" />
+                      <Avatar />
                       {/* THIS NEEDS UPDATED */}
                       <div>
                         <button
@@ -491,9 +490,8 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
                         htmlFor="address"
                         className="block text-sm font-medium leading-6"
                       >
-                        Current Address is: {currentUser?.street},{" "}
-                        {currentUser?.city}, {currentUser?.state},{" "}
-                        {currentUser?.zip}
+                        Current Address is: {user?.street}, {user?.city},{" "}
+                        {user?.state}, {user?.zip}
                       </label>
                       <label
                         htmlFor="address"
@@ -690,5 +688,3 @@ const DashboardComp: React.FC<UpdateUserProps> = ({ currentUser }) => {
     </>
   );
 };
-
-export default DashboardComp;

@@ -1,6 +1,6 @@
 "use client";
 
-import Avatar from "../ui/Avatar";
+import { Avatar } from "@/app/components/ui/avatar";
 import { SafeUser } from "@/app/types";
 import { useRouter } from "next/navigation";
 
@@ -31,7 +31,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
             className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
-            <Avatar src={user?.image} />
+            <Avatar />
             <span>{user?.name}</span>
           </span>
         </div>

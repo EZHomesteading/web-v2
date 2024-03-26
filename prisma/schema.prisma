@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,38 +15,38 @@ enum UserRole {
 }
 
 model User {
-  id                String @id @default(auto()) @map("_id") @db.ObjectId
-  name              String  @unique
-  email             String  @unique 
-  emailVerified     DateTime?
-  phoneNumber       String? 
-  street            String?
-  city              String?
-  zip               String?
-  state             String?
-  location          Json?
-  image             String?
-  hoursOfOperation  Json?
-  rolee             UserRole @default(CONSUMER)
-  role              String?
-  hashedPassword    String?
-  stripeAccountId   String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String  @unique
+  email                 String  @unique 
+  emailVerified         DateTime?
+  phoneNumber           String? 
+  street                String?
+  city                  String?
+  zip                   String?
+  state                 String?
+  location              Json?
+  image                 String?
+  hoursOfOperation      Json?
+  rolee                 UserRole @default(CONSUMER)
+  role                  String?
+  password              String?
+  stripeAccountId       String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  conversationIds String[] @db.ObjectId
-  conversations Conversation[] @relation(fields: [conversationIds], references: [id])
+  conversationIds       String[] @db.ObjectId
+  conversations         Conversation[] @relation(fields: [conversationIds], references: [id])
   
-  seenMessageIds String[] @db.ObjectId
-  seenMessages Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
+  seenMessageIds        String[] @db.ObjectId
+  seenMessages          Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
   
-  favoriteIds       String[] @db.ObjectId
-  cartIds           String[] @db.ObjectId
-  orders            Order[]
-  accounts Account[]
-  listings Listing[]
+  favoriteIds           String[] @db.ObjectId
+  cartIds               String[] @db.ObjectId
+  orders                Order[]
+  accounts              Account[]
+  listings              Listing[]
   
-  sentMessages Message[] @relation("SentMessages")
+  sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
 }
 
