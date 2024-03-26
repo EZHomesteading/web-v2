@@ -25,14 +25,23 @@ model User {
   hoursOfOperation  Json?
   role              String?
   hashedPassword    String?
+  stripeAccountId   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  conversationIds String[] @db.ObjectId
+  conversations Conversation[] @relation(fields: [conversationIds], references: [id])
+  
+  seenMessageIds String[] @db.ObjectId
+  seenMessages Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
+  
   favoriteIds       String[] @db.ObjectId
   cartIds           String[] @db.ObjectId
-
+  orders            Order[]
   accounts Account[]
   listings Listing[]
-  reservations Reservation[]
+  
+  sentMessages Message[] @relation("SentMessages")
 }
 
 model Account {
@@ -52,18 +61,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-}
-
-model Product {
-  id                String @id @default(auto()) @map("_id") @db.ObjectId
-  name              String
-  description       String?
-  productPic        String
-  category          String
-  subCategory       String
-  suggestedUnits    String
-  shelfLife         Int
-  suggestPrice      Int
 }
 
 model Listing {
@@ -86,20 +83,64 @@ model Listing {
   coopRating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
-
+  orders        Order[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reservations Reservation[]
 }
 
-model Reservation {
+model Order {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  listingId     String   @db.ObjectId
+  quantity      Int
+  totalPrice    Float
+  status        String   @default("pending")
+  stripePaymentIntentId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing       Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  payments      Payment[]
+}
+
+model Payment {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId       String   @db.ObjectId
+  stripePaymentIntentId String
+  amount        Float
+  status        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  listingId String @db.ObjectId  
-  startDate DateTime
-  endDate DateTime
-  totalPrice Int
+  createdAt       DateTime @default(now())
+  lastMessageAt DateTime @default(now())
+  name String?
+  isGroup Boolean?
+  
+  messagesIds String[] @db.ObjectId
+  messages Message[]
+
+  userIds String[] @db.ObjectId
+  users User[] @relation(fields: [userIds], references: [id])
+}
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  body String?
+  image String?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  seenIds String[] @db.ObjectId
+  seen User[] @relation("Seen", fields: [seenIds], references: [id])
+
+  conversationId String @db.ObjectId
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId String @db.ObjectId
+  sender User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 }

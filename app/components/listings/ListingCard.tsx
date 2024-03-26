@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import { useTheme } from "next-themes";
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
+import { SafeListing, SafeUser } from "@/app/types";
 
 import HeartButton from "../ui/HeartButton";
 import Button from "../Button";
 
 interface ListingCardProps {
   data: SafeListing;
-  reservation?: SafeReservation;
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
@@ -25,7 +24,6 @@ interface ListingCardProps {
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
-  reservation,
   onAction,
   disabled,
   actionLabel,
@@ -63,25 +61,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     },
     [disabled, onSecondAction, secondActionId]
   );
-
-  const price = useMemo(() => {
-    if (reservation) {
-      return reservation.totalPrice;
-    }
-
-    return data.price;
-  }, [reservation, data.price]);
-
-  const reservationDate = useMemo(() => {
-    if (!reservation) {
-      return null;
-    }
-
-    const start = new Date(reservation.startDate);
-    const end = new Date(reservation.endDate);
-
-    return `${format(start, "PP")} - ${format(end, "PP")}`;
-  }, [reservation]);
 
   const cardBackgroundLight = "#ffffff";
   const cardBackgroundDark = "#666666";
@@ -140,7 +119,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
         <div className="flex flex-row items-center gap-1">
           {" "}
-          <div className="font-semibold"> $ {price}</div>
+          <div className="font-semibold"> $ {data.price}</div>
           {data.quantityType && (
             <div className="font-light">per {data.quantityType}</div>
           )}
