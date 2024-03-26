@@ -1,6 +1,6 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import prisma from "@/app/libs/prismadb";
 
 // Interface defining the structure of parameters accepted by the functions
@@ -14,9 +14,9 @@ export async function POST(
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
   // Retrieving the current user
-  const currentUser = await getCurrentUser();
+  const currentUserr = await currentUser();
   // If current user is not available, return an error response
-  if (!currentUser) {
+  if (!currentUserr) {
     return NextResponse.error();
   }
 
@@ -29,7 +29,7 @@ export async function POST(
   }
 
   // Copying cartIds from currentUser or initializing an empty array if not available
-  let cartIds = [...(currentUser.cartIds || [])];
+  let cartIds = [...(currentUserr.cartIds || [])];
 
   // Adding the new listingId to cartIds
   cartIds.push(listingId);
@@ -37,7 +37,7 @@ export async function POST(
   // Updating the user's cartIds in the database
   const user = await prisma.user.update({
     where: {
-      id: currentUser.id, // Updating the user based on their id
+      id: currentUserr.id, // Updating the user based on their id
     },
     data: {
       cartIds, // Updating cartIds
@@ -53,9 +53,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
-  const currentUser = await getCurrentUser();
+  const currentUserr = await currentUser();
   // If current user is not available, return an error response
-  if (!currentUser) {
+  if (!currentUserr) {
     return NextResponse.error();
   }
 
@@ -68,7 +68,7 @@ export async function DELETE(
   }
 
   // Copying cartIds from currentUser or initializing an empty array if not available
-  let cartIds = [...(currentUser.cartIds || [])];
+  let cartIds = [...(currentUserr.cartIds || [])];
 
   // Filtering out the listingId from cartIds
   cartIds = cartIds.filter((id) => id !== listingId);
@@ -76,7 +76,7 @@ export async function DELETE(
   // Updating the user's cartIds in the database
   const user = await prisma.user.update({
     where: {
-      id: currentUser.id, // Updating the user based on their id
+      id: currentUserr.id, // Updating the user based on their id
     },
     data: {
       cartIds, // Updating cartIds

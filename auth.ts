@@ -31,7 +31,24 @@ export const {
       if (session.user) {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
+        session.user.phoneNumber = token.phoneNumber as string | undefined;
+        session.user.street = token.street as string | undefined;
+        session.user.city = token.city as string | undefined;
+        session.user.zip = token.zip as string | undefined;
+        session.user.state = token.state as string | undefined;
+        session.user.location = token.location as unknown;
+        session.user.image = token.image as string | undefined;
+        session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;
+        session.user.stripeAccountId = token.stripeAccountId as
+          | string
+          | undefined;
+        session.user.createdAt = token.createdAt as Date | undefined;
+        session.user.updatedAt = token.updatedAt as Date | undefined;
+        session.user.conversationIds = token.conversationIds as string[];
+        session.user.seenMessageIds = token.seenMessageIds as string[];
+        session.user.favoriteIds = token.favoriteIds as string[];
+        session.user.cartIds = token.cartIds as string[];
       }
       return session;
     },
@@ -43,7 +60,24 @@ export const {
       token.isOAuth = !!existingAccount;
       token.name = existingUser.name;
       token.email = existingUser.email;
+      token.emailVerified = existingUser.emailVerified;
+      token.phoneNumber = existingUser.phoneNumber;
+      token.street = existingUser.street;
+      token.city = existingUser.city;
+      token.zip = existingUser.zip;
+      token.state = existingUser.state;
+      token.location = existingUser.location;
+      token.image = existingUser.image;
+      token.hoursOfOperation = existingUser.hoursOfOperation;
       token.role = existingUser.role;
+      token.password = existingUser.password;
+      token.stripeAccountId = existingUser.stripeAccountId;
+      token.createdAt = existingUser.createdAt;
+      token.updatedAt = existingUser.updatedAt;
+      token.conversationIds = existingUser.conversationIds;
+      token.seenMessageIds = existingUser.seenMessageIds;
+      token.favoriteIds = existingUser.favoriteIds;
+      token.cartIds = existingUser.cartIds;
       return token;
     },
   },

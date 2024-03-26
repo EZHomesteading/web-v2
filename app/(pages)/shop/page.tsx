@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import ClientOnly from "../../components/client/ClientOnly";
 import getListingsApi from "@/app/actions/getListingsApi";
 
@@ -26,11 +26,11 @@ const ShopPage = async ({
   const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
 
   const listings = await getListingsApi({ q, lat, lng, radius });
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
   return (
     <DynamicShop
       listings={listings}
-      currentUser={currentUser}
+      currentUser={user}
       emptyState={
         listings.length === 0 ? (
           <ClientOnly>

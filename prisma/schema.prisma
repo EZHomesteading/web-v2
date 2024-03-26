@@ -27,8 +27,7 @@ model User {
   location              Json?
   image                 String?
   hoursOfOperation      Json?
-  rolee                 UserRole @default(CONSUMER)
-  role                  String?
+  role                 UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
   createdAt             DateTime @default(now())

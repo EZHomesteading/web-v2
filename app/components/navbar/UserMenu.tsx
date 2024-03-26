@@ -24,10 +24,10 @@ import MenuItem from "./MenuItem";
 import { Avatar } from "@/app/components/ui/avatar";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
-import { ExtendedUser } from "@/next-auth";
+import { UserInfo } from "@/next-auth";
 
 interface UserMenuProps {
-  user?: ExtendedUser;
+  user?: UserInfo;
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {

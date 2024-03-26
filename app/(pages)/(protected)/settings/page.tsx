@@ -49,6 +49,7 @@ const SettingsPage = () => {
       name: user?.name || undefined,
       email: user?.email || undefined,
       role: user?.role || undefined,
+      street: user?.street || undefined,
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });
@@ -145,6 +146,24 @@ const SettingsPage = () => {
                             {...field}
                             placeholder="******"
                             type="password"
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder=""
+                            type="text"
                             disabled={isPending}
                           />
                         </FormControl>

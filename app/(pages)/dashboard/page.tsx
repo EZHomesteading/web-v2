@@ -1,11 +1,8 @@
-import { ExtendedUser } from "@/next-auth";
+import { currentUser } from "@/lib/auth";
 import { DashboardComp } from "@/app/components/dashboard/dashboard";
 
-interface UserProps {
-  user?: ExtendedUser;
-}
-
-const DashboardPage = ({ user }: UserProps) => {
+const DashboardPage = async () => {
+  const user = await currentUser();
   return <DashboardComp user={user} />;
 };
 

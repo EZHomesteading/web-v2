@@ -18,7 +18,7 @@ import {
 } from "@/app/components/ui/alert-dialog";
 
 import { ModeToggle } from "../ui/mode-toggle";
-import { ExtendedUser } from "@/next-auth";
+import { UserInfo } from "@/next-auth";
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -35,7 +35,7 @@ import { Avatar } from "@/app/components/ui/avatar";
 import LocationSearchInput from "../map/LocationSearchInput";
 
 interface UserInfoProps {
-  user?: ExtendedUser;
+  user?: UserInfo;
 }
 
 interface NavigationItem {
@@ -124,7 +124,7 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fullAddress, setFullAddress] = useState(
-    `${currentUser?.street}, ${currentUser?.city}, ${currentUser?.state}, ${currentUser?.zip}`
+    `${user?.street}, ${user?.city}, ${user?.state}, ${user?.zip}`
   );
   type AddressComponents = {
     street: string;
@@ -143,7 +143,6 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
     defaultValues: {
       phoneNumber: user?.phoneNumber,
       email: user?.email,
-
       role: user?.role,
       name: user?.name,
     },

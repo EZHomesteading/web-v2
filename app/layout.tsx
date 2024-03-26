@@ -8,7 +8,7 @@ import RentModal from "@/app/components/modals/ListingModal";
 
 import ToasterProvider from "@/app/providers/ToasterProvider";
 
-import "./globals.css";
+import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 
 export const metadata = {
