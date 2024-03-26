@@ -66,6 +66,7 @@
     "react-places-autocomplete": "^7.3.0",
     "react-select": "^5.7.2",
     "react-spinners": "^0.13.8",
+    "stripe": "^14.22.0",
     "swr": "^2.1.1",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
