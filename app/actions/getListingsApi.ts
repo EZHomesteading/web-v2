@@ -1,7 +1,7 @@
 import prisma from "@/app/libs/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import getCurrentUser from "./getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 interface ILocation {
   type: "Point";
   coordinates: [number, number];
@@ -55,15 +55,15 @@ export default async function getListings(params: IListingsParams) {
         return distance <= radiusInMeters;
       });
     }
-    const currentUser = await getCurrentUser();
-    if (currentUser?.role === "producer") {
+    const user = await currentUser();
+    if (user?.role === "PRODUCER") {
       const fuseOptions = { keys: ["user.role"], threshold: 0.3 };
       const fuse = new Fuse(listings, fuseOptions);
       const results = fuse.search("coop");
       listings = results.map((result) => result.item);
       //remove producer listings from listings array.
     }
-    if (currentUser?.role === "") {
+    if (user?.role === "CONSUMER") {
       const fuseOptions = { keys: ["user.role"], threshold: 0.3 };
       const fuse = new Fuse(listings, fuseOptions);
       const results = fuse.search("coop");

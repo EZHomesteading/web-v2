@@ -1,6 +1,5 @@
-// Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import prisma from "@/app/libs/prismadb";
 
 type HoursOfOperation = {
@@ -20,15 +19,15 @@ export async function POST(request: Request) {
     email,
     hoursOfOperation,
   } = body;
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
+
+  const user = await currentUser();
+
+  if (!user) {
     return NextResponse.error();
   }
 
-  const user = await prisma.user.update({
-    where: {
-      id: currentUser.id,
-    },
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
     data: {
       street,
       city,
@@ -42,5 +41,5 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json(user);
+  return NextResponse.json(updatedUser);
 }
