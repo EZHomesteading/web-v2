@@ -1,19 +1,15 @@
 import { Nunito } from "next/font/google";
-
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 import { ThemeProvider } from "./components/theme-provider";
 import Navbar from "@/app/components/navbar/Navbar";
-import LoginModal from "@/app/components/modals/LoginModal";
-import RegisterModal from "@/app/components/modals/RegisterModal";
 import SearchModal from "@/app/components/modals/SearchModal";
 import RentModal from "@/app/components/modals/ListingModal";
 
 import ToasterProvider from "@/app/providers/ToasterProvider";
 
-import "./globals.css";
+import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
-import getCurrentUser from "./actions/getCurrentUserAsync";
-import CoopRegisterModal from "./components/modals/CoopRegisterModal";
-import AuthContext from "./context/AuthContext";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -29,34 +25,32 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const currentUser = await getCurrentUser();
+  const session = await auth();
   return (
-    <html lang="en" className={font.className}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ClientOnly>
-            <ToasterProvider />
-            <LoginModal />
-            <RegisterModal />
-            <CoopRegisterModal />
-            <SearchModal />
-            <RentModal />
-            <Navbar currentUser={currentUser} />
-          </ClientOnly>
-          <AuthContext>
+    <SessionProvider session={session}>
+      <html lang="en" className={font.className}>
+        <body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ClientOnly>
+              <ToasterProvider />
+              <SearchModal />
+              <RentModal />
+              <Navbar user={session?.user} />
+            </ClientOnly>
+
             <div className=" pt-25">{children}</div>
-          </AuthContext>
-        </ThemeProvider>
-        <script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&libraries=places`}
-          defer
-        />
-      </body>
-    </html>
+          </ThemeProvider>
+          <script
+            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&libraries=places`}
+            defer
+          />
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

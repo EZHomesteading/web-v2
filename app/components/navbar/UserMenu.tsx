@@ -19,18 +19,18 @@ import useCoopRegisterModal from "@/app/hooks/useCoopRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useRentModal from "@/app/hooks/useRentModal";
-import { SafeUser } from "@/app/types";
 
 import MenuItem from "./MenuItem";
-import Avatar from "../ui/Avatar";
+import { Avatar } from "@/app/components/ui/avatar";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
+import { UserInfo } from "@/next-auth";
 
 interface UserMenuProps {
-  currentUser?: SafeUser | null;
+  user?: UserInfo;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
+const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
 
   // Custom hooks for managing modal states
@@ -49,20 +49,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
 
   // Handler for renting a product
   const onRent = useCallback(() => {
-    if (!currentUser) {
+    if (!user) {
       // Open login modal if user is not logged in
       return loginModal.onOpen();
     }
 
     // Open rent modal if user is logged in
     rentModal.onOpen();
-  }, [loginModal, rentModal, currentUser]);
+  }, [loginModal, rentModal, user]);
 
   return (
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
         {/* Add a Product button */}
-        {currentUser?.role === "coop" ? (
+        {user?.role === "COOP" ? (
           <div
             onClick={onRent}
             className="
@@ -80,7 +80,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
           >
             Add a Product
           </div>
-        ) : currentUser?.role === "producer" ? (
+        ) : user?.role === "PRODUCER" ? (
           <div
             onClick={onRent}
             className="
@@ -140,7 +140,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
         >
           <AiOutlineMenu />
           <div className="hidden md:block">
-            <Avatar src={currentUser?.image} />
+            <Avatar />
           </div>
         </div>
       </div>
@@ -159,7 +159,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
         >
           <div className="flex flex-col cursor-pointer">
             {/* Render menu items based on user authentication */}
-            {currentUser?.role === "coop" ? (
+            {user?.role === "COOP" ? (
               <div>
                 <MenuItem
                   label="My Store"
@@ -172,7 +172,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   onClick={rentModal.onOpen}
                 />
               </div>
-            ) : currentUser?.role === "producer" ? (
+            ) : user?.role === "PRODUCER" ? (
               <div>
                 <MenuItem
                   label="My Store"
@@ -188,7 +188,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             ) : (
               <div></div>
             )}
-            {currentUser ? (
+            {user ? (
               <>
                 <MenuItem
                   label="Profile Settings"
@@ -205,7 +205,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   icon={<FaHeart className="mr-2" />}
                   onClick={() => router.push("/dashboard/favorites")}
                 />
-                {currentUser?.role === "" ? (
+                {user?.role === "CONSUMER" ? (
                   <div>
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
