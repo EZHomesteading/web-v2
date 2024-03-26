@@ -20,7 +20,6 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const userIds = conversation?.userIds;
   const otherUsers = userIds?.filter((userId) => userId !== currentUser?.id);
   const otherUser = otherUsers?.toString();
-  console.log(otherUser);
   if (!conversation) {
     return (
       <div className="lg:pl-80 h-full">
