@@ -19,7 +19,7 @@ import { GiStockpiles } from "react-icons/gi";
 
 interface ListingClientProps {
   listing: SafeListing & {
-    user: SafeUser;
+    user: any;
     shelfLife: number;
     city: string;
     state: string;
@@ -28,17 +28,14 @@ interface ListingClientProps {
     price: number;
     quantityType: string;
   };
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
-const ListingClient: React.FC<ListingClientProps> = ({
-  listing,
-  currentUser,
-}) => {
+const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
   const listingId = listing.id;
   const { toggleCart } = useCart({
     listingId,
-    currentUser,
+    user,
   });
   const loginModal = useLoginModal();
   const router = useRouter();
@@ -46,11 +43,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const onCreatePurchase = () => {
-    if (!currentUser) {
+    if (!user) {
       return loginModal.onOpen();
     }
     setIsLoading(true);
-    if (listing.user.role === "producer" && currentUser.role === "coop") {
+    if (listing.user.role === "PROUDCER" && user.role === "COOP") {
       toast
         .promise(
           axios.post("/api/listings", {
@@ -63,12 +60,12 @@ const ListingClient: React.FC<ListingClientProps> = ({
             shelfLife: listing.shelfLife,
             subCategory: listing.subCategory,
             price: listing.price,
-            street: currentUser.street,
-            location: currentUser.location,
-            city: currentUser.city,
-            state: currentUser.state,
-            zip: currentUser.zip,
-            userId: currentUser.id,
+            street: user.street,
+            location: user.location,
+            city: user.city,
+            state: user.state,
+            zip: user.zip,
+            userId: user.id,
           }),
           {
             loading: "loading",
@@ -151,7 +148,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               state={listing.state}
               imageSrc={listing.imageSrc}
               id={listing.id}
-              currentUser={currentUser}
+              currentUser={user}
             />
             <ListingInfo
               user={listing.user}
@@ -162,7 +159,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             <ListingReservation
               toggleCart={toggleCart}
               listingId={adjustedListing.id}
-              currentUser={currentUser}
+              currentUser={user}
               product={adjustedListing}
               onSubmit={onCreatePurchase}
               disabled={isLoading}
