@@ -25,9 +25,9 @@ import { login } from "@/app/actions/login";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const callbackUrl = searchParams?.get("callbackUrl");
   const urlError =
-    searchParams.get("error") === "OAuthAccountNotLinked"
+    searchParams?.get("error") === "OAuthAccountNotLinked"
       ? "Email already in use with different provider!"
       : "";
 
@@ -59,10 +59,6 @@ export const LoginForm = () => {
           if (data?.success) {
             form.reset();
             setSuccess(data.success);
-          }
-
-          if (data?.twoFactor) {
-            setShowTwoFactor(true);
           }
         })
         .catch(() => setError("Something went wrong"));
