@@ -43,7 +43,6 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ user }) => {
     },
   });
 
-  // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     if (!data.phoneNumber) {
       toast.error("Phone Number");
