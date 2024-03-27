@@ -1,6 +1,3 @@
-"use client";
-
-import { useCurrentUser } from "@/app/hooks/use-current-user";
 import Categories from "./Categories";
 import Container from "../Container";
 import Logo from "./Logo";
@@ -8,19 +5,22 @@ import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import { usePathname } from "next/navigation";
 
-const Navbar = () => {
-  const user = useCurrentUser();
-  const pathname = usePathname();
+interface NavbarProps {
+  user?: any;
+}
 
-  if (pathname?.startsWith(`/conversations`)) {
-    return null;
-  }
-  if (pathname?.startsWith(`/autochat`)) {
-    return null;
-  }
-  if (pathname === "/messenger") {
-    return null;
-  }
+const Navbar = ({ user }: NavbarProps) => {
+  // const pathname = usePathname();
+
+  // if (pathname?.startsWith(`/conversations`)) {
+  //   return null;
+  // }
+  // if (pathname?.startsWith(`/autochat`)) {
+  //   return null;
+  // }
+  // if (pathname === "/messenger") {
+  //   return null;
+  // }
 
   return (
     <div className="relative w-full z-10 shadow-sm">
