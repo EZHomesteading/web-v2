@@ -1,4 +1,4 @@
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
@@ -6,11 +6,11 @@ import { pusherServer } from "@/app/libs/pusher";
 
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
     const body = await request.json();
     const { userId, isGroup, members, name } = body;
 
-    if (!currentUser?.id || !currentUser?.email) {
+    if (!user?.id || !user?.email) {
       return new NextResponse("Unauthorized", { status: 400 });
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
                 id: member.value,
               })),
               {
-                id: currentUser.id,
+                id: user.id,
               },
             ],
           },
@@ -54,12 +54,12 @@ export async function POST(request: Request) {
         OR: [
           {
             userIds: {
-              equals: [currentUser.id, userId],
+              equals: [user.id, userId],
             },
           },
           {
             userIds: {
-              equals: [userId, currentUser.id],
+              equals: [userId, user.id],
             },
           },
         ],
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
         users: {
           connect: [
             {
-              id: currentUser.id,
+              id: user.id,
             },
             {
               id: userId,
