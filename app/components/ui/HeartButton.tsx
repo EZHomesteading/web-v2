@@ -9,16 +9,13 @@ import ClientOnly from "../client/ClientOnly";
 
 interface HeartButtonProps {
   listingId: string;
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({
-  listingId,
-  currentUser,
-}) => {
+const HeartButton: React.FC<HeartButtonProps> = ({ listingId, user }) => {
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId,
-    currentUser,
+    user,
   });
 
   return (

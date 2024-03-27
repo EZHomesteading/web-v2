@@ -19,7 +19,7 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -28,7 +28,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   disabled,
   actionLabel,
   actionId = "",
-  currentUser,
+  user,
   secondActionId,
   onSecondAction,
   secondActionLabel,
@@ -107,7 +107,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             right-3
           "
           >
-            <HeartButton listingId={data.id} currentUser={currentUser} />
+            <HeartButton listingId={data.id} user={user} />
           </div>
         </div>
         <div className="font-semibold text-lg">

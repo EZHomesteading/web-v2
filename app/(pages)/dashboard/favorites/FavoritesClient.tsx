@@ -1,4 +1,4 @@
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeListing } from "@/app/types";
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
@@ -6,12 +6,12 @@ import ListingCard from "@/app/components/listings/ListingCard";
 
 interface FavoritesClientProps {
   listings: SafeListing[];
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   listings,
-  currentUser,
+  user,
 }) => {
   return (
     <Container>
@@ -30,11 +30,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         "
       >
         {listings.map((listing: any) => (
-          <ListingCard
-            currentUser={currentUser}
-            key={listing.id}
-            data={listing}
-          />
+          <ListingCard user={user} key={listing.id} data={listing} />
         ))}
       </div>
     </Container>
