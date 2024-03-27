@@ -4,11 +4,11 @@ import ClientOnly from "../../components/client/ClientOnly";
 
 interface ShopProps {
   listings: any[];
-  currentUser: any;
+  user: any;
   emptyState: React.ReactNode;
 }
 
-const Shop = ({ listings, currentUser, emptyState }: ShopProps) => {
+const Shop = ({ listings, user, emptyState }: ShopProps) => {
   return (
     <ClientOnly>
       <Container>
@@ -26,11 +26,7 @@ const Shop = ({ listings, currentUser, emptyState }: ShopProps) => {
             "
           >
             {listings.map((listing: any) => (
-              <ListingCard
-                currentUser={currentUser}
-                key={listing.id}
-                data={listing}
-              />
+              <ListingCard user={user} key={listing.id} data={listing} />
             ))}
           </div>
         )}

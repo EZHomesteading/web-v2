@@ -30,7 +30,7 @@ const ShopPage = async ({
   return (
     <DynamicShop
       listings={listings}
-      currentUser={user}
+      user={user}
       emptyState={
         listings.length === 0 ? (
           <ClientOnly>

@@ -3,7 +3,6 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { ThemeProvider } from "./components/theme-provider";
 import Navbar from "@/app/components/navbar/Navbar";
-import SearchModal from "@/app/components/modals/SearchModal";
 import RentModal from "@/app/components/modals/ListingModal";
 
 import ToasterProvider from "@/app/providers/ToasterProvider";
@@ -38,7 +37,6 @@ export default async function RootLayout({
           >
             <ClientOnly>
               <ToasterProvider />
-              <SearchModal />
               <RentModal />
               <Navbar user={session?.user} />
             </ClientOnly>

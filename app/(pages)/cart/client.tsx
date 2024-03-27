@@ -7,7 +7,7 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeListing } from "@/app/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";
@@ -15,10 +15,10 @@ import { useRouter } from "next/navigation";
 
 interface FavoritesClientProps {
   listings: SafeListing[];
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
-const Cart: React.FC<FavoritesClientProps> = ({ listings, currentUser }) => {
+const Cart: React.FC<FavoritesClientProps> = ({ listings, user }) => {
   const [totalPrice, setTotalPrice] = useState("");
   // listings.forEach((listing) => {
   //   const list = listing.price.toString();

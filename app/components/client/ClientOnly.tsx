@@ -11,21 +11,15 @@ interface ClientOnlyProps {
 const ClientOnly: React.FC<ClientOnlyProps> = ({
   children, // Destructure children from props
 }) => {
-  // State to track whether the component has mounted
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Effect hook to set hasMounted to true when component mounts
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  // Render children only after the component has mounted
   if (!hasMounted) return null;
 
-  return (
-    // Return the children components
-    <>{children}</>
-  );
+  return <>{children}</>;
 };
 
 export default ClientOnly;

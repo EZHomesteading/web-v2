@@ -1,8 +1,8 @@
 import prisma from "@/app/libs/prismadb";
-import getSession from "./getSession";
+import { auth } from "@/auth";
 
 const getUsers = async () => {
-  const session = await getSession();
+  const session = await auth();
 
   if (!session?.user?.email) {
     return [];
@@ -11,13 +11,13 @@ const getUsers = async () => {
   try {
     const users = await prisma.user.findMany({
       orderBy: {
-        createdAt: 'desc'
+        createdAt: "desc",
       },
       where: {
         NOT: {
-          email: session.user.email
-        }
-      }
+          email: session.user.email,
+        },
+      },
     });
 
     return users;

@@ -14,9 +14,6 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-import useCoopRegisterModal from "@/app/hooks/useCoopRegisterModal";
-import useLoginModal from "@/app/hooks/useLoginModal";
-import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useRentModal from "@/app/hooks/useRentModal";
 
 import MenuItem from "./MenuItem";
@@ -31,31 +28,20 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
-
-  // Custom hooks for managing modal states
-  const coopRegisterModal = useCoopRegisterModal();
-  const loginModal = useLoginModal();
-  const registerModal = useRegisterModal();
   const rentModal = useRentModal();
-
-  // State for managing menu open/close
   const [isOpen, setIsOpen] = useState(false);
 
-  // Toggle menu open/close
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
 
-  // Handler for renting a product
   const onRent = useCallback(() => {
     if (!user) {
-      // Open login modal if user is not logged in
-      return loginModal.onOpen();
+      return router.push("/auth/login");
     }
 
-    // Open rent modal if user is logged in
     rentModal.onOpen();
-  }, [loginModal, rentModal, user]);
+  }, [, rentModal, user]);
 
   return (
     <div className="relative">
@@ -99,7 +85,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           </div>
         ) : (
           <div
-            onClick={coopRegisterModal.onOpen}
+            onClick={onRent}
             className="
             hidden
             md:flex
@@ -230,14 +216,18 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             ) : (
               <>
                 <MenuItem
-                  label="Login"
+                  label="Sign In"
                   icon={<FaSignInAlt className="mr-2" />}
-                  onClick={loginModal.onOpen}
+                  onClick={() => {
+                    router.push("/auth/login");
+                  }}
                 />
                 <MenuItem
                   label="Sign up"
                   icon={<FaUserPlus className="mr-2" />}
-                  onClick={registerModal.onOpen}
+                  onClick={() => {
+                    router.push("/auth/register");
+                  }}
                 />
               </>
             )}

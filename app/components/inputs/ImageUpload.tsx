@@ -1,51 +1,41 @@
 "use client";
 
-// Importing necessary modules and components
-import { CldUploadWidget } from "next-cloudinary"; // Cloudinary upload widget
-import Image from "next/image"; // Image component from Next.js
-import { useCallback } from "react"; // useCallback hook from React
-import { TbPhotoPlus } from "react-icons/tb"; // Icon component for photo plus icon
+import { CldUploadWidget } from "next-cloudinary";
+import Image from "next/image";
+import { useCallback } from "react";
+import { TbPhotoPlus } from "react-icons/tb";
 
-// Declaring global variable for cloudinary
 declare global {
   var cloudinary: any;
 }
 
-// Cloudinary upload preset
 const uploadPreset = "ejde7bjt";
 
-// Interface defining props accepted by the ImageUpload component
 interface ImageUploadProps {
-  onChange: (value: string) => void; // Function to handle image change
-  value: string; // Current selected image value
+  onChange: (value: string) => void;
+  value: string;
 }
 
-// ImageUpload component
-const ImageUpload: React.FC<ImageUploadProps> = ({
-  onChange, // Function to handle image change received as prop
-  value, // Current selected image value received as prop
-}) => {
-  // Function to handle image upload
+const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
   const handleUpload = useCallback(
     (result: any) => {
-      onChange(result.info.secure_url); // Calling onChange function with the uploaded image URL
+      onChange(result.info.secure_url);
     },
     [onChange]
-  ); // Dependency array includes onChange function
+  );
 
-  // Rendering the ImageUpload component
   return (
     <CldUploadWidget
-      onUpload={handleUpload} // Handling image upload
-      uploadPreset={uploadPreset} // Setting upload preset
+      onUpload={handleUpload}
+      uploadPreset={uploadPreset}
       options={{
-        maxFiles: 3, // Limiting the maximum number of files to be uploaded
+        maxFiles: 3,
       }}
     >
       {({ open }) => {
         return (
           <div
-            onClick={() => open?.()} // Opening upload widget on click
+            onClick={() => open?.()}
             className="
               relative
               cursor-pointer
@@ -63,22 +53,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               text-neutral-600
             "
           >
-            <TbPhotoPlus
-              size={50} // Setting size of photo plus icon
-            />
-            <div className="font-semibold text-lg">
-              Click to upload {/* Text indicating to click to upload */}
-            </div>
-            {value && ( // Conditional rendering if value exists
+            <TbPhotoPlus size={50} />
+            <div className="font-semibold text-lg">Click to upload</div>
+            {value && (
               <div
                 className="
               absolute inset-0 w-full h-full"
               >
                 <Image
-                  fill // Setting image to fill container
-                  style={{ objectFit: "cover" }} // Setting image style to cover
-                  src={value} // Image source
-                  alt="House" // Alternative text for image
+                  fill
+                  style={{ objectFit: "cover" }}
+                  src={value}
+                  alt="Image of Fresh Local Organic Produce on EZHomesteading"
                 />
               </div>
             )}
@@ -89,4 +75,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   );
 };
 
-export default ImageUpload; // Exporting ImageUpload component
+export default ImageUpload;

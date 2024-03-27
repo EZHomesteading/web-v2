@@ -1,13 +1,13 @@
 // Importing the necessary modules and functions
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "./getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 
 // Function to retrieve the favorite listings for the current user
 export default async function getCartListings() {
   try {
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
     // If current user is not available, return an empty array
-    if (!currentUser) {
+    if (!user) {
       return [];
     }
 
@@ -15,7 +15,7 @@ export default async function getCartListings() {
     const carts = await prisma.listing.findMany({
       where: {
         id: {
-          in: [...(currentUser.cartIds || [])], // Filtering by user's favoriteIds
+          in: [...(user.cartIds || [])], // Filtering by user's favoriteIds
         },
       },
     });

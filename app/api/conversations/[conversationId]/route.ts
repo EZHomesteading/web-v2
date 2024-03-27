@@ -1,4 +1,4 @@
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
@@ -14,9 +14,9 @@ export async function DELETE(
 ) {
   try {
     const { conversationId } = params;
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
 
-    if (!currentUser?.id) {
+    if (!user?.id) {
       return NextResponse.json(null);
     }
 
@@ -37,7 +37,7 @@ export async function DELETE(
       where: {
         id: conversationId,
         userIds: {
-          hasSome: [currentUser.id],
+          hasSome: [user.id],
         },
       },
     });

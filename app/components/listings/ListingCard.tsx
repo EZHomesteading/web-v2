@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
-import { format } from "date-fns";
+import { useCallback } from "react";
 import { useTheme } from "next-themes";
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeListing } from "@/app/types";
 
 import HeartButton from "../ui/HeartButton";
 import Button from "../Button";
@@ -19,7 +18,7 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -28,7 +27,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   disabled,
   actionLabel,
   actionId = "",
-  currentUser,
+  user,
   secondActionId,
   onSecondAction,
   secondActionLabel,
@@ -107,7 +106,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             right-3
           "
           >
-            <HeartButton listingId={data.id} currentUser={currentUser} />
+            <HeartButton listingId={data.id} user={user} />
           </div>
         </div>
         <div className="font-semibold text-lg">

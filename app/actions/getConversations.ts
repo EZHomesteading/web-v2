@@ -1,10 +1,10 @@
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "./getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 
 const getConversations = async () => {
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
 
-  if (!currentUser?.id) {
+  if (!user?.id) {
     return [];
   }
 
@@ -15,7 +15,7 @@ const getConversations = async () => {
       },
       where: {
         userIds: {
-          has: currentUser.id,
+          has: user.id,
         },
       },
       include: {

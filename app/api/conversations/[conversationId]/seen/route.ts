@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import { pusherServer } from "@/app/libs/pusher";
 import prisma from "@/app/libs/prismadb";
 
@@ -10,10 +10,10 @@ interface IParams {
 
 export async function POST(request: Request, { params }: { params: IParams }) {
   try {
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
     const { conversationId } = params;
 
-    if (!currentUser?.id || !currentUser?.email) {
+    if (!user?.id || !user?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -55,20 +55,20 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       data: {
         seen: {
           connect: {
-            id: currentUser.id,
+            id: user.id,
           },
         },
       },
     });
 
     // Update all connections with new seen
-    await pusherServer.trigger(currentUser.email, "conversation:update", {
+    await pusherServer.trigger(user.email, "conversation:update", {
       id: conversationId,
       messages: [updatedMessage],
     });
 
     // If user has already seen the message, no need to go further
-    if (lastMessage.seenIds.indexOf(currentUser.id) !== -1) {
+    if (lastMessage.seenIds.indexOf(user.id) !== -1) {
       return NextResponse.json(conversation);
     }
 

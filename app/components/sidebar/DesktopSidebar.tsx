@@ -9,14 +9,14 @@ import { User } from "@prisma/client";
 import { SafeUser } from "@/app/types";
 
 interface DesktopSidebarProps {
-  currentUser: SafeUser;
+  user: any | null;
 }
 
-const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
+const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ user }) => {
   const routes = useRoutes();
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log({ currentUser }, "TEST");
+  console.log({ user }, "TEST");
 
   return (
     <>
@@ -58,7 +58,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
             onClick={() => setIsOpen(true)}
             className="cursor-pointer hover:opacity-75 transition"
           >
-            <Avatar user={currentUser} />
+            <Avatar user={user} />
           </div>
         </nav>
       </div>

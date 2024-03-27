@@ -3,7 +3,6 @@
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 
-import { update } from "@/auth";
 import prisma from "@/lib/prisma";
 import { SettingsSchema } from "@/schemas";
 import { getUserByEmail, getUserById } from "@/data/user";
@@ -18,7 +17,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     return { error: "Unauthorized" };
   }
 
-  const dbUser = await getUserById(user.id);
+  const dbUser = await getUserById(user.id!);
 
   if (!dbUser) {
     return { error: "Unauthorized" };
@@ -62,21 +61,20 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     values.newPassword = undefined;
   }
 
-  const updatedUser = await prisma.user.update({
-    where: { id: dbUser.id },
-    data: {
-      ...values,
-    },
-  });
+  // const updatedUser = await prisma.user.update({
+  //   where: { id: dbUser.id },
+  //   data: {
+  //     ...values,
+  //   },
+  // });
 
-  update({
-    user: {
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
-      rolee: updatedUser.rolee,
-    },
-  });
+  // update({
+  //   user: {
+  //     name: updatedUser.name,
+  //     email: updatedUser.email,
+  //     role: updatedUser.role,
+  //   },
+  // });
 
   return { success: "Settings Updated!" };
 };

@@ -1,11 +1,10 @@
 import prisma from "@/app/libs/prismadb";
-import getCurrentUser from "./getCurrentUserAsync";
-
+import { currentUser } from "@/lib/auth";
 const getConversationById = async (conversationId: string) => {
   try {
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
 
-    if (!currentUser?.email) {
+    if (!user?.email) {
       return null;
     }
 
