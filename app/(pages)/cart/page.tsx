@@ -2,13 +2,13 @@
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import getCartListings from "@/app/actions/getCartListings";
 
 import Cart from "./client";
 
 const SearchPage = async () => {
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
   const listings = await getCartListings();
   if (listings.length === 0) {
     return (
@@ -24,7 +24,7 @@ const SearchPage = async () => {
 
   return (
     <ClientOnly>
-      <Cart listings={listings} currentUser={currentUser} />
+      <Cart listings={listings} user={user} />
     </ClientOnly>
   );
 };
