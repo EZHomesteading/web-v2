@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import { pusherServer } from "@/app/libs/pusher";
 import prisma from "@/app/libs/prismadb";
 
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
+    const user = await currentUser();
     const body = await request.json();
     const { message, messageOrder, image, conversationId, otherUserId } = body;
 
-    if (!currentUser?.id || !currentUser?.email) {
+    if (!user?.id || !user?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -27,11 +27,11 @@ export async function POST(request: Request) {
           connect: { id: conversationId },
         },
         sender: {
-          connect: { id: otherUserId || currentUser.id },
+          connect: { id: otherUserId || user.id },
         },
         seen: {
           connect: {
-            id: currentUser.id,
+            id: user.id,
           },
         },
       },
