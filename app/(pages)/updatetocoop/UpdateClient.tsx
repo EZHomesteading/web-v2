@@ -18,11 +18,11 @@ import { Button } from "@/app/components/ui/button";
 // const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
 // Define RegisterModal component
-const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
+const UpdateClient: React.FC<UpdateUserProps> = ({ user }) => {
   const router = useRouter();
   // Hooks for managing state and form data
   const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +34,12 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      phoneNumber: currentUser?.phoneNumber,
-      address: currentUser?.street,
-      zip: currentUser?.zip,
-      state: currentUser?.state,
-      role: "coop",
-      name: currentUser?.name,
+      phoneNumber: user?.phoneNumber,
+      address: user?.street,
+      zip: user?.zip,
+      state: user?.state,
+      role: "COOP",
+      name: user?.name,
     },
   });
 
