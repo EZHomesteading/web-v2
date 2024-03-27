@@ -6,13 +6,13 @@ import ListingCard from "@/app/components/listings/ListingCard";
 
 interface PropertiesClientProps {
   listings: SafeListing[];
-  currentUser?: SafeUser | null;
+  user?: any | null;
   storeId: string;
 }
 
 const PropertiesClient: React.FC<PropertiesClientProps> = ({
   listings,
-  currentUser,
+  user,
   storeId,
 }) => {
   const userSpecificListings = listings.filter(
@@ -22,16 +22,12 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
   return (
     <Container>
       <Heading
-        title={`${currentUser?.name}'s Store`}
+        title={`${user?.name}'s Store`}
         subtitle="List of this user's homesteading & self-sufficiency items"
       />
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
         {userSpecificListings.map((listing) => (
-          <ListingCard
-            key={listing.id}
-            data={listing}
-            currentUser={currentUser}
-          />
+          <ListingCard key={listing.id} data={listing} user={user} />
         ))}
       </div>
     </Container>

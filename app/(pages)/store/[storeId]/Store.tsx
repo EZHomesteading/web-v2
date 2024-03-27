@@ -4,15 +4,15 @@ import ClientOnly from "@/app/components/client/ClientOnly";
 
 interface StorePageProps {
   listings: any[];
+  storeUser: any;
   user: any;
-  currentUser: any;
   emptyState: React.ReactNode;
 }
 
 const StorePage = ({
   listings,
+  storeUser,
   user,
-  currentUser,
   emptyState,
 }: StorePageProps) => {
   return (
@@ -34,11 +34,7 @@ const StorePage = ({
             "
           >
             {listings.map((listing: any) => (
-              <ListingCard
-                currentUser={currentUser}
-                key={listing.id}
-                data={listing}
-              />
+              <ListingCard user={user} key={listing.id} data={listing} />
             ))}
           </div>
         )}
