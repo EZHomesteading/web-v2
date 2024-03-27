@@ -3,10 +3,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { toast } from "react-hot-toast";
 
-import { SafeUser } from "@/app/types";
-
-import useLoginModal from "./useLoginModal";
-
 interface IUseFavorite {
   listingId: string;
   user?: any | null;
@@ -14,8 +10,6 @@ interface IUseFavorite {
 
 const useFavorite = ({ listingId, user }: IUseFavorite) => {
   const router = useRouter();
-
-  const loginModal = useLoginModal();
 
   const hasFavorited = useMemo(() => {
     const list = user?.favoriteIds || [];
@@ -28,7 +22,7 @@ const useFavorite = ({ listingId, user }: IUseFavorite) => {
       e.stopPropagation();
 
       if (!user) {
-        return loginModal.onOpen();
+        return router.push("/auth/login");
       }
 
       try {
@@ -47,7 +41,7 @@ const useFavorite = ({ listingId, user }: IUseFavorite) => {
         toast.error("Something went wrong.");
       }
     },
-    [user, hasFavorited, listingId, loginModal, router]
+    [user, hasFavorited, listingId, router]
   );
 
   return {
