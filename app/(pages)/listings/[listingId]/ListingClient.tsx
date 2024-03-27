@@ -6,8 +6,7 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { addDays, format } from "date-fns";
 
-import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeListing, SafeUser } from "@/app/types";
+import { SafeListing } from "@/app/types";
 
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
@@ -15,7 +14,6 @@ import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listingMap";
 import useCart from "@/app/hooks/useCart";
-import { GiStockpiles } from "react-icons/gi";
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -37,14 +35,13 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
     listingId,
     user,
   });
-  const loginModal = useLoginModal();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const onCreatePurchase = () => {
     if (!user) {
-      return loginModal.onOpen();
+      router.push("/auth/login");
     }
     setIsLoading(true);
     if (listing.user.role === "PROUDCER" && user.role === "COOP") {
@@ -148,7 +145,7 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
               state={listing.state}
               imageSrc={listing.imageSrc}
               id={listing.id}
-              currentUser={user}
+              user={user}
             />
             <ListingInfo
               user={listing.user}
@@ -159,7 +156,7 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
             <ListingReservation
               toggleCart={toggleCart}
               listingId={adjustedListing.id}
-              currentUser={user}
+              user={user}
               product={adjustedListing}
               onSubmit={onCreatePurchase}
               disabled={isLoading}
