@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 
+// Define props interface for the ClientOnly component
 interface ClientOnlyProps {
-  children: React.ReactNode;
+  children: React.ReactNode; // Child components to be rendered conditionally
 }
 
-const ClientOnly: React.FC<ClientOnlyProps> = ({ children }) => {
+// ClientOnly component
+const ClientOnly: React.FC<ClientOnlyProps> = ({
+  children, // Destructure children from props
+}) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {

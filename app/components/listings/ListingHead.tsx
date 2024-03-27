@@ -13,7 +13,7 @@ interface ListingHeadProps {
   id: string;
   city: string;
   state: string;
-  currentUser?: SafeUser | null;
+  user?: SafeUser | null;
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
@@ -22,7 +22,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   id,
   city,
   state,
-  currentUser,
+  user,
 }) => {
   return (
     <>
@@ -51,7 +51,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           "
         >
           {" "}
-          <HeartButton listingId={id} currentUser={currentUser} />
+          <HeartButton listingId={id} user={user} />
         </div>
       </div>
       <div className="mt-2">

@@ -1,11 +1,7 @@
 "use client";
 
-// Import necessary modules and icons
 import { usePathname, useSearchParams } from "next/navigation";
 import {
-  GiBoatFishing,
-  GiRoastChicken,
-  GiFoodChain,
   GiCoolSpices,
   GiGrainBundle,
   GiWrappedSweet,
@@ -22,7 +18,6 @@ import { FaSeedling } from "react-icons/fa6";
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 
-// Define an array of category objects
 export const categories = [
   {
     label: "Fruits",

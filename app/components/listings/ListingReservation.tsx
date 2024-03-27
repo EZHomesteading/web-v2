@@ -2,12 +2,11 @@
 
 import { addDays, format } from "date-fns";
 import Button from "../Button";
-import { SafeUser } from "@/app/types";
 import useCart from "@/app/hooks/useCart";
 
 interface ListingReservationProps {
   listingId: string;
-  currentUser?: SafeUser | null;
+  user?: any | null;
   product: {
     endDate: Date | null;
     title: string | null;
@@ -31,12 +30,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   onSubmit,
   disabled,
   listingId,
-  currentUser,
+  user,
   toggleCart,
 }) => {
   const { hasCart } = useCart({
     listingId,
-    currentUser,
+    user,
   });
   const description = product.description;
   const stock = product.stock;
@@ -50,7 +49,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       : null;
   const endDateString = endDate
     ? format(endDate, "MMM dd, yyyy")
-    : "No expiry date"; // const dateRange = endDate ? { startDate, endDate, key: "selection" } : null;
+    : "No expiry date";
 
   return (
     <>

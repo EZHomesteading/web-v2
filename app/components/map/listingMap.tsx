@@ -1,19 +1,10 @@
-// pseudocode
-// import current user
-// convert current user's location info to lat, lng
-// pass into lat, lng in position const
-// create marker for user
-// if no user, dead center of virginia
-
 "use client";
-import oops from "@/public/images/oops.webp";
 import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { SafeUser } from "@/app/types";
 import React, { useEffect, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 
 interface UpdateUserProps {
-  currentUser?: SafeUser | null;
+  user?: any | null;
   city: string;
   state: string;
   street: string;
