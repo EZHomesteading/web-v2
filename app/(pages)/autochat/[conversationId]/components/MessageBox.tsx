@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import clsx from "clsx";
 import Image from "next/image";
@@ -9,58 +9,86 @@ import { FullMessageType } from "@/app/types";
 
 import Avatar from "@/app/components/Avatar";
 import ImageModal from "./ImageModal";
+import axios from "axios";
 
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
+  convoId: string;
+  otherUsersId: any;
 }
 
-const MessageBox: React.FC<MessageBoxProps> = ({ 
-  data, 
-  isLast
+const MessageBox: React.FC<MessageBoxProps> = ({
+  data,
+  isLast,
+  convoId,
+  otherUsersId,
 }) => {
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
 
+  const isOwn = session.data?.user?.email === data?.sender?.email;
 
-  const isOwn = session.data?.user?.email === data?.sender?.email
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
-    .join(', ');
+    .join(", ");
 
-  const container = clsx('flex gap-3 p-4', isOwn && 'justify-end');
-  const avatar = clsx(isOwn && 'order-2');
-  const body = clsx('flex flex-col gap-2', isOwn && 'items-end');
+  const container = clsx("flex gap-3 p-4", isOwn && "justify-end");
+  const avatar = clsx(isOwn && "order-2");
+  const body = clsx("flex flex-col gap-2", isOwn && "items-end");
   const message = clsx(
-    'text-sm w-fit overflow-hidden', 
-    isOwn ? 'bg-sky-500 text-white' : 'bg-gray-100', 
-    data.image ? 'rounded-md p-0' : 'rounded-full py-2 px-3'
+    "text-sm w-fit overflow-hidden",
+    isOwn ? "bg-sky-500 text-white" : "bg-gray-100",
+    data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
   );
+  const onSubmit = () => {
+    console.log(otherUsersId);
+    if (data.messageOrder === "1") {
+      axios.post("/api/messages", {
+        message:
+          "Your order is ready to be picked up. Please click confirm when you have done so.",
+        messageOrder: "2",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+    }
+    if (data.messageOrder === "2") {
+      axios.post("/api/messages", {
+        message:
+          "(user) has picked up their Item, and transaction is complete. Feel free to delete this chat",
+        messageOrder: "3",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+    }
+  };
 
-  return ( 
+  return (
     <div className={container}>
       <div className={avatar}>
         <Avatar user={data.sender} />
       </div>
       <div className={body}>
         <div className="flex items-center gap-1">
-          <div className="text-sm text-gray-500">
-            {data.sender.name}
-          </div>
+          <div className="text-sm text-gray-500">{data.sender.name}</div>
           <div className="text-xs text-gray-400">
-            {format(new Date(data.createdAt), 'p')}
+            {format(new Date(data.createdAt), "p")}
           </div>
         </div>
         <div className={message}>
-          <ImageModal src={data.image} isOpen={imageModalOpen} onClose={() => setImageModalOpen(false)} />
+          <ImageModal
+            src={data.image}
+            isOpen={imageModalOpen}
+            onClose={() => setImageModalOpen(false)}
+          />
           {data.image ? (
             <Image
               alt="Image"
               height="288"
               width="288"
-              onClick={() => setImageModalOpen(true)} 
-              src={data.image} 
+              onClick={() => setImageModalOpen(true)}
+              src={data.image}
               className="
                 object-cover 
                 cursor-pointer 
@@ -70,11 +98,36 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               "
             />
           ) : (
-            <div>{data.body}</div>
+            <div>
+              <div>{data.body}</div>
+              <div>
+                {isOwn &&
+                isLast &&
+                data.messageOrder !== "3" &&
+                data.messageOrder !== "0" ? (
+                  <button
+                    type="submit"
+                    onClick={onSubmit}
+                    className="
+      rounded-full 
+      p-2 
+      bg-sky-500 
+      cursor-pointer 
+      hover:bg-sky-600 
+      transition
+    "
+                  >
+                    Confirm?
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+            </div>
           )}
         </div>
         {isLast && isOwn && seenList.length > 0 && (
-          <div 
+          <div
             className="
             text-xs 
             font-light 
@@ -86,7 +139,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         )}
       </div>
     </div>
-   );
-}
- 
+  );
+};
+
 export default MessageBox;
