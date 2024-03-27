@@ -12,23 +12,13 @@ import Button from "@/app/components/Button";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
+  otherUser: string | undefined;
 }
 
-const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
+const Body: React.FC<BodyProps> = ({ initialMessages = [], otherUser }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(initialMessages);
-  const messager: string = "this is an automated message";
   const { conversationId } = useConversation();
-
-  const onSubmit = () => {
-    axios.post("/api/messages", {
-      message:
-        "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
-      messageOrder: "1",
-      conversationId: conversationId,
-    });
-  };
-
   useEffect(() => {
     axios.post(`/api/conversations/${conversationId}/seen`);
   }, [conversationId]);
@@ -80,22 +70,11 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}
+          convoId={conversationId}
+          otherUsersId={otherUser}
         />
       ))}
-      <button
-        type="submit"
-        onClick={onSubmit}
-        className="
-            rounded-full 
-            p-2 
-            bg-sky-500 
-            cursor-pointer 
-            hover:bg-sky-600 
-            transition
-          "
-      >
-        Confirm?
-      </button>
+
       <div className="pt-24" ref={bottomRef} />
     </div>
   );

@@ -17,9 +17,8 @@ const Form = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      message:
-        "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
-      messageOrder: "1",
+      message: "",
+      messageOrder: "0",
     },
   });
 
