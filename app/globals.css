@@ -80,3 +80,17 @@
 body::-webkit-scrollbar {
   display: none;
 }
+
+.authlayoutbg {
+  background-color: #ced9bb;
+}
+
+.cardauth,
+.buttonsActive {
+  background-color: #e3eac9;
+}
+
+.buttonsActive {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
