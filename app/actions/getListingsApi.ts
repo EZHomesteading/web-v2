@@ -2,6 +2,7 @@ import prisma from "@/app/libs/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
 import { currentUser } from "@/lib/auth";
+
 interface ILocation {
   type: "Point";
   coordinates: [number, number];
