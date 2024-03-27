@@ -3,8 +3,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { toast } from "react-hot-toast";
 
-import useLoginModal from "./useLoginModal";
-
 interface IUseCart {
   listingId: string;
   user?: any | null;
@@ -12,8 +10,6 @@ interface IUseCart {
 
 const useCart = ({ listingId, user }: IUseCart) => {
   const router = useRouter();
-
-  const loginModal = useLoginModal();
 
   const hasCart = useMemo(() => {
     const list = user?.cartIds || [];
@@ -24,10 +20,6 @@ const useCart = ({ listingId, user }: IUseCart) => {
   const toggleCart = useCallback(
     async (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
-
-      if (!user) {
-        return loginModal.onOpen();
-      }
 
       try {
         let request;
@@ -45,7 +37,7 @@ const useCart = ({ listingId, user }: IUseCart) => {
         toast.error("Something went wrong.");
       }
     },
-    [user, hasCart, listingId, loginModal, router]
+    [user, hasCart, listingId, router]
   );
 
   return {
