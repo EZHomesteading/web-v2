@@ -5,13 +5,12 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { useState } from "react";
-import { SafeUser } from "@/app/types";
 
 interface UpdateUserProps {
-  currentUser?: SafeUser | null;
+  user?: any | null;
 }
 
-const ConnectClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
+const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -22,7 +21,7 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       const response = await axios.post(
         "/api/stripe/create-connected-account",
         {
-          userId: currentUser?.id,
+          userId: user?.id,
         }
       );
 
@@ -44,9 +43,9 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
     <ClientOnly>
       <div>
         <h1>Connect to Stripe</h1>
-        {currentUser ? (
+        {user ? (
           <div>
-            <p>User: {currentUser.name}</p>
+            <p>User: {user.name}</p>
             <button onClick={handleConnectToStripe} disabled={isLoading}>
               {isLoading ? "Connecting..." : "Connect"}
             </button>

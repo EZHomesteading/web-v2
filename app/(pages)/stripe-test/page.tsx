@@ -1,12 +1,12 @@
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import ConnectClient from "./ConnectClient";
 
 const StripeTestPage = async () => {
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
   return (
     <ClientOnly>
-      <ConnectClient currentUser={currentUser} />
+      <ConnectClient user={user} />
     </ClientOnly>
   );
 };
