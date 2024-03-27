@@ -1,6 +1,6 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
-import getCurrentUser from "@/app/actions/getCurrentUserAsync";
+import { currentUser } from "@/lib/auth";
 import prisma from "@/app/libs/prismadb";
 
 // Interface defining the structure of parameters accepted by the functions
@@ -14,9 +14,9 @@ export async function POST(
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
   // Retrieving the current user
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
   // If current user is not available, return an error response
-  if (!currentUser) {
+  if (!user) {
     return NextResponse.error();
   }
 
@@ -29,15 +29,15 @@ export async function POST(
   }
 
   // Copying favoriteIds from currentUser or initializing an empty array if not available
-  let favoriteIds = [...(currentUser.favoriteIds || [])];
+  let favoriteIds = [...(user.favoriteIds || [])];
 
   // Adding the new listingId to favoriteIds
   favoriteIds.push(listingId);
 
   // Updating the user's favoriteIds in the database
-  const user = await prisma.user.update({
+  const UpdatedUser = await prisma.user.update({
     where: {
-      id: currentUser.id, // Updating the user based on their id
+      id: user.id, // Updating the user based on their id
     },
     data: {
       favoriteIds, // Updating favoriteIds
@@ -45,7 +45,7 @@ export async function POST(
   });
 
   // Returning a JSON response with the updated user
-  return NextResponse.json(user);
+  return NextResponse.json(UpdatedUser);
 }
 
 // DELETE function to remove a listing from favorites
@@ -53,9 +53,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: IParams } // Accepting parameters of type IParams
 ) {
-  const currentUser = await getCurrentUser();
+  const user = await currentUser();
   // If current user is not available, return an error response
-  if (!currentUser) {
+  if (!user) {
     return NextResponse.error();
   }
 
@@ -68,15 +68,15 @@ export async function DELETE(
   }
 
   // Copying favoriteIds from currentUser or initializing an empty array if not available
-  let favoriteIds = [...(currentUser.favoriteIds || [])];
+  let favoriteIds = [...(user.favoriteIds || [])];
 
   // Filtering out the listingId from favoriteIds
   favoriteIds = favoriteIds.filter((id) => id !== listingId);
 
   // Updating the user's favoriteIds in the database
-  const user = await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: {
-      id: currentUser.id, // Updating the user based on their id
+      id: user.id, // Updating the user based on their id
     },
     data: {
       favoriteIds, // Updating favoriteIds
@@ -84,5 +84,5 @@ export async function DELETE(
   });
 
   // Returning a JSON response with the updated user
-  return NextResponse.json(user);
+  return NextResponse.json(updatedUser);
 }
