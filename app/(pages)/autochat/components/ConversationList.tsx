@@ -13,6 +13,7 @@ import { pusherClient } from "@/lib/pusher";
 import GroupChatModal from "@/components/modals/chatmodals/GroupChatModal";
 import ConversationBox from "@/app/(pages)/autochat/components/ConversationBox";
 import { FullConversationType } from "@/types";
+import SubToggle from "./notificationButton";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -37,10 +38,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
   }, [session.data?.user?.email]);
 
   useEffect(() => {
+    async function setUpServiceWorker() {
+      try {
+        await registerServiceWorker();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    setUpServiceWorker();
+  });
+
+  useEffect(() => {
     if (!pusherKey) {
       return;
     }
-
     pusherClient.subscribe(pusherKey);
 
     const updateHandler = (conversation: FullConversationType) => {
@@ -91,7 +102,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
           className={clsx(
             `
         fixed
-        inset-y-0
+        inset-y-20
         pb-20
         lg:pb-0
       
@@ -122,8 +133,22 @@ const ConversationList: React.FC<ConversationListProps> = ({
               "
               >
                 <MdOutlineGroupAdd size={20} />
+              </div>{" "}
+              <div
+                className="
+                rounded-full 
+                p-2 
+                bg-gray-100 
+                text-gray-600 
+                cursor-pointer 
+                hover:opacity-75 
+                transition
+              "
+              >
+                <SubToggle />
               </div>
             </div>
+
             {items.map((item) => (
               <ConversationBox
                 key={item.id}
