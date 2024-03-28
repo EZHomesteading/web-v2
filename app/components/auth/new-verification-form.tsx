@@ -5,7 +5,7 @@ import { BeatLoader } from "react-spinners";
 import { useSearchParams } from "next/navigation";
 
 import { newVerification } from "@/app/actions/new-verification";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "./login/card-wrapper-login";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 
@@ -15,7 +15,7 @@ export const NewVerificationForm = () => {
 
   const searchParams = useSearchParams();
 
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   const onSubmit = useCallback(() => {
     if (success || error) return;
@@ -44,6 +44,7 @@ export const NewVerificationForm = () => {
       headerLabel="Confirming your verification"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
+      label2=""
     >
       <div className="flex items-center w-full justify-center">
         {!success && !error && <BeatLoader />}
