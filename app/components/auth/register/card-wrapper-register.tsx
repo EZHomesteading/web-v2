@@ -9,13 +9,14 @@ import {
 import { Header } from "@/app/components/auth/header";
 import { Social } from "@/app/components/auth/social";
 import { BackButton } from "@/app/components/auth/back-button";
-import Button from "../Button";
+import Button from "../../Button";
 
 interface CardWrapperProps {
   children: React.ReactNode;
   headerLabel: string;
   backButtonLabel: string;
   backButtonHref: string;
+  label2: string;
   showSocial?: boolean;
   activeTab: "buy" | "sell" | "sellAndSource";
   onTabChange: (tab: "buy" | "sell" | "sellAndSource") => void;
@@ -29,12 +30,13 @@ export const CardWrapper = ({
   showSocial,
   activeTab,
   onTabChange,
+  label2,
 }: CardWrapperProps) => {
   return (
     <div className="flex flex-col items-center lg:right-[15%]">
-      <Card className="relative w-[500px] lg:relative rounded-none cardauth border-none ">
+      <Card className="relative w-[500px] lg:relative rounded-none cardregister border-none">
         <CardHeader>
-          <Header label={headerLabel} />
+          <Header label={headerLabel} label2={label2} />
         </CardHeader>
         <CardContent>{children}</CardContent>
         {showSocial && (
@@ -46,9 +48,9 @@ export const CardWrapper = ({
           <BackButton label={backButtonLabel} href={backButtonHref} />
         </CardFooter>
       </Card>
-      <div className="flex flex-row space-x-7">
+      <div className="flex flex-row w-full items-center justify-between">
         <button
-          className={`px-4 py-2 ${
+          className={`p-6 ${
             activeTab === "buy" ? "buttonsActive shadow-md" : "buttonsNotActive"
           }`}
           onClick={() => onTabChange("buy")}
@@ -56,7 +58,7 @@ export const CardWrapper = ({
           I want to buy
         </button>
         <button
-          className={`px-4 py-2 ${
+          className={`py-6 px-3 ${
             activeTab === "sellAndSource"
               ? "buttonsActive shadow-md"
               : "buttonsNotActive"
@@ -66,14 +68,14 @@ export const CardWrapper = ({
           I want to sell & source
         </button>
         <button
-          className={`px-4 py-2 ${
+          className={`p-6 ${
             activeTab === "sell"
               ? "buttonsActive shadow-md"
               : "buttonsNotActive"
           }`}
           onClick={() => onTabChange("sell")}
         >
-          I want to sell
+          I just want to sell
         </button>
       </div>
     </div>

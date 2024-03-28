@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/card-wrapper";
+import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -74,6 +74,7 @@ export const CoOpRegisterForm = () => {
   return (
     <CardWrapper
       headerLabel="Become a Co-Op"
+      label2="Grow produce & source from producers to expand then start selling"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
       showSocial
@@ -93,7 +94,7 @@ export const CoOpRegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="John Doe"
+                      placeholder="Appleseed Store"
                     />
                   </FormControl>
                   <FormMessage />

@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/card-wrapper";
+import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -73,6 +73,7 @@ export const ProducerRegisterForm = () => {
   return (
     <CardWrapper
       headerLabel="Become a Producer"
+      label2="Grow and sell to co-ops, no need to deal with customers"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
       showSocial
@@ -92,7 +93,7 @@ export const ProducerRegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="John Doe"
+                      placeholder="Appleseed Farms"
                     />
                   </FormControl>
                   <FormMessage />
@@ -109,7 +110,7 @@ export const ProducerRegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="john.doe@example.com"
+                      placeholder="johnny.appleseed@example.com"
                       type="email"
                     />
                   </FormControl>
@@ -123,24 +124,6 @@ export const ProducerRegisterForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="******"
-                      type="password"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}

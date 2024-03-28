@@ -84,13 +84,23 @@ body::-webkit-scrollbar {
 .authlayoutbg {
   background-color: #ced9bb;
 }
+.cardregister {
+  background-color: #e3eac9;
+}
 
 .cardauth,
 .buttonsActive {
   background-color: #e3eac9;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .buttonsActive {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.buttonsNotActive {
+  background-color: #e3eac9;
+  opacity: 50%;
 }

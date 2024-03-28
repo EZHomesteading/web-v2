@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/card-wrapper";
+import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -76,6 +76,7 @@ export const RegisterForm = () => {
     <>
       <CardWrapper
         headerLabel="Create an account"
+        label2="Find fresh, local, and organic EZ Homesteading produce"
         backButtonLabel="Already have an account?"
         backButtonHref="/auth/login"
         showSocial
