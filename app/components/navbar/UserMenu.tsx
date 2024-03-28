@@ -14,7 +14,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/hooks/useRentModal";
 
 import MenuItem from "./MenuItem";
 import { Avatar } from "@/app/components/ui/avatar";

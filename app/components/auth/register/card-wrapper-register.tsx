@@ -34,7 +34,7 @@ export const CardWrapper = ({
 }: CardWrapperProps) => {
   return (
     <div className="flex flex-col items-center lg:right-[15%]">
-      <Card className="relative w-[500px] lg:relative rounded-none cardregister border-none">
+      <Card className="relative w-[80%] sm:w-[450px] md:w-[500px] rounded-none cardregister border-none">
         <CardHeader>
           <Header label={headerLabel} label2={label2} />
         </CardHeader>
@@ -47,37 +47,39 @@ export const CardWrapper = ({
         <CardFooter>
           <BackButton label={backButtonLabel} href={backButtonHref} />
         </CardFooter>
+        <div className="flex flex-row w-full items-center justify-between">
+          <button
+            className={`md:p-6 ${
+              activeTab === "buy"
+                ? "buttonsActive shadow-md"
+                : "buttonsNotActive"
+            }`}
+            onClick={() => onTabChange("buy")}
+          >
+            I want to buy
+          </button>
+          <button
+            className={`md:py-6 md:px-3 ${
+              activeTab === "sellAndSource"
+                ? "buttonsActive shadow-md"
+                : "buttonsNotActive"
+            }`}
+            onClick={() => onTabChange("sellAndSource")}
+          >
+            I want to sell & source
+          </button>
+          <button
+            className={`md:p-6 ${
+              activeTab === "sell"
+                ? "buttonsActive shadow-md"
+                : "buttonsNotActive"
+            }`}
+            onClick={() => onTabChange("sell")}
+          >
+            I just want to sell
+          </button>
+        </div>
       </Card>
-      <div className="flex flex-row w-full items-center justify-between">
-        <button
-          className={`p-6 ${
-            activeTab === "buy" ? "buttonsActive shadow-md" : "buttonsNotActive"
-          }`}
-          onClick={() => onTabChange("buy")}
-        >
-          I want to buy
-        </button>
-        <button
-          className={`py-6 px-3 ${
-            activeTab === "sellAndSource"
-              ? "buttonsActive shadow-md"
-              : "buttonsNotActive"
-          }`}
-          onClick={() => onTabChange("sellAndSource")}
-        >
-          I want to sell & source
-        </button>
-        <button
-          className={`p-6 ${
-            activeTab === "sell"
-              ? "buttonsActive shadow-md"
-              : "buttonsNotActive"
-          }`}
-          onClick={() => onTabChange("sell")}
-        >
-          I just want to sell
-        </button>
-      </div>
     </div>
   );
 };

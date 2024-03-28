@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar } from "@/app/components/ui/avatar";
-import { SafeUser } from "@/app/types";
+import { SafeUser } from "@/types";
 import { useRouter } from "next/navigation";
 
 interface ListingInfoProps {

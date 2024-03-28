@@ -86,6 +86,8 @@ body::-webkit-scrollbar {
 }
 .cardregister {
   background-color: #e3eac9;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .cardauth,
@@ -101,6 +103,5 @@ body::-webkit-scrollbar {
 }
 
 .buttonsNotActive {
-  background-color: #e3eac9;
-  opacity: 50%;
+  opacity: 0.4;
 }

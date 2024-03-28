@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "../../components/client/ClientOnly";
-import getListingsApi from "@/app/actions/getListingsApi";
+import getListingsApi from "@/actions/getListingsApi";
 
 interface ShopProps {
   userId?: string;

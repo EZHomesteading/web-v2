@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useTheme } from "next-themes";
-import { SafeListing } from "@/app/types";
+import { SafeListing } from "@/types";
 
 import HeartButton from "../ui/HeartButton";
 import Button from "../Button";

@@ -5,7 +5,7 @@ import MessageInput from "./MessageInput";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { CldUploadButton } from "next-cloudinary";
-import useConversation from "@/app/hooks/useConversation";
+import useConversation from "@/hooks/useConversation";
 
 const Form = () => {
   const { conversationId } = useConversation();

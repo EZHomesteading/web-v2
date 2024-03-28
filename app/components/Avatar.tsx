@@ -2,9 +2,9 @@
 
 import { User } from "@prisma/client";
 
-import useActiveList from "../hooks/useActiveList";
+import useActiveList from "../../hooks/useActiveList";
 import Image from "next/image";
-import { SafeUser } from "../types";
+import { SafeUser } from "../../types";
 
 interface AvatarProps {
   user?: any;

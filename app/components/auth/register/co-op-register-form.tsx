@@ -19,7 +19,7 @@ import { CardWrapper } from "@/app/components/auth/register/card-wrapper-registe
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
-import { register } from "@/app/actions/register";
+import { register } from "@/actions/Register";
 import { useRouter } from "next/navigation";
 
 export const CoOpRegisterForm = () => {

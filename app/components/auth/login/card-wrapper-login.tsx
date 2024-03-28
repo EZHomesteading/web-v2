@@ -29,7 +29,7 @@ export const CardWrapper = ({
 }: CardWrapperProps) => {
   return (
     <div className="flex flex-col items-center lg:right-[15%]">
-      <Card className="relative w-[500px] lg:relative rounded-none cardauth border-none">
+      <Card className="relative w-[280px] sm:w-[450px] md:w-[500px] rounded-none cardauth border-none">
         <CardHeader>
           <Header label={headerLabel} label2={label2} />
         </CardHeader>

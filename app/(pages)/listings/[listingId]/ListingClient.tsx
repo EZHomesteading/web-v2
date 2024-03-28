@@ -6,14 +6,14 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { addDays, format } from "date-fns";
 
-import { SafeListing } from "@/app/types";
+import { SafeListing } from "@/types";
 
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listingMap";
-import useCart from "@/app/hooks/useCart";
+import useCart from "@/hooks/useCart";
 
 interface ListingClientProps {
   listing: SafeListing & {

@@ -3,7 +3,7 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getCartListings from "@/app/actions/getCartListings";
+import getCartListings from "@/actions/getCartListings";
 
 import Cart from "./client";
 
