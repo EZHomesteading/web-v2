@@ -12,7 +12,7 @@ import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import useRentModal from "@/app/hooks/useRentModal";
 
@@ -40,16 +40,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       return router.push("/auth/register-producer");
     }
 
+    if (user.role == "CONSUMER") {
+      return router.push("/auth/become-producer");
+    }
+
     rentModal.onOpen();
   }, [, rentModal, user]);
 
   return (
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
-        {user?.role === "COOP" ? (
-          <div
-            onClick={onRent}
-            className="
+        <div
+          onClick={onRent}
+          className="
                 hidden
                 md:flex
                 items-center
@@ -61,47 +64,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 hover:bg-neutral-100 
                 transition 
                 cursor-pointer"
-          >
-            Add a Product
-          </div>
-        ) : user?.role === "PRODUCER" ? (
-          <div
-            onClick={onRent}
-            className="
-              hidden
-              md:flex
-              items-center
-              text-sm 
-              font-semibold 
-              py-3 
-              px-4 
-              rounded-full 
-              hover:bg-neutral-100 
-              transition 
-              cursor-pointer"
-          >
-            Add a Product
-          </div>
-        ) : (
-          <div
-            onClick={onRent}
-            className="
-            hidden
-            md:flex
-            items-center
-            text-sm 
-            font-semibold 
-            py-3 
-            px-4 
-            rounded-full 
-            hover:bg-neutral-100 
-            transition 
-            cursor-pointer
-          "
-          >
-            Add a Product
-          </div>
-        )}
+        >
+          Add a Product
+        </div>
         <div
           onClick={toggleOpen}
           className="
@@ -190,12 +155,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Co-Op"
-                      onClick={() => router.push("/updatetocoop")}
+                      onClick={() => router.push("/auth/become-co-op")}
                     />
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Producer"
-                      onClick={() => router.push("/updatetoproducer")}
+                      onClick={() => router.push("/auth/become-producer")}
                     />
                   </div>
                 ) : (

@@ -5,6 +5,7 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
+  updateRoutes,
 } from "@/routes";
 
 const { auth } = NextAuth(authConfig);
@@ -15,10 +16,22 @@ export default auth((req) => {
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isUpdateRoute = updateRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null as unknown as void;
   }
+
+  // if (isUpdateRoute) {
+  //   if (isLoggedIn) {
+  //     const userRole = req.auth?.user.role;
+  //     if (userRole === "CONSUMER") {
+  //       return null as unknown as void;
+  //     } else {
+  //       return Response.redirect(new URL("/unauthorized", nextUrl));
+  //     }
+  //   }
+  // }
 
   if (isAuthRoute) {
     if (isLoggedIn) {

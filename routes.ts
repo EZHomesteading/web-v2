@@ -25,6 +25,8 @@ export const authRoutes = [
   "/auth/new-password",
 ];
 
+export const updateRoutes = ["/auth/become-co-op", "/auth/become-producer"];
+
 /**
  * The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes

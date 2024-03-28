@@ -1,4 +1,4 @@
-import { CoOpRegisterForm } from "@/app/components/auth/register/co-op-register-form";
+import { CoOpRegisterForm } from "@/app/components/auth/register/co-op-form";
 
 const RegisterPage = () => {
   return <CoOpRegisterForm />;
