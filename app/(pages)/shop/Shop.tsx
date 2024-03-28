@@ -1,6 +1,6 @@
-import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
-import ClientOnly from "../../components/client/ClientOnly";
+import Container from "@/components/Container";
+import ListingCard from "@/components/listings/ListingCard";
+import ClientOnly from "@/components/client/ClientOnly";
 
 interface ShopProps {
   listings: any[];

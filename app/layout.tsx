@@ -1,14 +1,14 @@
 import { Nunito } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { ThemeProvider } from "./components/theme-provider";
-import Navbar from "@/app/components/navbar/Navbar";
-import RentModal from "@/app/components/modals/ListingModal";
+import { ThemeProvider } from "@/components/theme-provider";
+import Navbar from "@/components/navbar/Navbar";
+import RentModal from "@/components/modals/ListingModal";
 
-import ToasterProvider from "@/app/providers/ToasterProvider";
+import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
-import ClientOnly from "./components/client/ClientOnly";
+import ClientOnly from "@/components/client/ClientOnly";
 
 export const metadata = {
   title: "EZHomesteading",

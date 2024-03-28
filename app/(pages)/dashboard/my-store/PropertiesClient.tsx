@@ -5,11 +5,11 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { SafeListing } from "@/app/types";
+import { SafeListing } from "@/types";
 
-import Heading from "@/app/components/Heading";
-import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import Heading from "@/components/Heading";
+import Container from "@/components/Container";
+import ListingCard from "@/components/listings/ListingCard";
 
 interface PropertiesClientProps {
   listings: SafeListing[];

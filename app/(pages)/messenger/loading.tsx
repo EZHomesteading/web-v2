@@ -1,4 +1,4 @@
-import LoadingModal from "../../components/modals/chatmodals/LoadingModal";
+import LoadingModal from "@/components/modals/chatmodals/LoadingModal";
 
 const Loading = () => {
   return <LoadingModal />;

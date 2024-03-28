@@ -1,4 +1,4 @@
-import CoOpUpdateForm from "@/app/components/auth/update-role/co-op-form";
+import CoOpUpdateForm from "@/components/auth/update-role/co-op-form";
 import { currentUser } from "@/lib/auth";
 
 const BecomeCoopPage = () => {

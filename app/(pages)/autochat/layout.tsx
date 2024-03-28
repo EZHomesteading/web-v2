@@ -1,7 +1,7 @@
-import getConversations from "../../actions/getConversations";
-import getUsers from "../../actions/getUsers";
+import getConversations from "@/actions/getConversations";
+import getUsers from "@/actions/getUsers";
 
-import ConversationList from "./components/ConversationList";
+import ConversationList from "@/app/(pages)/autochat/components/ConversationList";
 
 export default async function ConversationsLayout({
   children,

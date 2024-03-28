@@ -1,8 +1,8 @@
 import React from "react";
-import { SafeListing, SafeUser } from "@/app/types";
-import Container from "@/app/components/Container";
-import Heading from "@/app/components/Heading";
-import ListingCard from "@/app/components/listings/ListingCard";
+import { SafeListing } from "@/types";
+import Container from "@/components/Container";
+import Heading from "@/components/Heading";
+import ListingCard from "@/components/listings/ListingCard";
 
 interface PropertiesClientProps {
   listings: SafeListing[];

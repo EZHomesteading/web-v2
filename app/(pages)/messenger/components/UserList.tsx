@@ -1,7 +1,6 @@
 "use client";
 
-import UserBox from "./UserBox";
-import { SafeUser } from "@/app/types";
+import UserBox from "@/app/(pages)/messenger/components/UserBox";
 
 interface UserListProps {
   items: any[];

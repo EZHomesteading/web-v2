@@ -1,11 +1,11 @@
 //checkout removes stock from listing
-import EmptyState from "@/app/components/EmptyState";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import EmptyState from "@/components/EmptyState";
+import ClientOnly from "@/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getCartListings from "@/app/actions/getCartListings";
+import getCartListings from "@/actions/getCartListings";
 
-import Cart from "./client";
+import Cart from "@/app/(pages)/cart/client";
 
 const SearchPage = async () => {
   const user = await currentUser();

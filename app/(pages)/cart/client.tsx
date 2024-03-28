@@ -7,7 +7,7 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { SafeListing } from "@/app/types";
+import { SafeListing } from "@/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";

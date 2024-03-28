@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@prisma/client";
 
-import Avatar from "@/app/components/Avatar";
-import LoadingModal from "@/app/components/modals/chatmodals/LoadingModal";
-import { SafeUser } from "@/app/types";
+import Avatar from "@/components/Avatar";
+import LoadingModal from "@/components/modals/chatmodals/LoadingModal";
+import { SafeUser } from "@/types";
 
 interface UserBoxProps {
   data: SafeUser;

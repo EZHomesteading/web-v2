@@ -3,7 +3,7 @@ import HourPicker from "./co-op-hour-select";
 import { CoOpHours, initialCoOpHours } from "./co-op-hours";
 import { useState } from "react";
 import axios from "axios";
-import Button from "@/app/components/Button";
+import Button from "@/components/Button";
 import { toast } from "react-hot-toast";
 
 const CoOpHoursPage = () => {

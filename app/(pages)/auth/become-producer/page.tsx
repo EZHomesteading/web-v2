@@ -1,4 +1,4 @@
-import ProducerUpdateForm from "@/app/components/auth/update-role/producer-form";
+import ProducerUpdateForm from "@/components/auth/update-role/producer-form";
 import { currentUser } from "@/lib/auth";
 
 const BecomeProducerPage = () => {

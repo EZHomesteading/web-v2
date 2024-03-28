@@ -1,4 +1,4 @@
-import { ProducerRegisterForm } from "@/app/components/auth/register/producer-form";
+import { ProducerRegisterForm } from "@/components/auth/register/producer-form";
 
 const RegisterPage = () => {
   return <ProducerRegisterForm />;

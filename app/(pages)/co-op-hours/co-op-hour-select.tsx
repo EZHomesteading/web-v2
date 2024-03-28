@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -8,14 +8,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/app/components/ui/command";
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { Label } from "@/app/components/ui/label";
-import { Status, statuses } from "./hours";
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { Status, statuses } from "@/app/(pages)/co-op-hours/hours";
 
 type HourPickerProps = {
   sideLabel: string;

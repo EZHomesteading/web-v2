@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
-import ClientOnly from "@/app/components/client/ClientOnly";
-import ConnectClient from "./ConnectClient";
+import ClientOnly from "@/components/client/ClientOnly";
+import ConnectClient from "@/app/(pages)/stripe-test/ConnectClient";
 
 const StripeTestPage = async () => {
   const user = await currentUser();

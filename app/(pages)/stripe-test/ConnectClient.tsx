@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import ClientOnly from "@/components/client/ClientOnly";
 import { useState } from "react";
 
 interface UpdateUserProps {

@@ -1,7 +1,7 @@
 // Importing the necessary modules and functions
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/lib/prisma";
 
 // Interface defining the structure of parameters accepted by the functions
 interface IParams {

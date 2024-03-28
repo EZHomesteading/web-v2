@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import { DashboardComp } from "@/app/components/dashboard/dashboard";
+import { DashboardComp } from "@/components/dashboard/dashboard";
 
 const DashboardPage = async () => {
   const user = await currentUser();
