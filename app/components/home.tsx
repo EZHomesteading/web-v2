@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import homebg from "@/public/images/home-images/ezhbg.webp";
-import { Indie_Flower } from "next/font/google";
+import homebg from "@/public/images/home-images/ezhbg2.webp";
+import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
+import { Card } from "./ui/card";
 
 const footerNavigation = {
   shop: [
@@ -31,8 +32,8 @@ const footerNavigation = {
   ],
 };
 
-const indie = Indie_Flower({
-  weight: ["400"],
+const outfit = Outfit({
+  weight: ["600"],
   style: ["normal"],
   subsets: ["latin"],
   display: "swap",
@@ -41,35 +42,35 @@ const indie = Indie_Flower({
 export default function Home() {
   return (
     <>
-      <div className="relative h-screen flex justify-center items-center">
-        <div className="w-full">
-          <Image
-            src={homebg}
-            alt="Farmer Holding Basket of Vegetables"
-            blurDataURL="data:..."
-            placeholder="blur"
-            fill
-            className="object-cover"
-          />
-        </div>
-        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-900 opacity-60"></div>
-        <div className="absolute text-start text-white">
-          <h1 className="2xl:text-5xl text-sm font-bold tracking-tight Fresh mb-2">
-            Fresh, Local, Organic
+      <div className="relative min-h-screen w-full flex justify-center md:justify-evenly items-center">
+        <div className="">
+          <h1 className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit">
+            <div className={outfit.className}>Fresh, Local, & Organic with</div>
           </h1>
-          <h1 className="2xl:text-7xl text-md font-bold tracking-tight Produce mb-2">
-            <div className={indie.className}>Produce Made Simple</div>
+          <h1 className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit">
+            <div className={outfit.className}>EZ Homesteading</div>
           </h1>
+
           <p className="2xl:text-lg text-sm mb-2">
-            EZ Homesteading connects family scale farmers & gardeners with
-            people in their community.
+            Creating communities & connecting family scale farmers & gardeners
+            with local consumers
           </p>
           <div className="flex">
             <FindListingsComponent />
           </div>
         </div>
+        <div>
+          <Image
+            src={homebg}
+            alt="Farmer Holding Basket of Vegetables"
+            blurDataURL="data:..."
+            placeholder="blur"
+            width={600}
+            height={400}
+            className="object-cover rounded-lg"
+          />
+        </div>
       </div>
-
       <footer aria-labelledby="footer-heading" className="bg-gray-500">
         <h2 id="footer-heading" className="sr-only">
           Footer

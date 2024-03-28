@@ -3,18 +3,23 @@ import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-
+import { Outfit } from "next/font/google";
 interface NavbarProps {
   user?: any;
 }
+const outfit = Outfit({
+  weight: ["100"],
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const NavbarHome = ({ user }: NavbarProps) => {
   return (
     <div className="absolute w-full z-10">
       <Container>
         <div className="flex flex-row items-center justify-between py-4">
-          <Logo />
-          <UserMenu user={user} />
+          <Logo /> <UserMenu user={user} />
         </div>
       </Container>
     </div>
