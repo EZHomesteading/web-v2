@@ -38,7 +38,7 @@ export const RegisterForm = () => {
       email: "",
       password: "",
       name: "",
-      role: "COOP",
+      role: "CONSUMER",
     },
   });
 
