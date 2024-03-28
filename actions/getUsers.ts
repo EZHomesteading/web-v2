@@ -1,4 +1,4 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
 const getUsers = async () => {

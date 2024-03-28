@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
 import axios from "axios";
-import SearchLocation from "@/app/components/listings/search-location";
+import SearchLocation from "@/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import SearchInput from "./search-input";
 
@@ -149,7 +149,6 @@ const FindListingsComponent = () => {
         {!focus.right && (
           <button
             className="absolute top-full mt-1 py-2 px-4 bg-green-800 text-white rounded w-full"
-
             onClick={handleNearMeClick}
           >
             Near Me

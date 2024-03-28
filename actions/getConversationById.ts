@@ -1,4 +1,4 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 const getConversationById = async (conversationId: string) => {
   try {

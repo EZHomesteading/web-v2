@@ -1,3 +1,3 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/lib/prisma";
 
 export const listings = await prisma.listing.findMany();

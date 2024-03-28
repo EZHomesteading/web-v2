@@ -1,20 +1,18 @@
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/lib/prisma";
 
-const getMessages = async (
-  conversationId: string
-) => {
+const getMessages = async (conversationId: string) => {
   try {
     const messages = await prisma.message.findMany({
       where: {
-        conversationId: conversationId
+        conversationId: conversationId,
       },
       include: {
         sender: true,
         seen: true,
       },
       orderBy: {
-        createdAt: 'asc'
-      }
+        createdAt: "asc",
+      },
     });
 
     return messages;
