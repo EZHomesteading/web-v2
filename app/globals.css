@@ -66,17 +66,6 @@
   }
 }
 
-.Fresh {
-  font-family: serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.Produce {
-  font-family: serif;
-  color: #f5b546;
-}
-
 body::-webkit-scrollbar {
   display: none;
 }
@@ -84,6 +73,7 @@ body::-webkit-scrollbar {
 .authlayoutbg {
   background-color: #ced9bb;
 }
+
 .cardregister {
   background-color: #e3eac9;
   border-bottom-left-radius: 0px;
@@ -104,4 +94,14 @@ body::-webkit-scrollbar {
 
 .buttonsNotActive {
   opacity: 0.4;
+}
+
+.section,
+.section2 {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #ced9bb;
 }

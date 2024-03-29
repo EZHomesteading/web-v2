@@ -17,7 +17,6 @@ import { redirect, useRouter } from "next/navigation";
 import useRentModal from "@/hooks/useRentModal";
 
 import MenuItem from "./MenuItem";
-import { Avatar } from "@/app/components/ui/avatar";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
 import { UserInfo } from "@/next-auth";
@@ -121,9 +120,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           "
         >
           <AiOutlineMenu />
-          <div className="hidden md:block">
-            <Avatar />
-          </div>
+          {user ? (
+            <div className="hidden md:flex items-center text-sm font-semibold">
+              {user.name}
+            </div>
+          ) : (
+            <div></div>
+          )}
         </div>
       </div>
       {isOpen && (
