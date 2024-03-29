@@ -8,12 +8,11 @@ import { MdOutlineGroupAdd } from "react-icons/md";
 import clsx from "clsx";
 import { find, uniq } from "lodash";
 
+import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/useConversation";
 import { pusherClient } from "@/libs/pusher";
 import GroupChatModal from "@/app/components/modals/chatmodals/GroupChatModal";
 import ConversationBox from "./ConversationBox";
-import { FullConversationType } from "@/types";
-import { registerServiceWorker } from "@/hooks/serviceWorker";
 import SubToggle from "./notificationButton";
 
 interface ConversationListProps {
