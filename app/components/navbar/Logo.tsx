@@ -15,7 +15,7 @@ const Logo = () => {
   return (
     <div
       onClick={() => router.push("/")}
-      className="hover:cursor-pointer text-2xl font-bold tracking-tight mb-2"
+      className="hover:cursor-pointer text-md md:text-2xl font-bold tracking-tight mb-2"
     >
       <h1 className={outfit.className}>EZ Homesteading</h1>
     </div>

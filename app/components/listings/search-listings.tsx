@@ -126,8 +126,8 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <div className="flex flex-row items-start md:items-center relative">
-        <div className="w-full md:w-1/2 mb-2 md:mb-0">
+      <div className="flex flex-col sm:flex-row items-start md:items-center justify-center relative text-black">
+        <div className="w-full mb-2 sm:mb-0 sm:w-auto">
           <SearchLocation
             address={location}
             setAddress={setLocation}
@@ -137,7 +137,7 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        <div className="w-full md:w-1/2">
+        <div className="w-full mb-2 sm:mb-0 sm:w-auto">
           <SearchInput
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}

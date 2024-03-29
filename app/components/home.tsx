@@ -68,7 +68,7 @@ export default function Home() {
       },
       xPercent: -50,
       opacity: 1,
-      duration: 3,
+      duration: 2,
     });
     gsap.to("#h3", {
       scrollTrigger: {
@@ -79,28 +79,29 @@ export default function Home() {
       },
       xPercent: 50,
       opacity: 1,
-      duration: 3,
+      duration: 2,
     });
   }, []);
 
   return (
     <>
       <main className="bg-black text-white">
-        <header id="header">
+        <header id="header" className="">
           <div
             id="h1"
-            className="relative min-h-screen w-full flex justify-center md:justify-evenly items-center"
+            className="relative h-screen w-full flex flex-col xl:flex-row justify-evenly p-10 md:justify-evenly items-center"
           >
             <article>
-              <h1 className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit">
+              <h1 className="2xl:text-5xl text-lg font-bold tracking-tight">
+                <div className={outfit.className}>Easily Find</div>
                 <div className={outfit.className}>
-                  Fresh, Local, & Organic with
+                  <em>Fresh, Local, & Organic with</em>
                 </div>
               </h1>
-              <h1 className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit">
+              <h1 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
                 <div className={outfit.className}>EZ Homesteading</div>
               </h1>
-              <p className="2xl:text-lg text-sm mb-2">
+              <p className="2xl:text-lg text-xs mb-2">
                 Join a community of consumers and producers. Find local produce
                 in your area.
               </p>
@@ -108,27 +109,29 @@ export default function Home() {
                 <FindListingsComponent />
               </div>
             </article>
-            <Image
-              src={homebg}
-              alt="Farmer Holding Basket of Vegetables"
-              blurDataURL="data:..."
-              placeholder="blur"
-              width={600}
-              height={400}
-              className="object-cover"
-            />
+            <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+              <Image
+                src={homebg}
+                alt="Farmer Holding Basket of Vegetables"
+                blurDataURL="data:..."
+                placeholder="blur"
+                className="object-cover rounded-3xl"
+              />
+            </div>
           </div>
         </header>
         <section className="relative  w-full flex justify-center md:justify-evenly items-center">
-          <Image
-            src={consumer}
-            alt="Farmer Holding Basket of Vegetables"
-            blurDataURL="data:..."
-            placeholder="blur"
-            width={300}
-            height={300}
-            className="object-cover rounded-lg"
-          />
+          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+            <Image
+              src={consumer}
+              alt="Farmer Holding Basket of Vegetables"
+              blurDataURL="data:..."
+              placeholder="blur"
+              width={400}
+              height={300}
+              className="object-cover rounded-lg"
+            />
+          </div>
           <div
             id="h2"
             className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
@@ -160,15 +163,17 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <Image
-            src={producer}
-            alt="Farmer Holding Basket of Vegetables"
-            blurDataURL="data:..."
-            placeholder="blur"
-            width={300}
-            height={300}
-            className="object-cover rounded-lg"
-          />
+          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+            <Image
+              src={producer}
+              alt="Farmer Holding Basket of Vegetables"
+              blurDataURL="data:..."
+              placeholder="blur"
+              width={500}
+              height={500}
+              className="object-cover rounded-lg"
+            />
+          </div>
         </section>
       </main>
       <footer aria-labelledby="footer-heading" className="bg-gray-500">
