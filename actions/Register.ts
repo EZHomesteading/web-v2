@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { RegisterSchema } from "@/schemas";
 import { getUserByEmail, getUserByName } from "@/data/user";
+import { UserRole } from "@prisma/client";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -13,7 +14,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Invalid fields!" };
   }
 
-  const { email, password, name } = validatedFields.data;
+  const { email, password, name, role } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
   const existingName = await getUserByName(name);
   const existingUser = await getUserByEmail(email);
@@ -27,6 +28,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       name,
       email,
       password: hashedPassword,
+      role: role as UserRole,
     },
   });
 };

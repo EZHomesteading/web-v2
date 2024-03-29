@@ -12,7 +12,7 @@ interface NavbarProps {
 const Navbar = ({ user }: NavbarProps) => {
   return (
     <div className="relative w-full z-10 shadow-sm">
-      <div className="py-4 border-b-[1px]">
+      <div className="py-4">
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
             <Logo />

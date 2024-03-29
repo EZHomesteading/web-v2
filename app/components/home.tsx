@@ -55,53 +55,37 @@ export default function Home() {
         end: "bottom top",
         scrub: true,
       },
-      yPercent: 50,
-      scale: 0.1,
+      yPercent: 0.1,
+      scale: 0.01,
       opacity: 0,
     });
-    // Section 1 H2
-    gsap.from("#h2", {
+    gsap.to("#h2", {
       scrollTrigger: {
         trigger: "#h2",
-        start: "top bottom+=100px",
-        toggleActions: "play complete none reset",
+        start: "top bottom",
+        end: "bottom top",
+        toggleActions: "play none none reset",
       },
-      xPercent: -100,
-      opacity: 0,
-      duration: 2,
+      xPercent: -50,
+      opacity: 1,
+      duration: 3,
     });
-    // Execution heading
-    gsap.from("#h3", {
+    gsap.to("#h3", {
       scrollTrigger: {
         trigger: "#h3",
-        start: "top bottom+=100px",
-        // scrub: true
-        toggleActions: "play complete none reset",
+        start: "top bottom",
+        end: "bottom top",
+        toggleActions: "restart pause reverse pause",
       },
-      xPercent: 100,
-      opacity: 0.5,
-      duration: 1,
+      xPercent: 50,
+      opacity: 1,
+      duration: 3,
     });
-    // Custom trigger
-    ScrollTrigger.create({
-      trigger: "#h3",
-      start: "top bottom+=-200px", // 200px after the top passes the bottom of the viewport
-      endTrigger: "#section2",
-      end: "bottom top",
-    });
-    ScrollTrigger.create({
-      trigger: "#h2",
-      start: "top bottom+=-200px",
-      endTrigger: "#section2",
-      end: "bottom top",
-    });
-
-    ScrollTrigger.refresh();
   }, []);
 
   return (
     <>
-      <main>
+      <main className="bg-black text-white">
         <header id="header">
           <div
             id="h1"
@@ -117,27 +101,25 @@ export default function Home() {
                 <div className={outfit.className}>EZ Homesteading</div>
               </h1>
               <p className="2xl:text-lg text-sm mb-2">
-                Creating communities & connecting family scale farmers &
-                gardeners with local consumers
+                Join a community of consumers and producers. Find local produce
+                in your area.
               </p>
               <div className="flex">
                 <FindListingsComponent />
               </div>
             </article>
-            <div>
-              <Image
-                src={homebg}
-                alt="Farmer Holding Basket of Vegetables"
-                blurDataURL="data:..."
-                placeholder="blur"
-                width={600}
-                height={400}
-                className="object-cover"
-              />
-            </div>
+            <Image
+              src={homebg}
+              alt="Farmer Holding Basket of Vegetables"
+              blurDataURL="data:..."
+              placeholder="blur"
+              width={600}
+              height={400}
+              className="object-cover"
+            />
           </div>
         </header>
-        <section className="section2 relative min-h-screen w-full flex justify-center md:justify-evenly">
+        <section className="relative  w-full flex justify-center md:justify-evenly items-center">
           <Image
             src={consumer}
             alt="Farmer Holding Basket of Vegetables"
@@ -147,30 +129,37 @@ export default function Home() {
             height={300}
             className="object-cover rounded-lg"
           />
-          <div id="section2">
-            <h2
-              id="h3"
-              className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
-            >
-              Become an EZH Co-Op
-            </h2>
+          <div
+            id="h2"
+            className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
+          >
+            Become an EZH Co-Op
+            <ul className="2xl:text-lg text-sm mb-2">
+              <li>A home-based opportunity to sell your produce</li>
+              <li>
+                Set your own hours, determine your prices, and save on farmer's
+                market fees
+              </li>
+              <li>
+                Source from a passionate community of producers to diversify
+                your offerings
+              </li>
+            </ul>
           </div>
         </section>
-        <div className="section relative min-h-screen w-full flex justify-center md:justify-evenly items-center">
-          <section>
-            <div id="h2">
-              <div className="relative">
-                <div className="relative min-h-screen w-full flex justify-center md:justify-evenly items-center">
-                  <div></div>
-                  <h1 className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit">
-                    <div className={outfit.className}>
-                      Become an EZH Producer
-                    </div>
-                  </h1>
-                </div>
-              </div>
-            </div>
-          </section>
+        <section className="relative h-[70vh] w-full flex justify-center md:justify-evenly items-center">
+          <div
+            id="h3"
+            className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
+          >
+            <h1 className={outfit.className}>Become an EZH Producer</h1>
+            <ul className="2xl:text-lg text-sm mb-2">
+              <li>Never let your homegrown produce go to waste again</li>
+              <li>
+                Hassle-free transactions without direct consumer interaction
+              </li>
+            </ul>
+          </div>
           <Image
             src={producer}
             alt="Farmer Holding Basket of Vegetables"
@@ -180,7 +169,7 @@ export default function Home() {
             height={300}
             className="object-cover rounded-lg"
           />
-        </div>
+        </section>
       </main>
       <footer aria-labelledby="footer-heading" className="bg-gray-500">
         <h2 id="footer-heading" className="sr-only">

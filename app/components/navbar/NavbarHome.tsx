@@ -16,7 +16,7 @@ const outfit = Outfit({
 
 const NavbarHome = ({ user }: NavbarProps) => {
   return (
-    <div className="absolute w-full z-10">
+    <div className="absolute w-full z-10 text-white">
       <Container>
         <div className="flex flex-row items-center justify-between py-4">
           <Logo />{" "}

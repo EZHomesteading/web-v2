@@ -95,13 +95,3 @@ body::-webkit-scrollbar {
 .buttonsNotActive {
   opacity: 0.4;
 }
-
-.section,
-.section2 {
-  height: 50vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-color: #ced9bb;
-}

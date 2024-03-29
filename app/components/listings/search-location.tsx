@@ -62,12 +62,12 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
     >
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div className="relative">
-          <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-400" />
+          <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg text-white" />
           <input
             {...getInputProps({
               placeholder: "Everywhere",
               className:
-                "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black w-full sm:w-auto",
+                "rounded-l-full px-4 py-2 pl-8 outline-none transition-all duration-200 sm:w-auto",
             })}
             onKeyDown={(e) => handleKeyDown(e, suggestions)}
             onFocus={() => setFocus({ ...focus, left: true })}
