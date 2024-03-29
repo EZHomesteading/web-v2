@@ -14,6 +14,7 @@ import { pusherClient } from "@/libs/pusher";
 import GroupChatModal from "@/app/components/modals/chatmodals/GroupChatModal";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
+import { registerServiceWorker } from "@/hooks/serviceWorker";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
