@@ -58,10 +58,7 @@ export async function DELETE(request: Request) {
   if (!body) {
     return NextResponse.error();
   }
-  const subs = user.subscriptions || "";
-  if (subs === "") {
-    return NextResponse.error();
-  }
+  const subs = user.subscriptions || "[]";
   const filterMe = JSON.parse(subs);
   const updatesubscriptions = filterMe.filter(
     (subscription: PushSubscription) => subscription.endpoint !== endpoint

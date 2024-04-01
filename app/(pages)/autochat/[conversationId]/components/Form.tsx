@@ -9,7 +9,7 @@ import useConversation from "@/hooks/useConversation";
 
 const Form = () => {
   const { conversationId } = useConversation();
-
+  const otherUserId = "660b21acfcb6c7eb395d69b6";
   const {
     register,
     handleSubmit,
@@ -27,13 +27,16 @@ const Form = () => {
     axios.post("/api/messages", {
       ...data,
       conversationId: conversationId,
+      otherUserId: otherUserId,
     });
+    console.log("beans");
   };
 
   const handleUpload = (result: any) => {
     axios.post("/api/messages", {
       image: result.info.secure_url,
       conversationId: conversationId,
+      otherUserId: otherUserId,
     });
   };
 
@@ -71,6 +74,7 @@ const Form = () => {
         />
         <button
           type="submit"
+          //onClick={onSubmit}
           className="
             rounded-full 
             p-2 
