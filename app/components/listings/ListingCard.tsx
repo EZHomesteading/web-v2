@@ -58,7 +58,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
       onSecondAction?.(secondActionId || "");
     },
-    [disabled, onSecondAction, actionId, secondActionId]
+    [disabled, onSecondAction, secondActionId]
   );
 
   const cardBackgroundLight = "#ffffff";
