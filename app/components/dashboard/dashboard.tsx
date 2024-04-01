@@ -31,7 +31,7 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-import { Avatar } from "@/app/components/ui/avatar";
+// import { Avatar } from "@/app/components/ui/avatar";
 import LocationSearchInput from "../map/LocationSearchInput";
 
 interface UserInfoProps {
@@ -420,7 +420,7 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
                 <form className="md:col-span-2">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
                     <div className="col-span-full flex items-center gap-x-8">
-                      <Avatar />
+                      {/* <Avatar /> */}
                       {/* THIS NEEDS UPDATED */}
                       <div>
                         <button

@@ -37,7 +37,9 @@ export const {
         session.user.city = token.city as string | undefined;
         session.user.zip = token.zip as string | undefined;
         session.user.state = token.state as string | undefined;
-        session.user.location = token.location as unknown;
+        session.user.location = token.location as
+          | { type: "Point"; coordinates: [number, number] }
+          | undefined;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;

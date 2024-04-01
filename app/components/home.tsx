@@ -147,8 +147,8 @@ export default function Home() {
             <ul className="2xl:text-lg text-sm mb-2">
               <li>A home-based opportunity to sell your produce</li>
               <li>
-                Set your own hours, determine your prices, and save on farmer's
-                market fees
+                Set your own hours, determine your prices, and save on
+                farmer&apos;s market fees
               </li>
               <li>
                 Source from a passionate community of producers to diversify

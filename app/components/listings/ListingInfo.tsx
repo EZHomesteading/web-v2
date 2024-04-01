@@ -1,11 +1,12 @@
 "use client";
 
-import { Avatar } from "@/app/components/ui/avatar";
+import { UserInfo } from "@/next-auth";
+import { Avatarr } from "../ui/AvatarDONTUSE";
 import { SafeUser } from "@/types";
 import { useRouter } from "next/navigation";
 
 interface ListingInfoProps {
-  user: SafeUser;
+  user: UserInfo;
   description: string;
 }
 
@@ -31,7 +32,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
             className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
-            <Avatar />
+            {/* <Avatarr user={user} /> */}
             <span>{user?.name}</span>
           </span>
         </div>
