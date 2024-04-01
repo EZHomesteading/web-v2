@@ -13,6 +13,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           alt="Farmer Holding Basket of Vegetables"
           blurDataURL="data:..."
           placeholder="blur"
+          priority={true}
           width={800}
           height={600}
           className="xl:display-hidden"

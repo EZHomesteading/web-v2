@@ -119,6 +119,7 @@ export default function Home() {
                 <Image
                   src={homebg}
                   alt="Farmer Holding Basket of Vegetables"
+                  priority={true}
                   blurDataURL="data:..."
                   placeholder="blur"
                   className="object-cover rounded-3xl"
