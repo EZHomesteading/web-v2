@@ -44,6 +44,7 @@ export default async function RootLayout({
             <div className=" pt-25">{children}</div>
           </ThemeProvider>
           <script
+            async
             src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&libraries=places`}
             defer
           />
