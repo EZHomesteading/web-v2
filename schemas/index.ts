@@ -101,10 +101,6 @@ export const UpdateSchema = z.object({
       type: z.literal("Point"),
       coordinates: z.tuple([z.number(), z.number()]),
     })
-    .optional(),
-  password: z
-    .string()
-    .min(6, { message: "Minimum 6 characters required" })
-    .optional(),
+    .required(),
   role: z.nativeEnum(UserRole).optional(),
 });

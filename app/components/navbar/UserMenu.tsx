@@ -40,7 +40,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
       return router.push("/auth/register-producer");
     }
     if (user.role !== "COOP") {
-      return router.push("/become-a-coop");
+      return router.push("/auth/become-a-producer");
     }
     listingModal.onOpen();
   }, [, listingModal, user]);
@@ -155,12 +155,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Co-Op"
-                      onClick={() => router.push("/updatetocoop")}
+                      onClick={() => router.push("/auth/become-a-co-op")}
                     />
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Producer"
-                      onClick={() => router.push("/updatetoproducer")}
+                      onClick={() => router.push("/auth/become-a-producer")}
                     />
                   </div>
                 ) : (

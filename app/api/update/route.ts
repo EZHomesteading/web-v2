@@ -9,14 +9,16 @@ type HoursOfOperation = {
 export async function POST(request: Request) {
   const body = await request.json();
   const {
+    firstName,
+    name,
+    email,
+    phoneNumber,
+    role,
+    location,
     street,
     city,
     zip,
-    phoneNumber,
     state,
-    role,
-    name,
-    email,
     hoursOfOperation,
   } = body;
 
@@ -29,14 +31,16 @@ export async function POST(request: Request) {
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
+      firstName,
+      name,
+      email,
+      phoneNumber,
+      role,
+      location,
       street,
       city,
       zip,
-      phoneNumber,
       state,
-      role,
-      name,
-      email,
       hoursOfOperation: hoursOfOperation as HoursOfOperation,
     },
   });

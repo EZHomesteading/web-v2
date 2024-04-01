@@ -38,14 +38,6 @@ export const CardWrapper = ({
           <Header label={headerLabel} label2={label2} />
         </CardHeader>
         <CardContent>{children}</CardContent>
-        {showSocial && (
-          <CardFooter>
-            <Social />
-          </CardFooter>
-        )}
-        <CardFooter>
-          <BackButton label={backButtonLabel} href={backButtonHref} />
-        </CardFooter>
         <div className="flex flex-row w-full items-center justify-between">
           <button
             className={`md:py-6 md:px-3 ${

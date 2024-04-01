@@ -11,7 +11,10 @@ export type UserInfo = DefaultSession["user"] & {
   city?: string;
   zip?: string;
   state?: string;
-  location?: unknown;
+  location?: {
+    type: "Point";
+    coordinates: [number, number];
+  };
   image?: string;
   hoursOfOperation?: unknown;
   stripeAccountId?: string;
