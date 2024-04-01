@@ -5,6 +5,7 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
+import { PushSubscription } from "web-push";
 
 export const {
   handlers: { GET, POST },
@@ -49,6 +50,7 @@ export const {
         session.user.seenMessageIds = token.seenMessageIds as string[];
         session.user.favoriteIds = token.favoriteIds as string[];
         session.user.cartIds = token.cartIds as string[];
+        session.user.subscriptions = token.subscriptions as string | undefined;
       }
       return session;
     },
@@ -78,6 +80,7 @@ export const {
       token.seenMessageIds = existingUser.seenMessageIds;
       token.favoriteIds = existingUser.favoriteIds;
       token.cartIds = existingUser.cartIds;
+      token.subscriptions = existingUser.subscriptions;
       return token;
     },
   },

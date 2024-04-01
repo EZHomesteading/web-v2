@@ -33,10 +33,24 @@ export async function unregisterPushNotifications() {
 export async function sendPushSubscriptionToServer(
   subscription: PushSubscription
 ) {
-  console.log("sending push subscription to server", subscription);
+  const response = await fetch("../api/register-push", {
+    method: "POST",
+    body: JSON.stringify(subscription),
+  });
+  if (!response.ok) {
+    throw Error("failed sub push");
+  }
+  // console.log("sending push subscription to server", subscription);
 }
 export async function deletePushSubscriptionFromServer(
   subscription: PushSubscription
 ) {
-  console.log("deleting push subscription from server", subscription);
+  const response = await fetch("../api/register-push", {
+    method: "DELETE",
+    body: JSON.stringify(subscription),
+  });
+  if (!response.ok) {
+    throw Error("failed sub delete");
+  }
+  //console.log("deleting push subscription from server", subscription);
 }

@@ -20,6 +20,7 @@ export type UserInfo = DefaultSession["user"] & {
   seenMessageIds: string[];
   favoriteIds: string[];
   cartIds: string[];
+  subscriptions?: string;
 };
 
 declare module "next-auth" {
