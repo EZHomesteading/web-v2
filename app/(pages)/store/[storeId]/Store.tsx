@@ -18,7 +18,7 @@ const StorePage = ({
   return (
     <ClientOnly>
       <Container>
-        <div className="text-5xl">{user?.name}</div>
+        <div className="text-5xl">{storeUser?.name}</div>
         {emptyState || (
           <div
             className="
@@ -34,7 +34,7 @@ const StorePage = ({
             "
           >
             {listings.map((listing: any) => (
-              <ListingCard user={user} key={listing.id} data={listing} />
+              <ListingCard user={storeUser} key={listing.id} data={listing} />
             ))}
           </div>
         )}

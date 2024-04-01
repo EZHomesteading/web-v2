@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
-import prisma from "@/app/libs/prismadb";
+import prisma from "@/libs/prismadb";
 
 type HoursOfOperation = {
   [key: string]: { start: string; end: string }[];

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import axios from "axios";
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/hooks/useRentModal";
 import Modal from "./Modal";
 import Counter from "../inputs/Counter";
 import ImageUpload from "../inputs/ImageUpload";

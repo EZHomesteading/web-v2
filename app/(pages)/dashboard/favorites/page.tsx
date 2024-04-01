@@ -2,7 +2,7 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getFavoriteListings from "@/app/actions/getFavoriteListings";
+import getFavoriteListings from "@/actions/getFavoriteListings";
 
 import FavoritesClient from "./FavoritesClient";
 

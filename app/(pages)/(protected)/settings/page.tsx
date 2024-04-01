@@ -17,7 +17,7 @@ import {
 import { SettingsSchema } from "@/schemas";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { settings } from "@/app/actions/settings";
+import { settings } from "@/actions/settings";
 import {
   Form,
   FormField,
@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "@/app/components/ui/form";
 import { Input } from "@/app/components/ui/input";
-import { useCurrentUser } from "@/app/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { UserRole } from "@prisma/client";

@@ -66,17 +66,32 @@
   }
 }
 
-.Fresh {
-  font-family: serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.Produce {
-  font-family: serif;
-  color: #f5b546;
-}
-
 body::-webkit-scrollbar {
   display: none;
+}
+
+.authlayoutbg {
+  background-color: #ced9bb;
+}
+
+.cardregister {
+  background-color: #e3eac9;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.cardauth,
+.buttonsActive {
+  background-color: #e3eac9;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.buttonsActive {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.buttonsNotActive {
+  opacity: 0.4;
 }

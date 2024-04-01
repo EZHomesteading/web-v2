@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "@/auth";
-import { pusherServer } from "@/app/libs/pusher";
+import { pusherServer } from "@/libs/pusher";
 
 export default async function handler(
   request: NextApiRequest,

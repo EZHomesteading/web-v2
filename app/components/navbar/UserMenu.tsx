@@ -14,10 +14,9 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/hooks/useRentModal";
 
 import MenuItem from "./MenuItem";
-import { Avatar } from "@/app/components/ui/avatar";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
 import { UserInfo } from "@/next-auth";
@@ -37,7 +36,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
 
   const onRent = useCallback(() => {
     if (!user) {
-      return router.push("/auth/login");
+      return router.push("/auth/register-producer");
     }
 
     rentModal.onOpen();
@@ -46,7 +45,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   return (
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
-        {/* Add a Product button */}
         {user?.role === "COOP" ? (
           <div
             onClick={onRent}
@@ -103,8 +101,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             Add a Product
           </div>
         )}
-
-        {/* Menu button */}
         <div
           onClick={toggleOpen}
           className="
@@ -124,12 +120,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           "
         >
           <AiOutlineMenu />
-          <div className="hidden md:block">
-            <Avatar />
-          </div>
+          {user ? (
+            <div className="hidden md:flex items-center text-sm font-semibold">
+              {user.name}
+            </div>
+          ) : (
+            <div></div>
+          )}
         </div>
       </div>
-      {/* Menu content */}
       {isOpen && (
         <div
           className="
@@ -143,7 +142,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           "
         >
           <div className="flex flex-col cursor-pointer">
-            {/* Render menu items based on user authentication */}
             {user?.role === "COOP" ? (
               <div>
                 <MenuItem

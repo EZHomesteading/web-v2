@@ -2,7 +2,7 @@
 
 import { addDays, format } from "date-fns";
 import Button from "../Button";
-import useCart from "@/app/hooks/useCart";
+import useCart from "@/hooks/useCart";
 
 interface ListingReservationProps {
   listingId: string;

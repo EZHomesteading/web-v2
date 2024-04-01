@@ -23,15 +23,15 @@ const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <div className="relative flex items-center mb-2 sm:mb-0 w-full sm:w-auto">
-      <BsBasket className="absolute text-lg left-2 text-gray-400" />
+    <div className="relative flex items-center mb-2 sm:mb-0 text-black">
+      <BsBasket className="absolute text-lg left-2 text-black" />
       <input
         type="text"
         placeholder="Everything"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="rounded-r-full px-4 py-2 pl-8 outline-none transition-all duration-200 border border-black"
+        className="rounded-md sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
         onFocus={() => setFocus({ ...focus, right: true })}
         onBlur={() => setFocus({ ...focus, right: false })}
       />
@@ -39,7 +39,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         onClick={handleSearch}
         className="absolute right-3 top-1/2 transform -translate-y-1/2"
       >
-        <IoIosSearch className="text-2xl text-gray-400" />
+        <IoIosSearch className="text-2xl text-black" />
       </button>
     </div>
   );

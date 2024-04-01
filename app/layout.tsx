@@ -5,7 +5,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import Navbar from "@/app/components/navbar/Navbar";
 import RentModal from "@/app/components/modals/ListingModal";
 
-import ToasterProvider from "@/app/providers/ToasterProvider";
+import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
@@ -38,9 +38,7 @@ export default async function RootLayout({
             <ClientOnly>
               <ToasterProvider />
               <RentModal />
-              <Navbar user={session?.user} />
             </ClientOnly>
-
             <div className=" pt-25">{children}</div>
           </ThemeProvider>
           <script

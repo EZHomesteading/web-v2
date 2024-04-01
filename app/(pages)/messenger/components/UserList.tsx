@@ -1,7 +1,7 @@
 "use client";
 
 import UserBox from "./UserBox";
-import { SafeUser } from "@/app/types";
+import { SafeUser } from "@/types";
 
 interface UserListProps {
   items: any[];

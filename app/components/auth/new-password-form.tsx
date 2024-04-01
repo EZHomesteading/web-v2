@@ -16,15 +16,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/card-wrapper";
+import { CardWrapper } from "./login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
-import { newPassword } from "@/app/actions/new-password";
+import { newPassword } from "@/actions/new-password";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
 
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -54,6 +54,7 @@ export const NewPasswordForm = () => {
       headerLabel="Enter a new password"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
+      label2=""
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
