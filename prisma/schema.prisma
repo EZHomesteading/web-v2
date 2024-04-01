@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -27,7 +28,7 @@ model User {
   location              Json?
   image                 String?
   hoursOfOperation      Json?
-  role                 UserRole @default(CONSUMER)
+  role                  UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
   createdAt             DateTime @default(now())
@@ -47,7 +48,9 @@ model User {
   
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
+  subscriptions         String?
 }
+
 
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -169,6 +172,8 @@ model Conversation {
   userIds String[] @db.ObjectId
   users User[] @relation(fields: [userIds], references: [id])
 }
+
+
 
 model Message {
   id String @id @default(auto()) @map("_id") @db.ObjectId
