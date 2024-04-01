@@ -14,7 +14,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import useListingModal from "@/hooks/useRentModal";
-
+import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
@@ -35,38 +35,31 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     setIsOpen((value) => !value);
   }, []);
 
-  const onRent = useCallback(() => {
-    if (!user) {
-      return router.push("/auth/register-producer");
-    }
-    if (user.role !== "COOP" && user.role !== "PRODUCER") {
-      return router.push("/auth/become-a-producer");
-    }
-    listingModal.onOpen();
-  }, [, listingModal, user]);
-
   return (
     <div className={`relative ${textColor}`}>
       <div className="flex flex-row items-center gap-3">
-        <div
-          onClick={onRent}
-          className="
-                hidden
-                md:flex
-                items-center
-                text-sm 
-                font-semibold 
-                py-3 
-                px-4 
-                rounded-full 
-                hover:bg-green-100
-                hover:shadow-md
-                hover:text-green-600 
-                transition 
-                cursor-pointer"
-        >
-          Add a Product
-        </div>
+        {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
+          <UpdateRoleAlert
+            heading="Would you like to become an EZH producer or co-op?"
+            description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."
+            backButtonLabel="No thanks"
+            actionButtonLabel="More Info"
+            actionButtonHref="/info/ezh-roles"
+            actionButtonLabelTwo="Co-op Registration"
+            actionButtonHrefTwo="/auth/become-a-co-op"
+            actionButtonLabelThree="Producer Registration"
+            actionButtonHrefThree="/auth/become-a-producer"
+          />
+        ) : (
+          <div
+            onClick={() => {
+              listingModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+          >
+            Add a Product
+          </div>
+        )}
         <div
           onClick={toggleOpen}
           className="
