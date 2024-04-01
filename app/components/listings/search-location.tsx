@@ -62,7 +62,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
     >
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div className="relative">
-          <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg text-black" />
+          <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg" />
           <input
             {...getInputProps({
               placeholder: "Everywhere",
@@ -81,11 +81,11 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
               return (
                 <div
                   {...getSuggestionItemProps(suggestion, {
-                    className: `px-4 py-2 bg-white flex items-center text-xs ${className}`,
+                    className: `px-4 py-2 bg-white flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
                   })}
                   key={suggestion.id}
                 >
-                  <span className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+                  <span className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
                     {suggestion.description}
                   </span>
                 </div>

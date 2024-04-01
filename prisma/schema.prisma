@@ -16,8 +16,9 @@ enum UserRole {
 
 model User {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
-  name                  String  @unique
+  name                  String  @unique 
   email                 String  @unique 
+  firstName             String?
   emailVerified         DateTime?
   phoneNumber           String? 
   street                String?
@@ -27,7 +28,7 @@ model User {
   location              Json?
   image                 String?
   hoursOfOperation      Json?
-  role                 UserRole @default(CONSUMER)
+  role                  UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
   createdAt             DateTime @default(now())

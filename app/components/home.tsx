@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import homebg from "@/public/images/home-images/ezhbg2.webp";
 import consumer from "@/public/images/home-images/ezhconsumer.webp";
 import producer from "@/public/images/home-images/ezhproducer.webp";
+import { useTheme } from "next-themes";
 
 const footerNavigation = {
   shop: [
@@ -47,6 +48,10 @@ const outfit = Outfit({
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  const { theme } = useTheme();
+  const backgroundColor = theme === "dark" ? "bg-black" : "bg-white";
+  const textColor = theme === "dark" ? "text-white" : "text-black";
+
   useEffect(() => {
     gsap.to("#h1", {
       scrollTrigger: {
@@ -85,43 +90,45 @@ export default function Home() {
 
   return (
     <>
-      <main className="bg-black text-white">
-        <header id="header" className="">
-          <div
-            id="h1"
-            className="relative h-screen w-full flex flex-col xl:flex-row justify-evenly p-10 md:justify-evenly items-center"
-          >
-            <article>
-              <h1 className="2xl:text-5xl text-lg font-bold tracking-tight">
-                <div className={outfit.className}>Easily Find</div>
-                <div className={outfit.className}>
-                  <em>Fresh, Local, & Organic with</em>
+      <div className={`${backgroundColor} ${textColor}`}>
+        <main>
+          <header id="header" className="">
+            <div
+              id="h1"
+              className="relative h-screen w-full flex flex-col xl:flex-row justify-evenly p-10 md:justify-evenly items-center"
+            >
+              <article>
+                <h1 className="2xl:text-5xl text-lg font-bold tracking-tight">
+                  <div className={outfit.className}>Easily Find</div>
+                  <div className={outfit.className}>
+                    <em>Fresh, Local, & Organic with</em>
+                  </div>
+                </h1>
+                <h1 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
+                  <div className={outfit.className}>EZ Homesteading</div>
+                </h1>
+                <p className="2xl:text-lg text-xs mb-2">
+                  Join a community of consumers and producers. Find local
+                  produce in your area.
+                </p>
+                <div className="flex">
+                  <FindListingsComponent />
                 </div>
-              </h1>
-              <h1 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
-                <div className={outfit.className}>EZ Homesteading</div>
-              </h1>
-              <p className="2xl:text-lg text-xs mb-2">
-                Join a community of consumers and producers. Find local produce
-                in your area.
-              </p>
-              <div className="flex">
-                <FindListingsComponent />
+              </article>
+              <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+                <Image
+                  src={homebg}
+                  alt="Farmer Holding Basket of Vegetables"
+                  blurDataURL="data:..."
+                  placeholder="blur"
+                  className="object-cover rounded-3xl"
+                />
               </div>
-            </article>
-            <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
-              <Image
-                src={homebg}
-                alt="Farmer Holding Basket of Vegetables"
-                blurDataURL="data:..."
-                placeholder="blur"
-                className="object-cover rounded-3xl"
-              />
             </div>
-          </div>
-        </header>
+          </header>
+        </main>
         <section className="relative  w-full flex justify-center md:justify-evenly items-center">
-          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[35vh]">
             <Image
               src={consumer}
               alt="Farmer Holding Basket of Vegetables"
@@ -150,10 +157,11 @@ export default function Home() {
             </ul>
           </div>
         </section>
-        <section className="relative h-[70vh] w-full flex justify-center md:justify-evenly items-center">
+
+        <section className="h-[100vh] flex justify-center md:justify-evenly items-center">
           <div
             id="h3"
-            className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
+            className="2xl:text-5xl text-sm font-bold tracking-tight"
           >
             <h1 className={outfit.className}>Become an EZH Producer</h1>
             <ul className="2xl:text-lg text-sm mb-2">
@@ -163,19 +171,21 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
-            <Image
-              src={producer}
-              alt="Farmer Holding Basket of Vegetables"
-              blurDataURL="data:..."
-              placeholder="blur"
-              width={500}
-              height={500}
-              className="object-cover rounded-lg"
-            />
-          </div>
+          <Link href="/auth/become-a-producer">
+            <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
+              <Image
+                src={producer}
+                alt="Farmer Holding Basket of Vegetables"
+                blurDataURL="data:..."
+                placeholder="blur"
+                width={500}
+                height={500}
+                className="object-cover rounded-lg"
+              />
+            </div>
+          </Link>
         </section>
-      </main>
+      </div>
       <footer aria-labelledby="footer-heading" className="bg-gray-500">
         <h2 id="footer-heading" className="sr-only">
           Footer

@@ -1,8 +1,12 @@
 import Image from "next/image";
 import authImg from "@/public/images/home-images/authimg2.png";
+import Logo from "../components/navbar/Logo";
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
+      <div className="absolute top-1 left-1 z-10">
+        <Logo />
+      </div>
       <div className="absolute z-10 bottom-0 left-0 hidden xl:block">
         <Image
           src={authImg}

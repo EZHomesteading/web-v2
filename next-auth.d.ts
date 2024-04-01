@@ -3,6 +3,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
   role: UserRole;
+  firstName: string;
   isTwoFactorEnabled: boolean;
   isOAuth: boolean;
   phoneNumber?: string;

@@ -2,7 +2,6 @@
 
 import {
   FaHeart,
-  FaShoppingCart,
   FaStore,
   FaSignOutAlt,
   FaSignInAlt,
@@ -13,8 +12,8 @@ import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-
-import useRentModal from "@/hooks/useRentModal";
+import { useTheme } from "next-themes";
+import useListingModal from "@/hooks/useRentModal";
 
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
@@ -27,7 +26,9 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
-  const rentModal = useRentModal();
+  const { theme } = useTheme();
+  const textColor = theme === "dark" ? "text-white" : "text-black";
+  const listingModal = useListingModal();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = useCallback(() => {
@@ -38,17 +39,18 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     if (!user) {
       return router.push("/auth/register-producer");
     }
-
-    rentModal.onOpen();
-  }, [, rentModal, user]);
+    if (user.role !== "COOP") {
+      return router.push("/become-a-coop");
+    }
+    listingModal.onOpen();
+  }, [, listingModal, user]);
 
   return (
-    <div className="relative">
+    <div className={`relative ${textColor}`}>
       <div className="flex flex-row items-center gap-3">
-        {user?.role === "COOP" ? (
-          <div
-            onClick={onRent}
-            className="
+        <div
+          onClick={onRent}
+          className="
                 hidden
                 md:flex
                 items-center
@@ -57,50 +59,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 py-3 
                 px-4 
                 rounded-full 
-                hover:bg-neutral-100 
+                hover:bg-green-100
+                hover:shadow-md
+                hover:text-green-600 
                 transition 
                 cursor-pointer"
-          >
-            Add a Product
-          </div>
-        ) : user?.role === "PRODUCER" ? (
-          <div
-            onClick={onRent}
-            className="
-              hidden
-              md:flex
-              items-center
-              text-sm 
-              font-semibold 
-              py-3 
-              px-4 
-              rounded-full 
-              hover:bg-neutral-100 
-              transition 
-              cursor-pointer"
-          >
-            Add a Product
-          </div>
-        ) : (
-          <div
-            onClick={onRent}
-            className="
-            hidden
-            md:flex
-            items-center
-            text-sm 
-            font-semibold 
-            py-3 
-            px-4 
-            rounded-full 
-            hover:bg-neutral-100 
-            transition 
-            cursor-pointer
-          "
-          >
-            Add a Product
-          </div>
-        )}
+        >
+          Add a Product
+        </div>
         <div
           onClick={toggleOpen}
           className="
@@ -120,13 +86,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           "
         >
           <AiOutlineMenu />
-          {user ? (
-            <div className="hidden md:flex items-center text-sm font-semibold">
-              {user.name}
-            </div>
-          ) : (
-            <div></div>
-          )}
+          <div className="hidden md:flex items-center text-sm font-semibold">
+            {user!.firstName}
+          </div>
         </div>
       </div>
       {isOpen && (
@@ -152,7 +114,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 <MenuItem
                   label="Add a Product"
                   icon={<CiSquarePlus className="mr-2" />}
-                  onClick={rentModal.onOpen}
+                  onClick={listingModal.onOpen}
                 />
               </div>
             ) : user?.role === "PRODUCER" ? (
@@ -165,7 +127,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 <MenuItem
                   label="Add a Product"
                   icon={<CiSquarePlus className="mr-2" />}
-                  onClick={rentModal.onOpen}
+                  onClick={listingModal.onOpen}
                 />
               </div>
             ) : (
@@ -202,7 +164,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                     />
                   </div>
                 ) : (
-                  <div></div>
+                  <></>
                 )}
                 <hr />
                 <MenuItem
