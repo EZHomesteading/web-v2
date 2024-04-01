@@ -11,7 +11,7 @@ import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import useListingModal from "@/hooks/useRentModal";
 
@@ -39,7 +39,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     if (!user) {
       return router.push("/auth/register-producer");
     }
-    if (user.role !== "COOP") {
+    if (user.role !== "COOP" && user.role !== "PRODUCER") {
       return router.push("/auth/become-a-producer");
     }
     listingModal.onOpen();
