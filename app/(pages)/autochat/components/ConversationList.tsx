@@ -15,6 +15,10 @@ import GroupChatModal from "@/app/components/modals/chatmodals/GroupChatModal";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
 import { registerServiceWorker } from "@/hooks/serviceWorker";
+import {
+  getCurrentPushSubscription,
+  sendPushSubscriptionToServer,
+} from "@/app/actions/notifications/pushService";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -48,6 +52,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
     }
     setUpServiceWorker();
   });
+
+  useEffect(() => {
+    async function syncPushSubscription() {
+      try {
+        const subscription = await getCurrentPushSubscription();
+        if (subscription) {
+          await sendPushSubscriptionToServer(subscription);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    syncPushSubscription();
+  }, []);
 
   useEffect(() => {
     if (!pusherKey) {
