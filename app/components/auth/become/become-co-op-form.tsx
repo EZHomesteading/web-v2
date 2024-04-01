@@ -22,49 +22,60 @@ import { FormSuccess } from "@/app/components/form-success";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "@/next-auth";
 import AuthLocation from "../auth-location";
-import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import axios from "axios";
+import { UserRole } from "@prisma/client";
 
 interface BecomeCoopProps {
   user?: UserInfo;
 }
 export const BecomeCoop = ({ user }: BecomeCoopProps) => {
+  const [address, setAddress] = useState<string>("");
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">(
-    "sellAndSource"
-  );
+  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">("sell");
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
 
-  const [location, setLocation] = useState("");
-  console.log(location);
-  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
-    null
-  );
-  const geocodingApiLoaded = useMapsLibrary("geocoding");
-  const [geocodingService, setGeocodingService] =
-    useState<google.maps.Geocoder>();
-  const [geocodingResult, setGeocodingResult] =
-    useState<google.maps.GeocoderResult>();
-  const [address, setAddress] = useState("");
-
-  useEffect(() => {
-    if (!geocodingApiLoaded) return;
-    setGeocodingService(new window.google.maps.Geocoder());
-  }, [geocodingApiLoaded]);
-
-  useEffect(() => {
-    if (!geocodingService || !address) return;
-    geocodingService.geocode({ address }, (results, status) => {
-      if (results && status === "OK") {
-        setGeocodingResult(results[0]);
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
       }
-    });
-  }, [geocodingService, address]);
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
 
-  const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
-    setLatLng(latLng);
-    console.log(latLng);
+  const handleAddressParsed = async (parsedAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  }) => {
+    form.setValue("street", parsedAddress.street);
+    form.setValue("city", parsedAddress.city);
+    form.setValue("state", parsedAddress.state);
+    form.setValue("zip", parsedAddress.zip);
+
+    const latLng = await getLatLngFromAddress(
+      `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
+    );
+
+    if (latLng) {
+      form.setValue("location", {
+        type: "Point",
+        coordinates: [latLng.lng, latLng.lat],
+      });
+    }
   };
 
   const form = useForm<z.infer<typeof UpdateSchema>>({
@@ -82,32 +93,30 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
       city: user?.city || "",
       state: user?.state || "",
       zip: user?.zip || "",
-      role: "COOP",
+
+      role: UserRole.COOP,
     },
   });
-
   const onSubmit = async (values: z.infer<typeof UpdateSchema>) => {
     try {
-      const locationObj = {
-        type: "Point",
-        coordinates: [latLng?.lng || 0, latLng?.lat || 0],
+      const updatedValues = {
+        ...values,
       };
       const response = await fetch("/api/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(updatedValues),
       });
-
-      if (response.ok) {
-        setSuccess("Co-op information updated successfully.");
-        router.push("/");
-      } else {
-        setError("Failed to update co-op information.");
-      }
     } catch (error) {
-      setError("An error occurred while updating co-op information.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      startTransition(() => {
+        setError("");
+        setSuccess("Your account has been updated.");
+        router.push("/");
+      });
     }
   };
 
@@ -209,23 +218,13 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Co-Op Location</FormLabel>
-                      <FormControl>
-                        <AuthLocation
-                          address={location}
-                          setAddress={setLocation}
-                          onAddressParsed={handleAddressParsed}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+
+                <AuthLocation
+                  address={address}
+                  setAddress={setAddress}
+                  onAddressParsed={handleAddressParsed}
                 />
+
                 <div className="flex flex-row">
                   <Button
                     disabled={isPending}
@@ -235,7 +234,12 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
                   >
                     Back
                   </Button>
-                  <Button disabled={isPending} type="submit" className="w-full">
+                  <Button
+                    onClick={() => onSubmit(form.getValues())}
+                    disabled={isPending}
+                    type="submit"
+                    className="w-full"
+                  >
                     Become an EZH Co-op
                   </Button>
                 </div>

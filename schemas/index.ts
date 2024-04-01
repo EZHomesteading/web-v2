@@ -44,8 +44,8 @@ export const SettingsSchema = z
   );
 
 export const NewPasswordSchema = z.object({
-  password: z.string().min(6, {
-    message: "Minimum of 6 characters required",
+  password: z.string().min(4, {
+    message: "Minimum of 4 characters required",
   }),
 });
 
@@ -72,11 +72,36 @@ export const RegisterSchema = z.object({
   email: z.string().email({
     message: "Email is required",
   }),
-  password: z.string().min(6, {
-    message: "Minimum 6 characters required",
+  password: z.string().min(4, {
+    message: "Minimum 4 characters required",
   }),
   name: z.string().min(1, {
     message: "Name is required",
+  }),
+  role: z.nativeEnum(UserRole),
+});
+
+export const RegisterRoleSchema = z.object({
+  firstName: z.string().min(1, {
+    message: "First name is required",
+  }),
+  email: z.string().email({
+    message: "Email is required",
+  }),
+  password: z.string().min(4, {
+    message: "Minimum 4 characters required",
+  }),
+  name: z.string().min(1, {
+    message: "Name is required",
+  }),
+  phoneNumber: z.string().min(6, { message: "Phone number is required" }),
+  street: z.string().min(1, { message: "Street is required" }),
+  city: z.string().min(1, { message: "City is required" }),
+  state: z.string().min(1, { message: "State is required" }),
+  zip: z.string().min(1, { message: "Zip is required" }),
+  location: z.object({
+    type: z.literal("Point"),
+    coordinates: z.tuple([z.number(), z.number()]),
   }),
   role: z.nativeEnum(UserRole),
 });
@@ -101,6 +126,6 @@ export const UpdateSchema = z.object({
       type: z.literal("Point"),
       coordinates: z.tuple([z.number(), z.number()]),
     })
-    .required(),
+    .optional(),
   role: z.nativeEnum(UserRole).optional(),
 });

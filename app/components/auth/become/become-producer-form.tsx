@@ -22,45 +22,61 @@ import { FormSuccess } from "@/app/components/form-success";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "@/next-auth";
 import AuthLocation from "../auth-location";
-import { useMapsLibrary } from "@vis.gl/react-google-maps";
-
+import axios from "axios";
+import { UserRole } from "@prisma/client";
 interface BecomeProducerProps {
   user?: UserInfo;
 }
 export const BecomeProducer = ({ user }: BecomeProducerProps) => {
+  const [address, setAddress] = useState<string>("");
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">("sell");
-
-  const [location, setLocation] = useState("");
-  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
-    null
+  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">(
+    "sellAndSource"
   );
-  const geocodingApiLoaded = useMapsLibrary("geocoding");
-  const [geocodingService, setGeocodingService] =
-    useState<google.maps.Geocoder>();
-  const [geocodingResult, setGeocodingResult] =
-    useState<google.maps.GeocoderResult>();
-  const [address, setAddress] = useState("");
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
 
-  useEffect(() => {
-    if (!geocodingApiLoaded) return;
-    setGeocodingService(new window.google.maps.Geocoder());
-  }, [geocodingApiLoaded]);
-
-  useEffect(() => {
-    if (!geocodingService || !address) return;
-    geocodingService.geocode({ address }, (results, status) => {
-      if (results && status === "OK") {
-        setGeocodingResult(results[0]);
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
       }
-    });
-  }, [geocodingService, address]);
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
 
-  const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
-    setLatLng(latLng);
+  const handleAddressParsed = async (parsedAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  }) => {
+    form.setValue("street", parsedAddress.street);
+    form.setValue("city", parsedAddress.city);
+    form.setValue("state", parsedAddress.state);
+    form.setValue("zip", parsedAddress.zip);
+
+    const latLng = await getLatLngFromAddress(
+      `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
+    );
+
+    if (latLng) {
+      form.setValue("location", {
+        type: "Point",
+        coordinates: [latLng.lng, latLng.lat],
+      });
+    }
   };
 
   const form = useForm<z.infer<typeof UpdateSchema>>({
@@ -70,43 +86,37 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",
-      location:
-        user?.location && typeof user.location === "object"
-          ? user.location
-          : {
-              type: "Point",
-              coordinates: [0, 0],
-            },
+      location: {
+        type: "Point",
+        coordinates: user?.location?.coordinates || [0, 0],
+      },
       street: user?.street || "",
       city: user?.city || "",
       state: user?.state || "",
       zip: user?.zip || "",
-      role: "COOP",
+      role: UserRole.PRODUCER,
     },
   });
-
   const onSubmit = async (values: z.infer<typeof UpdateSchema>) => {
     try {
-      const locationObj = {
-        type: "Point",
-        coordinates: [latLng?.lng || 0, latLng?.lat || 0],
+      const updatedValues = {
+        ...values,
       };
       const response = await fetch("/api/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(updatedValues),
       });
-
-      if (response.ok) {
-        setSuccess("Co-op information updated successfully.");
-        router.push("/");
-      } else {
-        setError("Failed to update producer information.");
-      }
     } catch (error) {
-      setError("An error occurred while updating producer information.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      startTransition(() => {
+        setError("");
+        setSuccess("Your account has been updated.");
+        router.push("/");
+      });
     }
   };
 
@@ -129,8 +139,8 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
 
   return (
     <CardWrapper
-      headerLabel="Become a Producer"
-      label2="Grow produce & sell directly to co-ops. Use your current info or update it below."
+      headerLabel="Become an EZH Producer"
+      label2="Grow produce & sell directly to co-ops hassle free without consumer interaction. Use your current info or update it below."
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
       showSocial
@@ -208,24 +218,14 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Co-Op Location</FormLabel>
-                      <FormControl>
-                        <AuthLocation
-                          address={location}
-                          setAddress={setLocation}
-                          onAddressParsed={handleAddressParsed}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+
+                <AuthLocation
+                  address={address}
+                  setAddress={setAddress}
+                  onAddressParsed={handleAddressParsed}
                 />
-                <div className="flex flex-row">
+
+                <div className="flex flex-row justify-evenly space-x-10">
                   <Button
                     disabled={isPending}
                     type="button"
@@ -234,7 +234,12 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
                   >
                     Back
                   </Button>
-                  <Button disabled={isPending} type="submit" className="w-full">
+                  <Button
+                    onClick={() => onSubmit(form.getValues())}
+                    disabled={isPending}
+                    type="submit"
+                    className="w-full"
+                  >
                     Become an EZH Producer
                   </Button>
                 </div>

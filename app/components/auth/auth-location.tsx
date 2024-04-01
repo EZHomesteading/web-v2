@@ -1,14 +1,18 @@
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
-  getLatLng,
 } from "react-places-autocomplete";
 import { FiMapPin } from "react-icons/fi";
 
 interface LocationSearchInputProps {
   address: string;
-  setAddress: (address: string) => void;
-  onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
+  setAddress: React.Dispatch<React.SetStateAction<string>>;
+  onAddressParsed?: (address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  }) => void;
 }
 
 const SearchLocation: React.FC<LocationSearchInputProps> = ({
@@ -23,14 +27,35 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
   const handleSelect = (address: string) => {
     setAddress(address);
     geocodeByAddress(address)
-      .then((results) => getLatLng(results[0]))
-      .then((latLng) => {
-        onAddressParsed(latLng);
+      .then((results) => {
+        const addressComponents = results[0].address_components;
+        let street = "";
+        let city = "";
+        let state = "";
+        let zip = "";
+
+        addressComponents.forEach((component) => {
+          const types = component.types;
+          if (types.includes("street_number")) {
+            street += component.long_name;
+          }
+          if (types.includes("route")) {
+            street += (street ? " " : "") + component.long_name;
+          }
+          if (types.includes("locality")) {
+            city = component.long_name;
+          }
+          if (types.includes("administrative_area_level_1")) {
+            state = component.short_name;
+          }
+          if (types.includes("postal_code")) {
+            zip = component.long_name;
+          }
+        });
+
+        onAddressParsed?.({ street, city, state, zip });
       })
-      .catch((error) => {
-        console.error("Error", error);
-        onAddressParsed(null);
-      });
+      .catch((error) => console.error("Error", error));
   };
 
   const handleKeyDown = (
@@ -43,7 +68,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
         setAddress(topSuggestion);
         handleSelect(topSuggestion);
       } else {
-        onAddressParsed(null);
+        handleSelect(address);
       }
     }
   };
