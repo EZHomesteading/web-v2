@@ -50,7 +50,7 @@ export async function POST(request: Request) {
           connect: { id: conversationId },
         },
         sender: {
-          connect: { id: user.id },
+          connect: { id: otherUserId || user.id },
         },
         seen: {
           connect: {

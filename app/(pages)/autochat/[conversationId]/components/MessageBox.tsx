@@ -28,6 +28,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
+  const notOwn = session.data?.user?.email !== data?.sender?.email;
 
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
@@ -43,7 +44,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
   );
   const onSubmit = () => {
-    console.log(otherUsersId);
     if (data.messageOrder === "1") {
       axios.post("/api/messages", {
         message:
@@ -101,7 +101,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div>
               <div>{data.body}</div>
               <div>
-                {isOwn &&
+                {notOwn &&
                 isLast &&
                 data.messageOrder !== "3" &&
                 data.messageOrder !== "0" ? (
