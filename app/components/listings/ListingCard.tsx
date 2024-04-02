@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { useTheme } from "next-themes";
 import { SafeListing } from "@/types";
 
 import HeartButton from "../ui/HeartButton";
@@ -33,7 +32,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   secondActionLabel,
 }) => {
   const router = useRouter();
-  const { theme } = useTheme();
 
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -61,14 +59,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     [disabled, onSecondAction, secondActionId]
   );
 
-  const cardBackgroundLight = "#ffffff";
-  const cardBackgroundDark = "#666666";
-
-  const cardStyle = {
-    backgroundColor:
-      theme === "light" ? cardBackgroundLight : cardBackgroundDark,
-  };
-
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
@@ -84,7 +74,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             overflow-hidden 
             rounded-xl
           "
-          style={cardStyle}
         >
           <Image
             className="
