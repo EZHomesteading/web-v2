@@ -29,7 +29,7 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en" className={font.className}>
         <body>
-          <ThemeProvider attribute="class" defaultTheme="dark">
+          <ThemeProvider attribute="class" defaultTheme="light">
             <ClientOnly>
               <ToasterProvider />
               <RentModal />

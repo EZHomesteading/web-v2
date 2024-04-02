@@ -7,9 +7,12 @@ import axios from "axios";
 import { CldUploadButton } from "next-cloudinary";
 import useConversation from "@/hooks/useConversation";
 
-const Form = () => {
+interface MessageFormProps {
+  otherUsersId: string | undefined;
+}
+
+const Form: React.FC<MessageFormProps> = (otherUsersId) => {
   const { conversationId } = useConversation();
-  const otherUserId = "660b21acfcb6c7eb395d69b6";
   const {
     register,
     handleSubmit,
@@ -27,16 +30,15 @@ const Form = () => {
     axios.post("/api/messages", {
       ...data,
       conversationId: conversationId,
-      otherUserId: otherUserId,
+      otherUserId: otherUsersId.otherUsersId,
     });
-    console.log("beans");
   };
 
   const handleUpload = (result: any) => {
     axios.post("/api/messages", {
       image: result.info.secure_url,
       conversationId: conversationId,
-      otherUserId: otherUserId,
+      otherUserId: otherUsersId.otherUsersId,
     });
   };
 
