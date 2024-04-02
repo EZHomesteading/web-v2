@@ -8,46 +8,49 @@
 
 ### What Makes EZHomesteading Different?
 
-Farmer's markets oftentimes charge vendors up front for their space. These vendors have to be outside watching over their items for upwards of 10 hours to sell their produce, hoping that consumers will come by looking for what they have to offer. EZHomesteading provides an easier, faster, and commitment-free way for these vendors to sell their fresh organic produce by connecting them with consumers in their area. EZHomesteading manages logistics and marketing for co-ops and producers. Producers are people with small gardens, a few cows, an apple tree, etc. These indidvuals do not have the time or desire to sell smaller quantities of their produce to consumers. By becoming EZH producers, these individuals can sell their excess produce in bulk to co-ops in their area. 
+Farmer's markets frequently charge vendors up front for their space. These vendors are outside watching over their items for up to 10 hours to sell their produce, hoping consumers will come looking for what they offer. EZHomesteading provides an easier, faster, and commitment-free way for these vendors to sell their fresh organic produce by connecting them with consumers in their area. EZHomesteading manages logistics and marketing for co-ops and producers. Producers are people with small gardens, a few cows, an apple tree, etc. These individuals do not have the time or desire to sell smaller quantities of their produce to consumers. By becoming EZH producers, these individuals can sell their excess produce in bulk to co-ops in their area. 
 
 ### Code Base Features
 
 - 🅽 [Next.js 14](https://nextjs.org) with App Router support
-- 🔍 Type checking [TypeScript](https://www.typescriptlang.org)
+- 🔍 Fuzzy search for listings, co-ops, and producers using [Fuse.js](https://www.npmjs.com/package/fuse.js?activeTab=readme)
 - 🌀 [Tailwind CSS](https://tailwindcss.com)
-- ✅ Strict Mode for TypeScript and React 18
+- ✅ Strict Mode for TypeScript and type checking [TypeScript](https://www.typescriptlang.org)
 - 🔒 Authentication with [NextAuth](https://next-auth.js.org/): Sign up as three different roles with different privileges and sign in.
-- 🔼 Type-safe ORM with Prisma
-- ⌨️ Form handling with React Hook Form
-- 🛡️ Validation library with Zod
-- 🔧 Linter with [ESLint](https://eslint.org) (default Next.js, Next.js Core Web Vitals, Tailwind CSS and Airbnb configuration)
+- 🔼 Type-safe ORM with [Prisma](https://www.prisma.io/)
+- ⌨️ Form handling with [React Hook Form](https://react-hook-form.com/)
+- 🛡️ Validation library with [Zod](https://zod.dev/)
+- 🔧 Linter with [ESLint](https://eslint.org) (default Next.js, Next.js Core Web Vitals, Tailwind CSS)
 - 💖 Code Formatter with [Prettier](https://prettier.io)
-- 💡 Absolute Imports using `@` prefix
-- 🗂 VSCode configuration: Debug, Settings, Tasks and Extensions
-- 🗺️ Google Maps API for autocomplete, nearby search, route optimization, and more
-- 📤 Cloudinary for image capture and upload
+- 💡 [Absolute Imports](https://nextjs.org/docs/app/building-your-application/configuring/absolute-imports-and-module-aliases) using `@` prefix
+- 🗂 [VSCode](https://code.visualstudio.com/) configuration: Debug, Settings, Tasks and Extensions
+- 🗺️ [Google Maps API](https://developers.google.com/maps) for autocomplete, nearby search, route optimization, and more
+- 📤 [Cloudinary](https://next.cloudinary.dev/) for image capture and upload
+- 💬 [Pusher](https://pusher.com/docs/) for automated messaging
+- 🔔 [Web push](https://www.npmjs.com/package/web-push) for notifications 
 
 ### Project Structure
 
 ```shell
-.
 
 ├── .next                           # NextJs folder
 ├── .vscode                         # VSCode configuration
 ├── app                             # App folder for NextJs app router functionality
-│   ├── (pages)                     # All front end routes except landing page
+│   ├── (pages)                     # All front-end pages except the landing page | authorization routes
+│   ├── (home)                      # Landing page
+│   ├── (auth)                      # Authorization pages
 │   ├── components                  # React components
-│   ├── libs                        # 3rd party libraries configuration
-│   ├── app                         # Next JS App (App Router)
-│   ├── actions                     # Get routes for listings, users, etc.
-│   ├── api                         # Api folder for post, delete, update requests
-│   ├── providers                   # Toast and Modal providers
-│   ├── types                       # Type definitions
-│   └── hooks                       # Hooks for modals, text files for listings, etc.
+│   └── api                         # Api folder for post, delete, update requests
 │   globals.css                     # Global css
 │   layout.tsx                      # Global layouts
 │   loading.tsx                     # Loading page
-│   page.jsx                        # Landing Page
+└── page.tsx                        # Landing Page
+├── actions                         # Get routes for listings, users, etc.
+├── data                            #
+├── libs                            # 3rd party libraries configuration
+├── providers                       # Toast and Modal providers
+├── types                           # Type definitions
+├── hooks                           # Hooks for modals, text files for listings, etc.
 ├── public                          # Public assets folder
 ├── unused                          # All currently unused components that may be needed for reference
 ├── tailwind.config.js              # Tailwind JS CSS configuration
