@@ -8,7 +8,6 @@ import useConversation from "@/hooks/useConversation";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
-import Button from "@/app/components/Button";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
