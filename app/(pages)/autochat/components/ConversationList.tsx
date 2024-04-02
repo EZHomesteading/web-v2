@@ -4,22 +4,17 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
-import { MdOutlineGroupAdd } from "react-icons/md";
 import clsx from "clsx";
-import { find, uniq } from "lodash";
-
+import { find } from "lodash";
 import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/useConversation";
 import { pusherClient } from "@/libs/pusher";
-import GroupChatModal from "@/app/components/modals/chatmodals/GroupChatModal";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
 import { registerServiceWorker } from "@/hooks/serviceWorker";
 import {
   getCurrentPushSubscription,
-  registerPushNotifications,
   sendPushSubscriptionToServer,
-  unregisterPushNotifications,
 } from "@/app/actions/notifications/pushService";
 import axios from "axios";
 
@@ -119,11 +114,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
   return (
     <>
       <SessionProvider>
-        <GroupChatModal
-          users={users}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
         <aside
           className={clsx(
             `
@@ -146,20 +136,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
               <div className="text-2xl font-bold text-neutral-800">
                 Messages
               </div>
-              <div
-                onClick={() => setIsModalOpen(true)}
-                className="
-                rounded-full 
-                p-2 
-                bg-gray-100 
-                text-gray-600 
-                cursor-pointer 
-                hover:opacity-75 
-                transition
-              "
-              >
-                <MdOutlineGroupAdd size={20} />
-              </div>{" "}
+
               <div
                 className="
                 rounded-full 
