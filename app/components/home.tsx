@@ -5,7 +5,7 @@ import FindListingsComponent from "@/app/components/listings/search-listings";
 import homebg from "@/public/images/fall-harvest-vegetable-market.webp";
 import consumer from "@/public/images/home-images/ezhconsumer.webp";
 import producer from "@/public/images/home-images/ezhproducer.webp";
-import { AspectRatio } from "./ui/aspect-ratio";
+
 const footerNavigation = {
   shop: [
     { name: "Vegetables", href: "/shop?q=vegetables" },
@@ -102,14 +102,14 @@ export default function Home() {
           </header>
         </main>
         <section className="relative w-full flex justify-center items-center">
-          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[35vh]">
+          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[35vh] relative">
             <Image
               src={consumer}
               alt="Farmer Holding Basket of Vegetables"
               blurDataURL="data:..."
               placeholder="blur"
-              width={400}
-              height={300}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover rounded-lg"
             />
           </div>

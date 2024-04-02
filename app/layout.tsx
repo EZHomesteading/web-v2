@@ -1,8 +1,6 @@
 import { Nunito } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { ThemeProvider } from "./components/theme-provider";
-import Navbar from "@/app/components/navbar/Navbar";
 import RentModal from "@/app/components/modals/ListingModal";
 
 import ToasterProvider from "@/providers/ToasterProvider";
@@ -29,17 +27,16 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en" className={font.className}>
         <body>
-          <ThemeProvider attribute="class" defaultTheme="dark">
-            <ClientOnly>
-              <ToasterProvider />
-              <RentModal />
-            </ClientOnly>
-            <div className=" pt-25">{children}</div>
-          </ThemeProvider>
+          <ClientOnly>
+            <ToasterProvider />
+            <RentModal />
+          </ClientOnly>
+          <main>{children}</main>
           <script
             async
+            defer
             src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places`}
-          />
+          ></script>
         </body>
       </html>
     </SessionProvider>
