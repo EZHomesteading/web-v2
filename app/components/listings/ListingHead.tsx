@@ -1,9 +1,6 @@
 "use client";
-
 import Image from "next/image";
-
 import { SafeUser } from "@/types";
-
 import Heading from "../Heading";
 import HeartButton from "../ui/HeartButton";
 

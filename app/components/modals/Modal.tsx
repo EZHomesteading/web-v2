@@ -1,12 +1,10 @@
 "use client";
-// Import necessary modules and components
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
 import { useTheme } from "next-themes";
 
-// Define props interface for Modal component
 interface ModalProps {
   isOpen?: boolean; // Optional prop indicating whether the modal is open
   onClose: () => void; // Function to handle modal close event
@@ -20,7 +18,6 @@ interface ModalProps {
   secondaryActionLabel?: string; // Label for the secondary action button
 }
 
-// Modal component definition
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -35,24 +32,19 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   const { theme } = useTheme(); // Get the current theme using useTheme hook
 
-  // Define CSS variables for modal background colors based on the theme
   const modalBackgroundLight = "#ffffff"; // Light theme modal background
   const modalBackgroundDark = "#333333"; // Dark theme modal background
 
-  // Update modal background dynamically based on the theme
   const modalStyle = {
     backgroundColor:
       theme === "light" ? modalBackgroundLight : modalBackgroundDark,
   };
-  // State variable to manage modal visibility
   const [showModal, setShowModal] = useState(isOpen);
 
-  // Effect to synchronize modal visibility with isOpen prop
   useEffect(() => {
     setShowModal(isOpen);
   }, [isOpen]);
 
-  // Callback function to handle modal close event
   const handleClose = useCallback(() => {
     if (disabled) {
       return;
@@ -64,7 +56,6 @@ const Modal: React.FC<ModalProps> = ({
     }, 300);
   }, [onClose, disabled]);
 
-  // Callback function to handle form submission event
   const handleSubmit = useCallback(() => {
     if (disabled) {
       return;
@@ -73,7 +64,6 @@ const Modal: React.FC<ModalProps> = ({
     onSubmit();
   }, [onSubmit, disabled]);
 
-  // Callback function to handle secondary action button click
   const handleSecondaryAction = useCallback(() => {
     if (disabled || !secondaryAction) {
       return;
@@ -82,12 +72,10 @@ const Modal: React.FC<ModalProps> = ({
     secondaryAction();
   }, [secondaryAction, disabled]);
 
-  // If modal is not open, return null
   if (!isOpen) {
     return null;
   }
 
-  // Render the modal JSX
   return (
     <>
       <div
@@ -120,7 +108,6 @@ const Modal: React.FC<ModalProps> = ({
           md:h-auto
           "
         >
-          {/* Modal content */}
           <div
             className={`
             translate
@@ -175,9 +162,7 @@ const Modal: React.FC<ModalProps> = ({
                 </button>
                 <div className="text-lg font-semibold">{title}</div>
               </div>
-              {/* Modal body */}
               <div className="relative p-6 flex-auto">{body}</div>
-              {/* Modal footer */}
               <div className="flex flex-col gap-2 p-6">
                 <div
                   className="
@@ -212,5 +197,4 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
-// Export the Modal component
 export default Modal;

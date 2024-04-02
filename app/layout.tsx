@@ -2,7 +2,6 @@ import { Nunito } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import RentModal from "@/app/components/modals/ListingModal";
-
 import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";

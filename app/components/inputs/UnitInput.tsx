@@ -1,14 +1,11 @@
 "use client";
 
-// Interface defining props accepted by the CategoryBox component
 interface UnitBoxProps {
-  // Icon component for rendering icon
   label: string; // Label for the category
   selected?: boolean; // Optional prop indicating if the category is selected
   onClick: (value: string) => void; // Function to handle click event
 }
 
-// CategoryBox component
 const CategoryBox: React.FC<UnitBoxProps> = ({
   label, // Label received as prop
   selected, // Optional prop indicating if the category is selected
@@ -30,11 +27,7 @@ const CategoryBox: React.FC<UnitBoxProps> = ({
         ${selected ? "border-black" : "border-neutral-200"}
       `}
     >
-      {/* Rendering the Icon component with size 30 */}
-      <div className="font-semibold">
-        {/* Rendering the category label */}
-        {label}
-      </div>
+      <div className="font-semibold">{label}</div>
     </div>
   );
 };

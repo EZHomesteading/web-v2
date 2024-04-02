@@ -41,7 +41,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const stock = product.stock;
   const quantityType = product.quantityType;
   const price = product.price;
-  // const total = product.price * product.stock;
   const startDate = product.createdAt;
   const endDate =
     product.shelfLife !== -1

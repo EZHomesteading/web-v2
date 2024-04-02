@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import axios from "axios";
 import useRentModal from "@/hooks/useRentModal";
@@ -28,7 +27,6 @@ import {
 } from "../ui/carousel";
 import LocationSearchInput from "../map/LocationSearchInput";
 import { PiStorefrontThin } from "react-icons/pi";
-import { Switch } from "../ui/switch";
 
 enum STEPS {
   DESCRIPTION = 0,
