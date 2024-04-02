@@ -15,7 +15,6 @@ import SearchClient, {
 import { BiSearch } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useMemo, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -46,8 +45,6 @@ const ListingModal = () => {
   };
 
   const [product, setProduct] = useState<ProductValue>();
-  const { theme } = useTheme();
-  const inputColor = theme === "dark" ? "#222222" : "#222222";
   const router = useRouter();
   const rentModal = useRentModal();
   const [coopRating, setCoopRating] = useState(1);
@@ -311,7 +308,7 @@ const ListingModal = () => {
         title="How would you describe your product?"
         subtitle="Short and sweet works best!"
       />
-      <div style={{ color: inputColor }}>
+      <div>
         <SearchClient
           value={product}
           onChange={(value) => {
@@ -324,7 +321,7 @@ const ListingModal = () => {
         />
       </div>
       <hr />
-      <div style={{ color: inputColor }} className="z-0">
+      <div className="z-0">
         <Input
           id="description"
           label="Description"
@@ -403,7 +400,7 @@ const ListingModal = () => {
       <div className="flex flex-col gap-4">
         <Heading title="Share some basics about your product" subtitle="" />
         <div className="flex flex-row items-center gap-16 w-full">
-          <div style={{ color: inputColor }} className="w-1/2">
+          <div className="w-1/2">
             <Input
               id="stock"
               label="Quantity"
@@ -568,7 +565,7 @@ const ListingModal = () => {
           title="Now, set your price"
           subtitle="How much do you charge per unit? This isn't your total price unless you only have one."
         />
-        <div style={{ color: inputColor }}>
+        <div>
           <Input
             id="price"
             label="Price per unit"

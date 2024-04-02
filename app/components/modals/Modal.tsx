@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
-import { useTheme } from "next-themes";
 
 interface ModalProps {
   isOpen?: boolean; // Optional prop indicating whether the modal is open
@@ -30,15 +29,6 @@ const Modal: React.FC<ModalProps> = ({
   secondaryAction,
   secondaryActionLabel,
 }) => {
-  const { theme } = useTheme(); // Get the current theme using useTheme hook
-
-  const modalBackgroundLight = "#ffffff"; // Light theme modal background
-  const modalBackgroundDark = "#333333"; // Dark theme modal background
-
-  const modalStyle = {
-    backgroundColor:
-      theme === "light" ? modalBackgroundLight : modalBackgroundDark,
-  };
   const [showModal, setShowModal] = useState(isOpen);
 
   useEffect(() => {
@@ -133,7 +123,6 @@ const Modal: React.FC<ModalProps> = ({
               outline-none 
               focus:outline-none
             "
-              style={modalStyle}
             >
               {/* Modal header */}
               <div

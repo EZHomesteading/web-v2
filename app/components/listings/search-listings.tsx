@@ -7,7 +7,6 @@ import axios from "axios";
 import SearchLocation from "@/app/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import SearchInput from "./search-input";
-import { useTheme } from "next-themes";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -30,8 +29,6 @@ const getLatLngFromAddress = async (address: string) => {
 };
 
 const FindListingsComponent = () => {
-  const { theme } = useTheme();
-  const textColor = theme === "dark" ? "text-white" : "text-black";
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
@@ -130,7 +127,7 @@ const FindListingsComponent = () => {
   return (
     <>
       <div
-        className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative ${textColor}`}
+        className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
       >
         <div className="w-full mb-2 sm:mb-0 sm:w-auto">
           <SearchLocation

@@ -1,7 +1,3 @@
-"use client";
-
-import { useTheme } from "next-themes";
-
 interface MenuItemProps {
   onClick: () => void;
   label: string;
@@ -9,9 +5,6 @@ interface MenuItemProps {
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
-  const { theme } = useTheme();
-  const backgroundColor = theme === "dark" ? "bg-black" : "bg-white";
-  const textColor = theme === "dark" ? "text-white" : "text-black";
   return (
     <div
       onClick={onClick}
@@ -25,8 +18,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
         text-sm
         flex
         items-center
-        ${backgroundColor}  
-        ${textColor}     
+  
         `}
     >
       <div className="mr-2">{icon}</div>
