@@ -23,16 +23,18 @@ import { register } from "@/actions/Register";
 import { useRouter } from "next/navigation";
 
 export const ProducerRegisterForm = () => {
+  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "buy"
+    "sell"
   );
-  const router = useRouter();
+
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
+      firstName: "",
       email: "",
       password: "",
       name: "",
@@ -72,7 +74,7 @@ export const ProducerRegisterForm = () => {
   return (
     <CardWrapper
       headerLabel="Become a Producer"
-      label2="Grow and sell to co-ops, no need to deal with customers"
+      label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
       showSocial
@@ -84,15 +86,32 @@ export const ProducerRegisterForm = () => {
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="Appleseed Farms"
+                      placeholder="Johnny"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Farm Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="Appleseed Farm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -109,7 +128,7 @@ export const ProducerRegisterForm = () => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="johnny.appleseed@example.com"
+                      placeholder="john.doe@example.com"
                       type="email"
                     />
                   </FormControl>

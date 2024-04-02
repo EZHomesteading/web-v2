@@ -8,6 +8,8 @@ export const publicRoutes = [
   "/auth/new-verification",
   "/shop",
   "/listings/:[listingId]",
+  "/auth/become-a-producer",
+  "/auth/become-a-co-op",
 ];
 
 /**
@@ -24,6 +26,8 @@ export const authRoutes = [
   "/auth/reset",
   "/auth/new-password",
 ];
+
+export const updateRoutes = ["/auth/become-a-co-op", "/auth/become-a-producer"];
 
 /**
  * The prefix for API authentication routes

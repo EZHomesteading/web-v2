@@ -5,16 +5,23 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
+  // updateRoutes,
 } from "@/routes";
-
+import { UserRole } from "@prisma/client";
 const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
+// import { currentUser } from "./lib/auth";
+export default auth(async (req) => {
+  // const user = await currentUser();
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  // const isUpdateRoute = updateRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) {
+    return null as unknown as void;
+  }
 
   if (isApiAuthRoute) {
     return null as unknown as void;
@@ -26,6 +33,30 @@ export default auth((req) => {
     }
     return null as unknown as void;
   }
+
+  // if (!isLoggedIn && isUpdateRoute) {
+  //   let callbackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callbackUrl += nextUrl.search;
+  //   }
+  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+  //   const redirectUrl = updateRoutes.includes(callbackUrl)
+  //     ? DEFAULT_LOGIN_REDIRECT
+  //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
+  //   return Response.redirect(new URL(redirectUrl, nextUrl));
+  // }
+
+  // if (user?.role === "CONSUMER" && isUpdateRoute) {
+  //   let callbackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callbackUrl += nextUrl.search;
+  //   }
+  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+  //   const redirectUrl = updateRoutes.includes(callbackUrl)
+  //     ? DEFAULT_LOGIN_REDIRECT
+  //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
+  //   return Response.redirect(new URL(redirectUrl, nextUrl));
+  // }
 
   if (!isLoggedIn && !isPublicRoute) {
     let callbackUrl = nextUrl.pathname;

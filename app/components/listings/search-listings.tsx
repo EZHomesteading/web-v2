@@ -7,6 +7,7 @@ import axios from "axios";
 import SearchLocation from "@/app/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import SearchInput from "./search-input";
+import { useTheme } from "next-themes";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -29,6 +30,8 @@ const getLatLngFromAddress = async (address: string) => {
 };
 
 const FindListingsComponent = () => {
+  const { theme } = useTheme();
+  const textColor = theme === "dark" ? "text-white" : "text-black";
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
@@ -126,7 +129,9 @@ const FindListingsComponent = () => {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-start md:items-center justify-center relative text-black">
+      <div
+        className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative ${textColor}`}
+      >
         <div className="w-full mb-2 sm:mb-0 sm:w-auto">
           <SearchLocation
             address={location}
@@ -148,7 +153,8 @@ const FindListingsComponent = () => {
         </div>
         {!focus.right && (
           <button
-            className="absolute top-full mt-2 py-2 px-4 border-[.2px] rounded-lg text-white w-full"
+            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey"
+            style={{ width: "99%" }}
             onClick={handleNearMeClick}
           >
             Near Me

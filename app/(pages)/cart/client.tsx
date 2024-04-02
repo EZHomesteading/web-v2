@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-
+import Image from "next/image";
 import {
   CheckIcon,
   ClockIcon,
@@ -66,9 +66,11 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, user }) => {
                 {listings?.map((product) => (
                   <li key={product.id} className="flex py-6 sm:py-10">
                     <div className="flex-shrink-0">
-                      <img
+                      <Image
                         src={product.imageSrc}
                         className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
+                        fill
+                        alt={product.title}
                       />
                     </div>
 

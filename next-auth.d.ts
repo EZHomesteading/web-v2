@@ -3,6 +3,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
   role: UserRole;
+  firstName: string;
   isTwoFactorEnabled: boolean;
   isOAuth: boolean;
   phoneNumber?: string;
@@ -10,7 +11,10 @@ export type UserInfo = DefaultSession["user"] & {
   city?: string;
   zip?: string;
   state?: string;
-  location?: unknown;
+  location?: {
+    type: "Point";
+    coordinates: [number, number];
+  };
   image?: string;
   hoursOfOperation?: unknown;
   stripeAccountId?: string;

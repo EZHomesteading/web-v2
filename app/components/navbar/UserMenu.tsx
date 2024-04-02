@@ -2,7 +2,6 @@
 
 import {
   FaHeart,
-  FaShoppingCart,
   FaStore,
   FaSignOutAlt,
   FaSignInAlt,
@@ -12,10 +11,10 @@ import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
-
-import useRentModal from "@/hooks/useRentModal";
-
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import useListingModal from "@/hooks/useRentModal";
+import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
@@ -27,76 +26,36 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
-  const rentModal = useRentModal();
+  const { theme } = useTheme();
+  const textColor = theme === "dark" ? "text-white" : "text-black";
+  const listingModal = useListingModal();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
 
-  const onRent = useCallback(() => {
-    if (!user) {
-      return router.push("/auth/register-producer");
-    }
-
-    rentModal.onOpen();
-  }, [, rentModal, user]);
-
   return (
-    <div className="relative">
+    <div className={`relative ${textColor}`}>
       <div className="flex flex-row items-center gap-3">
-        {user?.role === "COOP" ? (
-          <div
-            onClick={onRent}
-            className="
-                hidden
-                md:flex
-                items-center
-                text-sm 
-                font-semibold 
-                py-3 
-                px-4 
-                rounded-full 
-                hover:bg-neutral-100 
-                transition 
-                cursor-pointer"
-          >
-            Add a Product
-          </div>
-        ) : user?.role === "PRODUCER" ? (
-          <div
-            onClick={onRent}
-            className="
-              hidden
-              md:flex
-              items-center
-              text-sm 
-              font-semibold 
-              py-3 
-              px-4 
-              rounded-full 
-              hover:bg-neutral-100 
-              transition 
-              cursor-pointer"
-          >
-            Add a Product
-          </div>
+        {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
+          <UpdateRoleAlert
+            heading="Would you like to become an EZH producer or co-op?"
+            description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."
+            backButtonLabel="No thanks"
+            actionButtonLabel="More Info"
+            actionButtonHref="/info/ezh-roles"
+            actionButtonLabelTwo="Co-op Registration"
+            actionButtonHrefTwo="/auth/become-a-co-op"
+            actionButtonLabelThree="Producer Registration"
+            actionButtonHrefThree="/auth/become-a-producer"
+          />
         ) : (
           <div
-            onClick={onRent}
-            className="
-            hidden
-            md:flex
-            items-center
-            text-sm 
-            font-semibold 
-            py-3 
-            px-4 
-            rounded-full 
-            hover:bg-neutral-100 
-            transition 
-            cursor-pointer
-          "
+            onClick={() => {
+              listingModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
           >
             Add a Product
           </div>
@@ -120,13 +79,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           "
         >
           <AiOutlineMenu />
-          {user ? (
-            <div className="hidden md:flex items-center text-sm font-semibold">
-              {user.name}
-            </div>
-          ) : (
-            <div></div>
-          )}
+          <div className="hidden md:flex items-center text-sm font-semibold">
+            {user!.firstName}
+          </div>
         </div>
       </div>
       {isOpen && (
@@ -152,7 +107,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 <MenuItem
                   label="Add a Product"
                   icon={<CiSquarePlus className="mr-2" />}
-                  onClick={rentModal.onOpen}
+                  onClick={listingModal.onOpen}
                 />
               </div>
             ) : user?.role === "PRODUCER" ? (
@@ -165,7 +120,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 <MenuItem
                   label="Add a Product"
                   icon={<CiSquarePlus className="mr-2" />}
-                  onClick={rentModal.onOpen}
+                  onClick={listingModal.onOpen}
                 />
               </div>
             ) : (
@@ -193,16 +148,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Co-Op"
-                      onClick={() => router.push("/updatetocoop")}
+                      onClick={() => router.push("/auth/become-a-co-op")}
                     />
                     <MenuItem
                       icon={<FaStore className="mr-2" />}
                       label="Become a Producer"
-                      onClick={() => router.push("/updatetoproducer")}
+                      onClick={() => router.push("/auth/become-a-producer")}
                     />
                   </div>
                 ) : (
-                  <div></div>
+                  <></>
                 )}
                 <hr />
                 <MenuItem

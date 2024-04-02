@@ -1,26 +1,24 @@
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
-  getLatLng,
 } from "react-places-autocomplete";
 import { FiMapPin } from "react-icons/fi";
 
 interface LocationSearchInputProps {
   address: string;
-  setAddress: (address: string) => void;
-  onAddressParsed: (latLng: { lat: number; lng: number } | null) => void;
-  focus: { left: boolean; right: boolean };
-  setFocus: (focus: { left: boolean; right: boolean }) => void;
-  onSearch: () => void;
+  setAddress: React.Dispatch<React.SetStateAction<string>>;
+  onAddressParsed?: (address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  }) => void;
 }
 
 const SearchLocation: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onAddressParsed,
-  onSearch,
-  focus,
-  setFocus,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -29,14 +27,35 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
   const handleSelect = (address: string) => {
     setAddress(address);
     geocodeByAddress(address)
-      .then((results) => getLatLng(results[0]))
-      .then((latLng) => {
-        onAddressParsed(latLng);
+      .then((results) => {
+        const addressComponents = results[0].address_components;
+        let street = "";
+        let city = "";
+        let state = "";
+        let zip = "";
+
+        addressComponents.forEach((component) => {
+          const types = component.types;
+          if (types.includes("street_number")) {
+            street += component.long_name;
+          }
+          if (types.includes("route")) {
+            street += (street ? " " : "") + component.long_name;
+          }
+          if (types.includes("locality")) {
+            city = component.long_name;
+          }
+          if (types.includes("administrative_area_level_1")) {
+            state = component.short_name;
+          }
+          if (types.includes("postal_code")) {
+            zip = component.long_name;
+          }
+        });
+
+        onAddressParsed?.({ street, city, state, zip });
       })
-      .catch((error) => {
-        console.error("Error", error);
-        onAddressParsed(null);
-      });
+      .catch((error) => console.error("Error", error));
   };
 
   const handleKeyDown = (
@@ -49,7 +68,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
         setAddress(topSuggestion);
         handleSelect(topSuggestion);
       } else {
-        onSearch();
+        handleSelect(address);
       }
     }
   };
@@ -61,19 +80,16 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
       onSelect={handleSelect}
     >
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-        <div className="relative">
+        <div className="relative bg-transparent">
           <FiMapPin className="absolute z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg" />
           <input
             {...getInputProps({
-              placeholder: "Everywhere",
-              className:
-                "rounded-md sm:rounded-l-full px-4 py-2 pl-8 border-[.1px] border-black outline-none transition-all duration-200",
+              placeholder: "123 Main St, City, State, Zip Code",
+              className: "rounded-md px-4 py-1 pl-8",
             })}
             onKeyDown={(e) => handleKeyDown(e, suggestions)}
-            onFocus={() => setFocus({ ...focus, left: true })}
-            onBlur={() => setFocus({ ...focus, left: false })}
           />
-          <div className="absolute mt-1 shadow-lg z-10 max-w-full rounded-full">
+          <div className="absolute mt-1 shadow-lg z-10 max-w-full rounded-full ">
             {suggestions.map((suggestion) => {
               const className = suggestion.active
                 ? "cursor-pointer"

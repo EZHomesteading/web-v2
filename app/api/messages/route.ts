@@ -32,8 +32,8 @@ export async function POST(request: Request) {
         {
           vapidDetails: {
             subject: "mailto:macrowwwwwwwwww.co@gmail.com",
-            publicKey: process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
-            privateKey: process.env.WEB_PUSH_PRIVATE_KEY,
+            publicKey: process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
+            privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
           },
         }
       )
