@@ -2,10 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import homebg from "@/public/images/home-images/ezhbg2.webp";
+import homebg from "@/public/images/fall-harvest-vegetable-market.webp";
 import consumer from "@/public/images/home-images/ezhconsumer.webp";
 import producer from "@/public/images/home-images/ezhproducer.webp";
-
+import { AspectRatio } from "./ui/aspect-ratio";
 const footerNavigation = {
   shop: [
     { name: "Vegetables", href: "/shop?q=vegetables" },
@@ -88,20 +88,20 @@ export default function Home() {
                   <FindListingsComponent />
                 </div>
               </article>
-              <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
-                <Image
-                  src={homebg}
-                  alt="Farmer Holding Basket of Vegetables"
-                  priority={true}
-                  blurDataURL="data:..."
-                  placeholder="blur"
-                  className="object-cover rounded-3xl"
-                />
-              </div>
+
+              <Image
+                src={homebg}
+                alt="Farmer Holding Basket of Vegetables"
+                priority={true}
+                blurDataURL="data:..."
+                placeholder="blur"
+                width={500}
+                className="object-cover rounded-3xl"
+              />
             </div>
           </header>
         </main>
-        <section className="relative  w-full flex justify-center md:justify-evenly items-center">
+        <section className="relative w-full flex justify-center items-center">
           <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[35vh]">
             <Image
               src={consumer}
@@ -132,7 +132,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="h-[100vh] flex justify-center md:justify-evenly items-center">
+        <section className="h-[100vh] flex justify-center space-x-5 items-center">
           <div
             id="h3"
             className="2xl:text-5xl text-sm font-bold tracking-tight"
