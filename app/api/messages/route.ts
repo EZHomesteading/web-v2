@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       },
     });
     if (!recipients?.subscriptions) {
-      return;
+      return new NextResponse(null, { status: 204 });
     }
     const recipientSubs = recipients.subscriptions;
     const formatrecipients = JSON.parse(recipientSubs);
