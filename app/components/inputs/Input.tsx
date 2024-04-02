@@ -11,9 +11,9 @@ import { BiDollar } from "react-icons/bi";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 
 interface InputProps {
-  id: string; // ID of the input field
-  label: string; // Label for the input field
-  type?: string; // Type of the input field (default is "text")
+  id: string;
+  label: string;
+  type?: string;
   disabled?: boolean; // Whether the input field is disabled
   formatPrice?: boolean; // Whether to format the input field as a price
   required?: boolean; // Whether the input field is required

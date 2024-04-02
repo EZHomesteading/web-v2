@@ -31,7 +31,6 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-// import { Avatar } from "@/app/components/ui/avatar";
 import LocationSearchInput from "../map/LocationSearchInput";
 
 interface UserInfoProps {

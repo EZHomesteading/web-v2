@@ -1,18 +1,12 @@
+import { UserInfo } from "@/next-auth";
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
-import { Outfit } from "next/font/google";
 import AuthButtons from "./auth-buttons";
 
 interface NavbarProps {
-  user?: any;
+  user?: UserInfo;
 }
-const outfit = Outfit({
-  weight: ["100"],
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const NavbarHome = ({ user }: NavbarProps) => {
   return (

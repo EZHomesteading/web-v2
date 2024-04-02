@@ -12,7 +12,6 @@ import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import useListingModal from "@/hooks/useRentModal";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
@@ -26,8 +25,6 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
-  const { theme } = useTheme();
-  const textColor = theme === "dark" ? "text-white" : "text-black";
   const listingModal = useListingModal();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,7 +33,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   }, []);
 
   return (
-    <div className={`relative ${textColor}`}>
+    <div className={`relative`}>
       <div className="flex flex-row items-center gap-3">
         {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
           <UpdateRoleAlert
