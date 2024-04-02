@@ -10,7 +10,7 @@ const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
 sw.addEventListener("push", (event) => {
   const message = event.data?.json();
   const { title, body, id } = message;
-  console.log("received message ", message);
+  //console.log("received message ", message);
   async function handlePushEvent() {
     const windowClients = await sw.clients.matchAll({ type: "window" });
     if (windowClients.length > 0) {
@@ -30,4 +30,25 @@ sw.addEventListener("push", (event) => {
     });
   }
   event.waitUntil(handlePushEvent());
+});
+
+sw.addEventListener("notificationclick", (event) => {
+  const notification = event.notification;
+  notification.close();
+
+  async function handleNotificationClick() {
+    const windowClients = await sw.clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    });
+
+    const channelId = notification.data.id;
+
+    if (windowClients.length > 0) {
+      sw.clients.openWindow("/autochat/" + channelId);
+    } else {
+      sw.clients.openWindow("/autochat/" + channelId);
+    }
+  }
+  event.waitUntil(handleNotificationClick());
 });
