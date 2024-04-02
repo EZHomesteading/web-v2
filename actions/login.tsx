@@ -4,7 +4,7 @@ import * as z from "zod";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
 import { LoginSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
+import { getUserByEmail, getUserByName } from "@/data/user";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const login = async (
@@ -19,15 +19,23 @@ export const login = async (
 
   const { email, password } = validatedFields.data;
 
-  const existingUser = await getUserByEmail(email);
+  const isEmail = email.includes("@");
+
+  let existingUser;
+
+  if (isEmail) {
+    existingUser = await getUserByEmail(email);
+  } else {
+    existingUser = await getUserByName(email);
+  }
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "Email does not exist!" };
+    return { error: "Email or username does not exist" };
   }
 
   try {
     await signIn("credentials", {
-      email,
+      email: existingUser.email,
       password,
       redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });

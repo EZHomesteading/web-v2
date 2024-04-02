@@ -74,6 +74,10 @@ body::-webkit-scrollbar {
   background-color: #ced9bb;
 }
 
+.authlayouttext {
+  color: #ced9bb;
+}
+
 .cardregister {
   background-color: #e3eac9;
   border-bottom-left-radius: 0px;
