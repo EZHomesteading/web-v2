@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     zip,
     state,
     hoursOfOperation,
+    subscriptions,
   } = body;
 
   const user = await currentUser();
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
       city,
       zip,
       state,
+      subscriptions,
       hoursOfOperation: hoursOfOperation as HoursOfOperation,
     },
   });

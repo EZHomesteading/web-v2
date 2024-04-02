@@ -17,8 +17,11 @@ import SubToggle from "./notificationButton";
 import { registerServiceWorker } from "@/hooks/serviceWorker";
 import {
   getCurrentPushSubscription,
+  registerPushNotifications,
   sendPushSubscriptionToServer,
+  unregisterPushNotifications,
 } from "@/app/actions/notifications/pushService";
+import axios from "axios";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -46,6 +49,10 @@ const ConversationList: React.FC<ConversationListProps> = ({
     async function setUpServiceWorker() {
       try {
         await registerServiceWorker();
+        if (!session.data?.user?.subscriptions)
+          await axios.post("/api/update", {
+            subscriptions: "[]",
+          });
       } catch (error) {
         console.error(error);
       }

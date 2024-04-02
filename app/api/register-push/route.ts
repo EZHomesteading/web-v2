@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   if (!body) {
     return NextResponse.error();
   }
-  const subs = user.subscriptions || "[]";
+  const subs = (user.subscriptions as string) || "[]";
   if (subs === "[]") {
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
