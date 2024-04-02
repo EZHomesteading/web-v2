@@ -1,7 +1,5 @@
-"use client";
-import { useRouter } from "next/navigation";
 import { Outfit } from "next/font/google";
-import { useTheme } from "next-themes";
+import Link from "next/link";
 
 const outfit = Outfit({
   weight: ["100"],
@@ -11,18 +9,17 @@ const outfit = Outfit({
 });
 
 const Logo = () => {
-  const router = useRouter();
-  const { theme } = useTheme();
-  const textColor = theme === "dark" ? "text-white" : "text-black";
   return (
     <div
-      onClick={() => router.push("/")}
-      className={`hover:cursor-pointer text-md md:text-2xl font-bold tracking-tight mb-2 ${textColor}`}
+      className={`hover:cursor-pointer text-md md:text-3xl font-bold tracking-tight mb-2 text-grey`}
     >
-      <h1 className={outfit.className}>EZ Homesteading</h1>
+      <Link href="/">
+        <h1 className={`${outfit.className} hover:text-green-800`}>
+          EZ Homesteading
+        </h1>
+      </Link>
     </div>
   );
 };
 
-// Export the Logo component
 export default Logo;

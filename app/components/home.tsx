@@ -1,15 +1,10 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import { useEffect } from "react";
 import homebg from "@/public/images/home-images/ezhbg2.webp";
 import consumer from "@/public/images/home-images/ezhconsumer.webp";
 import producer from "@/public/images/home-images/ezhproducer.webp";
-import { useTheme } from "next-themes";
 
 const footerNavigation = {
   shop: [
@@ -39,58 +34,15 @@ const footerNavigation = {
 };
 
 const outfit = Outfit({
-  weight: ["600"],
   style: ["normal"],
   subsets: ["latin"],
   display: "swap",
 });
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function Home() {
-  const { theme } = useTheme();
-  const backgroundColor = theme === "dark" ? "bg-black" : "bg-white";
-  const textColor = theme === "dark" ? "text-white" : "text-black";
-
-  useEffect(() => {
-    gsap.to("#h1", {
-      scrollTrigger: {
-        trigger: "#header",
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-      },
-      yPercent: 0.1,
-      scale: 0.01,
-      opacity: 0,
-    });
-    gsap.to("#h2", {
-      scrollTrigger: {
-        trigger: "#h2",
-        start: "top bottom",
-        end: "bottom top",
-        toggleActions: "play none none reset",
-      },
-      xPercent: -50,
-      opacity: 1,
-      duration: 2,
-    });
-    gsap.to("#h3", {
-      scrollTrigger: {
-        trigger: "#h3",
-        start: "top bottom",
-        end: "bottom top",
-        toggleActions: "restart pause reverse pause",
-      },
-      xPercent: 50,
-      opacity: 1,
-      duration: 2,
-    });
-  }, []);
-
   return (
     <>
-      <div className={`${backgroundColor} ${textColor}`}>
+      <div className="bg-black text-white">
         <main>
           <header id="header" className="">
             <div
@@ -99,17 +51,38 @@ export default function Home() {
             >
               <article>
                 <h1 className="2xl:text-5xl text-lg font-bold tracking-tight">
-                  <div className={outfit.className}>Easily Find</div>
-                  <div className={outfit.className}>
-                    <em>Fresh, Local, & Organic with</em>
+                  <div
+                    className={`${outfit.className} 2xl:text-4xl text-md font-light`}
+                  >
+                    Easily Find
+                  </div>
+                  <div className={`${outfit.className} `}>
+                    <em>
+                      <span className="text-green-200 tracking font-medium">
+                        Fresh
+                      </span>
+                      <span className="text-xl mr-2 font-semibold">, {""}</span>
+                      <span className="text-green-400 font-bold">Local</span>
+                      <span className="text-xl mr-2 tracking-widest">
+                        ,{""} &{""}
+                      </span>
+                      <span className="text-green-600">Organic</span>{" "}
+                      <span className="text-xl mr-2 tracking-wide">
+                        with{""}
+                      </span>
+                    </em>
                   </div>
                 </h1>
                 <h1 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
-                  <div className={outfit.className}>EZ Homesteading</div>
+                  <div
+                    className={`${outfit.className} text-green-900 2xl:text-6xl text-2xl font-extrabold tracking-tight`}
+                  >
+                    EZ Homesteading
+                  </div>
                 </h1>
                 <p className="2xl:text-lg text-xs mb-2">
-                  Join a community of consumers and producers. Find local
-                  produce in your area.
+                  Find local produce in your area. Join a community of EZH
+                  consumers, co-ops, & producers.
                 </p>
                 <div className="flex">
                   <FindListingsComponent />
