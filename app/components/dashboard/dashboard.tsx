@@ -17,7 +17,6 @@ import {
   AlertDialogFooter,
 } from "@/app/components/ui/alert-dialog";
 
-import { ModeToggle } from "../ui/mode-toggle";
 import { UserInfo } from "@/next-auth";
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
@@ -505,7 +504,6 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
                         />
                       </div>
                     </div>
-                    <ModeToggle />
                     <div className="col-span-full">
                       <label
                         htmlFor="timezone"
