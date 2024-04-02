@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   const body: PushSubscription = await request.json();
   //type newSubscription = PushSubscription | undefined;
   //   const subscription: PushSubscription | undefined = await request.json()
-  const parsed = [body];
+  const parsed = JSON.stringify([body]);
   const endpoint = body.endpoint;
   const user = await currentUser();
 
@@ -18,12 +18,12 @@ export async function POST(request: Request) {
   if (!body) {
     return NextResponse.error();
   }
-  const subs = user.subscriptions || "";
+  const subs = user.subscriptions || "[]";
   if (subs === "[]") {
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
-        subscriptions: JSON.stringify(parsed),
+        subscriptions: parsed,
       },
     });
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
-      subscriptions: JSON.stringify(parsed),
+      subscriptions: parsed,
     },
   });
 
