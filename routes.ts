@@ -3,13 +3,20 @@
  * These routes do not require authentication
  * @type {string[]}
  */
+
 export const publicRoutes = [
   "/",
   "/auth/new-verification",
   "/shop",
-  "/listings/:[listingId]",
+  "/listings/[listingId]",
+  "/listings",
   "/auth/become-a-producer",
   "/auth/become-a-co-op",
+  "/store",
+  "/how-ezh-works",
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/who-we-are",
 ];
 
 /**
