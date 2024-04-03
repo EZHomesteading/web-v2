@@ -20,7 +20,7 @@ import {
   registerPushNotifications,
   sendPushSubscriptionToServer,
   unregisterPushNotifications,
-} from "@/app/actions/notifications/pushService";
+} from "@/actions/pushService";
 import axios from "axios";
 
 interface ConversationListProps {

@@ -4,7 +4,7 @@ import {
   getCurrentPushSubscription,
   registerPushNotifications,
   unregisterPushNotifications,
-} from "@/app/actions/notifications/pushService";
+} from "@/actions/pushService";
 import Loading from "@/app/loading";
 import { BellOff, BellRing } from "lucide-react";
 import { useEffect, useState } from "react";
