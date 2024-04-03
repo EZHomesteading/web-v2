@@ -24,9 +24,6 @@ export default auth(async (req) => {
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  console.log(nextUrl.pathname);
-
-  console.log(filteredString);
   // const isUpdateRoute = updateRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
