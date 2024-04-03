@@ -3,7 +3,6 @@ import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
-import { useTheme } from "next-themes";
 
 interface CategoryBoxProps {
   icon: IconType;
@@ -18,7 +17,6 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const { theme } = useTheme();
 
   const handleClick = useCallback(() => {
     let currentQuery = {};
@@ -59,10 +57,6 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   cursor-pointer
 `;
 
-  const themeStyles =
-    theme === "dark"
-      ? "text-neutral-200 hover:text-neutral-100"
-      : "text-neutral-700 hover:text-neutral-900";
   const selectedStyles = selected
     ? "border-b-neutral-800 dark:border-b-neutral-200"
     : "border-transparent";

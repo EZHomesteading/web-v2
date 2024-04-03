@@ -2,7 +2,6 @@ import { Nunito } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import RentModal from "@/app/components/modals/ListingModal";
-
 import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
@@ -27,10 +26,10 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en" className={font.className}>
         <body>
-          <ClientOnly>
+          {/* <ClientOnly>
             <ToasterProvider />
             <RentModal />
-          </ClientOnly>
+          </ClientOnly> */}
           <main>{children}</main>
           <script
             async

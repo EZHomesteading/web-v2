@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -69,7 +70,8 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, user }) => {
                       <Image
                         src={product.imageSrc}
                         className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
-                        fill
+                        width={100}
+                        height={100}
                         alt={product.title}
                       />
                     </div>
@@ -92,6 +94,7 @@ const Cart: React.FC<FavoritesClientProps> = ({ listings, user }) => {
                               {product.quantityType ? (
                                 <div>
                                   {product.stock}
+                                  {""}
                                   {product.quantityType} in stock
                                 </div>
                               ) : (

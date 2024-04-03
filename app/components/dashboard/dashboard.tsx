@@ -17,7 +17,6 @@ import {
   AlertDialogFooter,
 } from "@/app/components/ui/alert-dialog";
 
-import { ModeToggle } from "../ui/mode-toggle";
 import { UserInfo } from "@/next-auth";
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
@@ -31,7 +30,6 @@ import { PiStorefrontThin } from "react-icons/pi";
 import { FaOpencart } from "react-icons/fa";
 import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
-// import { Avatar } from "@/app/components/ui/avatar";
 import LocationSearchInput from "../map/LocationSearchInput";
 
 interface UserInfoProps {
@@ -506,7 +504,6 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
                         />
                       </div>
                     </div>
-                    <ModeToggle />
                     <div className="col-span-full">
                       <label
                         htmlFor="timezone"

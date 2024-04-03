@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
 import NavbarHome from "../components/navbar/NavbarHome";
+import { auth } from "@/auth";
 
 export default async function RootLayout({
   children,
