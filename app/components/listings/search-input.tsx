@@ -24,7 +24,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
 
   return (
     <div className="relative flex items-center mb-2 sm:mb-0 ">
-      <BsBasket className="absolute text-lg left-2" />
+      <BsBasket className="absolute text-black text-lg left-2" />
       <input
         type="text"
         placeholder="Everything"
@@ -39,7 +39,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         onClick={handleSearch}
         className="absolute right-3 top-1/2 transform -translate-y-1/2"
       >
-        <IoIosSearch className="text-2xl" />
+        <IoIosSearch className="text-2xl text-black" />
       </button>
     </div>
   );
