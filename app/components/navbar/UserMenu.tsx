@@ -32,6 +32,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     setIsOpen((value) => !value);
   }, []);
 
+  function handleClick() {
+    document.removeEventListener("click", handleClick);
+    setIsOpen(false);
+  }
+  if (isOpen === true) {
+    document.addEventListener("click", handleClick);
+  }
   return (
     <div className={`relative`}>
       <div className="flex flex-row items-center gap-3">
