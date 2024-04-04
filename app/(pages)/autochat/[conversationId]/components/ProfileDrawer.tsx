@@ -12,7 +12,6 @@ import useActiveList from "@/hooks/useActiveList";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/AvatarGroup";
 import ConfirmModal from "./ConfirmModal";
-import { FullConversationType, SafeUser } from "@/types";
 
 interface ProfileDrawerProps {
   isOpen: boolean;
