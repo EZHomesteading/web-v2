@@ -7,7 +7,7 @@ export const publicRoutes = [
   "/",
   "/auth/new-verification",
   "/shop",
-  "/listings/:[listingId]",
+  "/listings/:listingId",
   "/auth/become-a-producer",
   "/auth/become-a-co-op",
 ];
