@@ -15,6 +15,17 @@ enum UserRole {
   PRODUCER
 }
 
+enum orderStatus {
+  pending
+  pendingPickup
+  pendingDelivery
+  delivered
+  pickedUp
+  cancelled
+  coopConfirmed
+  completed
+}
+
 model User {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   name                  String  @unique 
@@ -46,7 +57,7 @@ model User {
   orders                String[] @db.ObjectId
   accounts              Account[]
   listings              Listing[]
-  
+  cart                  Cart[]
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
@@ -100,10 +111,10 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid()) @map("_id")
+  id     String @id @default(cuid()) @map("_id")
 
   userId String @db.ObjectId
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
 }
@@ -129,14 +140,22 @@ model Listing {
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String @db.ObjectId
+  listingId     String @db.ObjectId
+  quantity      Int    @default(1)
+  pickup        DateTime
+
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TransactionHistory {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String   @db.ObjectId
-  storeId          String 
-  listingTitle     String
+  orderId          String   @db.ObjectId 
   totalPrice       Float
 }
 
@@ -147,55 +166,58 @@ model Order {
   pickupDate            DateTime
   quantity              Int
   totalPrice            Float
-  status                String   @default("pending")
+  status                orderStatus @default(pending)
   stripePaymentIntentId String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+  stripeSessionId       String
+  fee                   Float
+
+  conversationId        String   @db.ObjectId
   payments              Payment[]
 }
 
 model Payment {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId       String   @db.ObjectId
-  stripePaymentIntentId String
-  amount        Float
-  status        String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId                String   @db.ObjectId
+  stripePaymentIntentId  String
+  amount                 Float
+  status                 String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
   
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Conversation {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt       DateTime @default(now())
-  lastMessageAt DateTime @default(now())
-  name String?
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt         DateTime @default(now())
+  lastMessageAt     DateTime @default(now())
+  name              String?
   isGroup Boolean?
   
-  messagesIds String[] @db.ObjectId
-  messages Message[]
+  messagesIds      String[] @db.ObjectId
+  messages         Message[]
 
-  userIds String[] @db.ObjectId
-  users User[] @relation(fields: [userIds], references: [id])
+  userIds          String[] @db.ObjectId
+  users            User[] @relation(fields: [userIds], references: [id])
 }
 
 
 
 model Message {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  body String?
-  image String?
-  createdAt DateTime @default(now())
-  messageOrder String?
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  body             String?
+  image            String?
+  createdAt        DateTime @default(now())
+  messageOrder     String?
 
-  seenIds String[] @db.ObjectId
-  seen User[] @relation("Seen", fields: [seenIds], references: [id])
+  seenIds          String[] @db.ObjectId
+  seen             User[] @relation("Seen", fields: [seenIds], references: [id])
 
-  conversationId String @db.ObjectId
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId   String @db.ObjectId
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
-  senderId String @db.ObjectId
-  sender User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId         String @db.ObjectId
+  sender           User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 }
