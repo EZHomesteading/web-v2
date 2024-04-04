@@ -11,7 +11,7 @@ import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import useListingModal from "@/hooks/useRentModal";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
@@ -25,6 +25,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const listingModal = useListingModal();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,8 +33,17 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     setIsOpen((value) => !value);
   }, []);
 
+  function handleClick() {
+    setIsOpen(false);
+    setTimeout(() => {
+      document.removeEventListener("click", handleClick);
+    }, 0);
+  }
+  if (isOpen === true) {
+    document.addEventListener("click", handleClick);
+  }
   return (
-    <div className={`relative`}>
+    <div className={`relative `}>
       <div className="flex flex-row items-center gap-3">
         {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
           <UpdateRoleAlert
@@ -93,7 +103,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             text-sm
           "
         >
-          <div className="flex flex-col cursor-pointer">
+          <div
+            className={
+              pathname === "/"
+                ? `flex flex-col cursor-pointer bg-black`
+                : `flex flex-col cursor-pointer bg-white`
+            }
+          >
             {user?.role === "COOP" ? (
               <div>
                 <MenuItem

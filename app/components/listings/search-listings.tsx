@@ -29,11 +29,23 @@ const getLatLngFromAddress = async (address: string) => {
 };
 
 const FindListingsComponent = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
     null
   );
+  const getFormState = () => {
+    const formState = sessionStorage.getItem("formState");
+    return formState ? JSON.parse(formState) : null;
+  };
+  useEffect(() => {
+    const formState = getFormState();
+    if (formState) {
+      setLocation(formState.location);
+      setLatLng(formState.latLng);
+    }
+  }, []);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const router = useRouter();
   const geocodingApiLoaded = useMapsLibrary("geocoding");
   const [geocodingService, setGeocodingService] =
@@ -110,11 +122,19 @@ const FindListingsComponent = () => {
         },
         { skipNull: true }
       );
-
+      sessionStorage.removeItem("formState");
+      const saveFormState = () => {
+        const formState = {
+          location,
+          latLng,
+        };
+        sessionStorage.setItem("formState", JSON.stringify(formState));
+      };
+      saveFormState();
       router.push(url);
       setSearchQuery("");
-      setLocation("");
-      setLatLng(null);
+      setLocation(location);
+      setLatLng(latLng);
     } catch (error) {
       console.error("Error searching listings:", error);
     }

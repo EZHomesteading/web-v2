@@ -84,7 +84,7 @@ export default function Home() {
                   Find local produce in your area. Join a community of EZH
                   consumers, co-ops, & producers.
                 </p>
-                <div className="flex">
+                <div className="flex Z-100">
                   <FindListingsComponent />
                 </div>
               </article>
