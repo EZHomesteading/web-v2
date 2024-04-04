@@ -11,11 +11,18 @@ import { UserRole } from "@prisma/client";
 const { auth } = NextAuth(authConfig);
 // import { currentUser } from "./lib/auth";
 export default auth(async (req) => {
-  // const user = await currentUser();
   const { nextUrl } = req;
+  // const user = await currentUser();
+  const path = nextUrl.pathname;
+  const firstIndex = path.indexOf("/");
+  const index = path.indexOf("/", firstIndex + 1); // Find the index of the first "/"
+  const filteredString = index !== -1 ? path.substring(0, index) : path;
+
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isPublicRoute =
+    publicRoutes.includes(nextUrl.pathname) ||
+    publicRoutes.includes(filteredString);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
   // const isUpdateRoute = updateRoutes.includes(nextUrl.pathname);
 
