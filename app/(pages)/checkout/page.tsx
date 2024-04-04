@@ -1,9 +1,8 @@
 import { getAllCartItemsByUserId } from "@/actions/getCart";
-import StripeCheckout from "./credit-card";
+import StripeCheckout from "./checkout";
 
 const CheckoutPage = async () => {
   const cartItems = await getAllCartItemsByUserId();
-  console.log(cartItems);
   return <StripeCheckout cartItems={cartItems} />;
 };
 

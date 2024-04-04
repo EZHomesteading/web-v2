@@ -1,91 +1,198 @@
 "use client";
-import React from "react";
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
 
-export default function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
+import { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "./payment-component";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { Fragment } from "react";
+import { Popover, Transition } from "@headlessui/react";
+import { ChevronUpIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
 
-  const [message, setMessage] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
-  React.useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+interface CheckoutFormProps {
+  cartItems: any;
+}
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
-    );
+export default function StripeCheckout({ cartItems }: CheckoutFormProps) {
+  const user = useCurrentUser();
+  const [clientSecret, setClientSecret] = useState("");
+  const total = cartItems.reduce(
+    (acc: number, cartItem: any) =>
+      acc + cartItem.listing.price * cartItem.quantity,
+    0
+  );
 
-    if (!clientSecret) {
-      return;
-    }
+  useEffect(() => {
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listings: [{ id: cartItems.id }] }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, []);
 
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          setMessage("Your payment was successful.");
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
-      }
-    });
-  }, [stripe]);
-
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsLoading(true);
-    console.log(process.env.NEXT_PUBLIC_APP_URL);
-    const { error } = await stripe.confirmPayment({
-      elements: elements,
-      confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}`,
-      },
-    });
-
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage("error card");
-    } else {
-      setMessage("An unexpected error occurred.");
-    }
-
-    setIsLoading(false);
+  const appearance = {
+    theme: "stripe",
   };
-
-  const paymentElementOptions = {
-    layout: "tabs",
+  const options = {
+    clientSecret,
+    appearance,
   };
 
   return (
     <>
-      <form id="payment-form" onSubmit={handleSubmit}>
-        <PaymentElement id="payment-element" />
-        <button
-          className="border-black border-[1px] rounded-md p-2 mt-4 w-full hover:text-green-900"
-          disabled={isLoading || !stripe || !elements}
-          id="submit"
-        >
-          Pay Now
-        </button>
-        {message && <div id="payment-message">{message}</div>}
-      </form>
+      {user && clientSecret && (
+        <div className="bg-white flex justify-center md:justify-evenly">
+          <div
+            className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block"
+            aria-hidden="true"
+          />
+          <div
+            className="fixed right-0 top-0 hidden h-full w-1/2 bg-gray-50 lg:block"
+            aria-hidden="true"
+          />
+
+          <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-x-16 lg:grid-cols-2 lg:px-8 xl:gap-x-48">
+            <h1 className="sr-only">Order information</h1>
+
+            <section
+              aria-labelledby="summary-heading"
+              className="bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16"
+            >
+              <div className="mx-auto max-w-lg lg:max-w-none">
+                <h2
+                  id="summary-heading"
+                  className="text-lg font-medium text-gray-900"
+                >
+                  Order summary
+                </h2>
+
+                <ul
+                  role="list"
+                  className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
+                >
+                  {cartItems.map((cartItem: any) => (
+                    <li
+                      key={cartItem.id}
+                      className="flex listings-start space-x-4 py-6"
+                    >
+                      <Image
+                        src={cartItem.listing.imageSrc}
+                        alt={cartItem.listing.title}
+                        width={80}
+                        height={80}
+                        className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                      />
+                      <div className="flex-auto space-y-1">
+                        <h3>{cartItem.listing.title}</h3>
+                        <p className="text-gray-500">{cartItem.user.name}</p>
+                        <p className="text-gray-500">
+                          {cartItem.quantity} {cartItem.listing.quantityType}
+                        </p>
+                      </div>
+                      <p className="flex-none text-base font-medium">
+                        ${cartItem.listing.price}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
+                <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
+                  <div className="flex listings-center justify-between">
+                    <dt className="text-gray-600">Subtotal</dt>
+                    <dd>${total}</dd>
+                  </div>
+
+                  <div className="flex listings-center justify-between">
+                    <dt className="text-gray-600">Processing Fees</dt>
+                    <dd>$0.00</dd>
+                  </div>
+
+                  <div className="flex listings-center justify-between">
+                    <dt className="text-gray-600">Taxes</dt>
+                    <dd>$0.00</dd>
+                  </div>
+
+                  <div className="flex listings-center justify-between border-t border-gray-200 pt-6">
+                    <dt className="text-base">Total</dt>
+                    <dd className="text-base">${total}</dd>
+                  </div>
+                </dl>
+
+                <Popover className="fixed inset-x-0 bottom-0 flex flex-col-reverse text-sm font-medium text-gray-900 lg:hidden">
+                  <div className="relative z-10 border-t border-gray-200 bg-white px-4 sm:px-6">
+                    <div className="mx-auto max-w-lg">
+                      <Popover.Button className="flex w-full listings-center py-6 font-medium">
+                        <span className="mr-auto text-base">Total</span>
+                        <span className="mr-2 text-base">${total}</span>
+                        <ChevronUpIcon
+                          className="h-5 w-5 text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Popover.Button>
+                    </div>
+                  </div>
+
+                  <Transition.Root as={Fragment}>
+                    <div>
+                      <Transition.Child
+                        as={Fragment}
+                        enter="transition-opacity ease-linear duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="transition-opacity ease-linear duration-300"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Popover.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
+                      </Transition.Child>
+
+                      <Transition.Child
+                        as={Fragment}
+                        enter="transition ease-in-out duration-300 transform"
+                        enterFrom="translate-y-full"
+                        enterTo="translate-y-0"
+                        leave="transition ease-in-out duration-300 transform"
+                        leaveFrom="translate-y-0"
+                        leaveTo="translate-y-full"
+                      >
+                        <Popover.Panel className="relative bg-white px-4 py-6 sm:px-6">
+                          <dl className="mx-auto max-w-lg space-y-6">
+                            <div className="flex listings-center justify-between">
+                              <dt className="text-gray-600">Subtotal</dt>
+                              <dd>$320.00</dd>
+                            </div>
+
+                            <div className="flex listings-center justify-between">
+                              <dt className="text-gray-600">Shipping</dt>
+                              <dd>$15.00</dd>
+                            </div>
+
+                            <div className="flex listings-center justify-between">
+                              <dt className="text-gray-600">Taxes</dt>
+                              <dd>$26.80</dd>
+                            </div>
+                          </dl>
+                        </Popover.Panel>
+                      </Transition.Child>
+                    </div>
+                  </Transition.Root>
+                </Popover>
+              </div>
+            </section>
+
+            <Elements options={options as any} stripe={stripePromise}>
+              <CheckoutForm />
+            </Elements>
+          </div>
+        </div>
+      )}
     </>
   );
 }
