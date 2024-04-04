@@ -1,18 +1,20 @@
 "use client";
-import React from "react";
+
+import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-
 import CheckoutForm from "./checkout";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-export default function CheckoutPage() {
-  const [clientSecret, setClientSecret] = React.useState("");
+export default function StripeCheckout() {
+  const user = useCurrentUser();
+  const [clientSecret, setClientSecret] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,14 +33,15 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="App">
-      {clientSecret && (
+    <>
+      {user && clientSecret && (
         <div className="flex justify-center items-center mt-20">
+          {user.name}
           <Elements options={options as any} stripe={stripePromise}>
             <CheckoutForm />
           </Elements>
         </div>
       )}
-    </div>
+    </>
   );
 }

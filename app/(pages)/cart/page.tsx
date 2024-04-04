@@ -1,4 +1,3 @@
-//checkout removes stock from listing
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
