@@ -141,6 +141,7 @@ model Listing {
   createdAt     DateTime @default(now())
 
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cart          Cart[]
 }
 
 model Cart {
@@ -148,9 +149,14 @@ model Cart {
   userId        String @db.ObjectId
   listingId     String @db.ObjectId
   quantity      Int    @default(1)
-  pickup        DateTime
-
+  pickup        DateTime?
+  price         Float
+  
   user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing       Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+
+  @@unique([userId, listingId])
 }
 
 model TransactionHistory {
