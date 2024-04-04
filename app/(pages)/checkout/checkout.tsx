@@ -52,12 +52,11 @@ export default function CheckoutForm() {
     }
 
     setIsLoading(true);
-
+    console.log(process.env.NEXT_PUBLIC_APP_URL);
     const { error } = await stripe.confirmPayment({
-      elements,
+      elements: elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}`,
       },
     });
 
