@@ -1,15 +1,16 @@
+//checkout removes stock from listing
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import { getAllCartItemsByUserId } from "@/actions/getCart";
+import getCartListings from "@/actions/getCartListings";
 
 import Cart from "./client";
 
 const SearchPage = async () => {
   const user = await currentUser();
-  const cartItems = await getAllCartItemsByUserId();
-  if (cartItems.length === 0) {
+  const listings = await getCartListings();
+  if (listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -23,7 +24,7 @@ const SearchPage = async () => {
 
   return (
     <ClientOnly>
-      <Cart cartItems={cartItems} />
+      <Cart listings={listings} user={user} />
     </ClientOnly>
   );
 };
