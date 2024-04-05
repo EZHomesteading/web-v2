@@ -10,6 +10,7 @@ export const getAllCartItemsByUserId = async () => {
       },
       include: {
         user: true,
+        listing: true,
       },
     });
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/libs/prismadb";
+import getListingById from "@/actions/getListingById";
 
 interface CartParams {
   cartId?: string;
@@ -19,45 +20,49 @@ export async function POST(
   const { cartId, listingId } = params;
   const { quantity, pickup } = await request.json();
 
+  if (!listingId || typeof listingId !== "string") {
+    throw new Error("Invalid ID");
+  }
+
   if (!cartId && listingId && user.id) {
+    const listing = await getListingById({ listingId });
+    if (!listing) {
+      return NextResponse.error();
+    }
+
     const createdCartItem = await prisma.cart.create({
       data: {
-        userId: user.id,
-        listingId,
         quantity,
         pickup,
+        price: listing.price * quantity,
+        user: {
+          connect: { id: user.id },
+        },
+        listing: {
+          connect: { id: listing.id },
+        },
       },
     });
-
     return NextResponse.json(createdCartItem);
   }
 
-  // update a single cart item
+  // Update a single cart item
   if (cartId) {
     const updatedCartItem = await prisma.cart.update({
-      where: {
-        id: cartId,
-      },
-      data: {
-        quantity,
-        pickup,
-      },
+      where: { id: cartId },
+      data: { quantity, pickup },
     });
-
     return NextResponse.json(updatedCartItem);
   } else {
-    const { sellerId, pickup } = await request.json(); // update multiple cart items with the same seller and user (this way if someone buys multiple items from the same seller, they can update the pickup date/time for all of them at once 👍)
-
+    const { sellerId, pickup } = await request.json();
+    // Update multiple cart items with the same seller and user
     const updatedCartItems = await prisma.cart.updateMany({
       where: {
         userId: user.id,
         listingId: sellerId,
       },
-      data: {
-        pickup,
-      },
+      data: { pickup },
     });
-
     return NextResponse.json(updatedCartItems);
   }
 }
@@ -74,18 +79,12 @@ export async function DELETE(
   const { cartId } = params;
 
   if (cartId) {
-    // delete a single cart item
-    await prisma.cart.delete({
-      where: {
-        id: cartId,
-      },
-    });
+    // Delete a single cart item
+    await prisma.cart.delete({ where: { id: cartId } });
   } else {
+    // Delete the entire cart for the user
     await prisma.cart.deleteMany({
-      // delete the entire cart for the user
-      where: {
-        userId: user.id,
-      },
+      where: { userId: user.id },
     });
   }
 
