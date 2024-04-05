@@ -26,10 +26,10 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en" className={font.className}>
         <body>
-          {/* <ClientOnly>
+          <ClientOnly>
             <ToasterProvider />
             <RentModal />
-          </ClientOnly> */}
+          </ClientOnly>
           <main>{children}</main>
           <script
             async
