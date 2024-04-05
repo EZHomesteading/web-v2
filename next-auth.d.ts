@@ -1,4 +1,4 @@
-import { Cart, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
@@ -23,7 +23,7 @@ export type UserInfo = DefaultSession["user"] & {
   conversationIds: string[];
   seenMessageIds: string[];
   favoriteIds: string[];
-  cart: Cart[];
+  cartIds: string[];
   subscriptions?: string;
 };
 

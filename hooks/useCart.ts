@@ -12,25 +12,25 @@ const useCart = ({ listingId, user }: IUseCart) => {
   const router = useRouter();
 
   const hasCart = useMemo(() => {
-    const cartItems = user?.cart || [];
-    return cartItems.some((item: any) => item.listingId === listingId);
+    const list = user?.cartIds || [];
+
+    return list.includes(listingId);
   }, [user, listingId]);
 
   const toggleCart = useCallback(
     async (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
+
       try {
+        let request;
+
         if (hasCart) {
-          await axios.delete(`/api/cart/${listingId}`);
+          request = () => axios.delete(`/api/cart/${listingId}`);
         } else {
-          if (!listingId) {
-            throw new Error("Listing ID is required");
-          }
-          await axios.post(`/api/cart/${listingId}`, {
-            quantity: 1,
-            pickup: null,
-          });
+          request = () => axios.post(`/api/cart/${listingId}`);
         }
+
+        await request();
         router.refresh();
         toast.success("Success");
       } catch (error) {
