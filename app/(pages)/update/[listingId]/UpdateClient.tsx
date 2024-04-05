@@ -18,7 +18,7 @@ import { $Enums, Prisma } from "@prisma/client";
 // const currentUser = getCurrentUser();
 
 interface UpdateUserProps {
-  currentUser: FullListing;
+  currentUser: any;
 }
 
 // Define RegisterModal component
