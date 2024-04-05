@@ -5,16 +5,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
 
-const calculateOrderAmount = (listings: any) => {
+const calculateOrderAmount = (items: any) => {
   return 1400;
 };
 
 export async function POST(request: NextRequest) {
-  const { listings } = await request.json();
+  const { items } = await request.json();
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: calculateOrderAmount(listings),
+      amount: calculateOrderAmount(items),
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,

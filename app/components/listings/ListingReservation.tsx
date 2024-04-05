@@ -71,14 +71,9 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
         <hr />
         <div className="flex flex-row items-center p-2">
-          {stock}
-          {""} {quantityType} remaining at ${price}
-          {""}
+          {stock} {quantityType} remaining at ${price}
           {quantityType && (
-            <div className="font-light">
-              {" "}
-              {}per {quantityType}
-            </div>
+            <div className="font-light"> per {quantityType}</div>
           )}
         </div>
         <hr />

@@ -51,6 +51,7 @@ export const {
         session.user.conversationIds = token.conversationIds as string[];
         session.user.seenMessageIds = token.seenMessageIds as string[];
         session.user.favoriteIds = token.favoriteIds as string[];
+        session.user.cartIds = token.cartIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
       }
       return session;
@@ -80,6 +81,7 @@ export const {
       token.conversationIds = existingUser.conversationIds;
       token.seenMessageIds = existingUser.seenMessageIds;
       token.favoriteIds = existingUser.favoriteIds;
+      token.cartIds = existingUser.cartIds;
       token.subscriptions = existingUser.subscriptions;
       return token;
     },

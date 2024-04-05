@@ -10,7 +10,7 @@ export default async function RootLayout({
   return (
     <>
       <Navbar user={session?.user} />
-      {children}
+      <div className=" pt-25">{children}</div>
     </>
   );
 }
