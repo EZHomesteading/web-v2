@@ -20,7 +20,6 @@ interface CartProps {
 }
 
 const Cart = ({ cartItems }: CartProps) => {
-  console.log(cartItems);
   const total = cartItems.reduce(
     (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
     0

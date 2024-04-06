@@ -50,12 +50,13 @@ model User {
   seenMessages          Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
   
   favoriteIds           String[] @db.ObjectId
-  orders                Order[] 
 
   accounts              Account[]
   listings              Listing[]
   cart                  Cart[]
 
+  buyerOrders           Order[] @relation("buyer")
+  sellerOrders          Order[] @relation("seller") 
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
@@ -166,6 +167,7 @@ model Order {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   userId                String   @db.ObjectId
   listingId             String   @db.ObjectId
+  sellerId              String   @db.ObjectId
   pickupDate            DateTime
   quantity              Int
   totalPrice            Float
@@ -179,7 +181,8 @@ model Order {
   conversationId        String   @db.ObjectId
   payments              Payment[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
+  seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model Payment {

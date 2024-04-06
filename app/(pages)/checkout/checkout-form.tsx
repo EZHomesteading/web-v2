@@ -16,6 +16,21 @@ const stripePromise = loadStripe(
 interface CheckoutFormProps {
   cartItems: any;
 }
+const products = [
+  {
+    id: 1,
+    name: "Micro Backpack",
+    href: "#",
+    price: "$70.00",
+    color: "Moss",
+    size: "5L",
+    imageSrc:
+      "https://tailwindui.com/img/ecommerce-images/checkout-page-04-product-01.jpg",
+    imageAlt:
+      "Moss green canvas compact backpack with double top zipper, zipper front pouch, and matching carry handle and backpack straps.",
+  },
+  // More products...
+];
 
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const user = useCurrentUser();
@@ -27,14 +42,23 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   );
 
   useEffect(() => {
+    const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
+      const coopId = cartItem.listing.userId;
+      if (!acc[coopId]) {
+        acc[coopId] = 0;
+      }
+      acc[coopId] += cartItem.listing.price * cartItem.quantity * 1000;
+      return acc;
+    }, {});
+    console.log(orderTotals);
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listings: [{ id: cartItems.id }] }),
+      body: JSON.stringify({ orderTotals: Object.values(orderTotals) }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-  }, []);
+  }, [cartItems]);
 
   const appearance = {
     theme: "stripe",
@@ -47,7 +71,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   return (
     <>
       {user && clientSecret && (
-        <div className="bg-white flex justify-center md:justify-evenly">
+        <div className="">
           <div
             className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block"
             aria-hidden="true"
@@ -165,17 +189,11 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                           <dl className="mx-auto max-w-lg space-y-6">
                             <div className="flex listings-center justify-between">
                               <dt className="text-gray-600">Subtotal</dt>
-                              <dd>$320.00</dd>
+                              <dd>${total}</dd>
                             </div>
-
-                            <div className="flex listings-center justify-between">
-                              <dt className="text-gray-600">Shipping</dt>
-                              <dd>$15.00</dd>
-                            </div>
-
                             <div className="flex listings-center justify-between">
                               <dt className="text-gray-600">Taxes</dt>
-                              <dd>$26.80</dd>
+                              <dd>$0.00</dd>
                             </div>
                           </dl>
                         </Popover.Panel>
@@ -185,10 +203,13 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                 </Popover>
               </div>
             </section>
-
-            <Elements options={options as any} stripe={stripePromise}>
-              <PaymentComponent />
-            </Elements>
+            <div className="px-4 pb-36 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0 lg:pb-16">
+              <div className="mx-auto max-w-lg lg:max-w-none">
+                <Elements options={options as any} stripe={stripePromise}>
+                  <PaymentComponent cartItems={cartItems} />
+                </Elements>
+              </div>
+            </div>
           </div>
         </div>
       )}
