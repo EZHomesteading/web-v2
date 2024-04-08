@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       status,
       stripePaymentIntentId,
       conversationId,
-      payments,
+      // payments,
     } = order;
 
     const requiredFields = [
@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
         stripeSessionId: "",
         fee: totalPrice * 0.06,
         conversationId,
-        payments: {
-          create: payments,
-        },
+        // payments: {
+        //  create: payments,
+        //},
       },
       include: {
         buyer: true,

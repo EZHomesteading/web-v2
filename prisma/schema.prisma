@@ -166,7 +166,7 @@ model TransactionHistory {
 model Order {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   userId                String   @db.ObjectId
-  listingId             String   @db.ObjectId
+  listingId             String[]   @db.ObjectId
   sellerId              String   @db.ObjectId
   pickupDate            DateTime
   quantity              Int
