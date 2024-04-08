@@ -20,21 +20,30 @@ interface CheckoutFormProps {
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const user = useCurrentUser();
   const [clientSecret, setClientSecret] = useState("");
-  const total = cartItems.reduce(
-    (acc: number, cartItem: any) =>
-      acc + cartItem.listing.price * cartItem.quantity,
-    0
+
+  const itemTotals = cartItems.map(
+    (cartItem: any) => cartItem.quantity * cartItem.listing.price
   );
+  const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
 
   useEffect(() => {
+    const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
+      const coopId = cartItem.listing.userId;
+      if (!acc[coopId]) {
+        acc[coopId] = 0;
+      }
+      acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
+      return acc;
+    }, {});
+    console.log(orderTotals);
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listings: [{ id: cartItems.id }] }),
+      body: JSON.stringify({ orderTotals: Object.values(orderTotals) }),
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-  }, []);
+  }, [cartItems]);
 
   const appearance = {
     theme: "stripe",
@@ -47,7 +56,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   return (
     <>
       {user && clientSecret && (
-        <div className="bg-white flex justify-center md:justify-evenly">
+        <div className="">
           <div
             className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block"
             aria-hidden="true"
@@ -76,30 +85,34 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                   role="list"
                   className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
                 >
-                  {cartItems.map((cartItem: any) => (
-                    <li
-                      key={cartItem.id}
-                      className="flex listings-start space-x-4 py-6"
-                    >
-                      <Image
-                        src={cartItem.listing.imageSrc}
-                        alt={cartItem.listing.title}
-                        width={80}
-                        height={80}
-                        className="h-20 w-20 flex-none rounded-md object-cover object-center"
-                      />
-                      <div className="flex-auto space-y-1">
-                        <h3>{cartItem.listing.title}</h3>
-                        <p className="text-gray-500">{cartItem.user.name}</p>
-                        <p className="text-gray-500">
-                          {cartItem.quantity} {cartItem.listing.quantityType}
+                  {cartItems.map((cartItem: any) => {
+                    const itemTotal =
+                      cartItem.quantity * cartItem.listing.price;
+                    return (
+                      <li
+                        key={cartItem.id}
+                        className="flex listings-start space-x-4 py-6"
+                      >
+                        <Image
+                          src={cartItem.listing.imageSrc}
+                          alt={cartItem.listing.title}
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                        />
+                        <div className="flex-auto space-y-1">
+                          <h3>{cartItem.listing.title}</h3>
+                          <p className="text-gray-500">{cartItem.user.name}</p>
+                          <p className="text-gray-500">
+                            {cartItem.quantity} {cartItem.listing.quantityType}
+                          </p>
+                        </div>
+                        <p className="flex-none text-base font-medium">
+                          ${itemTotal}
                         </p>
-                      </div>
-                      <p className="flex-none text-base font-medium">
-                        ${cartItem.listing.price}
-                      </p>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
 
                 <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
@@ -165,17 +178,11 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                           <dl className="mx-auto max-w-lg space-y-6">
                             <div className="flex listings-center justify-between">
                               <dt className="text-gray-600">Subtotal</dt>
-                              <dd>$320.00</dd>
+                              <dd>${total}</dd>
                             </div>
-
-                            <div className="flex listings-center justify-between">
-                              <dt className="text-gray-600">Shipping</dt>
-                              <dd>$15.00</dd>
-                            </div>
-
                             <div className="flex listings-center justify-between">
                               <dt className="text-gray-600">Taxes</dt>
-                              <dd>$26.80</dd>
+                              <dd>$0.00</dd>
                             </div>
                           </dl>
                         </Popover.Panel>
@@ -185,10 +192,13 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                 </Popover>
               </div>
             </section>
-
-            <Elements options={options as any} stripe={stripePromise}>
-              <PaymentComponent />
-            </Elements>
+            <div className="px-4 pb-36 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0 lg:pb-16">
+              <div className="mx-auto max-w-lg lg:max-w-none">
+                <Elements options={options as any} stripe={stripePromise}>
+                  <PaymentComponent cartItems={cartItems} />
+                </Elements>
+              </div>
+            </div>
           </div>
         </div>
       )}

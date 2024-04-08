@@ -31,8 +31,9 @@
     ".next/types/**/*.ts",
     "app/(pages)/page.jsx",
     "app/(pages)/checkout/page.jsx",
-    "app/(pages)/test/page.tsx",
-    "app/api/order/route.ts"
+    "app/(pages)/test/slider-component.tsx",
+    "app/api/order/route.ts",
+    "app/(pages)/co-op-hours/page.jsx"
   ],
   "exclude": ["node_modules"]
 }

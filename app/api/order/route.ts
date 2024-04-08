@@ -1,4 +1,9 @@
-export async function POST(request) {
+import { NextResponse, NextRequest } from "next/server";
+import { currentUser } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import getListingById from "@/actions/getListingById";
+
+export async function POST(request: NextRequest) {
   const user = await currentUser();
   if (!user) {
     return NextResponse.error();
@@ -39,28 +44,31 @@ export async function POST(request) {
       return NextResponse.error();
     }
 
-    const createdOrder = await prisma.order.create({
+    const newOrder = await prisma.order.create({
       data: {
         userId,
         listingId,
+        sellerId: listing.user.id,
         pickupDate,
         quantity,
         totalPrice: listing.price * quantity,
         status,
         stripePaymentIntentId,
         stripeSessionId: "",
-        seller: {
-          connect: { id: listing.userId },
-        },
+
         fee: totalPrice * 0.06,
         conversationId,
         payments: {
           create: payments,
         },
       },
+      include: {
+        buyer: true,
+        seller: true,
+      },
     });
 
-    createdOrders.push(createdOrder);
+    createdOrders.push(newOrder);
   }
 
   return NextResponse.json(createdOrders);

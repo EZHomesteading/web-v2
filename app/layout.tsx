@@ -1,7 +1,6 @@
-import { Nunito } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import RentModal from "@/app/components/modals/ListingModal";
+import RentModal from "@/app/components/modals/listing-modal";
 import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
@@ -12,10 +11,6 @@ export const metadata = {
   description: "",
 };
 
-const font = Nunito({
-  subsets: ["latin"],
-});
-
 export default async function RootLayout({
   children,
 }: {
@@ -24,7 +19,7 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <SessionProvider session={session}>
-      <html lang="en" className={font.className}>
+      <html lang="en">
         <body>
           <ClientOnly>
             <ToasterProvider />

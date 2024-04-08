@@ -20,7 +20,6 @@ interface CartProps {
 }
 
 const Cart = ({ cartItems }: CartProps) => {
-  console.log(cartItems);
   const total = cartItems.reduce(
     (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
     0
@@ -224,7 +223,7 @@ const Cart = ({ cartItems }: CartProps) => {
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex text-sm text-gray-600">
-                    <span>EZH Processing Fees</span>
+                    <span>EZH Processing Fees Always</span>
                     <a
                       href="#"
                       className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
