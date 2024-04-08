@@ -19,7 +19,11 @@ export interface IListingsParams {
   description?: string;
 }
 
-export default async function getListings(params: IListingsParams) {
+export default async function getListings(
+  params: IListingsParams,
+  page: number,
+  perPage: number
+) {
   try {
     const { lat, lng, radius, q } = params;
 
@@ -88,12 +92,17 @@ export default async function getListings(params: IListingsParams) {
       listings = results.map((result) => result.item);
     }
 
-    const safeListings = listings.map((listing) => ({
+    const totalItems = listings.length;
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const paginatedListings = listings.slice(startIndex, endIndex);
+
+    const safeListings = paginatedListings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
     }));
 
-    return safeListings;
+    return { listings: safeListings, totalItems };
   } catch (error: any) {
     throw new Error(error);
   }
