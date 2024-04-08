@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
         status,
         stripePaymentIntentId,
         stripeSessionId: "",
-
         fee: totalPrice * 0.06,
         conversationId,
         payments: {

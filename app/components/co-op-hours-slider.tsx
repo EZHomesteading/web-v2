@@ -1,8 +1,8 @@
 "use client";
 import { Slider } from "@/app/components/ui/slider";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
-
+import { MdOutlineNavigateNext } from "react-icons/md";
+import { MdOutlineNavigateBefore } from "react-icons/md";
 type CoopHoursSliderProps = {
   day: string;
   open: number;
@@ -44,8 +44,12 @@ export default function CoopHoursSlider({
         <div>{formatTime(values[1])}</div>
       </div>
       <div className="flex justify-evenly">
-        <button onClick={onPrevDay}>Previous Day</button>
-        <button onClick={onNextDay}>Next Day</button>
+        <button onClick={onPrevDay}>
+          <MdOutlineNavigateBefore className="h-8 w-8" />
+        </button>
+        <button onClick={onNextDay}>
+          <MdOutlineNavigateNext className="h-8 w-8" />
+        </button>
       </div>
     </div>
   );
