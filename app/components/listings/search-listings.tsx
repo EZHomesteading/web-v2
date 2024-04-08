@@ -12,7 +12,7 @@ const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
-  )}&key=${apiKey}`;
+  )}&key=${apiKey}&loading=async&libraries=places`;
 
   try {
     const response = await axios.get(url);

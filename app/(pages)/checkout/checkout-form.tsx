@@ -8,6 +8,7 @@ import { Popover, Transition } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import PaymentComponent from "./payment-component";
+import axios from "axios";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -19,7 +20,7 @@ interface CheckoutFormProps {
 
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const user = useCurrentUser();
-  const [clientSecret, setClientSecret] = useState("");
+  const [clientSecrets, setClientSecrets] = useState<string[]>([]);
 
   const itemTotals = cartItems.map(
     (cartItem: any) => cartItem.quantity * cartItem.listing.price
@@ -27,35 +28,41 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
 
   useEffect(() => {
-    const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
-      const coopId = cartItem.listing.userId;
-      if (!acc[coopId]) {
-        acc[coopId] = 0;
+    const fetchPaymentIntents = async () => {
+      const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
+        const coopId = cartItem.listing.userId;
+        if (!acc[coopId]) {
+          acc[coopId] = 0;
+        }
+        acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
+        return acc;
+      }, {});
+      console.log(orderTotals);
+      try {
+        const response = await axios.post("/api/create-payment-intent", {
+          orderTotals: Object.values(orderTotals),
+        });
+        setClientSecrets(response.data.clientSecrets);
+      } catch (error) {
+        console.error("Error fetching payment intents:", error);
       }
-      acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
-      return acc;
-    }, {});
-    console.log(orderTotals);
-    fetch("/api/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderTotals: Object.values(orderTotals) }),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
+    };
+
+    fetchPaymentIntents();
   }, [cartItems]);
 
   const appearance = {
     theme: "stripe",
   };
+  console.log(clientSecrets);
   const options = {
-    clientSecret,
+    clientSecrets,
     appearance,
   };
 
   return (
     <>
-      {user && clientSecret && (
+      {user && clientSecrets.length > 0 ? (
         <div className="">
           <div
             className="fixed left-0 top-0 hidden h-full w-1/2 bg-white lg:block"
@@ -194,13 +201,18 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
             </section>
             <div className="px-4 pb-36 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0 lg:pb-16">
               <div className="mx-auto max-w-lg lg:max-w-none">
-                <Elements options={options as any} stripe={stripePromise}>
+                <Elements
+                  options={{ mode: "setup", currency: "usd" }}
+                  stripe={stripePromise}
+                >
                   <PaymentComponent cartItems={cartItems} />
                 </Elements>
               </div>
             </div>
           </div>
         </div>
+      ) : (
+        <div>loading</div>
       )}
     </>
   );

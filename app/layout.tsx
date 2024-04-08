@@ -5,6 +5,7 @@ import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
+import Script from "next/script";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -26,11 +27,6 @@ export default async function RootLayout({
             <RentModal />
           </ClientOnly>
           <main>{children}</main>
-          <script
-            async
-            defer
-            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places`}
-          ></script>
         </body>
       </html>
     </SessionProvider>
