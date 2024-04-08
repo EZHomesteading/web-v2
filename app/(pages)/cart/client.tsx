@@ -14,6 +14,8 @@ import { addDays, format } from "date-fns";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Yesteryear } from "next/font/google";
+import { now } from "lodash";
 
 interface CartProps {
   cartItems?: any;
@@ -42,6 +44,51 @@ const Cart = ({ cartItems }: CartProps) => {
         )}`
       : "This product is non-perisable";
     return shelfLifeDisplay;
+  };
+  const body: any = [
+    {
+      userId: "660d7133407f015ed93875db",
+      listingId: "660c5664aa305c149f4447f6",
+      pickupDate: "2024-04-01T20:45:14.623+00:00",
+      quantity: 5,
+      totalPrice: 5000,
+      status: "pending",
+      stripePaymentIntentId: "teststring",
+      conversationId: "660b1cda321d320d4fe69785",
+      payments: {
+        createdAt: "2024-04-01T20:45:14.623+00:00",
+        updatedAt: "2024-04-01T20:45:14.623+00:00",
+        // create: 123412341234,
+        stripePaymentIntentId: "String",
+        amount: 1.5,
+        status: "String",
+        id: "690b1cda321d320d4fe69785",
+      },
+    },
+    {
+      userId: "660d7133407f015ed93875db",
+      listingId: "660c5664aa305c149f4447f6",
+      pickupDate: "2024-04-01T20:45:14.623+00:00",
+      quantity: 5,
+      totalPrice: 5000,
+      status: "pending",
+      stripePaymentIntentId: "teststring",
+      conversationId: "660b1cda321d320d4fe69785",
+      payments: {
+        createdAt: "2024-04-01T20:45:14.623+00:00",
+        updatedAt: "2024-04-01T20:45:14.623+00:00",
+        // create: 123412341234,
+        stripePaymentIntentId: "String",
+        amount: 1.5,
+        status: "String",
+        id: "620b1cda321d320d4fe69785",
+      },
+    },
+  ];
+
+  const createOrder = () => {
+    console.log("beans");
+    axios.post("/api/create-order", body);
   };
 
   return (
@@ -258,6 +305,15 @@ const Cart = ({ cartItems }: CartProps) => {
               </div>
             </section>
           </form>
+          <div>
+            {" "}
+            <button
+              onClick={createOrder}
+              className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+            >
+              TEST ORDER CREATE
+            </button>
+          </div>
         </main>
       </div>
     </>
