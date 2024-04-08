@@ -11,14 +11,13 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const orders = body;
-  console.log(orders);
 
   const createdOrders = [];
 
   for (const order of orders) {
     const {
       userId,
-      listingId,
+      listingIds,
       pickupDate,
       quantity,
       totalPrice,
@@ -30,46 +29,59 @@ export async function POST(request: NextRequest) {
 
     const requiredFields = [
       "userId",
-      "listingId",
+      "listingIds",
       "pickupDate",
       "quantity",
       "totalPrice",
       "status",
     ];
+
     if (requiredFields.some((field) => !order[field])) {
-      return NextResponse.error();
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
+    const listingId: any = listingIds[0];
     const listing = await getListingById({ listingId });
+
     if (!listing) {
-      return NextResponse.error();
+      return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
 
-    const newOrder = await prisma.order.create({
-      data: {
-        userId,
-        listingId,
-        sellerId: listing.user.id,
-        pickupDate,
-        quantity,
-        totalPrice: listing.price * quantity,
-        status,
-        stripePaymentIntentId,
-        stripeSessionId: "",
-        fee: totalPrice * 0.06,
-        conversationId,
-        // payments: {
-        //  create: payments,
-        //},
-      },
-      include: {
-        buyer: true,
-        seller: true,
-      },
-    });
-
-    createdOrders.push(newOrder);
+    try {
+      const newOrder = await prisma.order.create({
+        data: {
+          userId,
+          listingIds,
+          sellerId: listing.user.id,
+          pickupDate,
+          quantity,
+          totalPrice,
+          status,
+          stripePaymentIntentId,
+          stripeSessionId: "",
+          fee: totalPrice * 0.06,
+          conversationId,
+          // payments: {
+          // create: payments,
+          //},
+        },
+        include: {
+          buyer: true,
+          seller: true,
+        },
+      });
+      createdOrders.push(newOrder);
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json(
+        { error: "Failed to create order" },
+        { status: 500 }
+      );
+    }
   }
 
-  return NextResponse.json(createdOrders);
+  return NextResponse.json(createdOrders, { status: 200 });
 }
