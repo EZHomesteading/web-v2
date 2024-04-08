@@ -1,5 +1,5 @@
 // Importing the necessary modules and functions
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 
 // Function to retrieve the favorite listings for the current user
