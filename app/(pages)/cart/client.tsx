@@ -17,9 +17,10 @@ import Link from "next/link";
 
 interface CartProps {
   cartItems?: any;
+  user?: any;
 }
 
-const Cart = ({ cartItems }: CartProps) => {
+const Cart = ({ cartItems, user }: CartProps) => {
   const total = cartItems.reduce(
     (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
     0
@@ -42,6 +43,33 @@ const Cart = ({ cartItems }: CartProps) => {
         )}`
       : "This product is non-perisable";
     return shelfLifeDisplay;
+  };
+  console.log(cartItems);
+  const body: any = [
+    {
+      userId: user.id,
+      listingId: cartItems[0]?.listingId,
+      pickupDate: "2024-04-01T20:45:14.623+00:00",
+      quantity: cartItems[0]?.quantity,
+      totalPrice: cartItems[0]?.price,
+      status: "pending",
+      stripePaymentIntentId: "teststring",
+      conversationId: "660b1cda321d320d4fe69785",
+      // payments: {
+      //   createdAt: "2024-04-01T20:45:14.623+00:00",
+      //   updatedAt: "2024-04-01T20:45:14.623+00:00",
+      //   // create: 123412341234,
+      //   stripePaymentIntentId: "String",
+      //   amount: 1.5,
+      //   status: "String",
+      //   id: "690b1cda321d320d4fe69785",
+      // },
+    },
+  ];
+  console.log(body);
+  const createOrder = () => {
+    console.log("beans");
+    //axios.post("/api/create-order", body);
   };
 
   return (
@@ -258,6 +286,15 @@ const Cart = ({ cartItems }: CartProps) => {
               </div>
             </section>
           </form>
+          <div>
+            {" "}
+            <button
+              onClick={createOrder}
+              className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+            >
+              TEST ORDER CREATE
+            </button>
+          </div>
         </main>
       </div>
     </>

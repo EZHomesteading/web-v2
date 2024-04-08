@@ -33,6 +33,7 @@ const ListingMap = ({ location }: MapProps) => {
         zoomControl: false,
         streetViewControl: false,
         mapTypeControl: false,
+        gestureHandling: "none",
       };
       //map setup
       const map = new Map(mapRef.current as HTMLDivElement, mapOptions);

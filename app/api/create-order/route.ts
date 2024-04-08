@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { orders } = body;
+  const orders = body;
+  console.log(orders);
 
   const createdOrders = [];
 
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       status,
       stripePaymentIntentId,
       conversationId,
-      payments,
+      // payments,
     } = order;
 
     const requiredFields = [
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.error();
     }
 
-    const listing = await getListingById(listingId);
+    const listing = await getListingById({ listingId });
     if (!listing) {
       return NextResponse.error();
     }
@@ -57,9 +58,9 @@ export async function POST(request: NextRequest) {
         stripeSessionId: "",
         fee: totalPrice * 0.06,
         conversationId,
-        payments: {
-          create: payments,
-        },
+        // payments: {
+        //  create: payments,
+        //},
       },
       include: {
         buyer: true,
