@@ -166,10 +166,10 @@ model TransactionHistory {
 model Order {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   userId                String   @db.ObjectId
-  listingId             String[]   @db.ObjectId
+  listingIds            String[]  
   sellerId              String   @db.ObjectId
   pickupDate            DateTime
-  quantity              Int
+  quantity              String
   totalPrice            Float
   status                orderStatus @default(pending)
   stripePaymentIntentId String?
@@ -179,10 +179,11 @@ model Order {
   fee                   Float
 
   conversationId        String   @db.ObjectId
-  payments              Payment[]
+  //payments              Payment[]
 
   buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
   seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
+
 }
 
 model Payment {
@@ -194,7 +195,7 @@ model Payment {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   
-  order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  //order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Conversation {
