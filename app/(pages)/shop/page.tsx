@@ -11,6 +11,7 @@ interface ShopProps {
     lat?: string;
     lng?: string;
     radius?: string;
+    page?: string;
   };
 }
 
