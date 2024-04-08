@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
 
   for (const order of orders) {
     const {
-      userId,
       listingId,
       pickupDate,
       quantity,
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
       status,
       stripePaymentIntentId,
       conversationId,
-      payments,
+      // payments,
     } = order;
 
     const requiredFields = [
@@ -46,8 +45,8 @@ export async function POST(request: NextRequest) {
     }
 
     const newOrder = await prisma.order.create({
+      userId: user.id,
       data: {
-        userId,
         listingId,
         sellerId: listing.user.id,
         pickupDate,
