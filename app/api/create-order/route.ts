@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
 
   for (const order of orders) {
     const {
+      userId,
       listingId,
       pickupDate,
       quantity,
@@ -45,8 +46,8 @@ export async function POST(request: NextRequest) {
     }
 
     const newOrder = await prisma.order.create({
-      userId: user.id,
       data: {
+        userId,
         listingId,
         sellerId: listing.user.id,
         pickupDate,
@@ -57,9 +58,9 @@ export async function POST(request: NextRequest) {
         stripeSessionId: "",
         fee: totalPrice * 0.06,
         conversationId,
-        payments: {
-          create: payments,
-        },
+        // payments: {
+        //  create: payments,
+        //},
       },
       include: {
         buyer: true,
