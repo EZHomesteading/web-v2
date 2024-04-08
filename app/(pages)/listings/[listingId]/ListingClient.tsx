@@ -162,11 +162,7 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
               disabled={isLoading}
             />
             <div className="mt-5">
-              <ListingMap
-                street={listing.street}
-                city={listing.city}
-                state={listing.state}
-              />
+              <ListingMap location={listing.location} />
             </div>
           </div>
         </div>
