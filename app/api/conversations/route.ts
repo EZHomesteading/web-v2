@@ -1,8 +1,8 @@
 import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-import prisma from "@/libs/prismadb";
-import { pusherServer } from "@/libs/pusher";
+import prisma from "@/lib/prismadb";
+import { pusherServer } from "@/lib/pusher";
 
 export async function POST(request: Request) {
   try {

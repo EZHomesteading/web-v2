@@ -1,4 +1,4 @@
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 
 interface Params {
   userId?: string;

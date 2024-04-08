@@ -8,7 +8,7 @@ import clsx from "clsx";
 import { find } from "lodash";
 import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/useConversation";
-import { pusherClient } from "@/libs/pusher";
+import { pusherClient } from "@/lib/pusher";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
 import { registerServiceWorker } from "@/hooks/serviceWorker";

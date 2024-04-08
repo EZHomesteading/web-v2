@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import Button from "@/app/components/Button";
 import { toast } from "react-hot-toast";
-
+import { DaySelect } from "./day-select";
 const days = [
   "Monday",
   "Tuesday",
@@ -83,6 +83,7 @@ const CoOpHoursPage = () => {
       <div className="px-2 py-4">
         <Button onClick={handleSubmit} label="Update My Hours" />
       </div>
+      <DaySelect />
     </div>
   );
 };

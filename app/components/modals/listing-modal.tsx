@@ -232,7 +232,6 @@ const ListingModal = () => {
         category: data.category,
         subCategory: data.subCategory,
         coopRating: data.coopRating,
-
         price: formattedPrice,
         imageSrc: data.imageSrc,
         city: data.city,

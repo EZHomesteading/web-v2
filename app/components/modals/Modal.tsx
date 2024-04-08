@@ -1,20 +1,21 @@
 "use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
 
 interface ModalProps {
-  isOpen?: boolean; // Optional prop indicating whether the modal is open
-  onClose: () => void; // Function to handle modal close event
-  onSubmit: () => void; // Function to handle form submission event
-  title?: string; // Optional title for the modal
-  body?: React.ReactElement; // JSX content for the modal body
-  footer?: React.ReactElement; // JSX content for the modal footer
-  actionLabel: string; // Label for the primary action button
-  disabled?: boolean; // Optional prop indicating whether the modal is disabled
-  secondaryAction?: () => void; // Function to handle secondary action button click
-  secondaryActionLabel?: string; // Label for the secondary action button
+  isOpen?: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  title?: string;
+  body?: React.ReactElement;
+  footer?: React.ReactElement;
+  actionLabel: string;
+  disabled?: boolean;
+  secondaryAction?: () => void;
+  secondaryActionLabel?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -77,17 +78,16 @@ const Modal: React.FC<ModalProps> = ({
           overflow-y-auto 
           fixed 
           inset-0 
-          z-100
+          z-50 
           outline-none 
           focus:outline-none
-          bg-grey-900
+          bg-neutral-800/70
         "
       >
         <div
           className="
           relative 
           w-full
-          sm:w-5/6
           md:w-4/6
           lg:w-3/6
           xl:w-2/5
@@ -98,6 +98,7 @@ const Modal: React.FC<ModalProps> = ({
           md:h-auto
           "
         >
+          {/*content*/}
           <div
             className={`
             translate
@@ -119,12 +120,13 @@ const Modal: React.FC<ModalProps> = ({
               relative 
               flex 
               flex-col 
-              w-full  
+              w-full 
+              bg-white 
               outline-none 
               focus:outline-none
             "
             >
-              {/* Modal header */}
+              {/*header*/}
               <div
                 className="
                 flex 
@@ -151,7 +153,9 @@ const Modal: React.FC<ModalProps> = ({
                 </button>
                 <div className="text-lg font-semibold">{title}</div>
               </div>
+              {/*body*/}
               <div className="relative p-6 flex-auto">{body}</div>
+              {/*footer*/}
               <div className="flex flex-col gap-2 p-6">
                 <div
                   className="

@@ -32,7 +32,7 @@
     "app/(pages)/page.jsx",
     "app/(pages)/checkout/page.jsx",
     "app/(pages)/test/slider-component.tsx",
-    "app/api/order/route.ts",
+    "app/api/update-order/route.ts",
     "app/(pages)/co-op-hours/page.jsx"
   ],
   "exclude": ["node_modules"]
