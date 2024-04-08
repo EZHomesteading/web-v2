@@ -1,6 +1,6 @@
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import RentModal from "@/app/components/modals/ListingModal";
+import RentModal from "@/app/components/modals/listing-modal";
 import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";

@@ -20,11 +20,11 @@ interface CheckoutFormProps {
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const user = useCurrentUser();
   const [clientSecret, setClientSecret] = useState("");
-  const total = cartItems.reduce(
-    (acc: number, cartItem: any) =>
-      acc + cartItem.listing.price * cartItem.quantity,
-    0
+
+  const itemTotals = cartItems.map(
+    (cartItem: any) => cartItem.quantity * cartItem.listing.price
   );
+  const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
 
   useEffect(() => {
     const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
@@ -32,7 +32,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
       if (!acc[coopId]) {
         acc[coopId] = 0;
       }
-      acc[coopId] += cartItem.listing.price * cartItem.quantity * 1000;
+      acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
       return acc;
     }, {});
     console.log(orderTotals);
@@ -85,30 +85,34 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                   role="list"
                   className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
                 >
-                  {cartItems.map((cartItem: any) => (
-                    <li
-                      key={cartItem.id}
-                      className="flex listings-start space-x-4 py-6"
-                    >
-                      <Image
-                        src={cartItem.listing.imageSrc}
-                        alt={cartItem.listing.title}
-                        width={80}
-                        height={80}
-                        className="h-20 w-20 flex-none rounded-md object-cover object-center"
-                      />
-                      <div className="flex-auto space-y-1">
-                        <h3>{cartItem.listing.title}</h3>
-                        <p className="text-gray-500">{cartItem.user.name}</p>
-                        <p className="text-gray-500">
-                          {cartItem.quantity} {cartItem.listing.quantityType}
+                  {cartItems.map((cartItem: any) => {
+                    const itemTotal =
+                      cartItem.quantity * cartItem.listing.price;
+                    return (
+                      <li
+                        key={cartItem.id}
+                        className="flex listings-start space-x-4 py-6"
+                      >
+                        <Image
+                          src={cartItem.listing.imageSrc}
+                          alt={cartItem.listing.title}
+                          width={80}
+                          height={80}
+                          className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                        />
+                        <div className="flex-auto space-y-1">
+                          <h3>{cartItem.listing.title}</h3>
+                          <p className="text-gray-500">{cartItem.user.name}</p>
+                          <p className="text-gray-500">
+                            {cartItem.quantity} {cartItem.listing.quantityType}
+                          </p>
+                        </div>
+                        <p className="flex-none text-base font-medium">
+                          ${itemTotal}
                         </p>
-                      </div>
-                      <p className="flex-none text-base font-medium">
-                        ${cartItem.listing.price}
-                      </p>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
 
                 <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
