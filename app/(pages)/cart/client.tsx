@@ -14,8 +14,6 @@ import { addDays, format } from "date-fns";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Yesteryear } from "next/font/google";
-import { now } from "lodash";
 
 interface CartProps {
   cartItems?: any;
