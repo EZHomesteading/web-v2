@@ -3,6 +3,7 @@ import CheckoutForm from "./checkout-form";
 
 const CheckoutPage = async () => {
   const cartItems = await getAllCartItemsByUserId();
+
   return <CheckoutForm cartItems={cartItems} />;
 };
 
