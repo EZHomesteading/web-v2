@@ -65,7 +65,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
       className="col-span-1 cursor-pointer group"
     >
       <div className="flex flex-col gap-2 w-full">
-        {" "}
         <div
           className="
             aspect-square 
@@ -76,6 +75,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           "
         >
           <Image
+            fill
             className="
               object-cover 
               h-full 
@@ -84,9 +84,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               transition
             "
             src={data.imageSrc}
-            alt={data.title}
-            height={300}
-            width={300}
+            alt={`${data.title} image`}
           />
           <div
             className="
