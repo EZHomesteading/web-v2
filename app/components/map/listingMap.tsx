@@ -79,6 +79,7 @@ const MapTester: React.FC<UpdateUserProps> = ({ city, state, street }) => {
         zoomControl: false,
         streetViewControl: false,
         mapTypeControl: false,
+        gestureHandling: "greedy",
       };
       //map setup
       const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
