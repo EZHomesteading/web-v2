@@ -24,9 +24,36 @@ const ShopPage = async ({
   searchParams?: ShopProps["searchParams"];
 }) => {
   const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
+  let page = parseInt(searchParams?.page as string, 10);
+  page = !page || page < 1 ? 1 : page;
+  const perPage = 30;
 
-  const listings = await getListingsApi({ q, lat, lng, radius });
+  const { listings, totalItems } = await getListingsApi(
+    {
+      q,
+      lat,
+      lng,
+      radius,
+    },
+    page,
+    perPage
+  );
   const user = await currentUser();
+
+  const totalPages = Math.ceil(totalItems / perPage);
+  const prevPage = page - 1 > 0 ? page - 1 : 1;
+  const nextPage = page + 1;
+  const isPageOutOfRange = page > totalPages;
+
+  const pageNumbers = [];
+  const offsetNumber = 3;
+
+  for (let i = page - offsetNumber; i <= page + offsetNumber; i++) {
+    if (i >= 1 && i <= totalPages) {
+      pageNumbers.push(i);
+    }
+  }
+
   return (
     <DynamicShop
       listings={listings}
@@ -38,6 +65,12 @@ const ShopPage = async ({
           </ClientOnly>
         ) : null
       }
+      totalPages={totalPages}
+      prevPage={prevPage}
+      nextPage={nextPage}
+      isPageOutOfRange={isPageOutOfRange}
+      pageNumbers={pageNumbers}
+      currentPage={page}
     />
   );
 };
