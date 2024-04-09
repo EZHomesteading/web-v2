@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import {
   Carousel,
   CarouselContent,
@@ -7,26 +8,25 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/app/components/ui/carousel";
-import axios from "axios";
-import Modal from "@/app/components/modals/Modal";
-import Heading from "@/app/components/Heading";
-import Input from "@/app/components/inputs/Input";
-import { Label } from "@/app/components/ui/label";
 import { toast } from "react-hot-toast";
-import Counter from "@/app/components/inputs/Counter";
 import { useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
+import Heading from "@/app/components/Heading";
 import useRentModal from "@/hooks/useRentModal";
-import ImageUpload from "@/app/components/inputs/ImageUpload";
+import Modal from "@/app/components/modals/Modal";
+import Input from "@/app/components/inputs/Input";
+import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
+import Counter from "@/app/components/inputs/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import ImageUpload from "@/app/components/inputs/ImageUpload";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 
 enum STEPS {
   DESCRIPTION = 0,
