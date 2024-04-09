@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
         })
       )
     );
+    console.log("PaymentIntents created:", paymentIntents);
     return NextResponse.json({
       clientSecrets: paymentIntents.map(
         (paymentIntent) => paymentIntent.client_secret
