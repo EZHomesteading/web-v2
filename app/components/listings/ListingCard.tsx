@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
-
+import { RiShoppingBasketLine } from "react-icons/ri";
 import HeartButton from "../ui/HeartButton";
 import Button from "../Button";
 
@@ -65,7 +65,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
       className="col-span-1 cursor-pointer group"
     >
       <div className="flex flex-col gap-2 w-full">
-        {" "}
         <div
           className="
             aspect-square 
@@ -76,6 +75,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           "
         >
           <Image
+            fill
             className="
               object-cover 
               h-full 
@@ -84,9 +84,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               transition
             "
             src={data.imageSrc}
-            alt={data.title}
-            height={300}
-            width={300}
+            alt={`${data.title} Listing Image`}
           />
           <div
             className="
@@ -105,29 +103,26 @@ const ListingCard: React.FC<ListingCardProps> = ({
             {data?.city}, {data?.state}
           </div>
         </div>
-        <div className="flex flex-row items-center gap-1">
-          {" "}
-          <div className="font-semibold"> $ {data.price}</div>
-          {data.quantityType && (
-            <div className="font-light">per {data.quantityType}</div>
-          )}
+        <div
+          className="w-full 
+            relative "
+        >
+          <div className="flex flex-row items-center gap-1">
+            <div className="font-semibold"> ${data.price}</div>
+            {data.quantityType && (
+              <div className="font-light">per {data.quantityType}</div>
+            )}
+          </div>
+          <div
+            className="
+            absolute
+            bottom-3
+            right-3
+          "
+          >
+            <RiShoppingBasketLine className="h-5 w-5" />
+          </div>
         </div>
-        {onAction && actionLabel && (
-          <Button
-            disabled={disabled}
-            small
-            label={actionLabel}
-            onClick={handleCancel}
-          />
-        )}
-        {onSecondAction && secondActionLabel && (
-          <Button
-            disabled={disabled}
-            small
-            label={secondActionLabel}
-            onClick={handleSecondAction}
-          />
-        )}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ const Cancel = () => {
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="white"
+      stroke="black"
       className="w-6 h-6"
     >
       <path
