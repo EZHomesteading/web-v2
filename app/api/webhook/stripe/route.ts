@@ -1,5 +1,3 @@
-// pages/api/webhook.ts
-"use server";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -7,7 +5,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
 
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(request: NextRequest) {
@@ -36,9 +33,8 @@ export async function POST(request: NextRequest) {
   // Handle the event
   switch (event.type) {
     case "payment_intent.succeeded":
-      const paymentIntentSucceeded = event.data.object as Stripe.PaymentIntent;
-      console.log(paymentIntentSucceeded);
-      // Then define and call a function to handle the event payment_intent.succeeded
+      const paymentIntentSucceeded = event.data.object as any;
+      console.log(event.data.object);
       break;
     // ... handle other event types
     default:

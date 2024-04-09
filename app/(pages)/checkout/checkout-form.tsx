@@ -9,7 +9,6 @@ import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
-import client from "@/lib/prismadb";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -49,16 +48,10 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         const response = await axios.post("/api/create-client-secret", {
           totalSum,
           userId: user?.id,
+          orderTotals,
         });
         const clientSecret = response.data.clientSecret;
         setClientSecret(clientSecret);
-      } catch (error) {
-        console.error("Error fetching payment intents:", error);
-      }
-      try {
-        await axios.post("/api/create-payment-intent", {
-          orderTotals: Object.values(orderTotals),
-        });
       } catch (error) {
         console.error("Error fetching payment intents:", error);
       }
@@ -66,7 +59,6 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
     fetchPaymentIntents();
   }, [cartItems]);
-  console.log("clientSecret", clientSecret);
   return (
     <>
       {user ? (
