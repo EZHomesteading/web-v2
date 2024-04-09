@@ -23,7 +23,7 @@ export type UserInfo = DefaultSession["user"] & {
   conversationIds: string[];
   seenMessageIds: string[];
   favoriteIds: string[];
-  cartIds: string[];
+  cart: Cart[];
   subscriptions?: string;
 };
 

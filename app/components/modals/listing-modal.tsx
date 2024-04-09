@@ -1,31 +1,32 @@
 "use client";
 
-import { Checkbox } from "@/app/components/ui/checkbox";
 import axios from "axios";
-import useRentModal from "@/hooks/useRentModal";
-import Modal from "./Modal";
-import Counter from "../inputs/Counter";
-import ImageUpload from "../inputs/ImageUpload";
-import Input from "../inputs/Input";
-import Heading from "../Heading";
-import { Label } from "../ui/label";
-import SearchClient, {
-  ProductValue,
-} from "@/app/components/client/SearchClient";
-import { BiSearch } from "react-icons/bi";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel";
-import LocationSearchInput from "../map/LocationSearchInput";
+} from "@/app/components/ui/carousel";
+import { toast } from "react-hot-toast";
+import { useMemo, useState } from "react";
+import { BiSearch } from "react-icons/bi";
+import { useRouter } from "next/navigation";
+import SearchClient, {
+  ProductValue,
+} from "@/app/components/client/SearchClient";
+import Heading from "@/app/components/Heading";
+import useRentModal from "@/hooks/useRentModal";
+import Modal from "@/app/components/modals/Modal";
+import Input from "@/app/components/inputs/Input";
+import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
+import Counter from "@/app/components/inputs/Counter";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import ImageUpload from "@/app/components/inputs/ImageUpload";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 
 enum STEPS {
   DESCRIPTION = 0,
@@ -44,15 +45,17 @@ const ListingModal = () => {
     zip: string;
   };
 
-  const [product, setProduct] = useState<ProductValue>();
-  const router = useRouter();
-  const rentModal = useRentModal();
+  const user = useCurrentUser();
   const [coopRating, setCoopRating] = useState(1);
   const [certificationChecked, setCertificationChecked] = useState(false);
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.DESCRIPTION);
   const [quantityType, setQuantityType] = useState("");
+  const [product, setProduct] = useState<ProductValue>();
+  const router = useRouter();
+  const rentModal = useRentModal();
+  const [clicked, setClicked] = useState(false);
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
@@ -89,10 +92,10 @@ const ListingModal = () => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      street: "",
-      city: "",
-      zip: "",
-      state: "",
+      street: user?.street,
+      city: user?.city,
+      zip: user?.zip,
+      state: user?.state,
       coopRating: 1,
     },
   });
@@ -137,7 +140,22 @@ const ListingModal = () => {
 
   const onNext = () => {
     if (step === STEPS.DESCRIPTION && !product) {
-      toast.error("Please select a product");
+      toast("Let us know what produce you have!", {
+        duration: 2000,
+        position: "bottom-right",
+        style: {
+          border: "2px solid #4CAF50",
+          padding: "16px",
+          color: "#4CAF50",
+        },
+        className:
+          "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
+        icon: "❓",
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+      });
       return;
     }
 
@@ -147,7 +165,7 @@ const ListingModal = () => {
     }
 
     if (step === STEPS.INFO && !quantityType) {
-      toast.error("Please select a unit for your listing");
+      toast.error("Please enter a unit for your listing");
       return;
     }
 
@@ -195,9 +213,6 @@ const ListingModal = () => {
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
-
-        // console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
-
         return { lat, lng };
       } else {
         throw new Error("Geocoding failed");
@@ -246,8 +261,6 @@ const ListingModal = () => {
           coordinates: [geoData.lng, geoData.lat],
         },
       };
-      // console.log(formData);
-      // console.log(geoData);
       axios
 
         .post("/api/listings", formData)
@@ -285,10 +298,9 @@ const ListingModal = () => {
           );
         })
         .finally(() => {
-          setIsLoading(false); // Reset loading state
+          setIsLoading(false);
         });
     } else {
-      // Handle geocoding failure
       setIsLoading(false);
       toast.error("Please select or enter a valid address.");
     }
@@ -361,13 +373,17 @@ const ListingModal = () => {
           subtitle="Help local consumers find you!"
         />
         <div className="flex flex-row justify-evenly">
-          <div className="">
+          <div className="flex flex-col justify-center">
             <PiStorefrontThin
               size="5em"
-              className=" hover:cursor-pointer"
+              className={
+                clicked
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
               onClick={() => {
                 setValue("address", "");
-                // requires middleware for fetching current user?????
+                setClicked(true);
               }}
             />
             Default Location
@@ -375,7 +391,7 @@ const ListingModal = () => {
           <div className="">
             <BiSearch
               size="5em"
-              className=""
+              className="cursor-pointer hover:text-green-500"
               onClick={toggleLocationInput}
               style={{ cursor: "pointer" }}
             />
@@ -415,7 +431,6 @@ const ListingModal = () => {
     );
   }
   if (step === STEPS.INFO) {
-    // Form fields for providing basic information about the product
     bodyContent = (
       <div className="flex flex-col gap-4">
         <Heading title="Share some basics about your product" subtitle="" />
@@ -428,7 +443,6 @@ const ListingModal = () => {
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
             />
           </div>
           <Carousel
@@ -473,7 +487,6 @@ const ListingModal = () => {
           </Carousel>
         </div>
         <hr />
-        {/* shelfLife =  shelfLifeDays + shelfLifeWeeks*7 + shelfLifeMonths*30 */}
         <div className="mb-3">
           <Label className="text-lg">
             Estimated Shelf Life
@@ -516,7 +529,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.IMAGES) {
-    // Form fields for uploading images
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
@@ -532,7 +544,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.ORGANIC) {
-    // Form fields for uploading images
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
@@ -578,7 +589,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.PRICE) {
-    // Form fields for setting price
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
@@ -595,14 +605,12 @@ const ListingModal = () => {
             register={register}
             errors={errors}
             formatPrice
-            required
           />
         </div>
       </div>
     );
   }
 
-  // Return Modal component with appropriate props
   return (
     <Modal
       disabled={isLoading}
@@ -618,4 +626,4 @@ const ListingModal = () => {
   );
 };
 
-export default ListingModal; // Export RentModal component
+export default ListingModal;

@@ -10,7 +10,7 @@ import {
 } from "@/app/components/ui/alert-dialog";
 import homebg from "@/public/images/home-images/ezh-modal.jpg";
 import { Button } from "@/app/components/ui/button";
-import Cancel from "@/app/components/ui/cancel";
+import Cancel from "@/app/components/icons/cancel-svg";
 import Link from "next/link";
 import { CiCircleInfo } from "react-icons/ci";
 import { IoStorefrontOutline } from "react-icons/io5";
