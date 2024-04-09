@@ -1,5 +1,5 @@
 "use client";
-import CoopHoursSlider from "@/app/components/co-op-hours-slider";
+import CoopHoursSlider from "@/app/(pages)/co-op-hours/co-op-hours-slider";
 import { useState } from "react";
 import axios from "axios";
 import Button from "@/app/components/Button";

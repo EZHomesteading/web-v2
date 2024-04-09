@@ -12,7 +12,7 @@ import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
-import ListingMap from "@/app/components/map/listingMap";
+import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/useCart";
 
 interface ListingClientProps {

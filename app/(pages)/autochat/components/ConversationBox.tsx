@@ -8,7 +8,7 @@ import clsx from "clsx";
 
 import Avatar from "@/app/components/Avatar";
 import useOtherUser from "@/hooks/useOtherUser";
-import AvatarGroup from "@/app/components/AvatarGroup";
+import AvatarGroup from "@/app/components/avatar-group";
 import { FullConversationType } from "@/types";
 
 interface ConversationBoxProps {
