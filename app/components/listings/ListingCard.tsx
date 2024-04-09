@@ -6,7 +6,6 @@ import { useCallback } from "react";
 import { SafeListing } from "@/types";
 import { RiShoppingBasketLine } from "react-icons/ri";
 import HeartButton from "../ui/HeartButton";
-import Button from "../Button";
 
 interface ListingCardProps {
   data: SafeListing;
