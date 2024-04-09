@@ -198,6 +198,11 @@ model Payment {
   //order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
+model StripeIntents {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentIds           String[] @db.ObjectId
+}
+
 model Conversation {
   id                String @id @default(auto()) @map("_id") @db.ObjectId
   createdAt         DateTime @default(now())
