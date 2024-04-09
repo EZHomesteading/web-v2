@@ -6,14 +6,14 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel";
+} from "@/app/components/ui/carousel";
 import axios from "axios";
-import Modal from "./Modal";
-import Heading from "../Heading";
-import Input from "../inputs/Input";
-import { Label } from "../ui/label";
+import Modal from "@/app/components/modals/Modal";
+import Heading from "@/app/components/Heading";
+import Input from "@/app/components/inputs/Input";
+import { Label } from "@/app/components/ui/label";
 import { toast } from "react-hot-toast";
-import Counter from "../inputs/Counter";
+import Counter from "@/app/components/inputs/Counter";
 import { useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
@@ -21,11 +21,11 @@ import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
 import useRentModal from "@/hooks/useRentModal";
-import ImageUpload from "../inputs/ImageUpload";
+import ImageUpload from "@/app/components/inputs/ImageUpload";
 import { PiStorefrontThin } from "react-icons/pi";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import LocationSearchInput from "../map/LocationSearchInput";
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 enum STEPS {
