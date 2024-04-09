@@ -55,8 +55,7 @@ const ListingModal = () => {
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
   const rentModal = useRentModal();
-  const [defaultClicked, setDefaultClicked] = useState(false);
-  const [searchClicked, setSearchClicked] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
@@ -357,13 +356,13 @@ const ListingModal = () => {
             <PiStorefrontThin
               size="5em"
               className={
-                defaultClicked
+                clicked
                   ? "text-green-500 cursor-pointer"
                   : "cursor-pointer hover:text-green-500"
               }
               onClick={() => {
                 setValue("address", "");
-                setDefaultClicked(true);
+                setClicked(true);
               }}
             />
             Default Location
@@ -371,11 +370,7 @@ const ListingModal = () => {
           <div className="">
             <BiSearch
               size="5em"
-              className={
-                searchClicked
-                  ? "text-green-500 cursor-pointer"
-                  : "cursor-pointer hover:text-green-500"
-              }
+              className="cursor-pointer hover:text-green-500"
               onClick={toggleLocationInput}
               style={{ cursor: "pointer" }}
             />
@@ -573,7 +568,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.PRICE) {
-    // Form fields for setting price
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
@@ -596,7 +590,6 @@ const ListingModal = () => {
     );
   }
 
-  // Return Modal component with appropriate props
   return (
     <Modal
       disabled={isLoading}
@@ -612,4 +605,4 @@ const ListingModal = () => {
   );
 };
 
-export default ListingModal; // Export RentModal component
+export default ListingModal;
