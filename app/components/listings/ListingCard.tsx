@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import { SafeListing } from "@/types";
 import { RiShoppingBasketLine } from "react-icons/ri";
 import CartIcon from "./cart-icon";
+import Button from "../Button";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -113,6 +114,22 @@ const ListingCard: React.FC<ListingCardProps> = ({
             )}
           </div>
         </div>
+        {onAction && actionLabel && (
+          <Button
+            disabled={disabled}
+            small
+            label={actionLabel}
+            onClick={handleCancel}
+          />
+        )}
+        {onSecondAction && secondActionLabel && (
+          <Button
+            disabled={disabled}
+            small
+            label={secondActionLabel}
+            onClick={handleSecondAction}
+          />
+        )}
       </div>
     </div>
   );
