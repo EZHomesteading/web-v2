@@ -1,23 +1,5 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import axios from "axios";
-import useRentModal from "@/hooks/useRentModal";
-import Modal from "./Modal";
-import Counter from "../inputs/Counter";
-import ImageUpload from "../inputs/ImageUpload";
-import Input from "../inputs/Input";
-import Heading from "../Heading";
-import { Label } from "../ui/label";
-import SearchClient, {
-  ProductValue,
-} from "@/app/components/client/SearchClient";
-import { BiSearch } from "react-icons/bi";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import {
   Carousel,
   CarouselContent,
@@ -25,8 +7,26 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
-import LocationSearchInput from "../map/LocationSearchInput";
+import axios from "axios";
+import Modal from "./Modal";
+import Heading from "../Heading";
+import Input from "../inputs/Input";
+import { Label } from "../ui/label";
+import { toast } from "react-hot-toast";
+import Counter from "../inputs/Counter";
+import { useMemo, useState } from "react";
+import { BiSearch } from "react-icons/bi";
+import { useRouter } from "next/navigation";
+import SearchClient, {
+  ProductValue,
+} from "@/app/components/client/SearchClient";
+import useRentModal from "@/hooks/useRentModal";
+import ImageUpload from "../inputs/ImageUpload";
 import { PiStorefrontThin } from "react-icons/pi";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import LocationSearchInput from "../map/LocationSearchInput";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 enum STEPS {
   DESCRIPTION = 0,
@@ -55,6 +55,8 @@ const ListingModal = () => {
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
   const rentModal = useRentModal();
+  const [defaultClicked, setDefaultClicked] = useState(false);
+  const [searchClicked, setSearchClicked] = useState(false);
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
@@ -164,7 +166,7 @@ const ListingModal = () => {
     }
 
     if (step === STEPS.INFO && !quantityType) {
-      toast.error("Please select a unit for your listing");
+      toast.error("Please enter a unit for your listing");
       return;
     }
 
@@ -354,9 +356,14 @@ const ListingModal = () => {
           <div className="flex flex-col justify-center">
             <PiStorefrontThin
               size="5em"
-              className=" hover:cursor-pointer hover:text-green-500"
+              className={
+                defaultClicked
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
               onClick={() => {
                 setValue("address", "");
+                setDefaultClicked(true);
               }}
             />
             Default Location
@@ -364,7 +371,11 @@ const ListingModal = () => {
           <div className="">
             <BiSearch
               size="5em"
-              className=""
+              className={
+                searchClicked
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
               onClick={toggleLocationInput}
               style={{ cursor: "pointer" }}
             />
@@ -416,7 +427,6 @@ const ListingModal = () => {
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
             />
           </div>
           <Carousel
@@ -580,7 +590,6 @@ const ListingModal = () => {
             register={register}
             errors={errors}
             formatPrice
-            required
           />
         </div>
       </div>
