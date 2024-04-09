@@ -249,14 +249,35 @@ const ListingModal = () => {
       // console.log(formData);
       // console.log(geoData);
       axios
+
         .post("/api/listings", formData)
         .then(() => {
           toast.success("Listing created!");
-          router.refresh();
-          reset();
-          setStep(STEPS.DESCRIPTION);
-          reset;
           rentModal.onClose();
+          setValue("category", "");
+          setValue("subCategory", "");
+          setValue("location", "");
+          setValue("stock", 1);
+          setValue("quantityType", "");
+          setValue("imageSrc", "");
+          setValue("price", 1.5);
+          setValue("title", "");
+          setValue("description", "");
+          setValue("shelfLifeDays", 0);
+          setValue("shelfLifeWeeks", 0);
+          setValue("shelfLifeMonths", 0);
+          setValue("shelfLifeYears", 0);
+          setValue("street", "");
+          setValue("city", "");
+          setValue("zip", "");
+          setValue("state", "");
+          setValue("coopRating", 1);
+          setProduct(undefined);
+          setCoopRating(1);
+          setStep(STEPS.DESCRIPTION);
+          setCertificationChecked(false);
+          setShowLocationInput(false);
+          setQuantityType("");
         })
         .catch(() => {
           toast.error(
