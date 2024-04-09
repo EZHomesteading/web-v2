@@ -1,5 +1,6 @@
 "use client";
 
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import axios from "axios";
 import useRentModal from "@/hooks/useRentModal";
@@ -44,15 +45,16 @@ const ListingModal = () => {
     zip: string;
   };
 
-  const [product, setProduct] = useState<ProductValue>();
-  const router = useRouter();
-  const rentModal = useRentModal();
+  const user = useCurrentUser();
   const [coopRating, setCoopRating] = useState(1);
   const [certificationChecked, setCertificationChecked] = useState(false);
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.DESCRIPTION);
   const [quantityType, setQuantityType] = useState("");
+  const [product, setProduct] = useState<ProductValue>();
+  const router = useRouter();
+  const rentModal = useRentModal();
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
@@ -89,10 +91,10 @@ const ListingModal = () => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      street: "",
-      city: "",
-      zip: "",
-      state: "",
+      street: user?.street,
+      city: user?.city,
+      zip: user?.zip,
+      state: user?.state,
       coopRating: 1,
     },
   });
@@ -210,9 +212,6 @@ const ListingModal = () => {
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
-
-        // console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
-
         return { lat, lng };
       } else {
         throw new Error("Geocoding failed");
@@ -261,8 +260,6 @@ const ListingModal = () => {
           coordinates: [geoData.lng, geoData.lat],
         },
       };
-      // console.log(formData);
-      // console.log(geoData);
       axios
         .post("/api/listings", formData)
         .then(() => {
@@ -279,10 +276,9 @@ const ListingModal = () => {
           );
         })
         .finally(() => {
-          setIsLoading(false); // Reset loading state
+          setIsLoading(false);
         });
     } else {
-      // Handle geocoding failure
       setIsLoading(false);
       toast.error("Please select or enter a valid address.");
     }
@@ -355,13 +351,12 @@ const ListingModal = () => {
           subtitle="Help local consumers find you!"
         />
         <div className="flex flex-row justify-evenly">
-          <div className="">
+          <div className="flex flex-col justify-center">
             <PiStorefrontThin
               size="5em"
-              className=" hover:cursor-pointer"
+              className=" hover:cursor-pointer hover:text-green-500"
               onClick={() => {
                 setValue("address", "");
-                // requires middleware for fetching current user?????
               }}
             />
             Default Location
@@ -409,7 +404,6 @@ const ListingModal = () => {
     );
   }
   if (step === STEPS.INFO) {
-    // Form fields for providing basic information about the product
     bodyContent = (
       <div className="flex flex-col gap-4">
         <Heading title="Share some basics about your product" subtitle="" />
@@ -467,7 +461,6 @@ const ListingModal = () => {
           </Carousel>
         </div>
         <hr />
-        {/* shelfLife =  shelfLifeDays + shelfLifeWeeks*7 + shelfLifeMonths*30 */}
         <div className="mb-3">
           <Label className="text-lg">
             Estimated Shelf Life
@@ -510,7 +503,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.IMAGES) {
-    // Form fields for uploading images
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
@@ -526,7 +518,6 @@ const ListingModal = () => {
   }
 
   if (step === STEPS.ORGANIC) {
-    // Form fields for uploading images
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading

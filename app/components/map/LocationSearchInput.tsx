@@ -1,3 +1,4 @@
+import Script from "next/script";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -64,6 +65,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
         value={address}
         onChange={handleChange}
         onSelect={handleSelect}
+        googleCallbackName="lazyLoadMap"
       >
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
           <div>
@@ -113,6 +115,11 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
           </div>
         )}
       </PlacesAutocomplete>
+      <Script
+        async
+        defer
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
+      />
     </>
   );
 };
