@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import Button from "../Button";
+import { useRouter } from "next/navigation";
 
 interface ModalProps {
   isOpen?: boolean;
@@ -31,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({
   secondaryActionLabel,
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
-
+  const router = useRouter();
   useEffect(() => {
     setShowModal(isOpen);
   }, [isOpen]);
@@ -45,6 +46,7 @@ const Modal: React.FC<ModalProps> = ({
     setTimeout(() => {
       onClose();
     }, 300);
+    //window.location.reload();
   }, [onClose, disabled]);
 
   const handleSubmit = useCallback(() => {
