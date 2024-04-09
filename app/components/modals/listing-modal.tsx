@@ -137,7 +137,22 @@ const ListingModal = () => {
 
   const onNext = () => {
     if (step === STEPS.DESCRIPTION && !product) {
-      toast.error("Please select a product");
+      toast("Let us know what produce you have!", {
+        duration: 2000,
+        position: "bottom-right",
+        style: {
+          border: "2px solid #4CAF50",
+          padding: "16px",
+          color: "#4CAF50",
+        },
+        className:
+          "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
+        icon: "❓",
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+      });
       return;
     }
 

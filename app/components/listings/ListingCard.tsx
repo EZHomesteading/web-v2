@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
 import { RiShoppingBasketLine } from "react-icons/ri";
-import CartIcon from "../ui/cart-icon";
+import CartIcon from "./cart-icon";
 
 interface ListingCardProps {
   data: SafeListing;

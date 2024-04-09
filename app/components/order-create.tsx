@@ -99,7 +99,7 @@ const OrderCreate = ({ cartItems }: Create) => {
         onClick={createOrder}
         className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
       >
-        TEST ORDER CREATE
+        Create Test Order
       </button>
     </div>
   );
