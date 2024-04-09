@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
 import { RiShoppingBasketLine } from "react-icons/ri";
-import HeartButton from "../ui/HeartButton";
+import CartIcon from "../ui/cart-icon";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -92,7 +92,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             right-3
           "
           >
-            <HeartButton listingId={data.id} user={user} />
+            <CartIcon listingId={data.id} user={user} />
           </div>
         </div>
         <div className="font-semibold text-lg">
@@ -111,15 +111,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             {data.quantityType && (
               <div className="font-light">per {data.quantityType}</div>
             )}
-          </div>
-          <div
-            className="
-            absolute
-            bottom-3
-            right-3
-          "
-          >
-            <RiShoppingBasketLine className="h-5 w-5" />
           </div>
         </div>
       </div>

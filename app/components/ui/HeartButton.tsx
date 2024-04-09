@@ -1,22 +1,23 @@
 "use client";
 
-import { BiBasket } from "react-icons/bi";
-import useCart from "@/hooks/useCart";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
-interface CartButtonProps {
+import useFavorite from "@/hooks/useFavorite";
+
+interface HeartButtonProps {
   listingId: string;
   user?: any | null;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ listingId, user }) => {
-  const { hasCart, toggleCart } = useCart({
+const HeartButton: React.FC<HeartButtonProps> = ({ listingId, user }) => {
+  const { hasFavorited, toggleFavorite } = useFavorite({
     listingId,
     user,
   });
 
   return (
     <div
-      onClick={toggleCart}
+      onClick={toggleFavorite}
       className="
         relative
         hover:opacity-80
@@ -24,12 +25,21 @@ const CartButton: React.FC<CartButtonProps> = ({ listingId, user }) => {
         cursor-pointer
       "
     >
-      <BiBasket
+      <AiOutlineHeart
+        size={28}
+        className="
+          fill-white
+          absolute
+          -top-[2px]
+          -right-[2px]
+        "
+      />
+      <AiFillHeart
         size={24}
-        className={hasCart ? "fill-green-500" : "fill-neutral-500/70"}
+        className={hasFavorited ? "fill-green-500" : "fill-neutral-500/70"}
       />
     </div>
   );
 };
 
-export default CartButton;
+export default HeartButton;
