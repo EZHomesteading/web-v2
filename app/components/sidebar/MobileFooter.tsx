@@ -1,7 +1,7 @@
 "use client";
 
 import useConversation from "@/hooks/useConversation";
-import useRoutes from "@/hooks/useRoutes";
+import useRoutes from "@/hooks/use-routes";
 import MobileItem from "./MobileItem";
 
 const MobileFooter = () => {

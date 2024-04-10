@@ -12,7 +12,7 @@ import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import useListingModal from "@/hooks/useRentModal";
+import useListingModal from "@/hooks/use-listing-modal";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
