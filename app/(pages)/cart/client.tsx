@@ -253,16 +253,11 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
               <div className="mt-6">
                 <Link href="/checkout">
-                  <button className="w-full rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50">
-                    Checkout
-                  </button>
+                  <OrderCreate cartItems={cartItems} />
                 </Link>
               </div>
             </section>
           </form>
-          <div>
-            <OrderCreate cartItems={cartItems} />
-          </div>
         </main>
       </div>
     </>

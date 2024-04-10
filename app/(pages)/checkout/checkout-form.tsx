@@ -202,7 +202,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
               <div className="mx-auto max-w-lg lg:max-w-none">
                 {clientSecret ? (
                   <Elements options={{ clientSecret }} stripe={stripePromise}>
-                    <PaymentComponent cartItems={cartItems} />
+                    <PaymentComponent />
                   </Elements>
                 ) : (
                   <div>Loading...</div>

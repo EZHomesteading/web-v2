@@ -6,19 +6,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
-  const { totalSum, userId, orderTotals, body } = await request.json();
+  const { orderTotals } = await request.json();
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalSum,
-      currency: "usd",
-      description: JSON.stringify(body),
-      metadata: {
-        userId,
-        orderTotals: JSON.stringify(orderTotals),
-      },
-    });
+    const paymentIntents = await Promise.all(
+      orderTotals.map((amount: number) =>
+        stripe.paymentIntents.create({
+          amount,
+          currency: "usd",
+          automatic_payment_methods: { enabled: true },
+        })
+      )
+    );
+
     return NextResponse.json({
-      clientSecret: paymentIntent.client_secret,
+      clientSecrets: paymentIntents.map(
+        (paymentIntent) => paymentIntent.client_secret
+      ),
     });
   } catch (error) {
     console.error("Error creating PaymentIntent:", error);
