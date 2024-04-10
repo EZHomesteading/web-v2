@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
                 sender: true,
               },
               data: {
-                body: `${buyer.name} has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up`,
+                body: `${buyer.name} has ordered (insert item) from you, with expected pick up time of (insert time) on (pickupDate), please click confirm when their order is ready to be picked up`,
 
                 messageOrder: "1",
 
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
                 sender: true,
               },
               data: {
-                body: "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
+                body: "(user) has ordered (insert item) from you, with expected pick up time of (insert time) on (pickupDate), please click confirm when their order has been delivered",
 
                 messageOrder: "10",
 

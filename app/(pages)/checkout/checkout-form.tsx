@@ -45,7 +45,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         }
       }
       try {
-        const response = await axios.post("/api/create-client-secret", {
+        const response = await axios.post("/api/create-payment-intent", {
           totalSum,
           userId: user?.id,
           orderTotals,
