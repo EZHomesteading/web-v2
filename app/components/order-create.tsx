@@ -1,5 +1,6 @@
 "use client";
-
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Create {
@@ -7,6 +8,8 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems }: Create) => {
+  const pathname = usePathname();
+  const [prevPathname, setPrevPathname] = useState("");
   const createOrder = () => {
     const body: any = [];
     let prevUserId: any = null;
@@ -89,12 +92,28 @@ const OrderCreate = ({ cartItems }: Create) => {
       });
     }
 
-    axios.post("/api/create-order", body);
+    const post = async () => {
+      const response = await axios.post("/api/create-order", body);
+      console.log(response.data);
+      const datas = response.data;
+      datas.forEach((data: any) => {
+        let store = sessionStorage.getItem("ORDER");
+        if (store === null) {
+          store = "";
+        }
+        let filteredStore = store.replace(/\[|\]/g, "");
+        sessionStorage.setItem(
+          "ORDER",
+          `[${JSON.stringify(data.id)}` + "," + `${filteredStore}]`
+        );
+      });
+    };
+    post();
   };
+  sessionStorage.setItem("ORDER", "");
 
   return (
     <div>
-      {" "}
       <button
         onClick={createOrder}
         className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"

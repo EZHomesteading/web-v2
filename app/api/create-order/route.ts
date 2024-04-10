@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  console.log("BODY", body);
   const orders = body;
 
   const createdOrders = [];

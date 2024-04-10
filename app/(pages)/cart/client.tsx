@@ -12,7 +12,7 @@ import { SafeListing } from "@/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import Link from "next/link";
 import OrderCreate from "@/app/components/order-create";
 
@@ -26,7 +26,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
     (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
     0
   );
-  const router = useRouter();
+  //const router = useRouter();
   const shelfLife = (listing: SafeListing) => {
     const adjustedListing = {
       ...listing,
@@ -147,7 +147,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                 await axios.delete(
                                   `/api/cart/${cartItem.listing.id}`
                                 );
-                                router.refresh();
+                                //router.refresh();
                               }}
                             >
                               <span className="sr-only">Remove</span>
@@ -250,14 +250,13 @@ const Cart = ({ cartItems, user }: CartProps) => {
                   </dd>
                 </div>
               </dl>
-
-              <div className="mt-6">
-                <Link href="/checkout">
-                  <OrderCreate cartItems={cartItems} />
-                </Link>
-              </div>
             </section>
           </form>
+          <div className="mt-6">
+            {/* <Link href="/checkout"> */}
+            <OrderCreate cartItems={cartItems} />
+            {/* </Link> */}
+          </div>
         </main>
       </div>
     </>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 import getListingById from "@/actions/getListingById";
+import toast from "react-hot-toast";
 
 interface CartParams {
   cartId?: string;
@@ -29,6 +30,10 @@ export async function POST(
     if (!listing) {
       return NextResponse.error();
     }
+    if (listing.userId === user.id) {
+      toast.error("Cant add your own products");
+      throw new Error("Cant add Own products");
+    }
 
     const createdCartItem = await prisma.cart.create({
       data: {
@@ -43,7 +48,6 @@ export async function POST(
         listing: true,
       },
     });
-    console.log(createdCartItem);
     return NextResponse.json(createdCartItem);
   }
 

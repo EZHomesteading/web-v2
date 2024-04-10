@@ -2,6 +2,7 @@ import axios from "axios";
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import getUserById from "@/actions/getUserById";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -43,6 +44,14 @@ export async function POST(request: NextRequest) {
       console.log("LONGERID Array", longerValues);
       longerValues.forEach((longerValue: any) => {
         const postconversations = async () => {
+          const seller = await getUserById(longerValue);
+          const buyer = await getUserById(paymentIntentSucceeded.userId);
+          if (!seller) {
+            return;
+          }
+          if (!buyer) {
+            return;
+          }
           const newConversation: any = await prisma.conversation.create({
             data: {
               users: {
@@ -60,32 +69,57 @@ export async function POST(request: NextRequest) {
               users: true,
             },
           });
-
-          const newMessage: any = await prisma.message.create({
-            include: {
-              seen: true,
-              sender: true,
-            },
-            data: {
-              body: "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
-
-              messageOrder: "1",
-
-              conversation: {
-                connect: { id: newConversation.id },
+          if (seller.role === "COOP") {
+            const newMessage: any = await prisma.message.create({
+              include: {
+                seen: true,
+                sender: true,
               },
-              sender: {
-                connect: { id: paymentIntentSucceeded.userId },
-              },
-              seen: {
-                connect: {
-                  id: paymentIntentSucceeded.userId,
+              data: {
+                body: `${buyer.name} has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up`,
+
+                messageOrder: "1",
+
+                conversation: {
+                  connect: { id: newConversation.id },
+                },
+                sender: {
+                  connect: { id: paymentIntentSucceeded.userId },
+                },
+                seen: {
+                  connect: {
+                    id: paymentIntentSucceeded.userId,
+                  },
                 },
               },
-            },
-          });
+            });
+          }
+          if (seller.role === "PRODUCER") {
+            const newMessage: any = await prisma.message.create({
+              include: {
+                seen: true,
+                sender: true,
+              },
+              data: {
+                body: "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
 
-          console.log("newCONVO", newMessage);
+                messageOrder: "10",
+
+                conversation: {
+                  connect: { id: newConversation.id },
+                },
+                sender: {
+                  connect: { id: paymentIntentSucceeded.userId },
+                },
+                seen: {
+                  connect: {
+                    id: paymentIntentSucceeded.userId,
+                  },
+                },
+              },
+            });
+          }
+
           //window.location.href = `/autochat/${newConversation.id}`;
         };
         postconversations();
