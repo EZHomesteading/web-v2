@@ -3,6 +3,8 @@ import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import getUserById from "@/actions/getUserById";
+import getOrderById from "@/actions/getOrderById";
+import getListingById from "@/actions/getListingById";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -37,21 +39,40 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case "payment_intent.succeeded":
       const paymentIntentSucceeded = event.data.object.metadata as any;
-      const orderTotals = paymentIntentSucceeded.orderTotals;
-      const obj = JSON.parse(orderTotals);
-      const longerValues = Object.keys(obj).filter((key) => key.length === 24);
+      const orderIdss = paymentIntentSucceeded.orderIds;
+      const orderIdsss = orderIdss.replace(/,(?=[^,]*$)/, "");
+      const orderIds = JSON.parse(orderIdsss);
 
-      console.log("LONGERID Array", longerValues);
-      longerValues.forEach((longerValue: any) => {
+      // const obj = JSON.parse(orderTotals);
+      orderIds.forEach((orderId: any) => {
         const postconversations = async () => {
-          const seller = await getUserById(longerValue);
-          const buyer = await getUserById(paymentIntentSucceeded.userId);
+          const order = await getOrderById({ orderId });
+          if (!order) {
+            return;
+          }
+          console.log("ORDER", order);
+          let userId = order?.sellerId;
+          const seller = await getUserById({ userId });
+          userId = paymentIntentSucceeded.userId;
+          const buyer = await getUserById({ userId });
           if (!seller) {
             return;
           }
           if (!buyer) {
             return;
           }
+          // let listingTitles = "";
+          //   const titles = order.listingIds.forEach(async (listingId) => {
+          //     const listing = await getListingById({ listingId });
+          //     if (listing) {
+          //       listingTitles = listing.title + " and " + listingTitles;
+          //       return listingTitles;
+          //     } else {
+          //       return "";
+          //     }
+          //   });
+
+          //   console.log(titles);
           const newConversation: any = await prisma.conversation.create({
             data: {
               users: {
@@ -60,7 +81,7 @@ export async function POST(request: NextRequest) {
                     id: paymentIntentSucceeded.userId,
                   },
                   {
-                    id: longerValue,
+                    id: order?.sellerId,
                   },
                 ],
               },
@@ -76,7 +97,7 @@ export async function POST(request: NextRequest) {
                 sender: true,
               },
               data: {
-                body: `${buyer.name} has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up`,
+                body: `${buyer.name} has ordered {listingTitles} from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up`,
 
                 messageOrder: "1",
 
