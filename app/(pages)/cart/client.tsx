@@ -253,9 +253,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
             </section>
           </form>
           <div className="mt-6">
-            <Link href="/checkout">
-              <OrderCreate cartItems={cartItems} />
-            </Link>
+            <OrderCreate cartItems={cartItems} />
           </div>
         </main>
       </div>

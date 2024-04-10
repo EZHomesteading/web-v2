@@ -29,6 +29,14 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
   useEffect(() => {
     const fetchPaymentIntents = async () => {
+      const orderIds = await sessionStorage.getItem("ORDER");
+      if (orderIds === null) {
+        window.location.reload();
+      }
+      if (orderIds === "") {
+        window.location.reload();
+      }
+      console.log(orderIds);
       const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
         const coopId = cartItem.listing.userId;
         if (!acc[coopId]) {
@@ -48,7 +56,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         const response = await axios.post("/api/create-client-secret", {
           totalSum,
           userId: user?.id,
-          orderTotals,
+          orderIds,
         });
         const clientSecret = response.data.clientSecret;
         setClientSecret(clientSecret);
