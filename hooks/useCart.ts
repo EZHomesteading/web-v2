@@ -13,7 +13,6 @@ const useCart = ({ listingId, user }: IUseCart) => {
 
   const hasCart = useMemo(() => {
     const cartItems = user?.cart || [];
-    console.log(cartItems);
     return cartItems.some((item: any) => item.listingId === listingId);
   }, [user, listingId]);
 

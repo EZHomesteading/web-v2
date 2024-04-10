@@ -18,6 +18,8 @@ export const publicRoutes = [
   "/terms-and-conditions",
   "/who-we-are",
   "/api/webhook/stripe",
+  "/api/conversations",
+  "/api/messages",
 ];
 
 /**

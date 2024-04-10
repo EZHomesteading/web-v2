@@ -7,11 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
-interface CheckoutFormProps {
-  cartItems: any;
-}
-
-export default function PaymentComponent({ cartItems }: CheckoutFormProps) {
+export default function PaymentComponent() {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState("");
@@ -37,27 +33,6 @@ export default function PaymentComponent({ cartItems }: CheckoutFormProps) {
       return;
     } else {
       setMessage("Payment successful");
-      const orderDetails = cartItems.map((cartItem: any) => ({
-        userId: cartItem.userId,
-        listingId: cartItem.listingId,
-        pickupDate: cartItem.pickupDate,
-        quantity: cartItem.quantity,
-        totalPrice: cartItem.listing.price * cartItem.quantity,
-        status: "pending",
-        conversationId: "",
-      }));
-
-      const createOrderResponse = await fetch("/api/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orders: orderDetails }),
-      });
-
-      if (!createOrderResponse.ok) {
-        setMessage("Failed to create order. Please try again.");
-      }
     }
 
     setIsLoading(false);
