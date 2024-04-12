@@ -1,15 +1,13 @@
 "use client";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Create {
   cartItems: any;
 }
 
 const OrderCreate = ({ cartItems }: Create) => {
-  const pathname = usePathname();
-  const [prevPathname, setPrevPathname] = useState("");
+  const router = useRouter();
   const createOrder = () => {
     const body: any = [];
     let prevUserId: any = null;
@@ -96,7 +94,7 @@ const OrderCreate = ({ cartItems }: Create) => {
       const response = await axios.post("/api/create-order", body);
       console.log(response.data);
       const datas = response.data;
-      datas.forEach((data: any) => {
+      await datas.forEach((data: any) => {
         let store = sessionStorage.getItem("ORDER");
         if (store === null) {
           store = "";
@@ -107,6 +105,7 @@ const OrderCreate = ({ cartItems }: Create) => {
           `[${JSON.stringify(data.id)}` + "," + `${filteredStore}]`
         );
       });
+      router.push("/checkout");
     };
     post();
   };

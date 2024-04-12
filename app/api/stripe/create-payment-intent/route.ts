@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId,
         orderTotals: JSON.stringify(orderTotals),
+        orderIds,
       },
       transfer_group: parentOrderId,
       receipt_email: email,
