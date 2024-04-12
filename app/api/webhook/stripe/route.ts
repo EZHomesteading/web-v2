@@ -1,4 +1,3 @@
-import axios from "axios";
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
