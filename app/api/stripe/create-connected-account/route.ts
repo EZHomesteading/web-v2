@@ -8,9 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(request: Request) {
   const body = await request.json();
-
   const { userId } = body;
-
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -21,10 +19,15 @@ export async function POST(request: Request) {
     }
 
     const account = await stripe.accounts.create({
+      country: "US",
       type: "custom",
-      email: user.email,
-      business_profile: {
-        name: user.name,
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
       },
     });
 

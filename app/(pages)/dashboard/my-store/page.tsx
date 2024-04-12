@@ -2,7 +2,7 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getListings from "@/actions/getListings";
+import getListingsByUserId from "@/actions/getListingsByUserId";
 
 import PropertiesClient from "./PropertiesClient";
 
@@ -12,7 +12,7 @@ const PropertiesPage = async () => {
     return <EmptyState title="Unauthorized" subtitle="Please login" />;
   }
 
-  const listings = await getListings({ userId: user.id });
+  const listings = await getListingsByUserId({ userId: user.id });
 
   if (listings.length === 0) {
     return (

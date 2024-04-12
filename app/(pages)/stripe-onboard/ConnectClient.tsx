@@ -38,6 +38,48 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
 
     setIsLoading(false);
   };
+  const handleOnBoardToStripe = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post("/api/stripe/custom-onboard", {
+        stripeId: user?.stripeAccountId,
+      });
+
+      if (response.status === 200) {
+        toast.success("Connected successfully");
+        router.push("/dashboard/my-store");
+      } else {
+        toast.error("An error occurred");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An error occurred");
+    }
+
+    setIsLoading(false);
+  };
+  const handleAcceptTOS = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post("/api/stripe/accept-tos", {
+        stripeId: user?.stripeAccountId,
+      });
+
+      if (response.status === 200) {
+        toast.success("Connected successfully");
+        router.push("/dashboard/my-store");
+      } else {
+        toast.error("An error occurred");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An error occurred");
+    }
+
+    setIsLoading(false);
+  };
 
   return (
     <ClientOnly>
@@ -46,9 +88,17 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
         {user ? (
           <div>
             <p>User: {user.name}</p>
-            <button onClick={handleConnectToStripe} disabled={isLoading}>
-              {isLoading ? "Connecting..." : "Connect"}
-            </button>
+            <div className="flex flex-col gap-y-2">
+              {/* <button onClick={handleConnectToStripe} disabled={isLoading}>
+                {isLoading ? "Connecting..." : "Connect"}
+              </button> */}
+              <button onClick={handleOnBoardToStripe} disabled={isLoading}>
+                Onboard
+              </button>
+              <button onClick={handleAcceptTOS} disabled={isLoading}>
+                Accept TOS
+              </button>
+            </div>
           </div>
         ) : (
           <p>No user found.</p>
