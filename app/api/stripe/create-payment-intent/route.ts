@@ -6,8 +6,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
-  const { totalSum, userId, orderTotals, body, parentOrderId, email } =
-    await request.json();
+  const {
+    totalSum,
+    userId,
+    orderTotals,
+    body,
+    // parentOrderId,
+    email,
+    orderIds,
+  } = await request.json();
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,
@@ -19,11 +26,10 @@ export async function POST(request: NextRequest) {
         orderTotals: JSON.stringify(orderTotals),
         orderIds,
       },
-      transfer_group: parentOrderId,
+      // transfer_group: parentOrderId,
       receipt_email: email,
     });
 
-    console.log(orderTotals);
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
     });

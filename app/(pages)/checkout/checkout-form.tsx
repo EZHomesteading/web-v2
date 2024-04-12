@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -59,6 +60,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           orderTotals,
           // parentOrderId,
           email: user?.email,
+          orderIds,
         });
         const clientSecret = response.data.clientSecret;
         setClientSecret(clientSecret);
