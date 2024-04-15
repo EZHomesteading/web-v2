@@ -4,7 +4,7 @@ interface IParams {
   listingId?: string;
 }
 
-export const getListingById = async (params: IParams) => {
+export default async function (params: IParams) {
   try {
     const { listingId } = params;
 
@@ -35,6 +35,6 @@ export const getListingById = async (params: IParams) => {
     console.error(error);
     throw new Error(error);
   }
-};
+}
 
 export const listings = await prisma.listing.findMany();
