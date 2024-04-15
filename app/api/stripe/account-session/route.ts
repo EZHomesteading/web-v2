@@ -7,7 +7,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   const { stripeAccountId } = await request.json();
-  console.log("stripe account id:", stripeAccountId);
   try {
     const accountSession = await stripe.accountSessions.create({
       account: stripeAccountId,

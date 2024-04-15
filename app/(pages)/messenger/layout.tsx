@@ -1,4 +1,4 @@
-import getUsers from "../../../actions/getUsers";
+import getUsers from "../../../actions/user/getUsers";
 import UserList from "./components/UserList";
 
 export default async function UsersLayout({

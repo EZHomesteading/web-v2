@@ -34,7 +34,7 @@ export type FullListing = {
   user: {
     createdAt: string;
     updatedAt: string;
-    emailVerified: string | null;
+    // emailVerified: boolean | false;
     id: string;
     name: string;
     email: string;
@@ -44,7 +44,10 @@ export type FullListing = {
     city: string | null;
     zip: string | null;
     state: string | null;
-    location: Prisma.JsonValue;
+    location?: {
+      type: "Point";
+      coordinates: [number, number];
+    };
     image: string | null;
     hoursOfOperation: Prisma.JsonValue;
     role: $Enums.UserRole;
@@ -71,7 +74,10 @@ export type FullListing = {
   city: string;
   zip: string;
   state: string;
-  location: Prisma.JsonValue;
+  location?: {
+    type: "Point";
+    coordinates: [number, number];
+  };
   coopRating: number | null;
   userId: string;
 } | null;

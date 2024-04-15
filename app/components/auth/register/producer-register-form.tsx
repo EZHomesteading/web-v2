@@ -19,7 +19,7 @@ import { CardWrapper } from "@/app/components/auth/register/card-wrapper-registe
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
-import { register } from "@/actions/Register";
+import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
 
 export const ProducerRegisterForm = () => {

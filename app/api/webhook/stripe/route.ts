@@ -1,9 +1,9 @@
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import getUserById from "@/actions/getUserById";
+import getUserById from "@/actions/user/getUserById";
 import getOrderById from "@/actions/getOrderById";
-import getListingById from "@/actions/getListingById";
+import getListingById from "@/actions/listing/getListingById";
 import axios from "axios";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

@@ -53,6 +53,8 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           totalSum += acc[coopId];
         }
       }
+      console.log("totalsum", totalSum);
+
       try {
         const response = await axios.post("/api/stripe/create-payment-intent", {
           totalSum,
@@ -62,6 +64,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           email: user?.email,
           orderIds,
         });
+        console.log("totalsum", totalSum);
         const clientSecret = response.data.clientSecret;
         setClientSecret(clientSecret);
       } catch (error) {

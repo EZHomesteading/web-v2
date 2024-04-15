@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       email: user?.email,
       business_profile: {
         name: user?.name,
-        url: `https.ezhomesteading.vercel.app/${user?.id}`,
+        url: `https.ezhomesteading.vercel.app/store/${user?.id}`,
       },
       default_currency: "usd",
       capabilities: {
