@@ -19,7 +19,7 @@ import { CardWrapper } from "./login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
-import { reset } from "@/actions/reset";
+import { reset } from "@/actions/auth/reset";
 
 export const ResetForm = () => {
   const [error, setError] = useState<string | undefined>("");

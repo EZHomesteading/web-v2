@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-import getListingsByUserId from "@/actions/getListingsByUserId";
+import getListingsByUserId from "@/actions/listing/getListingsByUserId";
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import getUserById from "@/actions/getUserById";
+import getUserById from "@/actions/user/getUserById";
 
 interface StorePageProps {
   params: {

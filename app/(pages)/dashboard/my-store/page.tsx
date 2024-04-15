@@ -2,7 +2,7 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getListingsByUserId from "@/actions/getListingsByUserId";
+import getListingsByUserId from "@/actions/listing/getListingsByUserId";
 
 import PropertiesClient from "./PropertiesClient";
 

@@ -34,9 +34,9 @@ export default async function GetListings(
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        user: true,
-      },
+      // include: {
+      //   user: true,
+      // },
     });
 
     if (lat && lng && radius) {

@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "../../components/client/ClientOnly";
-import getListingsApi from "@/actions/getListingsApi";
+import getListingsApi from "@/actions/listing/getListingsApi";
 
 interface ShopProps {
   userId?: string;
@@ -47,7 +47,7 @@ const ShopPage = async ({
   const isPageOutOfRange = page > totalPages;
 
   const pageNumbers = [];
-  const offsetNumber = 3;
+  const offsetNumber = 1003;
 
   for (let i = page - offsetNumber; i <= page + offsetNumber; i++) {
     if (i >= 1 && i <= totalPages) {
