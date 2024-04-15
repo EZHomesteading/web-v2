@@ -386,7 +386,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                "Yes, That time works, Your order will be ready at that time."
+                Yes, That time works, Your order will be ready at that time.
               </button>
               <button
                 type="submit"
