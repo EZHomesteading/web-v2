@@ -7,6 +7,7 @@ import { loadConnectAndInitialize } from "@stripe/connect-js/pure";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import Loader from "@/app/components/secondary-loader";
 
 const AccountOnboardingUI = () => {
   const user = useCurrentUser();
@@ -31,8 +32,8 @@ const AccountOnboardingUI = () => {
       }
     };
 
-    const initializeConnect = async () => {
-      const instance = await loadConnectAndInitialize({
+    const initializeConnect = () => {
+      const instance = loadConnectAndInitialize({
         publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
         fetchClientSecret: fetchClientSecret,
       });
@@ -43,25 +44,28 @@ const AccountOnboardingUI = () => {
   }, [body]);
 
   if (!stripeConnectInstance) {
-    return <div>ezh onboarding</div>;
+    return <Loader />;
   }
 
   return (
-    <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-      <ConnectAccountOnboarding
-        onExit={() => {
-          console.log("The account has exited onboarding");
-        }}
-        fullTermsOfServiceUrl="http://localhost:3000/tos"
-        recipientTermsOfServiceUrl="http://localhost:3000/tos-recipient"
-        privacyPolicyUrl="http://localhost:3000/privacy-policy"
-        skipTermsOfServiceCollection={false}
-        collectionOptions={{
-          fields: "eventually_due",
-          futureRequirements: "include",
-        }}
-      />
-    </ConnectComponentsProvider>
+    <>
+      <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+        <ConnectAccountOnboarding
+          onExit={() => {
+            console.log("The account has exited onboarding");
+          }}
+          fullTermsOfServiceUrl="https://ezhomesteading.vercel.app/tos"
+          recipientTermsOfServiceUrl="https://ezhomesteading.vercel.app/tos-recipient"
+          privacyPolicyUrl="https://ezhomesteading.vercel.app/privacy-policy"
+          skipTermsOfServiceCollection={false}
+          collectionOptions={{
+            fields: "eventually_due",
+            futureRequirements: "include",
+          }}
+        />
+        {/* <ConnectDocuments /> */}
+      </ConnectComponentsProvider>
+    </>
   );
 };
 

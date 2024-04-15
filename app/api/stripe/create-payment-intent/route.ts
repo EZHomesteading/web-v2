@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     email,
     orderIds,
   } = await request.json();
+  console.log("totalSum: ", totalSum);
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,

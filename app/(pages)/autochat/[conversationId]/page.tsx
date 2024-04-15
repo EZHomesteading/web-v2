@@ -1,5 +1,5 @@
-import getConversationById from "@/actions/getConversationById";
-import getMessages from "@/actions/getMessages";
+import getConversationById from "@/actions/messenger/getConversationById";
+import getMessages from "@/actions/messenger/getMessages";
 
 import Header from "./components/Header";
 import Body from "./components/Body";
@@ -36,7 +36,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
       <div className="h-full flex flex-col">
         <Header conversation={conversation} />
         <Body initialMessages={messages} otherUser={otherUser} />
-        <Form otherUsersId={otherUser} />
+        {/* <Form otherUsersId={otherUser} /> */}
       </div>
     </div>
   );

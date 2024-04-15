@@ -1,4 +1,4 @@
-import getListingById from "@/actions/getListingById";
+import getListingById from "@/actions/listing/getListingById";
 
 import ClientOnly from "@/app/components/client/ClientOnly";
 

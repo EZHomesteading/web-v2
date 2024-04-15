@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import getListingById from "@/actions/getListingById";
+import getListingById from "@/actions/listing/getListingById";
 
 import ClientOnly from "@/app/components/client/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
