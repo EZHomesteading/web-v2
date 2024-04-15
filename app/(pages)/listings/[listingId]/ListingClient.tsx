@@ -13,7 +13,7 @@ import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
-import useCart from "@/hooks/useCart";
+import useCart from "@/hooks/use-cart";
 
 interface ListingClientProps {
   listing: SafeListing & {

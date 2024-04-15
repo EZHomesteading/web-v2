@@ -1,7 +1,7 @@
 "use client";
 
 import DesktopItem from "./DesktopItem";
-import useRoutes from "@/hooks/useRoutes";
+import useRoutes from "@/hooks/use-routes";
 import { useState } from "react";
 import Avatar from "../Avatar";
 import { UserInfo } from "@/next-auth";

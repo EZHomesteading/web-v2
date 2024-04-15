@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, use } from "react";
+
+import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -53,9 +54,12 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         }
       }
       try {
-        const response = await axios.post("/api/create-client-secret", {
+        const response = await axios.post("/api/stripe/create-payment-intent", {
           totalSum,
           userId: user?.id,
+          orderTotals,
+          // parentOrderId,
+          email: user?.email,
           orderIds,
         });
         const clientSecret = response.data.clientSecret;
@@ -213,7 +217,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                     <PaymentComponent />
                   </Elements>
                 ) : (
-                  <div>Loading...</div>
+                  <div></div>
                 )}
               </div>
             </div>

@@ -27,7 +27,7 @@ const ShopPage = async ({
   const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
   let page = parseInt(searchParams?.page as string, 10);
   page = !page || page < 1 ? 1 : page;
-  const perPage = 30;
+  const perPage = 12;
 
   const { listings, totalItems } = await getListingsApi(
     {

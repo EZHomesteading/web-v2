@@ -33,7 +33,8 @@
     "app/(pages)/checkout/page.jsx",
     "app/(pages)/test/slider-component.tsx",
     "app/api/update-order/route.ts",
-    "app/(pages)/co-op-hours/page.jsx"
+    "app/(pages)/co-op-hours/page.jsx",
+    "app/(pages)/onboarding/page.tsx"
   ],
   "exclude": ["node_modules"]
 }

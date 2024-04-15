@@ -1,7 +1,7 @@
 "use client";
 
 import { BiBasket } from "react-icons/bi";
-import useCart from "@/hooks/useCart";
+import useCart from "@/hooks/use-cart";
 
 interface CartButtonProps {
   listingId: string;

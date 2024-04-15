@@ -8,9 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(request: Request) {
   const body = await request.json();
-
   const { userId } = body;
-
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -21,11 +19,27 @@ export async function POST(request: Request) {
     }
 
     const account = await stripe.accounts.create({
-      type: "express",
-      email: user.email,
+      country: "US",
+      type: "custom",
+      business_type: "individual",
+      email: user?.email,
       business_profile: {
-        name: user.name,
+        name: user?.name,
+        url: `https.ezhomesteading.vercel.app/${user?.id}`,
       },
+      default_currency: "usd",
+      capabilities: {
+        card_payments: {
+          requested: true,
+        },
+        transfers: {
+          requested: true,
+        },
+      },
+
+      // company: {
+      //   address: `${user?.street} ${user?.city}, ${user?.state} ${user?.zip} `,
+      // },
     });
 
     const updatedUser = await prisma.user.update({

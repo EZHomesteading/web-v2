@@ -1,10 +1,10 @@
-import axios from "axios";
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import getUserById from "@/actions/getUserById";
 import getOrderById from "@/actions/getOrderById";
 import getListingById from "@/actions/getListingById";
+import axios from "axios";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -35,61 +35,67 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Webhook error" }, { status: 400 });
   }
 
-  // Handle the event
   switch (event.type) {
     case "payment_intent.succeeded":
-      const paymentIntentSucceeded = event.data.object.metadata as any;
-      const orderIdss = paymentIntentSucceeded.orderIds;
-      const orderIdsss = orderIdss.replace(/,(?=[^,]*$)/, "");
-      const orderIds = JSON.parse(orderIdsss);
+      const pi = event.data.object.metadata as any;
+      const buyerId = pi.userId;
+      const a = pi.orderIds;
+      const b = a.replace(/,(?=[^,]*$)/, "");
+      const orderIds = JSON.parse(b);
 
-      // const obj = JSON.parse(orderTotals);
-      orderIds.forEach((orderId: any) => {
+      // I KNOW THIS SHOULDNT WORK
+      // try {
+      //   await axios.delete(`http://localhost:3000/api/cart`, {
+      //     data: { listingId: orderIds.listingId },
+      //   });
+      //   console.log("Cart items deleted successfully");
+      // } catch (error) {
+      //   console.error("Error deleting cart items:", error);
+      // }
+
+      for (const orderId of orderIds) {
         const postconversations = async () => {
           const order = await getOrderById({ orderId });
           if (!order) {
             return;
           }
-          console.log("ORDER", order);
-          let userId = order?.sellerId;
-          const seller = await getUserById({ userId });
-          userId = paymentIntentSucceeded.userId;
-          const buyer = await getUserById({ userId });
-          if (!seller) {
-            return;
-          }
-          if (!buyer) {
-            return;
-          }
-          // let listingTitles = "";
-          //   const titles = order.listingIds.forEach(async (listingId) => {
-          //     const listing = await getListingById({ listingId });
-          //     if (listing) {
-          //       listingTitles = listing.title + " and " + listingTitles;
-          //       return listingTitles;
-          //     } else {
-          //       return "";
-          //     }
-          //   });
 
-          //   console.log(titles);
+          const seller = await getUserById({ userId: order.sellerId });
+          const buyer = await getUserById({ userId: buyerId });
+
+          if (!seller || !buyer) {
+            return "one of users is missings";
+          }
+          const quantities = JSON.parse(order.quantity);
+
+          const t = await Promise.all(
+            quantities.map(async (item: { id: string; quantity: number }) => {
+              const listing = await getListingById({ listingId: item.id });
+              return listing
+                ? `${item.quantity} ${listing.quantityType} of ${listing.title}`
+                : "";
+            })
+          );
+
+          const titles = t.filter(Boolean).join(", ");
+
           const newConversation: any = await prisma.conversation.create({
             data: {
               users: {
-                connect: [
-                  {
-                    id: paymentIntentSucceeded.userId,
-                  },
-                  {
-                    id: order?.sellerId,
-                  },
-                ],
+                connect: [{ id: pi.userId }, { id: order?.sellerId }],
               },
             },
             include: {
               users: true,
             },
           });
+          console.log(seller);
+          const coopBody = `Hi ${
+            seller.name
+          }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
+
+          const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off during my open hours (NEEDS REWORDING)`;
+
           if (seller.role === "COOP") {
             const newMessage: any = await prisma.message.create({
               include: {
@@ -97,24 +103,23 @@ export async function POST(request: NextRequest) {
                 sender: true,
               },
               data: {
-                body: `${buyer.name} has ordered {listingTitles} from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up`,
-
+                body: coopBody,
                 messageOrder: "1",
-
                 conversation: {
                   connect: { id: newConversation.id },
                 },
                 sender: {
-                  connect: { id: paymentIntentSucceeded.userId },
+                  connect: { id: pi.userId },
                 },
                 seen: {
                   connect: {
-                    id: paymentIntentSucceeded.userId,
+                    id: pi.userId,
                   },
                 },
               },
             });
           }
+
           if (seller.role === "PRODUCER") {
             const newMessage: any = await prisma.message.create({
               include: {
@@ -122,7 +127,7 @@ export async function POST(request: NextRequest) {
                 sender: true,
               },
               data: {
-                body: "(user) has ordered (insert item) from you, with expected pick up time(insert time), please click confirm when their order is ready to be picked up",
+                body: producerBody,
 
                 messageOrder: "10",
 
@@ -130,28 +135,30 @@ export async function POST(request: NextRequest) {
                   connect: { id: newConversation.id },
                 },
                 sender: {
-                  connect: { id: paymentIntentSucceeded.userId },
+                  connect: { id: pi.userId },
                 },
                 seen: {
                   connect: {
-                    id: paymentIntentSucceeded.userId,
+                    id: pi.userId,
                   },
                 },
               },
             });
           }
-
-          //window.location.href = `/autochat/${newConversation.id}`;
         };
         postconversations();
-      });
+      }
 
       break;
-    // ... handle other event types
+
+      switch (event.type) {
+        case "checkout.session.expired":
+      }
+      break;
+
     default:
       console.log(`Unhandled event type: ${event.type}`);
   }
 
-  // Return a 200 response to acknowledge receipt of the event
   return NextResponse.json({ received: true }, { status: 200 });
 }

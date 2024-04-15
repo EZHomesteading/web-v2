@@ -16,7 +16,7 @@ import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
 import Heading from "@/app/components/Heading";
-import useRentModal from "@/hooks/useRentModal";
+import useRentModal from "@/hooks/use-listing-modal";
 import Modal from "@/app/components/modals/Modal";
 import Input from "@/app/components/inputs/Input";
 import { Label } from "@/app/components/ui/label";
