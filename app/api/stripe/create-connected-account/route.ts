@@ -21,6 +21,13 @@ export async function POST(request: Request) {
     const account = await stripe.accounts.create({
       country: "US",
       type: "custom",
+      business_type: "individual",
+      email: user?.email,
+      business_profile: {
+        name: user?.name,
+        url: `https.ezhomesteading.vercel.app/${user?.id}`,
+      },
+      default_currency: "usd",
       capabilities: {
         card_payments: {
           requested: true,
@@ -29,6 +36,10 @@ export async function POST(request: Request) {
           requested: true,
         },
       },
+
+      // company: {
+      //   address: `${user?.street} ${user?.city}, ${user?.state} ${user?.zip} `,
+      // },
     });
 
     const updatedUser = await prisma.user.update({

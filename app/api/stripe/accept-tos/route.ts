@@ -6,11 +6,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 export async function POST(request: Request) {
-  const date = Date.now();
+  const currentTimestampSeconds = Math.floor(Date.now() / 1000);
+  const body = await request.json();
+  const stripeAccountId = body.stripeAccountId;
   try {
-    const account = await stripe.accounts.update("acct_1P4pyXIgRwkZrxF0", {
+    if (typeof stripeAccountId !== "string") {
+      throw new Error("Stripe account ID must be a string.");
+    }
+
+    const account = await stripe.accounts.update(stripeAccountId, {
       tos_acceptance: {
-        date: date,
+        date: currentTimestampSeconds,
         ip: "8.8.8.8",
       },
     });

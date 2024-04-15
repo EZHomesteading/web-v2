@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { useState } from "react";
-
+import Button from "@/app/components/Button";
 interface UpdateUserProps {
   user?: any | null;
 }
@@ -43,12 +43,11 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
 
     try {
       const response = await axios.post("/api/stripe/custom-onboard", {
-        stripeId: user?.stripeAccountId,
+        stripeAccountId: user?.stripeAccountId,
       });
 
       if (response.status === 200) {
-        toast.success("Connected successfully");
-        router.push("/dashboard/my-store");
+        toast.success("Onboard");
       } else {
         toast.error("An error occurred");
       }
@@ -61,15 +60,13 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
   };
   const handleAcceptTOS = async () => {
     setIsLoading(true);
-
     try {
       const response = await axios.post("/api/stripe/accept-tos", {
-        stripeId: user?.stripeAccountId,
+        stripeAccountId: user?.stripeAccountId,
       });
 
       if (response.status === 200) {
         toast.success("Connected successfully");
-        router.push("/dashboard/my-store");
       } else {
         toast.error("An error occurred");
       }
@@ -84,14 +81,15 @@ const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {
   return (
     <ClientOnly>
       <div>
-        <h1>Connect to Stripe</h1>
         {user ? (
           <div>
-            <p>User: {user.name}</p>
-            <div className="flex flex-col gap-y-2">
-              {/* <button onClick={handleConnectToStripe} disabled={isLoading}>
-                {isLoading ? "Connecting..." : "Connect"}
-              </button> */}
+            <p>{user.name}</p>
+            <div className="flex flex-col  justify-center h-screen gap-y-2 ">
+              {!user?.stripeAccountId && (
+                <button onClick={handleConnectToStripe} disabled={isLoading}>
+                  {isLoading ? "Connecting..." : "Connect"}
+                </button>
+              )}
               <button onClick={handleOnBoardToStripe} disabled={isLoading}>
                 Onboard
               </button>

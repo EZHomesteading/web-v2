@@ -6,10 +6,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 export async function POST(request: Request) {
-  const stripeId = await request.json();
+  const body = await request.json();
+  const stripeAccountId = body.stripeAccountId;
   try {
     const accountLink = await stripe.accountLinks.create({
-      account: "acct_1P4pyXIgRwkZrxF0",
+      account: stripeAccountId,
       refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/reauth`,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/return`,
       type: "account_onboarding",
