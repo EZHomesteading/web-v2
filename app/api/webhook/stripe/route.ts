@@ -43,15 +43,9 @@ export async function POST(request: NextRequest) {
       const b = a.replace(/,(?=[^,]*$)/, "");
       const orderIds = JSON.parse(b);
 
-      // I KNOW THIS SHOULDNT WORK
-      // try {
-      //   await axios.delete(`http://localhost:3000/api/cart`, {
-      //     data: { listingId: orderIds.listingId },
-      //   });
-      //   console.log("Cart items deleted successfully");
-      // } catch (error) {
-      //   console.error("Error deleting cart items:", error);
-      // }
+      await prisma.cart.deleteMany({
+        where: { userId: pi.userId },
+      });
 
       for (const orderId of orderIds) {
         const postconversations = async () => {
