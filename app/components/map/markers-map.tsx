@@ -65,7 +65,7 @@ const ListingsMap = ({
     disableDefaultUI: true,
     maxZoom: 16,
     scrollwheel: true,
-    minZoom: 5,
+    minZoom: 4,
   };
 
   const handleMarkerClick = (coordinate: { lat: number; lng: number }) => {
@@ -77,38 +77,49 @@ const ListingsMap = ({
   };
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   return (
-    <GoogleMap
-      mapContainerClassName="rounded-xl mb-5 h-screen"
-      options={mapOptions}
-    >
-      {producerCoordinates.map((coordinate, index) => (
-        <MarkerF
-          key={`producer-${index}`}
-          position={coordinate}
-          icon={{
-            url: "https://i.ibb.co/TMnKw45/circle-2.png",
-            scaledSize: new window.google.maps.Size(30, 30),
-            anchor: new window.google.maps.Point(15, 15),
-          }}
-          onClick={() => handleMarkerClick(coordinate)}
-        />
-      ))}
-      {coopCoordinates.map((coordinate, index) => (
-        <MarkerF
-          key={`coop-${index}`}
-          position={coordinate}
-          icon={{
-            url: "https://i.ibb.co/qyq0dhb/circle.png",
-            scaledSize: new window.google.maps.Size(30, 30),
-            anchor: new window.google.maps.Point(15, 15),
-          }}
-          onClick={() => handleMarkerClick(coordinate)}
-        />
-      ))}
+    <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
+      {producerCoordinates.map((coordinate, index) => {
+        const xSkew = Math.random() * 10 - 5;
+        const ySkew = Math.random() * 10 - 5;
+        return (
+          <MarkerF
+            key={`producer-${index}`}
+            position={coordinate}
+            icon={{
+              url: "https://i.ibb.co/TMnKw45/circle-2.png",
+              scaledSize: new window.google.maps.Size(40, 40),
+              anchor: new window.google.maps.Point(20 + xSkew, 20 + ySkew),
+            }}
+            onClick={() => handleMarkerClick(coordinate)}
+            label={{
+              text: "1",
+            }}
+          />
+        );
+      })}
+      {coopCoordinates.map((coordinate, index) => {
+        const xSkew = Math.random() * 10 - 5;
+        const ySkew = Math.random() * 10 - 5;
+        return (
+          <MarkerF
+            key={`coop-${index}`}
+            position={coordinate}
+            icon={{
+              url: "https://i.ibb.co/qyq0dhb/circle.png",
+              scaledSize: new window.google.maps.Size(40, 40),
+              anchor: new window.google.maps.Point(20 + xSkew, 20 + ySkew),
+            }}
+            label={{
+              text: "1",
+            }}
+            onClick={() => handleMarkerClick(coordinate)}
+          />
+        );
+      })}
       {selectedMarker && (
         <InfoWindow
           position={selectedMarker}
@@ -116,8 +127,8 @@ const ListingsMap = ({
         >
           <div>
             <h3></h3>
-            <p>Latitude: {selectedMarker.lat}</p>
-            <p>Longitude: {selectedMarker.lng}</p>
+            <p>lat: {selectedMarker.lat}</p>
+            <p>lng: {selectedMarker.lng}</p>
           </div>
         </InfoWindow>
       )}
