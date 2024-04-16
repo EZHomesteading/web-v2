@@ -25,7 +25,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     title = "Select a chat or start a new conversation";
     subtitle = "";
   }
-
+  const isFindPage = pathname === "/find-co-ops-and-producers";
+  if (isFindPage) {
+    title = "No users found in this area";
+    subtitle = "Try expanding your search or search for a new location";
+  }
   return (
     <div
       className="
