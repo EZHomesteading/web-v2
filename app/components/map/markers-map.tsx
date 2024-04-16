@@ -76,10 +76,6 @@ const ListingsMap = ({
     setSelectedMarker(null);
   };
 
-  const getUserById = (userId: string) => {
-    return users.find((user) => user.id === userId);
-  };
-
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
@@ -118,7 +114,11 @@ const ListingsMap = ({
           position={selectedMarker}
           onCloseClick={handleInfoWindowClose}
         >
-          <div></div>
+          <div>
+            <h3></h3>
+            <p>Latitude: {selectedMarker.lat}</p>
+            <p>Longitude: {selectedMarker.lng}</p>
+          </div>
         </InfoWindow>
       )}
     </GoogleMap>

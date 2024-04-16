@@ -2,6 +2,7 @@ import { UserInfo } from "@/next-auth";
 import Link from "next/link";
 import Avatar from "../Avatar";
 import { StarIcon } from "@radix-ui/react-icons";
+
 interface UserCardProps {
   user: {
     id: string;
@@ -12,15 +13,15 @@ interface UserCardProps {
     listings?: Array<any>;
   };
 }
-const UserCard = ({ user }: UserCardProps) => {
-  //   let listingsCount;
-  //   if (user?.listings.length > 0) {
-  //     listingsCount = user?.listings.length;
-  //   } else {
-  //     listingsCount = 0;
-  //   }
-  const listingsCount = user?.listings?.length || 0;
 
+const UserCard = ({ user }: UserCardProps) => {
+  // let listingsCount;
+  // if (user?.listings.length > 0) {
+  // listingsCount = user?.listings.length;
+  // } else {
+  // listingsCount = 0;
+  // }
+  const listingsCount = user?.listings?.length || 0;
   return (
     <>
       <Link href={`/store/${user?.id}`}>
@@ -29,7 +30,8 @@ const UserCard = ({ user }: UserCardProps) => {
             <Avatar />
             <div className="flex flex-col">
               <div>
-                {user?.name} <span className="text-xs">({listingsCount})</span>
+                {user?.name}
+                <span className="text-xs">({listingsCount})</span>
               </div>
               <div className="text-xs">
                 {user?.city}, {user?.state} {user?.zip}
@@ -37,11 +39,9 @@ const UserCard = ({ user }: UserCardProps) => {
               <div className="text-xs">Open</div>
             </div>
           </div>
-          <div className="flex flex-row justify-center">
-            <div className="absolute right-2 top-2">
-              <StarIcon />
-              {/* <div className="flex flex-row">1</div> */}
-            </div>
+          <div className="absolute right-1 top-1 flex items-center">
+            <StarIcon />
+            <span className="text-xs ml-1">(0)</span>
           </div>
         </div>
       </Link>

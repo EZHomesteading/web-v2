@@ -3,7 +3,7 @@ import ClientOnly from "../../components/client/ClientOnly";
 import Link from "next/link";
 import UserCard from "@/app/components/listings/user-card";
 
-interface ShopProps {
+interface UserCardProps {
   users: any;
   emptyState: React.ReactNode;
   totalPages: number;
@@ -14,7 +14,7 @@ interface ShopProps {
   currentPage: number;
 }
 
-const Shop = ({
+const UserCards = ({
   users,
   emptyState,
   totalPages,
@@ -23,7 +23,7 @@ const Shop = ({
   isPageOutOfRange,
   pageNumbers,
   currentPage,
-}: ShopProps) => {
+}: UserCardProps) => {
   return (
     <ClientOnly>
       <Container>
@@ -64,4 +64,4 @@ const Shop = ({
   );
 };
 
-export default Shop;
+export default UserCards;
