@@ -3,9 +3,10 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
+import { Location } from "@/next-auth";
 
 interface MapProps {
-  location: any;
+  location: Location | null;
 }
 
 const ListingMap = ({ location }: MapProps) => {
@@ -19,10 +20,14 @@ const ListingMap = ({ location }: MapProps) => {
       });
       const { Map } = await loader.importLibrary("maps");
 
-      const position = {
-        lat: location.coordinates[1],
-        lng: location.coordinates[0],
-      };
+      let position;
+
+      if (location) {
+        position = {
+          lat: location?.coordinates[1],
+          lng: location?.coordinates[0],
+        };
+      }
 
       const mapOptions: google.maps.MapOptions = {
         center: position,

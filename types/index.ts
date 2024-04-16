@@ -76,7 +76,8 @@ export type FullListing = {
   state: string;
   location?: {
     type: "Point";
-    coordinates: [number, number];
+    coordinates: number[];
+    address: string[];
   };
   coopRating: number | null;
   userId: string;
