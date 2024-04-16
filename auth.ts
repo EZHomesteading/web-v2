@@ -34,9 +34,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.location = token.location as
-          | import("c:/Users/macro/Desktop/clone/ezh/next-auth").Location
-          | undefined;
+        session.user.location = token.location as any;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;
