@@ -65,6 +65,28 @@ export const LoginSchema = z.object({
   code: z.optional(z.string()),
 });
 
+export const RegisterVendorSchema = z.object({
+  firstName: z.string().min(1, {
+    message: "First name is required",
+  }),
+  email: z.string().email({
+    message: "Email is required",
+  }),
+  password: z.string().min(4, {
+    message: "Minimum 4 characters required",
+  }),
+  name: z.string().min(1, {
+    message: "Name is required",
+  }),
+  phoneNumber: z.string().min(6, { message: "Phone number is required" }),
+  location: z.object({
+    type: z.literal("Point"),
+    coordinates: z.tuple([z.number(), z.number()]),
+    address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
+  }),
+  role: z.nativeEnum(UserRole),
+});
+
 export const RegisterSchema = z.object({
   firstName: z.string().min(1, {
     message: "First name is required",
@@ -95,13 +117,10 @@ export const RegisterRoleSchema = z.object({
     message: "Name is required",
   }),
   phoneNumber: z.string().min(6, { message: "Phone number is required" }),
-  street: z.string().min(1, { message: "Street is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  state: z.string().min(1, { message: "State is required" }),
-  zip: z.string().min(1, { message: "Zip is required" }),
   location: z.object({
     type: z.literal("Point"),
     coordinates: z.tuple([z.number(), z.number()]),
+    address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
   }),
   role: z.nativeEnum(UserRole),
 });
@@ -117,15 +136,14 @@ export const UpdateSchema = z.object({
     .string()
     .min(6, { message: "Phone number is required" })
     .optional(),
-  street: z.string().min(1, { message: "Street is required" }).optional(),
-  city: z.string().min(1, { message: "City is required" }).optional(),
-  state: z.string().min(1, { message: "State is required" }).optional(),
-  zip: z.string().min(1, { message: "Zip is required" }).optional(),
+
   location: z
     .object({
       type: z.literal("Point"),
       coordinates: z.tuple([z.number(), z.number()]),
+      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
     })
     .optional(),
+
   role: z.nativeEnum(UserRole).optional(),
 });

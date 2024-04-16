@@ -24,6 +24,7 @@ import { UserInfo } from "@/next-auth";
 import AuthLocation from "../auth-location";
 import axios from "axios";
 import { UserRole } from "@prisma/client";
+import { LatLng, latLng } from "leaflet";
 
 interface BecomeCoopProps {
   user?: UserInfo;
@@ -61,11 +62,8 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
     state: string;
     zip: string;
   }) => {
-    form.setValue("street", parsedAddress.street);
-    form.setValue("city", parsedAddress.city);
-    form.setValue("state", parsedAddress.state);
-    form.setValue("zip", parsedAddress.zip);
-
+    const { street, city, state, zip } = parsedAddress;
+    console.log("address:", parsedAddress);
     const latLng = await getLatLngFromAddress(
       `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
     );
@@ -74,10 +72,11 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
       form.setValue("location", {
         type: "Point",
         coordinates: [latLng.lng, latLng.lat],
+        address: [street, city, state, zip],
       });
     }
   };
-
+  console.log("lat:", LatLng);
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
@@ -85,15 +84,20 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",
+
       location: {
         type: "Point",
-        coordinates: user?.location?.coordinates || [0, 0],
+        coordinates: (user?.location?.coordinates?.slice(0, 2) as [
+          number,
+          number
+        ]) || [0, 0],
+        address: (user?.location?.address as [
+          string,
+          string,
+          string,
+          string
+        ]) || ["", "", "", ""],
       },
-      street: user?.street || "",
-      city: user?.city || "",
-      state: user?.state || "",
-      zip: user?.zip || "",
-
       role: UserRole.COOP,
     },
   });

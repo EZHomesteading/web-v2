@@ -57,19 +57,10 @@ const MapPage = async ({
   }
 
   const [coops, producers] = await Promise.all([GetCoops(), getProducers()]);
-
   const intLat = parseInt(searchParams?.lat ?? "0", 10);
   const intLng = parseInt(searchParams?.lat ?? "0", 10);
 
   const userCoordinates = { lat: intLat, lng: intLng };
-  const coopCoordinates = coops?.map((user: any) => ({
-    lat: user?.location.coordinates[1],
-    lng: user?.location.coordinates[0],
-  }));
-  const producerCoordinates = producers?.map((user: any) => ({
-    lat: user?.location.coordinates[1],
-    lng: user?.location.coordinates[0],
-  }));
   return (
     <div className="w-full h-full flex flex-row">
       <div className="w-full md:w-1/2">
@@ -92,9 +83,9 @@ const MapPage = async ({
       </div>
       <div className="w-1/2">
         <MarkersMap
-          coopCoordinates={coopCoordinates}
-          producerCoordinates={producerCoordinates}
           userCoordinates={userCoordinates}
+          coops={coops}
+          producers={producers}
         />
       </div>
     </div>

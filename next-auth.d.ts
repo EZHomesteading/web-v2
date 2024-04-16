@@ -7,15 +7,8 @@ export type UserInfo = DefaultSession["user"] & {
   isTwoFactorEnabled: boolean;
   isOAuth: boolean;
   phoneNumber?: string;
-  street?: string;
-  city?: string;
-  zip?: string;
-  state?: string;
-  location?: {
-    type: "Point";
-    coordinates: [number, number];
-  };
   image?: string;
+  location?: Location;
   hoursOfOperation?: unknown;
   stripeAccountId?: string;
   createdAt?: Date;
@@ -25,6 +18,12 @@ export type UserInfo = DefaultSession["user"] & {
   favoriteIds: string[];
   cart: Cart[];
   subscriptions?: string;
+};
+
+type Location = {
+  type: string;
+  coordinates: number[];
+  address: string[];
 };
 
 declare module "next-auth" {

@@ -122,7 +122,7 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fullAddress, setFullAddress] = useState(
-    `${user?.street}, ${user?.city}, ${user?.state}, ${user?.zip}`
+    `${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`
   );
   type AddressComponents = {
     street: string;
@@ -145,10 +145,10 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
       name: user?.name,
     },
   });
-  setValue("street", user?.street);
-  setValue("city", user?.city);
-  setValue("state", user?.state);
-  setValue("zip", user?.zip);
+  setValue("street", user?.location?.address[0]);
+  setValue("city", user?.location?.address[1]);
+  setValue("state", user?.location?.address[2]);
+  setValue("zip", user?.location?.address[3]);
   const getLatLngFromAddress = async (address: string) => {
     const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -187,6 +187,7 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
           location: {
             type: "Point",
             coordinates: [geoData.lng, geoData.lat],
+            address: [data.street, data.city, data.state, data.zip],
           },
         };
         axios
@@ -487,8 +488,10 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
                         htmlFor="address"
                         className="block text-sm font-medium leading-6"
                       >
-                        Current Address is: {user?.street}, {user?.city},{" "}
-                        {user?.state}, {user?.zip}
+                        Current Address is: {user?.location?.address[0]},{" "}
+                        {user?.location?.address[1]},{" "}
+                        {user?.location?.address[2]},{" "}
+                        {user?.location?.address[3]}
                       </label>
                       <label
                         htmlFor="address"

@@ -14,8 +14,6 @@ interface ListingReservationProps {
     imageSrc: string | null;
     createdAt: Date;
     description: string;
-    city: string | null;
-    state: string | null;
     price: number | null;
     quantityType: string | null;
     stock: number | null;
