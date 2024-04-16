@@ -2,6 +2,7 @@ import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
 import { currentUser } from "@/lib/auth";
+import { UserRole } from "@prisma/client";
 // for the sake of clarity, user is the user searching, and vendors are producers and co-ops
 interface ILocation {
   type: "Point";
@@ -27,7 +28,11 @@ export default async function GetVendors(
     let query: any = {};
 
     let vendors = await prisma.user.findMany({
-      where: query,
+      where: {
+        NOT: {
+          role: UserRole.CONSUMER,
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -35,7 +40,6 @@ export default async function GetVendors(
         listings: true,
       },
     });
-
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -54,6 +58,7 @@ export default async function GetVendors(
         };
 
         const distance = haversine(vendorCoordinates, userLocation);
+        console.log("distance:", distance);
         return distance <= radiusInMeters;
       });
     }
@@ -66,7 +71,7 @@ export default async function GetVendors(
       //remove producer vendors from users array.
     }
     if (user?.role === "CONSUMER") {
-      const fuseOptions = { keys: ["vendor.role"], threshold: 0.3 };
+      const fuseOptions = { keys: ["vendor.role"], threshold: 0 };
       const fuse = new Fuse(vendors, fuseOptions);
       const results = fuse.search("coop");
       vendors = results.map((result) => result.item);
@@ -74,7 +79,7 @@ export default async function GetVendors(
     }
     if (q) {
       const fuseOptions = {
-        keys: ["vendor.name", "User.role"],
+        keys: ["vendor.name", "vendor.role"],
         threshold: 0.3,
       };
       const fuse = new Fuse(vendors, fuseOptions);
@@ -91,7 +96,6 @@ export default async function GetVendors(
       ...user,
       createdAt: user.createdAt.toISOString(),
     }));
-
     return { vendors: safevendors, totalvendors };
   } catch (error: any) {
     throw new Error(error);

@@ -7,18 +7,47 @@ import {
 } from "@react-google-maps/api";
 import { useState } from "react";
 import Loading from "@/app/components/secondary-loader";
+import { UserRole } from "@prisma/client";
 
 interface MapProps {
-  coopCoordinates: { lat: number; lng: number }[];
-  producerCoordinates: { lat: number; lng: number }[];
   userCoordinates: { lat: number; lng: number } | null;
+  coops: {
+    name: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+    listingsCount: number;
+  }[];
+  producers: {
+    name: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+    listingsCount: number;
+  }[];
 }
 
-const ListingsMap = ({
-  producerCoordinates,
-  coopCoordinates,
-  userCoordinates,
-}: MapProps) => {
+const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
+  const coopInfo = coops?.map((user: any) => ({
+    coordinates: {
+      lat: user?.location.coordinates[1],
+      lng: user?.location.coordinates[0],
+    },
+    name: user?.name,
+    listingsCount: user?.listings.length,
+  }));
+  console.log(coopInfo);
+  const producerInfo = producers?.map((user: any) => ({
+    coordinates: {
+      lat: user?.location.coordinates[1],
+      lng: user?.location.coordinates[0],
+    },
+    name: user?.name,
+    listingsCount: user?.listings.length,
+  }));
+  console.log(producerInfo);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -58,41 +87,42 @@ const ListingsMap = ({
 
   return (
     <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
-      {producerCoordinates.map((coordinate, index) => {
+      {producerInfo.map((producer, index) => {
         // const xSkew = Math.random() * 10 - 5;
         // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`producer-${index}`}
-            position={coordinate}
+            position={producer.coordinates}
             icon={{
               url: "https://i.ibb.co/TMnKw45/circle-2.png",
               scaledSize: new window.google.maps.Size(40, 40),
               anchor: new window.google.maps.Point(20, 20),
             }}
-            onClick={() => handleMarkerClick(coordinate)}
+            onClick={() => handleMarkerClick(producer.coordinates)}
             label={{
-              text: "1",
+              text: `${producer.listingsCount}`,
             }}
           />
         );
       })}
-      {coopCoordinates.map((coordinate, index) => {
+      {coopInfo.map((coop, index) => {
+        console.log("coords:", coop.coordinates);
         // const xSkew = Math.random() * 10 - 5;
         // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`coop-${index}`}
-            position={coordinate}
+            position={coop.coordinates}
             icon={{
               url: "https://i.ibb.co/qyq0dhb/circle.png",
               scaledSize: new window.google.maps.Size(40, 40),
               anchor: new window.google.maps.Point(20, 20),
             }}
             label={{
-              text: "1",
+              text: `${coop.listingsCount}`,
             }}
-            onClick={() => handleMarkerClick(coordinate)}
+            onClick={() => handleMarkerClick(coop.coordinates)}
           />
         );
       })}
@@ -102,7 +132,6 @@ const ListingsMap = ({
           onCloseClick={handleInfoWindowClose}
         >
           <div>
-            <h3></h3>
             <p>lat: {selectedMarker.lat}</p>
             <p>lng: {selectedMarker.lng}</p>
           </div>
