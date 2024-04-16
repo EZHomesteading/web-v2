@@ -6,6 +6,7 @@ import {
   FaSignOutAlt,
   FaSignInAlt,
   FaUserPlus,
+  FaComment,
 } from "react-icons/fa";
 import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
@@ -153,6 +154,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                   label="My Favorites"
                   icon={<FaHeart className="mr-2" />}
                   onClick={() => router.push("/dashboard/favorites")}
+                />
+                <MenuItem
+                  label="Chat"
+                  icon={<FaComment className="mr-2" />}
+                  onClick={() => router.push("/autochat")}
                 />
                 {user?.role === "CONSUMER" ? (
                   <div>

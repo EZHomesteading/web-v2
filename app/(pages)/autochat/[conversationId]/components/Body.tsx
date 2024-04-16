@@ -8,6 +8,7 @@ import useConversation from "@/hooks/useConversation";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
+import CancelModal from "./CancelModal";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
@@ -16,6 +17,7 @@ interface BodyProps {
 
 const Body: React.FC<BodyProps> = ({ initialMessages = [], otherUser }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [messages, setMessages] = useState(initialMessages);
   const { conversationId } = useConversation();
   useEffect(() => {
@@ -61,9 +63,48 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [], otherUser }) => {
       pusherClient.unbind("message:update", updateMessageHandler);
     };
   }, [conversationId]);
-
+  const onCancel = () => {};
   return (
     <div className="flex-1 overflow-y-auto">
+      <div className="flex flex-row-reverse">
+        <CancelModal
+          isOpen={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+        />
+        <button
+          type="submit"
+          // onClick={onSubmit}
+          className="
+      rounded-full 
+      p-2 
+      bg-sky-500 
+      cursor-pointer 
+      hover:bg-sky-600 
+      mt-2
+      mr-1
+      ml-1
+    "
+        >
+          Reschedule
+        </button>
+        <button
+          type="submit"
+          onClick={() => setConfirmOpen(true)}
+          // onTouchMoveCapture={}
+          className="
+     rounded-full 
+     p-2 
+     bg-sky-500 
+     cursor-pointer 
+     hover:bg-sky-600 
+     mt-2
+     ml-1
+     mr-1
+   "
+        >
+          Cancel
+        </button>
+      </div>
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}
