@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
+import { Location } from "@prisma/client";
 
 export async function POST(request: Request) {
   const user = await currentUser();
@@ -18,10 +19,7 @@ export async function POST(request: Request) {
     quantityType,
     stock,
     shelfLife,
-    city,
-    state,
-    zip,
-    street,
+
     location,
     price,
     subCategory,
@@ -45,11 +43,9 @@ export async function POST(request: Request) {
       shelfLife,
       subCategory,
       price,
-      street,
-      location,
-      city,
-      state,
-      zip,
+
+      location: location as Location,
+
       coopRating,
       userId: user.id!,
     },

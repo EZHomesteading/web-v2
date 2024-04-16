@@ -62,10 +62,7 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
     state: string;
     zip: string;
   }) => {
-    form.setValue("street", parsedAddress.street);
-    form.setValue("city", parsedAddress.city);
-    form.setValue("state", parsedAddress.state);
-    form.setValue("zip", parsedAddress.zip);
+    const { street, city, state, zip } = parsedAddress;
 
     const latLng = await getLatLngFromAddress(
       `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
@@ -75,6 +72,7 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       form.setValue("location", {
         type: "Point",
         coordinates: [latLng.lng, latLng.lat],
+        address: [street, city, state, zip],
       });
     }
   };
@@ -88,12 +86,17 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       name: user?.name || "",
       location: {
         type: "Point",
-        coordinates: user?.location?.coordinates || [0, 0],
+        coordinates: (user?.location?.coordinates?.slice(0, 2) as [
+          number,
+          number
+        ]) || [0, 0],
+        address: (user?.location?.address as [
+          string,
+          string,
+          string,
+          string
+        ]) || ["", "", "", ""],
       },
-      street: user?.street || "",
-      city: user?.city || "",
-      state: user?.state || "",
-      zip: user?.zip || "",
       role: UserRole.PRODUCER,
     },
   });

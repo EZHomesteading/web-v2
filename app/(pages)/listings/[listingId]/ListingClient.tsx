@@ -14,17 +14,12 @@ import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/use-cart";
+import { Location } from "@prisma/client";
 
 interface ListingClientProps {
   listing: SafeListing & {
     user: any;
-    shelfLife: number;
-    city: string;
-    state: string;
-    street: string;
-    zip: string;
-    price: number;
-    quantityType: string;
+    location: Location | null;
   };
   user?: any | null;
 }
@@ -57,11 +52,7 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
             shelfLife: listing.shelfLife,
             subCategory: listing.subCategory,
             price: listing.price,
-            street: user.street,
-            location: user.location,
-            city: user.city,
-            state: user.state,
-            zip: user.zip,
+            location: user?.location,
             userId: user.id,
           }),
           {
@@ -141,8 +132,7 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
           <div className="w-full lg:w-2/3">
             <ListingHead
               title={listing.title}
-              city={listing.city}
-              state={listing.state}
+              location={listing.location}
               imageSrc={listing.imageSrc}
               id={listing.id}
               user={user}

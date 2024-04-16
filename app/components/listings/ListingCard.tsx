@@ -32,7 +32,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   secondActionLabel,
 }) => {
   const router = useRouter();
-
+  console.log(data);
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -100,7 +100,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           {" "}
           <div className="font-semibold text-lg"> {data.title}</div>
           <div className="font-light text-neutral-500">
-            {data?.city}, {data?.state}
+            {data?.location?.address[1]}, {data?.location?.address[2]}
           </div>
         </div>
         <div

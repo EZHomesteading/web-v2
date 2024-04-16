@@ -2,10 +2,12 @@
 
 import clsx from "clsx";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
+import DateTimePicker from "react-datetime-picker";
+import "react-datetime-picker/dist/DateTimePicker.css";
 
 import Avatar from "@/app/components/Avatar";
 import ImageModal from "./ImageModal";
@@ -26,6 +28,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 }) => {
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
+
+  const [selectedDateTime, setSelectedDateTime] = useState(
+    new Date("2023-04-16T12:00:00")
+  );
+  const handleDateTimeChange = (date: any) => {
+    setSelectedDateTime(date);
+  };
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
@@ -53,8 +62,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit2 = () => {
     axios.post("/api/messages", {
-      message:
-        "No, that time does not work. Does (dropdown time) work instead? if not, my hours of operation are (insert hours of operation)",
+      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead? if not, my hours of operation are (insert hours of operation)`,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -63,7 +71,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit3 = () => {
     axios.post("/api/messages", {
       message:
-        "My apologies, but one or more of these items is no longer available, and this order has been canceled. Sorry for the inconvenience. Feel free to delete this chat whenever you have seen this message",
+        "My apologies, but one or more of these items is no longer available, and this order has been canceled. Sorry for the inconvenience. Feel free to delete this chat whenever you have seen this message. If you do not delete this chat it will be automatically deleted after 72 hours",
       messageOrder: "1.1",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -97,7 +105,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit7 = () => {
     axios.post("/api/messages", {
       message:
-        "Fantastic, this order has been marked as completed, feel free to delete this chat.",
+        "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
       messageOrder: "1.1",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -105,8 +113,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit8 = () => {
     axios.post("/api/messages", {
-      message:
-        "No, that time does not work. Can it instead be at (dropdown time)",
+      message: `No, that time does not work. Can it instead be at ${selectedDateTime.toString()}`,
       messageOrder: "4",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -114,8 +121,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit9 = () => {
     axios.post("/api/messages", {
-      message:
-        "I can deliver these items to you at (dropdown time), does that work?",
+      message: `I can deliver these items to you at ${selectedDateTime.toString()}, does that work?`,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -131,8 +137,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit11 = () => {
     axios.post("/api/messages", {
-      message:
-        "No, that time does not work. Does (dropdown time) work instead? if not, my hours of operation are (insert hours of operation)",
+      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead? if not, my hours of operation are (insert hours of operation)`,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -148,8 +153,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit13 = () => {
     axios.post("/api/messages", {
-      message:
-        "No, that time does not work. Does (dropdown time) work instead?",
+      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead?`,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -258,9 +262,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                No, that time does not work. Does (dropdown time) work instead?
-                if not, my hours of operation are (insert hours of operation)
+                No, that time does not work. Does {selectedDateTime.toString()}{" "}
+                work instead? if not, my hours of operation are (insert hours of
+                operation)
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
               <button
                 type="submit"
                 onClick={onSubmit3}
@@ -278,7 +293,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 My apologies, but one or more of these items is no longer
                 available, and this order has been canceled. Sorry for the
                 inconvenience. Feel free to delete this chat whenever you have
-                seen this message
+                seen this message. If you do not delete this chat it will be
+                automatically deleted after 72 hours
               </button>
             </div>
           </div>
@@ -355,9 +371,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                No, that time does not work. Can it instead be ready at
-                (dropdown time)
+                No, that time does not work. Can it instead be ready at{" "}
+                {selectedDateTime.toString()}
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -402,9 +428,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                No, that time does not work. Does (dropdown time) work instead?
-                if not, my hours of operation are (insert hours of operation)
+                No, that time does not work. Does {selectedDateTime.toString()}{" "}
+                work instead? if not, my hours of operation are (insert hours of
+                operation)
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -494,7 +531,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     "
               >
                 Fantastic, this order has been marked as completed, feel free to
-                delete this chat.
+                delete this chat. If you do not delete this chat it will be
+                automatically deleted after 72 hours
               </button>
             </div>
           </div>
@@ -524,9 +562,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                I can deliver these items to you at (dropdown time), does that
-                work?
+                I can deliver these items to you at{" "}
+                {selectedDateTime.toString()}, does that work?
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
               <button
                 type="submit"
                 onClick={onSubmit3}
@@ -544,7 +592,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 My apologies, but one or more of these items is no longer
                 available, and this order has been canceled. Sorry for the
                 inconvenience. Feel free to delete this chat whenever you have
-                seen this message
+                seen this message. If you do not delete this chat it will be
+                automatically deleted after 72 hours
               </button>
             </div>
           </div>
@@ -590,9 +639,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                No, that time does not work. Does (dropdown time) work instead?
-                if not, my hours of operation are (insert hours of operation)
+                No, that time does not work. Does {selectedDateTime.toString()}{" "}
+                work instead? if not, my hours of operation are (insert hours of
+                operation)
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -667,8 +727,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ml-1
     "
               >
-                No, that time does not work. Does (dropdown time) work instead?
+                No, that time does not work. Does {selectedDateTime.toString()}{" "}
+                work instead?
               </button>
+              <div className="flex justify-center outline-none">
+                <DateTimePicker
+                  className="text-black mt-2 w-5 outline-none"
+                  onChange={handleDateTimeChange}
+                  value={selectedDateTime}
+                  disableClock={true} // Optional, to disable clock selection
+                  clearIcon={null} // Optional, to remove the clear icon
+                  calendarIcon={null} // Optional, to remove the calendar icon
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -92,10 +92,10 @@ const ListingModal = () => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      street: user?.street,
-      city: user?.city,
-      zip: user?.zip,
-      state: user?.state,
+      street: user?.location?.address[0],
+      city: user?.location?.address[1],
+      zip: user?.location?.address[3],
+      state: user?.location?.address[2],
       coopRating: 1,
     },
   });
@@ -249,16 +249,13 @@ const ListingModal = () => {
         coopRating: data.coopRating,
         price: formattedPrice,
         imageSrc: data.imageSrc,
-        city: data.city,
-        state: data.state,
-        zip: data.zip,
-        street: data.street,
         stock: parseInt(data.stock, 10),
         shelfLife: shelfLife,
         quantityType: data.quantityType === "none" ? "" : data.quantityType,
         location: {
           type: "Point",
           coordinates: [geoData.lng, geoData.lat],
+          address: [data.street, data.city, data.state, data.zip],
         },
       };
       axios

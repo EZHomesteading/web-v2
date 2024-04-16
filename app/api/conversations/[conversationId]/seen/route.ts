@@ -46,8 +46,9 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     // Update seen of last message
     const updatedMessage = await prisma.message.update({
       where: {
-        id: lastMessage.id,
+        id: lastMessage?.id,
       },
+
       include: {
         sender: true,
         seen: true,
@@ -55,12 +56,55 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       data: {
         seen: {
           connect: {
-            id: user.id,
+            id: user?.id,
           },
         },
       },
     });
+    const seenIds = updatedMessage.sender.seenMessageIds;
+    if (seenIds.length >= 10) {
+      seenIds.shift();
 
+      await prisma.user.update({
+        where: { id: updatedMessage.sender.id },
+        data: {
+          seenMessageIds: seenIds,
+        },
+      });
+    }
+
+    if (user?.seenMessageIds.length >= 10) {
+      const userSeenIds = user?.seenMessageIds;
+      userSeenIds.shift();
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          seenMessageIds: userSeenIds,
+        },
+      });
+    }
+    const convoIds = updatedMessage.sender.conversationIds;
+    if (convoIds.length >= 10) {
+      convoIds.shift();
+      await prisma.user.update({
+        where: { id: updatedMessage.sender.id },
+        data: {
+          conversationIds: convoIds,
+        },
+      });
+    }
+
+    if (user?.conversationIds.length >= 10) {
+      const userConvoIds = user?.conversationIds;
+      userConvoIds.shift();
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          conversationIds: userConvoIds,
+        },
+      });
+    }
     // Update all connections with new seen
     await pusherServer.trigger(user.email, "conversation:update", {
       id: conversationId,

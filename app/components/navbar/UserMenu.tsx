@@ -41,6 +41,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   if (isOpen === true) {
     document.addEventListener("click", handleClick);
   }
+  console.log(user?.firstName);
   return (
     <div className={`relative `}>
       <div className="flex flex-row items-center gap-3">
@@ -86,7 +87,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         >
           <AiOutlineMenu />
           <div className="hidden md:flex items-center text-sm font-semibold">
-            {user?.name}
+            {user?.firstName ? user?.firstName : user?.name}
           </div>
         </div>
       </div>

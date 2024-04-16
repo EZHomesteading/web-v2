@@ -20,9 +20,24 @@ const getCoops = async () => {
           email: session.user.email,
         },
       },
+      include: {
+        listings: true,
+      },
     });
 
-    return users;
+    const coops = users.map((user) => ({
+      name: user.name,
+      coordinates:
+        user.location && user.location.coordinates
+          ? {
+              lat: user.location.coordinates[1],
+              lng: user.location.coordinates[0],
+            }
+          : { lat: 0, lng: 0 },
+      listingsCount: user.listings.length,
+    }));
+
+    return coops;
   } catch (error: any) {
     return [];
   }
