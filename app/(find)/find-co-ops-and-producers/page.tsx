@@ -1,11 +1,12 @@
-import ListingsMap from "@/app/components/map/markers-map";
-import { currentUser } from "@/lib/auth";
+import MarkersMap from "@/app/(find)/markers-map";
+// import { currentUser } from "@/lib/auth";
 import GetCoops from "@/actions/user/getCoops";
 import getProducers from "@/actions/user/getProducers";
-import UserCard from "@/app/components/listings/user-card";
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
+import getVendors from "@/actions/user/getVendors";
+
 interface MapProps {
   searchParams?: {
     q?: string;
@@ -17,7 +18,7 @@ interface MapProps {
 }
 
 const DynamicMapPage = dynamic(
-  () => import("@/app/(pages)/listings-map/listings")
+  () => import("@/app/(find)/find-co-ops-and-producers/listings")
 );
 
 const MapPage = async ({
@@ -30,18 +31,18 @@ const MapPage = async ({
   page = !page || page < 1 ? 1 : page;
   const perPage = 20;
 
-  //   const { coops, totalItems } = await getListingsApi(
-  //     {
-  //       q,
-  //       lat,
-  //       lng,
-  //       radius,
-  //     },
-  //     page,
-  //     perPage
-  //   );
+  const { vendors, totalvendors } = await getVendors(
+    {
+      q,
+      lat,
+      lng,
+      radius,
+    },
+    page,
+    perPage
+  );
 
-  const totalPages = Math.ceil(20 / perPage);
+  const totalPages = Math.ceil(totalvendors / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;
   const isPageOutOfRange = page > totalPages;
@@ -55,12 +56,12 @@ const MapPage = async ({
     }
   }
 
-  const user = await currentUser();
-  const userCoordinates = user?.location
-    ? { lng: user.location.coordinates[0], lat: user.location.coordinates[1] }
-    : null;
-  const coops = await GetCoops();
-  const producers = await getProducers();
+  const [coops, producers] = await Promise.all([GetCoops(), getProducers()]);
+
+  const intLat = parseInt(searchParams?.lat ?? "0", 10);
+  const intLng = parseInt(searchParams?.lat ?? "0", 10);
+
+  const userCoordinates = { lat: intLat, lng: intLng };
   const coopCoordinates = coops?.map((user: any) => ({
     lat: user?.location.coordinates[1],
     lng: user?.location.coordinates[0],
@@ -71,11 +72,11 @@ const MapPage = async ({
   }));
   return (
     <div className="w-full h-full flex flex-row">
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <DynamicMapPage
-          users={coops}
+          users={vendors}
           emptyState={
-            coops.length === 0 ? (
+            vendors.length === 0 ? (
               <ClientOnly>
                 <EmptyState showReset />
               </ClientOnly>
@@ -90,7 +91,7 @@ const MapPage = async ({
         />
       </div>
       <div className="w-1/2">
-        <ListingsMap
+        <MarkersMap
           coopCoordinates={coopCoordinates}
           producerCoordinates={producerCoordinates}
           userCoordinates={userCoordinates}

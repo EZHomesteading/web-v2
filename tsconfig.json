@@ -34,7 +34,8 @@
     "app/(pages)/test/slider-component.tsx",
     "app/api/update-order/route.ts",
     "app/(pages)/co-op-hours/page.jsx",
-    "app/(pages)/onboarding/page.tsx"
+    "app/(pages)/onboarding/page.tsx",
+    "app/components/map/markers-map.jsx"
   ],
   "exclude": ["node_modules"]
 }
