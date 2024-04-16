@@ -34,12 +34,8 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.street = token.street as string | undefined;
-        session.user.city = token.city as string | undefined;
-        session.user.zip = token.zip as string | undefined;
-        session.user.state = token.state as string | undefined;
         session.user.location = token.location as
-          | { type: "Point"; coordinates: [number, number] }
+          | import("c:/Users/macro/Desktop/clone/ezh/next-auth").Location
           | undefined;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
@@ -68,10 +64,6 @@ export const {
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber;
-      token.street = existingUser.street;
-      token.city = existingUser.city;
-      token.zip = existingUser.zip;
-      token.state = existingUser.state;
       token.location = existingUser.location;
       token.image = existingUser.image;
       token.hoursOfOperation = existingUser.hoursOfOperation;
