@@ -76,22 +76,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: CartParams }
 ) {
-  const user = await currentUser();
-  if (!user) {
-    return NextResponse.error();
-  }
-
-  const { cartId } = params;
-
-  if (cartId) {
-    // Delete a single cart item
-    await prisma.cart.delete({ where: { id: cartId } });
-  } else {
-    // Delete the entire cart for the user
-    await prisma.cart.deleteMany({
-      where: { userId: user.id },
-    });
-  }
+  const { listingId } = params;
+  // Delete a single cart item
+  await prisma.cart.delete({ where: { id: listingId } });
 
   return NextResponse.json({ message: "Cart item(s) deleted successfully" });
 }

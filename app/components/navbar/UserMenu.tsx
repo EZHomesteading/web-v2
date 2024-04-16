@@ -41,7 +41,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   if (isOpen === true) {
     document.addEventListener("click", handleClick);
   }
-  console.log(user?.firstName);
+  // if (user) {
+  //   user.firstName = "beans";
+  // }
+  //console.log(user);
   return (
     <div className={`relative `}>
       <div className="flex flex-row items-center gap-3">
