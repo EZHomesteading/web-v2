@@ -6,42 +6,18 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import { useState } from "react";
+import Loading from "@/app/components/secondary-loader";
 
 interface MapProps {
   coopCoordinates: { lat: number; lng: number }[];
   producerCoordinates: { lat: number; lng: number }[];
   userCoordinates: { lat: number; lng: number } | null;
-  users: {
-    id: string;
-    name: string;
-    email: string;
-    firstName: string | null;
-    emailVerified: Date | null;
-    phoneNumber: string | null;
-    street: string | null;
-    city: string | null;
-    zip: string | null;
-    state: string | null;
-    location: any;
-    image: string | null;
-    hoursOfOperation: any;
-    role: any;
-    password: string | null;
-    stripeAccountId: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    conversationIds: string[];
-    seenMessageIds: string[];
-    favoriteIds: string[];
-    subscriptions: string | null;
-  }[];
 }
 
 const ListingsMap = ({
   producerCoordinates,
   coopCoordinates,
   userCoordinates,
-  users,
 }: MapProps) => {
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
@@ -53,9 +29,9 @@ const ListingsMap = ({
   });
 
   const mapOptions: google.maps.MapOptions = {
-    center: userCoordinates || { lat: 36.8508, lng: -76.2859 },
+    center: { lat: 36.8508, lng: -76.2859 },
     zoom: 11,
-    mapId: "c3c8ac3d22ecf356",
+    mapId: "c3c8ac3d22ecf406",
     zoomControl: false,
     streetViewControl: false,
     mapTypeControl: false,
@@ -63,7 +39,7 @@ const ListingsMap = ({
     keyboardShortcuts: false,
     clickableIcons: true,
     disableDefaultUI: true,
-    maxZoom: 16,
+    maxZoom: 13,
     scrollwheel: true,
     minZoom: 4,
   };
@@ -77,14 +53,14 @@ const ListingsMap = ({
   };
 
   if (!isLoaded) {
-    return <div></div>;
+    return <Loading />;
   }
 
   return (
     <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
       {producerCoordinates.map((coordinate, index) => {
-        const xSkew = Math.random() * 10 - 5;
-        const ySkew = Math.random() * 10 - 5;
+        // const xSkew = Math.random() * 10 - 5;
+        // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`producer-${index}`}
@@ -92,7 +68,7 @@ const ListingsMap = ({
             icon={{
               url: "https://i.ibb.co/TMnKw45/circle-2.png",
               scaledSize: new window.google.maps.Size(40, 40),
-              anchor: new window.google.maps.Point(20 + xSkew, 20 + ySkew),
+              anchor: new window.google.maps.Point(20, 20),
             }}
             onClick={() => handleMarkerClick(coordinate)}
             label={{
@@ -102,8 +78,8 @@ const ListingsMap = ({
         );
       })}
       {coopCoordinates.map((coordinate, index) => {
-        const xSkew = Math.random() * 10 - 5;
-        const ySkew = Math.random() * 10 - 5;
+        // const xSkew = Math.random() * 10 - 5;
+        // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`coop-${index}`}
@@ -111,7 +87,7 @@ const ListingsMap = ({
             icon={{
               url: "https://i.ibb.co/qyq0dhb/circle.png",
               scaledSize: new window.google.maps.Size(40, 40),
-              anchor: new window.google.maps.Point(20 + xSkew, 20 + ySkew),
+              anchor: new window.google.maps.Point(20, 20),
             }}
             label={{
               text: "1",

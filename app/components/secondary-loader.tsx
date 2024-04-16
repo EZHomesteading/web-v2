@@ -11,10 +11,10 @@ const Loader = () => {
       flex-col 
       justify-center 
       items-center 
-      bg-white 
+  
     "
     >
-      <PuffLoader size={100} color="green" speedMultiplier={10} />
+      <PuffLoader size={100} color="green" />
     </div>
   );
 };

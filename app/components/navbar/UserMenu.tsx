@@ -31,7 +31,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
-  console.log(user?.name);
   function handleClick() {
     setIsOpen(false);
     setTimeout(() => {

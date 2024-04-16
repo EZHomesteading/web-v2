@@ -13,7 +13,6 @@ interface LocationSearchInputProps {
   focus: { left: boolean; right: boolean };
   setFocus: (focus: { left: boolean; right: boolean }) => void;
   onSearch: () => void;
-  handleSearch: () => void;
 }
 
 const SearchLocation: React.FC<LocationSearchInputProps> = ({
@@ -23,7 +22,6 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
   onSearch,
   focus,
   setFocus,
-  handleSearch,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -53,7 +51,6 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
         handleSelect(topSuggestion);
       } else {
         onSearch();
-        handleSearch();
       }
     }
   };
@@ -73,7 +70,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
               {...getInputProps({
                 placeholder: "Everywhere",
                 className:
-                  "rounded-md px-4 py-2 pl-8 border-[.1px] border-black text-black outline-none transition-all duration-200",
+                  "rounded-md sm:rounded-l-full px-4 py-2 pl-8 border-[.1px] border-black text-black outline-none transition-all duration-200",
               })}
               onKeyDown={(e) => handleKeyDown(e, suggestions)}
               onFocus={() => setFocus({ ...focus, left: true })}

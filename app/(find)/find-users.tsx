@@ -149,7 +149,7 @@ const FindListingsComponent = () => {
       <div
         className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
       >
-        <div className="w-full mb-2 sm:mb-0 sm:w-auto">
+        <div className="">
           <SearchLocation
             address={location}
             setAddress={setLocation}
@@ -157,7 +157,6 @@ const FindListingsComponent = () => {
             onAddressParsed={handleAddressParsed}
             focus={focus}
             setFocus={setFocus}
-            handleSearch={handleSearch}
           />
         </div>
         {!focus.right && (
