@@ -28,7 +28,7 @@ const Shop = ({
     <ClientOnly>
       <Container>
         {emptyState || (
-          <div className="pt-5 grid grid-cols-2 w-full">
+          <div className="pt-5 grid md:grid-cols-2 w-full gap-2">
             {users.map((user: any) => (
               <UserCard user={user} key={user.id} />
             ))}

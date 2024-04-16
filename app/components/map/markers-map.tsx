@@ -1,116 +1,127 @@
 "use client";
+import {
+  GoogleMap,
+  MarkerF,
+  InfoWindow,
+  useLoadScript,
+} from "@react-google-maps/api";
+import { useState } from "react";
 
-import { APIProvider } from "@vis.gl/react-google-maps";
-import { useEffect, useRef } from "react";
-import { Loader } from "@googlemaps/js-api-loader";
-import circle from "@/public/images/circle.png";
 interface MapProps {
   coopCoordinates: { lat: number; lng: number }[];
   producerCoordinates: { lat: number; lng: number }[];
   userCoordinates: { lat: number; lng: number } | null;
+  users: {
+    id: string;
+    name: string;
+    email: string;
+    firstName: string | null;
+    emailVerified: Date | null;
+    phoneNumber: string | null;
+    street: string | null;
+    city: string | null;
+    zip: string | null;
+    state: string | null;
+    location: any;
+    image: string | null;
+    hoursOfOperation: any;
+    role: any;
+    password: string | null;
+    stripeAccountId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    conversationIds: string[];
+    seenMessageIds: string[];
+    favoriteIds: string[];
+    subscriptions: string | null;
+  }[];
 }
 
 const ListingsMap = ({
   producerCoordinates,
   coopCoordinates,
   userCoordinates,
+  users,
 }: MapProps) => {
-  const mapRef = useRef<HTMLDivElement>(null);
+  const [selectedMarker, setSelectedMarker] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
-  useEffect(() => {
-    const initMap = async (zoom: number) => {
-      const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-        version: "weekly",
-      });
-      const { Map } = await loader.importLibrary("maps");
-      let userPosition: { lat: number; lng: number };
-      if (userCoordinates) {
-        userPosition = {
-          lat: userCoordinates.lat,
-          lng: userCoordinates.lng,
-        };
-      } else {
-        userPosition = {
-          lat: 36.8508,
-          lng: -76.2859,
-        };
-      }
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
+  });
 
-      const mapOptions: google.maps.MapOptions = {
-        center: userPosition,
-        zoom: 11,
-        mapId: "c3c8ac3d22ecf356",
-        zoomControl: false,
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        keyboardShortcuts: false,
-        clickableIcons: true,
-        disableDefaultUI: true,
-        maxZoom: 16,
-        minZoom: 5,
-      };
+  const mapOptions: google.maps.MapOptions = {
+    center: userCoordinates || { lat: 36.8508, lng: -76.2859 },
+    zoom: 11,
+    mapId: "c3c8ac3d22ecf356",
+    zoomControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
+    fullscreenControl: false,
+    keyboardShortcuts: false,
+    clickableIcons: true,
+    disableDefaultUI: true,
+    maxZoom: 16,
+    scrollwheel: true,
+    minZoom: 5,
+  };
 
-      const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
-      //   map.setOptions({
-      //     disableDoubleClickZoom: true,
-      //   });
-      producerCoordinates.forEach((coordinate) => {
-        const position = {
-          lat: coordinate.lat,
-          lng: coordinate.lng,
-        };
-        const xSkew = Math.random() * 1 - 0.2;
-        const ySkew = Math.random() * 1 - 0.2;
-        var image = {
-          url: "https://i.ibb.co/TMnKw45/circle-2.png",
-          size: new google.maps.Size(200, 200),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(10 + xSkew, 10 + ySkew),
-          scaledSize: new google.maps.Size(30, 30),
-        };
+  const handleMarkerClick = (coordinate: { lat: number; lng: number }) => {
+    setSelectedMarker(coordinate);
+  };
 
-        const marker = new google.maps.Marker({
-          map,
-          position: position,
-          icon: image,
-          label: "",
-        });
-      });
-      coopCoordinates.forEach((coordinate) => {
-        const position = {
-          lat: coordinate.lat,
-          lng: coordinate.lng,
-        };
-        const xSkew = Math.random() * 1 - 0.2;
-        const ySkew = Math.random() * 1 - 0.2;
-        var image = {
-          url: "https://i.ibb.co/qyq0dhb/circle.png",
-          size: new google.maps.Size(200, 200),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(10 + xSkew, 10 + ySkew),
-          scaledSize: new google.maps.Size(30, 30),
-        };
+  const handleInfoWindowClose = () => {
+    setSelectedMarker(null);
+  };
 
-        const marker = new google.maps.Marker({
-          map,
-          position: position,
-          icon: image,
-          label: "",
-        });
-      });
-    };
-    initMap(11);
-  }, [producerCoordinates, coopCoordinates, userCoordinates]);
+  const getUserById = (userId: string) => {
+    return users.find((user) => user.id === userId);
+  };
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <>
-      <APIProvider
-        apiKey={process.env.NEXT_PUBLIC_MAPS_API_KEY as string}
-      ></APIProvider>
-      <div className="rounded-xl mb-5 h-screen" ref={mapRef}></div>
-    </>
+    <GoogleMap
+      mapContainerClassName="rounded-xl mb-5 h-screen"
+      options={mapOptions}
+    >
+      {producerCoordinates.map((coordinate, index) => (
+        <MarkerF
+          key={`producer-${index}`}
+          position={coordinate}
+          icon={{
+            url: "https://i.ibb.co/TMnKw45/circle-2.png",
+            scaledSize: new window.google.maps.Size(30, 30),
+            anchor: new window.google.maps.Point(15, 15),
+          }}
+          onClick={() => handleMarkerClick(coordinate)}
+        />
+      ))}
+      {coopCoordinates.map((coordinate, index) => (
+        <MarkerF
+          key={`coop-${index}`}
+          position={coordinate}
+          icon={{
+            url: "https://i.ibb.co/qyq0dhb/circle.png",
+            scaledSize: new window.google.maps.Size(30, 30),
+            anchor: new window.google.maps.Point(15, 15),
+          }}
+          onClick={() => handleMarkerClick(coordinate)}
+        />
+      ))}
+      {selectedMarker && (
+        <InfoWindow
+          position={selectedMarker}
+          onCloseClick={handleInfoWindowClose}
+        >
+          <div></div>
+        </InfoWindow>
+      )}
+    </GoogleMap>
   );
 };
 

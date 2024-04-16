@@ -2,7 +2,6 @@ import ListingsMap from "@/app/components/map/markers-map";
 import { currentUser } from "@/lib/auth";
 import GetCoops from "@/actions/user/getCoops";
 import getProducers from "@/actions/user/getProducers";
-import UserCard from "@/app/components/listings/user-card";
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -59,8 +58,9 @@ const MapPage = async ({
   const userCoordinates = user?.location
     ? { lng: user.location.coordinates[0], lat: user.location.coordinates[1] }
     : null;
-  const coops = await GetCoops();
-  const producers = await getProducers();
+  const [coops, producers] = await Promise.all([GetCoops(), getProducers()]);
+
+  const users = [...coops, ...producers];
   const coopCoordinates = coops?.map((user: any) => ({
     lat: user?.location.coordinates[1],
     lng: user?.location.coordinates[0],
@@ -71,9 +71,9 @@ const MapPage = async ({
   }));
   return (
     <div className="w-full h-full flex flex-row">
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <DynamicMapPage
-          users={coops}
+          users={users}
           emptyState={
             coops.length === 0 ? (
               <ClientOnly>
@@ -94,6 +94,7 @@ const MapPage = async ({
           coopCoordinates={coopCoordinates}
           producerCoordinates={producerCoordinates}
           userCoordinates={userCoordinates}
+          users={users}
         />
       </div>
     </div>
