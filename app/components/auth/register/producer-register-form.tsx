@@ -24,7 +24,7 @@ import { register } from "@/actions/auth/register-vendor";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export const CoOpRegisterForm = () => {
+export const ProducerRegisterForm = () => {
   const router = useRouter();
   const [address, setAddress] = useState<string>("");
   const [formStep, setFormStep] = useState("step1");
@@ -32,7 +32,7 @@ export const CoOpRegisterForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "buy"
+    "sell"
   );
 
   const getLatLngFromAddress = async (address: string) => {
@@ -104,7 +104,7 @@ export const CoOpRegisterForm = () => {
   };
 
   useEffect(() => {
-    setActiveTab("sellAndSource");
+    setActiveTab("sell");
   }, []);
 
   const handleTabChange = (tab: "buy" | "sell" | "sellAndSource") => {
@@ -164,7 +164,7 @@ export const CoOpRegisterForm = () => {
                         <Input
                           {...field}
                           disabled={isPending}
-                          placeholder="john.doe@example.com"
+                          placeholder="johnny.appleseed@example.com"
                           type="email"
                         />
                       </FormControl>
@@ -177,7 +177,7 @@ export const CoOpRegisterForm = () => {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Phone Number</FormLabel>
+                      <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -227,12 +227,12 @@ export const CoOpRegisterForm = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Producer Name</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="Appleseed Garden"
+                        placeholder="Appleseed Farm"
                       />
                     </FormControl>
                     <FormMessage />
@@ -259,7 +259,7 @@ export const CoOpRegisterForm = () => {
                   type="submit"
                   className="w-full"
                 >
-                  Become an EZH Co-op
+                  Become an EZH Producer
                 </Button>
               </div>
             </>
@@ -271,3 +271,5 @@ export const CoOpRegisterForm = () => {
     </CardWrapper>
   );
 };
+
+export default ProducerRegisterForm;

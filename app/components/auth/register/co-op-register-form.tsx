@@ -32,7 +32,7 @@ export const CoOpRegisterForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "buy"
+    "sellAndSource"
   );
 
   const getLatLngFromAddress = async (address: string) => {
@@ -88,7 +88,7 @@ export const CoOpRegisterForm = () => {
         coordinates: [0, 0],
         address: ["", "", "", ""],
       },
-      role: UserRole.PRODUCER,
+      role: UserRole.COOP,
     },
   });
 
@@ -123,7 +123,7 @@ export const CoOpRegisterForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Become a Producer"
+      headerLabel="Become a Co-op"
       label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"

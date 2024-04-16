@@ -3,13 +3,13 @@ import Image from "next/image";
 import { SafeUser } from "@/types";
 import Heading from "../Heading";
 import HeartButton from "./heart-button";
+import { Location } from "@prisma/client";
 
 interface ListingHeadProps {
   title: string;
   imageSrc: string;
   id: string;
-  city: string;
-  state: string;
+  location: Location | null;
   user?: SafeUser | null;
 }
 
@@ -17,8 +17,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   title,
   imageSrc,
   id,
-  city,
-  state,
+  location,
   user,
 }) => {
   return (
@@ -52,7 +51,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
       </div>
       <div className="mt-2">
-        <Heading title={title} subtitle={`${city}, ${state}`} />
+        <Heading
+          title={title}
+          subtitle={`${location?.address[1]}, ${location?.address[2]}`}
+        />
       </div>
     </>
   );

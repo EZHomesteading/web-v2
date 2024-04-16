@@ -19,10 +19,7 @@ export async function POST(request: Request) {
     quantityType,
     stock,
     shelfLife,
-    city,
-    state,
-    zip,
-    street,
+
     location,
     price,
     subCategory,
