@@ -63,29 +63,29 @@ export default async function GetVendors(
       });
     }
     const user = await currentUser();
-    if (user?.role === "PRODUCER") {
-      const fuseOptions = { keys: ["vendor.role"], threshold: 0.3 };
-      const fuse = new Fuse(vendors, fuseOptions);
-      const results = fuse.search("coop");
-      vendors = results.map((result) => result.item);
-      //remove producer vendors from users array.
-    }
-    if (user?.role === "CONSUMER") {
-      const fuseOptions = { keys: ["vendor.role"], threshold: 0 };
-      const fuse = new Fuse(vendors, fuseOptions);
-      const results = fuse.search("coop");
-      vendors = results.map((result) => result.item);
-      //remove producer vendors from users array.
-    }
-    if (q) {
-      const fuseOptions = {
-        keys: ["vendor.name", "vendor.role"],
-        threshold: 0.3,
-      };
-      const fuse = new Fuse(vendors, fuseOptions);
-      const results = fuse.search(q);
-      vendors = results.map((result) => result.item);
-    }
+    // if (user?.role === "PRODUCER") {
+    //   const fuseOptions = { keys: ["vendor.role"], threshold: 0.3 };
+    //   const fuse = new Fuse(vendors, fuseOptions);
+    //   const results = fuse.search("coop");
+    //   vendors = results.map((result) => result.item);
+    //   //remove producer vendors from users array.
+    // }
+    // if (user?.role === "CONSUMER") {
+    //   const fuseOptions = { keys: ["vendor.role"], threshold: 0 };
+    //   const fuse = new Fuse(vendors, fuseOptions);
+    //   const results = fuse.search("coop");
+    //   vendors = results.map((result) => result.item);
+    //   //remove producer vendors from users array.
+    // }
+    // if (q) {
+    //   const fuseOptions = {
+    //     keys: ["vendor.name", "vendor.role"],
+    //     threshold: 0.3,
+    //   };
+    //   const fuse = new Fuse(vendors, fuseOptions);
+    //   const results = fuse.search(q);
+    //   vendors = results.map((result) => result.item);
+    // }
 
     const totalvendors = vendors.length;
     const startIndex = (page - 1) * perPage;

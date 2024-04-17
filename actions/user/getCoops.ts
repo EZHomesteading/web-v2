@@ -27,13 +27,7 @@ const getCoops = async () => {
 
     const coops = users.map((user) => ({
       name: user.name,
-      coordinates:
-        user.location && user.location.coordinates
-          ? {
-              lat: user.location.coordinates[1],
-              lng: user.location.coordinates[0],
-            }
-          : { lat: 0, lng: 0 },
+      coordinates: user?.location?.coordinates,
       listingsCount: user.listings.length,
     }));
 

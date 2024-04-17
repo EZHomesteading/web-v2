@@ -1,5 +1,4 @@
 import MarkersMap from "@/app/(find)/markers-map";
-// import { currentUser } from "@/lib/auth";
 import GetCoops from "@/actions/user/getCoops";
 import getProducers from "@/actions/user/getProducers";
 import dynamic from "next/dynamic";
@@ -59,8 +58,7 @@ const MapPage = async ({
   const [coops, producers] = await Promise.all([GetCoops(), getProducers()]);
   const intLat = parseInt(searchParams?.lat ?? "0", 10);
   const intLng = parseInt(searchParams?.lat ?? "0", 10);
-
-  const userCoordinates = { lat: intLat, lng: intLng };
+  const userCoordinates = [intLat, intLng];
   return (
     <div className="w-full h-full flex flex-row">
       <div className="w-full md:w-1/2">

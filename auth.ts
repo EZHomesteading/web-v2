@@ -4,7 +4,7 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Location, UserRole } from "@prisma/client";
+import { Hours, Location, UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -36,7 +36,7 @@ export const {
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
-        session.user.hoursOfOperation = token.hoursOfOperation as unknown;
+        session.user.hours = token.hours as Hours;
         session.user.isOAuth = token.isOAuth as boolean;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
@@ -64,7 +64,7 @@ export const {
       token.phoneNumber = existingUser.phoneNumber;
       token.location = existingUser.location;
       token.image = existingUser.image;
-      token.hoursOfOperation = existingUser.hoursOfOperation;
+      token.hours = existingUser.hours;
       token.role = existingUser.role;
       token.password = existingUser.password;
       token.stripeAccountId = existingUser.stripeAccountId;
