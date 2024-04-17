@@ -1,11 +1,10 @@
 import NextAuth from "next-auth";
-import { UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { PushSubscription } from "web-push";
+import { Location, UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -30,16 +29,12 @@ export const {
         session.user.role = token.role as UserRole;
       }
       if (session.user) {
+        session.user.id = token.id as string;
+        session.user.firstName = token.firstName as string;
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.street = token.street as string | undefined;
-        session.user.city = token.city as string | undefined;
-        session.user.zip = token.zip as string | undefined;
-        session.user.state = token.state as string | undefined;
-        session.user.location = token.location as
-          | { type: "Point"; coordinates: [number, number] }
-          | undefined;
+        session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;
@@ -60,15 +55,13 @@ export const {
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
       const existingAccount = await getAccountByUserId(existingUser.id);
+      token.id = existingUser.id;
       token.isOAuth = !!existingAccount;
+      token.firstName = existingUser.firstName;
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber;
-      token.street = existingUser.street;
-      token.city = existingUser.city;
-      token.zip = existingUser.zip;
-      token.state = existingUser.state;
       token.location = existingUser.location;
       token.image = existingUser.image;
       token.hoursOfOperation = existingUser.hoursOfOperation;
