@@ -32,7 +32,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   secondActionLabel,
 }) => {
   const router = useRouter();
-  console.log(data);
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();

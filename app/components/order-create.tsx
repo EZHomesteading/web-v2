@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface Create {
   cartItems: any;
@@ -109,17 +110,34 @@ const OrderCreate = ({ cartItems }: Create) => {
     };
     post();
   };
+  const handleFail = () => {
+    toast.error("You cant puchase items that are out of stock.");
+  };
   sessionStorage.setItem("ORDER", "");
-
-  return (
-    <div>
-      <button
-        onClick={createOrder}
-        className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-      >
-        Checkout
-      </button>
-    </div>
-  );
+  const stock = cartItems.some((item: any) => item.listing.stock === 0);
+  console.log(stock);
+  if (stock === true) {
+    return (
+      <div>
+        <button
+          onClick={handleFail}
+          className="w-full mt-20 rounded-md border border-transparent bg-red-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+        >
+          Unable to Checkout
+        </button>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <button
+          onClick={createOrder}
+          className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+        >
+          Checkout
+        </button>
+      </div>
+    );
+  }
 };
 export default OrderCreate;

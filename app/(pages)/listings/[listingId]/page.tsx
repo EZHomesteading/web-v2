@@ -5,6 +5,7 @@ import ClientOnly from "@/app/components/client/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
 
 import ListingClient from "./ListingClient";
+import getUserwithCart from "@/actions/user/getUserWithCart";
 
 interface IParams {
   listingId?: string;
@@ -12,7 +13,9 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
-  const user = await currentUser();
+  const userpre = await currentUser();
+  const userId = { userId: userpre?.id };
+  const user = await getUserwithCart(userId);
 
   if (!listing) {
     return (
