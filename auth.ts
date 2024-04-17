@@ -1,10 +1,10 @@
 import NextAuth from "next-auth";
-import { UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
+import { Location, UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -34,7 +34,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.location = token.location as any;
+        session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;

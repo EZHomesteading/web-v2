@@ -1,4 +1,5 @@
 "use client";
+
 import {
   GoogleMap,
   MarkerF,
@@ -7,7 +8,6 @@ import {
 } from "@react-google-maps/api";
 import { useState } from "react";
 import Loading from "@/app/components/secondary-loader";
-import { UserRole } from "@prisma/client";
 
 interface MapProps {
   userCoordinates: { lat: number; lng: number } | null;
@@ -38,7 +38,6 @@ const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
     name: user?.name,
     listingsCount: user?.listings.length,
   }));
-  console.log(coopInfo);
   const producerInfo = producers?.map((user: any) => ({
     coordinates: {
       lat: user?.location.coordinates[1],
@@ -47,7 +46,6 @@ const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
     name: user?.name,
     listingsCount: user?.listings.length,
   }));
-  console.log(producerInfo);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
