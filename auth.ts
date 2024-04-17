@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
@@ -34,7 +34,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.location = token.location as any;
+        session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
         session.user.hoursOfOperation = token.hoursOfOperation as unknown;
         session.user.isOAuth = token.isOAuth as boolean;
