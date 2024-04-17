@@ -3,6 +3,7 @@ import EmptyState from "@/app/components/EmptyState";
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "../../components/client/ClientOnly";
 import getListingsApi from "@/actions/listing/getListingsApi";
+import getUserwithCart from "@/actions/user/getUserWithCart";
 
 interface ShopProps {
   userId?: string;
@@ -39,7 +40,9 @@ const ShopPage = async ({
     page,
     perPage
   );
-  const user = await currentUser();
+  const userpre = await currentUser();
+  const userId = { userId: userpre?.id };
+  const user = await getUserwithCart(userId);
 
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;

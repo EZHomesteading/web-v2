@@ -13,7 +13,6 @@ const CartButton: React.FC<CartButtonProps> = ({ listingId, user }) => {
     listingId,
     user,
   });
-
   return (
     <div
       onClick={toggleCart}

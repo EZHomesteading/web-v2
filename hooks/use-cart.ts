@@ -1,3 +1,4 @@
+import getUserwithCart from "@/actions/user/getUserWithCart";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
@@ -10,9 +11,8 @@ interface IUseCart {
 
 const useCart = ({ listingId, user }: IUseCart) => {
   const router = useRouter();
-
+  const cartItems = user?.cart || [];
   const hasCart = useMemo(() => {
-    const cartItems = user?.cart || [];
     return cartItems.some((item: any) => item.listingId === listingId);
   }, [user, listingId]);
 
@@ -21,7 +21,11 @@ const useCart = ({ listingId, user }: IUseCart) => {
       e.stopPropagation();
       try {
         if (hasCart) {
-          await axios.delete(`/api/cart/${listingId}`);
+          const matchingObject = cartItems.find(
+            (item: any) => item.listingId === listingId
+          );
+          const cartId = matchingObject.id;
+          await axios.delete(`/api/cart/${cartId}`);
         } else {
           if (!listingId) {
             throw new Error("Listing ID is required");
