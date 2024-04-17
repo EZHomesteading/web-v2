@@ -17,20 +17,22 @@ const days = [
 
 const CoOpHoursPage = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
-  const [coOpHours, setCoOpHours] = useState({
-    Monday: { open: 480, close: 1020 },
-    Tuesday: { open: 480, close: 1020 },
-    Wednesday: { open: 480, close: 1020 },
-    Thursday: { open: 480, close: 1020 },
-    Friday: { open: 480, close: 1020 },
-    Saturday: { open: 480, close: 1020 },
-    Sunday: { open: 480, close: 1020 },
-  });
+  const defaultHours = {
+    0: { open: 480, close: 1020 },
+    1: { open: 480, close: 1020 },
+    2: { open: 480, close: 1020 },
+    3: { open: 480, close: 1020 },
+    4: { open: 480, close: 1020 },
+    5: { open: 480, close: 1020 },
+    6: { open: 480, close: 1020 },
+  };
+
+  const [coOpHours, setCoOpHours] = useState(defaultHours);
 
   const handleHourChange = (open, close) => {
     setCoOpHours((prevHours) => ({
       ...prevHours,
-      [days[currentDayIndex]]: { open, close },
+      [currentDayIndex]: { open, close },
     }));
   };
 
@@ -43,19 +45,20 @@ const CoOpHoursPage = () => {
   };
 
   const handleApplyToAll = () => {
-    const { open, close } = coOpHours[days[currentDayIndex]];
+    const currentTimes = coOpHours[currentDayIndex];
     setCoOpHours((prevHours) =>
-      days.reduce((acc, day) => {
-        acc[day] = { open, close };
+      Object.keys(prevHours).reduce((acc, day) => {
+        acc[day] = { ...currentTimes };
         return acc;
       }, {})
     );
   };
 
   const handleSubmit = async () => {
+    console.log("hours", coOpHours);
     try {
       const response = await axios.post("/api/update", {
-        hoursOfOperation: coOpHours,
+        hours: coOpHours,
       });
       if (response.status !== 200) {
         throw new Error("error");
@@ -67,7 +70,7 @@ const CoOpHoursPage = () => {
   };
 
   const currentDay = days[currentDayIndex];
-  const { open, close } = coOpHours[currentDay];
+  const { open, close } = coOpHours[currentDayIndex];
 
   return (
     <div className="flex flex-col justify-center items-center gap-4 mt-10">

@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { Hours, UserRole } from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
@@ -9,14 +9,13 @@ export type UserInfo = DefaultSession["user"] & {
   phoneNumber?: string;
   image?: string;
   location?: Location;
-  hoursOfOperation?: unknown;
+  hours?: Hours;
   stripeAccountId?: string;
   createdAt?: Date;
   updatedAt?: Date;
   conversationIds: string[];
   seenMessageIds: string[];
   favoriteIds: string[];
-  cart: Cart[];
   subscriptions?: string;
 };
 
