@@ -12,9 +12,10 @@ import { SafeListing } from "@/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";
-//import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import OrderCreate from "@/app/components/order-create";
+import Button from "@/app/components/Button";
 
 interface CartProps {
   cartItems?: any;
@@ -26,7 +27,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
     (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
     0
   );
-  //const router = useRouter();
+  const router = useRouter();
   const shelfLife = (listing: SafeListing) => {
     const adjustedListing = {
       ...listing,
@@ -45,6 +46,10 @@ const Cart = ({ cartItems, user }: CartProps) => {
       : "This product is non-perisable";
     return shelfLifeDisplay;
   };
+  const handleDelete: any = async () => {
+    await axios.delete(`/api/cart`);
+    router.refresh();
+  };
 
   return (
     <>
@@ -53,7 +58,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Shopping Cart
           </h1>
-
+          <Button label="Clear Cart" onClick={handleDelete}></Button>
           <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
               <h2 id="cart-heading" className="sr-only">
@@ -144,10 +149,9 @@ const Cart = ({ cartItems, user }: CartProps) => {
                               type="button"
                               className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                               onClick={async () => {
-                                await axios.delete(
-                                  `/api/cart/${cartItem.listing.id}`
-                                );
-                                //router.refresh();
+                                const cartId = cartItem.id;
+                                await axios.delete(`/api/cart/${cartId}`);
+                                router.refresh();
                               }}
                             >
                               <span className="sr-only">Remove</span>
