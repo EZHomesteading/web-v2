@@ -3,7 +3,7 @@ import { SafeListing, SafeUser } from "@/types";
 import Container from "@/app/components/Container";
 import Heading from "@/app/components/Heading";
 import ListingCard from "@/app/components/listings/ListingCard";
-
+import { DatePickerDemo } from "@/app/components/ui/date-time-picker";
 interface PropertiesClientProps {
   listings: SafeListing[];
   user?: any | null;

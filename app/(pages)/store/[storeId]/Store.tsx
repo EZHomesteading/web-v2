@@ -1,7 +1,8 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-
+import { DatePickerDemo } from "@/app/components/ui/date-time-picker";
+import OpenStatus from "./status";
 interface StorePageProps {
   listings: any[];
   storeUser: any;
@@ -19,6 +20,7 @@ const StorePage = ({
     <ClientOnly>
       <Container>
         <div className="text-5xl">{storeUser?.name}</div>
+        <OpenStatus hours={storeUser.hours} />
         {emptyState || (
           <div
             className="
@@ -36,6 +38,7 @@ const StorePage = ({
             {listings.map((listing: any) => (
               <ListingCard user={storeUser} key={listing.id} data={listing} />
             ))}
+            <DatePickerDemo />
           </div>
         )}
       </Container>

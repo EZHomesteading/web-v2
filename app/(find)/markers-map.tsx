@@ -10,41 +10,41 @@ import { useState } from "react";
 import Loading from "@/app/components/secondary-loader";
 
 interface MapProps {
-  userCoordinates: { lat: number; lng: number } | null;
+  userCoordinates: number[];
   coops: {
     name: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    };
+    coordinates: number[] | undefined;
     listingsCount: number;
   }[];
   producers: {
     name: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    };
+    coordinates: number[] | undefined;
     listingsCount: number;
   }[];
 }
 
+type vendor = {
+  name: string;
+  coordinates: number[] | undefined;
+  listingsCounts: number;
+};
+
 const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
-  const coopInfo = coops?.map((user: any) => ({
+  const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
-      lat: user?.location.coordinates[1],
-      lng: user?.location.coordinates[0],
+      lat: coop.coordinates[1],
+      lng: coop.coordinates[0],
     },
-    name: user?.name,
-    listingsCount: user?.listings.length,
+    name: coop.name,
+    listingsCount: coop?.listingsCount,
   }));
-  const producerInfo = producers?.map((user: any) => ({
+  const producerInfo = producers?.map((producer: any) => ({
     coordinates: {
-      lat: user?.location.coordinates[1],
-      lng: user?.location.coordinates[0],
+      lat: producer?.coordinates[1],
+      lng: producer?.coordinates[0],
     },
-    name: user?.name,
-    listingsCount: user?.listings.length,
+    name: producer?.name,
+    listingsCount: producer?.listingsCount,
   }));
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
@@ -58,7 +58,7 @@ const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
   const mapOptions: google.maps.MapOptions = {
     center: { lat: 36.8508, lng: -76.2859 },
     zoom: 11,
-    mapId: "c3c8ac3d22ecf406",
+    mapId: "86bd900426b98c0a",
     zoomControl: false,
     streetViewControl: false,
     mapTypeControl: false,
@@ -86,8 +86,6 @@ const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
   return (
     <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
       {producerInfo.map((producer, index) => {
-        // const xSkew = Math.random() * 10 - 5;
-        // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`producer-${index}`}
@@ -105,9 +103,6 @@ const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
         );
       })}
       {coopInfo.map((coop, index) => {
-        console.log("coords:", coop.coordinates);
-        // const xSkew = Math.random() * 10 - 5;
-        // const ySkew = Math.random() * 10 - 5;
         return (
           <MarkerF
             key={`coop-${index}`}

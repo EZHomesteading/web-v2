@@ -1,26 +1,21 @@
-import { UserInfo } from "@/next-auth";
 import Link from "next/link";
 import Avatar from "../Avatar";
 import { StarIcon } from "@radix-ui/react-icons";
+import { Hours, Location, UserRole } from "@prisma/client";
+import OpenStatus from "@/app/(pages)/store/[storeId]/status";
 
 interface UserCardProps {
   user: {
     id: string;
     name: string;
-    city?: string;
-    state?: string;
-    zip?: string;
+    location: Location;
     listings?: Array<any>;
+    hours: Hours;
+    role: UserRole;
   };
 }
 
 const UserCard = ({ user }: UserCardProps) => {
-  // let listingsCount;
-  // if (user?.listings.length > 0) {
-  // listingsCount = user?.listings.length;
-  // } else {
-  // listingsCount = 0;
-  // }
   const listingsCount = user?.listings?.length || 0;
   return (
     <>
@@ -34,9 +29,13 @@ const UserCard = ({ user }: UserCardProps) => {
                 <span className="text-xs">({listingsCount})</span>
               </div>
               <div className="text-xs">
-                {user?.city}, {user?.state} {user?.zip}
+                {user?.location?.address[1]}, {user?.location.address[2]}{" "}
               </div>
-              <div className="text-xs">Open</div>
+              <div className="text-xs">
+                {user.role == UserRole.COOP && (
+                  <OpenStatus hours={user?.hours} />
+                )}
+              </div>
             </div>
           </div>
           <div className="absolute right-1 top-1 flex items-center">
