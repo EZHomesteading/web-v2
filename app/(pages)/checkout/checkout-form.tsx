@@ -37,7 +37,6 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
       if (orderIds === "") {
         window.location.reload();
       }
-      console.log(orderIds);
       const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
         const coopId = cartItem.listing.userId;
         if (!acc[coopId]) {
@@ -53,14 +52,12 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           totalSum += acc[coopId];
         }
       }
-      console.log("totalsum", totalSum);
 
       try {
         const response = await axios.post("/api/stripe/create-payment-intent", {
           totalSum,
           userId: user?.id,
           orderTotals,
-          // parentOrderId,
           email: user?.email,
           orderIds,
         });
