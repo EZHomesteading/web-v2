@@ -80,5 +80,5 @@ export async function DELETE(
   // Delete a single cart item
   await prisma.cart.delete({ where: { id: listingId } });
 
-  return NextResponse.json({ message: "Cart item(s) deleted successfully" });
+  return NextResponse.json({ message: "Cart item deleted successfully" });
 }

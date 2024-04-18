@@ -16,7 +16,6 @@ export type UserInfo = DefaultSession["user"] & {
   conversationIds: string[];
   seenMessageIds: string[];
   favoriteIds: string[];
-  cart: Cart[];
   subscriptions?: string;
 };
 
