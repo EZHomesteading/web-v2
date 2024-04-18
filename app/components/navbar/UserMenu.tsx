@@ -63,7 +63,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             }}
             className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
           >
-            Add a Product
+            <div className="block sm:hidden">
+              <CiSquarePlus />
+            </div>
+            <div className="hidden sm:block">Add a Product</div>
           </div>
         )}
         <div
@@ -184,22 +187,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 />
               </>
             ) : (
-              <>
-                <MenuItem
-                  label="Sign In"
-                  icon={<FaSignInAlt className="mr-2" />}
-                  onClick={() => {
-                    router.push("/auth/login");
-                  }}
-                />
-                <MenuItem
-                  label="Sign up"
-                  icon={<FaUserPlus className="mr-2" />}
-                  onClick={() => {
-                    router.push("/auth/register");
-                  }}
-                />
-              </>
+              <></>
             )}
           </div>
         </div>
