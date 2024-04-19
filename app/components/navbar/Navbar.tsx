@@ -13,7 +13,7 @@ interface NavbarProps {
 
 const Navbar = ({ user }: NavbarProps) => {
   return (
-    <div className="">
+    <div className="z-1000">
       <div className="py-1 sm:py-4">
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">

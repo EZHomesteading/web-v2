@@ -75,8 +75,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           p-4
           md:py-1
           md:px-2
-          border-[1px] 
-          border-neutral-200 
+          sm:border-[1px] 
+          sm:border-neutral-200 
           flex 
           flex-row 
           items-center 
