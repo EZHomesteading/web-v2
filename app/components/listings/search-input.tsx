@@ -37,7 +37,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
       />
       <button
         onClick={handleSearch}
-        className="absolute right-3 text-black top-1/2 transform -translate-y-1/2 hidden sm:block"
+        className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
       >
         <IoIosSearch className="text-2xl text-black" />
       </button>

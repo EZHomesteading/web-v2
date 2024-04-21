@@ -72,7 +72,6 @@ const FindListingsComponent = () => {
   const [focus, setFocus] = useState({ left: false, right: false });
 
   const handleNearMeClick = () => {
-    console.log("button click");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -169,14 +168,14 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        {!focus.right && (
-          <button
-            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full"
-            onClick={handleNearMeClick}
-          >
-            Near Me
-          </button>
-        )}
+        <button
+          className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full  ${
+            focus.left ? "visible" : "hidden"
+          }`}
+          onMouseDown={handleNearMeClick}
+        >
+          Near Me
+        </button>
       </div>
     </>
   );
