@@ -13,9 +13,7 @@ interface IParams {
 
 const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
-  const userpre = await currentUser();
-  const userId = { userId: userpre?.id };
-  const user = await getUserwithCart(userId);
+  const user = await getUserwithCart();
 
   if (!listing) {
     return (
