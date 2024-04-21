@@ -7,7 +7,6 @@ import axios from "axios";
 import SearchLocation from "@/app/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import SearchInput from "./search-input";
-import Button from "../Button";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -72,6 +71,7 @@ const FindListingsComponent = () => {
   const [focus, setFocus] = useState({ left: false, right: false });
 
   const handleNearMeClick = () => {
+    console.log("button click");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -168,14 +168,15 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        <button
-          className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full  ${
-            focus.left ? "visible" : "hidden"
-          }`}
-          onMouseDown={handleNearMeClick}
-        >
-          Near Me
-        </button>
+        {!focus.right && (
+          <button
+            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey"
+            style={{ width: "99%" }}
+            onClick={handleNearMeClick}
+          >
+            Near Me
+          </button>
+        )}
       </div>
     </>
   );
