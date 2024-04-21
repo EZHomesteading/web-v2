@@ -16,14 +16,14 @@ import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
 import Heading from "@/app/components/Heading";
-import useRentModal from "@/hooks/use-listing-modal";
+import useRentModal from "@/hooks/modal/use-listing-modal";
 import Modal from "@/app/components/modals/Modal";
 import Input from "@/app/components/inputs/Input";
 import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
 import Counter from "@/app/components/inputs/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 import ImageUpload from "@/app/components/inputs/ImageUpload";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";

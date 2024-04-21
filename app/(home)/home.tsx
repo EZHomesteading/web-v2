@@ -2,9 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import homebg from "@/public/images/fall-harvest-vegetable-market.webp";
-import consumer from "@/public/images/home-images/ezhconsumer.webp";
-import producer from "@/public/images/home-images/ezhproducer.webp";
+import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
+import consumer from "@/public/images/website-images/ezhconsumer.webp";
+import producer from "@/public/images/website-images/ezhproducer.webp";
 
 const footerNavigation = {
   shop: [

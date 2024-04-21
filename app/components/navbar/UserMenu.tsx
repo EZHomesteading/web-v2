@@ -1,24 +1,18 @@
 "use client";
 
-import {
-  FaHeart,
-  FaStore,
-  FaSignOutAlt,
-  FaSignInAlt,
-  FaUserPlus,
-  FaComment,
-} from "react-icons/fa";
+import { FaHeart, FaStore, FaSignOutAlt, FaComment } from "react-icons/fa";
 import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import useListingModal from "@/hooks/use-listing-modal";
+import useListingModal from "@/hooks/modal/use-listing-modal";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
 import { UserInfo } from "@/next-auth";
+import { UserRole } from "@prisma/client";
 
 interface UserMenuProps {
   user?: UserInfo;
@@ -44,7 +38,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   return (
     <div className={`relative `}>
       <div className="flex flex-row items-center gap-3">
-        {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
+        {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"
             description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."

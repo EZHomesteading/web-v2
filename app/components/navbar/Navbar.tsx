@@ -13,7 +13,7 @@ interface NavbarProps {
 
 const Navbar = ({ user }: NavbarProps) => {
   return (
-    <div className="z-1000">
+    <div className="relative z-1000">
       <div className="py-1 sm:py-4">
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
@@ -21,10 +21,12 @@ const Navbar = ({ user }: NavbarProps) => {
             <div className="hidden sm:block">
               <FindListingsComponent />
             </div>
-            <div className="block sm:hidden">
-              <Search />
+            <div className="flex justify-end items-center">
+              <div className="block sm:hidden ">
+                <Search />
+              </div>
+              {user ? <UserMenu user={user} /> : <AuthButtons />}
             </div>
-            {user ? <UserMenu user={user} /> : <AuthButtons />}
           </div>
         </Container>
       </div>

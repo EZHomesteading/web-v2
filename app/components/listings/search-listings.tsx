@@ -7,6 +7,7 @@ import axios from "axios";
 import SearchLocation from "@/app/components/listings/search-location";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import SearchInput from "./search-input";
+import Button from "../Button";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -170,8 +171,7 @@ const FindListingsComponent = () => {
         </div>
         {!focus.right && (
           <button
-            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey"
-            style={{ width: "99%" }}
+            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full"
             onClick={handleNearMeClick}
           >
             Near Me
