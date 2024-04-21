@@ -91,11 +91,6 @@ body::-webkit-scrollbar {
   border-bottom-right-radius: 5px;
 }
 
-.buttonsActive {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
 .buttonsNotActive {
   opacity: 0.4;
 }

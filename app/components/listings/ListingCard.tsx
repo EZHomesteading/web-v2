@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
-import { RiShoppingBasketLine } from "react-icons/ri";
 import CartIcon from "./cart-icon";
 import Button from "../Button";
 import { UserInfo } from "@/next-auth";
