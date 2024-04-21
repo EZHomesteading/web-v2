@@ -334,8 +334,8 @@ const ListingModal = () => {
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="How would you describe your product?"
-        subtitle="Short and sweet works best!"
+        title="List your produce!"
+        subtitle="Please provide a name and brief description"
       />
       <div>
         <SearchClient
@@ -612,7 +612,7 @@ const ListingModal = () => {
     <Modal
       disabled={isLoading}
       isOpen={rentModal.isOpen}
-      title="Sell your produce & self sufficiency items!"
+      title=""
       actionLabel={actionLabel}
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}

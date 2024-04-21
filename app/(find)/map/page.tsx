@@ -16,9 +16,7 @@ interface MapProps {
   };
 }
 
-const DynamicMapPage = dynamic(
-  () => import("@/app/(find)/find-co-ops-and-producers/listings")
-);
+const DynamicMapPage = dynamic(() => import("@/app/(find)/map/listings"));
 
 const MapPage = async ({
   searchParams,
