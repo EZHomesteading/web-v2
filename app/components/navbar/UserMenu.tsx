@@ -36,7 +36,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     document.addEventListener("click", handleClick);
   }
   return (
-    <div className={`relative `}>
+    <div className={`relative z-1000`}>
       <div className="flex flex-row items-center gap-3">
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
