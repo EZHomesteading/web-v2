@@ -29,6 +29,11 @@ type vendor = {
 };
 
 const ListingsMap = ({ coops, producers }: MapProps) => {
+  const [filteredCoops, setFilteredCoops] = useState<typeof coopInfo>([]);
+  const [filteredProducers, setFilteredProducers] = useState<
+    typeof producerInfo
+  >([]);
+
   const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
       lat: coop.coordinates[1],
@@ -57,7 +62,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-    libraries: ["drawing"],
+    libraries: ["drawing", "geometry"],
   });
 
   const mapOptions: google.maps.MapOptions = {
@@ -87,6 +92,34 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
   const onPolylineComplete = (polyline: google.maps.Polyline) => {
     const coordinates = polyline.getPath().getArray();
     setDrawnShape(coordinates);
+
+    const polygonPath = coordinates.map((latLng) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+
+    const polygon = new google.maps.Polygon({
+      paths: polygonPath,
+    });
+
+    const filteredCoops = coopInfo.filter((coop) => {
+      const coopLatLng = new google.maps.LatLng(
+        coop.coordinates.lat,
+        coop.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    const filteredProducers = producerInfo.filter((producer) => {
+      const coopLatLng = new google.maps.LatLng(
+        producer.coordinates.lat,
+        producer.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    setFilteredCoops(filteredCoops);
+    setFilteredProducers(filteredProducers);
   };
 
   if (!isLoaded) {
@@ -95,7 +128,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
 
   return (
     <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
-      {producerInfo.map((producer, index) => {
+      {filteredProducers.map((producer, index) => {
         return (
           <MarkerF
             key={`producer-${index}`}
@@ -113,7 +146,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
         );
       })}
 
-      {coopInfo.map((coop, index) => {
+      {filteredCoops.map((coop, index) => {
         return (
           <MarkerF
             key={`coop-${index}`}
