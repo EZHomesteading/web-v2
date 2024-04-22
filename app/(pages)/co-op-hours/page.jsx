@@ -5,6 +5,8 @@ import axios from "axios";
 import Button from "@/app/components/Button";
 import { toast } from "react-hot-toast";
 import { DaySelect } from "./day-select";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
+
 const days = [
   "Monday",
   "Tuesday",
@@ -16,17 +18,23 @@ const days = [
 ];
 
 const CoOpHoursPage = () => {
+  const user = useCurrentUser();
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
-  const defaultHours = {
-    0: { open: 480, close: 1020 },
-    1: { open: 480, close: 1020 },
-    2: { open: 480, close: 1020 },
-    3: { open: 480, close: 1020 },
-    4: { open: 480, close: 1020 },
-    5: { open: 480, close: 1020 },
-    6: { open: 480, close: 1020 },
-  };
-
+  console.log(user?.hours);
+  let defaultHours;
+  if (!user?.hours) {
+    defaultHours = user?.hours;
+  } else {
+    defaultHours = {
+      0: { open: 480, close: 1020 },
+      1: { open: 480, close: 1020 },
+      2: { open: 480, close: 1020 },
+      3: { open: 480, close: 1020 },
+      4: { open: 480, close: 1020 },
+      5: { open: 480, close: 1020 },
+      6: { open: 480, close: 1020 },
+    };
+  }
   const [coOpHours, setCoOpHours] = useState(defaultHours);
 
   const handleHourChange = (open, close) => {
@@ -55,7 +63,6 @@ const CoOpHoursPage = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("hours", coOpHours);
     try {
       const response = await axios.post("/api/update", {
         hours: coOpHours,

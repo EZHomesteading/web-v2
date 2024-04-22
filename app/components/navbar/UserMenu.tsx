@@ -57,10 +57,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             }}
             className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
           >
-            <div className="block sm:hidden">
+            <div className="block xl:hidden">
               <CiSquarePlus />
             </div>
-            <div className="hidden sm:block">Add a Product</div>
+            <div className="hidden xl:block">Add a Product</div>
           </div>
         )}
         <div

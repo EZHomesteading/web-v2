@@ -56,6 +56,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
     lat: number;
     lng: number;
   } | null>(null);
+
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
@@ -185,7 +186,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
             drawingModes: [google.maps.drawing.OverlayType.POLYLINE],
           },
           polylineOptions: {
-            strokeColor: "#FF0000",
+            strokeColor: "#FFFFF",
             strokeWeight: 2,
             clickable: false,
             editable: false,
