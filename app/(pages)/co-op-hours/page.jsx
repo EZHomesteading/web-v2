@@ -22,7 +22,8 @@ const CoOpHoursPage = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   console.log(user?.hours);
   let defaultHours;
-  if (!user?.hours) {
+  if (user?.hours) {
+    // this breaks the co-op-hours component, to fix use !user?.hours or remove if statement and use default hours
     defaultHours = user?.hours;
   } else {
     defaultHours = {

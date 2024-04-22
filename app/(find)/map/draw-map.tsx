@@ -146,7 +146,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
           />
         );
       })}
-
+      <div className="text-xs sm:text-sm"></div>
       {filteredCoops.map((coop, index) => {
         return (
           <MarkerF

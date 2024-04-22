@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getVendors from "@/actions/user/getVendors";
-import ListingsMap from "../map2/draw-map";
+import ListingsMap from "./draw-map";
 interface MapProps {
   searchParams?: {
     q?: string;
