@@ -6,8 +6,8 @@ import { IoClose, IoTrash } from "react-icons/io5";
 import { Conversation, User } from "@prisma/client";
 import { format } from "date-fns";
 
-import useOtherUser from "@/hooks/useOtherUser";
-import useActiveList from "@/hooks/useActiveList";
+import useOtherUser from "@/hooks/messenger/useOtherUser";
+import useActiveList from "@/hooks/messenger/useActiveList";
 
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/avatar-group";

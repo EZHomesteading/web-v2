@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         name: user?.name,
         url: `https.ezhomesteading.vercel.app/store/${user?.id}`,
       },
+
       default_currency: "usd",
       capabilities: {
         card_payments: {
@@ -36,10 +37,15 @@ export async function POST(request: Request) {
           requested: true,
         },
       },
-
-      // company: {
-      //   address: `${user?.street} ${user?.city}, ${user?.state} ${user?.zip} `,
-      // },
+      individual: {
+        address: {
+          line1: user?.location?.address[0],
+          city: user?.location?.address[1],
+          state: user?.location?.address[2],
+          postal_code: user?.location?.address[3],
+        },
+        phone: user?.phoneNumber as string | undefined,
+      },
     });
 
     const updatedUser = await prisma.user.update({

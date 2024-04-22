@@ -20,7 +20,7 @@ const isOpenNow = (
 };
 
 const OpenStatus = ({ hours }: StatusProps) => {
-  const currentDayIndex = new Date().getDay();
+  const currentDayIndex = (new Date().getDay() + 6) % 7;
   const todayHours = hours[currentDayIndex as keyof Hours];
   const open = isOpenNow(todayHours);
 

@@ -36,7 +36,7 @@ const useCart = ({ listingId, user }: IUseCart) => {
           });
         }
         router.refresh();
-        toast.success("Success");
+        toast.success("Your cart was updated!");
       } catch (error) {
         toast.error("Something went wrong.");
       }
