@@ -45,7 +45,7 @@ export default function Home() {
       <div className="bg-black text-white w-full">
         <div className="h-screen px-2 py-2 flex flex-col justify-center lg:p-0 lg:flex-row lg:justify-evenly sm:items-center">
           <header className="py-12">
-            <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
+            <h1 className="2xl:text-5xl text-lg font-bold tracking-tight ">
               <div
                 className={`${outfit.className} 2xl:text-4xl text-md font-light`}
               >

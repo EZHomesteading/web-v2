@@ -78,6 +78,13 @@ body::-webkit-scrollbar {
   color: #ced9bb;
 }
 
+.onboard-left {
+  background-color: #e3eac9;
+}
+
+.onboard-right {
+  background-color: #ced9bb;
+}
 .cardregister {
   background-color: #e3eac9;
   border-bottom-left-radius: 0px;

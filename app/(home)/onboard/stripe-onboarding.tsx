@@ -63,7 +63,6 @@ const AccountOnboardingUI = () => {
             futureRequirements: "include",
           }}
         />
-        {/* <ConnectDocuments /> */}
       </ConnectComponentsProvider>
     </>
   );

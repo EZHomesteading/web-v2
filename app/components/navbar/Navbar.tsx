@@ -4,7 +4,6 @@ import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
-import Search from "./native-search";
 import { UserInfo } from "@/next-auth";
 
 interface NavbarProps {
@@ -22,9 +21,6 @@ const Navbar = ({ user }: NavbarProps) => {
               <FindListingsComponent />
             </div>
             <div className="flex justify-end items-center">
-              <div className="block sm:hidden ">
-                <Search />
-              </div>
               {user ? <UserMenu user={user} /> : <AuthButtons />}
             </div>
           </div>

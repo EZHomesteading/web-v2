@@ -13,7 +13,8 @@ import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
 import { UserInfo } from "@/next-auth";
 import { UserRole } from "@prisma/client";
-
+import useSearchModal from "@/hooks/modal/useSearchModal";
+import { BiSearch } from "react-icons/bi";
 interface UserMenuProps {
   user?: UserInfo;
 }
@@ -22,6 +23,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
   const pathname = usePathname();
   const listingModal = useListingModal();
+  const searchModal = useSearchModal();
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -38,6 +40,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   return (
     <div className={`relative z-1000`}>
       <div className="flex flex-row items-center gap-3">
+        <div className="block sm:hidden ">
+          <div
+            onClick={() => {
+              searchModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+          >
+            <BiSearch className="text-sm sm:text-md md:text-2xl" />
+          </div>
+        </div>
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"

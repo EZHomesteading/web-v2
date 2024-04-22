@@ -12,6 +12,9 @@ export const getAllCartItemsByUserId = async () => {
         user: true,
         listing: true,
       },
+      orderBy: {
+        listingId: "desc",
+      },
     });
 
     return cartItems;

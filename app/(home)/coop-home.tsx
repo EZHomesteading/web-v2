@@ -34,7 +34,7 @@ const CoopHome = ({ user }: Props) => {
             {" "}
             <button className="hover:underline">Find producers nearby</button>
           </Link>
-          <Link href="/co-op-hours">
+          <Link href="/onboard">
             {" "}
             <button className="hover:underline">Set up my store</button>
           </Link>
