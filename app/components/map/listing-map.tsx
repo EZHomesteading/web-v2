@@ -31,8 +31,8 @@ const ListingMap = ({ location }: MapProps) => {
 
       const mapOptions: google.maps.MapOptions = {
         center: position,
+        mapId: "86bd900426b98c0a",
         zoom: zoom,
-        mapId: "MY_NEXTJS_MAPID",
         zoomControl: false,
         streetViewControl: false,
         mapTypeControl: false,

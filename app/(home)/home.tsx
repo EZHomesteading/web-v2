@@ -2,9 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import homebg from "@/public/images/fall-harvest-vegetable-market.webp";
-import consumer from "@/public/images/home-images/ezhconsumer.webp";
-import producer from "@/public/images/home-images/ezhproducer.webp";
+import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
+import consumer from "@/public/images/website-images/ezhconsumer.webp";
+import producer from "@/public/images/website-images/ezhproducer.webp";
 
 const footerNavigation = {
   shop: [
@@ -42,77 +42,60 @@ const outfit = Outfit({
 export default function Home() {
   return (
     <>
-      <div className="bg-black text-white">
-        <main>
-          <header id="header" className="">
-            <div
-              id="h1"
-              className="relative h-screen w-full flex flex-col xl:flex-row justify-evenly p-10 md:justify-evenly items-center"
-            >
-              <article>
-                <h1 className="2xl:text-5xl text-lg font-bold tracking-tight">
-                  <div
-                    className={`${outfit.className} 2xl:text-4xl text-md font-light`}
-                  >
-                    Easily Find
-                  </div>
-                  <div className={`${outfit.className} `}>
-                    <em>
-                      <span className="text-green-200 tracking font-medium">
-                        Fresh
-                      </span>
-                      <span className="text-xl mr-2 font-semibold">, {""}</span>
-                      <span className="text-green-400 font-bold">Local</span>
-                      <span className="text-xl mr-2 tracking-widest">
-                        ,{""} &{""}
-                      </span>
-                      <span className="text-green-600">Organic</span>{" "}
-                      <span className="text-xl mr-2 tracking-wide">
-                        with{""}
-                      </span>
-                    </em>
-                  </div>
-                </h1>
-                <h1 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
-                  <div
-                    className={`${outfit.className} text-green-900 2xl:text-6xl text-2xl font-extrabold tracking-tight`}
-                  >
-                    EZ Homesteading
-                  </div>
-                </h1>
-                <p className="2xl:text-lg text-xs mb-2">
-                  Find local produce in your area. Join a community of EZH
-                  consumers, co-ops, & producers.
-                </p>
-                <div className="flex Z-100">
-                  <FindListingsComponent />
-                </div>
-              </article>
-
-              <Image
-                src={homebg}
-                alt="Farmer Holding Basket of Vegetables"
-                priority={true}
-                blurDataURL="data:..."
-                placeholder="blur"
-                width={500}
-                className="object-cover rounded-3xl"
-              />
+      <div className="bg-black text-white w-full">
+        <div className="h-screen px-2 py-2 flex flex-col justify-center lg:p-0 lg:flex-row lg:justify-evenly sm:items-center">
+          <header className="py-12">
+            <h1 className="2xl:text-5xl text-lg font-bold tracking-tight ">
+              <div
+                className={`${outfit.className} 2xl:text-4xl text-md font-light`}
+              >
+                Easily Find
+              </div>
+              <div className={`${outfit.className} `}>
+                <em>
+                  <span className="text-green-200 tracking font-medium">
+                    Fresh
+                  </span>
+                  <span className="text-xl mr-2 font-semibold">, {""}</span>
+                  <span className="text-green-400 font-bold">Local</span>
+                  <span className="text-xl mr-2 tracking-widest">
+                    ,{""} &{""}
+                  </span>
+                  <span className="text-green-600">Organic</span>{" "}
+                  <span className="text-xl mr-2 tracking-wide">with{""}</span>
+                </em>
+              </div>
+            </h1>
+            <h2 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
+              <div
+                className={`${outfit.className} text-green-900 2xl:text-6xl text-2xl font-extrabold tracking-tight`}
+              >
+                EZ Homesteading
+              </div>
+            </h2>
+            <p className="2xl:text-lg text-xs mb-2">
+              Find local produce in your area. Join a community of EZH
+              consumers, co-ops, & producers.
+            </p>
+            <div className="flex">
+              <FindListingsComponent />
             </div>
           </header>
-        </main>
-        <section className="relative w-full flex justify-center items-center">
-          <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[35vh] relative">
-            <Image
-              src={consumer}
+          <div>
+            {" "}
+            {/* <Image
+              src={homebg}
               alt="Farmer Holding Basket of Vegetables"
+              priority={true}
               blurDataURL="data:..."
               placeholder="blur"
               fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover rounded-lg"
-            />
+              className="object-cover rounded-3xl"
+            /> */}
           </div>
+        </div>
+
+        <section className="px-2">
           <div
             id="h2"
             className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
@@ -130,9 +113,19 @@ export default function Home() {
               </li>
             </ul>
           </div>
+          <div className="aspect-square w-full relative overflow-hidden rounded-xl">
+            {/* <Image
+              src={consumer}
+              alt="Farmer Holding Basket of Vegetables"
+              placeholder="blur"
+              priority
+              fill
+              className="object-cover h-full w-full group-hover:scale-110 transition"
+            /> */}
+          </div>
         </section>
 
-        <section className="h-[100vh] flex justify-center space-x-5 items-center">
+        <section className="px-2">
           <div
             id="h3"
             className="2xl:text-5xl text-sm font-bold tracking-tight"
@@ -147,15 +140,15 @@ export default function Home() {
           </div>
           <Link href="/auth/become-a-producer">
             <div className="w-[80vw] h-[20vh] lg:w-[30vw] md:h-[30vh]">
-              <Image
+              {/* <Image
                 src={producer}
                 alt="Farmer Holding Basket of Vegetables"
                 blurDataURL="data:..."
                 placeholder="blur"
-                width={500}
-                height={500}
+                width={400}
+                height={400}
                 className="object-cover rounded-lg"
-              />
+              /> */}
             </div>
           </Link>
         </section>

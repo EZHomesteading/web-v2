@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
-import { RiShoppingBasketLine } from "react-icons/ri";
 import CartIcon from "./cart-icon";
 import Button from "../Button";
+import { UserInfo } from "@/next-auth";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -17,7 +17,7 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  user?: any | null;
+  user?: UserInfo | null;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({

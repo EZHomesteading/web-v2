@@ -6,7 +6,7 @@ import {
 import { loadConnectAndInitialize } from "@stripe/connect-js/pure";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 import Loader from "@/app/components/secondary-loader";
 
 const AccountOnboardingUI = () => {
@@ -63,7 +63,6 @@ const AccountOnboardingUI = () => {
             futureRequirements: "include",
           }}
         />
-        {/* <ConnectDocuments /> */}
       </ConnectComponentsProvider>
     </>
   );

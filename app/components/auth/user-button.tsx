@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/app/components/ui/dropdown-menu";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { LogoutButton } from "@/app/components/auth/login/logout-button";
 
 export const UserButton = () => {

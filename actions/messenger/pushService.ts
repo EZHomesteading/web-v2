@@ -1,4 +1,4 @@
-import { getReadyServiceWorker } from "@/hooks/serviceWorker";
+import { getReadyServiceWorker } from "@/hooks/messenger/serviceWorker";
 
 export async function getCurrentPushSubscription(): Promise<PushSubscription | null> {
   const sw = await getReadyServiceWorker();

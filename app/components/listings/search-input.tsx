@@ -34,6 +34,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
         onFocus={() => setFocus({ ...focus, right: true })}
         onBlur={() => setFocus({ ...focus, right: false })}
+        tabIndex={0}
       />
       <button
         onClick={handleSearch}

@@ -53,6 +53,12 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
         onSearch();
       }
     }
+
+    const nextElement = e.currentTarget
+      .nextElementSibling as HTMLElement | null;
+    if (nextElement && nextElement.tabIndex >= 0) {
+      nextElement.focus();
+    }
   };
 
   return (

@@ -7,11 +7,11 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { find } from "lodash";
 import { FullConversationType } from "@/types";
-import useConversation from "@/hooks/useConversation";
+import useConversation from "@/hooks/messenger/useConversation";
 import { pusherClient } from "@/lib/pusher";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
-import { registerServiceWorker } from "@/hooks/serviceWorker";
+import { registerServiceWorker } from "@/hooks/messenger/serviceWorker";
 import {
   getCurrentPushSubscription,
   sendPushSubscriptionToServer,

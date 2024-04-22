@@ -1,5 +1,5 @@
 import Image from "next/image";
-import authImg from "@/public/images/home-images/authimg2.png";
+import authImg from "@/public/images/website-images/authimg2.png";
 import Logo from "../components/navbar/Logo";
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
