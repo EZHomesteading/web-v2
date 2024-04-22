@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getVendors from "@/actions/user/getVendors";
-
+import ListingsMap from "../map2/draw-map";
 interface MapProps {
   searchParams?: {
     q?: string;
@@ -77,12 +77,16 @@ const MapPage = async ({
           currentPage={page}
         />
       </div>
-      <div className="w-1/2">
+      {/* <div className="w-1/2">
         <MarkersMap
           userCoordinates={userCoordinates}
           coops={coops}
           producers={producers}
         />
+      </div> */}
+      <div className="w-1/2">
+        {" "}
+        <ListingsMap coops={coops} producers={producers} />
       </div>
     </div>
   );

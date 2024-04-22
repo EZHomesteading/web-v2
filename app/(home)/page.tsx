@@ -10,9 +10,9 @@ const HomePage = async () => {
     <>
       {user ? (
         user?.role == UserRole.COOP ? (
-          <CoopHome />
+          <CoopHome user={user} />
         ) : user?.role == UserRole.PRODUCER ? (
-          <ProducerHome />
+          <ProducerHome user={user} />
         ) : (
           <Home />
         )

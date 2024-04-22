@@ -9,7 +9,7 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <>
-      <NavbarFind user={session?.user} />
+      {/* <NavbarFind user={session?.user} /> */}
       {children};
     </>
   );
