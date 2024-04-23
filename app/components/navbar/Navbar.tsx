@@ -15,7 +15,7 @@ const Navbar = ({ user }: NavbarProps) => {
     <div className="relative w-full z-10">
       <div className="py-1 sm:py-4">
         <Container>
-          <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
+          <div className="flex flex-row items-center justify-around sm:justify-between gap-3 md:gap-0">
             <Logo />
             <div className="hidden sm:block">
               <FindListingsComponent />

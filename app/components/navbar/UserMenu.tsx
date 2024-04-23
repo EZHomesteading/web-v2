@@ -11,18 +11,55 @@ import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn } from "react-icons/gi";
+import useSearchModal from "@/hooks/modal/useSearchModal";
+import { BiSearch } from "react-icons/bi";
+import { UserRole } from "@prisma/client";
+import { UpdateRoleAlert } from "../modals/update-role-alert";
 interface Props {
   user: UserInfo;
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const listingModal = useRentModal();
-
+  const searchModal = useSearchModal();
   return (
     <Sheet>
-      <SheetTrigger>
-        <div
-          className="
+      <div className="flex flex-row items-center justify-end">
+        <div className="block sm:hidden">
+          <div
+            onClick={() => {
+              searchModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+          >
+            <BiSearch className="text-sm sm:text-md md:text-2xl" />
+          </div>
+        </div>
+        {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
+          <UpdateRoleAlert
+            heading="Would you like to become an EZH producer or co-op?"
+            description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."
+            backButtonLabel="No thanks"
+            actionButtonLabel="More Info"
+            actionButtonHref="/info/ezh-roles"
+            actionButtonLabelTwo="Co-op Registration"
+            actionButtonHrefTwo="/auth/become-a-co-op"
+            actionButtonLabelThree="Producer Registration"
+            actionButtonHrefThree="/auth/become-a-producer"
+          />
+        ) : (
+          <div
+            onClick={() => {
+              listingModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+          >
+            <CiSquarePlus className="text-sm sm:text-md md:text-2xl" />
+          </div>
+        )}
+        <SheetTrigger>
+          <div
+            className="
           p-4
           md:py-1
           md:px-2
@@ -37,13 +74,14 @@ const UserMenu = ({ user }: Props) => {
           hover:shadow-md 
           transition
           "
-        >
-          <AiOutlineMenu />
-          <div className="hidden md:flex items-center text-sm font-semibold">
-            {user?.firstName ? user?.firstName : user?.name}
+          >
+            <AiOutlineMenu />
+            <div className="hidden md:flex items-center text-sm font-semibold">
+              {user?.firstName ? user?.firstName : user?.name}
+            </div>
           </div>
-        </div>
-      </SheetTrigger>
+        </SheetTrigger>
+      </div>
       <SheetContent className="bg-white w-full">
         <div>
           <div>
