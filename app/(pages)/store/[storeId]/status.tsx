@@ -13,7 +13,7 @@ const isOpenNow = (
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
+  console.log("now:", now, "currentMinutes:", currentMinutes);
   return todayHours.some(
     (slot) => currentMinutes >= slot.open && currentMinutes <= slot.close
   );

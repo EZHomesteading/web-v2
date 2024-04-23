@@ -29,7 +29,17 @@ export default function CoopHoursSlider({
 
   return (
     <div className="space-y-2">
-      <div>{day}</div>
+      <div className="flex flex-row justify-between">
+        <button onClick={onPrevDay}>
+          <MdOutlineNavigateBefore className="h-5 w-5" />
+        </button>
+        <div className="flex justify-center text-lg">{day}</div>
+        <div className="flex justify-evenly">
+          <button onClick={onNextDay}>
+            <MdOutlineNavigateNext className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
       <Slider
         defaultValue={[open, close]}
         min={0}
@@ -37,28 +47,21 @@ export default function CoopHoursSlider({
         step={15}
         minStepsBetweenThumbs={2}
         onValueChange={handleChange}
-        className="w-[300px]"
+        className="w-[275px]"
       />
       <div className="flex justify-between">
         <div>{formatTime(values[0])}</div>
         <div>{formatTime(values[1])}</div>
       </div>
-      <div className="flex justify-evenly">
-        <button onClick={onPrevDay}>
-          <MdOutlineNavigateBefore className="h-8 w-8" />
-        </button>
-        <button onClick={onNextDay}>
-          <MdOutlineNavigateNext className="h-8 w-8" />
-        </button>
-      </div>
     </div>
   );
 }
 
-function formatTime(minutes: number) {
+const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${mins
-    .toString()
-    .padStart(2, "0")}`;
-}
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12;
+  const formattedMins = mins < 10 ? `0${mins}` : mins;
+  return `${formattedHours}:${formattedMins} ${ampm}`;
+};
