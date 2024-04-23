@@ -114,7 +114,7 @@ const DateState = ({ hours }: StatusProps) => {
 };
 
 export default DateState;
-//   const currentDayIndex = (new Date().getDay() + 6) % 7;
+//   const currentDayIndex = (new Date().getDay() + 6) % 7; //updater
 //   const todayHours = hours[currentDayIndex as keyof Hours];
 //   const validPickup = (
 //     todayHours: { open: number; close: number }[] | undefined
