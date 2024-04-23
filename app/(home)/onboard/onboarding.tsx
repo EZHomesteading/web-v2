@@ -19,6 +19,7 @@ import { Button } from "@/app/components/ui/button";
 interface Props {
   user: UserInfo;
 }
+
 const Onboarding = ({ user }: Props) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<{ hours?: Hours }>({});

@@ -34,7 +34,11 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
 
   const handlePrevDay = () => {
-    setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
+    if (currentDayIndex == 0) {
+      setCurrentDayIndex(6);
+    } else {
+      setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
+    }
   };
 
   const handleHourChange = (open: number, close: number) => {
