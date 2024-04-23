@@ -44,7 +44,6 @@ export async function POST(request: Request) {
           state: user?.location?.address[2],
           postal_code: user?.location?.address[3],
         },
-        phone: user?.phoneNumber as string | undefined,
       },
     });
 
