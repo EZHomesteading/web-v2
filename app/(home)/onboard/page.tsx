@@ -6,6 +6,7 @@ import StripeStep from "./stripe-step";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import axios from "axios";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
+import toast from "react-hot-toast";
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
@@ -13,7 +14,20 @@ const Onboarding = () => {
   const user = useCurrentUser();
 
   const handleNext = async () => {
-    if (step === 2 && !user?.stripeAccountId) {
+    if (step === 1) {
+      setIsLoading(true);
+      try {
+        const response = await axios.post("/api/update", hours);
+        if (response.status === 200) {
+          toast.success;
+          setStep(step + 1);
+        } else {
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      setIsLoading(false);
+    } else if (step === 2 && !user?.stripeAccountId) {
       setIsLoading(true);
       try {
         const response = await axios.post(
@@ -21,6 +35,22 @@ const Onboarding = () => {
           { userId: user?.id }
         );
         if (response.status === 200) {
+          toast.success;
+          setStep(step + 1);
+        } else {
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      setIsLoading(false);
+    } else if (step === 3 && user?.stripeAccountId) {
+      setIsLoading(true);
+      try {
+        const response = await axios.post("/api/stripe/accept-tos", {
+          stripeAccountId: user?.stripeAccountId,
+        });
+        if (response.status === 200) {
+          toast.success;
           setStep(step + 1);
         } else {
         }
