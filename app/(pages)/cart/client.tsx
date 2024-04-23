@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   CheckIcon,
@@ -13,11 +13,11 @@ import { addDays, format } from "date-fns";
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import OrderCreate from "@/app/components/order-create";
 import Button from "@/app/components/Button";
-import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
+import SpCounter from "./components/counter";
+import DateState from "./components/dateStates";
 interface CartProps {
   cartItems?: any;
   user?: any;
@@ -30,6 +30,10 @@ const Cart = ({ cartItems, user }: CartProps) => {
       0
     )
   );
+  const handleDataFromChild = (childTotal: any) => {
+    setTotal(childTotal);
+  };
+  const memoData = useCallback(handleDataFromChild, []);
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -58,17 +62,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
     await axios.delete(`/api/cart`);
     router.refresh();
   };
-  useEffect(() => {
-    setTotal(
-      cartItems.reduce(
-        (acc: number, cartItem: any) =>
-          acc + cartItem.price * cartItem.quantity,
-        0
-      )
-    );
-    console.log(cartItems);
-  }),
-    [cartItems];
+
   return (
     <>
       <div className="bg-white">
@@ -87,128 +81,15 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 className="divide-y divide-gray-200 border-b border-t border-gray-200"
               >
                 {cartItems.map((cartItem: any, index: any) => {
-                  const [hover, setHover] = useState(false);
-                  const [inputValue, setInputValue] = useState(
-                    cartItem.quantity
-                  );
-                  const hoverOn = () => {
-                    setHover(true);
-                    setInputValue(quantity);
-                  };
-                  const hoverOff = () => {
-                    setHover(false);
-                    setInputValue(quantity);
-                  };
-                  const [selectedDateTime, setSelectedDateTime] = useState(
-                    new Date("2023-04-16T12:00:00")
-                  );
-
-                  const handleDateTimeChange = (date: any) => {
-                    setSelectedDateTime(date);
-                  };
                   const prevCartItem = cartItems[index - 1];
-                  const [quantity, setQuantity] = useState(cartItem.quantity);
-
-                  const increment = () => {
-                    if (quantity < cartItem.listing.stock) {
-                      setInputValue(quantity + 1);
-                      setQuantity((prevQuantity: number) =>
-                        Math.min(prevQuantity + 1)
-                      );
-                      cartItem.quantity = quantity + 1;
-                    }
-                  };
-
-                  const decrement = async () => {
-                    if (quantity !== 1) {
-                      setInputValue(quantity - 1);
-                      cartItem.quantity = quantity - 1;
-                    }
-                    setQuantity((prevQuantity: number) =>
-                      Math.max(prevQuantity - 1, 1)
-                    );
-                  };
-
-                  const handleQuantityChange = (
-                    e: React.ChangeEvent<HTMLInputElement>
-                  ) => {
-                    const newValue = e.target.value;
-
-                    // Update the input value state
-                    setInputValue(newValue);
-
-                    // If the input value is empty, reset the quantity to 1
-                    if (hover === false && newValue === "") {
-                      setQuantity(1);
-                      cartItem.quantity = 1;
-                      setInputValue(1);
-                    }
-                    if (hover === false && newValue > cartItem.listing.stock) {
-                      setQuantity(cartItem.listing.stock);
-                      cartItem.quantity = cartItem.listing.stock;
-                      setInputValue(cartItem.listing.stock);
-                    }
-                    const maxQuantity = cartItem.listing.stock;
-                    const newQuantity = parseInt(newValue, 10);
-                    if (!isNaN(newQuantity)) {
-                      if (newQuantity > maxQuantity) {
-                        // If the new quantity is greater than the maximum allowed, set it to the maximum
-                        setQuantity(
-                          newQuantity > maxQuantity ? maxQuantity : newQuantity
-                        );
-
-                        //setQuantity(quantity);
-                        setInputValue(
-                          newQuantity > maxQuantity ? maxQuantity : newQuantity
-                        );
-
-                        cartItem.quantity =
-                          newQuantity > maxQuantity ? maxQuantity : newQuantity;
-                        if (hover === false) {
-                          axios.post(`api/cartUpdate/`, {
-                            cartId: cartItem.id,
-                            quantity:
-                              newQuantity > maxQuantity
-                                ? maxQuantity
-                                : newQuantity,
-                          });
-                        }
-                      }
-                      if (newQuantity < 1) {
-                        setQuantity(1);
-                        setInputValue(1);
-
-                        cartItem.quantity = 1;
-                        if (hover === false) {
-                          axios.post(`api/cartUpdate/`, {
-                            cartId: cartItem.id,
-                            quantity: 1,
-                          });
-                        }
-                      }
-                    }
-                  };
-                  useEffect(() => {
-                    axios.post(`api/cartUpdate/`, {
-                      cartId: cartItem.id,
-                      quantity: inputValue,
-                    });
-                  }, [hover]);
 
                   return (
-                    <div>
+                    <div key={cartItem.listingId}>
                       {prevCartItem?.listing.userId !==
                       cartItem.listing.userId ? (
                         <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p>{cartItem.listing.user.name}</p>
-                          <DateTimePicker
-                            className="text-black mt-2 w-5 outline-none"
-                            onChange={handleDateTimeChange}
-                            value={selectedDateTime}
-                            disableClock={true} // Optional, to disable clock selection
-                            clearIcon={null} // Optional, to remove the clear icon
-                            calendarIcon={null} // Optional, to remove the calendar icon
-                          />
+                          <DateState hours={cartItem.listing.user.hours} />
                         </li>
                       ) : null}
                       <li
@@ -276,33 +157,11 @@ const Cart = ({ cartItems, user }: CartProps) => {
                               >
                                 Quantity, {cartItem.listing.title}
                               </label>
-                              <div className="flex flex-row gap-x-2 min-w-fit border-[1px] items-center border-gray-500 shadow-md rounded-lg w-fit px-1">
-                                <button
-                                  onMouseEnter={hoverOn}
-                                  onMouseLeave={hoverOff}
-                                  type="button"
-                                  className=""
-                                  onClick={decrement}
-                                >
-                                  -
-                                </button>
-                                <input
-                                  onFocus={hoverOn}
-                                  onBlur={hoverOff}
-                                  value={inputValue}
-                                  onChange={handleQuantityChange}
-                                  className="max-w-[40px]  text-center"
-                                />
-                                <button
-                                  onMouseEnter={hoverOn}
-                                  onMouseLeave={hoverOff}
-                                  type="button"
-                                  className=""
-                                  onClick={increment}
-                                >
-                                  +
-                                </button>
-                              </div>
+                              <SpCounter
+                                cartItem={cartItem}
+                                cartItems={cartItems}
+                                onDataChange={handleDataFromChild}
+                              />
 
                               <div className="absolute right-0 top-0">
                                 <button

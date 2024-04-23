@@ -70,7 +70,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
     };
 
     fetchPaymentIntents();
-  }, [cartItems]);
+  }, [cartItems, user?.email, user?.id]);
   return (
     <>
       {user ? (
