@@ -4,13 +4,33 @@ import ProfileStep from "./profile-step";
 import StoreStep from "./store-step";
 import StripeStep from "./stripe-step";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
-import { IoReturnDownBackOutline } from "react-icons/io5";
+import axios from "axios";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const user = useCurrentUser();
 
-  const handleNext = () => {
-    setStep(step + 1);
+  const handleNext = async () => {
+    if (step === 2 && !user?.stripeAccountId) {
+      setIsLoading(true);
+      try {
+        const response = await axios.post(
+          "/api/stripe/create-connected-account",
+          { userId: user?.id }
+        );
+        if (response.status === 200) {
+          setStep(step + 1);
+        } else {
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      setIsLoading(false);
+    } else {
+      setStep(step + 1);
+    }
   };
 
   const handlePrevious = () => {
