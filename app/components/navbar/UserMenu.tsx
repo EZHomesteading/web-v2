@@ -1,79 +1,27 @@
 "use client";
-
-import { FaHeart, FaStore, FaSignOutAlt, FaComment } from "react-icons/fa";
-import { MdSettings } from "react-icons/md";
-import { useCallback, useState } from "react";
-import { AiOutlineMenu } from "react-icons/ai";
-import { signOut } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import useListingModal from "@/hooks/modal/use-listing-modal";
-import { UpdateRoleAlert } from "../modals/update-role-alert";
-import MenuItem from "./MenuItem";
-import { CiSquarePlus } from "react-icons/ci";
-import { BsBasket } from "react-icons/bs";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { UserInfo } from "@/next-auth";
-import { UserRole } from "@prisma/client";
-import useSearchModal from "@/hooks/modal/useSearchModal";
-import { BiSearch } from "react-icons/bi";
-interface UserMenuProps {
-  user?: UserInfo;
+import { AiOutlineMenu } from "react-icons/ai";
+import MenuItem from "./MenuItem";
+import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
+import { signOut } from "next-auth/react";
+import { CiSquarePlus } from "react-icons/ci";
+import { useRouter } from "next/navigation";
+import useRentModal from "@/hooks/modal/use-listing-modal";
+import { MdSettings } from "react-icons/md";
+import { BsBasket } from "react-icons/bs";
+import { GiBarn } from "react-icons/gi";
+interface Props {
+  user: UserInfo;
 }
-
-const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
+const UserMenu = ({ user }: Props) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const listingModal = useListingModal();
-  const searchModal = useSearchModal();
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleOpen = useCallback(() => {
-    setIsOpen((value) => !value);
-  }, []);
-  function handleClick() {
-    setIsOpen(false);
-    setTimeout(() => {
-      document.removeEventListener("click", handleClick);
-    }, 0);
-  }
-  if (isOpen === true) {
-    document.addEventListener("click", handleClick);
-  }
+  const listingModal = useRentModal();
+
   return (
-    <div className={`relative z-1000`}>
-      <div className="flex flex-row items-center gap-3">
-        <div className="block sm:hidden ">
-          <div
-            onClick={() => {
-              searchModal.onOpen();
-            }}
-            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
-          >
-            <BiSearch className="text-sm sm:text-md md:text-2xl" />
-          </div>
-        </div>
-        {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
-          <UpdateRoleAlert
-            heading="Would you like to become an EZH producer or co-op?"
-            description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."
-            backButtonLabel="No thanks"
-            actionButtonLabel="More Info"
-            actionButtonHref="/info/ezh-roles"
-            actionButtonLabelTwo="Co-op Registration"
-            actionButtonHrefTwo="/auth/become-a-co-op"
-            actionButtonLabelThree="Producer Registration"
-            actionButtonHrefThree="/auth/become-a-producer"
-          />
-        ) : (
-          <div
-            onClick={() => {
-              listingModal.onOpen();
-            }}
-            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
-          >
-            <CiSquarePlus className="text-sm sm:text-md md:text-2xl" />
-          </div>
-        )}
+    <Sheet>
+      <SheetTrigger>
         <div
-          onClick={toggleOpen}
           className="
           p-4
           md:py-1
@@ -95,107 +43,108 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             {user?.firstName ? user?.firstName : user?.name}
           </div>
         </div>
-      </div>
-      {isOpen && (
-        <div
-          className="
-            absolute 
-            rounded-xl 
-            shadow-md
-            overflow-hidden 
-            right-0 
-            top-12 
-            text-sm
-          "
-        >
-          <div
-            className={
-              pathname === "/"
-                ? `flex flex-col cursor-pointer bg-black`
-                : `flex flex-col cursor-pointer bg-white`
-            }
-          >
+      </SheetTrigger>
+      <SheetContent className="bg-white w-full">
+        <div>
+          <div>
             {user?.role === "COOP" ? (
               <div>
-                <MenuItem
-                  label="My Store"
-                  icon={<FaStore className="mr-2" />}
-                  onClick={() => router.push("/dashboard/my-store")}
-                />
-                <MenuItem
-                  label="Add a Product"
-                  icon={<CiSquarePlus className="mr-2" />}
-                  onClick={listingModal.onOpen}
-                />
+                <SheetTrigger className="w-full">
+                  <MenuItem
+                    label="My Store"
+                    icon={<FaStore className="mr-2" />}
+                    onClick={() => router.push("/dashboard/my-store")}
+                  />
+                  <MenuItem
+                    label="Add a Product"
+                    icon={<CiSquarePlus className="mr-2" />}
+                    onClick={listingModal.onOpen}
+                  />
+                </SheetTrigger>
               </div>
             ) : user?.role === "PRODUCER" ? (
               <div>
-                <MenuItem
-                  label="My Store"
-                  icon={<FaStore className="mr-2" />}
-                  onClick={() => router.push("/dashboard/my-store")}
-                />
-                <MenuItem
-                  label="Add a Product"
-                  icon={<CiSquarePlus className="mr-2" />}
-                  onClick={listingModal.onOpen}
-                />
+                <SheetTrigger className="w-full">
+                  <MenuItem
+                    label="My Store"
+                    icon={<FaStore className="mr-2" />}
+                    onClick={() => router.push("/dashboard/my-store")}
+                  />
+                  <MenuItem
+                    label="Add a Product"
+                    icon={<CiSquarePlus className="mr-2" />}
+                    onClick={listingModal.onOpen}
+                  />
+                </SheetTrigger>
               </div>
             ) : (
               <div></div>
             )}
             {user ? (
               <>
-                <MenuItem
-                  label="Profile Settings"
-                  icon={<MdSettings className="mr-2" />}
-                  onClick={() => router.push("/dashboard")}
-                />
-                <MenuItem
-                  label="Cart"
-                  icon={<BsBasket className="mr-2" />}
-                  onClick={() => router.push("/cart")}
-                />
-                <MenuItem
-                  label="My Favorites"
-                  icon={<FaHeart className="mr-2" />}
-                  onClick={() => router.push("/dashboard/favorites")}
-                />
-                <MenuItem
-                  label="Chat"
-                  icon={<FaComment className="mr-2" />}
-                  onClick={() => router.push("/autochat")}
-                />
+                <SheetTrigger className="w-full">
+                  <MenuItem
+                    label="Profile Settings"
+                    icon={<MdSettings className="mr-2" />}
+                    onClick={() => router.push("/dashboard")}
+                  />
+                  <MenuItem
+                    label="Cart"
+                    icon={<BsBasket className="mr-2" />}
+                    onClick={() => router.push("/cart")}
+                  />
+                  <MenuItem
+                    label="My Favorites"
+                    icon={<FaHeart className="mr-2" />}
+                    onClick={() => router.push("/dashboard/favorites")}
+                  />
+                  <MenuItem
+                    label="Chat"
+                    icon={<FaComment className="mr-2" />}
+                    onClick={() => router.push("/autochat")}
+                  />
+                  <div className=" block sm:hidden">
+                    <MenuItem
+                      label="Home"
+                      icon={<GiBarn className="mr-2" />}
+                      onClick={() => router.push("/")}
+                    />
+                  </div>
+                </SheetTrigger>
                 {user?.role === "CONSUMER" ? (
                   <div>
-                    <MenuItem
-                      icon={<FaStore className="mr-2" />}
-                      label="Become a Co-Op"
-                      onClick={() => router.push("/auth/become-a-co-op")}
-                    />
-                    <MenuItem
-                      icon={<FaStore className="mr-2" />}
-                      label="Become a Producer"
-                      onClick={() => router.push("/auth/become-a-producer")}
-                    />
+                    <SheetTrigger className="w-full">
+                      <MenuItem
+                        icon={<FaStore className="mr-2" />}
+                        label="Become a Co-Op"
+                        onClick={() => router.push("/auth/become-a-co-op")}
+                      />
+                      <MenuItem
+                        icon={<FaStore className="mr-2" />}
+                        label="Become a Producer"
+                        onClick={() => router.push("/auth/become-a-producer")}
+                      />
+                    </SheetTrigger>
                   </div>
                 ) : (
                   <></>
                 )}
                 <hr />
-                <MenuItem
-                  icon={<FaSignOutAlt className="mr-2" />}
-                  label="Logout"
-                  onClick={() => signOut()}
-                />
+                <SheetTrigger className="w-full">
+                  <MenuItem
+                    icon={<FaSignOutAlt className="mr-2" />}
+                    label="Logout"
+                    onClick={() => signOut()}
+                  />
+                </SheetTrigger>
               </>
             ) : (
               <></>
             )}
           </div>
         </div>
-      )}
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 

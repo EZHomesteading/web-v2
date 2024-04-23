@@ -20,9 +20,8 @@ const Navbar = ({ user }: NavbarProps) => {
             <div className="hidden sm:block">
               <FindListingsComponent />
             </div>
-            <div className="flex justify-end items-center">
-              {user ? <UserMenu user={user} /> : <AuthButtons />}
-            </div>
+            {/* className="flex justify-end items-center w-full" */}
+            <div>{user ? <UserMenu user={user} /> : <AuthButtons />}</div>
           </div>
         </Container>
       </div>

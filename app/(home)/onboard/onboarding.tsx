@@ -15,7 +15,21 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { Button } from "@/app/components/ui/button";
-
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
 interface Props {
   user: UserInfo;
 }
@@ -47,7 +61,6 @@ const Onboarding = ({ user }: Props) => {
         const response = await axios.post("/api/update", { hours: coOpHours });
         console.log(coOpHours);
         if (response.status === 200) {
-          toast.success("Hours updated successfully");
           setStep(step + 1);
         } else {
           toast.error("Failed to update hours");
@@ -118,11 +131,11 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">
+                  <Button className="shadow-none">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80">
+                <PopoverContent className="popover border-none xl:absolute xl:bottom-10">
                   <div className="grid gap-4">
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
@@ -143,11 +156,11 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">
+                  <Button className="shadow-none">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80">
+                <PopoverContent className="popover xl:absolute xl:bottom-10">
                   <div className="grid gap-4">
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
@@ -168,11 +181,11 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">
+                  <Button className="shadow-none">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80">
+                <PopoverContent className="popover xl:absolute xl:bottom-10">
                   <div className="grid gap-4">
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
@@ -188,6 +201,45 @@ const Onboarding = ({ user }: Props) => {
               </Popover>
             </div>
           )}
+          <Breadcrumb className="absolute bottom-5">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem
+                className={
+                  step === 1
+                    ? "font-bold cursor-not-allowed"
+                    : "cursor-not-allowed"
+                }
+              >
+                Co-op
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem
+                className={
+                  step === 2
+                    ? "font-bold cursor-not-allowed"
+                    : "cursor-not-allowed"
+                }
+              >
+                Profile
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage
+                  className={
+                    step === 3
+                      ? "font-bold cursor-not-allowed"
+                      : "cursor-not-allowed"
+                  }
+                >
+                  Stripe
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
 
@@ -228,6 +280,7 @@ const Onboarding = ({ user }: Props) => {
             <IoReturnDownBack />
           </button>
         )}
+
         {step < 3 && (
           <button
             onClick={handleNext}

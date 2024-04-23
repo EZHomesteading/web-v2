@@ -41,7 +41,7 @@ export default auth(async (req) => {
     return null as unknown as void;
   }
 
-  if (isCoopRoute && user?.role == UserRole.COOP) {
+  if (isCoopRoute && user?.role !== UserRole.COOP) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;

@@ -78,10 +78,14 @@ body::-webkit-scrollbar {
   color: #ced9bb;
 }
 
-.onboard-left {
+.onboard-left,
+.popover {
   background-color: #e3eac9;
 }
-
+.popover {
+  border: none;
+  width: 20rem;
+}
 .onboard-right {
   background-color: #ced9bb;
 }
