@@ -21,37 +21,37 @@ import {
 
 const data: Days[] = [
   {
-    id: "monday",
+    id: 0,
     day: "Monday",
   },
   {
-    id: "tuesday",
+    id: 1,
     day: "Tuesday",
   },
   {
-    id: "wednesday",
+    id: 2,
     day: "Wednesday",
   },
   {
-    id: "thursday",
+    id: 3,
     day: "Thursday",
   },
   {
-    id: "friday",
+    id: 4,
     day: "Friday",
   },
   {
-    id: "saturday",
+    id: 5,
     day: "Sunday",
   },
   {
-    id: "sunday",
+    id: 6,
     day: "Sunday",
   },
 ];
 
 export type Days = {
-  id: string;
+  id: number;
   day: string;
 };
 

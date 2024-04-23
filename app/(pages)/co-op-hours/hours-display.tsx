@@ -16,10 +16,7 @@ import {
 export type Days = {
   id: string;
   day: string;
-  hours: {
-    open: number;
-    close: number;
-  };
+  hours: Array<{ open: number; close: number }>;
 };
 
 const formatTime = (minutes: number) => {
@@ -47,7 +44,12 @@ export const columns: ColumnDef<Days>[] = [
       const hours = row.original.hours;
       return (
         <div className="text-right text-sm w-[140px]">
-          {formatTime(hours.open)} - {formatTime(hours.close)}
+          {hours.map((timeRange, index) => (
+            <React.Fragment key={index}>
+              {formatTime(timeRange.open)} - {formatTime(timeRange.close)}
+              {index < hours.length - 1 && <br />}
+            </React.Fragment>
+          ))}
         </div>
       );
     },
@@ -56,10 +58,7 @@ export const columns: ColumnDef<Days>[] = [
 
 interface HoursDisplayProps {
   coOpHours: {
-    [key: number]: {
-      open: number;
-      close: number;
-    };
+    [key: number]: Array<{ open: number; close: number }>;
   };
 }
 
