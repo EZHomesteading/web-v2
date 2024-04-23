@@ -8,9 +8,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import Loader from "@/app/components/secondary-loader";
+import { UserInfo } from "@/next-auth";
 
-const AccountOnboardingUI = () => {
-  const user = useCurrentUser();
+interface Props {
+  user?: UserInfo;
+}
+const AccountOnboardingUI = ({ user }: Props) => {
   const body = user?.stripeAccountId;
 
   const [stripeConnectInstance, setStripeConnectInstance] = useState<
