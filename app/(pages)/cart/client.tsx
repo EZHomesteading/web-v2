@@ -89,7 +89,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       cartItem.listing.userId ? (
                         <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p>{cartItem.listing.user.name}</p>
-                          <DateState />
+                          <DateState hours={cartItem.listing.user.hours} />
                         </li>
                       ) : null}
                       <li
@@ -160,7 +160,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                               <SpCounter
                                 cartItem={cartItem}
                                 cartItems={cartItems}
-                                onDataChange={memoData}
+                                onDataChange={handleDataFromChild}
                               />
 
                               <div className="absolute right-0 top-0">
