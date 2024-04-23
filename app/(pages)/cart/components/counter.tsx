@@ -21,6 +21,21 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
   };
   const hoverOff = () => {
     setHover(false);
+    if (
+      inputValue === "" ||
+      inputValue === null ||
+      inputValue === undefined ||
+      isNaN(inputValue)
+    ) {
+      setQuantity(1);
+      cartItem.quantity = 1;
+      setInputValue("1");
+      axios.post(`api/cartUpdate/`, {
+        cartId: cartItem.id,
+        quantity: 1,
+      });
+      return;
+    }
     axios.post(`api/cartUpdate/`, {
       cartId: cartItem.id,
       quantity: parseInt(inputValue),
@@ -75,7 +90,6 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
       } else if (newQuantity < 1) {
         setQuantity(1);
         setInputValue(1);
-
         cartItem.quantity = 1;
       } else {
         setQuantity(newQuantity);
@@ -92,8 +106,10 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
         0
       )
     );
+  }, [cartItems, hover, quantity]);
+  useEffect(() => {
     onDataChange(total);
-  }, [hover, quantity]);
+  }, [total, onDataChange]);
 
   return (
     <>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   CheckIcon,
@@ -33,6 +33,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
+  const memoData = useCallback(handleDataFromChild, []);
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -159,7 +160,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                               <SpCounter
                                 cartItem={cartItem}
                                 cartItems={cartItems}
-                                onDataChange={handleDataFromChild}
+                                onDataChange={memoData}
                               />
 
                               <div className="absolute right-0 top-0">
