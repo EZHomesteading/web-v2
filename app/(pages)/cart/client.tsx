@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   CheckIcon,
@@ -18,12 +18,14 @@ import Button from "@/app/components/Button";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "./components/counter";
 import DateState from "./components/dateStates";
+import { Hours } from "@prisma/client";
 interface CartProps {
   cartItems?: any;
   user?: any;
 }
 
 const Cart = ({ cartItems, user }: CartProps) => {
+  const [validTime, setValidTime] = useState(false);
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
@@ -33,7 +35,9 @@ const Cart = ({ cartItems, user }: CartProps) => {
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
-  const memoData = useCallback(handleDataFromChild, []);
+  const handleInvalidTime = (childValidTime: any) => {
+    setValidTime(childValidTime);
+  };
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -89,7 +93,10 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       cartItem.listing.userId ? (
                         <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p>{cartItem.listing.user.name}</p>
-                          <DateState hours={cartItem.listing.user.hours} />
+                          <DateState
+                            hours={cartItem?.listing.user.hours as Hours}
+                            onValidChange={handleInvalidTime}
+                          />
                         </li>
                       ) : null}
                       <li

@@ -1,40 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Hours } from "@prisma/client";
+import * as React from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/app/components/ui/calendar";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { Separator } from "@/app/components/ui/separator";
 
 import "react-datetime-picker/dist/DateTimePicker.css";
-import DateTimePicker from "react-datetime-picker";
-import { Value } from "react-datetime-picker/dist/cjs/shared/types";
+
+import { Button } from "@/app/components/ui/button";
+import { Popover } from "@radix-ui/react-popover";
+import { PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+import { HoursDisplay } from "../../co-op-hours/hours-display";
 
 interface StatusProps {
   hours: Hours;
+  onValidChange: any;
+  index: number;
 }
 
-const isOpenNow = (
-  todayHours: { open: number; close: number }[] | undefined
-): boolean => {
-  if (!todayHours) {
-    return false;
-  }
-
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-  return todayHours.some(
-    (slot) => currentMinutes >= slot.open && currentMinutes <= slot.close
-  );
-};
-
 const DateState = ({ hours }: StatusProps) => {
+  const [date, setDate] = React.useState<Date>();
   const now = new Date();
   const [selectedDateTime, setSelectedDateTime] = useState(now);
+  const [options, setOptions] = useState<string[]>([]);
   const [selectedMinutes, setSelectedMinutes] = useState(
     selectedDateTime.getHours() * 60 + selectedDateTime.getMinutes()
   );
-  const currentDayIndex = (new Date().getDay() + 6) % 7;
-  const todayHours = hours[currentDayIndex as keyof Hours];
-  const open = isOpenNow(todayHours);
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -44,59 +41,106 @@ const DateState = ({ hours }: StatusProps) => {
     const formattedMins = mins < 10 ? `0${mins}` : mins;
     return `${formattedHours}:${formattedMins} ${ampm}`;
   };
-
-  const openHours = formatTime(hours[1][0].open);
-  const closeHours = formatTime(hours[1][0].close);
-
-  const handleDateTimeChange = (date: any) => {
-    setSelectedDateTime(date);
-    setSelectedMinutes(date.getHours() * 60 + date.getMinutes());
+  const buildArray = async () => {
+    if (date === undefined) {
+      return;
+    }
+    const newHoursIndex = (date.getDay() + 6) % 7;
+    const newHours = hours[newHoursIndex as keyof Hours];
+    const resultantArray = [];
+    for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
+      const time = formatTime(i);
+      resultantArray.push(time);
+    }
+    setOptions(resultantArray);
   };
-  const validPickup = (
-    todayHours: { open: number; close: number }[] | undefined
-  ): boolean => {
-    if (!todayHours) {
-      return false;
-    }
-    if (selectedMinutes < now.getHours() * 60 + now.getMinutes()) {
-      return false;
-    }
-    if (selectedDateTime.getDate() < now.getDate()) {
-      return false;
-    }
-    return todayHours.some(
-      (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
-    );
-  };
-  const validTime = validPickup(todayHours);
-  const openText = ` this shop is open today from ${openHours} untill ${closeHours}`;
-
-  console.log(selectedDateTime);
+  useEffect(() => {
+    setOptions([]);
+    buildArray();
+  }, [date]);
   return (
     <>
-      <span className={`text-xs ${open ? "text-green-500" : "text-red-500"}`}>
-        {open ? "Open" : "Closed"}
-      </span>
       <div>
-        <span
-          className={`text-xs ${validTime ? "text-green-500" : "text-red-500"}`}
-        >
-          {validTime
-            ? "Valid pickup time detected"
-            : "invalid pickup time detected"}
-        </span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant={"outline"}>Hours</Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-fit border-none shadow-none ">
+            <div className="grid gap-4">
+              <div className="bg-white">
+                <HoursDisplay coOpHours={hours} />
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
-      <p>{openText}</p>
-      <DateTimePicker
-        className="text-black mt-2 w-5 outline-none"
-        onChange={handleDateTimeChange}
-        value={selectedDateTime}
-        disableClock={true} // Optional, to disable clock selection
-        clearIcon={null} // Optional, to remove the clear icon
-        calendarIcon={null} // Optional, to remove the calendar icon
-      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-[280px] justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, "PPP") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+      <ScrollArea className="h-72 w-48 rounded-md border">
+        <div className="p-4">
+          <h4 className="mb-4 text-sm font-medium leading-none">Options</h4>
+          {options.map((option) => (
+            <>
+              <div key={option} className="text-sm">
+                {option}
+              </div>
+              <Separator className="my-2" />
+            </>
+          ))}
+        </div>
+      </ScrollArea>
     </>
   );
 };
 
 export default DateState;
+//   const currentDayIndex = (new Date().getDay() + 6) % 7;
+//   const todayHours = hours[currentDayIndex as keyof Hours];
+//   const validPickup = (
+//     todayHours: { open: number; close: number }[] | undefined
+//   ): boolean => {
+//     if (!todayHours) {
+//       return false;
+//     }
+//     if (selectedMinutes < now.getHours() * 60 + now.getMinutes()) {
+//       return false;
+//     }
+//     if (selectedDateTime.getDate() < now.getDate()) {
+//       return false;
+//     }
+//     if (selectedDateTime.getDay() != now.getDay()) {
+//       const newHoursIndex = (selectedDateTime.getDay() + 6) % 7;
+//       const newHours = hours[newHoursIndex as keyof Hours];
+//       return newHours.some(
+//         (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
+//       );
+//     }
+//     return todayHours.some(
+//       (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
+//     );
+//   };
+//   const validTime = validPickup(todayHours);
+//   useEffect(() => {
+//     onValidChange(validTime);
+//   }),
+//     [validTime];
