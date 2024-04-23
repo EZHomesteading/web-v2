@@ -96,6 +96,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                           <DateState
                             hours={cartItem?.listing.user.hours as Hours}
                             onValidChange={handleInvalidTime}
+                            index={index}
                           />
                         </li>
                       ) : null}
