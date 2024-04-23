@@ -1,6 +1,6 @@
 "use client";
 
-import useActiveList from "../../hooks/useActiveList";
+import useActiveList from "../../hooks/messenger/useActiveList";
 import Image from "next/image";
 
 interface AvatarProps {

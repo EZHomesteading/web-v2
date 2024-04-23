@@ -1,6 +1,6 @@
 "use client";
 
-import useConversation from "@/hooks/useConversation";
+import useConversation from "@/hooks/messenger/useConversation";
 import useRoutes from "@/hooks/use-routes";
 import MobileItem from "./MobileItem";
 

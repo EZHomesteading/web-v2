@@ -1,7 +1,7 @@
 "use client";
 
 import Select from "react-select";
-import useProduct from "@/hooks/use-product";
+import useProduct from "@/hooks/listing/use-product";
 
 export type ProductValue = {
   cat: string;

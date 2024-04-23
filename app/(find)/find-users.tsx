@@ -117,7 +117,7 @@ const FindListingsComponent = () => {
 
       const url = qs.stringifyUrl(
         {
-          url: "/find-co-ops-and-producers",
+          url: "/map",
           query,
         },
         { skipNull: true }
@@ -159,15 +159,14 @@ const FindListingsComponent = () => {
             setFocus={setFocus}
           />
         </div>
-        {!focus.right && (
-          <button
-            className="absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey"
-            style={{ width: "99%" }}
-            onClick={handleNearMeClick}
-          >
-            Near Me
-          </button>
-        )}
+        <button
+          className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full ${
+            focus.left ? "visible" : "hidden"
+          }`}
+          onMouseDown={handleNearMeClick}
+        >
+          Near Me
+        </button>
       </div>
     </>
   );

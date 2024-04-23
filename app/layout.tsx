@@ -5,7 +5,7 @@ import ToasterProvider from "@/providers/ToasterProvider";
 
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
-import Script from "next/script";
+import SearchModal from "./components/modals/SearchModal";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -25,6 +25,7 @@ export default async function RootLayout({
           <ClientOnly>
             <ToasterProvider />
             <RentModal />
+            <SearchModal />
           </ClientOnly>
           <main>{children}</main>
         </body>

@@ -1,25 +1,20 @@
 "use client";
 
-import {
-  FaHeart,
-  FaStore,
-  FaSignOutAlt,
-  FaSignInAlt,
-  FaUserPlus,
-  FaComment,
-} from "react-icons/fa";
+import { FaHeart, FaStore, FaSignOutAlt, FaComment } from "react-icons/fa";
 import { MdSettings } from "react-icons/md";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import useListingModal from "@/hooks/use-listing-modal";
+import useListingModal from "@/hooks/modal/use-listing-modal";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import MenuItem from "./MenuItem";
 import { CiSquarePlus } from "react-icons/ci";
 import { BsBasket } from "react-icons/bs";
 import { UserInfo } from "@/next-auth";
-
+import { UserRole } from "@prisma/client";
+import useSearchModal from "@/hooks/modal/useSearchModal";
+import { BiSearch } from "react-icons/bi";
 interface UserMenuProps {
   user?: UserInfo;
 }
@@ -28,6 +23,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const router = useRouter();
   const pathname = usePathname();
   const listingModal = useListingModal();
+  const searchModal = useSearchModal();
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -42,9 +38,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
     document.addEventListener("click", handleClick);
   }
   return (
-    <div className={`relative `}>
+    <div className={`relative z-1000`}>
       <div className="flex flex-row items-center gap-3">
-        {user?.role !== "COOP" && user?.role !== "PRODUCER" ? (
+        <div className="block sm:hidden ">
+          <div
+            onClick={() => {
+              searchModal.onOpen();
+            }}
+            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+          >
+            <BiSearch className="text-sm sm:text-md md:text-2xl" />
+          </div>
+        </div>
+        {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"
             description="You have to be a producer or co-op to add a product. There's no fee and and can be done in a few seconds."
@@ -63,7 +69,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             }}
             className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
           >
-            Add a Product
+            <CiSquarePlus className="text-sm sm:text-md md:text-2xl" />
           </div>
         )}
         <div
@@ -72,8 +78,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           p-4
           md:py-1
           md:px-2
-          border-[1px] 
-          border-neutral-200 
+          sm:border-[1px] 
+          sm:border-neutral-200 
           flex 
           flex-row 
           items-center 
@@ -184,22 +190,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                 />
               </>
             ) : (
-              <>
-                <MenuItem
-                  label="Sign In"
-                  icon={<FaSignInAlt className="mr-2" />}
-                  onClick={() => {
-                    router.push("/auth/login");
-                  }}
-                />
-                <MenuItem
-                  label="Sign up"
-                  icon={<FaUserPlus className="mr-2" />}
-                  onClick={() => {
-                    router.push("/auth/register");
-                  }}
-                />
-              </>
+              <></>
             )}
           </div>
         </div>

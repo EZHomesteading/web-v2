@@ -11,7 +11,7 @@ const outfit = Outfit({
 const Logo = () => {
   return (
     <div
-      className={`hover:cursor-pointer text-md md:text-3xl font-bold tracking-tight mb-2 text-grey`}
+      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-3xl font-bold tracking-tight mb-2 text-grey`}
     >
       <Link href="/">
         <h1 className={`${outfit.className} hover:text-green-800`}>

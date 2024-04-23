@@ -5,7 +5,7 @@ import {
   registerPushNotifications,
   unregisterPushNotifications,
 } from "@/actions/messenger/pushService";
-import Loading from "@/app/loading";
+import Loading from "@/app/components/secondary-loader";
 import { BellOff, BellRing } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";

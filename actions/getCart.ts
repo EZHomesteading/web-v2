@@ -1,5 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
+import { orderBy } from "lodash";
 
 export const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
@@ -10,10 +11,10 @@ export const getAllCartItemsByUserId = async () => {
       },
       include: {
         user: true,
-        listing: true,
+        listing: { include: { user: true } },
       },
+      orderBy: { listing: { userId: "desc" } },
     });
-
     return cartItems;
   } catch (error: any) {
     return [];
