@@ -43,21 +43,6 @@ const Onboarding = () => {
         console.error("Error:", error);
       }
       setIsLoading(false);
-    } else if (step === 3 && user?.stripeAccountId) {
-      setIsLoading(true);
-      try {
-        const response = await axios.post("/api/stripe/accept-tos", {
-          stripeAccountId: user?.stripeAccountId,
-        });
-        if (response.status === 200) {
-          toast.success;
-          setStep(step + 1);
-        } else {
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-      setIsLoading(false);
     } else {
       setStep(step + 1);
     }
@@ -67,7 +52,21 @@ const Onboarding = () => {
     setStep(step - 1);
   };
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("/api/stripe/accept-tos", {
+        stripeAccountId: user?.stripeAccountId,
+      });
+      if (response.status === 200) {
+        toast.success;
+        setStep(step + 1);
+      } else {
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <div className="flex flex-col sm:flex-row h-screen w-full text-black">
