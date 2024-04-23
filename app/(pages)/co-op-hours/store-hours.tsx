@@ -7,6 +7,8 @@ import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { HoursDisplay } from "./hours-display";
 import Button from "@/app/components/Button";
 import { DaySelect } from "./day-select";
+import { UserInfo } from "@/next-auth";
+
 const days = [
   "Monday",
   "Tuesday",
@@ -17,18 +19,20 @@ const days = [
   "Sunday",
 ];
 
-const CoOpHoursPage = () => {
-  const user = useCurrentUser();
+interface Props {
+  user: UserInfo;
+}
+
+interface HoursType {
+  [key: number]: {
+    open: number;
+    close: number;
+  };
+}
+const CoOpHoursPage = ({ user }: Props) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
-  // const formatTime = (minutes) => {
-  //   const hours = Math.floor(minutes / 60);
-  //   const mins = minutes % 60;
-  //   const ampm = hours >= 12 ? "PM" : "AM";
-  //   const formattedHours = hours % 12 || 12;
-  //   const formattedMins = mins < 10 ? `0${mins}` : mins;
-  //   return `${formattedHours}:${formattedMins} ${ampm}`;
-  // };
-  const defaultHours = {
+
+  const defaultHours: HoursType = {
     0: { open: 480, close: 1020 },
     1: { open: 480, close: 1020 },
     2: { open: 480, close: 1020 },
@@ -40,7 +44,7 @@ const CoOpHoursPage = () => {
 
   const [coOpHours, setCoOpHours] = useState(defaultHours);
 
-  const handleHourChange = (open, close) => {
+  const handleHourChange = (open: any, close: any) => {
     setCoOpHours((prevHours) => ({
       ...prevHours,
       [currentDayIndex]: { open, close },
@@ -58,10 +62,10 @@ const CoOpHoursPage = () => {
   const handleApplyToAll = () => {
     const currentTimes = coOpHours[currentDayIndex];
     setCoOpHours((prevHours) =>
-      Object.keys(prevHours).reduce((acc, day) => {
-        acc[day] = { ...currentTimes };
+      Object.keys(prevHours).reduce((acc, day: string) => {
+        acc[Number(day)] = { ...currentTimes };
         return acc;
-      }, {})
+      }, {} as HoursType)
     );
   };
 
