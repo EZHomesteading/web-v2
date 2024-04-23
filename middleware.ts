@@ -5,14 +5,14 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  // updateRoutes,
+  coopRoutes,
 } from "@/routes";
 import { UserRole } from "@prisma/client";
+import { currentUser } from "./lib/auth";
 const { auth } = NextAuth(authConfig);
-// import { currentUser } from "./lib/auth";
 export default auth(async (req) => {
+  const user = await currentUser();
   const { nextUrl } = req;
-  // const user = await currentUser();
   const path = nextUrl.pathname;
   const firstIndex = path.indexOf("/");
   const index = path.indexOf("/", firstIndex + 1); // Find the index of the first "/"
@@ -24,7 +24,7 @@ export default auth(async (req) => {
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  // const isUpdateRoute = updateRoutes.includes(nextUrl.pathname);
+  const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null as unknown as void;
@@ -41,31 +41,42 @@ export default auth(async (req) => {
     return null as unknown as void;
   }
 
-  // if (!isLoggedIn && isUpdateRoute) {
-  //   let callbackUrl = nextUrl.pathname;
-  //   if (nextUrl.search) {
-  //     callbackUrl += nextUrl.search;
-  //   }
-  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-  //   const redirectUrl = updateRoutes.includes(callbackUrl)
-  //     ? DEFAULT_LOGIN_REDIRECT
-  //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-  //   return Response.redirect(new URL(redirectUrl, nextUrl));
-  // }
-
-  // if (user?.role === "CONSUMER" && isUpdateRoute) {
-  //   let callbackUrl = nextUrl.pathname;
-  //   if (nextUrl.search) {
-  //     callbackUrl += nextUrl.search;
-  //   }
-  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-  //   const redirectUrl = updateRoutes.includes(callbackUrl)
-  //     ? DEFAULT_LOGIN_REDIRECT
-  //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-  //   return Response.redirect(new URL(redirectUrl, nextUrl));
-  // }
+  if (isCoopRoute && user?.role !== UserRole.COOP) {
+    let callbackUrl = nextUrl.pathname;
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search;
+    }
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    return Response.redirect(
+      new URL(`/shop?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    );
+  }
 
   if (!isLoggedIn && !isPublicRoute) {
+    // if (!isLoggedIn && isUpdateRoute) {
+    //   let callbackUrl = nextUrl.pathname;
+    //   if (nextUrl.search) {
+    //     callbackUrl += nextUrl.search;
+    //   }
+    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    //   const redirectUrl = updateRoutes.includes(callbackUrl)
+    //     ? DEFAULT_LOGIN_REDIRECT
+    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
+    //   return Response.redirect(new URL(redirectUrl, nextUrl));
+    // }
+
+    // if (user?.role === "CONSUMER" && isUpdateRoute) {
+    //   let callbackUrl = nextUrl.pathname;
+    //   if (nextUrl.search) {
+    //     callbackUrl += nextUrl.search;
+    //   }
+    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    //   const redirectUrl = updateRoutes.includes(callbackUrl)
+    //     ? DEFAULT_LOGIN_REDIRECT
+    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
+    //   return Response.redirect(new URL(redirectUrl, nextUrl));
+    // }
+
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
