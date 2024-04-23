@@ -34,7 +34,11 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
 
   const handlePrevDay = () => {
-    setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
+    if (currentDayIndex == 0) {
+      setCurrentDayIndex(6);
+    } else {
+      setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
+    }
   };
 
   const handleHourChange = (open: number, close: number) => {
@@ -60,22 +64,27 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
 
   const currentDay = days[currentDayIndex];
-  const { open, close } = coOpHours[currentDayIndex][0];
+  const defaultHours = {
+    open: 480,
+    close: 1020,
+  };
+  const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
 
   return (
     <div className="flex flex-row justify-center items-center gap-4">
       <div className="flex flex-col">
         <CoopHoursSlider
           day={currentDay}
-          open={open}
-          close={close}
+          hours={currentDayHours}
           onChange={handleHourChange}
           onNextDay={handleNextDay}
           onPrevDay={handlePrevDay}
         />
-        <button onClick={handleApplyToAll}>Apply to All Days</button>
+        <button onClick={handleApplyToAll} className="mt-10">
+          Apply to All Days
+        </button>
       </div>
-      <DaySelect />
+      {/* <DaySelect /> */}
       <HoursDisplay coOpHours={coOpHours} />
     </div>
   );

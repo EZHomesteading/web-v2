@@ -3,10 +3,10 @@ import { Slider } from "@/app/components/ui/slider";
 import { useState } from "react";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { MdOutlineNavigateBefore } from "react-icons/md";
+
 type CoopHoursSliderProps = {
   day: string;
-  open: number;
-  close: number;
+  hours: { open: number; close: number };
   onChange: (open: number, close: number) => void;
   onNextDay: () => void;
   onPrevDay: () => void;
@@ -14,14 +14,13 @@ type CoopHoursSliderProps = {
 
 export default function CoopHoursSlider({
   day,
-  open,
-  close,
+  hours,
   onChange,
   onNextDay,
   onPrevDay,
 }: CoopHoursSliderProps) {
-  const [values, setValues] = useState([open, close]);
-
+  const [values, setValues] = useState([hours.open, hours.close]);
+  console.log(hours.open, hours.close);
   const handleChange = (newValues: number[]) => {
     setValues(newValues);
     onChange(newValues[0], newValues[1]);
@@ -40,18 +39,20 @@ export default function CoopHoursSlider({
           </button>
         </div>
       </div>
-      <Slider
-        defaultValue={[open, close]}
-        min={0}
-        max={1440}
-        step={15}
-        minStepsBetweenThumbs={2}
-        onValueChange={handleChange}
-        className="w-[275px]"
-      />
-      <div className="flex justify-between">
-        <div>{formatTime(values[0])}</div>
-        <div>{formatTime(values[1])}</div>
+      <div className="relative">
+        <Slider
+          defaultValue={[hours.open, hours.close]}
+          min={0}
+          max={1440}
+          step={15}
+          minStepsBetweenThumbs={2}
+          onValueChange={handleChange}
+          className="w-[275px]"
+        />
+        <div className="absolute top-6 left-0 right-0 flex justify-between">
+          <div>{formatTime(values[0])}</div>
+          <div>{formatTime(values[1])}</div>
+        </div>
       </div>
     </div>
   );
