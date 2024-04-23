@@ -138,7 +138,7 @@ const Onboarding = ({ user }: Props) => {
             <div className="flex flex-row items-center ">
               {" "}
               <div className="2xl:text-5xl text-lg font-bold tracking-tight flex">
-                First, let's set your hours
+                First, let&apos;s set your hours
               </div>
               <Popover>
                 <PopoverTrigger asChild>
