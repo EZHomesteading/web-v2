@@ -96,16 +96,17 @@ const Onboarding = () => {
       </div>
 
       <div className="sm:w-3/5 onboard-right relative">
-        {step === 2 && (
-          <div className="md:pt-[20%] ">
-            <ProfileStep formData={formData} setFormData={setFormData} />
-          </div>
-        )}
         {step === 1 && (
           <div className="md:pt-[20%] ">
             <StoreStep formData={formData} setFormData={setFormData} />
           </div>
         )}
+        {step === 2 && (
+          <div className="md:pt-[20%] ">
+            <ProfileStep formData={formData} setFormData={setFormData} />
+          </div>
+        )}
+
         {step === 3 && (
           <div className="p-10">
             <StripeStep
