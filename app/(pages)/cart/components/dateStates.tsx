@@ -25,9 +25,9 @@ interface StatusProps {
 }
 
 const DateState = ({ hours }: StatusProps) => {
-  const [date, setDate] = React.useState<Date>();
   const now = new Date();
-  const [selectedDateTime, setSelectedDateTime] = useState(now);
+  const [date, setDate] = useState<Date | undefined>(now);
+  const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
   const [options, setOptions] = useState<string[]>([]);
   const [selectedMinutes, setSelectedMinutes] = useState(
     selectedDateTime.getHours() * 60 + selectedDateTime.getMinutes()
@@ -41,23 +41,48 @@ const DateState = ({ hours }: StatusProps) => {
     const formattedMins = mins < 10 ? `0${mins}` : mins;
     return `${formattedHours}:${formattedMins} ${ampm}`;
   };
+
+  const roundNumber = (n: number) => {
+    if (n > 0) return Math.ceil(n / 30) * 30;
+    else if (n < 0) return Math.floor(n / 30) * 30;
+    else return 30;
+  };
+
   const buildArray = async () => {
     if (date === undefined) {
       return;
     }
+    const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
     const newHours = hours[newHoursIndex as keyof Hours];
     const resultantArray = [];
+    const roundedMin = roundNumber(currentMin);
+    if (date.getDate() < now.getDate()) {
+      return;
+    }
+    if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
+      for (let i = roundedMin; i <= newHours[0].close; i += 30) {
+        const time = formatTime(i);
+        resultantArray.push(time);
+      }
+      setOptions(resultantArray);
+      return;
+    }
     for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
       const time = formatTime(i);
       resultantArray.push(time);
     }
     setOptions(resultantArray);
   };
+
   useEffect(() => {
     setOptions([]);
     buildArray();
   }, [date]);
+
+  const setTime = (option: string) => {
+    console.log(date, option);
+  };
   return (
     <>
       <div>
@@ -92,6 +117,8 @@ const DateState = ({ hours }: StatusProps) => {
             mode="single"
             selected={date}
             onSelect={setDate}
+            fromMonth={now}
+            disabled={{ before: now, after: now }}
             initialFocus
           />
         </PopoverContent>
@@ -99,13 +126,18 @@ const DateState = ({ hours }: StatusProps) => {
       <ScrollArea className="h-72 w-48 rounded-md border">
         <div className="p-4">
           <h4 className="mb-4 text-sm font-medium leading-none">Options</h4>
+          {!options.length ? <div>No available times on this day</div> : null}
           {options.map((option) => (
-            <>
-              <div key={option} className="text-sm">
+            <div className="hover:bg-slate">
+              <div
+                key={option}
+                className="text-sm cursor-pointer hover:bg-slate-400"
+                onClick={() => setTime(option)}
+              >
                 {option}
               </div>
               <Separator className="my-2" />
-            </>
+            </div>
           ))}
         </div>
       </ScrollArea>
