@@ -42,8 +42,8 @@ export function UpdateRoleAlert({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="shadow-none">
-          <CiSquarePlus className="text-sm sm:text-lg md:text-2xl" />
+        <Button className="shadow-none bg-inherit hover:bg-green-100 rounded-full mr-1">
+          <CiSquarePlus className="text-sm sm:text-lg md:text-2xl text-gray-500" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-white rounded-lg w-full h-4/5 md:w-1/2 md:h-1/2 flex flex-row justify-start">
