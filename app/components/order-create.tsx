@@ -115,7 +115,7 @@ const OrderCreate = ({ cartItems }: Create) => {
   };
   sessionStorage.setItem("ORDER", "");
   const stock = cartItems.some((item: any) => item.listing.stock === 0);
-  console.log(stock);
+
   if (stock === true) {
     return (
       <div>
