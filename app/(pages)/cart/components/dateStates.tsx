@@ -1,5 +1,6 @@
 "use client";
 
+import { Sheet, SheetTrigger, SheetContent } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { Hours } from "@prisma/client";
 import * as React from "react";
@@ -32,7 +33,7 @@ const DateState = ({ hours }: StatusProps) => {
   const [selectedMinutes, setSelectedMinutes] = useState(
     selectedDateTime.getHours() * 60 + selectedDateTime.getMinutes()
   );
-
+  //
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -84,36 +85,55 @@ const DateState = ({ hours }: StatusProps) => {
     console.log(date, option);
   };
   return (
-    <>
-      <div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant={"outline"}>Hours</Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-fit border-none shadow-none ">
-            <div className="grid gap-4">
-              <div className="bg-white">
-                <HoursDisplay coOpHours={hours} />
-              </div>
+    <div className="relative">
+      <Sheet>
+        <SheetTrigger className="border-black border-[1px] px-2 py-2 rounded-lg shadow-lg">
+          Set Pickup Time
+          {/* {user?.cartItem.pickup ? <>{pickuptime}</> : <>Set Pickup Time</>} */}
+        </SheetTrigger>
+        <SheetContent
+          side="top"
+          className="rounded-lg px-2 py-2 h-screen sm:h-fit sm:w-fit  w-[400px]"
+        >
+          <Sheet>
+            <div className="">
+              <Button className="mr-2">As soon as possible</Button>
+              <SheetTrigger>
+                <Button>Custom Time</Button>
+              </SheetTrigger>
             </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant={"outline"}
-            className={cn(
-              "w-[280px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
+            <SheetContent
+              side="top"
+              className="flex flex-col md:flex-row items-center sm:items-start justify-center h-screen sm:h-fit"
+            >
+              <div className="w-fit border-none shadow-none">
+                <div className="grid gap-4">
+                  <div className="bg-white">
+                    <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
+                      Co-op Hours Each Day
+                    </div>
+                    <div className="mt-1">
+                      <HoursDisplay coOpHours={hours} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[200px] sm:w-[280px] justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                     <Calendar
             mode="single"
             selected={date}
             onSelect={setDate}
@@ -121,12 +141,14 @@ const DateState = ({ hours }: StatusProps) => {
             disabled={{ before: now, after: now }}
             initialFocus
           />
-        </PopoverContent>
-      </Popover>
-      <ScrollArea className="h-72 w-48 rounded-md border">
-        <div className="p-4">
-          <h4 className="mb-4 text-sm font-medium leading-none">Options</h4>
-          {!options.length ? <div>No available times on this day</div> : null}
+                  </PopoverContent>
+                </Popover>
+                <ScrollArea className="h-[16.1rem] w-full rounded-md border mt-1">
+                  <div className="p-4">
+                    <h4 className="mb-4 text-sm font-medium leading-none">
+                      Open Hours
+                    </h4>
+                    {!options.length ? <div>No available times on this day</div> : null}
           {options.map((option) => (
             <div className="hover:bg-slate">
               <div
@@ -137,11 +159,16 @@ const DateState = ({ hours }: StatusProps) => {
                 {option}
               </div>
               <Separator className="my-2" />
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    </>
+                      </>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 
