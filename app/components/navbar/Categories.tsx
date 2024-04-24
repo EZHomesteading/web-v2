@@ -19,6 +19,7 @@ import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import Filters from "./filter";
+import { UserInfo } from "@/next-auth";
 
 export const categories = [
   {
@@ -82,8 +83,11 @@ export const categories = [
     description: "",
   },
 ];
+interface Props {
+  user?: UserInfo;
+}
 
-const Categories = () => {
+const Categories = ({ user }: Props) => {
   const params = useSearchParams();
   const q = params?.get("q");
   const pathname = usePathname();
@@ -96,7 +100,7 @@ const Categories = () => {
 
   return (
     <Container>
-      <Filters />
+      <Filters user={user} />
       <div
         className="
           p-0

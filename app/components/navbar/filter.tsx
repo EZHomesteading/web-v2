@@ -1,65 +1,80 @@
 "use client";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import { Slider } from "./radius-slider";
 import { Switch } from "../ui/switch";
 import { UserRole } from "@prisma/client";
-import { currentUser } from "@/lib/auth";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
-
-const Filters = () => {
+import FiltersIcon from "../ui/filters-icon";
+import { UserInfo } from "@/next-auth";
+import { Button } from "../ui/button";
+interface Props {
+  user?: UserInfo;
+}
+const Filters = ({ user }: Props) => {
   const [radius, setRadius] = useState(0);
-  const user = useCurrentUser();
+  const [showCoops, setShowCoops] = useState(user?.role === UserRole.COOP);
+  const [showProducers, setShowProducers] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const showRadiusSlider = searchParams?.get("lat") && searchParams?.get("lng");
+  const r = searchParams?.get("radius");
+  const rMi = r ? Math.round(parseFloat(r) * 0.621371 * 10) / 10 : 0;
+
+  const handleSeeListings = () => {
+    const params = new URLSearchParams(searchParams?.toString());
+    const rKm = (radius / 0.621371).toFixed(1);
+    params.set("radius", rKm);
+
+    router.push(`/shop?${params.toString()}`);
+  };
+
   return (
     <Sheet>
       <SheetTrigger className="absolte flex flex-row border-[1px] border-gray-500 rounded-full px-2 py-2 bg-transparent">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
-          />
-        </svg>
-        Filters
+        <FiltersIcon /> Filters
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-screen sm:w-1/2 md:w-1/3 2xl:w-1/5 px-2 sm:px-4"
+        className="w-screen sm:w-1/2 md:w-1/3 2xl:w-1/5 px-2 sm:px-4 flex flex-col"
       >
         <SheetHeader>Filters</SheetHeader>
-        <Slider
-          min={1.1}
-          max={50}
-          step={0.1}
-          className="px-2"
-          value={[radius]}
-          onValueChange={(value) => setRadius(value[0])}
-        />
-        {user ? (
-          user?.role == UserRole.COOP ? (
-            <div className="flex flex-col">
-              <div className="flex flex-row">
-                <Switch /> Co-ops
-              </div>
-              <div className="flex flex-row">
-                <Switch /> Producers
-              </div>
-            </div>
-          ) : user?.role == UserRole.PRODUCER ? (
-            <></>
-          ) : (
-            <></>
-          )
-        ) : (
-          <></>
+        {showRadiusSlider && (
+          <Slider
+            min={1}
+            max={50}
+            step={0.5}
+            className="px-2"
+            value={[radius || rMi]}
+            onValueChange={(value) => setRadius(value[0])}
+          />
         )}
+        {user?.role === UserRole.COOP && (
+          <>
+            <div>
+              <Switch
+                checked={showCoops}
+                onCheckedChange={setShowCoops}
+              ></Switch>
+              Co-ops
+            </div>
+            <div>
+              <Switch
+                checked={showProducers}
+                onCheckedChange={setShowProducers}
+              ></Switch>
+              Producers
+            </div>
+          </>
+        )}
+        {(user?.role !== UserRole.COOP || (showCoops && !showProducers)) && (
+          <div>
+            <Switch /> Pick Produce Myself
+          </div>
+        )}
+        <SheetTrigger>
+          <Button onClick={handleSeeListings}>See Listings</Button>
+        </SheetTrigger>
       </SheetContent>
     </Sheet>
   );

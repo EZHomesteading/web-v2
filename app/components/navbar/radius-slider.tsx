@@ -2,13 +2,16 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
+interface SliderProps
+  extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {}
+
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+  SliderProps
 >(({ className, value, onValueChange, ...props }, ref) => {
   return (
     <div>
-      <div className="mb-3">Radius </div>
+      <div className="mb-3">Radius</div>
       <SliderPrimitive.Root
         ref={ref}
         className={cn(

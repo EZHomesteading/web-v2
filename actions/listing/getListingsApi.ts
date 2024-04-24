@@ -44,6 +44,7 @@ export default async function GetListings(
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
+      console.log("user:", userLocation);
 
       const radiusInMeters = parseFloat(radius) * 1000;
 
@@ -57,6 +58,9 @@ export default async function GetListings(
         };
 
         const distance = haversine(listingCoordinates, userLocation);
+        console.log("listing:", listingCoordinates);
+        console.log("distance", distance);
+
         return distance <= radiusInMeters;
       });
     }
@@ -107,72 +111,3 @@ export default async function GetListings(
     throw new Error(error);
   }
 }
-
-// interface IParams {
-//   listingId?: string;
-// }
-
-// export const getListingById = async (params: IParams) => {
-//   try {
-//     const { listingId } = params;
-
-//     const listing = await prisma.listing.findUnique({
-//       where: {
-//         id: listingId,
-//       },
-//       include: {
-//         user: true,
-//       },
-//     });
-
-//     if (!listing) {
-//       return null;
-//     }
-
-//     return {
-//       ...listing,
-//       createdAt: listing.createdAt.toString(),
-//       user: {
-//         ...listing.user,
-//         createdAt: listing.user.createdAt.toString(),
-//         updatedAt: listing.user.updatedAt.toString(),
-//         emailVerified: listing.user.emailVerified?.toString() || null,
-//       },
-//     };
-//   } catch (error: any) {
-//     console.error(error);
-//     throw new Error(error);
-//   }
-// };
-
-// export interface ListingsParams {
-//   userId?: string;
-// }
-
-// export default async function getListingsByUserId(params: ListingsParams) {
-//   try {
-//     const { userId } = params;
-
-//     let query: any = {};
-
-//     if (userId) {
-//       query.userId = userId;
-//     }
-
-//     let listings = await prisma.listing.findMany({
-//       where: query,
-//       orderBy: {
-//         createdAt: "desc",
-//       },
-//     });
-
-//     const safeListings = listings.map((listing) => ({
-//       ...listing,
-//       createdAt: listing.createdAt.toISOString(),
-//     }));
-
-//     return safeListings;
-//   } catch (error: any) {
-//     throw new Error(error);
-//   }
-// }
