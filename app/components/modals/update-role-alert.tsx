@@ -12,7 +12,7 @@ import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import { Button } from "@/app/components/ui/button";
 import Cancel from "@/app/components/icons/cancel-svg";
 import Link from "next/link";
-import { CiCircleInfo } from "react-icons/ci";
+import { CiCircleInfo, CiSquarePlus } from "react-icons/ci";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import Image from "next/image";
@@ -42,7 +42,9 @@ export function UpdateRoleAlert({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>Add a Product</Button>
+        <Button className="shadow-none">
+          <CiSquarePlus className="text-sm sm:text-lg md:text-2xl" />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-white rounded-lg w-full h-4/5 md:w-1/2 md:h-1/2 flex flex-row justify-start">
         <Image

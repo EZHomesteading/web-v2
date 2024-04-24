@@ -60,8 +60,7 @@ const UserMenu = ({ user }: Props) => {
         <SheetTrigger>
           <div
             className="
-          p-4
-          md:py-1
+          p-2
           md:px-2
           sm:border-[1px] 
           sm:border-neutral-200 
@@ -82,7 +81,7 @@ const UserMenu = ({ user }: Props) => {
           </div>
         </SheetTrigger>
       </div>
-      <SheetContent className="bg-white w-full">
+      <SheetContent className="bg-white w-full ">
         <div>
           <div>
             {user?.role === "COOP" ? (

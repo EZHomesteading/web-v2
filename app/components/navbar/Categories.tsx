@@ -65,7 +65,7 @@ export const categories = [
     description: "",
   },
   {
-    label: "Herbs and Spices",
+    label: "Herbs",
     icon: GiCoolSpices,
     description: "",
   },
@@ -96,22 +96,17 @@ export const categories = [
   },
 ];
 
-// Categories component
 const Categories = () => {
-  // Get the search parameters and current pathname
   const params = useSearchParams();
   const q = params?.get("q");
   const pathname = usePathname();
 
-  // Check if it's the main page
   const isShopPage = pathname === "/shop" && "/";
 
-  // If it's not the main page, return null
   if (!isShopPage) {
     return null;
   }
 
-  // Render the Categories component
   return (
     <Container>
       <div
@@ -123,7 +118,8 @@ const Categories = () => {
           items-center 
           justify-between
           overflow-x-auto
-        "
+          overflow-y-auto
+          h-fit        "
       >
         {/* Map through the categories array and render a CategoryBox for each */}
         {categories.map((item) => (
