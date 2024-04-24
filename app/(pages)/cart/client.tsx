@@ -19,25 +19,35 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "./components/counter";
 import DateState from "./components/dateStates";
 import { Hours } from "@prisma/client";
+import { UserInfo, CartGroups } from "@/next-auth";
+import { id } from "date-fns/locale";
 interface CartProps {
   cartItems?: any;
-  user?: any;
+  user?: UserInfo;
 }
 
 const Cart = ({ cartItems, user }: CartProps) => {
-  const [validTime, setValidTime] = useState(false);
+  const [validTime, setValidTime] = useState<any>();
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
       0
     )
   );
+
+  //need to send back selected pickup date from dateStates.
+
+  //for checkout
+  //checkout groups {order:1,
+  // selectedPickupTime:Date}[]
+  //need the pickup times from date State
+  // need them set to each order when checkout is started.
+  //pickup times need to have a value assigned to them that allows me to attach them to the proper order on creation
+
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
-  const handleInvalidTime = (childValidTime: any) => {
-    setValidTime(childValidTime);
-  };
+
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -66,6 +76,71 @@ const Cart = ({ cartItems, user }: CartProps) => {
     await axios.delete(`/api/cart`);
     router.refresh();
   };
+  function convertToDate(dateString: string) {
+    // Remove the leading text "Estimated Expiry Date: "
+    const datePart = dateString.split(": ")[1];
+
+    // Convert the date string to a Date object
+    const dateObj = new Date(datePart);
+
+    return dateObj;
+  }
+  const mappedCartItems: CartGroups = cartItems.reduce(
+    (acc: any, cartItem: any, index: number) => {
+      const expiry = convertToDate(shelfLife(cartItem.listing)); // Replace with the actual expiry date calculation
+      const existingOrder = acc[acc.length - 1];
+      const prevCartItem = cartItems[index - 1];
+
+      if (
+        existingOrder &&
+        prevCartItem?.listing.userId === cartItem.listing.userId
+      ) {
+        if (existingOrder.expiry > expiry) {
+          existingOrder.expiry = expiry;
+        }
+      }
+      if (prevCartItem?.listing.userId !== cartItem.listing.userId) {
+        acc.push({
+          expiry,
+          cartIndex: index,
+        });
+      }
+      return acc;
+    },
+    []
+  );
+  function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {
+    let foundObject = null;
+
+    arr.forEach((obj: any, index: number) => {
+      if (obj.cartIndex === targetCartIndex) {
+        arr[index].expiry = validTime.pickupTime;
+      }
+    });
+    console.log(arr);
+    return foundObject;
+  }
+  useEffect(() => {
+    if (validTime) {
+      updateObjectWithCartIndex(mappedCartItems, validTime.index);
+    }
+  }),
+    [validTime];
+  const handleTime = (childTime: Date) => {
+    setValidTime(childTime);
+  };
+  function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
+    let foundObject = null;
+
+    arr.forEach((obj: any) => {
+      if (obj.cartIndex === targetCartIndex) {
+        foundObject = obj;
+      }
+    });
+
+    return foundObject;
+  }
+  console.log("RELOADED!");
 
   return (
     <>
@@ -95,8 +170,12 @@ const Cart = ({ cartItems, user }: CartProps) => {
                           <p>{cartItem.listing.user.name}</p>
                           <DateState
                             hours={cartItem?.listing.user.hours as Hours}
-                            onValidChange={handleInvalidTime}
+                            onSetTime={handleTime}
                             index={index}
+                            cartGroup={findObjectWithCartIndex(
+                              mappedCartItems,
+                              index
+                            )}
                           />
                         </li>
                       ) : null}
