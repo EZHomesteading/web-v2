@@ -25,6 +25,14 @@ type Location = {
   coordinates: number[];
   address: string[];
 };
+type CartGroup = {
+  expiry?: date;
+  cartIndex?: number;
+};
+
+type CartGroups = {
+  cartGroup: CartGroup[];
+};
 
 declare module "next-auth" {
   interface Session {
