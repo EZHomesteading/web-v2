@@ -35,8 +35,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
     )
   );
 
-  //need to send back selected pickup date from dateStates.
-
   //for checkout
   //checkout groups {order:1,
   // selectedPickupTime:Date}[]
