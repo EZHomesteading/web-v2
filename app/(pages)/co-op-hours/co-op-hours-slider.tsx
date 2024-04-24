@@ -20,7 +20,6 @@ export default function CoopHoursSlider({
   onPrevDay,
 }: CoopHoursSliderProps) {
   const [values, setValues] = useState([hours.open, hours.close]);
-  console.log(hours.open, hours.close);
   const handleChange = (newValues: number[]) => {
     setValues(newValues);
     onChange(newValues[0], newValues[1]);

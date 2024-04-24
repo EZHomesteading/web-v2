@@ -12,11 +12,14 @@ import {
   GiMilkCarton,
 } from "react-icons/gi";
 import { LuNut, LuBeef } from "react-icons/lu";
-import { CiApple } from "react-icons/ci";
+import { CiApple, CiFilter } from "react-icons/ci";
 import { FaSeedling } from "react-icons/fa6";
 
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import Filters from "./filter";
+import { UserInfo } from "@/next-auth";
 
 export const categories = [
   {
@@ -39,26 +42,11 @@ export const categories = [
     icon: GiBread,
     description: "",
   },
-  // {
-  //   label: "Poultry",
-  //   icon: GiRoastChicken,
-  //   description: "",
-  // },
   {
     label: "Meats",
     icon: LuBeef,
     description: "",
   },
-  // {
-  //   label: "Survival",
-  //   icon: GiBoatFishing,
-  //   description: "",
-  // },
-  // {
-  //   label: "Seafood",
-  //   icon: GiFoodChain,
-  //   description: "",
-  // },
   {
     label: "Grains",
     icon: GiGrainBundle,
@@ -95,8 +83,11 @@ export const categories = [
     description: "",
   },
 ];
+interface Props {
+  user?: UserInfo;
+}
 
-const Categories = () => {
+const Categories = ({ user }: Props) => {
   const params = useSearchParams();
   const q = params?.get("q");
   const pathname = usePathname();
@@ -109,6 +100,7 @@ const Categories = () => {
 
   return (
     <Container>
+      <Filters user={user} />
       <div
         className="
           p-0
@@ -119,9 +111,9 @@ const Categories = () => {
           justify-between
           overflow-x-auto
           overflow-y-auto
-          h-fit        "
+          h-fit
+          relative    "
       >
-        {/* Map through the categories array and render a CategoryBox for each */}
         {categories.map((item) => (
           <CategoryBox
             key={item.label}
