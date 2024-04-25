@@ -44,7 +44,6 @@ export default async function GetListings(
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
-      console.log("user:", userLocation);
 
       const radiusInMeters = parseFloat(radius) * 1000;
 
@@ -58,8 +57,6 @@ export default async function GetListings(
         };
 
         const distance = haversine(listingCoordinates, userLocation);
-        console.log("listing:", listingCoordinates);
-        console.log("distance", distance);
 
         return distance <= radiusInMeters;
       });

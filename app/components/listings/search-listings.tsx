@@ -98,7 +98,7 @@ const FindListingsComponent = () => {
       if (latLng) {
         lat = latLng.lat.toString();
         lng = latLng.lng.toString();
-        radius = 20;
+        radius = 32.2;
       } else if (location) {
         const geoData = await getLatLngFromAddress(location);
         radius = 20;

@@ -8,13 +8,16 @@ import { UserRole } from "@prisma/client";
 import FiltersIcon from "../ui/filters-icon";
 import { UserInfo } from "@/next-auth";
 import { Button } from "../ui/button";
+
 interface Props {
   user?: UserInfo;
 }
 const Filters = ({ user }: Props) => {
   const [radius, setRadius] = useState(0);
-  const [showCoops, setShowCoops] = useState(user?.role === UserRole.COOP);
-  const [showProducers, setShowProducers] = useState(false);
+  const [showCoops, setShowCoops] = useState(false);
+  const [showProducers, setShowProducers] = useState(
+    user?.role === UserRole.COOP
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
   const showRadiusSlider = searchParams?.get("lat") && searchParams?.get("lng");
@@ -52,17 +55,14 @@ const Filters = ({ user }: Props) => {
         {user?.role === UserRole.COOP && (
           <>
             <div>
-              <Switch
-                checked={showCoops}
-                onCheckedChange={setShowCoops}
-              ></Switch>
+              <Switch checked={showCoops} onCheckedChange={setShowCoops} />{" "}
               Co-ops
             </div>
             <div>
               <Switch
                 checked={showProducers}
                 onCheckedChange={setShowProducers}
-              ></Switch>
+              />{" "}
               Producers
             </div>
           </>
