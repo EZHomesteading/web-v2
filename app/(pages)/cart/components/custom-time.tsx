@@ -54,7 +54,8 @@ const CustomTime = ({
 
           <CardContent>
             Not in a rush? Feel free to set a pick up anytime within the
-            freshness window of your cart items and this co-op's open hours.
+            freshness window of your cart items and this co-op&apos;s open
+            hours.
           </CardContent>
         </Card>
       </SheetTrigger>

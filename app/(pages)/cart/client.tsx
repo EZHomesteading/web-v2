@@ -23,6 +23,7 @@ import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
+
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
