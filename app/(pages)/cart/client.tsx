@@ -21,7 +21,13 @@ import { Hours } from "@prisma/client";
 import { UserInfo, CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
-
+import { Outfit } from "next/font/google";
+import Link from "next/link";
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 interface CartProps {
   cartItems?: any;
   user?: UserInfo;
@@ -144,8 +150,8 @@ const Cart = ({ cartItems, user }: CartProps) => {
       <div className="bg-white">
         <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
           <header className="flex flex-row gap-x-2 items-center justify-between">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Shopping Cart
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Cart
             </h1>
             <div className="justify-center">
               <Button
@@ -174,7 +180,11 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       {prevCartItem?.listing.userId !==
                       cartItem.listing.userId ? (
                         <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
-                          <p>{cartItem.listing.user.name}</p>
+                          <p
+                            className={`${outfit.className} text-2xl md:text-4xl`}
+                          >
+                            {cartItem.listing.user.name}
+                          </p>
                           <DateState
                             hours={cartItem?.listing.user.hours as Hours}
                             onSetTime={handleTime}
@@ -188,7 +198,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       ) : null}
                       <li
                         key={cartItem.listing.id}
-                        className="flex py-6 sm:py-10"
+                        className="flex py-3 sm:py-8"
                       >
                         <div className="flex-shrink-0">
                           <Image
@@ -205,12 +215,12 @@ const Cart = ({ cartItems, user }: CartProps) => {
                             <div>
                               <div className="flex justify-between">
                                 <h3 className="text-sm">
-                                  <a
+                                  <Link
                                     href={`listings/${cartItem.listing.id}`}
                                     className="font-medium text-gray-700 hover:text-gray-800"
                                   >
                                     {cartItem.listing.title}
-                                  </a>
+                                  </Link>
                                 </h3>
                               </div>
                               <div className="mt-1 flex text-sm">

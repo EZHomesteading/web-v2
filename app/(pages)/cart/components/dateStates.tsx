@@ -1,6 +1,7 @@
 "use client";
 
-import { Sheet, SheetTrigger, SheetContent } from "@/app/components/ui/sheet";
+import { SheetCart } from "@/app/components/ui/sheet-cart";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { Hours } from "@prisma/client";
 import * as React from "react";
@@ -19,6 +20,18 @@ import { Popover } from "@radix-ui/react-popover";
 import { PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { HoursDisplay } from "../../co-op-hours/hours-display";
 import { CartGroup } from "@/next-auth";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/app/components/ui/card";
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface StatusProps {
   hours: Hours;
@@ -211,7 +224,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   return (
     <div className="relative">
       <Sheet>
-        <SheetTrigger className="border-black border-[1px] px-2 py-2 rounded-lg shadow-lg">
+        <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
           {selectedTime ? (
             <>{formatPickupTime(selectedTime)}</>
           ) : (
@@ -219,18 +232,40 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
           )}
         </SheetTrigger>
         <SheetContent
-          side="top"
-          className="rounded-lg px-2 py-2 h-screen sm:h-fit sm:w-fit  w-[400px]"
+          side="bottom"
+          className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center "
         >
           <Sheet>
-            <div className="">
-              <Button className="mr-2" onClick={handleAsSoonAsPossible}>
-                As soon as possible
-              </Button>
-              <SheetTrigger>
-                <Button>Custom Time</Button>
+            <Card
+              className="lg:w-1/4 lg:h-1/4 h-1/3 mx-2 cursor-pointer flex flex-col items-center justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200"
+              onClick={handleAsSoonAsPossible}
+            >
+              <CardHeader
+                className={`text-2xl 2xl:text-2xl pb-0 mb-0 ${outfit.className}`}
+              >
+                Pickup as soon as possible
+              </CardHeader>
+              <CardContent className="text-sm">
+                In a hurry? The earliest possible time for pickup from this
+                co-op is PICKUP TIME HERE
+              </CardContent>
+            </Card>
+            <Card className="lg:w-1/4 lg:h-1/4 h-1/3 mx-2 cursor-pointer hover:shadow-xl opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
+              <SheetTrigger className="">
+                <CardHeader
+                  className={`text-2xl 2xl:text-2xl pb-0 mb-0 ${outfit.className}`}
+                >
+                  Set a custom pickup time
+                </CardHeader>
+                <div className="items-start justify-start flex flex-col">
+                  <CardContent className="text-sm flex flex-col justify-items-start">
+                    Not in a rush? Feel free to set a pick up anytime within the
+                    freshness window of your cart items and this co-op's open
+                    hours.
+                  </CardContent>
+                </div>
               </SheetTrigger>
-            </div>
+            </Card>
             <SheetContent
               side="top"
               className="flex flex-col md:flex-row items-center sm:items-start justify-center h-screen sm:h-fit"
@@ -304,33 +339,3 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
 };
 
 export default DateState;
-//   const currentDayIndex = (new Date().getDay() + 6) % 7; //updaters
-//   const todayHours = hours[currentDayIndex as keyof Hours];
-//   const validPickup = (
-//     todayHours: { open: number; close: number }[] | undefined
-//   ): boolean => {
-//     if (!todayHours) {
-//       return false;
-//     }
-//     if (selectedMinutes < now.getHours() * 60 + now.getMinutes()) {
-//       return false;
-//     }
-//     if (selectedDateTime.getDate() < now.getDate()) {
-//       return false;
-//     }
-//     if (selectedDateTime.getDay() != now.getDay()) {
-//       const newHoursIndex = (selectedDateTime.getDay() + 6) % 7;
-//       const newHours = hours[newHoursIndex as keyof Hours];
-//       return newHours.some(
-//         (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
-//       );
-//     }
-//     return todayHours.some(
-//       (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
-//     );
-//   };
-//   const validTime = validPickup(todayHours);
-//   useEffect(() => {
-//     onValidChange(validTime);
-//   }),
-//     [validTime];
