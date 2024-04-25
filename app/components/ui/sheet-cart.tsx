@@ -6,6 +6,15 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "./card";
+import { Outfit } from "next/font/google";
+import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
+
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const SheetCartC = SheetPrimitive.Root;
 
@@ -51,26 +60,47 @@ const sheetVariants = cva(
 
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  earliestPickupTime: string | null;
+  handleAsSoonAsPossible: () => void;
+}
 
 const SheetContentC = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentCProps
->(({ side = "right", className, children, ...props }, ref) => (
-  <SheetPortalC>
-    <SheetOverlayC />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(sheetVariants({ side }), className)}
-      {...props}
-    >
-      {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <IoReturnDownBack className="lg:h-20 lg:w-20 h-8 w-8" />
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortalC>
-));
+>(
+  (
+    {
+      side = "right",
+      className,
+      children,
+      earliestPickupTime,
+      handleAsSoonAsPossible,
+      ...props
+    },
+    ref
+  ) => (
+    <SheetPortalC>
+      <SheetOverlayC />
+      <SheetPrimitive.Content
+        ref={ref}
+        className={cn(sheetVariants({ side }), className)}
+        {...props}
+      >
+        <SheetPrimitive.Close>
+          <EarliestPickup
+            handleAsSoonAsPossible={handleAsSoonAsPossible}
+            earliestPickupTime={earliestPickupTime || ""}
+          />
+        </SheetPrimitive.Close>
+        {children}
+        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+          <IoReturnDownBack className="lg:h-20 lg:w-20 h-8 w-8" />
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortalC>
+  )
+);
 SheetContentC.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeaderC = ({

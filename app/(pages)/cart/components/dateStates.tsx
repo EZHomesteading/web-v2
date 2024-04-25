@@ -224,12 +224,10 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       <SheetContentC
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
+        handleAsSoonAsPossible={handleAsSoonAsPossible}
+        earliestPickupTime={earliestPickupTime}
       >
         <Sheet>
-          <EarliestPickup
-            handleAsSoonAsPossible={handleAsSoonAsPossible}
-            earliestPickupTime={earliestPickupTime || "loading"}
-          />
           <CustomTime
             hours={hours}
             options={options}
