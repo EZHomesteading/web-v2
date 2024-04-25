@@ -108,9 +108,8 @@ const CustomTime = ({
                 <div>No available times on this day</div>
               ) : null}
               {options.map((option) => (
-                <div className="hover:bg-slate">
+                <div key={option} className="hover:bg-slate">
                   <div
-                    key={option}
                     className="text-sm cursor-pointer hover:bg-slate-400"
                     onClick={() => setTime(option)}
                   >

@@ -179,7 +179,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                     <div key={cartItem.listingId}>
                       {prevCartItem?.listing.userId !==
                       cartItem.listing.userId ? (
-                        <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
+                        <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p
                             className={`${outfit.className} text-2xl md:text-4xl`}
                           >

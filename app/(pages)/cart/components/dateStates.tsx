@@ -26,6 +26,8 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
   const [selectedTime, setSelectedTime] = useState<any>();
   const [options, setOptions] = useState<string[]>([]);
+  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null);
+
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>(
     null
   );
@@ -175,12 +177,17 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       });
       setEarliestPickupTime(formattedEarliestTime);
     }
-  };
 
+    return nextAvailableTime;
+  };
+  useEffect(() => {
+    const nextAvailableTime = calculateEarliestPickupTime();
+    setNextAvailableTime(nextAvailableTime);
+  }, []);
   const handleAsSoonAsPossible = () => {
-    if (earliestPickupTime) {
+    if (nextAvailableTime) {
       setSelectedTime({
-        pickupTime: earliestPickupTime,
+        pickupTime: nextAvailableTime,
         index: index,
       });
     }
@@ -219,7 +226,11 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   return (
     <SheetCartC>
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
-        {selectedTime?.pickupTime || "Set Pickup Time"}
+        {selectedTime?.pickupTime ? (
+          <>{formatPickupTime(selectedTime)}</>
+        ) : (
+          "Set Pickup Time"
+        )}
       </SheetTrigger>
       <SheetContentC
         side="top"

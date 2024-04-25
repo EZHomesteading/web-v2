@@ -90,7 +90,9 @@ const SheetContentC = React.forwardRef<
         <SheetPrimitive.Close>
           <EarliestPickup
             handleAsSoonAsPossible={handleAsSoonAsPossible}
-            earliestPickupTime={earliestPickupTime || ""}
+            earliestPickupTime={
+              earliestPickupTime || "not available at this time"
+            }
           />
         </SheetPrimitive.Close>
         {children}
