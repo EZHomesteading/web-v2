@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { Button } from "./ui/button";
 
 interface Create {
   cartItems: any;
@@ -130,12 +131,12 @@ const OrderCreate = ({ cartItems }: Create) => {
   } else {
     return (
       <div>
-        <button
+        <Button
           onClick={createOrder}
-          className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+          className="bg-green-300 text-black hover:text-white hover:bg-green-600 shadow-md hover:shadow-xl"
         >
           Checkout
-        </button>
+        </Button>
       </div>
     );
   }

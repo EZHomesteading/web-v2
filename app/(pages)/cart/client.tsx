@@ -14,13 +14,14 @@ import { addDays, format } from "date-fns";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import OrderCreate from "@/app/components/order-create";
-import Button from "@/app/components/Button";
+import { Button } from "@/app/components/ui/button";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "./components/counter";
 import DateState from "./components/dateStates";
 import { Hours } from "@prisma/client";
 import { UserInfo, CartGroups } from "@/next-auth";
-import { id } from "date-fns/locale";
+import { BsTrash2 } from "react-icons/bs";
+
 interface CartProps {
   cartItems?: any;
   user?: UserInfo;
@@ -144,10 +145,20 @@ const Cart = ({ cartItems, user }: CartProps) => {
     <>
       <div className="bg-white">
         <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Shopping Cart
-          </h1>
-          <Button label="Clear Cart" onClick={handleDelete}></Button>
+          <header className="flex flex-row gap-x-2 items-center justify-between">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Shopping Cart
+            </h1>
+            <div className="justify-center">
+              <Button
+                className="bg-red-300 text-black hover:bg-red-600 hover:text-white hover:shadow-lg shadow-md"
+                onClick={handleDelete}
+              >
+                <BsTrash2 className="text-lg mr-1" />
+                Empty Cart
+              </Button>
+            </div>
+          </header>
           <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
               <h2 id="cart-heading" className="sr-only">
