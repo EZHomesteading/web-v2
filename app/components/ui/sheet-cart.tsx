@@ -7,15 +7,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 
-const SheetCart = SheetPrimitive.Root;
+const SheetCartC = SheetPrimitive.Root;
 
-const SheetTriggerCart = SheetPrimitive.Trigger;
+const SheetTriggerC = SheetPrimitive.Trigger;
 
-const SheetCloseCart = SheetPrimitive.Close;
+const SheetCloseC = SheetPrimitive.Close;
 
-const SheetPortalCart = SheetPrimitive.Portal;
+const SheetPortalC = SheetPrimitive.Portal;
 
-const SheetOverlayCart = React.forwardRef<
+const SheetOverlayC = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
@@ -28,7 +28,7 @@ const SheetOverlayCart = React.forwardRef<
     ref={ref}
   />
 ));
-SheetOverlayCart.displayName = SheetPrimitive.Overlay.displayName;
+SheetOverlayC.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
   "fixed z-50 gap-4 bg-background py-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
@@ -49,32 +49,31 @@ const sheetVariants = cva(
   }
 );
 
-interface SheetContentProps
+interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 
-const SheetContentCart = React.forwardRef<
+const SheetContentC = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
-  SheetContentProps
+  SheetContentCProps
 >(({ side = "right", className, children, ...props }, ref) => (
-  <SheetPortalCart>
-    <SheetOverlayCart />
+  <SheetPortalC>
+    <SheetOverlayC />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <IoReturnDownBack className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+        <IoReturnDownBack className="lg:h-20 lg:w-20 h-8 w-8" />
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
-  </SheetPortalCart>
+  </SheetPortalC>
 ));
-SheetContentCart.displayName = SheetPrimitive.Content.displayName;
+SheetContentC.displayName = SheetPrimitive.Content.displayName;
 
-const SheetHeaderCart = ({
+const SheetHeaderC = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -86,9 +85,9 @@ const SheetHeaderCart = ({
     {...props}
   />
 );
-SheetHeaderCart.displayName = "SheetHeader";
+SheetHeaderC.displayName = "SheetHeader";
 
-const SheetFooterCart = ({
+const SheetFooterC = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -100,9 +99,9 @@ const SheetFooterCart = ({
     {...props}
   />
 );
-SheetFooterCart.displayName = "SheetFooter";
+SheetFooterC.displayName = "SheetFooter";
 
-const SheetTitleCart = React.forwardRef<
+const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
@@ -112,9 +111,9 @@ const SheetTitleCart = React.forwardRef<
     {...props}
   />
 ));
-SheetTitleCart.displayName = SheetPrimitive.Title.displayName;
+SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
-const SheetDescriptionCart = React.forwardRef<
+const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (
@@ -124,17 +123,17 @@ const SheetDescriptionCart = React.forwardRef<
     {...props}
   />
 ));
-SheetDescriptionCart.displayName = SheetPrimitive.Description.displayName;
+SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
-  SheetCart,
-  SheetPortalCart,
-  SheetOverlayCart,
-  SheetTriggerCart,
-  SheetCloseCart,
-  SheetContentCart,
-  SheetHeaderCart,
-  SheetFooterCart,
-  SheetTitleCart,
-  SheetDescriptionCart,
+  SheetCartC,
+  SheetPortalC,
+  SheetOverlayC,
+  SheetTriggerC,
+  SheetCloseC,
+  SheetContentC,
+  SheetHeaderC,
+  SheetFooterC,
+  SheetTitle,
+  SheetDescription,
 };
