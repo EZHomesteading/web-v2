@@ -177,12 +177,46 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       });
     }
   };
+
+  const formatPickupTime = (selectedTime: any) => {
+    if (!selectedTime) return "";
+
+    const { pickupTime } = selectedTime;
+    const now = new Date();
+    const pickupDate = new Date(pickupTime);
+
+    if (pickupDate.toDateString() === now.toDateString()) {
+      return `Today at ${pickupDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`;
+    } else if (pickupDate.getTime() < now.getTime() + 7 * 24 * 60 * 60 * 1000) {
+      return `${pickupDate.toLocaleDateString([], {
+        weekday: "long",
+      })} at ${pickupDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`;
+    } else {
+      return `${pickupDate.toLocaleDateString()} at ${pickupDate.toLocaleTimeString(
+        [],
+        {
+          hour: "numeric",
+          minute: "2-digit",
+        }
+      )}`;
+    }
+  };
+
   return (
     <div className="relative">
       <Sheet>
         <SheetTrigger className="border-black border-[1px] px-2 py-2 rounded-lg shadow-lg">
-          Set Pickup Time
-          {/* {user?.cartItem.pickup ? <>{pickuptime}</> : <>Set Pickup Time</>} */}
+          {selectedTime ? (
+            <>{formatPickupTime(selectedTime)}</>
+          ) : (
+            <>Set Pickup Time</>
+          )}
         </SheetTrigger>
         <SheetContent
           side="top"
