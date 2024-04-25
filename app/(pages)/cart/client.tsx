@@ -21,6 +21,7 @@ import DateState from "./components/dateStates";
 import { Hours } from "@prisma/client";
 import { UserInfo, CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
+import { MdErrorOutline } from "react-icons/md";
 
 interface CartProps {
   cartItems?: any;
@@ -159,7 +160,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
               </Button>
             </div>
           </header>
-          <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+          <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
               <h2 id="cart-heading" className="sr-only">
                 Items in your shopping cart
@@ -286,8 +287,8 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                 aria-hidden="true"
                               />
                             ) : (
-                              <ClockIcon
-                                className="h-5 w-5 flex-shrink-0 text-gray-300"
+                              <MdErrorOutline
+                                className="h-5 w-5 flex-shrink-0 text-red-700"
                                 aria-hidden="true"
                               />
                             )}
@@ -373,10 +374,10 @@ const Cart = ({ cartItems, user }: CartProps) => {
                   </dd>
                 </div>
               </dl>
+              <div className="mt-6">
+                <OrderCreate cartItems={cartItems} />
+              </div>
             </section>
-          </form>
-          <div className="mt-6">
-            <OrderCreate cartItems={cartItems} />
           </div>
         </main>
       </div>
