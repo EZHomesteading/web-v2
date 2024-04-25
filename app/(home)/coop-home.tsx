@@ -1,6 +1,7 @@
 import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
+import { Button } from "../components/ui/button";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -25,18 +26,24 @@ const CoopHome = ({ user }: Props) => {
             <span className="text-green-400 font-bold">{user.firstName}?</span>
           </div>
         </h1>
-        <div className="flex flex-row justify-evenly text-sm mt-5 ">
+        <div className="flex flex-row justify-evenly text-sm mt-5 gap-x-3">
           <Link href="/shop">
             {" "}
-            <button className="hover:underline">List my produce</button>
+            <Button className="hover:bg-green-100 hover:text-black">
+              Shop
+            </Button>
           </Link>
           <Link href="/map">
             {" "}
-            <button className="hover:underline">Find producers nearby</button>
+            <Button className="hover:bg-green-100 hover:text-black">
+              Find producers nearby
+            </Button>
           </Link>
           <Link href="/onboard">
             {" "}
-            <button className="hover:underline">Set up my store</button>
+            <Button className="hover:bg-green-100 hover:text-black">
+              Set up my store
+            </Button>
           </Link>
         </div>
       </header>
