@@ -18,22 +18,22 @@ import { Button } from "@/app/components/ui/button";
 import { Popover } from "@radix-ui/react-popover";
 import { PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { HoursDisplay } from "../../co-op-hours/hours-display";
+import { CartGroup } from "@/next-auth";
 
 interface StatusProps {
   hours: Hours;
-  onValidChange: any;
+  onSetTime: any;
   index: number;
+  cartGroup: CartGroup | null;
 }
 
-const DateState = ({ hours }: StatusProps) => {
-  const [date, setDate] = React.useState<Date>();
+const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const now = new Date();
-  const [selectedDateTime, setSelectedDateTime] = useState(now);
+  const [date, setDate] = useState<Date | undefined>(now);
+  const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
+  const [selectedTime, setSelectedTime] = useState<any>();
   const [options, setOptions] = useState<string[]>([]);
-  const [selectedMinutes, setSelectedMinutes] = useState(
-    selectedDateTime.getHours() * 60 + selectedDateTime.getMinutes()
-  );
-  //
+
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -42,23 +42,81 @@ const DateState = ({ hours }: StatusProps) => {
     const formattedMins = mins < 10 ? `0${mins}` : mins;
     return `${formattedHours}:${formattedMins} ${ampm}`;
   };
+
+  const roundNumber = (n: number) => {
+    if (n > 0) return Math.ceil(n / 30) * 30;
+    else if (n < 0) return Math.floor(n / 30) * 30;
+    else return 30;
+  };
+
   const buildArray = async () => {
     if (date === undefined) {
       return;
     }
+    const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
     const newHours = hours[newHoursIndex as keyof Hours];
     const resultantArray = [];
+    const roundedMin = roundNumber(currentMin);
+    if (date.getDate() < now.getDate()) {
+      return;
+    }
+    if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
+      for (let i = roundedMin; i <= newHours[0].close; i += 30) {
+        const time = formatTime(i);
+        resultantArray.push(time);
+      }
+      setOptions(resultantArray);
+      return;
+    }
     for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
       const time = formatTime(i);
       resultantArray.push(time);
     }
     setOptions(resultantArray);
   };
+
   useEffect(() => {
     setOptions([]);
     buildArray();
   }, [date]);
+
+  function insertTimeIntoDatetime(datetime: Date, timeString: string) {
+    const inputDatetime = new Date(datetime);
+
+    const matchResult = timeString.match(/(\d+):(\d+)\s*(\w*)/i);
+    if (!matchResult) {
+      console.error("Invalid time string format:", timeString);
+      return inputDatetime;
+    }
+    const [, hours, minutes, meridiem] = matchResult;
+    let parsedHours = parseInt(hours, 10);
+    if (meridiem) {
+      const isPM = meridiem.toUpperCase() === "PM";
+      if (isPM && parsedHours < 12) {
+        parsedHours += 12;
+      } else if (!isPM && parsedHours === 12) {
+        parsedHours = 0;
+      }
+    } else {
+      parsedHours = parsedHours % 24;
+    }
+    const parsedMinutes = parseInt(minutes, 10);
+    inputDatetime.setHours(parsedHours, parsedMinutes, 0, 0);
+    return inputDatetime;
+  }
+  const setTime = (option: string) => {
+    if (date && option) {
+      setSelectedTime({
+        pickupTime: insertTimeIntoDatetime(date, option),
+        index: index,
+      });
+    }
+  };
+  useEffect(() => {
+    onSetTime(selectedTime);
+  }),
+    [selectedTime];
   return (
     <div className="relative">
       <Sheet>
@@ -112,6 +170,8 @@ const DateState = ({ hours }: StatusProps) => {
                       mode="single"
                       selected={date}
                       onSelect={setDate}
+                      fromMonth={now}
+                      disabled={{ before: now, after: cartGroup?.expiry }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -121,13 +181,20 @@ const DateState = ({ hours }: StatusProps) => {
                     <h4 className="mb-4 text-sm font-medium leading-none">
                       Open Hours
                     </h4>
+                    {!options.length ? (
+                      <div>No available times on this day</div>
+                    ) : null}
                     {options.map((option) => (
-                      <>
-                        <div key={option} className="text-sm">
+                      <div className="hover:bg-slate">
+                        <div
+                          key={option}
+                          className="text-sm cursor-pointer hover:bg-slate-400"
+                          onClick={() => setTime(option)}
+                        >
                           {option}
                         </div>
                         <Separator className="my-2" />
-                      </>
+                      </div>
                     ))}
                   </div>
                 </ScrollArea>
