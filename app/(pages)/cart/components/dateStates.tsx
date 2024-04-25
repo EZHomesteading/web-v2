@@ -33,7 +33,6 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
   const [selectedTime, setSelectedTime] = useState<any>();
   const [options, setOptions] = useState<string[]>([]);
-
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -89,7 +88,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       console.error("Invalid time string format:", timeString);
       return inputDatetime;
     }
-    const [, hours, minutes, meridiem] = matchResult;
+    const [hours, minutes, meridiem] = matchResult;
     let parsedHours = parseInt(hours, 10);
     if (meridiem) {
       const isPM = meridiem.toUpperCase() === "PM";
@@ -117,6 +116,67 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     onSetTime(selectedTime);
   }),
     [selectedTime];
+
+  const handleAsSoonAsPossible = () => {
+    const now = new Date();
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+    let nextAvailableTime = null;
+    console.log("user time in minutes:", currentMin);
+    for (let i = 0; i < 7; i++) {
+      const newHoursIndex = ((now.getDay() + i) % 7) - 1;
+      console.log("index", newHoursIndex);
+      const newHours = hours[newHoursIndex as keyof Hours];
+
+      if (newHours.length === 0) continue;
+
+      const openTime = newHours[0].open; // time the co-op opens on the day
+      const closeTime = newHours[0].close; // time the co-op closes on the day
+      console.log("open time for co-op", openTime);
+      console.log("closing time for co-op", closeTime);
+
+      if (i === 0 && currentMin < closeTime) {
+        // if the user is trying to buy today and before the co-op is closed, proceed
+        if (currentMin < openTime) {
+          // if the user is trying to buy today and before the co-op is open, pick up is when the co-op opens plus 30 minutes
+          // we will need another check here that if the time difference between co-op open time and order time is less than the co-ops set out time, the pick up time is the order time plus set out time
+          console.log("entered case 1");
+          nextAvailableTime = new Date(now);
+          nextAvailableTime.setHours(
+            Math.floor(openTime / 60),
+            openTime % 60,
+            0,
+            0
+          );
+          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+        } else {
+          // if the user is buying today after the co-op has opened but before they close, the pick up is now plus the set out time
+          console.log("entered case 2");
+          nextAvailableTime = new Date(now);
+          nextAvailableTime.setMinutes(now.getMinutes() + 30);
+        }
+        break;
+      } else if (i > 0) {
+        console.log("entered case 3");
+        nextAvailableTime = new Date(now);
+        nextAvailableTime.setDate(now.getDate() + i);
+        nextAvailableTime.setHours(
+          Math.floor(openTime / 60),
+          openTime % 60,
+          0,
+          0
+        );
+        nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+        break;
+      }
+    }
+    console.log(nextAvailableTime);
+    if (nextAvailableTime) {
+      setSelectedTime({
+        pickupTime: nextAvailableTime,
+        index: index,
+      });
+    }
+  };
   return (
     <div className="relative">
       <Sheet>
@@ -130,7 +190,9 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         >
           <Sheet>
             <div className="">
-              <Button className="mr-2">As soon as possible</Button>
+              <Button className="mr-2" onClick={handleAsSoonAsPossible}>
+                As soon as possible
+              </Button>
               <SheetTrigger>
                 <Button>Custom Time</Button>
               </SheetTrigger>

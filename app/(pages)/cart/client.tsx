@@ -1,10 +1,9 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   CheckIcon,
-  ClockIcon,
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
@@ -117,7 +116,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
         arr[index].expiry = validTime.pickupTime;
       }
     });
-    console.log(arr);
     return foundObject;
   }
   useEffect(() => {
@@ -140,7 +138,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
     return foundObject;
   }
-  console.log("RELOADED!");
 
   return (
     <>
