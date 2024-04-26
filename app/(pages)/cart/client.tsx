@@ -23,6 +23,11 @@ import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -359,18 +364,17 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex text-sm text-gray-600">
                     <span>EZH Processing Fees Always</span>
-                    <a
-                      href="#"
-                      className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">
-                        Learn more about how tax is calculated
-                      </span>
-                      <QuestionMarkCircleIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </a>
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="h-5 w-5"
+                          aria-hidden="true"
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="absolute bottom-5">
+                        There are zero fees for EZH consumers buying from co-ops
+                      </PopoverContent>
+                    </Popover>
                   </dt>
                   <dd className="text-sm font-medium text-gray-900">$0.00</dd>
                 </div>
