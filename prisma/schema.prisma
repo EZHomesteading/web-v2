@@ -54,7 +54,7 @@ model User {
   phoneNumber           String? 
   location              Location?
   image                 String?
-  hours                 Hours?
+  hours                 Json?
   role                  UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
@@ -76,7 +76,7 @@ model User {
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
   sentMessages          Message[] @relation("SentMessages")
-  twoFactorConfirmation TwoFactorConfirmation?
+  // twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
 }
 
@@ -100,41 +100,41 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model VerificationToken {
-  id    String @id @default(cuid()) @map("_id")
-  email String
-  token String @unique
-  expires DateTime
+// model VerificationToken {
+//   id    String @id @default(cuid()) @map("_id")
+//   email String
+//   token String @unique
+//   expires DateTime
 
-  @@unique([email, token])
-}
+//   @@unique([email, token])
+// }
 
-model PasswordResetToken {
-  id String @id @default(cuid()) @map("_id")
-  email String
-  token String @unique
-  expires DateTime
+// model PasswordResetToken {
+//   id String @id @default(cuid()) @map("_id")
+//   email String
+//   token String @unique
+//   expires DateTime
 
-  @@unique([email, token])
-}
+//   @@unique([email, token])
+// }
 
-model TwoFactorToken {
-  id String @id @default(cuid()) @map("_id")
-  email String
-  token String @unique
-  expires DateTime
+// model TwoFactorToken {
+//   id String @id @default(cuid()) @map("_id")
+//   email String
+//   token String @unique
+//   expires DateTime
 
-  @@unique([email, token])
-}
+//   @@unique([email, token])
+// }
 
-model TwoFactorConfirmation {
-  id     String @id @default(cuid()) @map("_id")
+// model TwoFactorConfirmation {
+//   id     String @id @default(cuid()) @map("_id")
 
-  userId String @db.ObjectId
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId String @db.ObjectId
+//   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId])
-}
+//   @@unique([userId])
+// }
 
 model Listing {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
@@ -200,22 +200,22 @@ model Order {
 
 }
 
-model Payment {
-  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                String   @db.ObjectId
-  stripePaymentIntentId  String
-  amount                 Float
-  status                 String
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+// model Payment {
+//   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+//   orderId                String   @db.ObjectId
+//   stripePaymentIntentId  String
+//   amount                 Float
+//   status                 String
+//   createdAt              DateTime @default(now())
+//   updatedAt              DateTime @updatedAt
   
-  //order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-}
+//   //order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+// }
 
-model StripeIntents {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  paymentIds           String[] @db.ObjectId
-}
+// model StripeIntents {
+//   id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+//   paymentIds           String[] @db.ObjectId
+// }
 
 model Conversation {
   id                String @id @default(auto()) @map("_id") @db.ObjectId

@@ -1,5 +1,4 @@
-import { Hours } from "@prisma/client";
-
+import { Hours } from "@/next-auth";
 interface StatusProps {
   hours: Hours;
 }

@@ -6,9 +6,9 @@ import StripeStep from "./stripe-step";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Hours } from "@prisma/client";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
+import { ExtendedHours } from "@/next-auth";
 import {
   Popover,
   PopoverContent,
@@ -27,10 +27,9 @@ import {
 interface Props {
   user: UserInfo;
 }
-
 const Onboarding = ({ user }: Props) => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<{ hours?: Hours }>({});
+  const [formData, setFormData] = useState<{ hours?: ExtendedHours }>({});
   const [isLoading, setIsLoading] = useState(false);
   let defaultHours;
   if (user?.hours) {
@@ -47,11 +46,12 @@ const Onboarding = ({ user }: Props) => {
     };
   }
 
-  const [coOpHours, setCoOpHours] = useState<Hours>(defaultHours);
+  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
   const handleNext = async () => {
     if (step === 1) {
       setIsLoading(true);
       try {
+        console.log(coOpHours);
         const response = await axios.post("/api/update", { hours: coOpHours });
         console.log(coOpHours);
         if (response.status === 200) {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { Hours, Location, UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.error();
   }
+  console.log(body);
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
       role: role as UserRole,
       location: location as Location,
       subscriptions,
-      hours: hours as Hours,
+      hours,
     },
   });
   return NextResponse.json(updatedUser);

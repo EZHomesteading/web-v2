@@ -4,16 +4,13 @@ import { useState } from "react";
 import { HoursDisplay } from "./hours-display";
 import { DaySelect } from "./day-select";
 import { UserInfo } from "@/next-auth";
-import { Hours } from "@prisma/client";
 import { Outfit } from "next/font/google";
+import { ExtendedHours } from "@/next-auth";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 const outfit = Outfit({ subsets: ["latin"] });
-interface ExtendedHours extends Hours {
-  [key: number]: { open: number; close: number }[];
-}
 
 const days = [
   "Monday",
@@ -35,7 +32,24 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
 
   const handleNextDay = () => {
-    setCurrentDayIndex((prevIndex) => (prevIndex + 1) % days.length);
+    setCurrentDayIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % days.length;
+      const nextDayHours = coOpHours[nextIndex]?.[0];
+
+      if (nextDayHours === null) {
+        setCoOpHours((prevHours) => ({
+          ...prevHours,
+          [nextIndex]: [defaultHours],
+        }));
+      } else {
+        setCoOpHours((prevHours) => ({
+          ...prevHours,
+          [nextIndex]: null,
+        }));
+      }
+
+      return nextIndex;
+    });
   };
 
   const handlePrevDay = () => {
@@ -68,6 +82,13 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
     const currentTimes = coOpHours[currentDayIndex];
   };
 
+  const handleClose = () => {
+    setCoOpHours((prevHours) => ({
+      ...prevHours,
+      [currentDayIndex]: null,
+    }));
+    handleNextDay();
+  };
   const currentDay = days[currentDayIndex];
   const defaultHours = {
     open: 480,
@@ -83,7 +104,7 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
         </CardHeader> */}
         <CardContent>
           <div>
-            <Button onClick={handleNextDay} className="bg-red-900">
+            <Button onClick={handleClose} className="bg-red-900">
               Close on {currentDay}
             </Button>
             <CoopHoursSlider
