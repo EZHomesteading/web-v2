@@ -7,8 +7,8 @@ import {
 } from "@/app/components/ui/sheet-cart";
 import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
-import { Hours } from "@prisma/client";
 import { CartGroup } from "@/next-auth";
+import { ExtendedHours } from "@/next-auth";
 import EarliestPickup from "./earliest-pickup";
 import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
@@ -16,7 +16,7 @@ import { set } from "lodash";
 import axios from "axios";
 
 interface StatusProps {
-  hours: Hours;
+  hours: ExtendedHours;
   onSetTime: any;
   index: number;
   cartGroup: CartGroup | null;
@@ -58,7 +58,10 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     }
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
-    const newHours = hours[newHoursIndex as keyof Hours];
+    const newHours = hours[newHoursIndex as keyof ExtendedHours];
+    if (newHours === null) {
+      return; //early retur if co-op is closed
+    }
     const resultantArray = [];
     const roundedMin = roundNumber(currentMin);
     if (date.getDate() < now.getDate()) {
@@ -129,7 +132,11 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     for (let i = 0; i < 7; i++) {
       const newHoursIndex = ((now.getDay() + i) % 7) - 1;
       console.log("index", newHoursIndex);
-      const newHours = hours[newHoursIndex as keyof Hours];
+      const newHours = hours[newHoursIndex as keyof ExtendedHours];
+
+      if (newHours === null) {
+        continue; //skips to next day if the co-op is closed
+      }
 
       if (newHours.length === 0) continue;
 

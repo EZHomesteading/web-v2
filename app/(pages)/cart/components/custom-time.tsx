@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
-import { Hours } from "@prisma/client";
 import { CartGroup } from "@/next-auth";
+import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
 const outfit = Outfit({
   style: ["normal"],
@@ -24,7 +24,7 @@ const outfit = Outfit({
 });
 
 interface Props {
-  hours: Hours;
+  hours: ExtendedHours;
   date: Date | undefined;
   now: Date;
   cartGroup: CartGroup | null;
