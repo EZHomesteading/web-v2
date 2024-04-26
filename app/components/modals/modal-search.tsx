@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
-import Button from "../Button";
 import { useRouter } from "next/navigation";
 
 interface ModalProps {
@@ -15,8 +14,6 @@ interface ModalProps {
   footer?: React.ReactElement;
   actionLabel: string;
   disabled?: boolean;
-  secondaryAction?: () => void;
-  secondaryActionLabel?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -25,11 +22,8 @@ const Modal: React.FC<ModalProps> = ({
   onSubmit,
   title,
   body,
-  actionLabel,
   footer,
   disabled,
-  secondaryAction,
-  secondaryActionLabel,
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
   const router = useRouter();
@@ -52,7 +46,6 @@ const Modal: React.FC<ModalProps> = ({
     setTimeout(() => {
       onClose();
     }, 300);
-    //window.location.reload();
   }, [onClose, disabled]);
 
   const handleSubmit = useCallback(() => {
@@ -62,14 +55,6 @@ const Modal: React.FC<ModalProps> = ({
 
     onSubmit();
   }, [onSubmit, disabled]);
-
-  const handleSecondaryAction = useCallback(() => {
-    if (disabled || !secondaryAction) {
-      return;
-    }
-
-    secondaryAction();
-  }, [secondaryAction, disabled]);
 
   if (!isOpen) {
     return null;

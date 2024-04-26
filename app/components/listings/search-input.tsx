@@ -4,24 +4,20 @@ import { IoIosSearch } from "react-icons/io";
 interface SearchInputProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  handleSearch: () => void;
   focus: { left: boolean; right: boolean };
   setFocus: (focus: { left: boolean; right: boolean }) => void;
+  handleSearch: () => void;
+  handleEnterDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
   searchQuery,
   setSearchQuery,
-  handleSearch,
   focus,
   setFocus,
+  handleSearch,
+  handleEnterDown,
 }) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
   return (
     <div className="relative flex items-center mb-2 sm:mb-0 ">
       <BsBasket className="absolute text-black text-lg left-2" />
@@ -30,7 +26,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         placeholder="Everything"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={handleEnterDown}
         className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
         onFocus={() => setFocus({ ...focus, right: true })}
         onBlur={() => setFocus({ ...focus, right: false })}
