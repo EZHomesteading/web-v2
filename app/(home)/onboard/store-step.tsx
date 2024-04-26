@@ -1,4 +1,4 @@
-import CoOpHoursPage from "@/app/(pages)/co-op-hours/co-op-hours-page";
+import CoOpHoursPage from "@/app/components/co-op-hours/co-op-hours-page";
 import { UserInfo } from "@/next-auth";
 import { Hours } from "@prisma/client";
 
@@ -15,7 +15,7 @@ interface Props {
 const StoreStep = ({ coOpHours, setCoOpHours, user }: Props) => {
   return (
     <>
-      <div>
+      <div className="flex flex-col items-center">
         {user ? (
           <CoOpHoursPage
             coOpHours={coOpHours}

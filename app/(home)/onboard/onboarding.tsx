@@ -118,9 +118,9 @@ const Onboarding = ({ user }: Props) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen w-full text-black">
+    <div className="flex flex-col sm:flex-row h-screen w-[100vw] text-black">
       <div className="onboard-left sm:w-2/5">
-        <div className="flex flex-col items-start px-20 py-20">
+        <div className="flex flex-col items-center justify-center sm:items-start lg:px-20 py-20">
           <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
             Finish your account setup
           </h2>
@@ -131,19 +131,13 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="shadow-none">
+                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="popover border-none xl:absolute xl:bottom-10">
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        A profile picture and description is not required, but
-                        it is recommended to encourage consumer confidence.
-                      </p>
-                    </div>
-                  </div>
+                  A profile picture and description is not required, but it is
+                  recommended to encourage consumer confidence.
                 </PopoverContent>
               </Popover>
             </div>
@@ -156,20 +150,14 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="shadow-none">
+                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="popover xl:absolute xl:bottom-10">
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        Use the sliders to set your open and close times for
-                        each day of the week, this will determine when consumers
-                        are allowed to pick up from your co-op location.
-                      </p>
-                    </div>
-                  </div>
+                <PopoverContent className="popover xl:absolute xl:bottom-10 text-black left-5">
+                  Use the sliders to set your open and close times for each day
+                  of the week, this will determine when consumers are allowed to
+                  pick up from your co-op location.
                 </PopoverContent>
               </Popover>
             </div>
@@ -181,7 +169,7 @@ const Onboarding = ({ user }: Props) => {
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="shadow-none">
+                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
                     <CiCircleInfo className="lg:text-4xl" />
                   </Button>
                 </PopoverTrigger>
@@ -201,7 +189,7 @@ const Onboarding = ({ user }: Props) => {
               </Popover>
             </div>
           )}
-          <Breadcrumb className="absolute bottom-5">
+          <Breadcrumb className="absolute bottom-5 z-10">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/">Home</BreadcrumbLink>

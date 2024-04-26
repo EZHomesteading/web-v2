@@ -88,14 +88,16 @@ body::-webkit-scrollbar {
 }
 
 .onboard-left,
-.popover {
+.popover,
+.bg {
   background-color: #e3eac9;
 }
 .popover {
   border: none;
   width: 20rem;
 }
-.onboard-right {
+.onboard-right,
+.sheet {
   background-color: #ced9bb;
 }
 .cardregister {

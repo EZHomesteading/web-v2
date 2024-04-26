@@ -1,9 +1,14 @@
 "use client";
 import { Slider } from "@/app/components/ui/slider";
+import { Outfit } from "next/font/google";
 import { useState } from "react";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { MdOutlineNavigateBefore } from "react-icons/md";
 
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+});
 type CoopHoursSliderProps = {
   day: string;
   hours: { open: number; close: number };
@@ -27,14 +32,16 @@ export default function CoopHoursSlider({
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between items-center">
         <button onClick={onPrevDay}>
-          <MdOutlineNavigateBefore className="h-5 w-5" />
+          <MdOutlineNavigateBefore className="h-10 w-10" />
         </button>
-        <div className="flex justify-center text-lg">{day}</div>
+        <div className={`${outfit.className} flex justify-center text-3xl`}>
+          {day}
+        </div>
         <div className="flex justify-evenly">
           <button onClick={onNextDay}>
-            <MdOutlineNavigateNext className="h-5 w-5" />
+            <MdOutlineNavigateNext className="h-10 w-10" />
           </button>
         </div>
       </div>
@@ -46,9 +53,11 @@ export default function CoopHoursSlider({
           step={15}
           minStepsBetweenThumbs={2}
           onValueChange={handleChange}
-          className="w-[275px]"
+          className="w-full"
         />
-        <div className="absolute top-6 left-0 right-0 flex justify-between">
+        <div
+          className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
+        >
           <div>{formatTime(values[0])}</div>
           <div>{formatTime(values[1])}</div>
         </div>
