@@ -8,11 +8,11 @@ import { FiMapPin } from "react-icons/fi";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import SearchInput from "./search-input";
-import NearMeButton from "./near-me-button";
 import axios from "axios";
 import qs from "query-string";
 import { useRouter } from "next/navigation";
+import { BsBasket } from "react-icons/bs";
+import { IoIosSearch } from "react-icons/io";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
@@ -233,16 +233,35 @@ const SearchLocation = () => {
         )}
       </PlacesAutocomplete>
       <div className="w-full mb-2 sm:mb-0 sm:w-auto">
-        <SearchInput
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          focus={focus}
-          setFocus={setFocus}
-          handleEnterDown={handleEnterDown}
-          handleSearch={handleSearch}
-        />
+        <div className="relative flex items-center mb-2 sm:mb-0 ">
+          <BsBasket className="absolute text-black text-lg left-2" />
+          <input
+            type="text"
+            placeholder="Everything"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleEnterDown}
+            className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
+            onFocus={() => setFocus({ ...focus, right: true })}
+            onBlur={() => setFocus({ ...focus, right: false })}
+            tabIndex={0}
+          />
+          <button
+            onClick={handleSearch}
+            className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
+          >
+            <IoIosSearch className="text-2xl text-black" />
+          </button>
+        </div>
       </div>
-      <NearMeButton focus={focus} handleNearMeClick={handleNearMeClick} />
+      <button
+        className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full ${
+          focus.left ? "visible" : "hidden"
+        }`}
+        onMouseDown={handleNearMeClick}
+      >
+        Near Me
+      </button>
       <Script
         async
         defer
