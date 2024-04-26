@@ -240,7 +240,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                   )}
                                 </div>
                                 {cartItem.listing.shelfLife && (
-                                  <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500">
+                                  <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500 text-xs sm:text-sm">
                                     {shelfLife(cartItem.listing)}
                                   </p>
                                 )}
@@ -372,7 +372,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                         />
                       </PopoverTrigger>
                       <PopoverContent className="absolute bottom-5">
-                        There are zero fees for EZH consumers buying from co-ops
+                        There are no fees for EZH buyers
                       </PopoverContent>
                     </Popover>
                   </dt>
