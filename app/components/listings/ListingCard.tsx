@@ -81,6 +81,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             relative 
             overflow-hidden 
             rounded-xl
+            hover:shadow-xl
           "
         >
           <Image
@@ -89,7 +90,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
               object-cover 
               h-full 
               w-full 
-              group-hover:scale-110 
+              group-hover:scale-105
+            
               transition
             "
             src={data.imageSrc}
