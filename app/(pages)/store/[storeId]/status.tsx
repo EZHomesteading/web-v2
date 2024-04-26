@@ -1,10 +1,10 @@
-import { Hours } from "@/next-auth";
+import { ExtendedHours } from "@/next-auth";
 interface StatusProps {
-  hours: Hours;
+  hours: ExtendedHours;
 }
 
 const isOpenNow = (
-  todayHours: { open: number; close: number }[] | undefined
+  todayHours: { open: number; close: number }[] | null
 ): boolean => {
   if (!todayHours) {
     return false;
@@ -23,7 +23,7 @@ const OpenStatus = ({ hours }: StatusProps) => {
     return <span className="text-xs text-gray-500">No hours available</span>;
   }
   const currentDayIndex = (new Date().getDay() + 6) % 7;
-  const todayHours = hours[currentDayIndex as keyof Hours];
+  const todayHours = hours[currentDayIndex as keyof ExtendedHours];
   console.log("todayhours:", todayHours);
   const open = isOpenNow(todayHours);
   return (
