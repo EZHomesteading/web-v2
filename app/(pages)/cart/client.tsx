@@ -17,7 +17,7 @@ import { Button } from "@/app/components/ui/button";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "./components/counter";
 import DateState from "./components/dateStates";
-import { Hours } from "@prisma/client";
+import { ExtendedHours } from "@/next-auth";
 import { UserInfo, CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
@@ -192,7 +192,9 @@ const Cart = ({ cartItems, user }: CartProps) => {
                             {cartItem.listing.user.name}
                           </p>
                           <DateState
-                            hours={cartItem?.listing.user.hours as Hours}
+                            hours={
+                              cartItem?.listing.user.hours as ExtendedHours
+                            }
                             onSetTime={handleTime}
                             index={index}
                             cartGroup={findObjectWithCartIndex(
