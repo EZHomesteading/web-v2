@@ -1,12 +1,12 @@
-import React from "react";
-import { SafeListing, SafeUser } from "@/types";
+import { SafeListing } from "@/types";
 import Container from "@/app/components/Container";
 import Heading from "@/app/components/Heading";
 import ListingCard from "@/app/components/listings/ListingCard";
-import { DatePickerDemo } from "@/app/components/ui/date-time-picker";
+import { UserInfo } from "@/next-auth";
+
 interface PropertiesClientProps {
   listings: SafeListing[];
-  user?: any | null;
+  user?: UserInfo | null;
   storeId: string;
 }
 

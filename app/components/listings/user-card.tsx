@@ -4,6 +4,7 @@ import { StarIcon } from "@radix-ui/react-icons";
 import { Location, UserRole } from "@prisma/client";
 import OpenStatus from "@/app/(pages)/store/[storeId]/status";
 import { ExtendedHours } from "@/next-auth";
+
 interface UserCardProps {
   user: {
     id: string;

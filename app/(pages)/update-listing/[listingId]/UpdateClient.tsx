@@ -1,51 +1,41 @@
 "use client";
-// Import necessary modules and components
-
-// make radiogroup data go where its supposed to
 
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { FullListing } from "@/types";
 import Container from "@/app/components/Container";
-// import getCurrentUser from "@/app/actions/getCurrentUser";
 
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
 import { Button } from "@/app/components/ui/button";
-import { $Enums, Prisma } from "@prisma/client";
-// const currentUser = getCurrentUser();
+import { SafeListing } from "@/types";
 
 interface UpdateUserProps {
-  currentUser: any;
+  listing: SafeListing;
 }
 
-// Define RegisterModal component
-const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
-  // Hooks for managing state and form data
+const UpdateClient: React.FC<UpdateUserProps> = ({ listing }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Form control using react-hook-form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      id: currentUser?.id,
-      description: currentUser?.description,
-      title: currentUser?.title,
-      stock: currentUser?.stock,
-      price: currentUser?.price,
-      shelfLife: currentUser?.shelfLife,
-      imageSrc: currentUser?.imageSrc,
-      category: currentUser?.category,
-      quantityType: currentUser?.quantityType,
+      id: listing?.id,
+      description: listing?.description,
+      title: listing?.title,
+      stock: listing?.stock,
+      price: listing?.price,
+      shelfLife: listing?.shelfLife,
+      imageSrc: listing?.imageSrc,
+      category: listing?.category,
+      quantityType: listing?.quantityType,
     },
   });
 
-  // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
     const formData = {
@@ -54,7 +44,6 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       shelfLife: parseInt(data.shelfLife),
       price: parseFloat(data.price),
     };
-    // Send registration data to the backend
     axios
       .post("/api/updateListing", formData)
       .then(() => {
@@ -68,13 +57,12 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
       });
   };
 
-  // JSX content for the modal body
   return (
     <Container>
       <div className="flex flex-col gap-4">
         <Heading
           title="Update The Listings Info Below"
-          subtitle={`enter details for ${currentUser?.title} below`}
+          subtitle={`enter details for ${listing?.title} below`}
         />
 
         <Input
@@ -122,5 +110,4 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ currentUser }) => {
   );
 };
 
-// Export the RegisterModal component
 export default UpdateClient;

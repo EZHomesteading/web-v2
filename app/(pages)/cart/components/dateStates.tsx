@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  SheetCartC,
-  SheetCloseC,
-  SheetContentC,
-} from "@/app/components/ui/sheet-cart";
+import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
 import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
-import EarliestPickup from "./earliest-pickup";
 import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import { set } from "lodash";
-import axios from "axios";
 
 interface StatusProps {
   hours: ExtendedHours;
@@ -25,16 +18,12 @@ interface StatusProps {
 const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const now = new Date();
   const [date, setDate] = useState<Date | undefined>(now);
-  const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
   const [selectedTime, setSelectedTime] = useState<any>();
   const [options, setOptions] = useState<string[]>([]);
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null);
-
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>(
     null
   );
-  const [hasClickedEarliestPickup, setHasClickedEarliestPickup] =
-    useState<boolean>(false);
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;

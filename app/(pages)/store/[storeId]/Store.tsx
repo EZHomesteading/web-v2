@@ -1,7 +1,7 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import OpenStatus from "./status";
+import OpenStatus from "@/app/(pages)/store/[storeId]/status";
 interface StorePageProps {
   listings: any[];
   storeUser: any;
