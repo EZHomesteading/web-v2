@@ -1,12 +1,19 @@
 "use client";
 
+import { Button } from "@/app/components/ui/button";
 import {
   PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { Outfit } from "next/font/google";
 import { useState } from "react";
 
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 export default function PaymentComponent() {
   const stripe = useStripe();
   const elements = useElements();
@@ -46,13 +53,13 @@ export default function PaymentComponent() {
     <>
       <form id="payment-form" onSubmit={handleSubmit}>
         <PaymentElement id="payment-element" />
-        <button
-          className="border-black border-[1px] rounded-md p-2 w-full hover:text-green-900"
+        <Button
+          className={`${outfit.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
           disabled={isLoading || !stripe || !elements}
           id="submit"
         >
           Pay Now
-        </button>
+        </Button>
         {message && <div id="payment-message">{message}</div>}
       </form>
     </>

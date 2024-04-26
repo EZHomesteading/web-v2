@@ -67,13 +67,13 @@ export function UpdateRoleAlert({
           <AlertDialogCancel className="absolute top-2 right-2 border-none">
             <Cancel />
           </AlertDialogCancel>
-          <div className="mt-10 flex flex-col sm:flex-row">
+          <div className="mt-10 flex flex-col sm:flex-row gap-5">
             <AlertDialogAction>
               <Link
                 href={actionButtonHref}
                 className="border-black shadow-none"
               >
-                <Button variant="link" className="w-full  border-black">
+                <Button variant="outline" className="w-full  border-black">
                   <CiCircleInfo className="mr-2" />
                   {actionButtonLabel}
                 </Button>

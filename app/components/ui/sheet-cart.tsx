@@ -82,22 +82,25 @@ const SheetContentC = React.forwardRef<
   ) => (
     <SheetPortalC>
       <SheetOverlayC />
+
       <SheetPrimitive.Content
         ref={ref}
         className={cn(sheetVariants({ side }), className)}
         {...props}
       >
-        <SheetPrimitive.Close>
+        <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
           <EarliestPickup
             handleAsSoonAsPossible={handleAsSoonAsPossible}
-            earliestPickupTime={
-              earliestPickupTime || "not available at this time"
-            }
+            earliestPickupTime={earliestPickupTime || "not available right now"}
           />
         </SheetPrimitive.Close>
-        {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <IoReturnDownBack className="lg:h-20 lg:w-20 h-8 w-8" />
+        <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
+          {" "}
+          {children}
+        </div>
+
+        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white disabled:pointer-events-none data-[state=open]:bg-secondary">
+          <IoReturnDownBack className="lg:h-15 lg:w-15 h-8 w-8" />
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortalC>

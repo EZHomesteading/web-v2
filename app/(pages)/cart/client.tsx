@@ -212,7 +212,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                         </div>
 
                         <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                          <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                          <div className="relative pr-9 sm:gap-x-6 sm:pr-0">
                             <div>
                               <div className="flex justify-between">
                                 <h3 className="text-sm">
@@ -224,33 +224,34 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                   </Link>
                                 </h3>
                               </div>
-                              <div className="mt-1 flex text-sm">
+                              <div className="mt-1 flex text-sm flex-col sm:flex-row">
                                 <div className="text-gray-500">
                                   {cartItem.listing.quantityType ? (
-                                    <div>
-                                      {cartItem.listing.stock}
-                                      {""}
-                                      {cartItem.listing.quantityType} in stock
+                                    <div className="flex flex-row">
+                                      <span>{`${cartItem.listing.stock} ${cartItem.listing.quantityType} in stock`}</span>
                                     </div>
                                   ) : (
-                                    `${cartItem.listing.stock} in stock`
+                                    <span>{`${cartItem.listing.stock} in stock`}</span>
                                   )}
                                 </div>
-                                {cartItem.listing.shelfLife ? (
-                                  <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">
+                                {cartItem.listing.shelfLife && (
+                                  <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500">
                                     {shelfLife(cartItem.listing)}
                                   </p>
-                                ) : null}
+                                )}
                               </div>
-                              <div className="mt-1 text-sm font-medium text-gray-900">
+                              <div className="mt-1 text-sm font-medium text-gray-900 flex flex-row">
                                 ${cartItem.listing.price}{" "}
                                 {cartItem.listing.quantityType ? (
-                                  <div>
+                                  <span className="ml-1">
                                     {" "}
                                     per {cartItem.listing.quantityType}
-                                  </div>
+                                  </span>
                                 ) : (
-                                  `per ${cartItem.listing.subCategory}`
+                                  <span className="ml-1">
+                                    {" "}
+                                    per {cartItem.listing.subCategory}
+                                  </span>
                                 )}
                               </div>
                             </div>

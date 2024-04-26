@@ -45,14 +45,13 @@ const CustomTime = ({
   return (
     <div>
       <SheetTrigger>
-        <Card className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
+        <Card className="bg-inherit border-none">
           <CardHeader
-            className={`text-2xl 2xl:text-2xl pb-0 mb-0 ${outfit.className}`}
+            className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
           >
             Set a custom pickup time{" "}
           </CardHeader>
-
-          <CardContent>
+          <CardContent className={`${outfit.className} mt-2`}>
             Not in a rush? Feel free to set a pick up anytime within the
             freshness window of your cart items and this co-op&apos;s open
             hours.

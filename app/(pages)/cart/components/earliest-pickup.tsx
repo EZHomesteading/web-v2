@@ -15,18 +15,17 @@ const EarliestPickup = ({
   handleAsSoonAsPossible,
 }: Props) => {
   return (
-    <Card
-      className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200"
-      onClick={handleAsSoonAsPossible}
-    >
+    <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
       <CardHeader
-        className={`text-2xl 2xl:text-2xl pb-0 mb-0 ${outfit.className}`}
+        className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
       >
         Pickup as soon as possible
       </CardHeader>
-      <CardContent className="text-sm">
+      <CardContent className={`${outfit.className}`}>
         In a hurry? The earliest possible time for pickup from this co-op is{" "}
-        {earliestPickupTime || "loading..."}
+        <span className={`${outfit.className} text-lg`}>
+          {earliestPickupTime || "loading..."}
+        </span>
       </CardContent>
     </Card>
   );

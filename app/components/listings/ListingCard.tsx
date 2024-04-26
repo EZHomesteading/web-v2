@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
 import CartIcon from "./cart-icon";
-import Button from "../Button";
+import { Button } from "../ui/button";
 import { UserInfo } from "@/next-auth";
+import { BsBucketFill, BsTrash2Fill } from "react-icons/bs";
+import { MdOutlineEdit } from "react-icons/md";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -102,32 +105,35 @@ const ListingCard: React.FC<ListingCardProps> = ({
             {data?.location?.address[1]}, {data?.location?.address[2]}
           </div>
         </div>
-        <div
-          className="w-full 
-            relative "
-        >
-          <div className="flex flex-row items-center gap-1">
-            <div className="font-semibold"> ${data.price}</div>
-            {data.quantityType && (
-              <div className="font-light">per {data.quantityType}</div>
+        <div className="w-full flex justify-between">
+          <div className="flex w-full justify-start">
+            <div className="flex flex-row items-center gap-1">
+              <div className="font-semibold"> ${data.price}</div>
+              {data.quantityType && (
+                <div className="font-light">per {data.quantityType}</div>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end">
+            {onAction && actionLabel && (
+              <Button
+                disabled={disabled}
+                onClick={handleCancel}
+                className="bg-transparent shadow-none text-red-600 text-3xl hover:bg-transparent hover:scale-105"
+              >
+                <FaDeleteLeft />
+              </Button>
             )}
           </div>
         </div>
-        {onAction && actionLabel && (
-          <Button
-            disabled={disabled}
-            small
-            label={actionLabel}
-            onClick={handleCancel}
-          />
-        )}
         {onSecondAction && secondActionLabel && (
           <Button
             disabled={disabled}
-            small
-            label={secondActionLabel}
             onClick={handleSecondAction}
-          />
+            className="absolute bg-transparent shadow-none text-3xl text-yellow-300 mt-2 ml-2 hover:bg-transparent hover:text-yellow-400"
+          >
+            <MdOutlineEdit />
+          </Button>
         )}
       </div>
     </div>

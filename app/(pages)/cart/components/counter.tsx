@@ -113,7 +113,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
 
   return (
     <>
-      <div className="flex flex-row gap-x-2 min-w-fit border-[1px] items-center border-gray-500 shadow-md rounded-lg w-fit px-1">
+      <div className="flex flex-row gap-x-2 min-w-fit border-[1px] items-center border-gray-500 shadow-md rounded-lg w-fit px-1 sm:mt-2">
         <button
           onMouseEnter={hoverOn}
           onMouseLeave={hoverOff}
