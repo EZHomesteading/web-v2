@@ -4,8 +4,8 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Hours, Location, UserRole } from "@prisma/client";
-
+import { Location, UserRole } from "@prisma/client";
+import { ExtendedHours } from "@/next-auth";
 export const {
   handlers: { GET, POST },
   auth,
@@ -17,7 +17,7 @@ export const {
     error: "/auth/error",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ account }) {
       if (account?.provider !== "credentials") return true;
       return true;
     },
@@ -36,7 +36,7 @@ export const {
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
-        session.user.hours = token.hours as Hours;
+        session.user.hours = token.hours as ExtendedHours;
         session.user.isOAuth = token.isOAuth as boolean;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
