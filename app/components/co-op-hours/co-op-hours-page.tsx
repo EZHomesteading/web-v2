@@ -5,11 +5,12 @@ import { HoursDisplay } from "./hours-display";
 import { DaySelect } from "./day-select";
 import { UserInfo } from "@/next-auth";
 import { Hours } from "@prisma/client";
-
+import { Outfit } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardFooter } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
+const outfit = Outfit({ subsets: ["latin"] });
 interface ExtendedHours extends Hours {
   [key: number]: { open: number; close: number }[];
 }
@@ -76,38 +77,46 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
 
   return (
     <Card className="flex flex-col lg:flex-row justify-center items-center bg-inherit border-none md:shadow-xl">
-      <CardContent>
-        <div>
-          <CoopHoursSlider
-            day={currentDay}
-            hours={currentDayHours}
-            onChange={handleHourChange}
-            onNextDay={handleNextDay}
-            onPrevDay={handlePrevDay}
-          />
-        </div>
-        <CardFooter className="flex flex-col md:flex-row items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
-          <Sheet>
-            <SheetTrigger>
-              <Button className="mb-0" onClick={handleApplyToAll}>
-                Apply To
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-              <DaySelect />
-            </SheetContent>
-          </Sheet>
+      <div className="flex flex-col">
+        {/* <CardHeader className={`text-xl ${outfit.className}`}>
+          Set Your Hours
+        </CardHeader> */}
+        <CardContent>
+          <div>
+            <Button onClick={handleNextDay} className="bg-red-900">
+              Close on {currentDay}
+            </Button>
+            <CoopHoursSlider
+              day={currentDay}
+              hours={currentDayHours}
+              onChange={handleHourChange}
+              onNextDay={handleNextDay}
+              onPrevDay={handlePrevDay}
+            />
+          </div>
+          <CardFooter className="flex flex-col md:flex-row items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
+            <Sheet>
+              <SheetTrigger>
+                <Button className="mb-0" onClick={handleApplyToAll}>
+                  Apply To
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                <DaySelect />
+              </SheetContent>
+            </Sheet>
 
-          <Sheet>
-            <SheetTrigger>
-              <Button>Visualize</Button>
-            </SheetTrigger>
-            <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-              <HoursDisplay coOpHours={coOpHours} />
-            </SheetContent>
-          </Sheet>
-        </CardFooter>
-      </CardContent>
+            <Sheet>
+              <SheetTrigger>
+                <Button>Visualize</Button>
+              </SheetTrigger>
+              <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                <HoursDisplay coOpHours={coOpHours} />
+              </SheetContent>
+            </Sheet>
+          </CardFooter>
+        </CardContent>
+      </div>
     </Card>
   );
 };
