@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
 import axios from "axios";
@@ -46,6 +46,7 @@ const FindListingsComponent = () => {
   }, []);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const searchLocationRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const geocodingApiLoaded = useMapsLibrary("geocoding");
   const [geocodingService, setGeocodingService] =
@@ -143,6 +144,12 @@ const FindListingsComponent = () => {
   const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
     setLatLng(latLng);
   };
+
+  useEffect(() => {
+    if (searchLocationRef.current) {
+      searchLocationRef.current.focus();
+    }
+  }, []);
 
   return (
     <>

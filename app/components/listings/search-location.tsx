@@ -13,6 +13,7 @@ interface LocationSearchInputProps {
   focus: { left: boolean; right: boolean };
   setFocus: (focus: { left: boolean; right: boolean }) => void;
   onSearch: () => void;
+  // ref: any;
 }
 
 const SearchLocation: React.FC<LocationSearchInputProps> = ({
