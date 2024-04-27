@@ -100,32 +100,25 @@ const Categories = ({ user }: Props) => {
 
   return (
     <Container>
-      <Filters user={user} />
-      <div
-        className="
-          p-0
-          sm:pt-4
-          flex 
-          flex-row 
-          items-center 
-          justify-between
-          overflow-x-auto
-          overflow-y-auto
-          h-fit
-          relative    "
-      >
-        {categories.map((item) => (
-          <CategoryBox
-            key={item.label}
-            label={item.label}
-            icon={item.icon}
-            selected={q === item.label}
-          />
-        ))}
+      <div className="flex flex-row">
+        <div>
+          <Filters user={user} />
+        </div>
+        <div className="w-full p-0 sm:pt-4">
+          <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
+            {categories.map((item) => (
+              <CategoryBox
+                key={item.label}
+                label={item.label}
+                icon={item.icon}
+                selected={q === item.label}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </Container>
   );
 };
 
-// Export the Categories component
 export default Categories;

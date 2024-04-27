@@ -78,7 +78,9 @@
 body::-webkit-scrollbar {
   display: none;
 }
-
+.z {
+  z-index: 100;
+}
 .authlayoutbg {
   background-color: #ced9bb;
 }
