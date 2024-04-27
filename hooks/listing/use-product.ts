@@ -18,6 +18,12 @@ const products = [
     photo: "/images/product-images/strawberry.webp",
   },
   {
+    name: "Eggs",
+    category: "PoultryChicken",
+    subCategory: "egg",
+    photo: "/images/product-images/egg.webp",
+  },
+  {
     name: "Basil",
     category: "herbs and spices",
     subCategory: "green",

@@ -21,13 +21,13 @@ const UserCard = ({ user }: UserCardProps) => {
   return (
     <>
       <Link href={`/store/${user?.id}`}>
-        <div className="relative border-2 border-gray h-1/10 rounded-md px-2 py-2">
+        <div className="relative border-[1px] shadow-md border-green-200 h-1/10 rounded-md px-2 py-2">
           <div className="flex flex-row gap-x-2">
-            <Avatar />
+            {/* <Avatar /> */}
             <div className="flex flex-col">
-              <div>
+              <div className="gap-x-2">
                 {user?.name}
-                <span className="text-xs">({listingsCount})</span>
+                <span className="text-xs mr-2">({listingsCount})</span>
               </div>
               <div className="text-xs">
                 {user?.location?.address[1]}, {user?.location.address[2]}{" "}
