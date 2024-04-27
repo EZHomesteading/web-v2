@@ -233,7 +233,7 @@ const SearchLocation = ({ onClose }: any) => {
           </div>
         )}
       </PlacesAutocomplete>
-      <div className="w-full mb-2 sm:mb-0 sm:w-auto">
+      <div className="w-full mb-2 sm:mb-0 sm:w-auto mt-1 sm:mt-0">
         <div className="relative flex items-center mb-2 sm:mb-0 ">
           <BsBasket className="absolute text-black text-lg left-2" />
           <input
