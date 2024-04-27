@@ -82,12 +82,31 @@ const UserMenu = ({ user }: Props) => {
               <div className="font-bold">{user?.name}</div>
               <div>{user?.firstName}</div>
             </div>
-            <SheetTrigger className="flex justify-end items-center">
-              <CiSquarePlus
-                className="ml-2 h-5 w-5"
-                onClick={listingModal.onOpen}
-              />
-            </SheetTrigger>
+            {/* <SheetTrigger className="flex justify-end items-center ml-[2%]">
+              {user?.role !== UserRole.COOP &&
+              user?.role != UserRole.PRODUCER ? (
+                <UpdateRoleAlert
+                  heading="Would you like to become an EZH producer or co-op?"
+                  description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
+                  backButtonLabel="No thanks"
+                  actionButtonLabel="More Info"
+                  actionButtonHref="/info/ezh-roles"
+                  actionButtonLabelTwo="Co-op Registration"
+                  actionButtonHrefTwo="/auth/become-a-co-op"
+                  actionButtonLabelThree="Producer Registration"
+                  actionButtonHrefThree="/auth/become-a-producer"
+                />
+              ) : (
+                <div
+                  onClick={() => {
+                    listingModal.onOpen();
+                  }}
+                  className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
+                >
+                  <CiSquarePlus className="text-sm sm:text-md md:text-2xl" />
+                </div>
+              )}
+            </SheetTrigger> */}
           </div>
           <div>
             {user?.role === "COOP" ? (
