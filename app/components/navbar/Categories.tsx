@@ -100,7 +100,7 @@ const Categories = ({ user }: Props) => {
 
   return (
     <Container>
-      <div className="flex flex-row">
+      <div className="flex flex-row items-center">
         <div>
           <Filters user={user} />
         </div>

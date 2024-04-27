@@ -34,7 +34,7 @@ const Filters = ({ user }: Props) => {
 
   return (
     <Sheet>
-      <SheetTrigger className="absolte flex flex-row border-[1px] border-gray-500 rounded-full px-3 py-3 bg-white">
+      <SheetTrigger className="flex flex-row border-[1px] border-gray-500 rounded-full px-2 py-2 bg-transparent">
         <FiltersIcon /> Filters
       </SheetTrigger>
       <SheetContent
