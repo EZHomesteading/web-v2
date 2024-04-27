@@ -26,7 +26,7 @@ const CoopHome = ({ user }: Props) => {
             <span className="text-green-400 font-bold">{user.firstName}?</span>
           </div>
         </h1>
-        <div className="flex flex-row justify-evenly text-sm mt-5 gap-x-3">
+        <div className="flex flex-row justify-evenly mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
           <Link href="/shop">
             {" "}
             <Button className="hover:bg-green-100 hover:text-black">

@@ -119,18 +119,18 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     let nextAvailableTime = null;
     console.log("user time in minutes:", currentMin);
     for (let i = 0; i < 7; i++) {
-      const newHoursIndex = ((now.getDay() + i) % 7) - 1;
+      const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
       console.log("index", newHoursIndex);
-      const newHours = hours[newHoursIndex as keyof ExtendedHours];
+      const newHours = hours[newHoursIndex];
 
       if (newHours === null) {
         continue; //skips to next day if the co-op is closed
       }
 
-      if (newHours.length === 0) continue;
+      if (newHours && newHours.length === 0) continue;
 
-      const openTime = newHours[0].open; // time the co-op opens on the day
-      const closeTime = newHours[0].close; // time the co-op closes on the day
+      const openTime = newHours ? newHours[0].open : 0; // time the co-op opens on the day
+      const closeTime = newHours ? newHours[0].close : 0; // time the co-op closes on the day
       console.log("open time for co-op", openTime);
       console.log("closing time for co-op", closeTime);
 
@@ -159,12 +159,14 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         console.log("entered case 3");
         nextAvailableTime = new Date(now);
         nextAvailableTime.setDate(now.getDate() + i);
-        nextAvailableTime.setHours(
-          Math.floor(openTime / 60),
-          openTime % 60,
-          0,
-          0
-        );
+        if (newHours) {
+          nextAvailableTime.setHours(
+            Math.floor(newHours[0].open / 60),
+            newHours[0].open % 60,
+            0,
+            0
+          );
+        }
         nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
         break;
       }
