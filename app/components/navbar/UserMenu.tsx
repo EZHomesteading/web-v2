@@ -11,30 +11,26 @@ import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn } from "react-icons/gi";
-import useSearchModal from "@/hooks/modal/useSearchModal";
-import { BiSearch } from "react-icons/bi";
 import { UserRole } from "@prisma/client";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
+import { Outfit } from "next/font/google";
+import { GoPeople } from "react-icons/go";
+import Avatar from "../Avatar";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "auto",
+  style: "normal",
+  weight: ["100"],
+});
 interface Props {
   user: UserInfo;
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const listingModal = useRentModal();
-  const searchModal = useSearchModal();
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end">
-        <div className="block sm:hidden">
-          <div
-            onClick={() => {
-              searchModal.onOpen();
-            }}
-            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
-          >
-            <BiSearch className="text-sm sm:text-md md:text-2xl" />
-          </div>
-        </div>
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"
@@ -68,21 +64,31 @@ const UserMenu = ({ user }: Props) => {
           flex-row 
           items-center 
           gap-3 
-          rounded-full 
+          rounded-lg 
           cursor-pointer 
           hover:shadow-md 
           transition
           "
           >
             <AiOutlineMenu />
-            <div className="hidden md:flex items-center text-sm font-semibold">
-              {user?.firstName ? user?.firstName : user?.name}
-            </div>
           </div>
         </SheetTrigger>
       </div>
-      <SheetContent className="bg-white w-full ">
+      <SheetContent className={`${outfit.className} bg`}>
         <div>
+          <div className="flex flex-row px-4">
+            <Avatar />
+            <div className="flex flex-col ml-2">
+              <div className="font-bold">{user?.name}</div>
+              <div>{user?.firstName}</div>
+            </div>
+            <SheetTrigger className="flex justify-end items-center">
+              <CiSquarePlus
+                className="ml-2 h-5 w-5"
+                onClick={listingModal.onOpen}
+              />
+            </SheetTrigger>
+          </div>
           <div>
             {user?.role === "COOP" ? (
               <div>
@@ -92,11 +98,11 @@ const UserMenu = ({ user }: Props) => {
                     icon={<FaStore className="mr-2" />}
                     onClick={() => router.push("/dashboard/my-store")}
                   />
-                  <MenuItem
+                  {/* <MenuItem
                     label="Add a Product"
                     icon={<CiSquarePlus className="mr-2" />}
                     onClick={listingModal.onOpen}
-                  />
+                  /> */}
                 </SheetTrigger>
               </div>
             ) : user?.role === "PRODUCER" ? (
@@ -107,11 +113,11 @@ const UserMenu = ({ user }: Props) => {
                     icon={<FaStore className="mr-2" />}
                     onClick={() => router.push("/dashboard/my-store")}
                   />
-                  <MenuItem
+                  {/* <MenuItem
                     label="Add a Product"
                     icon={<CiSquarePlus className="mr-2" />}
                     onClick={listingModal.onOpen}
-                  />
+                  /> */}
                 </SheetTrigger>
               </div>
             ) : (
@@ -131,8 +137,8 @@ const UserMenu = ({ user }: Props) => {
                     onClick={() => router.push("/cart")}
                   />
                   <MenuItem
-                    label="My Favorites"
-                    icon={<FaHeart className="mr-2" />}
+                    label="Following"
+                    icon={<GoPeople className="mr-2" />}
                     onClick={() => router.push("/dashboard/favorites")}
                   />
                   <MenuItem

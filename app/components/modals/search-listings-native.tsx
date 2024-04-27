@@ -1,6 +1,6 @@
 "use client";
 
-import SearchLocation from "@/app/components/listings/search-listings";
+import SearchLocation from "@/app/components/navbar/search-listings-native";
 
 const FindListingsComponent = ({ onClose }: any) => {
   return (
@@ -8,7 +8,7 @@ const FindListingsComponent = ({ onClose }: any) => {
       <div
         className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
       >
-        <SearchLocation />
+        <SearchLocation onClose={onClose} />
       </div>
     </>
   );

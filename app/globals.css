@@ -83,6 +83,9 @@ body::-webkit-scrollbar {
   background-color: #ced9bb;
 }
 
+.mi:hover {
+  background-color: #ced9bb;
+}
 .authlayouttext {
   color: #ced9bb;
 }
