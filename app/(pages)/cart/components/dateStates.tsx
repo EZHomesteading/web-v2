@@ -1,27 +1,15 @@
 "use client";
 
-import { Sheet, SheetTrigger, SheetContent } from "@/app/components/ui/sheet";
+import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
+import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
-import { Hours } from "@prisma/client";
-import * as React from "react";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/app/components/ui/calendar";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { Separator } from "@/app/components/ui/separator";
-
+import { CartGroup } from "@/next-auth";
+import { ExtendedHours } from "@/next-auth";
+import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
-import { Button } from "@/app/components/ui/button";
-import { Popover } from "@radix-ui/react-popover";
-import { PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
-import { HoursDisplay } from "../../co-op-hours/hours-display";
-import { CartGroup } from "@/next-auth";
-
 interface StatusProps {
-  hours: Hours;
+  hours: ExtendedHours;
   onSetTime: any;
   index: number;
   cartGroup: CartGroup | null;
@@ -30,10 +18,12 @@ interface StatusProps {
 const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const now = new Date();
   const [date, setDate] = useState<Date | undefined>(now);
-  const [selectedDateTime, setSelectedDateTime] = useState<Date>(now);
   const [selectedTime, setSelectedTime] = useState<any>();
   const [options, setOptions] = useState<string[]>([]);
-
+  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null);
+  const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>(
+    null
+  );
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -42,7 +32,9 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     const formattedMins = mins < 10 ? `0${mins}` : mins;
     return `${formattedHours}:${formattedMins} ${ampm}`;
   };
-
+  useEffect(() => {
+    calculateEarliestPickupTime();
+  }, []);
   const roundNumber = (n: number) => {
     if (n > 0) return Math.ceil(n / 30) * 30;
     else if (n < 0) return Math.floor(n / 30) * 30;
@@ -55,7 +47,10 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     }
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
-    const newHours = hours[newHoursIndex as keyof Hours];
+    const newHours = hours[newHoursIndex as keyof ExtendedHours];
+    if (newHours === null) {
+      return; //early retur if co-op is closed
+    }
     const resultantArray = [];
     const roundedMin = roundNumber(currentMin);
     if (date.getDate() < now.getDate()) {
@@ -89,7 +84,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       console.error("Invalid time string format:", timeString);
       return inputDatetime;
     }
-    const [, hours, minutes, meridiem] = matchResult;
+    const [hours, minutes, meridiem] = matchResult;
     let parsedHours = parseInt(hours, 10);
     if (meridiem) {
       const isPM = meridiem.toUpperCase() === "PM";
@@ -117,124 +112,146 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
     onSetTime(selectedTime);
   }),
     [selectedTime];
+
+  const calculateEarliestPickupTime = () => {
+    const now = new Date();
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+    let nextAvailableTime = null;
+    console.log("user time in minutes:", currentMin);
+    for (let i = 0; i < 7; i++) {
+      const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
+      console.log("index", newHoursIndex);
+      const newHours = hours[newHoursIndex];
+
+      if (newHours === null) {
+        continue; //skips to next day if the co-op is closed
+      }
+
+      if (newHours && newHours.length === 0) continue;
+
+      const openTime = newHours ? newHours[0].open : 0; // time the co-op opens on the day
+      const closeTime = newHours ? newHours[0].close : 0; // time the co-op closes on the day
+      console.log("open time for co-op", openTime);
+      console.log("closing time for co-op", closeTime);
+
+      if (i === 0 && currentMin < closeTime) {
+        // if the user is trying to buy today and before the co-op is closed, proceed
+        if (currentMin < openTime) {
+          // if the user is trying to buy today and before the co-op is open, pick up is when the co-op opens plus 30 minutes
+          // we will need another check here that if the time difference between co-op open time and order time is less than the co-ops set out time, the pick up time is the order time plus set out time
+          console.log("entered case 1");
+          nextAvailableTime = new Date(now);
+          nextAvailableTime.setHours(
+            Math.floor(openTime / 60),
+            openTime % 60,
+            0,
+            0
+          );
+          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+        } else {
+          // if the user is buying today after the co-op has opened but before they close, the pick up is now plus the set out time
+          console.log("entered case 2");
+          nextAvailableTime = new Date(now);
+          nextAvailableTime.setMinutes(now.getMinutes() + 30);
+        }
+        break;
+      } else if (i > 0) {
+        console.log("entered case 3");
+        nextAvailableTime = new Date(now);
+        nextAvailableTime.setDate(now.getDate() + i);
+        if (newHours) {
+          nextAvailableTime.setHours(
+            Math.floor(newHours[0].open / 60),
+            newHours[0].open % 60,
+            0,
+            0
+          );
+        }
+        nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+        break;
+      }
+    }
+    if (nextAvailableTime) {
+      const formattedEarliestTime = formatPickupTime({
+        pickupTime: nextAvailableTime,
+      });
+      setEarliestPickupTime(formattedEarliestTime);
+    }
+
+    return nextAvailableTime;
+  };
+  useEffect(() => {
+    const nextAvailableTime = calculateEarliestPickupTime();
+    setNextAvailableTime(nextAvailableTime);
+  }, []);
+  const handleAsSoonAsPossible = () => {
+    if (nextAvailableTime) {
+      setSelectedTime({
+        pickupTime: nextAvailableTime,
+        index: index,
+      });
+    }
+  };
+
+  const formatPickupTime = (selectedTime: any) => {
+    if (!selectedTime) return "";
+
+    const { pickupTime } = selectedTime;
+    const now = new Date();
+    const pickupDate = new Date(pickupTime);
+
+    if (pickupDate.toDateString() === now.toDateString()) {
+      return `Today at ${pickupDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`;
+    } else if (pickupDate.getTime() < now.getTime() + 7 * 24 * 60 * 60 * 1000) {
+      return `${pickupDate.toLocaleDateString([], {
+        weekday: "long",
+      })} at ${pickupDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`;
+    } else {
+      return `${pickupDate.toLocaleDateString()} at ${pickupDate.toLocaleTimeString(
+        [],
+        {
+          hour: "numeric",
+          minute: "2-digit",
+        }
+      )}`;
+    }
+  };
+
   return (
-    <div className="relative">
-      <Sheet>
-        <SheetTrigger className="border-black border-[1px] px-2 py-2 rounded-lg shadow-lg">
-          Set Pickup Time
-          {/* {user?.cartItem.pickup ? <>{pickuptime}</> : <>Set Pickup Time</>} */}
-        </SheetTrigger>
-        <SheetContent
-          side="top"
-          className="rounded-lg px-2 py-2 h-screen sm:h-fit sm:w-fit  w-[400px]"
-        >
-          <Sheet>
-            <div className="">
-              <Button className="mr-2">As soon as possible</Button>
-              <SheetTrigger>
-                <Button>Custom Time</Button>
-              </SheetTrigger>
-            </div>
-            <SheetContent
-              side="top"
-              className="flex flex-col md:flex-row items-center sm:items-start justify-center h-screen sm:h-fit"
-            >
-              <div className="w-fit border-none shadow-none">
-                <div className="grid gap-4">
-                  <div className="bg-white">
-                    <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                      Co-op Hours Each Day
-                    </div>
-                    <div className="mt-1">
-                      <HoursDisplay coOpHours={hours} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[200px] sm:w-[280px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      fromMonth={now}
-                      disabled={{ before: now, after: cartGroup?.expiry }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <ScrollArea className="h-[16.1rem] w-full rounded-md border mt-1">
-                  <div className="p-4">
-                    <h4 className="mb-4 text-sm font-medium leading-none">
-                      Open Hours
-                    </h4>
-                    {!options.length ? (
-                      <div>No available times on this day</div>
-                    ) : null}
-                    {options.map((option) => (
-                      <div className="hover:bg-slate">
-                        <div
-                          key={option}
-                          className="text-sm cursor-pointer hover:bg-slate-400"
-                          onClick={() => setTime(option)}
-                        >
-                          {option}
-                        </div>
-                        <Separator className="my-2" />
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </SheetContent>
-      </Sheet>
-    </div>
+    <SheetCartC>
+      <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
+        {selectedTime?.pickupTime ? (
+          <>{formatPickupTime(selectedTime)}</>
+        ) : (
+          "Set Pickup Time"
+        )}
+      </SheetTrigger>
+      <SheetContentC
+        side="top"
+        className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
+        handleAsSoonAsPossible={handleAsSoonAsPossible}
+        earliestPickupTime={earliestPickupTime}
+      >
+        <Sheet>
+          <CustomTime
+            hours={hours}
+            options={options}
+            setTime={setTime}
+            date={date}
+            setDate={setDate}
+            cartGroup={cartGroup}
+            now={now}
+          />
+        </Sheet>
+      </SheetContentC>
+    </SheetCartC>
   );
 };
 
 export default DateState;
-//   const currentDayIndex = (new Date().getDay() + 6) % 7; //updaters
-//   const todayHours = hours[currentDayIndex as keyof Hours];
-//   const validPickup = (
-//     todayHours: { open: number; close: number }[] | undefined
-//   ): boolean => {
-//     if (!todayHours) {
-//       return false;
-//     }
-//     if (selectedMinutes < now.getHours() * 60 + now.getMinutes()) {
-//       return false;
-//     }
-//     if (selectedDateTime.getDate() < now.getDate()) {
-//       return false;
-//     }
-//     if (selectedDateTime.getDay() != now.getDay()) {
-//       const newHoursIndex = (selectedDateTime.getDay() + 6) % 7;
-//       const newHours = hours[newHoursIndex as keyof Hours];
-//       return newHours.some(
-//         (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
-//       );
-//     }
-//     return todayHours.some(
-//       (slot) => selectedMinutes >= slot.open && selectedMinutes <= slot.close
-//     );
-//   };
-//   const validTime = validPickup(todayHours);
-//   useEffect(() => {
-//     onValidChange(validTime);
-//   }),
-//     [validTime];

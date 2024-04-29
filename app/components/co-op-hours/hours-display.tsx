@@ -16,7 +16,7 @@ import {
 export type Days = {
   id: string;
   day: string;
-  hours: Array<{ open: number; close: number }>;
+  hours: Array<{ open: number; close: number }> | null;
 };
 
 const formatTime = (minutes: number) => {
@@ -43,13 +43,15 @@ export const columns: ColumnDef<Days>[] = [
     cell: ({ row }) => {
       const hours = row.original.hours;
       return (
-        <div className="text-right text-sm w-[140px]">
-          {hours.map((timeRange, index) => (
-            <React.Fragment key={index}>
-              {formatTime(timeRange.open)} - {formatTime(timeRange.close)}
-              {index < hours.length - 1 && <br />}
-            </React.Fragment>
-          ))}
+        <div className="text-right text-sm">
+          {hours === null
+            ? "Closed"
+            : hours.map((timeRange, index) => (
+                <React.Fragment key={index}>
+                  {formatTime(timeRange.open)} - {formatTime(timeRange.close)}
+                  {index < hours.length - 1 && <br />}
+                </React.Fragment>
+              ))}
         </div>
       );
     },
@@ -58,7 +60,7 @@ export const columns: ColumnDef<Days>[] = [
 
 interface HoursDisplayProps {
   coOpHours: {
-    [key: number]: Array<{ open: number; close: number }>;
+    [key: number]: Array<{ open: number; close: number }> | null;
   };
 }
 
@@ -86,22 +88,20 @@ export function HoursDisplay({ coOpHours }: HoursDisplayProps) {
   });
 
   return (
-    <div className="flex">
-      <div className="rounded-md border">
-        <Table>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+    <div className="flex bg-white rounded-lg px-2 py-2 bg shadow-lg">
+      <Table>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

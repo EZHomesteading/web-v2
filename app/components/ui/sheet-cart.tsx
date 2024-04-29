@@ -6,16 +6,25 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "./card";
+import { Outfit } from "next/font/google";
+import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
 
-const Sheet = SheetPrimitive.Root;
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
-const SheetTrigger = SheetPrimitive.Trigger;
+const SheetCartC = SheetPrimitive.Root;
 
-const SheetClose = SheetPrimitive.Close;
+const SheetTriggerC = SheetPrimitive.Trigger;
 
-const SheetPortal = SheetPrimitive.Portal;
+const SheetCloseC = SheetPrimitive.Close;
 
-const SheetOverlay = React.forwardRef<
+const SheetPortalC = SheetPrimitive.Portal;
+
+const SheetOverlayC = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
@@ -28,7 +37,7 @@ const SheetOverlay = React.forwardRef<
     ref={ref}
   />
 ));
-SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
+SheetOverlayC.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
   "fixed z-50 gap-4 bg-background py-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
@@ -49,32 +58,57 @@ const sheetVariants = cva(
   }
 );
 
-interface SheetContentProps
+interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  earliestPickupTime: string | null;
+  handleAsSoonAsPossible: () => void;
+}
 
-const SheetContent = React.forwardRef<
+const SheetContentC = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
-  SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(sheetVariants({ side }), className)}
-      {...props}
-    >
-      {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <IoReturnDownBack className="lg:h-15 lg:w-15 h-8 w-8" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortal>
-));
-SheetContent.displayName = SheetPrimitive.Content.displayName;
+  SheetContentCProps
+>(
+  (
+    {
+      side = "right",
+      className,
+      children,
+      earliestPickupTime,
+      handleAsSoonAsPossible,
+      ...props
+    },
+    ref
+  ) => (
+    <SheetPortalC>
+      <SheetOverlayC />
 
-const SheetHeader = ({
+      <SheetPrimitive.Content
+        ref={ref}
+        className={cn(sheetVariants({ side }), className)}
+        {...props}
+      >
+        <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
+          <EarliestPickup
+            handleAsSoonAsPossible={handleAsSoonAsPossible}
+            earliestPickupTime={earliestPickupTime || "not available right now"}
+          />
+        </SheetPrimitive.Close>
+        <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
+          {" "}
+          {children}
+        </div>
+
+        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 text-white disabled:pointer-events-none data-[state=open]:bg-secondary">
+          <IoReturnDownBack className="lg:h-15 lg:w-15 h-8 w-8" />
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortalC>
+  )
+);
+SheetContentC.displayName = SheetPrimitive.Content.displayName;
+
+const SheetHeaderC = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -86,9 +120,9 @@ const SheetHeader = ({
     {...props}
   />
 );
-SheetHeader.displayName = "SheetHeader";
+SheetHeaderC.displayName = "SheetHeader";
 
-const SheetFooter = ({
+const SheetFooterC = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -100,7 +134,7 @@ const SheetFooter = ({
     {...props}
   />
 );
-SheetFooter.displayName = "SheetFooter";
+SheetFooterC.displayName = "SheetFooter";
 
 const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
@@ -127,14 +161,14 @@ const SheetDescription = React.forwardRef<
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
-  Sheet,
-  SheetPortal,
-  SheetOverlay,
-  SheetTrigger,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
+  SheetCartC,
+  SheetPortalC,
+  SheetOverlayC,
+  SheetTriggerC,
+  SheetCloseC,
+  SheetContentC,
+  SheetHeaderC,
+  SheetFooterC,
   SheetTitle,
   SheetDescription,
 };

@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { Button } from "./ui/button";
 
 interface Create {
   cartItems: any;
@@ -111,7 +112,16 @@ const OrderCreate = ({ cartItems }: Create) => {
     post();
   };
   const handleFail = () => {
-    toast.error("You cant puchase items that are out of stock.");
+    toast.error("Some of the items in your cart may not be in stock", {
+      duration: 2000,
+      position: "bottom-right",
+      className:
+        "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
+      ariaProps: {
+        role: "status",
+        "aria-live": "polite",
+      },
+    });
   };
   sessionStorage.setItem("ORDER", "");
   const stock = cartItems.some((item: any) => item.listing.stock === 0);
@@ -119,23 +129,23 @@ const OrderCreate = ({ cartItems }: Create) => {
   if (stock === true) {
     return (
       <div>
-        <button
+        <Button
           onClick={handleFail}
-          className="w-full mt-20 rounded-md border border-transparent bg-red-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+          className="bg-red-300 text-black hover:text-white hover:bg-red-600 shadow-md hover:shadow-xl hover:cursor-not-allowed w-full"
         >
           Unable to Checkout
-        </button>
+        </Button>
       </div>
     );
   } else {
     return (
       <div>
-        <button
+        <Button
           onClick={createOrder}
-          className="w-full mt-20 rounded-md border border-transparent bg-green-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+          className="bg-green-300 text-black hover:text-white hover:bg-green-600 shadow-md hover:shadow-xl w-full"
         >
           Checkout
-        </button>
+        </Button>
       </div>
     );
   }

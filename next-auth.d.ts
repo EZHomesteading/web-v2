@@ -20,6 +20,21 @@ export type UserInfo = DefaultSession["user"] & {
   cart?: Cart[];
 };
 
+type Times = {
+  open: number;
+  close: number;
+};
+
+type Hours = {
+  0: Times[];
+  1: Times[];
+  2: Times[];
+  3: Times[];
+  4: Times[];
+  5: Times[];
+  6: Times[];
+};
+
 type Location = {
   type: string;
   coordinates: number[];
@@ -29,7 +44,9 @@ type CartGroup = {
   expiry?: date;
   cartIndex?: number;
 };
-
+interface ExtendedHours extends Hours {
+  [key: number]: { open: number; close: number }[] | null;
+}
 type CartGroups = {
   cartGroup: CartGroup[];
 };

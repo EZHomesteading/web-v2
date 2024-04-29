@@ -1,10 +1,9 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   CheckIcon,
-  ClockIcon,
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
@@ -14,13 +13,27 @@ import { addDays, format } from "date-fns";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import OrderCreate from "@/app/components/order-create";
-import Button from "@/app/components/Button";
+import { Button } from "@/app/components/ui/button";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import SpCounter from "./components/counter";
-import DateState from "./components/dateStates";
-import { Hours } from "@prisma/client";
+import SpCounter from "@/app/(pages)/cart/components/counter";
+import DateState from "@/app/(pages)/cart/components/dateStates";
+import { ExtendedHours } from "@/next-auth";
 import { UserInfo, CartGroups } from "@/next-auth";
-import { id } from "date-fns/locale";
+import { BsTrash2 } from "react-icons/bs";
+import { MdErrorOutline } from "react-icons/md";
+import { Outfit } from "next/font/google";
+import Link from "next/link";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
+
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 interface CartProps {
   cartItems?: any;
   user?: UserInfo;
@@ -115,7 +128,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
         arr[index].expiry = validTime.pickupTime;
       }
     });
-    console.log(arr);
     return foundObject;
   }
   useEffect(() => {
@@ -138,17 +150,26 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
     return foundObject;
   }
-  console.log("RELOADED!");
 
   return (
     <>
       <div className="bg-white">
         <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Shopping Cart
-          </h1>
-          <Button label="Clear Cart" onClick={handleDelete}></Button>
-          <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+          <header className="flex flex-row gap-x-2 items-center justify-between">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Cart
+            </h1>
+            <div className="justify-center">
+              <Button
+                className="bg-red-300 text-black hover:bg-red-600 hover:text-white hover:shadow-lg shadow-md"
+                onClick={handleDelete}
+              >
+                <BsTrash2 className="text-lg mr-1" />
+                Empty Cart
+              </Button>
+            </div>
+          </header>
+          <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
               <h2 id="cart-heading" className="sr-only">
                 Items in your shopping cart
@@ -164,10 +185,16 @@ const Cart = ({ cartItems, user }: CartProps) => {
                     <div key={cartItem.listingId}>
                       {prevCartItem?.listing.userId !==
                       cartItem.listing.userId ? (
-                        <li className="flex justify-evenly outline-none border-t-[2px]  border-gray-200 pt-4">
-                          <p>{cartItem.listing.user.name}</p>
+                        <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
+                          <p
+                            className={`${outfit.className} text-2xl md:text-4xl`}
+                          >
+                            {cartItem.listing.user.name}
+                          </p>
                           <DateState
-                            hours={cartItem?.listing.user.hours as Hours}
+                            hours={
+                              cartItem?.listing.user.hours as ExtendedHours
+                            }
                             onSetTime={handleTime}
                             index={index}
                             cartGroup={findObjectWithCartIndex(
@@ -179,7 +206,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       ) : null}
                       <li
                         key={cartItem.listing.id}
-                        className="flex py-6 sm:py-10"
+                        className="flex py-3 sm:py-8"
                       >
                         <div className="flex-shrink-0">
                           <Image
@@ -192,45 +219,46 @@ const Cart = ({ cartItems, user }: CartProps) => {
                         </div>
 
                         <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                          <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                          <div className="relative pr-9 sm:gap-x-6 sm:pr-0">
                             <div>
                               <div className="flex justify-between">
                                 <h3 className="text-sm">
-                                  <a
+                                  <Link
                                     href={`listings/${cartItem.listing.id}`}
                                     className="font-medium text-gray-700 hover:text-gray-800"
                                   >
                                     {cartItem.listing.title}
-                                  </a>
+                                  </Link>
                                 </h3>
                               </div>
-                              <div className="mt-1 flex text-sm">
+                              <div className="mt-1 flex text-sm flex-col sm:flex-row">
                                 <div className="text-gray-500">
                                   {cartItem.listing.quantityType ? (
-                                    <div>
-                                      {cartItem.listing.stock}
-                                      {""}
-                                      {cartItem.listing.quantityType} in stock
+                                    <div className="flex flex-row">
+                                      <span>{`${cartItem.listing.stock} ${cartItem.listing.quantityType} in stock`}</span>
                                     </div>
                                   ) : (
-                                    `${cartItem.listing.stock} in stock`
+                                    <span>{`${cartItem.listing.stock} in stock`}</span>
                                   )}
                                 </div>
-                                {cartItem.listing.shelfLife ? (
-                                  <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">
+                                {cartItem.listing.shelfLife && (
+                                  <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500 text-xs sm:text-sm">
                                     {shelfLife(cartItem.listing)}
                                   </p>
-                                ) : null}
+                                )}
                               </div>
-                              <div className="mt-1 text-sm font-medium text-gray-900">
+                              <div className="mt-1 text-sm font-medium text-gray-900 flex flex-row">
                                 ${cartItem.listing.price}{" "}
                                 {cartItem.listing.quantityType ? (
-                                  <div>
+                                  <span className="ml-1">
                                     {" "}
                                     per {cartItem.listing.quantityType}
-                                  </div>
+                                  </span>
                                 ) : (
-                                  `per ${cartItem.listing.subCategory}`
+                                  <span className="ml-1">
+                                    {" "}
+                                    per {cartItem.listing.subCategory}
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -275,8 +303,8 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                 aria-hidden="true"
                               />
                             ) : (
-                              <ClockIcon
-                                className="h-5 w-5 flex-shrink-0 text-gray-300"
+                              <MdErrorOutline
+                                className="h-5 w-5 flex-shrink-0 text-red-700"
                                 aria-hidden="true"
                               />
                             )}
@@ -338,18 +366,17 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex text-sm text-gray-600">
                     <span>EZH Processing Fees Always</span>
-                    <a
-                      href="#"
-                      className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">
-                        Learn more about how tax is calculated
-                      </span>
-                      <QuestionMarkCircleIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </a>
+                    <Popover>
+                      <PopoverTrigger>
+                        <QuestionMarkCircleIcon
+                          className="h-5 w-5"
+                          aria-hidden="true"
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="absolute bottom-5">
+                        There are no fees for EZH buyers
+                      </PopoverContent>
+                    </Popover>
                   </dt>
                   <dd className="text-sm font-medium text-gray-900">$0.00</dd>
                 </div>
@@ -362,10 +389,10 @@ const Cart = ({ cartItems, user }: CartProps) => {
                   </dd>
                 </div>
               </dl>
+              <div className="mt-6">
+                <OrderCreate cartItems={cartItems} />
+              </div>
             </section>
-          </form>
-          <div className="mt-6">
-            <OrderCreate cartItems={cartItems} />
           </div>
         </main>
       </div>

@@ -3,12 +3,17 @@ import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
 interface SliderProps
-  extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {}
+  extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
+  value?: number[];
+}
 
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   SliderProps
 >(({ className, value, onValueChange, ...props }, ref) => {
+  const unit = (singleValue: number) => (singleValue === 1 ? "mile" : "miles");
+
+  const singleValue = Array.isArray(value) ? value[0] : value || 0;
   return (
     <div>
       <div className="mb-3">Radius</div>
@@ -27,7 +32,9 @@ const Slider = React.forwardRef<
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-[1px] border-gray-500 bg-white" />
       </SliderPrimitive.Root>
-      <div>{value} miles</div>
+      <div>
+        {value} {unit(singleValue)}
+      </div>
     </div>
   );
 });

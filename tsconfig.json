@@ -33,9 +33,10 @@
     "app/(pages)/checkout/page.jsx",
     "app/(pages)/test/slider-component.tsx",
     "app/api/update-order/route.ts",
-    "app/(pages)/co-op-hours/hours.jsx",
+    "app/components/co-op-hours/hours.jsx",
     "app/(pages)/onboarding/page.tsx",
-    "app/components/map/markers-map.jsx"
+    "app/components/map/markers-map.jsx",
+    "app/components/listings/search-locationtsx"
   ],
   "exclude": ["node_modules"]
 }

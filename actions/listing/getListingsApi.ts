@@ -44,11 +44,10 @@ export default async function GetListings(
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
-      console.log("user:", userLocation);
 
       const radiusInMeters = parseFloat(radius) * 1000;
 
-      listings = listings.filter((listing) => {
+      const listingsWithDistance = listings.map((listing) => {
         const listingLocation = listing.location as unknown as {
           coordinates: [number, number];
         };
@@ -56,13 +55,22 @@ export default async function GetListings(
           latitude: listingLocation.coordinates[1],
           longitude: listingLocation.coordinates[0],
         };
-
         const distance = haversine(listingCoordinates, userLocation);
-        console.log("listing:", listingCoordinates);
-        console.log("distance", distance);
-
-        return distance <= radiusInMeters;
+        return {
+          listing,
+          distance,
+        };
       });
+
+      const filteredListings = listingsWithDistance.filter(
+        ({ distance }) => distance <= radiusInMeters
+      );
+
+      const sortedListings = filteredListings.sort(
+        (a, b) => a.distance - b.distance
+      );
+      console.log(sortedListings, "sorted");
+      listings = sortedListings.map(({ listing }) => listing);
     }
     const user = await currentUser();
     if (user?.role === "PRODUCER") {

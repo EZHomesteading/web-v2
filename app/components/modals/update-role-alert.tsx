@@ -46,15 +46,16 @@ export function UpdateRoleAlert({
           <CiSquarePlus className="text-sm sm:text-lg md:text-2xl text-gray-500" />
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="bg-white rounded-lg w-full h-4/5 md:w-1/2 md:h-1/2 flex flex-row justify-start">
-        <Image
-          src={homebg}
-          alt="Farmer Holding Basket of Vegetables"
-          blurDataURL="data:..."
-          placeholder="blur"
-          height={800}
-          className="rounded-l-lg"
-        />
+      <AlertDialogContent className="grid grid-cols-1 lg:grid-cols-2 w-[90vw] h-[40vh] sm:w-[90vw] md:w-[50vw] xl:w-[vw] xl:h-[60vh] overflow-hidden authlayoutbg rounded-xl">
+        <div className="relative hidden xl:block">
+          <Image
+            src={homebg}
+            alt="Farmer Holding Basket of Vegetables"
+            placeholder="blur"
+            className="rounded-l-lg object-cover"
+            fill
+          />
+        </div>
         <div className="mt-12 px-2">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-black">
@@ -64,41 +65,35 @@ export function UpdateRoleAlert({
               {description}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogCancel className="absolute top-2 right-2 border-none">
+          <AlertDialogCancel className="absolute top-1 right-1 border-none bg-transparent">
             <Cancel />
           </AlertDialogCancel>
-          <div className="mt-10 flex flex-col sm:flex-row">
-            <AlertDialogAction>
+          <div className="mt-10 flex flex-col sm:flex-row gap-5">
+            <AlertDialogAction className="bg shadow-xl">
               <Link
                 href={actionButtonHref}
-                className="border-black shadow-none"
+                className="flex flex-row items-center text-black gap-x-2"
               >
-                <Button variant="link" className="w-full  border-black">
-                  <CiCircleInfo className="mr-2" />
-                  {actionButtonLabel}
-                </Button>
+                <CiCircleInfo className="" />
+                {actionButtonLabel}
               </Link>
             </AlertDialogAction>
-            <AlertDialogAction className="border-black shadow-none">
+            <AlertDialogAction className="bg shadow-xl">
               <Link
                 href={actionButtonHrefTwo}
-                className="border-black shadow-none"
+                className="flex flex-row items-center text-black gap-x-2"
               >
-                <Button variant="link" className="border-black shadow-none">
-                  <IoStorefrontOutline className="mr-2" />
-                  {actionButtonLabelTwo}
-                </Button>
+                <IoStorefrontOutline className="mr-2" />
+                {actionButtonLabelTwo}
               </Link>
             </AlertDialogAction>
-            <AlertDialogAction className="">
+            <AlertDialogAction className="bg shadow-xl">
               <Link
                 href={actionButtonHrefThree}
-                className="border-black shadow-none"
+                className="flex flex-row items-center text-black gap-x-2"
               >
-                <Button className="border-black shadow-none" variant="link">
-                  <GiFruitTree className="mr-2" />
-                  {actionButtonLabelThree}
-                </Button>
+                <GiFruitTree className="" />
+                {actionButtonLabelThree}
               </Link>
             </AlertDialogAction>
           </div>
