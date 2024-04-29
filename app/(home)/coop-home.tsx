@@ -20,10 +20,10 @@ const CoopHome = ({ user }: Props) => {
       <header className="py-12">
         <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
           <div className={`${outfit.className} `}>
-            {user?.stripeAccountId || user?.hours || user?.image ? (
+            {!user?.stripeAccountId || !user?.hours || !user?.image ? (
               <>
                 <span className="text-green-200 tracking font-medium">
-                  You&apos;re almost ready to start getting payed out
+                  You&apos;re almost ready to start getting payed
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
                 <span className="text-green-400 font-bold">
@@ -56,7 +56,7 @@ const CoopHome = ({ user }: Props) => {
               Find producers nearby
             </Button>
           </Link>
-          {user?.stripeAccountId || user?.hours || user?.image ? (
+          {!user?.stripeAccountId || !user?.hours || !user?.image ? (
             <StripeButton label="Finish Account Setup" user={user} />
           ) : null}
         </div>
