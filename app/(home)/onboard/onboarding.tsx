@@ -23,12 +23,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/app/components/ui/breadcrumb";
+import { useRouter } from "next/navigation";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface Props {
   user: UserInfo;
+  index: number;
 }
-const Onboarding = ({ user }: Props) => {
-  const [step, setStep] = useState(1);
+const Onboarding = ({ user, index }: Props) => {
+  const router = useRouter();
+  const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
     image?: string;
@@ -52,42 +60,9 @@ const Onboarding = ({ user }: Props) => {
 
   const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
   const handleNext = async () => {
-    if (step === 1) {
-      setIsLoading(true);
-      try {
-        console.log(coOpHours);
-        const response = await axios.post("/api/update", { hours: coOpHours });
-        console.log(coOpHours);
-        if (response.status === 200) {
-          setStep(step + 1);
-        } else {
-          toast.error("Failed to update hours");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        toast.error("An error occurred while updating hours");
-      }
-      setIsLoading(false);
-    } else if (step === 2 && !user?.stripeAccountId) {
-      setIsLoading(true);
-      try {
-        const response = await axios.post(
-          "/api/stripe/create-connected-account",
-          { userId: user?.id }
-        );
-        if (response.status === 200) {
-          toast.success("Stripe account connected successfully");
-          setStep(step + 1);
-        } else {
-          toast.error("Failed to connect Stripe account");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        toast.error("An error occurred while connecting Stripe account");
-      }
-      setIsLoading(false);
-    } else if (step == 3) {
+    if (step === 3) {
       handleSubmit();
+      router.push("/dashboard/my-store");
     } else {
       setStep(step + 1);
     }
@@ -103,25 +78,21 @@ const Onboarding = ({ user }: Props) => {
         stripeAccountId: user?.stripeAccountId,
       });
       if (response.status === 200) {
-        toast.success("Terms of Service accepted successfully");
         if (formData.image) {
           try {
             const updateResponse = await axios.post("/api/update", {
               image: formData.image,
+              hours: coOpHours,
             });
             if (updateResponse.status === 200) {
-              toast.success("Profile photo updated successfully");
             } else {
-              toast.error("Failed to update profile photo");
             }
           } catch (error) {
             console.error("Error:", error);
-            toast.error("An error occurred while updating profile photo");
           }
         }
         setStep(step + 1);
       } else {
-        toast.error("Failed to accept Terms of Service");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -202,7 +173,9 @@ const Onboarding = ({ user }: Props) => {
               </Popover>
             </div>
           )}
-          <Breadcrumb className="absolute bottom-5 z-10">
+          <Breadcrumb
+            className={`${outfit.className} text-black absolute bottom-5 z-10`}
+          >
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -211,9 +184,10 @@ const Onboarding = ({ user }: Props) => {
               <BreadcrumbItem
                 className={
                   step === 1
-                    ? "font-bold cursor-not-allowed"
-                    : "cursor-not-allowed"
+                    ? "font-bold cursor-none"
+                    : "font-normal cursor-pointer"
                 }
+                onMouseDown={() => setStep(1)}
               >
                 Co-op
               </BreadcrumbItem>
@@ -221,23 +195,23 @@ const Onboarding = ({ user }: Props) => {
               <BreadcrumbItem
                 className={
                   step === 2
-                    ? "font-bold cursor-not-allowed"
-                    : "cursor-not-allowed"
+                    ? "font-bold cursor-none"
+                    : "font-normal cursor-pointer"
                 }
+                onMouseDown={() => setStep(2)}
               >
                 Profile
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage
-                  className={
-                    step === 3
-                      ? "font-bold cursor-not-allowed"
-                      : "cursor-not-allowed"
-                  }
-                >
-                  Stripe
-                </BreadcrumbPage>
+              <BreadcrumbItem
+                className={
+                  step === 3
+                    ? "font-bold cursor-none"
+                    : "font-normal cursor-pointer"
+                }
+                onMouseDown={() => setStep(3)}
+              >
+                Stripe
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

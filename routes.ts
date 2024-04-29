@@ -40,7 +40,7 @@ export const authRoutes = [
 
 export const updateRoutes = ["/auth/become-a-co-op", "/auth/become-a-producer"];
 
-export const coopRoutes = ["/onboard", "/map"];
+// export const coopRoutes = ["/onboard", "/map"];
 /**
  * The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes

@@ -379,7 +379,6 @@ const ListingModal = () => {
                   : "cursor-pointer hover:text-green-500"
               }
               onClick={() => {
-                setValue("address", "");
                 setClicked(true);
               }}
             />

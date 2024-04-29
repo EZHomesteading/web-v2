@@ -49,7 +49,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const body = clsx("flex flex-grow flex-col ga", isOwn && "items-end");
   const message = clsx(
     "text-sm w-fit overflow-hidden",
-    isOwn ? "message text-white" : "bg-gray-100",
+    isOwn ? "message text-white" : "bg-gray-100 rounded-lg",
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
   const onSubmit1 = () => {
