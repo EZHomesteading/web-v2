@@ -15,7 +15,9 @@ const OrderCreate = ({ cartItems }: Create) => {
     let prevUserId: any = null;
     let userItems: any = [];
 
-    cartItems.forEach((cartItem: any) => {
+    cartItems.forEach((cartItem: any, index: number) => {
+      //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
+
       if (cartItem.listing.userId !== prevUserId) {
         if (prevUserId !== null) {
           const summedTotalPrice = userItems.reduce(
@@ -94,7 +96,7 @@ const OrderCreate = ({ cartItems }: Create) => {
 
     const post = async () => {
       const response = await axios.post("/api/create-order", body);
-      console.log(response.data);
+      //console.log(response.data);
       const datas = response.data;
       await datas.forEach((data: any) => {
         let store = sessionStorage.getItem("ORDER");

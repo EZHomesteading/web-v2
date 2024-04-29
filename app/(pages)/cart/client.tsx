@@ -41,6 +41,7 @@ interface CartProps {
 
 const Cart = ({ cartItems, user }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
+  const [checkoutPickup, setCheckoutPickup] = useState<any>();
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
@@ -58,6 +59,13 @@ const Cart = ({ cartItems, user }: CartProps) => {
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
+  useEffect(() => {
+    const newTotal = cartItems.reduce(
+      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      0
+    );
+    setTotal(newTotal);
+  }, [cartItems, total]);
 
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
@@ -125,20 +133,30 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
     arr.forEach((obj: any, index: number) => {
       if (obj.cartIndex === targetCartIndex) {
-        arr[index].expiry = validTime.pickupTime;
+        arr[0].expiry = validTime.pickupTime;
+        foundObject = obj;
       }
     });
+    //setCheckoutPickup(mappedCartItems);
     return foundObject;
   }
+  //useEffect(() => {
+  //console.log(checkoutPickup);
+  //}),
+  //[checkoutPickup];
   useEffect(() => {
     if (validTime) {
-      updateObjectWithCartIndex(mappedCartItems, validTime.index);
+      console.log(validTime);
+      console.log(mappedCartItems);
+      const toes = updateObjectWithCartIndex(mappedCartItems, validTime.index);
+      console.log(toes);
     }
   }),
     [validTime];
   const handleTime = (childTime: Date) => {
     setValidTime(childTime);
   };
+  //console.log(mappedCartItems);
   function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
     let foundObject = null;
 
