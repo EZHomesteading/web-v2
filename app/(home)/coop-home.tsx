@@ -23,7 +23,7 @@ const CoopHome = ({ user }: Props) => {
             {user?.stripeAccountId || user?.hours || user?.image ? (
               <>
                 <span className="text-green-200 tracking font-medium">
-                  You're almost ready to start getting payed out
+                  You&apos;re almost ready to start getting payed out
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
                 <span className="text-green-400 font-bold">
@@ -37,7 +37,7 @@ const CoopHome = ({ user }: Props) => {
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
                 <span className="text-green-400 font-bold">
-                  {user.firstName}?
+                  {user.firstName}.
                 </span>
               </>
             )}
