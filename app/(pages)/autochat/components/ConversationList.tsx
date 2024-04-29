@@ -139,7 +139,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
               <div
                 className="
-                rounded-full 
+                rounded-lg 
                 p-2 
                 bg-gray-100 
                 text-gray-600 

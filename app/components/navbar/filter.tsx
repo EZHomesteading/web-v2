@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import { Slider } from "./radius-slider";
 import { Switch } from "../ui/switch";
 import { UserRole } from "@prisma/client";
-import FiltersIcon from "../ui/filters-icon";
+import FiltersIcon from "../icons/filters-icon";
 import { UserInfo } from "@/next-auth";
 import { Button } from "../ui/button";
 

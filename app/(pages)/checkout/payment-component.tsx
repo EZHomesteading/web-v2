@@ -6,6 +6,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Outfit } from "next/font/google";
 import { useState } from "react";
 
@@ -46,14 +47,16 @@ export default function PaymentComponent() {
     setIsLoading(false);
   };
 
-  const paymentElementOptions = {
-    layout: "tabs",
+  const options: StripePaymentElementOptions = {
+    layout: {
+      type: "tabs",
+      defaultCollapsed: false,
+    },
   };
-
   return (
     <>
       <form id="payment-form" onSubmit={handleSubmit}>
-        <PaymentElement id="payment-element" />
+        <PaymentElement id="payment-element" options={options} />
         <Button
           className={`${outfit.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
           disabled={isLoading || !stripe || !elements}

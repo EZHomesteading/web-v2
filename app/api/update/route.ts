@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     email,
     phoneNumber,
     role,
+    image,
     location,
     hours,
     subscriptions,
@@ -19,7 +20,6 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.error();
   }
-  console.log(body);
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
       name,
       email,
       phoneNumber,
+      image,
       role: role as UserRole,
       location: location as Location,
       subscriptions,

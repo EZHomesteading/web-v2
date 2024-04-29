@@ -29,7 +29,11 @@ interface Props {
 }
 const Onboarding = ({ user }: Props) => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<{ hours?: ExtendedHours }>({});
+  const [formData, setFormData] = useState<{
+    hours?: ExtendedHours;
+    image?: string;
+  }>({});
+
   const [isLoading, setIsLoading] = useState(false);
   let defaultHours;
   if (user?.hours) {
@@ -100,6 +104,21 @@ const Onboarding = ({ user }: Props) => {
       });
       if (response.status === 200) {
         toast.success("Terms of Service accepted successfully");
+        if (formData.image) {
+          try {
+            const updateResponse = await axios.post("/api/update", {
+              image: formData.image,
+            });
+            if (updateResponse.status === 200) {
+              toast.success("Profile photo updated successfully");
+            } else {
+              toast.error("Failed to update profile photo");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            toast.error("An error occurred while updating profile photo");
+          }
+        }
         setStep(step + 1);
       } else {
         toast.error("Failed to accept Terms of Service");
@@ -263,7 +282,7 @@ const Onboarding = ({ user }: Props) => {
           </button>
         )}
 
-        {step < 3 && (
+        {step < 4 && (
           <button
             onClick={handleNext}
             className="absolute bottom-5 right-5 xl:text-[100px]"
