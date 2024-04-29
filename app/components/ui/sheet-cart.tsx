@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader } from "./card";
 import { Outfit } from "next/font/google";
 import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
+import { ExtendedHours } from "@/next-auth";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -61,8 +62,9 @@ const sheetVariants = cva(
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  earliestPickupTime: string | null;
-  handleAsSoonAsPossible: () => void;
+  hours: ExtendedHours;
+  index: number;
+  onSetTime: any;
 }
 
 const SheetContentC = React.forwardRef<
@@ -70,14 +72,7 @@ const SheetContentC = React.forwardRef<
   SheetContentCProps
 >(
   (
-    {
-      side = "right",
-      className,
-      children,
-      earliestPickupTime,
-      handleAsSoonAsPossible,
-      ...props
-    },
+    { side = "right", className, children, index, hours, onSetTime, ...props },
     ref
   ) => (
     <SheetPortalC>
@@ -89,10 +84,7 @@ const SheetContentC = React.forwardRef<
         {...props}
       >
         <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-          <EarliestPickup
-            handleAsSoonAsPossible={handleAsSoonAsPossible}
-            earliestPickupTime={earliestPickupTime || "not available right now"}
-          />
+          <EarliestPickup hours={hours} index={index} onSetTime={onSetTime} />
         </SheetPrimitive.Close>
         <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
           {" "}

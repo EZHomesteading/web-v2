@@ -1,3 +1,4 @@
+"use client";
 import { SheetTrigger, SheetContent } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
@@ -17,6 +18,7 @@ import { Separator } from "@/app/components/ui/separator";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
+import { useEffect, useState } from "react";
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
@@ -25,23 +27,99 @@ const outfit = Outfit({
 
 interface Props {
   hours: ExtendedHours;
-  date: Date | undefined;
-  now: Date;
+  index: number;
   cartGroup: CartGroup | null;
-  setTime: any;
-  setDate: any;
-  options: string[];
+  onSetTime: any;
 }
 
-const CustomTime = ({
-  hours,
-  date,
-  now,
-  cartGroup,
-  setTime,
-  setDate,
-  options,
-}: Props) => {
+const CustomTime = ({ hours, index, cartGroup, onSetTime }: Props) => {
+  const now = new Date();
+  const [date, setDate] = useState<Date | undefined>(now); //current time
+  const [options, setOptions] = useState<string[]>([]); // array of times with 15 minute intervals
+
+  const formatTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    const formattedMins = mins < 10 ? `0${mins}` : mins;
+    return `${formattedHours}:${formattedMins} ${ampm}`;
+  };
+
+  const roundNumber = (n: number) => {
+    if (n > 0) return Math.ceil(n / 30) * 30;
+    else if (n < 0) return Math.floor(n / 30) * 30;
+    else return 30;
+  };
+
+  const buildArray = async () => {
+    if (date === undefined) {
+      return;
+    }
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+    const newHoursIndex = (date.getDay() + 6) % 7;
+    const newHours = hours[newHoursIndex as keyof ExtendedHours];
+    if (newHours === null) {
+      return; //early retur if co-op is closed
+    }
+    const resultantArray = [];
+    const roundedMin = roundNumber(currentMin);
+    if (date.getDate() < now.getDate()) {
+      return;
+    }
+    if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
+      for (let i = roundedMin; i <= newHours[0].close; i += 30) {
+        const time = formatTime(i);
+        resultantArray.push(time);
+      }
+      setOptions(resultantArray);
+      return;
+    }
+    for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
+      const time = formatTime(i);
+      resultantArray.push(time);
+    }
+    setOptions(resultantArray);
+  };
+
+  useEffect(() => {
+    setOptions([]);
+    buildArray();
+  }, [date]);
+
+  function insertTimeIntoDatetime(datetime: Date, timeString: string) {
+    const inputDatetime = new Date(datetime);
+
+    const matchResult = timeString.match(/(\d+):(\d+)\s*(\w*)/i);
+    if (!matchResult) {
+      console.error("Invalid time string format:", timeString);
+      return inputDatetime;
+    }
+    const [time, hours, minutes, meridiem] = matchResult;
+    let parsedHours = parseInt(hours, 10);
+    if (meridiem) {
+      const isPM = meridiem.toUpperCase() === "PM";
+      if (isPM && parsedHours < 12) {
+        parsedHours += 12;
+      } else if (!isPM && parsedHours === 12) {
+        parsedHours = 0;
+      }
+    } else {
+      parsedHours = parsedHours % 24;
+    }
+    const parsedMinutes = parseInt(minutes, 10);
+    inputDatetime.setHours(parsedHours, parsedMinutes, 0, 0);
+    return inputDatetime;
+  }
+  const setTime = (option: string) => {
+    if (date && option) {
+      onSetTime({
+        pickupTime: insertTimeIntoDatetime(date, option),
+        index: index,
+      });
+    }
+  };
+
   return (
     <div>
       <SheetTrigger>
