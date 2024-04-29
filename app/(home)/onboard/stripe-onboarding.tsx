@@ -27,7 +27,6 @@ const AccountOnboardingUI = ({ user }: Props) => {
           stripeAccountId: body,
         });
         const { client_secret: clientSecret } = response.data;
-        console.log(clientSecret);
         return clientSecret;
       } catch (error) {
         console.error("An error occurred: ", error);
@@ -62,7 +61,7 @@ const AccountOnboardingUI = ({ user }: Props) => {
           privacyPolicyUrl="https://ezhomesteading.vercel.app/privacy-policy"
           skipTermsOfServiceCollection={false}
           collectionOptions={{
-            fields: "eventually_due",
+            fields: "currently_due",
             futureRequirements: "include",
           }}
         />
