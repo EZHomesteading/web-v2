@@ -14,6 +14,7 @@ enum UserRole {
   PRODUCER
 }
 
+
 enum orderStatus {
   pending //order has been created
   ready // order is ready to be picked up
@@ -53,7 +54,7 @@ model User {
   phoneNumber           String? 
   location              Location?
   image                 String?
-  hours                 Hours?
+  hours                 Json?
   role                  UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
@@ -192,7 +193,7 @@ model Order {
   fee                   Float
 
   conversationId        String   @db.ObjectId
-  //payments              Payment[]
+  payments              Payment[]
 
   buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
   seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
@@ -208,7 +209,7 @@ model Payment {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   
-  //order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model StripeIntents {

@@ -10,7 +10,6 @@ import { useState } from "react";
 import Loading from "@/app/components/secondary-loader";
 
 interface MapProps {
-  userCoordinates: number[];
   coops: {
     name: string;
     coordinates: number[] | undefined;
@@ -29,7 +28,7 @@ type vendor = {
   listingsCounts: number;
 };
 
-const ListingsMap = ({ userCoordinates, coops, producers }: MapProps) => {
+const ListingsMap = ({ coops, producers }: MapProps) => {
   const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
       lat: coop.coordinates[1],

@@ -6,6 +6,48 @@ const products = [
     photo: "/images/product-images/beefsteak-tomato.webp",
   },
   {
+    name: "Red Delicious Apples",
+    category: "Fruits",
+    subCategory: "apple",
+    photo: "/images/product-images/red-delicious-apple.webp",
+  },
+  {
+    name: "Strawberries",
+    category: "Fruits",
+    subCategory: "Berry",
+    photo: "/images/product-images/strawberry.webp",
+  },
+  {
+    name: "Eggs",
+    category: "PoultryChicken",
+    subCategory: "egg",
+    photo: "/images/product-images/egg.webp",
+  },
+  {
+    name: "Basil",
+    category: "herbs and spices",
+    subCategory: "green",
+    photo: "/images/product-images/basil.webp",
+  },
+  {
+    name: "Blood Oranges",
+    category: "Fruits",
+    subCategory: "orange",
+    photo: "/images/product-images/blood-orange.webp",
+  },
+  {
+    name: "Baby Spinach",
+    category: "Vegetables",
+    subCategory: "Spinach",
+    photo: "/images/product-images/baby-spinach.webp",
+  },
+  {
+    name: "Elk",
+    category: "Meats",
+    subCategory: "",
+    photo: "/images/product-images/Elk.webp",
+  },
+  {
     name: "Cherry Tomatoes",
     category: "Vegetables",
     subCategory: "tomato",
@@ -306,12 +348,7 @@ const products = [
     photo: "/images/product-images/tomato.webp",
   },
   ///////////////////////////////////////////////////////
-  {
-    name: "Red Delicious Apples",
-    category: "Fruits",
-    subCategory: "apple",
-    photo: "/images/product-images/red-delicious-apple.webp",
-  },
+
   {
     name: "Granny Smith Apples",
     category: "Fruits",
@@ -907,12 +944,7 @@ const products = [
     subCategory: "orange",
     photo: "/images/product-images/valencia_orange.webp",
   },
-  {
-    name: "Blood Oranges",
-    category: "Fruits",
-    subCategory: "orange",
-    photo: "/images/product-images/blood-orange.webp",
-  },
+
   {
     name: "Cara Cara Oranges",
     category: "Fruits",
@@ -1441,12 +1473,7 @@ const products = [
     subCategory: "Spinach",
     photo: "/images/product-images/bloomsdale-spinach.webp",
   },
-  {
-    name: "Baby Spinach",
-    category: "Vegetables",
-    subCategory: "Spinach",
-    photo: "/images/product-images/baby-spinach.webp",
-  },
+
   {
     name: "Savoy Spinach",
     category: "Vegetables",
@@ -2203,12 +2230,7 @@ const products = [
     subCategory: "avacado",
     photo: "/images/product-images/avocado.webp",
   },
-  {
-    name: "Strawberries",
-    category: "Fruits",
-    subCategory: "Berry",
-    photo: "/images/product-images/strawberry.webp",
-  },
+
   {
     name: "Blueberries",
     category: "Fruits",
@@ -2503,12 +2525,7 @@ const products = [
     subCategory: "green",
     photo: "/images/product-images/parsley.webp",
   },
-  {
-    name: "Basil",
-    category: "herbs and spices",
-    subCategory: "green",
-    photo: "/images/product-images/basil.webp",
-  },
+
   {
     name: "Mint",
     category: "herbs and spices",
@@ -3865,12 +3882,7 @@ const products = [
     subCategory: "",
     photo: "/images/product-images/venison.webp",
   },
-  {
-    name: "Elk",
-    category: "Meats",
-    subCategory: "",
-    photo: "/images/product-images/Elk.webp",
-  },
+
   {
     name: "Goose",
     category: "Meats",

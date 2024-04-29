@@ -34,7 +34,7 @@ const getLatLngFromAddress = async (address: string) => {
   }
 };
 
-const SearchLocation = () => {
+const SearchLocation = ({ onClose }: any) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,6 +99,7 @@ const SearchLocation = () => {
       setSearchQuery("");
       setLocation(location);
       setLatLng(latLng);
+      onClose();
     } catch (error) {
       console.error("Error searching listings:", error);
     }
@@ -232,7 +233,7 @@ const SearchLocation = () => {
           </div>
         )}
       </PlacesAutocomplete>
-      <div className="w-full mb-2 sm:mb-0 sm:w-auto">
+      <div className="w-full mb-2 sm:mb-0 sm:w-auto mt-1 sm:mt-0">
         <div className="relative flex items-center mb-2 sm:mb-0 ">
           <BsBasket className="absolute text-black text-lg left-2" />
           <input

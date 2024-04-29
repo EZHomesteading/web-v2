@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { Hours, Location, UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     email,
     phoneNumber,
     role,
+    image,
     location,
     hours,
     subscriptions,
@@ -26,10 +27,11 @@ export async function POST(request: Request) {
       name,
       email,
       phoneNumber,
+      image,
       role: role as UserRole,
       location: location as Location,
       subscriptions,
-      hours: hours as Hours,
+      hours,
     },
   });
   return NextResponse.json(updatedUser);

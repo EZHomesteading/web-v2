@@ -78,24 +78,31 @@
 body::-webkit-scrollbar {
   display: none;
 }
-
+.z {
+  z-index: 100;
+}
 .authlayoutbg {
   background-color: #ced9bb;
 }
 
+.mi:hover {
+  background-color: #ced9bb;
+}
 .authlayouttext {
   color: #ced9bb;
 }
 
 .onboard-left,
-.popover {
+.popover,
+.bg {
   background-color: #e3eac9;
 }
 .popover {
   border: none;
   width: 20rem;
 }
-.onboard-right {
+.onboard-right,
+.sheet {
   background-color: #ced9bb;
 }
 .cardregister {

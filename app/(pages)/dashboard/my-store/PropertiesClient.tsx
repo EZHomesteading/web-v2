@@ -45,7 +45,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 
   const onEdit = (id: string) => {
     id;
-    router.push(`/update/${id}`);
+    router.push(`/update-listing/${id}`);
   };
 
   return (
@@ -67,16 +67,16 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           gap-8
         "
       >
-        {listings.map((listing: any) => (
+        {listings.map((listing: SafeListing) => (
           <ListingCard
             key={listing.id}
             data={listing}
             actionId={listing.id}
             onAction={onDelete}
             disabled={deletingId === listing.id}
-            actionLabel="Delete Product"
+            actionLabel="Delete"
             secondActionId={listing.id}
-            secondActionLabel="Edit Product"
+            secondActionLabel="Edit"
             onSecondAction={onEdit}
             user={user}
           />

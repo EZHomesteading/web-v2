@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getVendors from "@/actions/user/getVendors";
-import ListingsMap from "./draw-map";
+// import ListingsMap from "./draw-map";
 interface MapProps {
   searchParams?: {
     q?: string;
@@ -58,7 +58,7 @@ const MapPage = async ({
   const intLng = parseInt(searchParams?.lat ?? "0", 10);
   const userCoordinates = [intLat, intLng];
   return (
-    <div className="w-full h-full flex flex-row">
+    <div className="w-full h-full flex flex-col lg:flex-row">
       <div className="w-full md:w-1/2">
         <DynamicMapPage
           users={vendors}
@@ -86,7 +86,7 @@ const MapPage = async ({
       </div> */}
       <div className="w-1/2">
         {" "}
-        <ListingsMap coops={coops} producers={producers} />
+        <MarkersMap coops={coops} producers={producers} />
       </div>
     </div>
   );

@@ -21,6 +21,10 @@ import {
 
 const data: Days[] = [
   {
+    id: 7,
+    day: "Everyday",
+  },
+  {
     id: 0,
     day: "Monday",
   },
@@ -94,7 +98,7 @@ export function DaySelect() {
 
   return (
     <div className="flex">
-      <div className="rounded-md border">
+      <div className="rounded-md border bg shadow-lg">
         <Table>
           <TableBody>
             {table.getRowModel().rows?.length ? (

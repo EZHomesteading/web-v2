@@ -2,7 +2,7 @@
 
 import useSearchModal from "@/hooks/modal/useSearchModal";
 
-import Modal from "./Modal";
+import Modal from "./modal-search";
 import Heading from "../Heading";
 import FindListingsComponent from "./search-listings-native";
 
@@ -20,8 +20,6 @@ const SearchModal = () => {
 
   return (
     <Modal
-      onSubmit={() => {}}
-      actionLabel=""
       isOpen={searchModal.isOpen}
       onClose={searchModal.onClose}
       body={bodyContent}

@@ -6,6 +6,7 @@ import ToasterProvider from "@/providers/ToasterProvider";
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
+import CartModal from "./components/modals/cart-modal";
 
 export const metadata = {
   title: "EZHomesteading",
@@ -26,6 +27,7 @@ export default async function RootLayout({
             <ToasterProvider />
             <RentModal />
             <SearchModal />
+            <CartModal />
           </ClientOnly>
           <main>{children}</main>
         </body>

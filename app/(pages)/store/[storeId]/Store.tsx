@@ -1,8 +1,16 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import { DatePickerDemo } from "@/app/components/ui/date-time-picker";
-import OpenStatus from "./status";
+import OpenStatus from "@/app/(pages)/store/[storeId]/status";
+import Avatar from "@/app/components/Avatar";
+import { Outfit } from "next/font/google";
+import Bio from "./bio";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  style: "normal",
+});
 interface StorePageProps {
   listings: any[];
   storeUser: any;
@@ -19,8 +27,26 @@ const StorePage = ({
   return (
     <ClientOnly>
       <Container>
-        <div className="text-5xl">{storeUser?.name}</div>
-        <OpenStatus hours={storeUser.hours} />
+        <div className="flex justify-between">
+          <div className="flex flex-row items-center">
+            <Avatar />
+            <div
+              className={`${outfit.className} weight-100 flex flex-col ml-2`}
+            >
+              <div className="flex flex-row items-center gap-x-2">
+                <div className="font-bold text-2xl lg:text-4xl">
+                  {user?.name}
+                </div>
+                <OpenStatus hours={storeUser.hours} />
+              </div>
+              <div>{user?.firstName}</div>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <Bio user={user} />
+          </div>
+        </div>
+
         {emptyState || (
           <div
             className="
@@ -38,7 +64,6 @@ const StorePage = ({
             {listings.map((listing: any) => (
               <ListingCard user={storeUser} key={listing.id} data={listing} />
             ))}
-            <DatePickerDemo />
           </div>
         )}
       </Container>
