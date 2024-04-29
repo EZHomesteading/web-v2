@@ -1,6 +1,6 @@
 import getListingById from "@/actions/listing/getListingById";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import UpdateClient from "@/app/(pages)/update-listing/[listingId]/UpdateClient";
+import UpdateClient from "@/app/(home)/update-listing/[listingId]/UpdateClient";
 
 interface IParams {
   listingId?: string;

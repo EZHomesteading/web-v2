@@ -10,14 +10,16 @@ import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
 import { Button } from "@/app/components/ui/button";
 import { SafeListing } from "@/types";
+import { useRouter } from "next/navigation";
+import ImageUpload from "@/app/components/inputs/ImageUpload";
 
-interface UpdateUserProps {
+interface UpdateListingProps {
   listing: SafeListing;
 }
 
-const UpdateClient: React.FC<UpdateUserProps> = ({ listing }) => {
+const UpdateClient = ({ listing }: UpdateListingProps) => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -47,63 +49,59 @@ const UpdateClient: React.FC<UpdateUserProps> = ({ listing }) => {
     axios
       .post("/api/updateListing", formData)
       .then(() => {
-        toast.success("Updated!");
+        toast.success("Your Listing was Updated!");
       })
       .catch((error) => {
         toast.error(error);
       })
       .finally(() => {
         setIsLoading(false);
+        router.push("/");
       });
   };
 
   return (
     <Container>
-      <div className="flex flex-col gap-4">
-        <Heading
-          title="Update The Listings Info Below"
-          subtitle={`enter details for ${listing?.title} below`}
-        />
+      <div className="flex flex-row gap-4">
+        <div className="w-1/2">
+          <Heading
+            title="Update Your Listing"
+            subtitle={`Modify the details for your ${listing?.title} here`}
+          />
+        </div>
+        <div className="flex flex-col gap-y-2">
+          <Input
+            id="stock"
+            label="Stock"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
 
-        <Input
-          id="stock"
-          label="Stock"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
+          <Input
+            id="price"
+            label="Price"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
 
-        <Input
-          id="price"
-          label="Price"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-
-        <Input
-          id="description"
-          label="Description"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        <Input
-          id="shelfLife"
-          label="Shelf Life"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-      </div>
-      <div className="flex flex-col gap-4 mt-3">
-        <div className="text-neutral-500 text-center mt-4 font-light">
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            className="text-neutral-800 cursor-pointer hover:underline"
-          >
-            SUBMIT
-          </Button>
+          <Input
+            id="description"
+            label="Description"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
+          <Input
+            id="shelfLife"
+            label="Shelf Life"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
+          <ImageUpload value={listing?.imageSrc} onChange={() => {}} />
+          <Button onClick={handleSubmit(onSubmit)}>Update</Button>
         </div>
       </div>
     </Container>
