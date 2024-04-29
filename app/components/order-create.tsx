@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { useEffect } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 interface Create {
   cartItems: any;
@@ -12,6 +15,10 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
+  console.log(pickupArr);
+  const formatDate = (date: any) => {
+    return dayjs(date).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+  };
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -31,55 +38,49 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
         return foundObject;
       }
-
-      if ((index = pickupArr))
-        if (cartItem.listing.userId !== prevUserId) {
-          const currentpickuparr: any = findObjectWithCartIndex(
-            pickupArr,
-            index
+      if (cartItem.listing.userId !== prevUserId) {
+        const currentpickuparr: any = findObjectWithCartIndex(pickupArr, index);
+        console.log(index);
+        console.log(currentpickuparr);
+        if (prevUserId !== null) {
+          const summedTotalPrice = userItems.reduce(
+            (acc: any, curr: any) => acc + curr.price,
+            0
           );
-          if (currentpickuparr && currentpickuparr.expiry) {
-            console.log("hello");
-          } //stock=false};
-          if (prevUserId !== null) {
-            const summedTotalPrice = userItems.reduce(
-              (acc: any, curr: any) => acc + curr.price,
+          const allListings = userItems.reduce((acc: any, curr: any) => {
+            if (!acc.includes(curr.listingId.toString())) {
+              return [...acc, curr.listingId.toString()];
+            }
+            return acc;
+          }, []);
+
+          const quantities = allListings.map((listingId: string) => {
+            const listingQuantity = userItems.reduce(
+              (acc: any, curr: any) =>
+                curr.listingId.toString() === listingId
+                  ? acc + curr.quantity
+                  : acc,
               0
             );
-            const allListings = userItems.reduce((acc: any, curr: any) => {
-              if (!acc.includes(curr.listingId.toString())) {
-                return [...acc, curr.listingId.toString()];
-              }
-              return acc;
-            }, []);
+            return { id: listingId, quantity: listingQuantity };
+          });
 
-            const quantities = allListings.map((listingId: string) => {
-              const listingQuantity = userItems.reduce(
-                (acc: any, curr: any) =>
-                  curr.listingId.toString() === listingId
-                    ? acc + curr.quantity
-                    : acc,
-                0
-              );
-              return { id: listingId, quantity: listingQuantity };
-            });
-
-            body.push({
-              userId: prevUserId,
-              listingIds: allListings,
-              pickupDate: "2024-04-01T20:45:14.623+00:00",
-              quantity: JSON.stringify(quantities),
-              totalPrice: summedTotalPrice,
-              status: "pending",
-              stripePaymentIntentId: "teststring",
-              conversationId: "660b1cda321d320d4fe69785",
-            });
-          }
-          prevUserId = cartItem.listing.userId;
-          userItems = [cartItem];
-        } else {
-          userItems.push(cartItem);
+          body.push({
+            userId: prevUserId,
+            listingIds: allListings,
+            pickupDate: formatDate(currentpickuparr.pickupTime),
+            quantity: JSON.stringify(quantities),
+            totalPrice: summedTotalPrice,
+            status: "pending",
+            stripePaymentIntentId: "teststring",
+            conversationId: "660b1cda321d320d4fe69785",
+          });
         }
+        prevUserId = cartItem.listing.userId;
+        userItems = [cartItem];
+      } else {
+        userItems.push(cartItem);
+      }
     });
 
     // Handle the last user's items
@@ -107,7 +108,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       body.push({
         userId: prevUserId,
         listingIds: allListings,
-        pickupDate: "2024-04-01T20:45:14.623+00:00",
+        pickupDate: formatDate(pickupArr[pickupArr.length - 1].pickupTime),
         quantity: JSON.stringify(quantities),
         totalPrice: summedTotalPrice,
         status: "pending",
