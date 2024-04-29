@@ -78,6 +78,40 @@
 body::-webkit-scrollbar {
   display: none;
 }
+
+.message {
+  background-color: #007aff;
+  align-self: flex-end;
+  position: relative;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+
+.sentMessage {
+  background-color: #007aff;
+  color: white;
+  align-self: flex-end;
+}
+
+.responseOption {
+  background-color: #e6f2ff;
+  align-self: flex-end;
+}
+
+.sentMessage::before {
+  left: auto;
+  right: -10px;
+  border-right: none;
+  border-left: 10px solid #007aff;
+}
+
+.responseOption::before {
+  left: auto;
+  right: -10px;
+  border-right: none;
+  border-left: 10px solid #e6f2ff;
+}
+
 .z {
   z-index: 100;
 }

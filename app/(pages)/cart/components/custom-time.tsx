@@ -9,7 +9,6 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
@@ -17,6 +16,7 @@ import { Separator } from "@/app/components/ui/separator";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
+
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],

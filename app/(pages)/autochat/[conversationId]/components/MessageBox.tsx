@@ -46,11 +46,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const container = clsx("flex flex-grow gap-3 p-4", isOwn && "justify-end");
   const avatar = clsx(isOwn && "order-2");
-  const body = clsx("flex flex-grow flex-col gap-2", isOwn && "items-end");
+  const body = clsx("flex flex-grow flex-col ga", isOwn && "items-end");
   const message = clsx(
     "text-sm w-fit overflow-hidden",
-    isOwn ? "bg-sky-500 text-white" : "bg-gray-100",
-    data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
+    isOwn ? "message text-white" : "bg-gray-100",
+    data.image ? "rounded-md p-0" : " py-2 px-3"
   );
   const onSubmit1 = () => {
     axios.post("/api/messages", {
@@ -197,9 +197,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 src={data.image}
                 className="
                 object-cover 
-                cursor-pointer 
+                 
                 hover:scale-110 
-                transition 
+                 
                 translate
               "
               />
@@ -227,46 +227,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[70%] gap-y-2 text-white py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit1}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
-              <button
-                type="submit"
-                onClick={onSubmit2}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
-              >
-                No, that time does not work. Does {selectedDateTime.toString()}{" "}
-                work instead? if not, my hours of operation are (insert hours of
-                operation)
-              </button>
-              <div className="flex justify-center outline-none">
+              <div className="">
                 <DateTimePicker
                   className="text-black mt-2 w-5 outline-none"
                   onChange={handleDateTimeChange}
@@ -275,20 +248,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   clearIcon={null} // Optional, to remove the clear icon
                   calendarIcon={null} // Optional, to remove the calendar icon
                 />
+                <button
+                  type="submit"
+                  onClick={onSubmit2}
+                  className="message hover:bg-sky"
+                >
+                  No, that time does not work. Does{" "}
+                  {selectedDateTime.toString()} work instead? if not, my hours
+                  of operation are (insert hours of operation)
+                </button>
               </div>
               <button
                 type="submit"
                 onClick={onSubmit3}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 My apologies, but one or more of these items is no longer
                 available, and this order has been canceled. Sorry for the
@@ -305,24 +278,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit5}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 Your order is ready to be picked up!
               </button>
@@ -335,24 +299,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit4}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 Fantastic, I will be there to pick up the item at the specified
                 time.
@@ -360,21 +315,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit8}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 No, that time does not work. Can it instead be ready at{" "}
                 {selectedDateTime.toString()}
               </button>
-              <div className="flex justify-center outline-none">
+              <div className="">
                 <DateTimePicker
                   className="text-black mt-2 w-5 outline-none"
                   onChange={handleDateTimeChange}
@@ -393,40 +339,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit1}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
               <button
                 type="submit"
                 onClick={onSubmit2}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 No, that time does not work. Does {selectedDateTime.toString()}{" "}
                 work instead? if not, my hours of operation are (insert hours of
@@ -451,24 +379,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit5}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 Your order is ready to be picked up!
               </button>
@@ -481,24 +400,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit6}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 I have Received my order. Thank you!
               </button>
@@ -511,24 +421,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit7}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-500"
               >
                 Fantastic, this order has been marked as completed, feel free to
                 delete this chat. If you do not delete this chat it will be
@@ -543,24 +444,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit9}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 I can deliver these items to you at{" "}
                 {selectedDateTime.toString()}, does that work?
@@ -578,16 +470,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit3}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky"
               >
                 My apologies, but one or more of these items is no longer
                 available, and this order has been canceled. Sorry for the
@@ -604,40 +487,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit10}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-500"
               >
                 Yes, That time works, See you then!
               </button>
               <button
                 type="submit"
                 onClick={onSubmit11}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-500"
               >
                 No, that time does not work. Does {selectedDateTime.toString()}{" "}
                 work instead? if not, my hours of operation are (insert hours of
@@ -662,24 +527,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit12}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-600"
               >
                 Your item has been delivered.
               </button>
@@ -692,40 +548,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit14}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-600"
               >
                 Yes, That time works. Your item will be delivered at that time.
               </button>
               <button
                 type="submit"
                 onClick={onSubmit13}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-600"
               >
                 No, that time does not work. Does {selectedDateTime.toString()}{" "}
                 work instead?
@@ -749,24 +587,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="order-2">
             <Avatar user={session?.data?.user} />
           </div>
-          <div className="flex flex-col gap-2 items-end">
+          <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden bg-sky-500 text-white rounded-full py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit12}
-                className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      transition
-      mr-1
-      ml-1
-    "
+                className="message hover:bg-sky-600"
               >
                 Your item has been delivered.
               </button>
