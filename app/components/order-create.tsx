@@ -3,12 +3,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
+import { useEffect } from "react";
 
 interface Create {
   cartItems: any;
+  pickupArr: any;
+  stillExpiry: boolean;
 }
 
-const OrderCreate = ({ cartItems }: Create) => {
+const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -17,47 +20,66 @@ const OrderCreate = ({ cartItems }: Create) => {
 
     cartItems.forEach((cartItem: any, index: number) => {
       //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
+      function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
+        let foundObject = null;
 
-      if (cartItem.listing.userId !== prevUserId) {
-        if (prevUserId !== null) {
-          const summedTotalPrice = userItems.reduce(
-            (acc: any, curr: any) => acc + curr.price,
-            0
+        arr.forEach((obj: any) => {
+          if (obj.cartIndex === targetCartIndex) {
+            foundObject = obj;
+          }
+        });
+
+        return foundObject;
+      }
+
+      if ((index = pickupArr))
+        if (cartItem.listing.userId !== prevUserId) {
+          const currentpickuparr: any = findObjectWithCartIndex(
+            pickupArr,
+            index
           );
-          const allListings = userItems.reduce((acc: any, curr: any) => {
-            if (!acc.includes(curr.listingId.toString())) {
-              return [...acc, curr.listingId.toString()];
-            }
-            return acc;
-          }, []);
-
-          const quantities = allListings.map((listingId: string) => {
-            const listingQuantity = userItems.reduce(
-              (acc: any, curr: any) =>
-                curr.listingId.toString() === listingId
-                  ? acc + curr.quantity
-                  : acc,
+          if (currentpickuparr && currentpickuparr.expiry) {
+            console.log("hello");
+          } //stock=false};
+          if (prevUserId !== null) {
+            const summedTotalPrice = userItems.reduce(
+              (acc: any, curr: any) => acc + curr.price,
               0
             );
-            return { id: listingId, quantity: listingQuantity };
-          });
+            const allListings = userItems.reduce((acc: any, curr: any) => {
+              if (!acc.includes(curr.listingId.toString())) {
+                return [...acc, curr.listingId.toString()];
+              }
+              return acc;
+            }, []);
 
-          body.push({
-            userId: prevUserId,
-            listingIds: allListings,
-            pickupDate: "2024-04-01T20:45:14.623+00:00",
-            quantity: JSON.stringify(quantities),
-            totalPrice: summedTotalPrice,
-            status: "pending",
-            stripePaymentIntentId: "teststring",
-            conversationId: "660b1cda321d320d4fe69785",
-          });
+            const quantities = allListings.map((listingId: string) => {
+              const listingQuantity = userItems.reduce(
+                (acc: any, curr: any) =>
+                  curr.listingId.toString() === listingId
+                    ? acc + curr.quantity
+                    : acc,
+                0
+              );
+              return { id: listingId, quantity: listingQuantity };
+            });
+
+            body.push({
+              userId: prevUserId,
+              listingIds: allListings,
+              pickupDate: "2024-04-01T20:45:14.623+00:00",
+              quantity: JSON.stringify(quantities),
+              totalPrice: summedTotalPrice,
+              status: "pending",
+              stripePaymentIntentId: "teststring",
+              conversationId: "660b1cda321d320d4fe69785",
+            });
+          }
+          prevUserId = cartItem.listing.userId;
+          userItems = [cartItem];
+        } else {
+          userItems.push(cartItem);
         }
-        prevUserId = cartItem.listing.userId;
-        userItems = [cartItem];
-      } else {
-        userItems.push(cartItem);
-      }
     });
 
     // Handle the last user's items
@@ -125,8 +147,33 @@ const OrderCreate = ({ cartItems }: Create) => {
       },
     });
   };
+  const handleFailure = () => {
+    toast.error("Some of the items in your cart do not have pickup times set", {
+      duration: 2000,
+      position: "bottom-right",
+      className:
+        "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
+      ariaProps: {
+        role: "status",
+        "aria-live": "polite",
+      },
+    });
+  };
   sessionStorage.setItem("ORDER", "");
   const stock = cartItems.some((item: any) => item.listing.stock === 0);
+
+  if (stillExpiry === true) {
+    return (
+      <div>
+        <Button
+          onClick={handleFailure}
+          className="bg-red-300 text-black hover:text-white hover:bg-red-600 shadow-md hover:shadow-xl hover:cursor-not-allowed w-full"
+        >
+          Unable to Checkout
+        </Button>
+      </div>
+    );
+  }
 
   if (stock === true) {
     return (

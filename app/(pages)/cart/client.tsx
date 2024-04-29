@@ -41,7 +41,8 @@ interface CartProps {
 
 const Cart = ({ cartItems, user }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
-  const [checkoutPickup, setCheckoutPickup] = useState<any>();
+  const [checkoutPickup, setCheckoutPickup] = useState<any>("");
+  const [stillExpiry, setStillExpiry] = useState(true);
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
@@ -133,23 +134,40 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
     arr.forEach((obj: any, index: number) => {
       if (obj.cartIndex === targetCartIndex) {
-        arr[0].expiry = validTime.pickupTime;
+        arr[index].pickupTime = validTime.pickupTime;
+        delete arr[index].expiry;
         foundObject = obj;
       }
     });
     //setCheckoutPickup(mappedCartItems);
-    return foundObject;
+    return arr;
   }
-  //useEffect(() => {
-  //console.log(checkoutPickup);
-  //}),
-  //[checkoutPickup];
+  useEffect(() => {
+    console.log(checkoutPickup);
+  }),
+    [checkoutPickup];
   useEffect(() => {
     if (validTime) {
-      console.log(validTime);
-      console.log(mappedCartItems);
-      const toes = updateObjectWithCartIndex(mappedCartItems, validTime.index);
-      console.log(toes);
+      if (checkoutPickup === "") {
+        const initialPickupBuild = updateObjectWithCartIndex(
+          mappedCartItems,
+          validTime.index
+        );
+        setStillExpiry(
+          initialPickupBuild.some((item: any) => !item.pickupTime)
+        );
+        console.log(stillExpiry);
+        setCheckoutPickup(initialPickupBuild);
+      } else {
+        const updatePickupBuild = updateObjectWithCartIndex(
+          checkoutPickup,
+          validTime.index
+        );
+        setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
+        console.log(stillExpiry);
+        setCheckoutPickup(updatePickupBuild);
+        console.log(checkoutPickup);
+      }
     }
   }),
     [validTime];
@@ -408,7 +426,11 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 </div>
               </dl>
               <div className="mt-6">
-                <OrderCreate cartItems={cartItems} />
+                <OrderCreate
+                  cartItems={cartItems}
+                  pickupArr={checkoutPickup}
+                  stillExpiry={stillExpiry}
+                />
               </div>
             </section>
           </div>
