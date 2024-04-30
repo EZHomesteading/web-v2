@@ -55,7 +55,7 @@ const Input: React.FC<InputProps> = ({
   }
   if (isNumber) {
     registerOptions.pattern = {
-      value: /^(1-)?\d{3}-\d{3}-\d{4}$/,
+      value: /^(\+1)?\s*\(\d{3}\)\s*\d{3}-\d{4}$/,
       message: "Only enter numbers",
     };
   }

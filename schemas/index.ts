@@ -1,6 +1,9 @@
 import * as z from "zod";
 import { UserRole } from "@prisma/client";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
+import "react-phone-number-input/style.css";
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
@@ -78,7 +81,7 @@ export const RegisterVendorSchema = z.object({
   name: z.string().min(1, {
     message: "Name is required",
   }),
-  phoneNumber: z.string().min(6, { message: "Phone number is required" }),
+  phoneNumber: z.string().min(10).max(16),
   location: z.object({
     type: z.literal("Point"),
     coordinates: z.tuple([z.number(), z.number()]),

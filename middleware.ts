@@ -5,7 +5,7 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  coopRoutes,
+  // coopRoutes,
 } from "@/routes";
 import { UserRole } from "@prisma/client";
 import { currentUser } from "./lib/auth";
@@ -24,7 +24,7 @@ export default auth(async (req) => {
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
+  // const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null as unknown as void;
@@ -41,16 +41,16 @@ export default auth(async (req) => {
     return null as unknown as void;
   }
 
-  if (isCoopRoute && user?.role !== UserRole.COOP) {
-    let callbackUrl = nextUrl.pathname;
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
-    }
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    return Response.redirect(
-      new URL(`/shop?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
-  }
+  // if (isCoopRoute && user?.role !== UserRole.COOP) {
+  //   let callbackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callbackUrl += nextUrl.search;
+  //   }
+  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+  //   return Response.redirect(
+  //     new URL(`/shop?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+  //   );
+  // }
 
   if (!isLoggedIn && !isPublicRoute) {
     // if (!isLoggedIn && isUpdateRoute) {

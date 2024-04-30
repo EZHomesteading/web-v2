@@ -23,6 +23,8 @@ import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register-vendor";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 
 export const CoOpRegisterForm = () => {
   const router = useRouter();
@@ -179,11 +181,20 @@ export const CoOpRegisterForm = () => {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input
+                        <PhoneInput
                           {...field}
                           disabled={isPending}
-                          placeholder="555-555-5555"
-                          type="phone"
+                          placeholder="(743) 216-9078"
+                          value={field.value}
+                          onChange={(value) => field.onChange(value)}
+                          format="(###) ###-####"
+                          style={{
+                            backgroundColor: "inherit",
+                          }}
+                          international={false}
+                          defaultCountry="US"
+                          countrySelectProps={{ disabled: true }}
+                          maxLength={14}
                         />
                       </FormControl>
                       <FormMessage />

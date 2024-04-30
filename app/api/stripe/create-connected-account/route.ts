@@ -26,8 +26,9 @@ export async function POST(request: Request) {
       business_profile: {
         name: user?.name,
         url: `https.ezhomesteading.vercel.app/store/${user?.id}`,
+        product_description: "Agriculture and Farming",
+        mcc: "0763",
       },
-
       default_currency: "usd",
       capabilities: {
         card_payments: {
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
       where: { id: userId },
       data: { stripeAccountId: account.id },
     });
-
+    console.log(updatedUser);
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error("Error creating Stripe connected account:", error);

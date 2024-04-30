@@ -50,13 +50,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
     )
   );
 
-  //for checkout
-  //checkout groups {order:1,
-  // selectedPickupTime:Date}[]
-  //need the pickup times from date State
-  // need them set to each order when checkout is started.
-  //pickup times need to have a value assigned to them that allows me to attach them to the proper order on creation
-
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
