@@ -479,7 +479,6 @@ export const DashboardComp = ({ user }: UserInfoProps) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
-                          isNumber={true}
                         />
                       </div>
                     </div>
