@@ -37,7 +37,9 @@
     "app/(pages)/onboarding/page.tsx",
     "app/components/map/markers-map.jsx",
     "app/components/listings/search-locationtsx",
-    "app/api/stripe/create-connected-account/route.ts"
+    "app/api/stripe/create-connected-account/route.ts",
+    "app/components/listings/image-upload.jsx",
+    "app/api/upload/route.js"
   ],
   "exclude": ["node_modules"]
 }
