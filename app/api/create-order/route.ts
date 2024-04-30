@@ -49,11 +49,14 @@ export async function POST(request: NextRequest) {
     if (!listing) {
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
+    if (!user.id) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     try {
       const newOrder = await prisma.order.create({
         data: {
-          userId,
+          userId: user.id,
           listingIds,
           sellerId: listing.user.id,
           pickupDate,

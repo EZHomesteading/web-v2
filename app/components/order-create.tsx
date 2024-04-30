@@ -22,26 +22,26 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
+    let currentpickuparr: any = null;
     let prevUserId: any = null;
     let userItems: any = [];
+    const findObjectWithCartIndex = (arr: any, targetCartIndex: number) => {
+      let foundObject = null;
 
-    cartItems.forEach((cartItem: any, index: number) => {
+      arr.forEach((obj: any) => {
+        if (obj.cartIndex === targetCartIndex) {
+          foundObject = obj;
+        }
+      });
+
+      return foundObject;
+    };
+    cartItems.forEach(async (cartItem: any, index: number) => {
       //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
-      function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
-        let foundObject = null;
 
-        arr.forEach((obj: any) => {
-          if (obj.cartIndex === targetCartIndex) {
-            foundObject = obj;
-          }
-        });
-
-        return foundObject;
-      }
       if (cartItem.listing.userId !== prevUserId) {
-        const currentpickuparr: any = findObjectWithCartIndex(pickupArr, index);
         console.log(index);
-        console.log(currentpickuparr);
+
         if (prevUserId !== null) {
           const summedTotalPrice = userItems.reduce(
             (acc: any, curr: any) => acc + curr.price,
@@ -64,11 +64,11 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             );
             return { id: listingId, quantity: listingQuantity };
           });
-
+          console.log(currentpickuparr.pickupTime);
           body.push({
             userId: prevUserId,
             listingIds: allListings,
-            pickupDate: formatDate(currentpickuparr.pickupTime),
+            pickupDate: currentpickuparr.pickupTime,
             quantity: JSON.stringify(quantities),
             totalPrice: summedTotalPrice,
             status: "pending",
@@ -76,14 +76,15 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             conversationId: "660b1cda321d320d4fe69785",
           });
         }
-        prevUserId = cartItem.listing.userId;
+        currentpickuparr = findObjectWithCartIndex(pickupArr, index);
+        prevUserId = cartItem.listing.user.id;
         userItems = [cartItem];
       } else {
         userItems.push(cartItem);
       }
     });
 
-    // Handle the last user's items
+    //Handle the last user's items
     if (userItems.length > 0) {
       const summedTotalPrice = userItems.reduce(
         (acc: any, curr: any) => acc + curr.price,
@@ -108,7 +109,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       body.push({
         userId: prevUserId,
         listingIds: allListings,
-        pickupDate: formatDate(pickupArr[pickupArr.length - 1].pickupTime),
+        pickupDate: pickupArr[pickupArr.length - 1].pickupTime,
         quantity: JSON.stringify(quantities),
         totalPrice: summedTotalPrice,
         status: "pending",
@@ -119,7 +120,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
     const post = async () => {
       const response = await axios.post("/api/create-order", body);
-      //console.log(response.data);
+      console.log(response.data);
       const datas = response.data;
       await datas.forEach((data: any) => {
         let store = sessionStorage.getItem("ORDER");
