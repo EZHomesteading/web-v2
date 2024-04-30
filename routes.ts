@@ -20,7 +20,7 @@ export const publicRoutes = [
   "/api/webhook/stripe",
   "/api/conversations",
   "/api/messages",
-  "/find-co-ops-and-producers",
+  "/map",
 ];
 
 /**
