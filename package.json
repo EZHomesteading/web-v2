@@ -51,6 +51,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.11",
     "embla-carousel-react": "^8.0.0",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
