@@ -71,6 +71,11 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
     fetchPaymentIntents();
   }, [cartItems, user?.email, user?.id]);
+  function Round(value: number, precision: number) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+  }
+
   return (
     <>
       {user ? (
@@ -138,7 +143,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                 <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
                   <div className="flex listings-center justify-between">
                     <dt className="text-gray-600">Subtotal</dt>
-                    <dd>${total}</dd>
+                    <dd>${Round(total, 2)}</dd>
                   </div>
 
                   <div className="flex listings-center justify-between">
@@ -153,7 +158,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
                   <div className="flex listings-center justify-between border-t border-gray-200 pt-6">
                     <dt className="text-base">Total</dt>
-                    <dd className="text-base">${total}</dd>
+                    <dd className="text-base">${Round(total, 2)}</dd>
                   </div>
                 </dl>
 
