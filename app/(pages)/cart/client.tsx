@@ -41,6 +41,8 @@ interface CartProps {
 
 const Cart = ({ cartItems, user }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
+  const [checkoutPickup, setCheckoutPickup] = useState<any>("");
+  const [stillExpiry, setStillExpiry] = useState(true);
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
@@ -48,16 +50,16 @@ const Cart = ({ cartItems, user }: CartProps) => {
     )
   );
 
-  //for checkout
-  //checkout groups {order:1,
-  // selectedPickupTime:Date}[]
-  //need the pickup times from date State
-  // need them set to each order when checkout is started.
-  //pickup times need to have a value assigned to them that allows me to attach them to the proper order on creation
-
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
+  useEffect(() => {
+    const newTotal = cartItems.reduce(
+      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      0
+    );
+    setTotal(newTotal);
+  }, [cartItems, total]);
 
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
@@ -125,20 +127,47 @@ const Cart = ({ cartItems, user }: CartProps) => {
 
     arr.forEach((obj: any, index: number) => {
       if (obj.cartIndex === targetCartIndex) {
-        arr[index].expiry = validTime.pickupTime;
+        arr[index].pickupTime = validTime.pickupTime;
+        delete arr[index].expiry;
+        foundObject = obj;
       }
     });
-    return foundObject;
+    //setCheckoutPickup(mappedCartItems);
+    return arr;
   }
   useEffect(() => {
+    console.log(checkoutPickup);
+  }),
+    [checkoutPickup];
+  useEffect(() => {
     if (validTime) {
-      updateObjectWithCartIndex(mappedCartItems, validTime.index);
+      if (checkoutPickup === "") {
+        const initialPickupBuild = updateObjectWithCartIndex(
+          mappedCartItems,
+          validTime.index
+        );
+        setStillExpiry(
+          initialPickupBuild.some((item: any) => !item.pickupTime)
+        );
+        console.log(stillExpiry);
+        setCheckoutPickup(initialPickupBuild);
+      } else {
+        const updatePickupBuild = updateObjectWithCartIndex(
+          checkoutPickup,
+          validTime.index
+        );
+        setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
+        console.log(stillExpiry);
+        setCheckoutPickup(updatePickupBuild);
+        console.log(checkoutPickup);
+      }
     }
   }),
     [validTime];
   const handleTime = (childTime: Date) => {
     setValidTime(childTime);
   };
+  //console.log(mappedCartItems);
   function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
     let foundObject = null;
 
@@ -390,7 +419,11 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 </div>
               </dl>
               <div className="mt-6">
-                <OrderCreate cartItems={cartItems} />
+                <OrderCreate
+                  cartItems={cartItems}
+                  pickupArr={checkoutPickup}
+                  stillExpiry={stillExpiry}
+                />
               </div>
             </section>
           </div>

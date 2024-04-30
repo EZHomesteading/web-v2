@@ -25,7 +25,8 @@ import AuthLocation from "../auth-location";
 import axios from "axios";
 import { UserRole } from "@prisma/client";
 import { LatLng, latLng } from "leaflet";
-
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 interface BecomeCoopProps {
   user?: UserInfo;
 }
@@ -197,13 +198,22 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Phone Number</FormLabel>
+                      <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input
+                        <PhoneInput
                           {...field}
                           disabled={isPending}
-                          placeholder="555-555-5555"
-                          type="phone"
+                          placeholder="(743) 216-9078"
+                          value={field.value}
+                          onChange={(value) => field.onChange(value)}
+                          format="(###) ###-####"
+                          style={{
+                            backgroundColor: "inherit",
+                          }}
+                          international={false}
+                          defaultCountry="US"
+                          countrySelectProps={{ disabled: true }}
+                          maxLength={14}
                         />
                       </FormControl>
                       <FormMessage />

@@ -99,13 +99,11 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
     }
   };
   useEffect(() => {
-    setTotal(
-      cartItems.reduce(
-        (acc: number, cartItem: any) =>
-          acc + cartItem.price * cartItem.quantity,
-        0
-      )
+    const newTotal = cartItems.reduce(
+      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      0
     );
+    setTotal(newTotal);
   }, [cartItems, hover, quantity]);
   useEffect(() => {
     onDataChange(total);
