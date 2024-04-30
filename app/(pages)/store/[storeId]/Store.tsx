@@ -35,15 +35,15 @@ const StorePage = ({
             >
               <div className="flex flex-row items-center gap-x-2">
                 <div className="font-bold text-2xl lg:text-4xl">
-                  {user?.name}
+                  {storeUser?.name}
                 </div>
                 <OpenStatus hours={storeUser.hours} />
               </div>
-              <div>{user?.firstName}</div>
+              <div>{storeUser?.firstName}</div>
             </div>
           </div>
           <div className="flex justify-center">
-            <Bio user={user} />
+            <Bio user={storeUser} />
           </div>
         </div>
 
