@@ -71,22 +71,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [], otherUser }) => {
           isOpen={confirmOpen}
           onClose={() => setConfirmOpen(false)}
         />
-        <button
-          type="submit"
-          // onClick={onSubmit}
-          className="
-      rounded-full 
-      p-2 
-      bg-sky-500 
-      cursor-pointer 
-      hover:bg-sky-600 
-      mt-2
-      mr-1
-      ml-1
-    "
-        >
-          Reschedule
-        </button>
+
         <button
           type="submit"
           onClick={() => setConfirmOpen(true)}
