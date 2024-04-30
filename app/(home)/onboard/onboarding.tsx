@@ -110,7 +110,7 @@ const Onboarding = ({ user, index }: Props) => {
           </h2>
           {step === 2 && (
             <div className="flex flex-row">
-              <div className="2xl:text-5xl text-lg font-bold tracking-tight">
+              <div className="2xl:text-4xl text-lg font-bold tracking-tight">
                 Now, tell us about yourself
               </div>
               <Popover>
@@ -147,25 +147,63 @@ const Onboarding = ({ user, index }: Props) => {
             </div>
           )}
           {step === 3 && (
-            <div className="flex flex-row">
-              <div className="2xl:text-5xl text-lg font-bold tracking-tight">
-                Finally, connect with Stripe for easy & secure payouts
+            <div className="flex flex-col items-start">
+              <div className="flex flex-row">
+                <div className="2xl:text-3xl text-lg font-bold tracking-tight">
+                  Finally, connect with Stripe for easy & secure payouts
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                      <CiCircleInfo className="lg:text-4xl" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="popover xl:absolute xl:bottom-10">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">
+                          EZHomesteading partners with Stripe to keep your
+                          information as secure as possible. All of the
+                          information in this form is required by Stripe & the
+                          government for regulatory purposes. EZHomesteading
+                          does not have access to sensitive information such as
+                          your full SSN or bank accounting number.
+                        </p>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                    <CiCircleInfo className="lg:text-4xl" />
+                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
+                    Why are we asking for this information?
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="popover xl:absolute xl:bottom-10">
                   <div className="grid gap-4">
                     <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        EZHomesteading partners with stripe, all of the
-                        information in this form is required by Stripe for
-                        regulatory purposes. EZHomesteading does not have access
-                        to sensitive information such as your full SSN or Bank
-                        Account Info.
+                      <p className="text-sm text-muted-foreground ">
+                        “Know Your Customer” (KYC) obligations for payments
+                        require Stripe to collect and maintain information on
+                        all Stripe account holders. These requirements come from
+                        our regulators and are intended to prevent abuse of the
+                        financial system, provide your potential customers with
+                        clear and useful information, and prevent material loss
+                        to your business or to Stripe. You can read more on that
+                        {""}
+                        <a
+                          href="https://support.stripe.com/questions/passport-id-or-drivers-license-upload-requirement"
+                          className="underline ml-1 text-blue-400"
+                        >
+                          here
+                        </a>
+                        .{" "}
+                        <strong>
+                          We do not use this information for any other purposes,
+                          and we take your privacy and the security of your data
+                          very seriously.
+                        </strong>
                       </p>
                     </div>
                   </div>
@@ -239,7 +277,7 @@ const Onboarding = ({ user, index }: Props) => {
         )}
 
         {step === 3 && (
-          <div className="p-10">
+          <div className="mt-20">
             <StripeStep
               formData={formData}
               setFormData={setFormData}
