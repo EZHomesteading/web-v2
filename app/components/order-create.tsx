@@ -3,12 +3,22 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
+import { useEffect } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 interface Create {
   cartItems: any;
+  pickupArr: any;
+  stillExpiry: boolean;
 }
 
-const OrderCreate = ({ cartItems }: Create) => {
+const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
+  console.log(pickupArr);
+  const formatDate = (date: any) => {
+    return dayjs(date).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+  };
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -17,8 +27,21 @@ const OrderCreate = ({ cartItems }: Create) => {
 
     cartItems.forEach((cartItem: any, index: number) => {
       //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
+      function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
+        let foundObject = null;
 
+        arr.forEach((obj: any) => {
+          if (obj.cartIndex === targetCartIndex) {
+            foundObject = obj;
+          }
+        });
+
+        return foundObject;
+      }
       if (cartItem.listing.userId !== prevUserId) {
+        const currentpickuparr: any = findObjectWithCartIndex(pickupArr, index);
+        console.log(index);
+        console.log(currentpickuparr);
         if (prevUserId !== null) {
           const summedTotalPrice = userItems.reduce(
             (acc: any, curr: any) => acc + curr.price,
@@ -45,7 +68,7 @@ const OrderCreate = ({ cartItems }: Create) => {
           body.push({
             userId: prevUserId,
             listingIds: allListings,
-            pickupDate: "2024-04-01T20:45:14.623+00:00",
+            pickupDate: formatDate(currentpickuparr.pickupTime),
             quantity: JSON.stringify(quantities),
             totalPrice: summedTotalPrice,
             status: "pending",
@@ -85,7 +108,7 @@ const OrderCreate = ({ cartItems }: Create) => {
       body.push({
         userId: prevUserId,
         listingIds: allListings,
-        pickupDate: "2024-04-01T20:45:14.623+00:00",
+        pickupDate: formatDate(pickupArr[pickupArr.length - 1].pickupTime),
         quantity: JSON.stringify(quantities),
         totalPrice: summedTotalPrice,
         status: "pending",
@@ -125,8 +148,33 @@ const OrderCreate = ({ cartItems }: Create) => {
       },
     });
   };
+  const handleFailure = () => {
+    toast.error("Some of the items in your cart do not have pickup times set", {
+      duration: 2000,
+      position: "bottom-right",
+      className:
+        "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
+      ariaProps: {
+        role: "status",
+        "aria-live": "polite",
+      },
+    });
+  };
   sessionStorage.setItem("ORDER", "");
   const stock = cartItems.some((item: any) => item.listing.stock === 0);
+
+  if (stillExpiry === true) {
+    return (
+      <div>
+        <Button
+          onClick={handleFailure}
+          className="bg-red-300 text-black hover:text-white hover:bg-red-600 shadow-md hover:shadow-xl hover:cursor-not-allowed w-full"
+        >
+          Unable to Checkout
+        </Button>
+      </div>
+    );
+  }
 
   if (stock === true) {
     return (
