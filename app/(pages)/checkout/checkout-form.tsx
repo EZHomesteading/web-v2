@@ -120,7 +120,9 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                         />
                         <div className="flex-auto space-y-1">
                           <h3>{cartItem.listing.title}</h3>
-                          <p className="text-gray-500">{cartItem.user.name}</p>
+                          <p className="text-gray-500">
+                            {cartItem.listing.user.name}
+                          </p>
                           <p className="text-gray-500">
                             {cartItem.quantity} {cartItem.listing.quantityType}
                           </p>
