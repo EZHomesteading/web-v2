@@ -56,9 +56,9 @@ const CoopHome = ({ user }: Props) => {
               Find producers nearby
             </Button>
           </Link>
-          {!user?.stripeAccountId || !user?.hours || !user?.image ? (
-            <StripeButton label="Finish Account Setup" user={user} />
-          ) : null}
+          {/* {!user?.stripeAccountId || !user?.hours || !user?.image ? ( */}
+          <StripeButton label="Finish Account Setup" user={user} />
+          {/* ) : null} */}
         </div>
       </header>
     </main>

@@ -36,7 +36,8 @@
     "app/components/co-op-hours/hours.jsx",
     "app/(pages)/onboarding/page.tsx",
     "app/components/map/markers-map.jsx",
-    "app/components/listings/search-locationtsx"
+    "app/components/listings/search-locationtsx",
+    "app/api/stripe/create-connected-account/route.ts"
   ],
   "exclude": ["node_modules"]
 }

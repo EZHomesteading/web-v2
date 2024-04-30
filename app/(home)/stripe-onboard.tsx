@@ -18,24 +18,21 @@ const StripeButton = ({ user, label }: Props) => {
       console.error("Error:", error);
     }
   };
-  if (!user?.stripeAccountId) {
-    return (
-      <Link href="/onboard">
-        <Button
-          onClick={stripe}
-          className="hover:bg-green-100 hover:text-black"
-        >
-          {label}
-        </Button>
-      </Link>
-    );
-  } else {
-    return (
-      <Link href="/onboard">
-        <Button className="hover:bg-green-100 hover:text-black">{label}</Button>
-      </Link>
-    );
-  }
+  // if (!user?.stripeAccountId) {
+  return (
+    <Link href="/onboard">
+      <Button onClick={stripe} className="hover:bg-green-100 hover:text-black">
+        {label}
+      </Button>
+    </Link>
+  );
+  // } else {
+  //   return (
+  //     <Link href="/onboard">
+  //       <Button className="hover:bg-green-100 hover:text-black">{label}</Button>
+  //     </Link>
+  //   );
+  // }
 };
 
 export default StripeButton;

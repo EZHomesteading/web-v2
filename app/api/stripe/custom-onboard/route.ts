@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/return`,
       type: "account_onboarding",
       collection_options: {
-        fields: "currently_due",
+        fields: "eventually_due",
       },
     });
     return NextResponse.json(accountLink);
