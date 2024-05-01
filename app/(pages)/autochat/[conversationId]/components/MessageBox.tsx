@@ -14,6 +14,8 @@ import axios from "axios";
 import DateState from "./dateStates";
 import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 
 interface MessageBoxProps {
   data: FullMessageType;
@@ -53,7 +55,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   const onSubmit1 = () => {
     axios.post("/api/messages", {
-      message: "Yes, That time works, Your order will be ready at that time.",
+      message: `Yes, That time works, Your order will be ready at that time. at ${session.data?.user.location?.address}`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -70,7 +72,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are `,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -194,7 +196,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are`,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -255,6 +257,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     const date = formatTime(childTime);
     setValidTime(date);
   };
+
+  const hoursButton = () => {
+    return (
+      <span>
+        <Sheet>
+          <SheetTrigger>HOURS</SheetTrigger>
+          <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+            <HoursDisplay coOpHours={session.data?.user.hours} />
+          </SheetContent>
+        </Sheet>
+      </span>
+    );
+  };
+
   return (
     <div>
       <div className={container}>
@@ -291,7 +307,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               />
             ) : (
               <div>
-                <div>{data.body}</div>
+                {data.messageOrder === "10" ||
+                data.messageOrder === "13" ||
+                data.messageOrder === "3" ? (
+                  <div>
+                    {data.body}
+                    <span className="text-black">{hoursButton()}</span>
+                  </div>
+                ) : (
+                  <div>{data.body}</div>
+                )}
               </div>
             )}
           </div>
@@ -323,7 +348,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit1}
                 className="message hover:bg-sky"
               >
-                Yes, That time works, Your order will be ready at that time.
+                Yes, That time works, Your order will be ready at that time. at{" "}
+                {session.data?.user.location?.address}
               </button>
 
               <DateState
@@ -337,7 +363,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead? if
-                not, my hours of operation are (insert hours of operation)
+                not, my hours of operation are
               </button>
 
               <button
@@ -438,7 +464,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead? if{" "}
-                not, my hours of operation are (insert hours of operation)
+                not, my hours of operation are
               </button>
             </div>
           </div>
@@ -575,7 +601,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead? if
-                not, my hours of operation are (insert hours of operation)
+                not, my hours of operation are
               </button>
             </div>
           </div>

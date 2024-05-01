@@ -23,7 +23,6 @@ const Body: React.FC<BodyProps> = ({
   order,
   otherUserRole,
 }) => {
-  console.log(order);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancel, setCancel] = useState(true);
@@ -77,6 +76,10 @@ const Body: React.FC<BodyProps> = ({
       order.status === 4 ||
       order.status === 7 ||
       order.status === 15 ||
+      order.status === 9 ||
+      order.status === 18 ||
+      order.status === 19 ||
+      order.status === 17 ||
       order.status === 12
     ) {
       setCancel(false);
@@ -84,15 +87,6 @@ const Body: React.FC<BodyProps> = ({
   }),
     [order];
 
-  // if (order.status === 12) {
-  //   setCancel(false);
-  // }
-  // if (order.status === 7) {
-  //   setCancel(false);
-  // }
-  // if (order.status === 15) {
-  //   setCancel(false);
-  // }
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="flex flex-row-reverse">
@@ -123,14 +117,6 @@ const Body: React.FC<BodyProps> = ({
             Cancel
           </button>
         )}
-        {/* <CancelModal
-          isOpen={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          order={order}
-          otherUser={otherUser}
-          convoId={conversationId}
-          otherUserRole={otherUserRole}
-        /> */}
       </div>
       {messages.map((message, i) => (
         <MessageBox
