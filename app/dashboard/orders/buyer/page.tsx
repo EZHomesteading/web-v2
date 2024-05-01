@@ -24,12 +24,11 @@ const Page = async () => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
             });
-            console.log(order);
-            const buyer = await getUserById({ userId: order.userId });
+            const seller = await getUserById({ userId: order.userId });
             return (
               <Card key={order.id} className="sheet shadow-lg mb-4">
                 <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
-                  {buyer?.name}
+                  {seller?.name}
                 </CardHeader>
                 <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                   {listings.map(async (listing: SafeListing) => {
@@ -67,7 +66,7 @@ const Page = async () => {
                   Status:
                   {getStatusText(
                     order.status,
-                    buyer?.name || "",
+                    seller?.name || "",
                     buyer?.name || "",
                     buyer?.role === UserRole.COOP
                       ? UserRole.COOP
