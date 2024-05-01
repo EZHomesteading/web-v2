@@ -39,7 +39,8 @@
     "app/components/listings/search-locationtsx",
     "app/api/stripe/create-connected-account/route.ts",
     "app/components/listings/image-upload.jsx",
-    "app/api/upload/route.js"
+    "app/api/upload/route.js",
+    "app/(home)/dashboard/orders/buyer"
   ],
   "exclude": ["node_modules"]
 }
