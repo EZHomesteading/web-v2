@@ -115,7 +115,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="My Store"
                     icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/my-store")}
+                    onClick={() => router.push("/my-store")}
                   />
                   {/* <MenuItem
                     label="Add a Product"
@@ -130,7 +130,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="My Store"
                     icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/my-store")}
+                    onClick={() => router.push("/my-store")}
                   />
                   {/* <MenuItem
                     label="Add a Product"
@@ -148,7 +148,9 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Profile Settings"
                     icon={<MdSettings className="mr-2" />}
-                    onClick={() => router.push("/dashboard")}
+                    onClick={() =>
+                      router.push("/dashboard/account-settings/general")
+                    }
                   />
                   <MenuItem
                     label="Cart"
@@ -158,7 +160,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Following"
                     icon={<GoPeople className="mr-2" />}
-                    onClick={() => router.push("/dashboard/favorites")}
+                    onClick={() => router.push("/favorites")}
                   />
                   <MenuItem
                     label="Chat"
