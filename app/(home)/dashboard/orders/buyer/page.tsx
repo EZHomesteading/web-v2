@@ -14,7 +14,7 @@ const Page = async () => {
   return (
     <div className="h-screen">
       <main className="flex flex-col items-start justify-start">
-        <h1 className="px-2 py-4 text-lg lg:text-4xl">Sell Orders</h1>{" "}
+        <h1 className="px-2 py-4 text-lg lg:text-4xl">Buy Orders</h1>{" "}
         {buyer?.buyerOrders
           .filter((order) => order.status !== 0)
           .map(async (order) => {
