@@ -1,7 +1,7 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import OpenStatus from "@/app/(pages)/store/[storeId]/status";
+import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
