@@ -58,6 +58,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    if (session.data?.user.role === "COOP") {
+      axios.post("/api/update-order", { orderId: order.id, status: 2 });
+    } else {
+      axios.post("/api/update-order", { orderId: order.id, status: 10 });
+    }
   };
   const onSubmit2 = () => {
     if (validTime === "(select your time)") {
@@ -70,6 +75,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 3 });
   };
   const onSubmit3 = () => {
     axios.post("/api/messages", {
@@ -79,6 +85,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 4 });
   };
   const onSubmit4 = () => {
     axios.post("/api/messages", {
@@ -88,6 +95,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 5 });
   };
   const onSubmit5 = () => {
     axios.post("/api/messages", {
@@ -96,6 +104,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 8 });
   };
   const onSubmit6 = () => {
     axios.post("/api/messages", {
@@ -104,6 +113,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    if (session.data?.user.role === "COOP") {
+      axios.post("/api/update-order", { orderId: order.id, status: 17 });
+    } else {
+      axios.post("/api/update-order", { orderId: order.id, status: 9 });
+    }
   };
   const onSubmit7 = () => {
     axios.post("/api/messages", {
@@ -113,6 +127,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 18 });
   };
   const onSubmit8 = () => {
     if (validTime === "(select your time)") {
@@ -125,6 +140,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    if (session.data?.user.role === "PRODUCER") {
+      axios.post("/api/update-order", { orderId: order.id, status: 11 });
+    } else {
+      axios.post("/api/update-order", { orderId: order.id, status: 6 });
+    }
   };
   const onSubmit9 = () => {
     if (validTime === "(select your time)") {
@@ -137,6 +157,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 11 });
   };
   const onSubmit10 = () => {
     axios.post("/api/messages", {
@@ -145,6 +166,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    if (session.data?.user.role === "COOP") {
+      axios.post("/api/update-order", { orderId: order.id, status: 13 });
+    } else {
+      axios.post("/api/update-order", { orderId: order.id, status: 10 });
+    }
   };
   const onSubmit11 = () => {
     if (validTime === "(select your time)") {
@@ -157,6 +183,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 14 });
   };
   const onSubmit12 = () => {
     axios.post("/api/messages", {
@@ -165,6 +192,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 16 });
   };
   const onSubmit13 = () => {
     if (validTime === "(select your time)") {
@@ -177,6 +205,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    if (session.data?.user.role === "PRODUCER") {
+      axios.post("/api/update-order", { orderId: order.id, status: 11 });
+    } else {
+      axios.post("/api/update-order", { orderId: order.id, status: 6 });
+    }
   };
   const onSubmit14 = () => {
     axios.post("/api/messages", {
@@ -186,6 +219,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
+    axios.post("/api/update-order", { orderId: order.id, status: 10 });
   };
   const handleTime = (childTime: Date) => {
     const date = childTime;

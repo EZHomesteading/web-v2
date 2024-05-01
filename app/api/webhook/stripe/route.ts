@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
           });
           const orderUpdate: any = await prisma.order.update({
             where: { id: order.id },
-            data: { conversationId: newConversation.id },
+            data: { conversationId: newConversation.id, status: 1 },
           });
 
           const coopBody = `Hi ${
