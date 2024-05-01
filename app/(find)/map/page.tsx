@@ -1,4 +1,4 @@
-import MarkersMap from "@/app/(find)/markers-map";
+import MarkersMap from "@/app/(find)/map/draw-map";
 import GetCoops from "@/actions/user/getCoops";
 import getProducers from "@/actions/user/getProducers";
 import dynamic from "next/dynamic";

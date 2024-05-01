@@ -83,7 +83,11 @@ export async function POST(request: NextRequest) {
               users: true,
             },
           });
-          console.log(seller);
+          const orderUpdate: any = await prisma.order.update({
+            where: { id: order.id },
+            data: { conversationId: newConversation.id, status: 1 },
+          });
+
           const coopBody = `Hi ${
             seller.name
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;

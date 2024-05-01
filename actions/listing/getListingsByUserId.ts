@@ -10,7 +10,7 @@ export interface IListingsParams {
   userId?: string;
 }
 
-export default async function GetListingsByUserId(params: IListingsParams) {
+export default async function GetListingsByOrderId(params: IListingsParams) {
   try {
     const { userId } = params;
 
