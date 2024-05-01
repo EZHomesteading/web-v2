@@ -27,7 +27,7 @@ const Page = async () => {
             console.log(order);
             const buyer = await getUserById({ userId: order.userId });
             return (
-              <Card key={order.id} className="sheet shadow-lg">
+              <Card key={order.id} className="sheet shadow-lg mb-4">
                 <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
                   {buyer?.name}
                 </CardHeader>
