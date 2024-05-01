@@ -6,18 +6,21 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
-import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 import Avatar from "@/app/components/Avatar";
 import ImageModal from "./ImageModal";
 import axios from "axios";
+import DateState from "./dateStates";
+import { ExtendedHours } from "@/next-auth";
+import toast from "react-hot-toast";
 
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
   convoId: string;
   otherUsersId: any;
+  order: any;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -25,16 +28,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   isLast,
   convoId,
   otherUsersId,
+  order,
 }) => {
+  const [validTime, setValidTime] = useState<any>("(select your time)");
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
-
-  const [selectedDateTime, setSelectedDateTime] = useState(
-    new Date("2023-04-16T12:00:00")
-  );
-  const handleDateTimeChange = (date: any) => {
-    setSelectedDateTime(date);
-  };
+  console.log(order);
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
@@ -61,8 +60,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
   };
   const onSubmit2 = () => {
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -112,16 +115,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
   };
   const onSubmit8 = () => {
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Can it instead be at ${selectedDateTime.toString()}`,
+      message: `No, that time does not work. Can it instead be at ${validTime}`,
       messageOrder: "4",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
   };
   const onSubmit9 = () => {
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
     axios.post("/api/messages", {
-      message: `I can deliver these items to you at ${selectedDateTime.toString()}, does that work?`,
+      message: `I can deliver these items to you at ${validTime}, does that work?`,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -136,8 +147,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
   };
   const onSubmit11 = () => {
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -152,8 +167,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
   };
   const onSubmit13 = () => {
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${selectedDateTime.toString()} work instead?`,
+      message: `No, that time does not work. Does ${validTime} work instead?`,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -168,7 +187,30 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
   };
+  const handleTime = (childTime: Date) => {
+    const date = childTime;
+    const hours = date.getHours();
+    const isAM = hours < 12;
+    const formattedHours = isAM
+      ? hours === 0
+        ? "12"
+        : hours
+      : hours > 12
+      ? hours - 12
+      : hours;
+    const formattedMinutes = date.getMinutes().toString().padStart(2, "0");
+    const formattedSeconds = date.getSeconds().toString().padStart(2, "0");
+    const amPm = isAM ? "AM" : "PM";
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const year = date.getFullYear();
 
+    const formattedTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds} ${amPm}`;
+    const formattedDate = `${month}/${day}/${year}`;
+
+    const result = `${formattedTime} on ${formattedDate}`;
+    setValidTime(result);
+  };
   return (
     <div>
       <div className={container}>
@@ -231,7 +273,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[70%] gap-y-2 text-white py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[70%] gap-y-2  items-end text-white py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit1}
@@ -239,25 +281,21 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
-              <div className="">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-                <button
-                  type="submit"
-                  onClick={onSubmit2}
-                  className="message hover:bg-sky"
-                >
-                  No, that time does not work. Does{" "}
-                  {selectedDateTime.toString()} work instead? if not, my hours
-                  of operation are (insert hours of operation)
-                </button>
-              </div>
+
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
+              <button
+                type="submit"
+                onClick={onSubmit2}
+                className="message hover:bg-green-500"
+              >
+                No, that time does not work. Does{" "}
+                <span className="text-black">{validTime}</span> work instead? if
+                not, my hours of operation are (insert hours of operation)
+              </button>
+
               <button
                 type="submit"
                 onClick={onSubmit3}
@@ -312,24 +350,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Fantastic, I will be there to pick up the item at the specified
                 time.
               </button>
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
               <button
                 type="submit"
                 onClick={onSubmit8}
                 className="message hover:bg-sky"
               >
                 No, that time does not work. Can it instead be ready at{" "}
-                {selectedDateTime.toString()}
+                {validTime}
               </button>
-              <div className="">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -351,25 +383,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
               <button
                 type="submit"
                 onClick={onSubmit2}
                 className="message hover:bg-sky"
               >
-                No, that time does not work. Does {selectedDateTime.toString()}{" "}
+                No, that time does not work. Does {validTime}
                 work instead? if not, my hours of operation are (insert hours of
                 operation)
               </button>
-              <div className="flex justify-center outline-none">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -449,24 +475,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
               <button
                 type="submit"
                 onClick={onSubmit9}
                 className="message hover:bg-sky"
               >
-                I can deliver these items to you at{" "}
-                {selectedDateTime.toString()}, does that work?
+                I can deliver these items to you at
+                {validTime}, does that work?
               </button>
-              <div className="flex justify-center outline-none">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-              </div>
+
               <button
                 type="submit"
                 onClick={onSubmit3}
@@ -499,25 +520,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, See you then!
               </button>
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
               <button
                 type="submit"
                 onClick={onSubmit11}
                 className="message hover:bg-sky-500"
               >
-                No, that time does not work. Does {selectedDateTime.toString()}{" "}
-                work instead? if not, my hours of operation are (insert hours of
-                operation)
+                No, that time does not work. Does {validTime} work instead? if
+                not, my hours of operation are (insert hours of operation)
               </button>
-              <div className="flex justify-center outline-none">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -560,24 +574,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works. Your item will be delivered at that time.
               </button>
+              <DateState
+                hours={session?.data?.user.hours as ExtendedHours}
+                onSetTime={handleTime}
+              />
               <button
                 type="submit"
                 onClick={onSubmit13}
                 className="message hover:bg-sky-600"
               >
-                No, that time does not work. Does {selectedDateTime.toString()}{" "}
-                work instead?
+                No, that time does not work. Does {validTime} work instead?
               </button>
-              <div className="flex justify-center outline-none">
-                <DateTimePicker
-                  className="text-black mt-2 w-5 outline-none"
-                  onChange={handleDateTimeChange}
-                  value={selectedDateTime}
-                  disableClock={true} // Optional, to disable clock selection
-                  clearIcon={null} // Optional, to remove the clear icon
-                  calendarIcon={null} // Optional, to remove the calendar icon
-                />
-              </div>
             </div>
           </div>
         </div>

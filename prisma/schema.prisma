@@ -183,7 +183,7 @@ model Order {
   stripeSessionId       String
   fee                   Float
 
-  conversationId        String   @db.ObjectId
+  conversationId        String?   @db.ObjectId
   payments              Payment[]
 
   buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)

@@ -16,14 +16,12 @@ export async function POST(request: NextRequest) {
 
   for (const order of orders) {
     const {
-      userId,
       listingIds,
       pickupDate,
       quantity,
       totalPrice,
       status,
       stripePaymentIntentId,
-      conversationId,
       // payments,
     } = order;
 
@@ -33,7 +31,6 @@ export async function POST(request: NextRequest) {
       "pickupDate",
       "quantity",
       "totalPrice",
-      "status",
     ];
 
     if (requiredFields.some((field) => !order[field])) {
@@ -49,11 +46,14 @@ export async function POST(request: NextRequest) {
     if (!listing) {
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
+    if (!user.id) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     try {
       const newOrder = await prisma.order.create({
         data: {
-          userId,
+          userId: user.id,
           listingIds,
           sellerId: listing.user.id,
           pickupDate,
@@ -63,7 +63,6 @@ export async function POST(request: NextRequest) {
           stripePaymentIntentId,
           stripeSessionId: "",
           fee: totalPrice * 0.06,
-          conversationId,
           // payments: {
           // create: payments,
           //},
