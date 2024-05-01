@@ -11,7 +11,7 @@ const statusTextMap: Record<
   1: ({ buyerName, sellerName, userRole }) =>
     userRole === UserRole.COOP
       ? `${buyerName} created a new order.`
-      : `You have sent a message to ${sellerName} about your order.`,
+      : `Waiting for ${sellerName} to confirm, reschedule, or deny your order.`,
   2: ({ buyerName, sellerName, userRole }) =>
     userRole === UserRole.COOP
       ? `${buyerName} is waiting for their order to be ready for pickup.`
@@ -20,7 +20,7 @@ const statusTextMap: Record<
     userRole === UserRole.COOP
       ? `Waiting for ${buyerName} to respond to your new pickup time.`
       : `${sellerName} has proposed a new pickup time.`,
-  4: ({ buyerName, sellerName, userRole }) =>
+  4: ({ sellerName, userRole }) =>
     userRole === UserRole.COOP
       ? `You canceled this order`
       : `${sellerName} has canceled the order. You can see their reason why in the conversation.`,
@@ -32,17 +32,17 @@ const statusTextMap: Record<
     userRole === UserRole.COOP
       ? `${buyerName} has proposed a different pickup time.`
       : `Waiting for ${sellerName} to respond to your new pickup time.`,
-  7: ({ buyerName, sellerName, userRole }) =>
+  7: ({ buyerName, userRole }) =>
     userRole === UserRole.COOP
       ? `${buyerName} created a new order.`
       : `You canceled this order.`,
-  8: ({ buyerName, sellerName, userRole }) =>
+  8: ({ buyerName, userRole }) =>
     userRole === UserRole.COOP
       ? `Waiting for ${buyerName} to pick up the order.`
       : `Your order is ready for pickup.`,
   9: ({ buyerName, sellerName, userRole }) =>
     userRole === UserRole.COOP
-      ? `${buyerName} has picked up their order, please leave a review.`
+      ? `${buyerName} has picked up their order, please leave a review for them.`
       : `Please leave a review for ${sellerName}.`,
 
   10: ({ buyerName, sellerName, userRole }) =>
@@ -65,15 +65,19 @@ const statusTextMap: Record<
     userRole === UserRole.COOP
       ? `Waiting for ${sellerName} to respond to your new drop off time.`
       : `${buyerName} has proposed a different drop off time.`,
-  15: ({ buyerName, sellerName, userRole }) =>
+  15: ({ buyerName, userRole }) =>
     userRole === UserRole.COOP
       ? `You canceled this order.`
       : `${buyerName} canceled this order`,
-  16: ({ buyerName, sellerName, userRole }) =>
+  16: ({ sellerName, userRole }) =>
     userRole === UserRole.COOP
       ? `${sellerName} has dropped your order, please confirm this is true.`
-      : `Waiting for ${buyerName} to confirm the order was dropped off.`,
-  17: ({ buyerName, sellerName, userRole }) =>
+      : `Waiting for your confirmation that the order was dropped off.`,
+  17: ({ sellerName, userRole }) =>
+    userRole === UserRole.COOP
+      ? `Please leave a review.`
+      : `Please leave a review for ${sellerName}.`,
+  18: ({ sellerName, userRole }) =>
     userRole === UserRole.COOP
       ? `Please leave a review.`
       : `Please leave a review for ${sellerName}.`,
