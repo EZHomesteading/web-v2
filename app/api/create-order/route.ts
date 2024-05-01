@@ -16,14 +16,12 @@ export async function POST(request: NextRequest) {
 
   for (const order of orders) {
     const {
-      userId,
       listingIds,
       pickupDate,
       quantity,
       totalPrice,
       status,
       stripePaymentIntentId,
-      conversationId,
       // payments,
     } = order;
 
@@ -33,7 +31,6 @@ export async function POST(request: NextRequest) {
       "pickupDate",
       "quantity",
       "totalPrice",
-      "status",
     ];
 
     if (requiredFields.some((field) => !order[field])) {
@@ -66,7 +63,6 @@ export async function POST(request: NextRequest) {
           stripePaymentIntentId,
           stripeSessionId: "",
           fee: totalPrice * 0.06,
-          conversationId,
           // payments: {
           // create: payments,
           //},

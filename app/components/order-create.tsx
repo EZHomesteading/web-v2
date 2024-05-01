@@ -16,9 +16,7 @@ interface Create {
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
   console.log(pickupArr);
-  const formatDate = (date: any) => {
-    return dayjs(date).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-  };
+
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -71,9 +69,8 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             pickupDate: currentpickuparr.pickupTime,
             quantity: JSON.stringify(quantities),
             totalPrice: summedTotalPrice,
-            status: "pending",
+            status: 0,
             stripePaymentIntentId: "teststring",
-            conversationId: "660b1cda321d320d4fe69785",
           });
         }
         currentpickuparr = findObjectWithCartIndex(pickupArr, index);
@@ -112,9 +109,8 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         pickupDate: pickupArr[pickupArr.length - 1].pickupTime,
         quantity: JSON.stringify(quantities),
         totalPrice: summedTotalPrice,
-        status: "pending",
+        status: 0,
         stripePaymentIntentId: "teststring",
-        conversationId: "660b1cda321d320d4fe69785",
       });
     }
 

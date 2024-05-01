@@ -20,6 +20,7 @@ interface MessageBoxProps {
   isLast?: boolean;
   convoId: string;
   otherUsersId: any;
+  order: any;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -27,10 +28,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   isLast,
   convoId,
   otherUsersId,
+  order,
 }) => {
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  console.log(order);
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
