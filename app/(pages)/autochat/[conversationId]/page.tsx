@@ -7,6 +7,7 @@ import EmptyState from "@/app/components/EmptyState";
 import { currentUser } from "@/lib/auth";
 import Form from "./components/Form";
 import GetOrderByConvoId from "@/actions/messenger/getOrderByConvoId";
+import getUserRoleById from "@/actions/messenger/getUserRoleById";
 
 interface IParams {
   conversationId: string;
@@ -21,7 +22,10 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const userIds = conversation?.userIds;
   const otherUsers = userIds?.filter((userId) => userId !== user?.id);
   const otherUser: any = otherUsers?.toString();
-  //console.log(otherUser);
+  const userId = otherUser;
+  const otherUserRole = await getUserRoleById({ userId });
+  console.log(otherUser);
+  console.log(otherUserRole);
 
   if (!conversation) {
     return (
@@ -37,7 +41,12 @@ const ChatId = async ({ params }: { params: IParams }) => {
     <div className="lg:pl-80 h-full">
       <div className="h-full flex flex-col">
         <Header conversation={conversation} />
-        <Body initialMessages={messages} otherUser={otherUser} order={order} />
+        <Body
+          initialMessages={messages}
+          otherUser={otherUser}
+          order={order}
+          otherUserRole={otherUserRole}
+        />
         {/* <Form otherUsersId={otherUser} /> */}
       </div>
     </div>

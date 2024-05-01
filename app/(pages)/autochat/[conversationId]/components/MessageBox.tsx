@@ -34,7 +34,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [dateTime, setDateTime] = useState<any>("");
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  console.log(order);
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
