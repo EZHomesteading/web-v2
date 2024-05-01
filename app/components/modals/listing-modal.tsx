@@ -261,6 +261,7 @@ const ListingModal = () => {
       axios
 
         .post("/api/listings", formData)
+
         .then(() => {
           toast.success("Listing created!");
           rentModal.onClose();

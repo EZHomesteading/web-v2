@@ -2,7 +2,7 @@ import Link from "next/link";
 import Avatar from "../Avatar";
 import { StarIcon } from "@radix-ui/react-icons";
 import { Location, UserRole } from "@prisma/client";
-import OpenStatus from "@/app/(pages)/store/[storeId]/status";
+import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import { ExtendedHours } from "@/next-auth";
 
 interface UserCardProps {

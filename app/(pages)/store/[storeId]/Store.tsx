@@ -1,7 +1,7 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import OpenStatus from "@/app/(pages)/store/[storeId]/status";
+import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
@@ -35,15 +35,15 @@ const StorePage = ({
             >
               <div className="flex flex-row items-center gap-x-2">
                 <div className="font-bold text-2xl lg:text-4xl">
-                  {user?.name}
+                  {storeUser?.name}
                 </div>
                 <OpenStatus hours={storeUser.hours} />
               </div>
-              <div>{user?.firstName}</div>
+              <div>{storeUser?.firstName}</div>
             </div>
           </div>
           <div className="flex justify-center">
-            <Bio user={user} />
+            <Bio user={storeUser} />
           </div>
         </div>
 

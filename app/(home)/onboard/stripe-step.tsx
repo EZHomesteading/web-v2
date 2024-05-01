@@ -1,7 +1,7 @@
 import AccountOnboardingUI from "./stripe-onboarding";
 import { UserInfo } from "@/next-auth";
 interface Props {
-  user?: UserInfo;
+  user: UserInfo;
   formData: any;
   setFormData: any;
 }
