@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import getUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
+import getUserWithSellOrders from "@/actions/user/getUserWithSellOrders";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import getUserById from "@/actions/user/getUserById";
@@ -7,59 +7,76 @@ import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
 import { getStatusText } from "@/app/components/order-status";
 import { UserRole } from "@prisma/client";
+import { Button } from "@/app/components/ui/button";
+import Link from "next/link";
+
 const Page = async () => {
   let user = await currentUser();
-  const buyer = await getUserWithBuyOrders({ userId: user?.id });
+  const seller = await getUserWithSellOrders({ userId: user?.id });
 
   return (
-    <div className="h-screen">
-      <main className="flex flex-col items-start justify-start">
-        <h1 className="px-2 py-4 text-lg lg:text-4xl">Buy Orders</h1>{" "}
-        {buyer?.buyerOrders
+    <div className="h-screen w-full flex flex-col items-start">
+      <h1 className="px-2 py-4 text-3xl sm:text-5xl">Sell Orders</h1>{" "}
+      <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
+        {seller?.sellerOrders
           .filter((order) => order.status !== 0)
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
             });
-            const seller = await getUserById({ userId: order.sellerId });
+            console.log(order);
+            const buyer = await getUserById({ userId: order.userId });
             return (
-              <Card key={order.id}>
-                <CardHeader>{seller?.name}</CardHeader>{" "}
-                <CardContent className="flex flex-col">
+              <Card key={order.id} className="sheet shadow-lg">
+                <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
+                  {buyer?.name}
+                </CardHeader>
+                <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                   {listings.map(async (listing: SafeListing) => {
+                    const quantities = JSON.parse(order.quantity);
+
+                    const quantityObj = quantities.find(
+                      (q: any) => q.id === listing.id
+                    );
+                    const quantity = quantityObj ? quantityObj.quantity : 0;
                     return (
                       <div
                         key={listing.id}
                         className="flex flex-row items-center gap-2"
                       >
                         <Image
-                          width={80}
-                          height={80}
                           src={listing.imageSrc}
                           alt={listing.title}
+                          width={50}
+                          height={50}
+                          className="rounded-lg object-cover aspect-square"
                         />
                         <p>
-                          {listing.quantityType} of {listing.title}{" "}
+                          {quantity} {listing.quantityType} of {listing.title}{" "}
                         </p>
                       </div>
                     );
                   })}
                   <div>Order Total: ${order.totalPrice}</div>{" "}
-                  <div>Pick Up Date: {formatTime(order.pickupDate)}</div>{" "}
                   <div>
-                    {" "}
-                    Status:{" "}
-                    {getStatusText(
-                      order.status,
-                      buyer?.name || "",
-                      seller?.name || "",
-
-                      buyer?.role === UserRole.COOP
-                        ? UserRole.COOP
-                        : UserRole.CONSUMER
-                    )}
+                    Current Pick Up Date: {formatTime(order.pickupDate)}
                   </div>{" "}
                 </CardContent>{" "}
+                <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
+                  {" "}
+                  Status:
+                  {getStatusText(
+                    order.status,
+                    buyer?.name || "",
+                    seller?.name || "",
+                    seller?.role === UserRole.COOP
+                      ? UserRole.COOP
+                      : UserRole.CONSUMER
+                  )}
+                  <Link href={`/autochat/${order.conversationId}`}>
+                    <Button className="text-xs p-1">Go to Conversation</Button>
+                  </Link>
+                </div>{" "}
               </Card>
             );
           })}{" "}

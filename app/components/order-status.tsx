@@ -77,6 +77,10 @@ const statusTextMap: Record<
     userRole === UserRole.COOP
       ? `Please leave a review.`
       : `Please leave a review for ${sellerName}.`,
+  18: ({ buyerName, sellerName, userRole }) =>
+    userRole === UserRole.COOP
+      ? `Please leave a review.`
+      : `Please leave a review for ${sellerName}.`,
   19: () => `Complete`,
 };
 
