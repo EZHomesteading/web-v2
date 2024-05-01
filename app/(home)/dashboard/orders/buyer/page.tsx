@@ -24,7 +24,7 @@ const Page = async () => {
             const seller = await getUserById({ userId: order.sellerId });
             return (
               <Card key={order.id}>
-                <CardHeader>{buyer?.name}</CardHeader>{" "}
+                <CardHeader>{seller?.name}</CardHeader>{" "}
                 <CardContent className="flex flex-col">
                   {listings.map(async (listing: SafeListing) => {
                     return (
