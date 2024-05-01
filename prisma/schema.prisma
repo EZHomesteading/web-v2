@@ -15,15 +15,6 @@ enum UserRole {
 }
 
 
-enum orderStatus {
-  pending //order has been created
-  ready // order is ready to be picked up
-  recieved // order has been picked up
-  coopConfirmed // coop has confirmed order
-  cancelled // order has been cancelled
-  completed // order has been confirmed by both parties
-}
-
 type Location {
   type String
   coordinates Float[]
@@ -185,7 +176,7 @@ model Order {
   pickupDate            DateTime
   quantity              String
   totalPrice            Float
-  status                orderStatus @default(pending)
+  status                Int @default(0)
   stripePaymentIntentId String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -197,7 +188,6 @@ model Order {
 
   buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
   seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
-
 }
 
 model Payment {
