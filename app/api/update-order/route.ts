@@ -1,0 +1,21 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prismadb";
+
+interface CartParams {
+  orderId?: string;
+  status?: number;
+}
+export async function POST(
+  request: Request,
+  { params }: { params: CartParams }
+) {
+  const { orderId, status } = await request.json();
+  // Update a single cart item
+  if (status) {
+    const orderUpdate: any = await prisma.order.update({
+      where: { id: orderId },
+      data: { status: status },
+    });
+    return NextResponse.json(orderUpdate);
+  }
+}
