@@ -23,7 +23,7 @@ const UserCard = ({ user }: UserCardProps) => {
       <Link href={`/store/${user?.id}`}>
         <div className="relative border-[1px] shadow-md border-green-200 h-1/10 rounded-md px-2 py-2">
           <div className="flex flex-row gap-x-2">
-            {/* <Avatar /> */}
+            <Avatar user={user} />
             <div className="flex flex-col">
               <div className="gap-x-2">
                 {user?.name}

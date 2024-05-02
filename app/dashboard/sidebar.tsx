@@ -29,7 +29,7 @@ const conNav: NavigationItem[] = [
     name: "Profile Settings",
     href: "/dashboard/account-settings/general",
     icon: GiSettingsKnobs,
-    current: true,
+    current: false,
   },
   {
     name: "Orders",
@@ -91,7 +91,7 @@ const vendorNav: NavigationItem[] = [
     name: "Profile Settings",
     href: "/dashboard/account-settings/general",
     icon: GiSettingsKnobs,
-    current: true,
+    current: false,
   },
 
   {
@@ -108,7 +108,7 @@ const vendorNav: NavigationItem[] = [
   },
   {
     name: "Terms of Service",
-    href: "#",
+    href: "/tos",
     icon: HiOutlineDocument,
     current: false,
   },

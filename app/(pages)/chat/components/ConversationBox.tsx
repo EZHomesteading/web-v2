@@ -26,7 +26,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   const mess: string = "this is an automated message";
 
   const handleClick = useCallback(() => {
-    router.push(`/autochat/${data.id}`);
+    router.push(`/chat/${data.id}`);
   }, [data, router]);
 
   const lastMessage = useMemo(() => {

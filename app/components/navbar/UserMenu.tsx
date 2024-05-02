@@ -119,7 +119,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Chat"
                     icon={<FaComment className="mr-2" />}
-                    onClick={() => router.push("/autochat")}
+                    onClick={() => router.push("/chat")}
                   />{" "}
                   <MenuItem
                     label="Market"

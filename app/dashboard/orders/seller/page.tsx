@@ -82,7 +82,7 @@ const Page = async () => {
                       ? UserRole.COOP
                       : UserRole.CONSUMER
                   )}
-                  <Link href={`/autochat/${order.conversationId}`}>
+                  <Link href={`/chat/${order.conversationId}`}>
                     <Button className="text-xs p-1">Go to Conversation</Button>
                   </Link>
                 </div>{" "}
