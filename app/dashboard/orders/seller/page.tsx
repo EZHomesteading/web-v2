@@ -24,11 +24,11 @@ const Page = async () => {
   const seller = await getUserWithSellOrders({ userId: user?.id });
 
   return (
-    <div className="h-screen w-full flex flex-col items-start">
+    <div className="min-h-screen w-full flex flex-col items-start">
       <h1 className="px-2 py-4 text-3xl sm:text-5xl">Sell Orders</h1>
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {seller?.sellerOrders
-          .filter((order) => order.status !== 0)
+          .filter((order) => order.status !== 0 || order.status < 18)
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,

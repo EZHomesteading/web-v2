@@ -11,6 +11,7 @@ import { UserRole } from "@prisma/client";
 import { BsCartPlusFill } from "react-icons/bs";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
+import { TbShoppingCartDollar } from "react-icons/tb";
 
 interface NavigationItem {
   name: string;
@@ -72,7 +73,7 @@ const vendorNav: NavigationItem[] = [
   {
     name: "Sell Orders",
     href: "/dashboard/orders/seller",
-    icon: BsCartPlusFill,
+    icon: TbShoppingCartDollar,
     current: false,
   },
   {

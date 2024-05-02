@@ -24,8 +24,8 @@ const Page = async () => {
   const seller = await getUserWithSellOrders({ userId: user?.id });
 
   return (
-    <div className="h-screen w-full flex flex-col items-start">
-      <h1 className="px-2 pb-2 pt-14 text-3xl sm:text-5xl">
+    <div className="min-h-screen w-full flex flex-col items-start">
+      <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
         Sell Order History
       </h1>{" "}
       <Link className="px-2 py-4" href="/dashboard/order-history/buy">
@@ -33,7 +33,10 @@ const Page = async () => {
       </Link>{" "}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {seller?.sellerOrders
-          .filter((order) => order.status >= 17 || order.status == 9)
+          .filter(
+            (order) =>
+              order.status >= 17 || order.status == 9 || order.status == 0
+          )
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,

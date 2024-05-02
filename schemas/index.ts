@@ -68,65 +68,89 @@ export const LoginSchema = z.object({
   code: z.optional(z.string()),
 });
 
-export const RegisterVendorSchema = z.object({
-  firstName: z.string().min(1, {
-    message: "First name is required",
-  }),
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(4, {
-    message: "Minimum 4 characters required",
-  }),
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-  phoneNumber: z.string().min(10).max(16),
-  location: z.object({
-    type: z.literal("Point"),
-    coordinates: z.tuple([z.number(), z.number()]),
-    address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
-  }),
-  role: z.nativeEnum(UserRole),
-});
+export const RegisterVendorSchema = z
+  .object({
+    firstName: z.string().min(1, {
+      message: "First name is required",
+    }),
+    email: z.string().email({
+      message: "Email is required",
+    }),
+    password: z.string().min(4, {
+      message: "Minimum 4 characters required",
+    }),
+    confirmPassword: z
+      .string()
+      .min(4, { message: "Minimum 4 characters required" }),
+    name: z.string().min(1, {
+      message: "Name is required",
+    }),
+    phoneNumber: z.string().min(10).max(16),
+    location: z.object({
+      type: z.literal("Point"),
+      coordinates: z.tuple([z.number(), z.number()]),
+      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
+    }),
+    role: z.nativeEnum(UserRole),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-export const RegisterSchema = z.object({
-  firstName: z.string().min(1, {
-    message: "First name is required",
-  }),
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(4, {
-    message: "Minimum 4 characters required",
-  }),
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-  role: z.nativeEnum(UserRole),
-});
+export const RegisterSchema = z
+  .object({
+    firstName: z.string().min(1, {
+      message: "First name is required",
+    }),
+    email: z.string().email({
+      message: "Email is required",
+    }),
+    password: z.string().min(4, {
+      message: "Minimum 4 characters required",
+    }),
+    confirmPassword: z
+      .string()
+      .min(4, { message: "Minimum 4 characters required" }),
+    name: z.string().min(1, {
+      message: "Name is required",
+    }),
+    role: z.nativeEnum(UserRole),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-export const RegisterRoleSchema = z.object({
-  firstName: z.string().min(1, {
-    message: "First name is required",
-  }),
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(4, {
-    message: "Minimum 4 characters required",
-  }),
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-  phoneNumber: z.string().min(6, { message: "Phone number is required" }),
-  location: z.object({
-    type: z.literal("Point"),
-    coordinates: z.tuple([z.number(), z.number()]),
-    address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
-  }),
-  role: z.nativeEnum(UserRole),
-});
+export const RegisterRoleSchema = z
+  .object({
+    firstName: z.string().min(1, {
+      message: "First name is required",
+    }),
+    email: z.string().email({
+      message: "Email is required",
+    }),
+    password: z.string().min(4, {
+      message: "Minimum 4 characters required",
+    }),
+    confirmPassword: z
+      .string()
+      .min(4, { message: "Minimum 4 characters required" }),
+    name: z.string().min(1, {
+      message: "Name is required",
+    }),
+    phoneNumber: z.string().min(6, { message: "Phone number is required" }),
+    location: z.object({
+      type: z.literal("Point"),
+      coordinates: z.tuple([z.number(), z.number()]),
+      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
+    }),
+    role: z.nativeEnum(UserRole),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export const UpdateSchema = z.object({
   firstName: z

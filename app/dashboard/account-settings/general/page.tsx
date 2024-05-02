@@ -17,7 +17,6 @@ import { HiOutlineDocument } from "react-icons/hi2";
 import { CgCommunity } from "react-icons/cg";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
-import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
 import {
@@ -32,6 +31,7 @@ import {
 } from "@/app/components/ui/alert-dialog";
 import { FaDeleteLeft } from "react-icons/fa6";
 import ImageUpload from "@/app/components/inputs/profile-img-upload";
+import { useRouter } from "next/navigation";
 
 interface NavigationItem {
   name: string;
@@ -104,6 +104,7 @@ function classNames(...classes: string[]) {
 const Page = () => {
   const user = useCurrentUser();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const [fullAddress, setFullAddress] = useState(
     `${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`
   );
@@ -177,6 +178,7 @@ const Page = () => {
         axios
           .post("/api/update", formData)
           .then(() => {
+            router.refresh();
             toast.success("Your account details have changed");
           })
           .catch((error) => {
@@ -184,12 +186,14 @@ const Page = () => {
           })
           .finally(() => {
             setIsLoading(false);
+
             return;
           });
       } else
         axios
           .post("/api/update", data)
           .then(() => {
+            router.refresh();
             toast.success("Your account details have changed");
           })
           .catch((error) => {
@@ -268,7 +272,7 @@ const Page = () => {
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
           <h2 className="lg:text-3xl text-lg">Username</h2>
           <ul>
-            <li>This name is unique to you.</li>
+            <li>This name is unique to you & visible to other users.</li>
             <li>Type in a new username to change it.</li>
           </ul>
           <div className="flex justify-end">
@@ -299,7 +303,7 @@ const Page = () => {
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
           <h3 className="text-lg lg:text-3xl">Email Address</h3>
           <ul>
-            <li>This email address is unique to you.</li>
+            <li>This email address is unique to your account.</li>
             <li>Type in a new email to change it.</li>
           </ul>
           <div className="justify-end flex">
@@ -334,7 +338,6 @@ const Page = () => {
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
           <h4 className="text-lg lg:text-3xl">Phone number</h4>
           <ul>
-            <li>This phone number is unique to your account.</li>
             <li>Type in a new phone number to change it.</li>
           </ul>
           <div className="flex justify-end">
@@ -378,22 +381,26 @@ const Page = () => {
                 <></>
               )}
             </li>
-            <li>Type in a new address to change it.</li>
           </ul>
           <div>
             <label
               htmlFor="address"
               className="block text-sm font-medium leading-6"
             >
-              Current Address is: {user?.location?.address[0]},{" "}
-              {user?.location?.address[1]}, {user?.location?.address[2]},{" "}
-              {user?.location?.address[3]}
+              {!user?.location?.address ? (
+                <>You do not currently have a saved address</>
+              ) : (
+                `Your current address is${" "}${user?.location?.address[0]}, ${
+                  user?.location?.address[1]
+                },${" "}
+                  ${user?.location?.address[2]}, ${user?.location?.address[3]}`
+              )}
             </label>
             <label
               htmlFor="address"
               className="block text-sm font-medium leading-6"
             >
-              To Change, Enter a new Address
+              To change this, enter a new address
             </label>
             <div className="flex justify-end">
               <LocationSearchInput

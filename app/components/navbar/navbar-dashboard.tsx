@@ -19,6 +19,7 @@ import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
 import {
   TbLayoutSidebarRightCollapse,
   TbLayoutSidebarRightCollapseFilled,
+  TbShoppingCartDollar,
 } from "react-icons/tb";
 import { VscHistory } from "react-icons/vsc";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
@@ -95,7 +96,7 @@ const vendorNav: NavigationItem[] = [
   {
     name: "Sell Orders",
     href: "/dashboard/orders/seller",
-    icon: BsCartPlusFill,
+    icon: TbShoppingCartDollar,
     current: false,
   },
   {
