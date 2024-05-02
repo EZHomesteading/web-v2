@@ -4,9 +4,10 @@ import React from "react";
 
 interface ContainerProps {
   children: React.ReactNode;
+  style?: any;
 }
 
-const Container: React.FC<ContainerProps> = ({ children }) => {
+const Container: React.FC<ContainerProps> = ({ style, children }) => {
   return (
     <div
       className="
@@ -17,6 +18,7 @@ const Container: React.FC<ContainerProps> = ({ children }) => {
         sm:px-2 
         px-4 
       "
+      style={style}
     >
       {children}
     </div>

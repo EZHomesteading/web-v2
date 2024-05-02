@@ -34,7 +34,7 @@ const statusTextMap: Record<
       : `Waiting for ${sellerName} to respond to your new pickup time.`,
   7: ({ buyerName, userRole }) =>
     userRole === UserRole.COOP
-      ? `${buyerName} created a new order.`
+      ? `${buyerName} canceled this order.`
       : `You canceled this order.`,
   8: ({ buyerName, userRole }) =>
     userRole === UserRole.COOP

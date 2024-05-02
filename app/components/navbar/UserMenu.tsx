@@ -77,7 +77,7 @@ const UserMenu = ({ user }: Props) => {
       <SheetContent className={`${outfit.className} bg pt-5`}>
         <div>
           <div className="flex flex-row px-4">
-            <Avatar />
+            <Avatar user={user} />
             <div className="flex flex-col ml-2">
               <div className="font-bold">{user?.name}</div>
               <div>{user?.firstName}</div>

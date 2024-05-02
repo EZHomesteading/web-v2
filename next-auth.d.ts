@@ -51,6 +51,28 @@ type CartGroups = {
   cartGroup: CartGroup[];
 };
 
+type Order = {
+  id: string;
+  userId: string;
+  listingIds: string[];
+  sellerId: string;
+  pickupDate: Date;
+  quantity: string;
+  totalPrice: number;
+  status: number;
+  stripePaymentIntentId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  stripeSessionId: string;
+  fee: number;
+  conversationId: string | null;
+};
+
+export type UserInfoOrders = UserInfo & {
+  buyerOrders?: Order[];
+  sellerOrders?: Order[];
+};
+
 declare module "next-auth" {
   interface Session {
     user: UserInfo;

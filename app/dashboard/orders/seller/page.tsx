@@ -6,9 +6,18 @@ import getUserById from "@/actions/user/getUserById";
 import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
 import { getStatusText } from "@/app/components/order-status";
-import { UserRole } from "@prisma/client";
+import { Order, UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
+
+const formatPrice = (price: number): string => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
 
 const Page = async () => {
   let user = await currentUser();
@@ -57,7 +66,7 @@ const Page = async () => {
                       </div>
                     );
                   })}
-                  <div>Order Total: ${order.totalPrice}</div>{" "}
+                  <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>{" "}
                   <div>
                     Current Pick Up Date: {formatTime(order.pickupDate)}
                   </div>{" "}

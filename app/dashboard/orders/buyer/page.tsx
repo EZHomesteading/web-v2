@@ -10,6 +10,14 @@ import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 
+const formatPrice = (price: number): string => {
+  return price.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
 const Page = async () => {
   let user = await currentUser();
   const buyer = await GetUserWithBuyOrders({ userId: user?.id });
@@ -24,7 +32,7 @@ const Page = async () => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
             });
-            const seller = await getUserById({ userId: order.userId });
+            const seller = await getUserById({ userId: order.sellerId });
             return (
               <Card key={order.id} className="sheet shadow-lg mb-4">
                 <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
@@ -56,7 +64,7 @@ const Page = async () => {
                       </div>
                     );
                   })}
-                  <div>Order Total: ${order.totalPrice}</div>{" "}
+                  <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>{" "}
                   <div>
                     Current Pick Up Date: {formatTime(order.pickupDate)}
                   </div>{" "}
