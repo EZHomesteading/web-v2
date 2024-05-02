@@ -1,12 +1,12 @@
 import { currentUser } from "@/lib/auth";
-import getUserWithSellOrders from "@/actions/user/getUserWithSellOrders";
+import GetUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import getUserById from "@/actions/user/getUserById";
 import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
 import { getStatusText } from "@/app/components/order-status";
-import { Order, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 
@@ -18,26 +18,30 @@ const formatPrice = (price: number): string => {
     maximumFractionDigits: 2,
   });
 };
-
 const Page = async () => {
   let user = await currentUser();
-  const seller = await getUserWithSellOrders({ userId: user?.id });
+  const buyer = await GetUserWithBuyOrders({ userId: user?.id });
 
   return (
     <div className="h-screen w-full flex flex-col items-start">
-      <h1 className="px-2 py-4 text-3xl sm:text-5xl">Sell Orders</h1>
+      <h1 className="px-2 pb-2 pt-14 text-3xl sm:text-5xl">
+        Buy Order History
+      </h1>{" "}
+      <Link className="px-2 py-4" href="/dashboard/order-history/sell">
+        <Button>Go to Sell Order History</Button>
+      </Link>{" "}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
-        {seller?.sellerOrders
-          .filter((order) => order.status !== 0)
+        {buyer?.buyerOrders
+          .filter((order) => order.status >= 17 || order.status == 9)
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
             });
-            const buyer = await getUserById({ userId: order.userId });
+            const seller = await getUserById({ userId: order.sellerId });
             return (
               <Card key={order.id} className="sheet shadow-lg mb-4">
                 <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
-                  {buyer?.name}
+                  {seller?.name}
                 </CardHeader>
                 <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                   {listings.map(async (listing: SafeListing) => {
@@ -75,9 +79,9 @@ const Page = async () => {
                   Status:
                   {getStatusText(
                     order.status,
-                    buyer?.name || "",
                     seller?.name || "",
-                    seller?.role === UserRole.COOP
+                    buyer?.name || "",
+                    buyer?.role === UserRole.COOP
                       ? UserRole.COOP
                       : UserRole.CONSUMER
                   )}

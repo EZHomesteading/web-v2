@@ -25,10 +25,15 @@ const Page = async () => {
 
   return (
     <div className="h-screen w-full flex flex-col items-start">
-      <h1 className="px-2 py-4 text-3xl sm:text-5xl">Sell Orders</h1>
+      <h1 className="px-2 pb-2 pt-14 text-3xl sm:text-5xl">
+        Sell Order History
+      </h1>{" "}
+      <Link className="px-2 py-4" href="/dashboard/order-history/buy">
+        <Button>Go to Buy Order History</Button>
+      </Link>{" "}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {seller?.sellerOrders
-          .filter((order) => order.status !== 0)
+          .filter((order) => order.status >= 17 || order.status == 9)
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
