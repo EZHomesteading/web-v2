@@ -5,10 +5,10 @@ import { AiOutlineMenu } from "react-icons/ai";
 import MenuItem from "./MenuItem";
 import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { CiSquarePlus } from "react-icons/ci";
+import { CiShop, CiSquarePlus } from "react-icons/ci";
 import { useRouter } from "next/navigation";
 import useRentModal from "@/hooks/modal/use-listing-modal";
-import { MdSettings } from "react-icons/md";
+import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn } from "react-icons/gi";
 import { UserRole } from "@prisma/client";
@@ -16,6 +16,7 @@ import { UpdateRoleAlert } from "../modals/update-role-alert";
 import { Outfit } from "next/font/google";
 import { GoPeople } from "react-icons/go";
 import Avatar from "../Avatar";
+import { LiaMapMarkedSolid } from "react-icons/lia";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -88,9 +89,9 @@ const UserMenu = ({ user }: Props) => {
               <div>
                 <SheetTrigger className="w-full">
                   <MenuItem
-                    label="My Store"
+                    label="Sell Orders"
                     icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/my-store")}
+                    onClick={() => router.push("/dashboard/orders/seller")}
                   />
                 </SheetTrigger>
               </div>
@@ -98,9 +99,9 @@ const UserMenu = ({ user }: Props) => {
               <div>
                 <SheetTrigger className="w-full">
                   <MenuItem
-                    label="My Store"
+                    label="Sell Orders"
                     icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/my-store")}
+                    onClick={() => router.push("/dashboard/orders/seller")}
                   />
                 </SheetTrigger>
               </div>
@@ -111,11 +112,24 @@ const UserMenu = ({ user }: Props) => {
               <>
                 <SheetTrigger className="w-full">
                   <MenuItem
-                    label="Profile Settings"
-                    icon={<MdSettings className="mr-2" />}
-                    onClick={() =>
-                      router.push("/dashboard/account-settings/general")
-                    }
+                    label="Dashboard"
+                    icon={<MdDashboard className="mr-2" />}
+                    onClick={() => router.push("/dashboard")}
+                  />{" "}
+                  <MenuItem
+                    label="Chat"
+                    icon={<FaComment className="mr-2" />}
+                    onClick={() => router.push("/autochat")}
+                  />{" "}
+                  <MenuItem
+                    label="Market"
+                    icon={<CiShop className="mr-2" />}
+                    onClick={() => router.push("/shop")}
+                  />
+                  <MenuItem
+                    label="Map"
+                    icon={<LiaMapMarkedSolid className="mr-2" />}
+                    onClick={() => router.push("/map")}
                   />
                   <MenuItem
                     label="Cart"
@@ -128,9 +142,11 @@ const UserMenu = ({ user }: Props) => {
                     onClick={() => router.push("/favorites")}
                   />
                   <MenuItem
-                    label="Chat"
-                    icon={<FaComment className="mr-2" />}
-                    onClick={() => router.push("/autochat")}
+                    label="Profile Settings"
+                    icon={<MdSettings className="mr-2" />}
+                    onClick={() =>
+                      router.push("/dashboard/account-settings/general")
+                    }
                   />
                   <div className=" block sm:hidden">
                     <MenuItem

@@ -10,6 +10,7 @@ import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import { UserInfoOrders } from "@/next-auth";
+import DashPopover from "./dashboard-popover";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -79,11 +80,13 @@ const Dashboard = async () => {
           <></>
         ) : (
           <Card className="w-full aspect-video sheet shadow-lg">
-            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
+            <CardHeader
+              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+            >
               Total Sales
+              <DashPopover c="The amount you've made based on completed orders" />
             </CardHeader>
             <CardContent className="sheet h-fit">
-              Sales based on complete orders from store
               <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
                 {formatPrice(totalSales)}
               </div>
@@ -91,7 +94,10 @@ const Dashboard = async () => {
                 className="flex justify-end items-end"
                 href="/dashboard/my-store/settings"
               >
-                <Button className="mt-2">Store Settings</Button>
+                <Button className="mt-2">
+                  {user?.role === UserRole.COOP ? <>Co-op</> : <>Producer</>}{" "}
+                  Settings
+                </Button>
               </Link>
             </CardContent>
           </Card>
@@ -100,11 +106,13 @@ const Dashboard = async () => {
           <></>
         ) : (
           <Card className="w-full sheet shadow-lg">
-            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
+            <CardHeader
+              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+            >
               Ongoing Sell Orders
+              <DashPopover c="Check all store orders and reply to buyer messages." />
             </CardHeader>
             <CardContent className="sheet">
-              Check all store orders and reply to buyer messages.
               <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
                 {sellOrdersLength}
               </div>
@@ -118,11 +126,13 @@ const Dashboard = async () => {
           </Card>
         )}
         <Card className="w-full aspect-video sheet shadow-lg">
-          <CardHeader className={`${outfit.className} text-xl md:2xl`}>
+          <CardHeader
+            className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+          >
             Ongoing Buy Orders
+            <DashPopover c="Check your orders and reply to seller messages." />
           </CardHeader>
           <CardContent className="sheet">
-            Check your orders and reply to seller messages.
             <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
               {buyOrdersLength}
             </div>
@@ -135,11 +145,13 @@ const Dashboard = async () => {
           </CardContent>
         </Card>
         <Card className="w-full aspect-video sheet shadow-lg">
-          <CardHeader className={`${outfit.className} text-xl md:2xl`}>
-            Followers
+          <CardHeader
+            className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+          >
+            Followers{" "}
+            <DashPopover c="People who follow you, you cannot remove followers." />
           </CardHeader>
           <CardContent className="sheet">
-            People who follow you, cannot remove followers.
             <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
               0
             </div>
@@ -155,11 +167,13 @@ const Dashboard = async () => {
           <></>
         ) : (
           <Card className="w-full aspect-video sheet shadow-lg">
-            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
-              Projected Harvest Payout
+            <CardHeader
+              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+            >
+              Projected Harvest Payout{" "}
+              <DashPopover c="This number is estimated based on the value and quantity of your your projected harvest & assumes you sell all of it." />
             </CardHeader>
             <CardContent className="sheet">
-              Based on selling your projected harvest
               <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
                 $0.00
               </div>
@@ -178,8 +192,11 @@ const Dashboard = async () => {
           <></>
         ) : (
           <Card className="w-full sheet shadow-lg md:col-span-1">
-            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
+            <CardHeader
+              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+            >
               Overview
+              <DashPopover c="This graphy indicates your sales month over month." />
             </CardHeader>
             <CardContent className="sheet p-0">
               <Overview sellerOrders={user?.sellerOrders ?? []} />
@@ -194,7 +211,7 @@ const Dashboard = async () => {
             {(() => {
               const userElements = recentPurchases.map(async (order) => {
                 const user = await prisma.user.findUnique({
-                  where: { id: order.userId },
+                  where: { id: order.sellerId },
                   select: {
                     id: true,
                     name: true,
@@ -217,8 +234,8 @@ const Dashboard = async () => {
                         {user.firstName}
                       </div>
                     </div>
-                    <div className="text-green-500">
-                      +{formatPrice(order.totalPrice * 10)}
+                    <div className="text-red-400">
+                      -{formatPrice(order.totalPrice * 10)}
                     </div>
                   </div>
                 );

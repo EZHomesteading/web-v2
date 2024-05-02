@@ -31,6 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import { FaDeleteLeft } from "react-icons/fa6";
+import ImageUpload from "@/app/components/inputs/profile-img-upload";
 
 interface NavigationItem {
   name: string;
@@ -125,6 +126,7 @@ const Page = () => {
       email: user?.email,
       role: user?.role,
       name: user?.name,
+      image: user?.image,
     },
   });
   setValue("street", user?.location?.address[0]);
@@ -212,7 +214,9 @@ const Page = () => {
         location.replace("/");
       });
   };
-
+  const handleImageChange = (value: string) => {
+    setValue("image", value);
+  };
   const handleAddressSelect = ({
     street,
     city,
@@ -239,16 +243,24 @@ const Page = () => {
                 <li>This is your current profile image.</li>
                 <li>
                   Click on the image to upload a custom one from your device.
+                  Press save after clicking upload even if the image doesnt
+                  change at first.
                 </li>
               </ul>
             </div>
-            <div>
-              <Avatar user={user?.image} />
-            </div>
+
+            <ImageUpload onChange={handleImageChange} value={user?.image} />
           </div>
 
           <CardFooter className="flex justify-between m-0 p-0 pt-2">
             A profile picture is optional but we recommend it.
+            <Button
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+            >
+              Save
+            </Button>
           </CardFooter>
         </CardContent>
       </Card>

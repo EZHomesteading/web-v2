@@ -33,7 +33,7 @@ export default function Overview({ sellerOrders }: OverviewProps) {
             dataKey="totalPrice"
             style={
               {
-                fill: "hsl(var(--foreground))",
+                fill: "black",
                 opacity: 0.9,
               } as React.CSSProperties
             }
