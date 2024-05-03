@@ -11,12 +11,13 @@ import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn } from "react-icons/gi";
-import { UserRole } from "@prisma/client";
+import { Cart, Order, UserRole } from "@prisma/client";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import { Outfit } from "next/font/google";
 import { GoPeople } from "react-icons/go";
 import Avatar from "../Avatar";
 import { LiaMapMarkedSolid } from "react-icons/lia";
+import NotificationIcon from "../icons/notification";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -24,7 +25,7 @@ const outfit = Outfit({
   weight: ["100"],
 });
 interface Props {
-  user: UserInfo;
+  user: any;
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
@@ -32,6 +33,7 @@ const UserMenu = ({ user }: Props) => {
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end">
+        <NotificationIcon user={user} />
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"

@@ -1,35 +1,21 @@
-import Categories from "./Categories";
 import Container from "../Container";
-import Logo from "./Logo";
 import UserMenu from "./UserMenu";
-import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
-import { UserInfo } from "@/next-auth";
-import SearchNative from "./search-native";
 import { CgCommunity } from "react-icons/cg";
 import { FaOpencart } from "react-icons/fa";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { HiOutlineDocument } from "react-icons/hi";
-import {
-  MdDashboard,
-  MdOutlineFavoriteBorder,
-  MdOutlinePrivacyTip,
-} from "react-icons/md";
+import { MdDashboard, MdOutlinePrivacyTip } from "react-icons/md";
 import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
 import {
   TbLayoutSidebarRightCollapse,
-  TbLayoutSidebarRightCollapseFilled,
   TbShoppingCartDollar,
 } from "react-icons/tb";
 import { VscHistory } from "react-icons/vsc";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { BsCartPlusFill } from "react-icons/bs";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
-interface NavbarProps {
-  user?: UserInfo;
-}
+import GetOrderNotificationInfo from "@/actions/user/getOrderNotificationInfo";
 interface NavigationItem {
   name: string;
   href: string;
@@ -154,7 +140,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 const Navbar = async () => {
-  const user = await currentUser();
+  const user = await GetOrderNotificationInfo();
   return (
     <div className="sheet">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">

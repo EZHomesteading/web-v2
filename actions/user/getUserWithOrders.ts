@@ -1,13 +1,11 @@
 import prisma from "@/lib/prismadb";
 
-interface Params {
+export default async function getUserWithOrders({
+  userId,
+}: {
   userId?: string;
-}
-
-export default async function getUserWithOrders(params: Params) {
+}) {
   try {
-    const { userId } = params;
-
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -18,10 +16,12 @@ export default async function getUserWithOrders(params: Params) {
       },
     });
 
-    if (!user) {
-      return null;
+    if (user) {
+      user.firstName = user.firstName ?? "";
+      return user;
     }
-    return user;
+
+    return null;
   } catch (error: any) {
     throw new Error(error);
   }

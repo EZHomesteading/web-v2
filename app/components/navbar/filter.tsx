@@ -10,7 +10,7 @@ import { UserInfo } from "@/next-auth";
 import { Button } from "../ui/button";
 
 interface Props {
-  user?: UserInfo;
+  user?: any;
 }
 const Filters = ({ user }: Props) => {
   const [radius, setRadius] = useState(0);

@@ -2,16 +2,15 @@ import { CgCommunity } from "react-icons/cg";
 import { FaOpencart } from "react-icons/fa";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { HiOutlineDocument } from "react-icons/hi";
-import { MdOutlineFavoriteBorder, MdOutlinePrivacyTip } from "react-icons/md";
+import { MdOutlinePrivacyTip } from "react-icons/md";
 import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
 import { VscHistory } from "react-icons/vsc";
 import Logo from "../components/navbar/Logo";
-import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-import { BsCartPlusFill } from "react-icons/bs";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
 import { TbShoppingCartDollar } from "react-icons/tb";
+import GetRoleGate from "@/actions/user/getRoleGate";
 
 interface NavigationItem {
   name: string;
@@ -130,7 +129,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 const Sidebar = async () => {
-  const user = await currentUser();
+  const user = await GetRoleGate();
   return (
     <>
       <div className="hidden lg:block w-72 h-full">

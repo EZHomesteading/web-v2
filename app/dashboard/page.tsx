@@ -9,7 +9,6 @@ import { Button } from "../components/ui/button";
 import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
-import { UserInfoOrders } from "@/next-auth";
 import DashPopover from "./dashboard-popover";
 
 const outfit = Outfit({

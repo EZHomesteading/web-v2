@@ -1,15 +1,16 @@
+import getUserWithOrders from "@/actions/user/getOrderNotificationInfo";
 import Navbar from "@/app/components/navbar/Navbar";
 import { auth } from "@/auth";
+import { currentUser } from "@/lib/auth";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
   return (
     <>
-      <Navbar user={session?.user} />
+      <Navbar />
       <div className=" pt-25">{children}</div>
     </>
   );

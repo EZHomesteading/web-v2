@@ -102,7 +102,7 @@ const Categories = ({ user }: Props) => {
     <Container>
       <div className="flex flex-row items-center">
         <div>
-          <Filters user={user} />
+          <Filters />
         </div>
         <div className="w-full p-0 sm:pt-4">
           <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
