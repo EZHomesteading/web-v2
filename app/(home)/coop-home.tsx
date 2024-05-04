@@ -32,7 +32,7 @@ const CoopHome = ({ user }: Props) => {
               </>
             ) : (
               <>
-                <span className="text-green-200 tracking font-medium">
+                <span className="text-green-200 tracking font-medium text-sm">
                   Congrats on setting up your account
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
@@ -56,9 +56,9 @@ const CoopHome = ({ user }: Props) => {
               Find producers nearby
             </Button>
           </Link>
-          {/* {!user?.stripeAccountId || !user?.hours || !user?.image ? ( */}
-          <StripeButton label="Finish Account Setup" user={user} />
-          {/* ) : null} */}
+          {!user?.stripeAccountId || !user?.hours || !user?.image ? (
+            <StripeButton label="Finish Account Setup" user={user} />
+          ) : null}
         </div>
       </header>
     </main>

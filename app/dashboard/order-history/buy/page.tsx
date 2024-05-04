@@ -28,9 +28,12 @@ const Page = async () => {
       <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
         Buy Order History
       </h1>{" "}
-      <Link className="px-2 py-4" href="/dashboard/order-history/sell">
-        <Button>Go to Sell Order History</Button>
-      </Link>{" "}
+      {user?.role === UserRole.COOP ||
+        (user?.role === UserRole.PRODUCER && (
+          <Link className="px-2 py-4" href="/dashboard/order-history/sell">
+            <Button>Go to Sell Order History</Button>
+          </Link>
+        ))}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {buyer?.buyerOrders
           .filter(
