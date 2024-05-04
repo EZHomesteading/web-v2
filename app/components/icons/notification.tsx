@@ -1,22 +1,24 @@
-import { IoMdNotifications, IoMdNotificationsOutline } from "react-icons/io";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { getStatusText } from "@/app/components/notification-order-status";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
+import { navBuyOrder, navSellOrder } from "@/next-auth";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
   weight: ["200"],
 });
 interface Props {
-  user?: any;
+  bOrders: navBuyOrder[];
+  sOrders: navSellOrder[];
 }
 
-const NotificationIcon = async ({ user }: Props) => {
+const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
   const notifications: { text: string; conversationId: string }[] = [];
 
-  if (user?.buyerOrders) {
-    user.buyerOrders.forEach((order: any) => {
+  if (bOrders) {
+    bOrders.forEach((order: any) => {
       const statusText = getStatusText(
         order.status,
         false,
@@ -32,8 +34,8 @@ const NotificationIcon = async ({ user }: Props) => {
     });
   }
 
-  if (user?.sellerOrders) {
-    user.sellerOrders.forEach((order: any) => {
+  if (sOrders) {
+    sOrders.forEach((order: any) => {
       const statusText = getStatusText(
         order.status,
         true,

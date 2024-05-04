@@ -13,9 +13,11 @@ export default async function GetOrderNotificationInfo() {
         id: currentUserr?.id,
       },
       select: {
+        id: true,
         firstName: true,
         role: true,
         name: true,
+        email: true,
         image: true,
         cart: {
           select: {

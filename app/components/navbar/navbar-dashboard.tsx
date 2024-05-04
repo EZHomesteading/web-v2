@@ -141,6 +141,7 @@ function classNames(...classes: string[]) {
 }
 const Navbar = async () => {
   const user = await GetOrderNotificationInfo();
+
   return (
     <div className="sheet">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">

@@ -1,6 +1,5 @@
 "use client";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { UserInfo } from "@/next-auth";
 import { AiOutlineMenu } from "react-icons/ai";
 import MenuItem from "./MenuItem";
 import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
@@ -11,7 +10,7 @@ import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn } from "react-icons/gi";
-import { Cart, Order, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import { Outfit } from "next/font/google";
 import { GoPeople } from "react-icons/go";
@@ -19,6 +18,7 @@ import Avatar from "../Avatar";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
 import CartIcon from "../icons/cart-icon";
+import { navUser } from "@/next-auth";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -31,12 +31,16 @@ interface Props {
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const listingModal = useRentModal();
-  console.log("cart", user?.cart);
+  console.log("user", user);
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end">
         <CartIcon cart={user?.cart} />
-        <NotificationIcon user={user} />
+
+        <NotificationIcon
+          sOrders={user?.sellerOrders}
+          bOrders={user?.buyerOrders}
+        />
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert
             heading="Would you like to become an EZH producer or co-op?"
@@ -83,7 +87,7 @@ const UserMenu = ({ user }: Props) => {
       <SheetContent className={`${outfit.className} bg pt-5`}>
         <div>
           <div className="flex flex-row px-4">
-            <Avatar user={user} />
+            <Avatar image={user?.image} email={user?.email} />
             <div className="flex flex-col ml-2">
               <div className="font-bold">{user?.name}</div>
               <div>{user?.firstName}</div>

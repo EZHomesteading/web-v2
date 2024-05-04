@@ -18,11 +18,69 @@ interface CartItem {
   };
 }
 
-interface CartProps {
+interface c {
   cart: CartItem[];
 }
+const getQuantityWording = (
+  quantityType: string,
+  quantity: number,
+  title: string
+) => {
+  const endsWithIes = title.toLowerCase().endsWith("ies");
+  const endsWithS = title.toLowerCase().endsWith("s");
+  const isBerryOrCherry =
+    title.toLowerCase().includes("berr") ||
+    title.toLowerCase().includes("cherr");
 
-const CartIcon = ({ cart }: CartProps) => {
+  let pluralizedTitle = title;
+  if (quantity === 1 && quantityType === "none") {
+    if (endsWithIes) {
+      pluralizedTitle = title.slice(0, -3) + "y";
+    } else if (endsWithS && !isBerryOrCherry) {
+      pluralizedTitle = title.slice(0, -1);
+    }
+  }
+
+  if (quantityType === "none" || quantityType === "") {
+    return `${quantity} ${pluralizedTitle}`;
+  }
+
+  let quantityTypeText = quantityType;
+  if (quantity > 1) {
+    switch (quantityType) {
+      case "oz":
+        quantityTypeText = "ounces";
+        break;
+      case "lb":
+        quantityTypeText = "pounds";
+        break;
+      case "kg":
+        quantityTypeText = "kilograms";
+        break;
+      case "dozen":
+        quantityTypeText = "dozen";
+        break;
+      default:
+        quantityTypeText += "s";
+    }
+  }
+
+  switch (quantityType) {
+    case "oz":
+    case "lb":
+    case "kg":
+    case "gram":
+    case "bushel":
+    case "carton":
+      return `${quantity} ${quantityTypeText} of ${pluralizedTitle}`;
+    case "dozen":
+      return `${quantity} ${quantityTypeText} ${pluralizedTitle}`;
+    default:
+      return `${quantity} ${pluralizedTitle}`;
+  }
+};
+
+const CartIcon = ({ cart }: c) => {
   const groupedListings: Record<string, CartItem[]> = cart.reduce(
     (acc: Record<string, CartItem[]>, item: CartItem) => {
       const userId = item.listing.user.id;
@@ -67,8 +125,11 @@ const CartIcon = ({ cart }: CartProps) => {
                   />
                   <div>
                     <h4 className="font-semibold">
-                      {item.quantity} {item.listing.quantityType}{" "}
-                      {item.listing.title}
+                      {getQuantityWording(
+                        item.listing.quantityType,
+                        item.quantity,
+                        item.listing.title
+                      )}
                     </h4>
                   </div>
                 </div>

@@ -4,12 +4,13 @@ import useActiveList from "@/hooks/messenger/useActiveList";
 import Image from "next/image";
 
 interface AvatarProps {
-  user?: any;
+  email: string;
+  image?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ user }) => {
+const Avatar: React.FC<AvatarProps> = ({ email, image }: AvatarProps) => {
   const { members } = useActiveList();
-  const isActive = members.indexOf(user?.email!) !== -1;
+  const isActive = members.indexOf(email!) !== -1;
   return (
     <div className="relative">
       <div
@@ -26,7 +27,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
       >
         <Image
           fill
-          src={user?.image || "/images/website-images/placeholder.jpg"}
+          src={image || "/images/website-images/placeholder.jpg"}
           alt="Avatar"
           className="object-cover"
         />
