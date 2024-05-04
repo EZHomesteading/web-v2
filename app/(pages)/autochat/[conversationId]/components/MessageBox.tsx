@@ -14,6 +14,8 @@ import axios from "axios";
 import DateState from "./dateStates";
 import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 
 interface MessageBoxProps {
   data: FullMessageType;
@@ -31,9 +33,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   order,
 }) => {
   const [validTime, setValidTime] = useState<any>("(select your time)");
+  const [dateTime, setDateTime] = useState<any>("");
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  console.log(order);
 
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
@@ -53,7 +55,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   const onSubmit1 = () => {
     axios.post("/api/messages", {
-      message: "Yes, That time works, Your order will be ready at that time.",
+      message: `Yes, That time works, Your order will be ready at that time. at ${session.data?.user.location?.address}`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -70,12 +72,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are `,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 3 });
+    axios.post("/api/update-order", {
+      orderId: order.id,
+      status: 3,
+      pickupDate: dateTime,
+    });
   };
   const onSubmit3 = () => {
     axios.post("/api/messages", {
@@ -141,9 +147,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     if (session.data?.user.role === "PRODUCER") {
-      axios.post("/api/update-order", { orderId: order.id, status: 11 });
+      axios.post("/api/update-order", {
+        orderId: order.id,
+        status: 11,
+        pickupDate: dateTime,
+      });
     } else {
-      axios.post("/api/update-order", { orderId: order.id, status: 6 });
+      axios.post("/api/update-order", {
+        orderId: order.id,
+        status: 6,
+        pickupDate: dateTime,
+      });
     }
   };
   const onSubmit9 = () => {
@@ -157,7 +171,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 11 });
+    axios.post("/api/update-order", {
+      orderId: order.id,
+      status: 11,
+      pickupDate: dateTime,
+    });
   };
   const onSubmit10 = () => {
     axios.post("/api/messages", {
@@ -178,12 +196,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are (insert hours of operation)`,
+      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are`,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 14 });
+    axios.post("/api/update-order", {
+      orderId: order.id,
+      status: 14,
+      pickupDate: dateTime,
+    });
   };
   const onSubmit12 = () => {
     axios.post("/api/messages", {
@@ -206,9 +228,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     if (session.data?.user.role === "PRODUCER") {
-      axios.post("/api/update-order", { orderId: order.id, status: 11 });
+      axios.post("/api/update-order", {
+        orderId: order.id,
+        status: 11,
+        pickupDate: dateTime,
+      });
     } else {
-      axios.post("/api/update-order", { orderId: order.id, status: 6 });
+      axios.post("/api/update-order", {
+        orderId: order.id,
+        status: 6,
+        pickupDate: dateTime,
+      });
     }
   };
   const onSubmit14 = () => {
@@ -221,30 +251,26 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
     axios.post("/api/update-order", { orderId: order.id, status: 10 });
   };
+
   const handleTime = (childTime: Date) => {
-    const date = childTime;
-    const hours = date.getHours();
-    const isAM = hours < 12;
-    const formattedHours = isAM
-      ? hours === 0
-        ? "12"
-        : hours
-      : hours > 12
-      ? hours - 12
-      : hours;
-    const formattedMinutes = date.getMinutes().toString().padStart(2, "0");
-    const formattedSeconds = date.getSeconds().toString().padStart(2, "0");
-    const amPm = isAM ? "AM" : "PM";
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const year = date.getFullYear();
-
-    const formattedTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds} ${amPm}`;
-    const formattedDate = `${month}/${day}/${year}`;
-
-    const result = `${formattedTime} on ${formattedDate}`;
-    setValidTime(result);
+    setDateTime(childTime);
+    const date = formatTime(childTime);
+    setValidTime(date);
   };
+
+  const hoursButton = () => {
+    return (
+      <span>
+        <Sheet>
+          <SheetTrigger>HOURS</SheetTrigger>
+          <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+            <HoursDisplay coOpHours={session.data?.user.hours} />
+          </SheetContent>
+        </Sheet>
+      </span>
+    );
+  };
+
   return (
     <div>
       <div className={container}>
@@ -281,7 +307,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               />
             ) : (
               <div>
-                <div>{data.body}</div>
+                {data.messageOrder === "10" ||
+                data.messageOrder === "13" ||
+                data.messageOrder === "3" ? (
+                  <div>
+                    {data.body}
+                    <span className="text-black">{hoursButton()}</span>
+                  </div>
+                ) : (
+                  <div>{data.body}</div>
+                )}
               </div>
             )}
           </div>
@@ -313,7 +348,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit1}
                 className="message hover:bg-sky"
               >
-                Yes, That time works, Your order will be ready at that time.
+                Yes, That time works, Your order will be ready at that time. at{" "}
+                {session.data?.user.location?.address}
               </button>
 
               <DateState
@@ -327,7 +363,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead? if
-                not, my hours of operation are (insert hours of operation)
+                not, my hours of operation are
               </button>
 
               <button
@@ -394,7 +430,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 className="message hover:bg-sky"
               >
                 No, that time does not work. Can it instead be ready at{" "}
-                {validTime}
+                <span className="text-black">{validTime}</span>
               </button>
             </div>
           </div>
@@ -426,9 +462,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit2}
                 className="message hover:bg-sky"
               >
-                No, that time does not work. Does {validTime}
-                work instead? if not, my hours of operation are (insert hours of
-                operation)
+                No, that time does not work. Does{" "}
+                <span className="text-black">{validTime}</span> work instead? if{" "}
+                not, my hours of operation are
               </button>
             </div>
           </div>
@@ -518,8 +554,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit9}
                 className="message hover:bg-sky"
               >
-                I can deliver these items to you at
-                {validTime}, does that work?
+                I can deliver these items to you at{" "}
+                <span className="text-black">{validTime}</span>, does that work?
               </button>
 
               <button
@@ -563,8 +599,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit11}
                 className="message hover:bg-sky-500"
               >
-                No, that time does not work. Does {validTime} work instead? if
-                not, my hours of operation are (insert hours of operation)
+                No, that time does not work. Does{" "}
+                <span className="text-black">{validTime}</span> work instead? if
+                not, my hours of operation are
               </button>
             </div>
           </div>
@@ -617,7 +654,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit13}
                 className="message hover:bg-sky-600"
               >
-                No, that time does not work. Does {validTime} work instead?
+                No, that time does not work. Does{" "}
+                <span className="text-black">{validTime}</span> work instead?
               </button>
             </div>
           </div>
@@ -649,3 +687,32 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 };
 
 export default MessageBox;
+const getOrdinalSuffix = (day: number) => {
+  if (day >= 11 && day <= 13) {
+    return "th";
+  }
+  switch (day % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
+
+const formatTime = (timeString: Date) => {
+  const date = new Date(timeString);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const ordinalSuffix = getOrdinalSuffix(day);
+
+  return `${formattedHours}:${formattedMinutes}${ampm} on ${month} ${day}${ordinalSuffix}`;
+};
