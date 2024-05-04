@@ -9,6 +9,7 @@ import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -41,10 +42,24 @@ const Page = async () => {
               listingIds: order.listingIds,
             });
             const seller = await getUserById({ userId: order.sellerId });
+            const statusText = getStatusText(
+              order.status,
+              false,
+              buyer?.name || "(Deleted User)",
+              seller?.name || "(Deleted User)"
+            );
             return (
               <Card key={order.id} className="sheet shadow-lg mb-4">
-                <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
+                <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
                   {seller?.name}
+                  <Link
+                    href={`/chat/${order.conversationId}`}
+                    className="absolute top-2 lg:top-0 right-2 "
+                  >
+                    <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
+                      Go to Conversation
+                    </Button>
+                  </Link>
                 </CardHeader>
                 <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                   {listings.map(async (listing: SafeListing) => {
@@ -78,19 +93,11 @@ const Page = async () => {
                   </div>{" "}
                 </CardContent>{" "}
                 <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
-                  {" "}
-                  Status:
-                  {getStatusText(
-                    order.status,
-                    seller?.name || "",
-                    buyer?.name || "",
-                    buyer?.role === UserRole.COOP
-                      ? UserRole.COOP
-                      : UserRole.CONSUMER
-                  )}
-                  <Link href={`/chat/${order.conversationId}`}>
-                    <Button className="text-xs p-1">Go to Conversation</Button>
-                  </Link>
+                  Status changed{" "}
+                  {formatDistanceToNow(new Date(order.updatedAt), {
+                    addSuffix: true,
+                  })}
+                  : {statusText}
                 </div>{" "}
               </Card>
             );

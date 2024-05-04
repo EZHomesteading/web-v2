@@ -1,6 +1,6 @@
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { getStatusText } from "@/app/components/notification-order-status";
+import { getStatusText } from "@/app/components/icons/notification-order-status";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
 import { navBuyOrder, navSellOrder } from "@/next-auth";
