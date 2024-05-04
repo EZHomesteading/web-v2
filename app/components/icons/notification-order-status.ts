@@ -9,11 +9,12 @@ const statusTextMap: Record<
     isSeller
       ? ``
       : `${sName} accepted your pick up time and is preparing your order`,
-  3: ({ isSeller }) =>
+  3: ({ isSeller, sName }) =>
     isSeller
       ? ``
-      : `Waiting for the seller to confirm, reschedule, or deny your order.`,
-  4: ({ isSeller }) => (isSeller ? `` : `The seller is preparing your order.`),
+      : `Waiting for ${sName} to confirm, reschedule, or deny your order.`,
+  4: ({ isSeller, sName }) =>
+    isSeller ? `` : `${sName} is preparing your order.`,
   5: ({ isSeller, bName }) =>
     isSeller ? `${bName} has accepted your new pick up time` : ``,
   6: ({ isSeller, bName }) =>
