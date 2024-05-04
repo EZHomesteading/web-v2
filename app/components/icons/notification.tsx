@@ -73,7 +73,7 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
             </div>
           </div>
         </SheetTrigger>
-        <SheetContent className="pt-12 bg-black border-none justify-start flex flex-col px-2 gap-y-2">
+        <SheetContent className="pt-12 bg-neutral-400 border-none justify-start flex flex-col px-2 gap-y-2">
           {notifications.map((notification, index) => (
             <Link
               key={index}
@@ -81,15 +81,15 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
               href={`/chat/${notification.conversationId}`}
             >
               <SheetTrigger
-                className={`${outfit.className} shadow-xl px-2 pt-5 pb-2 min-w-full rounded-lg text-white bg-slate-500 hover:bg-slate-800`}
+                className={`${outfit.className} px-2 py-5 pb-2 min-w-full`}
               >
-                <span className="absolute top-1 right-2 text-xs text-white">
+                <span className="absolute top-0 right-2 text-xs text-black">
                   {formatDistanceToNow(new Date(notification.updatedAt), {
                     addSuffix: true,
                   })}
                 </span>
 
-                <div className="flex justify-start text-white">
+                <div className="flex justify-start items-start text-start text-white notification-bubble">
                   {notification.text}
                 </div>
               </SheetTrigger>
@@ -97,6 +97,30 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
           ))}
         </SheetContent>
       </Sheet>
+      <style jsx>{`
+        .notification-bubble {
+          position: relative;
+          background-color: #4a5568;
+          border-radius: 20px;
+          padding: 10px 20px;
+          margin-bottom: 10px;
+        }
+        .notification-bubble:hover {
+          box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.06);
+          scale: 1.003;
+        }
+        .notification-bubble::after {
+          content: "";
+          position: absolute;
+          bottom: 5px;
+          right: 15px;
+          transform: translateY(50%) rotate(45deg);
+          width: 15px;
+          height: 15px;
+          background-color: #4a5568;
+        }
+      `}</style>
     </>
   );
 };
