@@ -125,7 +125,9 @@
 body::-webkit-scrollbar {
   display: none !important;
 }
-
+.messagebg {
+  background-color: #007aff !important;
+}
 .message {
   background-color: #007aff !important;
   align-self: flex-end !important;

@@ -132,7 +132,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Market"
                     icon={<CiShop className="mr-2" />}
-                    onClick={() => router.push("/shop")}
+                    onClick={() => router.push("/market")}
                   />
                   <MenuItem
                     label="Map"

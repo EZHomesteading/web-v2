@@ -5,10 +5,10 @@ import Image from "next/image";
 import getUserById from "@/actions/user/getUserById";
 import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
-import { getStatusText } from "@/app/components/order-status";
-import { Order, UserRole } from "@prisma/client";
+import { getStatusText } from "@/app/dashboard/order-status";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -28,21 +28,40 @@ const Page = async () => {
       <h1 className="px-2 py-4 text-3xl sm:text-5xl">Sell Orders</h1>
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {seller?.sellerOrders
-          .filter((order) => order.status !== 0 || order.status < 18)
+          .filter(
+            (order) =>
+              ![0, 4, 7, 12, 15, 19].includes(order.status) && order.status < 18
+          )
           .map(async (order) => {
             const listings = await GetListingsByListingIds({
               listingIds: order.listingIds,
             });
             const buyer = await getUserById({ userId: order.userId });
+            const time = formatDistanceToNow(new Date(order.updatedAt), {
+              addSuffix: true,
+            });
+            const statusText = getStatusText(
+              order.status,
+              true,
+              buyer?.name || "(Deleted User)",
+              seller?.name || "(Deleted User)"
+            );
             return (
-              <Card key={order.id} className="sheet shadow-lg mb-4">
+              <Card key={order.id} className="sheet shadow-lg mb-4 relative">
                 <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
                   {buyer?.name}
+                  <Link
+                    href={`/chat/${order.conversationId}`}
+                    className="absolute top-2 lg:top-0 right-2 "
+                  >
+                    <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
+                      Go to Conversation
+                    </Button>
+                  </Link>
                 </CardHeader>
                 <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                   {listings.map(async (listing: SafeListing) => {
                     const quantities = JSON.parse(order.quantity);
-
                     const quantityObj = quantities.find(
                       (q: any) => q.id === listing.id
                     );
@@ -68,27 +87,19 @@ const Page = async () => {
                   <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>{" "}
                   <div>
                     Current Pick Up Date: {formatTime(order.pickupDate)}
-                  </div>{" "}
-                </CardContent>{" "}
-                <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
-                  {" "}
-                  Status:
-                  {getStatusText(
-                    order.status,
-                    buyer?.name || "",
-                    seller?.name || "",
-                    seller?.role === UserRole.COOP
-                      ? UserRole.COOP
-                      : UserRole.CONSUMER
-                  )}
-                  <Link href={`/chat/${order.conversationId}`}>
-                    <Button className="text-xs p-1">Go to Conversation</Button>
-                  </Link>
-                </div>{" "}
+                  </div>
+                </CardContent>
+                <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row text-sm text-black items-start relative">
+                  Status changed{" "}
+                  {formatDistanceToNow(new Date(order.updatedAt), {
+                    addSuffix: true,
+                  })}
+                  : {statusText}
+                </div>
               </Card>
             );
-          })}{" "}
-      </main>{" "}
+          })}
+      </main>
     </div>
   );
 };

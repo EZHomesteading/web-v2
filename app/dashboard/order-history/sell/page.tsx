@@ -5,7 +5,7 @@ import Image from "next/image";
 import getUserById from "@/actions/user/getUserById";
 import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
-import { getStatusText } from "@/app/components/order-status";
+import { getStatusText } from "@/app/dashboard/order-status";
 import { Order, UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
