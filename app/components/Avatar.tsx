@@ -8,9 +8,9 @@ interface AvatarProps {
   image?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ email, image }: AvatarProps) => {
+const Avatar: React.FC<AvatarProps> = ({ user }: any) => {
   const { members } = useActiveList();
-  const isActive = members.indexOf(email!) !== -1;
+  const isActive = members.indexOf(user?.email!) !== -1;
   return (
     <div className="relative">
       <div
@@ -27,7 +27,7 @@ const Avatar: React.FC<AvatarProps> = ({ email, image }: AvatarProps) => {
       >
         <Image
           fill
-          src={image || "/images/website-images/placeholder.jpg"}
+          src={user?.image || "/images/website-images/placeholder.jpg"}
           alt="Avatar"
           className="object-cover"
         />

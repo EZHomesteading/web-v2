@@ -31,7 +31,6 @@ interface Props {
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const listingModal = useRentModal();
-  console.log("user", user);
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end">
@@ -87,7 +86,7 @@ const UserMenu = ({ user }: Props) => {
       <SheetContent className={`${outfit.className} bg pt-5`}>
         <div>
           <div className="flex flex-row px-4">
-            <Avatar image={user?.image} email={user?.email} />
+            <Avatar user={user} />
             <div className="flex flex-col ml-2">
               <div className="font-bold">{user?.name}</div>
               <div>{user?.firstName}</div>
