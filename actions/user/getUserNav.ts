@@ -17,6 +17,25 @@ export default async function GetOrderNotificationInfo() {
         role: true,
         name: true,
         image: true,
+        cart: {
+          select: {
+            id: true,
+            quantity: true,
+            listing: {
+              select: {
+                imageSrc: true,
+                quantityType: true,
+                title: true,
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         buyerOrders: {
           select: {
             id: true,

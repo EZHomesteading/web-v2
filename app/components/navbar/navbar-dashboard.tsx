@@ -15,7 +15,7 @@ import { VscHistory } from "react-icons/vsc";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { UserRole } from "@prisma/client";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
-import GetOrderNotificationInfo from "@/actions/user/getOrderNotificationInfo";
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 interface NavigationItem {
   name: string;
   href: string;

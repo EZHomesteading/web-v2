@@ -1,4 +1,4 @@
-import { IoMdNotifications } from "react-icons/io";
+import { IoMdNotifications, IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { getStatusText } from "@/app/components/notification-order-status";
 import Link from "next/link";
@@ -58,8 +58,8 @@ const NotificationIcon = async ({ user }: Props) => {
       <Sheet>
         <SheetTrigger className="cursor-pointer">
           <div className="relative">
-            <IoMdNotifications size={40} />
-            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-6">
+            <IoMdNotificationsOutline className="h-9 w-9 " />
+            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
               {notifications.length}
             </div>
           </div>

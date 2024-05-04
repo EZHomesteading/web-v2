@@ -18,6 +18,7 @@ import { GoPeople } from "react-icons/go";
 import Avatar from "../Avatar";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
+import CartIcon from "../icons/cart-icon";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -30,9 +31,11 @@ interface Props {
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const listingModal = useRentModal();
+  console.log("cart", user?.cart);
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end">
+        <CartIcon cart={user?.cart} />
         <NotificationIcon user={user} />
         {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
           <UpdateRoleAlert

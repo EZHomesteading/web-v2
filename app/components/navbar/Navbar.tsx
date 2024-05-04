@@ -5,7 +5,7 @@ import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
 import SearchNative from "./search-native";
-import GetOrderNotificationInfo from "@/actions/user/getOrderNotificationInfo";
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 
 const Navbar = async () => {
   const user = await GetOrderNotificationInfo();

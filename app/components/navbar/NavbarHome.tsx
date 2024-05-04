@@ -3,7 +3,7 @@ import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import AuthButtons from "./auth-buttons";
-import GetOrderNotificationInfo from "@/actions/user/getOrderNotificationInfo";
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 
 const NavbarHome = async () => {
   const user = await GetOrderNotificationInfo();
