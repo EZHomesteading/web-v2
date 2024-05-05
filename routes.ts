@@ -13,14 +13,15 @@ export const publicRoutes = [
   "/auth/become-a-producer",
   "/auth/become-a-co-op",
   "/store",
-  "/how-ezh-works",
-  "/privacy-policy",
-  "/terms-and-conditions",
+  "/info/how-ezh-works",
+  "/info/privacy-policy",
+  "/info/terms-and-conditions",
   "/who-we-are",
   "/api/webhook/stripe",
   "/api/conversations",
   "/api/messages",
   "/map",
+  "/info",
 ];
 
 /**

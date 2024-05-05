@@ -1,35 +1,23 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
-import consumer from "@/public/images/website-images/ezhconsumer.webp";
-import producer from "@/public/images/website-images/ezhproducer.webp";
+// import Image from "next/image";
+// import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
+// import consumer from "@/public/images/website-images/ezhconsumer.webp";
+// import producer from "@/public/images/website-images/ezhproducer.webp";
 
 const footerNavigation = {
   shop: [
-    { name: "Vegetables", href: "/shop?q=vegetables" },
-    { name: "Fruits", href: "/shop?q=fruits" },
-    { name: "Dairy", href: "/shop?q=dairy" },
-    { name: "Grains", href: "/shop?q=grains" },
-    { name: "Seeds", href: "/shop?q=seeds" },
+    { name: "More Info", href: "/info" },
+    { name: "Contact Us", href: "/info/contact-us" },
   ],
   company: [
-    { name: "Who we are", href: "/who-we-are" },
-    { name: "How EZH Works", href: "/how-ezh-works" },
-    { name: "Terms & Conditions", href: "/terms-and-conditions" },
-    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms & Conditions", href: "/info/terms-and-conditions" },
+    { name: "Privacy Policy", href: "/info/privacy-policy" },
   ],
   account: [
-    { name: "Settings", href: "/dashboard" },
-    { name: "Co-Ops I Follow", href: "/dashboard" },
-    { name: "Messages", href: "/dashboard" },
-  ],
-  connect: [
-    { name: "Contact Us", href: "/" },
-    { name: "Facebook", href: "/" },
-    { name: "Instagram", href: "/" },
-    { name: "Pinterest", href: "/" },
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Settings", href: "/dashboard/account-settings/general" },
   ],
 };
 
@@ -81,21 +69,9 @@ export default function Home() {
               <FindListingsComponent />
             </div>
           </header>
-          <div>
-            {" "}
-            {/* <Image
-              src={homebg}
-              alt="Farmer Holding Basket of Vegetables"
-              priority={true}
-              blurDataURL="data:..."
-              placeholder="blur"
-              fill
-              className="object-cover rounded-3xl"
-            /> */}
-          </div>
         </div>
 
-        <section className="px-2">
+        {/* <section className="flex flex-col items-stary justify-start text-start px-4">
           <div
             id="h2"
             className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
@@ -113,19 +89,6 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <div className="aspect-square w-full relative overflow-hidden rounded-xl">
-            {/* <Image
-              src={consumer}
-              alt="Farmer Holding Basket of Vegetables"
-              placeholder="blur"
-              priority
-              fill
-              className="object-cover h-full w-full group-hover:scale-110 transition"
-            /> */}
-          </div>
-        </section>
-
-        <section className="px-2">
           <div
             id="h3"
             className="2xl:text-5xl text-sm font-bold tracking-tight"
@@ -149,9 +112,9 @@ export default function Home() {
                 height={400}
                 className="object-cover rounded-lg"
               /> */}
-            </div>
-          </Link>
-        </section>
+        {/* </div> */}
+        {/* </Link> */}
+        {/* </section> */}
       </div>
       <footer aria-labelledby="footer-heading" className="bg-gray-500">
         <h2 id="footer-heading" className="sr-only">
@@ -162,7 +125,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-8 xl:col-span-2">
               <div className="space-y-12 md:grid md:grid-cols-2 md:gap-8 md:space-y-0">
                 <div>
-                  <h3 className="text-sm font-medium">Shop</h3>
+                  <h3 className="text-sm font-medium">Support</h3>
                   <ul role="list" className="mt-6 space-y-6">
                     {footerNavigation.shop.map((item) => (
                       <li key={item.name} className="text-sm">
@@ -199,47 +162,7 @@ export default function Home() {
                     ))}
                   </ul>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Connect</h3>
-                  <ul role="list" className="mt-6 space-y-6">
-                    {footerNavigation.connect.map((item) => (
-                      <li key={item.name} className="text-sm">
-                        <Link href={item.href} className="">
-                          {item.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
-            </div>
-            <div className="mt-12 md:mt-16 xl:mt-0">
-              <h3 className="text-sm font-medium">
-                Sign up for our newsletter
-              </h3>
-              <p className="mt-6 text-sm">
-                Get updates on popular produce in your area and more.
-              </p>
-              <form className="mt-2 flex sm:max-w-md">
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email-address"
-                  type="text"
-                  autoComplete="email"
-                  required
-                  className="w-full min-w-0 appearance-none rounded-md border border-white px-4 py-2 text-base placeholder-gray-500 shadow-sm focus:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
-                />
-                <div className="ml-4 flex-shrink-0">
-                  <button
-                    type="submit"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-                  >
-                    Sign up
-                  </button>
-                </div>
-              </form>
             </div>
           </div>
 
