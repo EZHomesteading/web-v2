@@ -7,7 +7,7 @@
 export const publicRoutes = [
   "/",
   "/auth/new-verification",
-  "/shop",
+  "/market",
   "/listings/[listingId]",
   "/listings",
   "/auth/become-a-producer",
