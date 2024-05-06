@@ -1,9 +1,7 @@
-import { UserInfo } from "@/next-auth";
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import AuthButtons from "./auth-buttons";
-import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 interface p {
   user?: any;
 }
