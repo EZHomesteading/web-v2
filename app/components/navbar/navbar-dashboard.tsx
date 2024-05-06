@@ -28,6 +28,10 @@ interface NavigationItem {
   icon: React.ElementType;
   current: boolean;
 }
+
+interface p {
+  user?: any;
+}
 const conNav: NavigationItem[] = [
   {
     name: "Dashboard",
@@ -139,9 +143,7 @@ const vendorNav: NavigationItem[] = [
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-const Navbar = async () => {
-  const user = await GetOrderNotificationInfo();
-
+const Navbar = ({ user }: p) => {
   return (
     <div className="sheet">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">

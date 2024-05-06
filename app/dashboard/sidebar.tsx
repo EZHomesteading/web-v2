@@ -11,7 +11,9 @@ import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
 import { TbShoppingCartDollar } from "react-icons/tb";
 import GetRoleGate from "@/actions/user/getRoleGate";
-
+interface p {
+  role?: UserRole;
+}
 interface NavigationItem {
   name: string;
   href: string;
@@ -128,8 +130,7 @@ const vendorNav: NavigationItem[] = [
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-const Sidebar = async () => {
-  const user = await GetRoleGate();
+const Sidebar = ({ role }: p) => {
   return (
     <>
       <div className="hidden lg:block w-72 h-full">
@@ -139,7 +140,7 @@ const Sidebar = async () => {
               <Logo />
             </div>
             <ul role="list" className="flex flex-2 flex-col gap-y-3">
-              {user?.role !== UserRole.CONSUMER ? (
+              {role !== UserRole.CONSUMER ? (
                 <>
                   {vendorNav.map((item) => (
                     <li key={item.name}>
