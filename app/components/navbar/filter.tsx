@@ -29,7 +29,7 @@ const Filters = ({ user }: Props) => {
     const rKm = (radius / 0.621371).toFixed(1);
     params.set("radius", rKm);
 
-    router.push(`/shop?${params.toString()}`);
+    router.push(`/market?${params.toString()}`);
   };
 
   return (
