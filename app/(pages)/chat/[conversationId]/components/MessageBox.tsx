@@ -342,20 +342,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-<<<<<<< HEAD:app/(pages)/autochat/[conversationId]/components/MessageBox.tsx
-            <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[70%] gap-y-2  items-end text-white py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit1}
-                className="message hover:bg-sky"
-              >
-                Yes, That time works, Your order will be ready at that time. at{" "}
-                {session.data?.user.location?.address}
-=======
             <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[90%] gap-y-2  items-end text-white py-2 px-3">
               <button type="submit" onClick={onSubmit1} className="m">
                 Yes, That time works, Your order will be ready at that time.
->>>>>>> 25c56ebdd8c22749904677f6d9ab2b7f74ad8d48:app/(pages)/chat/[conversationId]/components/MessageBox.tsx
               </button>
 
               <DateState
