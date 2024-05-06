@@ -15,6 +15,7 @@ import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { Location } from "@prisma/client";
+import FollowButton from "@/app/components/follow/followButton";
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -22,9 +23,14 @@ interface ListingClientProps {
     location: Location | null;
   };
   user?: any | null;
+  following: any;
 }
 
-const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
+const ListingClient: React.FC<ListingClientProps> = ({
+  listing,
+  user,
+  following,
+}) => {
   const listingId = listing.id;
   const { toggleCart } = useCart({
     listingId,
@@ -137,10 +143,14 @@ const ListingClient: React.FC<ListingClientProps> = ({ listing, user }) => {
               id={listing.id}
               user={user}
             />
-            <ListingInfo
-              user={listing.user}
-              description={listing.description}
-            />
+            <div className="flex flex-col h-full">
+              <ListingInfo
+                user={listing.user}
+                description={listing.description}
+                followUserId={listing.user.id}
+                following={following}
+              />
+            </div>
           </div>
           <div className="w-full lg:w-1/3 px-4">
             <ListingReservation

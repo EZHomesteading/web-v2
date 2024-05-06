@@ -1,3 +1,4 @@
+"use client";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -5,6 +6,7 @@ import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
+import FollowButton from "@/app/components/follow/followButton";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,6 +18,7 @@ interface StorePageProps {
   storeUser: any;
   user: any;
   emptyState: React.ReactNode;
+  following: any;
 }
 
 const StorePage = ({
@@ -23,6 +26,7 @@ const StorePage = ({
   storeUser,
   user,
   emptyState,
+  following,
 }: StorePageProps) => {
   return (
     <ClientOnly>
@@ -39,9 +43,14 @@ const StorePage = ({
                 </div>
                 <OpenStatus hours={storeUser.hours} />
               </div>
+
               <div>{storeUser?.firstName}</div>
             </div>
+            <div className="pl-[10px]">
+              <FollowButton followUserId={storeUser.id} following={following} />
+            </div>
           </div>
+
           <div className="flex justify-center">
             <Bio user={storeUser} />
           </div>
