@@ -6,12 +6,12 @@ export default async function getVendorsInBounds(userCoordinates: number[][]) {
     const vendors = await prisma.user.findMany({
       where: {
         NOT: { role: UserRole.CONSUMER },
-        location: {
-          type: "Point",
-          coordinates: {
-            in: userCoordinates,
-          },
-        },
+        // location: {
+        //   type: "Point",
+        //   coordinates: {
+        //     in: userCoordinates,
+        //   },
+        // },
       },
       orderBy: {
         createdAt: "desc",
