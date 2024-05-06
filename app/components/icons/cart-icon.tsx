@@ -81,9 +81,12 @@ const getQuantityWording = (
 };
 
 const CartIcon = ({ cart }: c) => {
+<<<<<<< HEAD
   if (!cart) {
     return null;
   }
+=======
+>>>>>>> 9080aaaa3150fac933322ca931415bd810945d53
   const groupedListings: Record<string, CartItem[]> = cart.reduce(
     (acc: Record<string, CartItem[]>, item: CartItem) => {
       const userId = item.listing.user.id;
