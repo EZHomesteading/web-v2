@@ -1,3 +1,4 @@
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 import NavbarHome from "../components/navbar/NavbarHome";
 
 export default async function RootLayout({
@@ -5,9 +6,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const user = await GetOrderNotificationInfo();
   return (
     <>
-      <NavbarHome />
+      <NavbarHome user={user} />
       {children}
     </>
   );
