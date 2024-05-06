@@ -81,7 +81,7 @@ const SearchLocation = ({ onClose }: any) => {
 
       const url = qs.stringifyUrl(
         {
-          url: "/shop",
+          url: "/market",
           query,
         },
         { skipNull: true }
