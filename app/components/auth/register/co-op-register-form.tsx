@@ -7,6 +7,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
 import { RegisterVendorSchema } from "@/schemas";
+import {
+  formatPhoneNumberIntl,
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from "react-phone-number-input";
+
 import { Input } from "@/app/components/ui/input";
 import {
   Form,
@@ -188,7 +194,7 @@ export const CoOpRegisterForm = () => {
                           {...field}
                           disabled={isPending}
                           placeholder="(743) 216-9078"
-                          value={field.value}
+                          value={field.value as any}
                           onChange={(value) => field.onChange(value)}
                           format="(###) ###-####"
                           style={{

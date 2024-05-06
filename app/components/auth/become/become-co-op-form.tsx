@@ -203,7 +203,7 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
                           {...field}
                           disabled={isPending}
                           placeholder="(743) 216-9078"
-                          value={field.value}
+                          value={field.value as any}
                           onChange={(value) => field.onChange(value)}
                           format="(###) ###-####"
                           style={{
