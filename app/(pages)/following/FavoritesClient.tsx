@@ -2,15 +2,20 @@ import { SafeListing } from "@/types";
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
-import FollowCard from "@/app/components/FollowCard";
+import FollowCard from "@/app/components/follow/FollowCard";
 import getUserById from "@/actions/user/getUserById";
 
 interface FavoritesClientProps {
   follows: any;
   user?: any | null;
+  followarr: any;
 }
 
-const FavoritesClient: React.FC<FavoritesClientProps> = ({ follows, user }) => {
+const FavoritesClient: React.FC<FavoritesClientProps> = ({
+  follows,
+  followarr,
+  user,
+}) => {
   console.log(follows);
   return (
     <Container>
@@ -31,7 +36,14 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({ follows, user }) => {
         {follows.map(async (follow: any) => {
           const userId = follow;
           const shop = await getUserById({ userId });
-          return <FollowCard user={user} key={shop?.id} data={shop} />;
+          return (
+            <FollowCard
+              user={user}
+              key={shop?.id}
+              data={shop}
+              followarr={followarr}
+            />
+          );
         })}
       </div>
     </Container>

@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { SafeListing } from "@/types";
-import CartIcon from "./listings/cart-icon";
-import { Button } from "./ui/button";
+import CartIcon from "../listings/cart-icon";
+import { Button } from "../ui/button";
 import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -18,10 +18,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
+} from "../ui/alert-dialog";
 import { StarIcon } from "@radix-ui/react-icons";
 import { Trash2Icon } from "lucide-react";
 import axios from "axios";
+import FollowButton from "./followButton";
 
 interface ListingCardProps {
   data: any;
@@ -33,6 +34,7 @@ interface ListingCardProps {
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
   user?: UserInfo | null;
+  followarr: any;
 }
 
 const FollowCard: React.FC<ListingCardProps> = ({
@@ -45,6 +47,7 @@ const FollowCard: React.FC<ListingCardProps> = ({
   secondActionId,
   onSecondAction,
   secondActionLabel,
+  followarr,
 }) => {
   const router = useRouter();
   const handleCancel = useCallback(
@@ -72,13 +75,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
     },
     [disabled, onSecondAction, secondActionId]
   );
-  const handleTrash = async () => {
-    const follows = data.id;
-    console.log(follows);
-    await axios.post("/api/follow/unfollow", { follows });
-    router.refresh();
-    console.log("trash");
-  };
 
   const [isHovering, setIsHovering] = useState(false);
 
@@ -108,12 +104,7 @@ const FollowCard: React.FC<ListingCardProps> = ({
           <div className="font-semibold text-lg flex-1 flex justify-between items-start">
             {data.name}
             <div className="relative">
-              <Trash2Icon
-                className="hover:text-blue-500 relative cursor-pointer"
-                onClick={handleTrash}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              />
+              <FollowButton followUserId={data.id} following={followarr} />
               {isHovering && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md p-2 transition duration-300">
                   Unfollow?

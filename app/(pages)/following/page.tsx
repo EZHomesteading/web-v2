@@ -23,7 +23,7 @@ const ListingPage = async () => {
 
   return (
     <ClientOnly>
-      <FavoritesClient follows={follows} user={user} />
+      <FavoritesClient follows={follows} user={user} followarr={followarr} />
     </ClientOnly>
   );
 };

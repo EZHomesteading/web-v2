@@ -6,8 +6,7 @@ import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
-import { Button } from "@/app/components/ui/button";
-import axios from "axios";
+import FollowButton from "@/app/components/follow/followButton";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -19,6 +18,7 @@ interface StorePageProps {
   storeUser: any;
   user: any;
   emptyState: React.ReactNode;
+  following: any;
 }
 
 const StorePage = ({
@@ -26,17 +26,11 @@ const StorePage = ({
   storeUser,
   user,
   emptyState,
+  following,
 }: StorePageProps) => {
-  const handleFollow = async () => {
-    const resp = await axios.post(`/api/follow/`, {
-      follows: storeUser.id,
-    });
-    console.log(resp);
-  };
   return (
     <ClientOnly>
       <Container>
-        <button onClick={handleFollow}>FOLLOW</button>
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
             <Avatar user={storeUser} />
@@ -49,9 +43,14 @@ const StorePage = ({
                 </div>
                 <OpenStatus hours={storeUser.hours} />
               </div>
+
               <div>{storeUser?.firstName}</div>
             </div>
+            <div className="pl-[10px]">
+              <FollowButton followUserId={storeUser.id} following={following} />
+            </div>
           </div>
+
           <div className="flex justify-center">
             <Bio user={storeUser} />
           </div>
