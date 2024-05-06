@@ -15,7 +15,7 @@ interface Props {
   sOrders: navSellOrder[];
 }
 
-const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
+const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   const notifications: {
     text: string;
     conversationId: string;
