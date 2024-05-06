@@ -27,7 +27,7 @@ const getProducers = async () => {
 
     const producers = users.map((user) => ({
       name: user.name,
-      coordinates: user?.location?.coordinates,
+      location: user?.location,
       listingsCount: user.listings.length,
     }));
 

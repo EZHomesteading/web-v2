@@ -10,7 +10,6 @@ interface UserCardProps {
   isPageOutOfRange: boolean;
   pageNumbers: number[];
   currentPage: number;
-  userCoordinates: number[][];
 }
 
 const UserCards = ({
@@ -20,9 +19,8 @@ const UserCards = ({
   isPageOutOfRange,
   pageNumbers,
   currentPage,
-  userCoordinates,
 }: UserCardProps) => {
-  console.log("user coords", userCoordinates);
+  console.log("vendors", vendors);
   return (
     <ClientOnly>
       <Container>

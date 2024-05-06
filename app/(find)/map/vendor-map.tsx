@@ -11,24 +11,24 @@ import Loading from "@/app/components/secondary-loader";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
 import UserCards from "./user-cards";
+import { Location } from "@prisma/client";
 
 interface MapProps {
   coops: {
     name: string;
-    coordinates: number[] | undefined;
+    location: Location | null;
     listingsCount: number;
   }[];
   producers: {
     name: string;
-    coordinates: number[] | undefined;
+    location: Location | null;
     listingsCount: number;
   }[];
   vendors: any;
-
   searchParams?: {
     page?: string;
   };
-  totalvendors: any;
+  totalvendors: number;
 }
 
 const VendorsMap = ({
@@ -38,14 +38,13 @@ const VendorsMap = ({
   totalvendors,
   searchParams,
 }: MapProps) => {
-  const [userCoordinates, setUserCoordinates] = useState<number[][]>([]);
+  const [filteredVendors, setFilteredVendors] = useState<any>();
 
   let page = parseInt(searchParams?.page as string, 10);
   page = !page || page < 1 ? 1 : page;
   const perPage = 20;
   const totalPages = Math.ceil(totalvendors / perPage);
   const isPageOutOfRange = page > totalPages;
-  const [filteredVendors, setFilteredVendors] = useState<any[]>(vendors);
 
   const pageNumbers = [];
   const offsetNumber = 3;
@@ -64,9 +63,7 @@ const VendorsMap = ({
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
   });
-  const onBoundsChange = () => {
-    setUserCoordinates(userCoordinates);
-  };
+  const onBoundsChange = () => {};
 
   const mapOptions: google.maps.MapOptions = {
     center: { lat: 36.8508, lng: -76.2859 },
@@ -90,19 +87,19 @@ const VendorsMap = ({
         if (bounds) {
           const { south, west, north, east } = bounds.toJSON();
 
-          const userCoordinates = [...coops, ...producers]
-            .filter((user) => {
-              const coordinates = user.coordinates;
-              if (coordinates) {
-                const [lng, lat] = coordinates;
-                return (
-                  lng >= west && lng <= east && lat >= south && lat <= north
-                );
-              }
-              return false;
-            })
-            .map((user) => user.coordinates as number[]);
-          console.log(userCoordinates);
+          const filteredVendors = [...coops, ...producers].filter((user) => {
+            if (user?.location?.coordinates) {
+              const coordinates = user?.location.coordinates;
+              const [lng, lat] = coordinates;
+              return lng >= west && lng <= east && lat >= south && lat <= north;
+            } else {
+              return null;
+            }
+            return false;
+          });
+          // setFilteredVendors(filteredVendors);
+          console.log("1", vendors);
+          console.log("2", filteredVendors);
           onBoundsChange();
         }
       });
@@ -123,8 +120,8 @@ const VendorsMap = ({
 
   const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
-      lat: coop.coordinates[1],
-      lng: coop.coordinates[0],
+      lat: coop.location.coordinates[1],
+      lng: coop.location.coordinates[0],
     },
     name: coop.name,
     listingsCount: coop?.listingsCount,
@@ -132,8 +129,8 @@ const VendorsMap = ({
 
   const producerInfo = producers?.map((producer: any) => ({
     coordinates: {
-      lat: producer?.coordinates[1],
-      lng: producer?.coordinates[0],
+      lat: producer?.location.coordinates[1],
+      lng: producer?.location.coordinates[0],
     },
     name: producer?.name,
     listingsCount: producer?.listingsCount,
@@ -148,7 +145,6 @@ const VendorsMap = ({
       <div className="w-1/2">
         <UserCards
           vendors={vendors}
-          userCoordinates={userCoordinates}
           emptyState={
             vendors.length === 0 ? (
               <ClientOnly>

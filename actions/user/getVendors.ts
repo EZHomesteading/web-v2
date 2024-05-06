@@ -23,7 +23,9 @@ export default async function GetVendors(page: number, perPage: number) {
     const paginatedvendors = vendors.slice(startIndex, endIndex);
 
     const safevendors = paginatedvendors.map((user) => ({
-      ...user,
+      name: user.name,
+      location: user?.location,
+      listingsCount: user?.listings.length,
       createdAt: user.createdAt.toISOString(),
     }));
     return { vendors: safevendors, totalvendors };
