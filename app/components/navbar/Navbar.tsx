@@ -6,10 +6,10 @@ import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
 import SearchNative from "./search-native";
 import GetOrderNotificationInfo from "@/actions/user/getUserNav";
-
-const Navbar = async () => {
-  const user = await GetOrderNotificationInfo();
-
+interface p {
+  user?: any;
+}
+const Navbar = ({ user }: p) => {
   return (
     <div className="relative w-full z-10">
       <div className="py-1 sm:py-4">
