@@ -92,7 +92,7 @@ const Categories = ({ user }: Props) => {
   const q = params?.get("q");
   const pathname = usePathname();
 
-  const isShopPage = pathname === "/shop" && "/";
+  const isShopPage = pathname === "/market" && "/";
 
   if (!isShopPage) {
     return null;

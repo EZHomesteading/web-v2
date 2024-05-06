@@ -95,9 +95,10 @@ const CartIcon = ({ cart }: c) => {
     },
     {} as Record<string, CartItem[]>
   );
-  if (cart.length === 0) {
-    return null;
-  }
+
+  // if (cart.length === 0) {
+  //   return null;
+  // }
   return (
     <>
       <Sheet>
