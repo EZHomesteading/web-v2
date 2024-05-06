@@ -10,7 +10,7 @@ node_modules
 .yarn/install-state.gz
 # testing
 /coverage
-
+pnpm-lock.yaml
 # next.js
 /.next/
 /out/

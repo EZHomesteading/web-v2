@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import NavbarFind from "./NavbarFind";
+import NavbarFind from "./map/NavbarFind";
 
 export default async function RootLayout({
   children,

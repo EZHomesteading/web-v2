@@ -1,7 +1,7 @@
-import Container from "../components/Container";
-import Logo from "../components/navbar/Logo";
-import UserMenu from "../components/navbar/UserMenu";
-import AuthButtons from "../components/navbar/auth-buttons";
+import Container from "../../components/Container";
+import Logo from "../../components/navbar/Logo";
+import UserMenu from "../../components/navbar/UserMenu";
+import AuthButtons from "../../components/navbar/auth-buttons";
 
 interface NavbarProps {
   user?: any;

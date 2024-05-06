@@ -6,7 +6,7 @@ import {
   InfoWindow,
   useLoadScript,
 } from "@react-google-maps/api";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
 import Loading from "@/app/components/secondary-loader";
 
 interface MapProps {
@@ -29,33 +29,6 @@ type vendor = {
 };
 
 const ListingsMap = ({ coops, producers }: MapProps) => {
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const [mapBounds, setMapBounds] = useState<google.maps.LatLngBounds | null>(
-    null
-  );
-  const onMapLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-  }, []);
-
-  const onBoundsChanged = useCallback(() => {
-    if (mapRef.current) {
-      const bounds = mapRef.current.getBounds();
-      if (bounds) {
-        setMapBounds(bounds);
-      } else {
-        setMapBounds(null);
-      }
-    }
-  }, []);
-
-  const isMarkerWithinBounds = useCallback(
-    (coordinates: { lat: number; lng: number }) => {
-      if (!mapBounds) return true;
-      return mapBounds.contains(coordinates);
-    },
-    [mapBounds]
-  );
-
   const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
       lat: coop.coordinates[1],
@@ -110,12 +83,7 @@ const ListingsMap = ({ coops, producers }: MapProps) => {
   }
 
   return (
-    <GoogleMap
-      mapContainerClassName="h-screen"
-      options={mapOptions}
-      onLoad={onMapLoad}
-      onBoundsChanged={onBoundsChanged}
-    >
+    <GoogleMap mapContainerClassName="h-screen" options={mapOptions}>
       {producerInfo.map((producer, index) => {
         return (
           <MarkerF
