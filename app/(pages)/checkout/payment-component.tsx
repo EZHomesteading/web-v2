@@ -31,7 +31,7 @@ export default function PaymentComponent() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "https://ezhomesteading.vercel.app/autochat",
+        return_url: "https://ezhomesteading.com/chat",
         shipping: null,
       },
     });

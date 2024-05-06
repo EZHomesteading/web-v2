@@ -34,7 +34,49 @@ type Hours = {
   5: Times[];
   6: Times[];
 };
-
+type navBuyOrder = {
+  id: string;
+  conversationId: string;
+  status: number;
+  updatedAt: Date;
+  buyer: {
+    name: string;
+  };
+};
+type navSellOrder = {
+  id: string;
+  conversationId: string;
+  status: number;
+  updatedAt: Date;
+  seller: {
+    name: string;
+  };
+};
+type navListing = {
+  imageSrc: string;
+  quantityType: string;
+  title: string;
+  user: {
+    id: string;
+    name: string;
+  };
+};
+type navCart = {
+  id: string;
+  quantity: number;
+  listing: navListing[];
+};
+type navUser = {
+  id: string;
+  name: string;
+  firstName?: string;
+  image?: string;
+  role: UserRole;
+  email: string;
+  sellerOrders?: navSellOrder[];
+  buyerOrders?: navBuyOrder[];
+  cart?: nav;
+};
 type Location = {
   type: string;
   coordinates: number[];

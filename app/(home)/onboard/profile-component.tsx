@@ -21,10 +21,8 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
       <CardContent className="">
         <Card className="bg-inherit border-none">
           <CardContent className="flex flex-row items-center">
-            <div>
-              <Avatar />{" "}
-            </div>
-            <div className="ml-2">
+            <div className="">
+              <Label>Profile Image</Label>
               <ImageUpload
                 onChange={handleImageChange}
                 value={formData.image || user?.image}

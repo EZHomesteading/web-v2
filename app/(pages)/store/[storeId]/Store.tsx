@@ -29,7 +29,7 @@ const StorePage = ({
       <Container>
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
-            <Avatar />
+            <Avatar user={storeUser} />
             <div
               className={`${outfit.className} weight-100 flex flex-col ml-2`}
             >

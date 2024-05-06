@@ -3,12 +3,10 @@ import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import AuthButtons from "./auth-buttons";
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 
-interface NavbarProps {
-  user?: UserInfo;
-}
-
-const NavbarHome = ({ user }: NavbarProps) => {
+const NavbarHome = async () => {
+  const user = await GetOrderNotificationInfo();
   return (
     <div className="absolute w-full z-10 text-white">
       <Container>

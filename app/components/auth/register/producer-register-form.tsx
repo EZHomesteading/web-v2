@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import PasswordInput from "./password-input";
 export const ProducerRegisterForm = () => {
   const router = useRouter();
   const [address, setAddress] = useState<string>("");
@@ -84,6 +85,7 @@ export const ProducerRegisterForm = () => {
       phoneNumber: "",
       name: "",
       password: "",
+      confirmPassword: "",
       location: {
         type: "Point",
         coordinates: [0, 0],
@@ -121,7 +123,8 @@ export const ProducerRegisterForm = () => {
         break;
     }
   };
-
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
       headerLabel="Become a Producer"
@@ -200,18 +203,24 @@ export const ProducerRegisterForm = () => {
                     </FormItem>
                   )}
                 />
+                <PasswordInput
+                  form={form}
+                  isPending={isPending}
+                  toggleShowPassword={toggleShowPassword}
+                  showPassword={showPassword}
+                />
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={isPending}
                           placeholder="******"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                         />
                       </FormControl>
                       <FormMessage />

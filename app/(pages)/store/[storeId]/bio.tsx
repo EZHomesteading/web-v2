@@ -34,7 +34,7 @@ const Bio = ({ user }: Props) => {
       <SheetContent>
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
-            <Avatar />
+            <Avatar user={user} />
             <div
               className={`${outfit.className} weight-100 flex flex-col ml-2`}
             >

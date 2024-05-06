@@ -1,9 +1,7 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
-import Fuse from "fuse.js";
 import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
-// for the sake of clarity, user is the user searching, and vendors are producers and co-ops
 interface ILocation {
   type: "Point";
   coordinates: [number, number];

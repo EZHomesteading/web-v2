@@ -4,14 +4,12 @@ import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
-import { UserInfo } from "@/next-auth";
 import SearchNative from "./search-native";
+import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 
-interface NavbarProps {
-  user?: UserInfo;
-}
+const Navbar = async () => {
+  const user = await GetOrderNotificationInfo();
 
-const Navbar = ({ user }: NavbarProps) => {
   return (
     <div className="relative w-full z-10">
       <div className="py-1 sm:py-4">
@@ -26,7 +24,7 @@ const Navbar = ({ user }: NavbarProps) => {
           </div>
         </Container>
       </div>
-      <Categories user={user} />
+      <Categories />
     </div>
   );
 };

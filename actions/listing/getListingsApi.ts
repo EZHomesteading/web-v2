@@ -69,7 +69,6 @@ export default async function GetListings(
       const sortedListings = filteredListings.sort(
         (a, b) => a.distance - b.distance
       );
-      console.log(sortedListings, "sorted");
       listings = sortedListings.map(({ listing }) => listing);
     }
     const user = await currentUser();

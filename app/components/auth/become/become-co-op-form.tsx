@@ -24,9 +24,9 @@ import { UserInfo } from "@/next-auth";
 import AuthLocation from "../auth-location";
 import axios from "axios";
 import { UserRole } from "@prisma/client";
-import { LatLng, latLng } from "leaflet";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+
 interface BecomeCoopProps {
   user?: UserInfo;
 }
@@ -77,7 +77,6 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
       });
     }
   };
-  console.log("lat:", LatLng);
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
