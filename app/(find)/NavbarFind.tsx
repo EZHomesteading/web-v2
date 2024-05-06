@@ -1,5 +1,4 @@
 import Container from "../components/Container";
-import FindUsersComponent from "@/app/(find)/find-users";
 import Logo from "../components/navbar/Logo";
 import UserMenu from "../components/navbar/UserMenu";
 import AuthButtons from "../components/navbar/auth-buttons";
@@ -15,7 +14,6 @@ const NavbarFind = ({ user }: NavbarProps) => {
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
             <Logo />
-            <FindUsersComponent />
             {user ? <UserMenu user={user} /> : <AuthButtons />}
           </div>
         </Container>
