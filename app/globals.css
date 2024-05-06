@@ -125,7 +125,9 @@
 body::-webkit-scrollbar {
   display: none !important;
 }
-
+.messagebg {
+  background-color: #007aff !important;
+}
 .message {
   background-color: #007aff !important;
   align-self: flex-end !important;
@@ -143,6 +145,49 @@ body::-webkit-scrollbar {
 .responseOption {
   background-color: #e6f2ff !important;
   align-self: flex-end !important;
+}
+.notification-bubble {
+  position: relative;
+  background-color: #4a5568;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+.notification-bubble:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1.003;
+}
+.notification-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #4a5568;
+}
+
+.m {
+  position: relative;
+  background-color: #007aff;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+.m:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1.003;
+}
+.m::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #007aff;
 }
 
 .sentMessage::before {

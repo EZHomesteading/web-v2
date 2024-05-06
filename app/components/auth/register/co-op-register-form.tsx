@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import PasswordInput from "./password-input";
 
 export const CoOpRegisterForm = () => {
   const router = useRouter();
@@ -85,6 +86,7 @@ export const CoOpRegisterForm = () => {
       phoneNumber: "",
       name: "",
       password: "",
+      confirmPassword: "",
       location: {
         type: "Point",
         coordinates: [0, 0],
@@ -122,7 +124,8 @@ export const CoOpRegisterForm = () => {
         break;
     }
   };
-
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
       headerLabel="Become a Co-op"
@@ -201,18 +204,24 @@ export const CoOpRegisterForm = () => {
                     </FormItem>
                   )}
                 />
+                <PasswordInput
+                  form={form}
+                  isPending={isPending}
+                  toggleShowPassword={toggleShowPassword}
+                  showPassword={showPassword}
+                />
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={isPending}
                           placeholder="******"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                         />
                       </FormControl>
                       <FormMessage />

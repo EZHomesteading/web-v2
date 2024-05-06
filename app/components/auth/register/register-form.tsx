@@ -21,6 +21,8 @@ import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
+import { PiEye, PiEyeClosedThin } from "react-icons/pi";
+import PasswordInput from "./password-input";
 
 export const RegisterForm = () => {
   const router = useRouter();
@@ -37,6 +39,7 @@ export const RegisterForm = () => {
       firstName: "",
       email: "",
       password: "",
+      confirmPassword: "",
       name: "",
       role: "CONSUMER",
     },
@@ -70,7 +73,8 @@ export const RegisterForm = () => {
         break;
     }
   };
-
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
       headerLabel="Welcome to EZ Homesteading"
@@ -136,18 +140,24 @@ export const RegisterForm = () => {
                 </FormItem>
               )}
             />
+            <PasswordInput
+              form={form}
+              isPending={isPending}
+              toggleShowPassword={toggleShowPassword}
+              showPassword={showPassword}
+            />
             <FormField
               control={form.control}
-              name="password"
+              name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
                       placeholder="******"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                     />
                   </FormControl>
                   <FormMessage />

@@ -49,13 +49,14 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
   };
 
   return (
-    <Container>
-      <Heading
-        title="Products"
-        subtitle="Modify your listings from this page"
-      />
-      <div
-        className="
+    <div style={{ height: "100vh", overflow: "auto" }} className="pt-12">
+      <Container style={{ minHeight: "100%" }}>
+        <Heading
+          title="Products"
+          subtitle="Modify your listings from this page"
+        />
+        <div
+          className="
           mt-10
           grid 
           grid-cols-1 
@@ -65,24 +66,26 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           xl:grid-cols-5
           2xl:grid-cols-6
           gap-8
+          
         "
-      >
-        {listings.map((listing: SafeListing) => (
-          <ListingCard
-            key={listing.id}
-            data={listing}
-            actionId={listing.id}
-            onAction={onDelete}
-            disabled={deletingId === listing.id}
-            actionLabel="Delete"
-            secondActionId={listing.id}
-            secondActionLabel="Edit"
-            onSecondAction={onEdit}
-            user={user}
-          />
-        ))}
-      </div>
-    </Container>
+        >
+          {listings.map((listing: SafeListing) => (
+            <ListingCard
+              key={listing.id}
+              data={listing}
+              actionId={listing.id}
+              onAction={onDelete}
+              disabled={deletingId === listing.id}
+              actionLabel="Delete"
+              secondActionId={listing.id}
+              secondActionLabel="Edit"
+              onSecondAction={onEdit}
+              user={user}
+            />
+          ))}
+        </div>
+      </Container>
+    </div>
   );
 };
 
