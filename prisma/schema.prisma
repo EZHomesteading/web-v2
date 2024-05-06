@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CONSUMER
+  COOP
+  PRODUCER
+}
+
+
+type Location {
+  type String
+  coordinates Float[]
+  address String[]
+}
+
+type Hours {
+  0 Times[] @map("0")
+  1 Times[] @map("1")
+  2 Times[] @map("2")
+  3 Times[] @map("3")
+  4 Times[] @map("4")
+  5 Times[] @map("5")
+  6 Times[] @map("6")
+}
+
+type Times {
+  open Int
+  close Int
+}
+
+model User {
+  id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String  @unique 
+  email                 String  @unique 
+  firstName             String?
+  emailVerified         DateTime?
+  phoneNumber           String? 
+  location              Location?
+  image                 String?
+  hours                 Json?
+  role                  UserRole @default(CONSUMER)
+  password              String?
+  stripeAccountId       String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  conversationIds       String[] @db.ObjectId
+  conversations         Conversation[] @relation(fields: [conversationIds], references: [id])
+  
+  seenMessageIds        String[] @db.ObjectId
+  seenMessages          Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
+  
+  favoriteIds           String[] @db.ObjectId
+
+  accounts              Account[]
+  listings              Listing[]
+  cart                  Cart[]
+
+  buyerOrders           Order[] @relation("buyer")
+  sellerOrders          Order[] @relation("seller") 
+  sentMessages          Message[] @relation("SentMessages")
+  twoFactorConfirmation TwoFactorConfirmation?
+  subscriptions         String?
+}
+
+
+model Account {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @db.ObjectId
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.String
+  access_token       String?  @db.String
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.String
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  id    String @id @default(cuid()) @map("_id")
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid()) @map("_id")
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id String @id @default(cuid()) @map("_id")
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(cuid()) @map("_id")
+
+  userId String @db.ObjectId
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model Listing {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  species       String?
+  category      String 
+  subCategory   String
+  stock         Int
+  quantityType  String
+  price         Float
+  description   String
+  imageSrc      String
+  shelfLife     Int
+  location      Location?
+  coopRating    Int?
+  userId        String @db.ObjectId
+  createdAt     DateTime @default(now())
+
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cart          Cart[]
+}
+
+model Cart {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String @db.ObjectId
+  listingId     String @db.ObjectId
+  quantity      Int    @default(1)
+  pickup        DateTime?
+  price         Float
+  
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing       Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+}
+
+model TransactionHistory {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId          String   @db.ObjectId 
+  totalPrice       Float
+}
+
+model Order {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String   @db.ObjectId
+  listingIds            String[]  
+  sellerId              String   @db.ObjectId
+  pickupDate            DateTime
+  quantity              String
+  totalPrice            Float
+  status                Int @default(0)
+  stripePaymentIntentId String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  stripeSessionId       String
+  fee                   Float
+
+  conversationId        String?   @db.ObjectId
+  payments              Payment[]
+
+  buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
+  seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId                String   @db.ObjectId
+  stripePaymentIntentId  String
+  amount                 Float
+  status                 String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  
+  order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model StripeIntents {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentIds           String[] @db.ObjectId
+}
+
+model Conversation {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt         DateTime @default(now())
+  lastMessageAt     DateTime @default(now())
+  name              String?
+  isGroup Boolean?
+  
+  messagesIds      String[] @db.ObjectId
+  messages         Message[]
+
+  userIds          String[] @db.ObjectId
+  users            User[] @relation(fields: [userIds], references: [id])
+}
+
+model Message {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  body             String?
+  image            String?
+  createdAt        DateTime @default(now())
+  messageOrder     String?
+
+  seenIds          String[] @db.ObjectId
+  seen             User[] @relation("Seen", fields: [seenIds], references: [id])
+
+  conversationId   String @db.ObjectId
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId         String @db.ObjectId
+  sender           User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+}

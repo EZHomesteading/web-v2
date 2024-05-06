@@ -2,32 +2,248 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background: 0 0% 100% !important;
+    --foreground: 240 10% 3.9% !important;
+
+    --card: 0 0% 100% !important;
+    --card-foreground: 240 10% 3.9% !important;
+
+    --popover: 0 0% 100% !important;
+    --popover-foreground: 240 10% 3.9% !important;
+
+    --primary: 240 5.9% 10% !important;
+    --primary-foreground: 0 0% 98% !important;
+
+    --secondary: 240 4.8% 95.9% !important;
+    --secondary-foreground: 240 5.9% 10% !important;
+
+    --muted: 240 4.8% 95.9% !important;
+    --muted-foreground: 240 3.8% 46.1% !important;
+
+    --accent: 240 4.8% 95.9% !important;
+    --accent-foreground: 240 5.9% 10% !important;
+
+    --destructive: 0 84.2% 60.2% !important;
+    --destructive-foreground: 0 0% 98% !important;
+
+    --border: 240 5.9% 90% !important;
+    --input: 240 5.9% 90% !important;
+    --ring: 240 10% 3.9% !important;
+
+    --radius: 0.5rem !important;
+  }
+
+  .dark {
+    --background: 240 10% 3.9% !important;
+    --foreground: 0 0% 98% !important;
+
+    --card: 240 10% 3.9% !important;
+    --card-foreground: 0 0% 98% !important;
+
+    --popover: 240 10% 3.9% !important;
+    --popover-foreground: 0 0% 98% !important;
+
+    --primary: 0 0% 98% !important;
+    --primary-foreground: 240 5.9% 10% !important;
+
+    --secondary: 240 3.7% 15.9% !important;
+    --secondary-foreground: 0 0% 98% !important;
+
+    --muted: 240 3.7% 15.9% !important;
+    --muted-foreground: 240 5% 64.9% !important;
+
+    --accent: 240 3.7% 15.9% !important;
+    --accent-foreground: 0 0% 98% !important;
+
+    --destructive: 0 62.8% 30.6% !important;
+    --destructive-foreground: 0 0% 98% !important;
+
+    --border: 240 3.7% 15.9% !important;
+    --input: 240 3.7% 15.9% !important;
+    --ring: 240 4.9% 83.9% !important;
+  }
+}
+.PhoneInputCountryIcon,
+.PhoneInputCountrySelect,
+.PhoneInputCountrySelectArrow {
+  display: none !important;
+}
+
+.PhoneInputInput {
+  background-color: inherit;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  height: 2.25rem !important;
+  width: 100% !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: inherit !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+  margin-top: 4px;
+}
+.phoneInput::file-selector-button {
+  border: none !important;
+  background-color: transparent !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  font-weight: 500 !important;
+}
+
+.phoneInput::placeholder {
+  color: #9ca3af !important;
+}
+
+.phoneInput:focus-visible {
+  outline: none !important;
+}
+
+.phoneInput:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+@layer base {
+  * {
+    @apply border-border !important;
+  }
+  body {
+    @apply bg-background text-foreground !important;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+body::-webkit-scrollbar {
+  display: none !important;
+}
+.messagebg {
+  background-color: #007aff !important;
+}
+.message {
+  background-color: #007aff !important;
+  align-self: flex-end !important;
+  position: relative important;
+  border-radius: 8px !important;
+  padding: 8px !important;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.sentMessage {
+  background-color: #007aff !important;
+  color: white !important;
+  align-self: flex-end !important;
+}
+
+.responseOption {
+  background-color: #e6f2ff !important;
+  align-self: flex-end !important;
+}
+.notification-bubble {
+  position: relative;
+  background-color: #4a5568;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+.notification-bubble:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1.003;
+}
+.notification-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #4a5568;
+}
+
+.m {
+  position: relative;
+  background-color: #007aff;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+.m:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1.003;
+}
+.m::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #007aff;
+}
+
+.sentMessage::before {
+  left: auto !important;
+  right: -10px !important;
+  border-right: none !important;
+  border-left: 10px solid #007aff !important;
+}
+
+.responseOption::before {
+  left: auto !important;
+  right: -10px !important;
+  border-right: none !important;
+  border-left: 10px solid #e6f2ff !important;
+}
+
+.z {
+  z-index: 100 !important;
+}
+.authlayoutbg {
+  background-color: #ced9bb !important;
+}
+
+.mi:hover {
+  background-color: #ced9bb !important;
+}
+.authlayouttext {
+  color: #ced9bb !important;
+}
+
+.onboard-left,
+.popover,
+.bg {
+  background-color: #e3eac9 !important;
+}
+.popover {
+  border: none !important;
+  width: 20rem !important;
+}
+.onboard-right,
+.sheet {
+  background-color: #ced9bb !important;
+}
+.cardregister {
+  background-color: #e3eac9 !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+.cardauth,
+.buttonsActive {
+  background-color: #e3eac9 !important;
+  border-bottom-left-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+.buttonsNotActive {
+  opacity: 0.4 !important;
 }
