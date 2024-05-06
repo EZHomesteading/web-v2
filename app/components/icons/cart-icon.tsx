@@ -81,7 +81,7 @@ const getQuantityWording = (
 };
 
 const CartIcon = ({ cart }: c) => {
-  if (!cart) {
+  if (!cart || cart.length === 0) {
     return null;
   }
   const groupedListings: Record<string, CartItem[]> = cart.reduce(
