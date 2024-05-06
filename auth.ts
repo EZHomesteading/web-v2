@@ -30,14 +30,13 @@ export const {
       }
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.firstName = token.firstName as string;
+        session.user.firstName = (token.firstName as string) ?? "";
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
         session.user.hours = token.hours as ExtendedHours;
-        session.user.isOAuth = token.isOAuth as boolean;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
@@ -56,7 +55,6 @@ export const {
       if (!existingUser) return token;
       const existingAccount = await getAccountByUserId(existingUser.id);
       token.id = existingUser.id;
-      token.isOAuth = !!existingAccount;
       token.firstName = existingUser.firstName;
       token.name = existingUser.name;
       token.email = existingUser.email;

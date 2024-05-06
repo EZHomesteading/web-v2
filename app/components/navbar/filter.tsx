@@ -10,7 +10,7 @@ import { UserInfo } from "@/next-auth";
 import { Button } from "../ui/button";
 
 interface Props {
-  user?: UserInfo;
+  user?: any;
 }
 const Filters = ({ user }: Props) => {
   const [radius, setRadius] = useState(0);
@@ -29,7 +29,7 @@ const Filters = ({ user }: Props) => {
     const rKm = (radius / 0.621371).toFixed(1);
     params.set("radius", rKm);
 
-    router.push(`/shop?${params.toString()}`);
+    router.push(`/market?${params.toString()}`);
   };
 
   return (

@@ -72,6 +72,9 @@ const Body: React.FC<BodyProps> = ({
     };
   }, [conversationId]);
   useEffect(() => {
+    if (order?.status == null) {
+      return;
+    }
     if (
       order.status === 4 ||
       order.status === 7 ||

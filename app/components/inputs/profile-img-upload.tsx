@@ -13,7 +13,7 @@ const uploadPreset = "ejde7bjt";
 
 interface ImageUploadProps {
   onChange: (value: string) => void;
-  value: string;
+  value?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
@@ -43,7 +43,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
               transition
               border-dashed 
               border-2
-              p-3 
+              p-1 
               border-neutral-300
               flex
               flex-row
@@ -51,14 +51,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
               items-center
               gap-4
               text-neutral-600
+              rounded-full
             "
           >
-            <TbPhotoPlus size={30} />
-            <div className="font-semibold text-lg">Add a Profile Photo</div>
-            {value && (
+            {!value ? (
+              <>
+                <TbPhotoPlus size={30} />
+                <div className="font-semibold text-lg">
+                  Change Profile Photo
+                </div>
+              </>
+            ) : (
               <div
-                className="
-              absolute inset-0 w-full h-full rounded-full"
+                className="        relative 
+              inline-block 
+              rounded-full 
+              overflow-hidden
+              h-10 
+              w-10 
+              md:h-20 
+              md:w-20"
               >
                 <Image
                   fill
