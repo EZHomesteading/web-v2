@@ -1,3 +1,4 @@
+"use client";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -5,6 +6,8 @@ import OpenStatus from "@/app/(pages)/store/[storeId]/hours-status";
 import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
+import { Button } from "@/app/components/ui/button";
+import axios from "axios";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -24,9 +27,16 @@ const StorePage = ({
   user,
   emptyState,
 }: StorePageProps) => {
+  const handleFollow = async () => {
+    const resp = await axios.post(`/api/follow/`, {
+      follows: storeUser.id,
+    });
+    console.log(resp);
+  };
   return (
     <ClientOnly>
       <Container>
+        <button onClick={handleFollow}>FOLLOW</button>
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
             <Avatar user={storeUser} />
