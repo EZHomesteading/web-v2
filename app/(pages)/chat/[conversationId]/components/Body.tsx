@@ -14,15 +14,18 @@ interface BodyProps {
   initialMessages: FullMessageType[];
   otherUser: string | undefined;
   order: any;
+  otherUserRole: any;
 }
 
 const Body: React.FC<BodyProps> = ({
   initialMessages = [],
   otherUser,
   order,
+  otherUserRole,
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cancel, setCancel] = useState(true);
   const [messages, setMessages] = useState(initialMessages);
   const { conversationId } = useConversation();
   useEffect(() => {
@@ -68,32 +71,55 @@ const Body: React.FC<BodyProps> = ({
       pusherClient.unbind("message:update", updateMessageHandler);
     };
   }, [conversationId]);
-  const onCancel = () => {};
+  useEffect(() => {
+    if (order?.status == null) {
+      return;
+    }
+    if (
+      order.status === 4 ||
+      order.status === 7 ||
+      order.status === 15 ||
+      order.status === 9 ||
+      order.status === 18 ||
+      order.status === 19 ||
+      order.status === 17 ||
+      order.status === 12
+    ) {
+      setCancel(false);
+    }
+  }),
+    [order];
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="flex flex-row-reverse">
         <CancelModal
           isOpen={confirmOpen}
           onClose={() => setConfirmOpen(false)}
+          order={order}
+          otherUser={otherUser}
+          convoId={conversationId}
+          otherUserRole={otherUserRole}
         />
-
-        <button
-          type="submit"
-          onClick={() => setConfirmOpen(true)}
-          // onTouchMoveCapture={}
-          className="
-     rounded-full 
-     p-2 
-     bg-sky-500 
-     cursor-pointer 
-     hover:bg-sky-600 
-     mt-2
-     ml-1
-     mr-1
-   "
-        >
-          Cancel
-        </button>
+        {cancel === false ? null : (
+          <button
+            type="submit"
+            onClick={() => setConfirmOpen(true)}
+            // onTouchMoveCapture={}
+            className="
+ rounded-full 
+ p-2 
+ bg-sky-500 
+ cursor-pointer 
+ hover:bg-sky-600 
+ mt-2
+ ml-1
+ mr-1
+"
+          >
+            Cancel
+          </button>
+        )}
       </div>
       {messages.map((message, i) => (
         <MessageBox

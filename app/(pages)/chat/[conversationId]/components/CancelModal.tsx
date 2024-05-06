@@ -5,6 +5,7 @@ import { Dialog } from "@headlessui/react";
 import { FiAlertTriangle } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
 import useConversation from "@/hooks/messenger/useConversation";
@@ -13,23 +14,82 @@ import { toast } from "react-hot-toast";
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
+  order: any;
+  otherUser: any;
+  convoId: any;
+  otherUserRole: string;
 }
 
-const CancelModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
+const CancelModal: React.FC<ConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  order,
+  otherUser,
+  convoId,
+  otherUserRole,
+}) => {
+  const session = useSession();
   const router = useRouter();
   const { conversationId } = useConversation();
   const [isLoading, setIsLoading] = useState(false);
 
   const onDelete = useCallback(() => {
     setIsLoading(true);
-
+    console.log(order);
     axios
-      .delete(`/api/orders/${conversationId}`)
-      .then(() => {
-        onClose();
-        router.refresh();
+      .post("/api/messages", {
+        message: "I have canceled this item, because of reasons",
+        messageOrder: "1.1",
+        conversationId: convoId,
+        otherUserId: otherUser,
       })
-      .catch(() => toast.error("Something went wrong!"))
+      .then(() => {
+        if (session.data?.user.id === order.sellerId) {
+          if (session.data?.user.role === "COOP") {
+            axios
+              .post("/api/update-order", { orderId: order.id, status: 4 })
+              .then(() => {
+                onClose();
+                router.refresh();
+              });
+          } else {
+            axios
+              .post("/api/update-order", { orderId: order.id, status: 12 })
+              .then(() => {
+                onClose();
+                router.refresh();
+              });
+          }
+        } else {
+          if (session.data?.user.role === "COOP") {
+            if (
+              session.data?.user.role === "COOP" &&
+              otherUserRole === "COOP"
+            ) {
+              axios
+                .post("/api/update-order", { orderId: order.id, status: 7 })
+                .then(() => {
+                  onClose();
+                  router.refresh();
+                });
+            } else {
+              axios
+                .post("/api/update-order", { orderId: order.id, status: 15 })
+                .then(() => {
+                  onClose();
+                  router.refresh();
+                });
+            }
+          } else {
+            axios
+              .post("/api/update-order", { orderId: order.id, status: 7 })
+              .then(() => {
+                onClose();
+                router.refresh();
+              });
+          }
+        }
+      })
       .finally(() => setIsLoading(false));
   }, [router, conversationId, onClose]);
 

@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
             seller.name
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
 
-          const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off during my open hours (NEEDS REWORDING)`;
+          const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
 
           if (seller.role === "COOP") {
             const newMessage: any = await prisma.message.create({
