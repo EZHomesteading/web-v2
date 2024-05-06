@@ -159,11 +159,7 @@ export const UpdateSchema = z.object({
     .optional(),
   name: z.string().min(1, { message: "Name is required" }).optional(),
   email: z.string().email({ message: "Email is required" }).optional(),
-  phoneNumber: z
-    .string()
-    .min(6, { message: "Phone number is required" })
-    .optional(),
-
+  phoneNumber: z.any().optional(),
   location: z
     .object({
       type: z.literal("Point"),

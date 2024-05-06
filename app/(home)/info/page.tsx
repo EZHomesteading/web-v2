@@ -21,7 +21,7 @@ const Info = () => {
   };
   return (
     <div
-      className={`${outfit.className} sheet min-h-screen flex items-center justify-center`}
+      className={`${outfit.className} min-h-screen flex justify-center items-center`}
     >
       <InfoSearchClient value={infoPage} onChange={handleChange} />
     </div>
