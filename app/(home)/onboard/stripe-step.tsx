@@ -5,7 +5,7 @@ interface Props {
   formData: any;
   setFormData: any;
 }
-const StripeStep = async ({ user, formData, setFormData }: Props) => {
+const StripeStep = ({ user, formData, setFormData }: Props) => {
   return <>{user ? <AccountOnboardingUI user={user} /> : <></>}</>;
 };
 
