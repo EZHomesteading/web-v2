@@ -10,7 +10,7 @@ import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
-
+import getFollowers from "@/actions/follow/getFollowers";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -39,6 +39,8 @@ const sumTotalPrice = (sellerOrders: Order[]): number => {
 };
 
 const Dashboard = async () => {
+  const followers = await getFollowers();
+  console.log(followers);
   const currentUserr = await currentUser();
   let buyOrdersLength = 0;
   let sellOrdersLength = 0;
@@ -152,7 +154,7 @@ const Dashboard = async () => {
           </CardHeader>
           <CardContent className="sheet">
             <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-              0
+              {followers ? followers.length : 0}
             </div>
             <Link
               className="flex justify-end items-end"

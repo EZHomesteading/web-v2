@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import getFollows from "@/actions/getFollows";
+import getFollows from "@/actions/follow/getFollows";
 
 interface IParams {
   follows?: string;

@@ -6,7 +6,7 @@ import EmptyState from "@/app/components/EmptyState";
 
 import ListingClient from "./ListingClient";
 import getUserwithCart from "@/actions/user/getUserWithCart";
-import getFollows from "@/actions/getFollows";
+import getFollows from "@/actions/follow/getFollows";
 
 interface IParams {
   listingId?: string;

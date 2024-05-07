@@ -2,15 +2,17 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getFollows from "@/actions/follow/getFollows";
+import getFollowers from "@/actions/follow/getFollowers";
 
 import FavoritesClient from "./FavoritesClient";
+import getFollows from "@/actions/follow/getFollows";
 
 const ListingPage = async () => {
   const user = await currentUser();
-  const followarr = await getFollows();
-  const follows = followarr?.follows;
-  if (!follows) {
+  const followarr = await getFollowers();
+  const myFollow = await getFollows();
+  console.log("initial state", followarr);
+  if (!followarr) {
     return (
       <ClientOnly>
         <EmptyState
@@ -23,7 +25,7 @@ const ListingPage = async () => {
 
   return (
     <ClientOnly>
-      <FavoritesClient follows={follows} user={user} followarr={followarr} />
+      <FavoritesClient user={user} followarr={followarr} myFollow={myFollow} />
     </ClientOnly>
   );
 };
