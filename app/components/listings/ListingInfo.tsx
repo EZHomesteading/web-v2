@@ -3,6 +3,7 @@
 import { UserInfo } from "@/next-auth";
 import { useRouter } from "next/navigation";
 import FollowButton from "../follow/followButton";
+import ReviewButton from "../ui/reviewButton";
 
 interface ListingInfoProps {
   user: UserInfo;
@@ -45,6 +46,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             following={following}
             user={user}
           />
+          <ReviewButton />
         </div>
       </div>
     </div>
