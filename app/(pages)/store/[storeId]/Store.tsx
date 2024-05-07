@@ -47,7 +47,11 @@ const StorePage = ({
               <div>{storeUser?.firstName}</div>
             </div>
             <div className="pl-[10px]">
-              <FollowButton followUserId={storeUser.id} following={following} />
+              <FollowButton
+                followUserId={storeUser.id}
+                following={following}
+                user={user}
+              />
             </div>
           </div>
 

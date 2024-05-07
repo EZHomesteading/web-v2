@@ -4,12 +4,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import UnfollowIcon from "../icons/unfollow-svg";
 import FollowIcon from "../icons/follow-svg";
+import toast from "react-hot-toast";
+import { SafeUser } from "@/types";
 
 interface FollowButtonProps {
   followUserId: any;
   following: any;
+  user: any;
 }
-const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
+const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
   const router = useRouter();
   function checkStringMatch(str: any, arr: any) {
     if (typeof str !== "string" || !Array.isArray(arr)) {
@@ -28,6 +31,10 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     checkStringMatch(followUserId, following.follows) === false
   ) {
     const handleFollow = async () => {
+      if (user.id === followUserId) {
+        toast.error("Can't follow yourself.");
+        return;
+      }
       const resp = await axios.post(`/api/follow/`, {
         follows: followUserId,
       });
