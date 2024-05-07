@@ -24,6 +24,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
 
   if (
     following === null ||
+    following === undefined ||
     checkStringMatch(followUserId, following.follows) === false
   ) {
     const handleFollow = async () => {
