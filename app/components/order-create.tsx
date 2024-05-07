@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { useEffect } from "react";
 import dayjs from "dayjs";
@@ -139,10 +139,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       position: "bottom-right",
       className:
         "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
-      ariaProps: {
-        role: "status",
-        "aria-live": "polite",
-      },
     });
   };
   const handleFailure = () => {
@@ -151,10 +147,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       position: "bottom-right",
       className:
         "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
-      ariaProps: {
-        role: "status",
-        "aria-live": "polite",
-      },
     });
   };
   sessionStorage.setItem("ORDER", "");

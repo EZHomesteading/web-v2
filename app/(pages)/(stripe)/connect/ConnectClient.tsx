@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import axios from "axios";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { useState } from "react";

@@ -16,7 +16,6 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
   const user = await getUserwithCart();
   const following = await getFollows();
-
   if (!listing) {
     return (
       <ClientOnly>

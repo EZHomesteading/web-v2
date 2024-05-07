@@ -45,6 +45,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       router.push("/auth/login");
     }
     setIsLoading(true);
+
     if (listing.user.role === "PROUDCER" && user.role === "COOP") {
       toast
         .promise(
@@ -152,7 +153,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               />
             </div>
           </div>
-          <div className="w-full lg:w-1/3 px-4">
+          <div className="w-full lg:w-1/3 pt-2 lg:pt-0 lg:px-4">
             <ListingReservation
               toggleCart={toggleCart}
               listingId={adjustedListing.id}
