@@ -108,7 +108,11 @@ const FollowCard: React.FC<ListingCardProps> = ({
           <div className="font-semibold text-lg flex-1 flex justify-between items-start">
             {data.name}
             <div className="relative">
-              <FollowButton followUserId={data.id} following={followarr} />
+              <FollowButton
+                followUserId={data.id}
+                following={followarr}
+                user={user}
+              />
               {isHovering && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md p-2 transition duration-300">
                   Unfollow?

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 import getFollows from "@/actions/follow/getFollows";
+import toast from "react-hot-toast";
 
 interface IParams {
   follows?: string;
@@ -15,8 +16,10 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   if (!user.id) {
     return NextResponse.error();
   }
+
   const following = await getFollows();
   const { follows } = await request.json();
+
   if (!following) {
     const createdCartItem = await prisma.following.create({
       data: {
