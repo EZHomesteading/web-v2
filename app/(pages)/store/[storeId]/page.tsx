@@ -4,7 +4,7 @@ import getListingsByUserId from "@/actions/listing/getListingsByUserId";
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getUserById from "@/actions/user/getUserById";
-import getFollows from "@/actions/getFollows";
+import getFollows from "@/actions/follow/getFollows";
 
 interface StorePageProps {
   params: {

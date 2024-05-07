@@ -22,7 +22,11 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return matchFound;
   }
 
-  if (checkStringMatch(followUserId, following.follows) === false) {
+  if (
+    following === null ||
+    following === undefined ||
+    checkStringMatch(followUserId, following.follows) === false
+  ) {
     const handleFollow = async () => {
       const resp = await axios.post(`/api/follow/`, {
         follows: followUserId,

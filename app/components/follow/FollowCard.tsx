@@ -96,7 +96,11 @@ const FollowCard: React.FC<ListingCardProps> = ({
           <Image
             fill
             className=" object-cover h-full w-full group-hover:scale-105 transition "
-            src={data.image}
+            src={
+              data.image
+                ? data?.image
+                : "/images/website-images/placeholder.jpg"
+            }
             alt={`${data.name} profile picture`}
           />
         </div>
