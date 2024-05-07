@@ -19,6 +19,7 @@ interface StorePageProps {
   user: any;
   emptyState: React.ReactNode;
   following: any;
+  reviews: any;
 }
 
 const StorePage = ({
@@ -27,6 +28,7 @@ const StorePage = ({
   user,
   emptyState,
   following,
+  reviews,
 }: StorePageProps) => {
   return (
     <ClientOnly>
@@ -56,7 +58,7 @@ const StorePage = ({
           </div>
 
           <div className="flex justify-center">
-            <Bio user={storeUser} />
+            <Bio reviews={reviews} user={storeUser} />
           </div>
         </div>
 
