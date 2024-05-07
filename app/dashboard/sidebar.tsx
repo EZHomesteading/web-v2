@@ -40,6 +40,12 @@ const conNav: NavigationItem[] = [
     current: false,
   },
   {
+    name: "Order History",
+    href: "/dashboard/order-history",
+    icon: VscHistory,
+    current: false,
+  },
+  {
     name: "Privacy Policy",
     href: "/privacy-policy",
     icon: MdOutlinePrivacyTip,
@@ -95,10 +101,9 @@ const vendorNav: NavigationItem[] = [
     icon: GiSettingsKnobs,
     current: false,
   },
-
   {
-    name: "Transaction History",
-    href: "/dashboard/history",
+    name: "Order History",
+    href: "/dashboard/order-history",
     icon: VscHistory,
     current: false,
   },
