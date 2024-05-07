@@ -4,16 +4,7 @@ import { PuffLoader } from "react-spinners";
 
 const Loader = () => {
   return (
-    <div
-      className="
-      h-[100vh]
-      flex 
-      flex-col 
-      justify-center 
-      items-center 
-      authlayoutbg
-    "
-    >
+    <div className="flex justify-center items-center min-h-screen authlayoutbg">
       <PuffLoader size={100} color="green" />
     </div>
   );

@@ -15,8 +15,6 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
-  console.log(pickupArr);
-
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -38,8 +36,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
 
       if (cartItem.listing.userId !== prevUserId) {
-        console.log(index);
-
         if (prevUserId !== null) {
           const summedTotalPrice = userItems.reduce(
             (acc: any, curr: any) => acc + curr.price,
@@ -62,7 +58,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             );
             return { id: listingId, quantity: listingQuantity };
           });
-          console.log(currentpickuparr.pickupTime);
           body.push({
             userId: prevUserId,
             listingIds: allListings,
@@ -116,7 +111,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
     const post = async () => {
       const response = await axios.post("/api/create-order", body);
-      console.log(response.data);
       const datas = response.data;
       await datas.forEach((data: any) => {
         let store = sessionStorage.getItem("ORDER");
