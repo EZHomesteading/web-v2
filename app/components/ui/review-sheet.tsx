@@ -7,6 +7,7 @@ import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
 import ReactStars from "react-stars";
+import axios from "axios";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -58,12 +59,14 @@ const sheetVariants = cva(
 
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  user: any;
+}
 
 const SheetContentF = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentCProps
->(({ side = "right", className, children, ...props }, ref) => {
+>(({ side = "right", className, children, user, ...props }, ref) => {
   const [rating, setRating] = React.useState(0);
   const [text, setText] = React.useState("");
   const [showSheet, setShowSheet] = React.useState(true);
@@ -83,6 +86,12 @@ const SheetContentF = React.forwardRef<
       return;
     }
     console.log("Typed text:", text);
+    axios.post("/api/review", {
+      rating: rating,
+      review: text,
+      reviewedId: user.id,
+      buyer: false,
+    });
     // You can perform additional actions with the text here
     closeSheet();
   };
@@ -92,7 +101,7 @@ const SheetContentF = React.forwardRef<
   };
 
   if (!showSheet) return null;
-
+  console.log(user);
   return (
     <SheetPortalC>
       <SheetOverlayC />

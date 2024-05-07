@@ -85,12 +85,11 @@ model Following {
   model Reviews {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   userId                String @db.ObjectId
-  reveiwedId            String @db.ObjectId
+  reviewedId            String @db.ObjectId
   review                String
   rating                Int
   buyer                 Boolean 
   user                   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([userId])
   }
 
 

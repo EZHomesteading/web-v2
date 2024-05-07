@@ -39,14 +39,14 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
-            <span>{user?.name}</span>{" "}
+            <span>{user?.name}</span>
           </span>
           <FollowButton
             followUserId={followUserId}
             following={following}
             user={user}
           />
-          <ReviewButton />
+          <ReviewButton user={user} />
         </div>
       </div>
     </div>

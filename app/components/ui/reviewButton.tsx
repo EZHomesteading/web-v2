@@ -6,9 +6,11 @@ import { useState } from "react";
 
 import "react-datetime-picker/dist/DateTimePicker.css";
 
-interface StatusProps {}
+interface StatusProps {
+  user: any;
+}
 
-const ReviewButton = ({}: StatusProps) => {
+const ReviewButton = ({ user }: StatusProps) => {
   return (
     <SheetCartC>
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
@@ -17,6 +19,7 @@ const ReviewButton = ({}: StatusProps) => {
       <SheetContentF
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
+        user={user}
       ></SheetContentF>
     </SheetCartC>
   );
