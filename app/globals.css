@@ -189,7 +189,29 @@ body::-webkit-scrollbar {
   height: 15px;
   background-color: #007aff;
 }
+.mnot {
+  position: relative;
+  background-color: #d3d3d3;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
 
+.mnot:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1.003;
+}
+
+.mnot::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #d3d3d3;
+}
 .sentMessage::before {
   left: auto !important;
   right: -10px !important;

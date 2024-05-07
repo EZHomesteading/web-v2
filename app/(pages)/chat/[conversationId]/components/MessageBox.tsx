@@ -16,7 +16,11 @@ import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin-ext"],
+  display: "swap",
+});
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
@@ -45,12 +49,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     .map((user) => user.name)
     .join(", ");
 
-  const container = clsx("flex flex-grow gap-3 p-4", isOwn && "justify-end");
+  const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");
   const avatar = clsx(isOwn && "order-2");
   const body = clsx("flex flex-grow flex-col ga", isOwn && "items-end");
   const message = clsx(
-    "text-sm w-fit overflow-hidden",
-    isOwn ? "message text-white" : "bg-gray-100 rounded-lg",
+    `text-xs md:text-sm w-fit ${outfit.className}`,
+    isOwn ? `m text-white` : `mnot`,
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
   const onSubmit1 = () => {
@@ -274,19 +278,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   return (
     <div>
       <div className={container}>
-        <div className={avatar}>
-          <Avatar user={data.sender} />
-        </div>
         <div className={body}>
           <div className="flex items-center gap-1">
-            <div className="text-sm text-gray-500">{data.sender.name}</div>
+            <div className="text-xs mb-1 text-gray-500 hidden sm:block">
+              {data.sender.name}
+            </div>
             <div className="text-xs text-gray-400">
               {format(new Date(data.createdAt), "p")}
             </div>
           </div>
           <div className={message}>
             <ImageModal
-              src={data.image}
               isOpen={imageModalOpen}
               onClose={() => setImageModalOpen(false)}
             />
@@ -334,10 +336,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       </div>
       {notOwn && isLast && data.messageOrder === "1" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -369,10 +368,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {isOwn && isLast && data.messageOrder === "2" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -386,10 +382,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "3" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -420,10 +413,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "4" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -454,10 +444,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "5" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -475,19 +462,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "6" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit6}
-                className="message hover:bg-sky"
+                className={`m text-xs md:text-sm`}
               >
                 I have Received my order. Thank you!
               </button>
@@ -496,10 +480,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "7" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -508,7 +489,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit7}
-                className="message hover:bg-sky-500"
+                className="m hover:bg-sky-500"
               >
                 Fantastic, this order has been marked as completed, feel free to
                 delete this chat. If you do not delete this chat it will be
@@ -519,10 +500,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "10" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -532,11 +510,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 hours={session?.data?.user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
-              <button
-                type="submit"
-                onClick={onSubmit9}
-                className="message hover:bg-sky"
-              >
+              <button type="submit" onClick={onSubmit9} className="">
                 I can deliver these items to you at{" "}
                 <span className="text-black">{validTime}</span>, does that work?
               </button>
@@ -544,7 +518,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit3}
-                className="message hover:bg-sky"
+                className="m hover:bg-sky"
               >
                 My apologies, but one or more of these items is no longer
                 available, and this order has been canceled. Sorry for the
@@ -557,19 +531,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "11" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit10}
-                className="message hover:bg-sky-500"
+                className="m hover:bg-sky-500"
               >
                 Yes, That time works, See you then!
               </button>
@@ -580,7 +551,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit11}
-                className="message hover:bg-sky-500"
+                className="m hover:bg-sky-500"
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead? if
@@ -591,19 +562,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "12" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
+          <div className="order-2"></div>
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit12}
-                className="message hover:bg-sky-600"
+                className="m hover:bg-sky-600"
               >
                 Your item has been delivered.
               </button>
@@ -612,19 +581,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {notOwn && isLast && data.messageOrder === "13" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
+          <div className="order-2"></div>
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button
                 type="submit"
                 onClick={onSubmit14}
-                className="message hover:bg-sky-600"
+                className="m hover:bg-sky-600"
               >
                 Yes, That time works. Your item will be delivered at that time.
               </button>
@@ -635,7 +602,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit13}
-                className="message hover:bg-sky-600"
+                className="m hover:bg-sky-600"
               >
                 No, that time does not work. Does{" "}
                 <span className="text-black">{validTime}</span> work instead?
@@ -645,10 +612,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         </div>
       )}
       {isOwn && isLast && data.messageOrder === "14" && (
-        <div className="flex gap-3 p-4 justify-end ">
-          <div className="order-2">
-            <Avatar user={session?.data?.user} />
-          </div>
+        <div className="flex gap-3 p-2 justify-end ">
           <div className="flex flex-col ga items-end">
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
@@ -657,7 +621,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <button
                 type="submit"
                 onClick={onSubmit12}
-                className="message hover:bg-sky-600"
+                className="m hover:bg-sky-600"
               >
                 Your item has been delivered.
               </button>
