@@ -1,7 +1,7 @@
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 
-export default async function getFollows() {
+export default async function getFollowers() {
   let user = await currentUser();
   const userId = user?.id;
   if (user) {
@@ -17,7 +17,7 @@ export default async function getFollows() {
       if (!following) {
         return null;
       }
-      return following.length;
+      return following;
     } catch (error: any) {
       throw new Error(error);
     }
