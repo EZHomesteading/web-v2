@@ -2,7 +2,7 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
 import { currentUser } from "@/lib/auth";
-import getFollows from "@/actions/getFollows";
+import getFollows from "@/actions/follow/getFollows";
 
 import FavoritesClient from "./FavoritesClient";
 
