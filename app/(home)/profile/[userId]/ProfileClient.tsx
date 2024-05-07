@@ -1,26 +1,52 @@
+import getUserById from "@/actions/user/getUserById";
 import Avatar from "@/app/components/Avatar";
 import { StarIcon } from "@heroicons/react/20/solid";
-import { UserRole } from "@prisma/client";
+import { Reviews, UserRole } from "@prisma/client";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 interface p {
+  buyerRevs?: any;
   user?: any;
+  average: any;
 }
+function getReviewCounts(reviews: Reviews[]) {
+  const counts = [1, 2, 3, 4, 5].reduce((acc, rating) => {
+    const count = reviews.filter((review) => review.rating === rating).length;
+    acc.push({ rating, count });
+    return acc;
+  }, [] as { rating: number; count: number }[]);
 
-export default function ProfilePage({ user }: p) {
+  return counts;
+}
+function getAverageRating(reviews: Reviews[]) {
+  if (reviews.length === 0) return 0;
+
+  const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+  const averageRating = totalRatings / reviews.length;
+  return Math.round(averageRating * 2) / 2;
+}
+export default function ProfilePage({ buyerRevs, user, average }: p) {
+  const counts = getReviewCounts(buyerRevs || []);
+  const total = buyerRevs.length || 0;
+  const averageRating = getAverageRating(buyerRevs || []);
   return (
-    <div className="bg-white">
+    <div className={`${outfit.className} min-h-screen bg`}>
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
         <div className="lg:col-span-4">
-          <div className="flex flex-row">
+          <div className="flex flex-row items-center">
             <div>
               <Avatar user={user} />
             </div>
-            <div className="flex flex-col">
-              <div>{user?.name}</div>
+            <div className="flex flex-col ml-2">
+              <div className="text-lg lg:text-2xl">{user?.name}</div>
               {user?.firstName}
             </div>
           </div>
@@ -32,28 +58,39 @@ export default function ProfilePage({ user }: p) {
           <div className="mt-3 flex items-center">
             <div>
               <div className="flex items-center">
-                {[0, 1, 2, 3, 4].map((rating) => (
+                {[...Array(5)].map((_, index) => (
                   <StarIcon
-                    key={rating}
+                    key={index}
                     className={classNames(
-                      // user?.reviews?.average > rating
-                      4.5 > 4 ? "text-yellow-400" : "text-gray-300",
+                      averageRating >= index + 1
+                        ? "text-yellow-400"
+                        : averageRating >= index + 0.5
+                        ? "text-yellow-400"
+                        : "text-gray-300",
                       "h-5 w-5 flex-shrink-0"
                     )}
                     aria-hidden="true"
                   />
                 ))}
               </div>
-              <p className="sr-only">4 out of 5 stars</p>
+              <p className="sr-only">
+                {averageRating.toFixed(1)} out of 5 stars
+              </p>
             </div>
-            <p className="ml-2 text-sm text-gray-900">Based on 10 reviews</p>
+            <p className="ml-2 text-sm text-gray-900">
+              {total > 1 ? (
+                <>Based on {total} reviews</>
+              ) : (
+                <>Based on {total} review</>
+              )}
+            </p>
           </div>
 
           <div className="mt-6">
             <h3 className="sr-only">Review data</h3>
 
             <dl className="space-y-3">
-              {user?.reviews?.counts.map((count: any) => (
+              {counts.map((count: any) => (
                 <div key={count.rating} className="flex items-center text-sm">
                   <dt className="flex flex-1 items-center">
                     <p className="w-3 font-medium text-gray-900">
@@ -78,7 +115,7 @@ export default function ProfilePage({ user }: p) {
                           <div
                             className="absolute inset-y-0 rounded-full border border-yellow-400 bg-yellow-400"
                             style={{
-                              width: `calc(${count.count} / ${user?.reviews?.totalCount} * 100%)`,
+                              width: `calc(${count.count} / ${total} * 100%)`,
                             }}
                           />
                         ) : null}
@@ -86,7 +123,7 @@ export default function ProfilePage({ user }: p) {
                     </div>
                   </dt>
                   <dd className="ml-3 w-10 text-right text-sm tabular-nums text-gray-900">
-                    {Math.round((count.count / user.reviews.totalCount) * 100)}%
+                    {Math.round((count.count / total) * 100)}%
                   </dd>
                 </div>
               ))}
@@ -99,38 +136,46 @@ export default function ProfilePage({ user }: p) {
 
           <div className="flow-root">
             <div className="-my-12 divide-y divide-gray-200">
-              {user?.reviews?.featured.map((review: any) => (
-                <div key={review.id} className="py-12">
-                  <div className="flex items-center">
-                    <Avatar user={user} />
-                    <div className="ml-4">
-                      <h4 className="text-sm font-bold text-gray-900">
-                        {review.author}
-                      </h4>
-                      <div className="mt-1 flex items-center">
-                        {[0, 1, 2, 3, 4].map((rating) => (
-                          <StarIcon
-                            key={rating}
-                            className={classNames(
-                              review.rating > rating
-                                ? "text-yellow-400"
-                                : "text-gray-300",
-                              "h-5 w-5 flex-shrink-0"
-                            )}
-                            aria-hidden="true"
-                          />
-                        ))}
-                      </div>
-                      <p className="sr-only">{review?.rating} out of 5 stars</p>
-                    </div>
-                  </div>
+              {buyerRevs.map(async (review: any) => {
+                const user = await getUserById({ userId: review.userId });
 
-                  <div
-                    className="mt-4 space-y-6 text-base italic text-gray-600"
-                    dangerouslySetInnerHTML={{ __html: review?.content }}
-                  />
-                </div>
-              ))}
+                return (
+                  <div key={review.id} className="py-12">
+                    <div className="flex items-center">
+                      {user && <Avatar user={user} />}
+                      <div className="ml-4">
+                        {user && (
+                          <h4 className="text-sm font-bold text-gray-900">
+                            {user.name}
+                          </h4>
+                        )}
+                        <div className="mt-1 flex items-center">
+                          {[...Array(5)].map((_, rating) => (
+                            <StarIcon
+                              key={rating}
+                              className={classNames(
+                                review.rating > rating
+                                  ? "text-yellow-400"
+                                  : "text-gray-300",
+                                "h-5 w-5 flex-shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                          ))}
+                        </div>
+                        <p className="sr-only">
+                          {review?.rating} out of 5 stars
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="mt-4 space-y-6 text-base italic text-gray-600"
+                      dangerouslySetInnerHTML={{ __html: review?.review }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
