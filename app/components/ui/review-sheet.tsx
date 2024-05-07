@@ -61,12 +61,13 @@ interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
   user: any;
+  buyer: boolean;
 }
 
 const SheetContentF = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentCProps
->(({ side = "right", className, children, user, ...props }, ref) => {
+>(({ side = "right", className, children, user, buyer, ...props }, ref) => {
   const [rating, setRating] = React.useState(0);
   const [text, setText] = React.useState("");
   const [showSheet, setShowSheet] = React.useState(true);
@@ -89,8 +90,8 @@ const SheetContentF = React.forwardRef<
     axios.post("/api/review", {
       rating: rating,
       review: text,
-      reviewedId: user.id,
-      buyer: false,
+      reviewedId: user,
+      buyer: buyer,
     });
     // You can perform additional actions with the text here
     closeSheet();
