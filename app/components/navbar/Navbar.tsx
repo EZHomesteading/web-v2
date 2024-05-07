@@ -25,7 +25,7 @@ const Navbar = ({ user }: p) => {
           </div>
         </Container>
       </div>
-      <Categories />
+      <Categories user={user} />
     </div>
   );
 };

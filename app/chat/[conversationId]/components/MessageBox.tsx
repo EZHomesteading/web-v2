@@ -356,7 +356,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="m">
                 Your order is ready to be picked up!
               </button>
@@ -433,11 +433,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit5}
-                className="message hover:bg-sky-800"
-              >
+              <button type="submit" onClick={onSubmit5} className="">
                 Your order is ready to be picked up!
               </button>
             </div>

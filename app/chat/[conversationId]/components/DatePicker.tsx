@@ -1,7 +1,6 @@
 "use client";
-import { SheetTrigger, SheetContent } from "@/app/components/ui/sheet";
+import { SheetContent } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import {
   Popover,
   PopoverTrigger,

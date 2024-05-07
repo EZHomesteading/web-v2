@@ -1,11 +1,10 @@
 import getConversationById from "@/actions/messenger/getConversationById";
 import getMessages from "@/actions/messenger/getMessages";
 
-import Header from "./components/Header";
-import Body from "./components/Body";
+import Header from "@/app/chat/[conversationId]/components/Header";
+import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
 import { currentUser } from "@/lib/auth";
-import Form from "./components/Form";
 import GetOrderByConvoId from "@/actions/messenger/getOrderByConvoId";
 import getUserRoleById from "@/actions/messenger/getUserRoleById";
 
@@ -24,8 +23,6 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const otherUser: any = otherUsers?.toString();
   const userId = otherUser;
   const otherUserRole = await getUserRoleById({ userId });
-  console.log(otherUser);
-  console.log(otherUserRole);
 
   if (!conversation) {
     return (
@@ -47,7 +44,6 @@ const ChatId = async ({ params }: { params: IParams }) => {
           order={order}
           otherUserRole={otherUserRole}
         />
-        {/* <Form otherUsersId={otherUser} /> */}
       </div>
     </div>
   );

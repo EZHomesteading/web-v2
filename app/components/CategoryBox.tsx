@@ -36,7 +36,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 
     const url = qs.stringifyUrl(
       {
-        url: "/shop",
+        url: "/market",
         query: updatedQuery,
       },
       { skipNull: true }

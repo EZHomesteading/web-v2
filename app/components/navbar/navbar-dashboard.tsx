@@ -145,7 +145,7 @@ function classNames(...classes: string[]) {
 }
 const Navbar = ({ user }: p) => {
   return (
-    <div className="sheet">
+    <div className="sheet py-2 xl: p-0">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">
         <Container>
           <div className="flex flex-row items-center justify-end  gap-3 md:gap-0">
