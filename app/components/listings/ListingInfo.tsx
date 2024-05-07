@@ -2,13 +2,21 @@
 
 import { UserInfo } from "@/next-auth";
 import { useRouter } from "next/navigation";
+import FollowButton from "../follow/followButton";
 
 interface ListingInfoProps {
   user: UserInfo;
   description: string;
+  followUserId: string;
+  following: any;
 }
 
-const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
+const ListingInfo: React.FC<ListingInfoProps> = ({
+  user,
+  description,
+  followUserId,
+  following,
+}) => {
   const router = useRouter();
 
   return (
@@ -30,8 +38,9 @@ const ListingInfo: React.FC<ListingInfoProps> = ({ user, description }) => {
             className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
-            <span>{user?.name}</span>
+            <span>{user?.name}</span>{" "}
           </span>
+          <FollowButton followUserId={followUserId} following={following} />
         </div>
       </div>
     </div>

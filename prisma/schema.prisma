@@ -36,6 +36,7 @@ type Times {
   close Int
 }
 
+
 model User {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   name                  String  @unique 
@@ -59,10 +60,11 @@ model User {
   seenMessages          Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
   
   favoriteIds           String[] @db.ObjectId
-
+  
   accounts              Account[]
   listings              Listing[]
   cart                  Cart[]
+  following             Following?
 
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
@@ -70,6 +72,14 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
 }
+
+model Following {
+  id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String @db.ObjectId
+  follows               String[]
+  user                   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId])
+  }
 
 
 model Account {
