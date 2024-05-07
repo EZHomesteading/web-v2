@@ -65,6 +65,7 @@ model User {
   listings              Listing[]
   cart                  Cart[]
   following             Following?
+  reviews               Reviews[]
 
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
@@ -80,6 +81,17 @@ model Following {
   user                   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([userId])
   }
+
+  model Reviews {
+  id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String @db.ObjectId
+  reviewedId            String @db.ObjectId
+  review                String
+  rating                Int
+  buyer                 Boolean 
+  user                   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  }
+
 
 
 model Account {
