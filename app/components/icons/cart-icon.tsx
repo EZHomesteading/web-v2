@@ -104,7 +104,7 @@ const CartIcon = ({ cart }: c) => {
       <Sheet>
         <SheetTrigger>
           <div className="relative">
-            <BsBasket className="w-7 h-7" />
+            <BsBasket className="w-8 h-8" />
             <div className="absolute top-[0px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
               {cart.length}
             </div>

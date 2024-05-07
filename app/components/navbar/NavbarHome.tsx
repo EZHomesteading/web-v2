@@ -9,9 +9,14 @@ const NavbarHome = ({ user }: p) => {
   return (
     <div className="absolute w-full z-10 text-white">
       <Container>
-        <div className="flex flex-row items-center justify-end sm:justify-between py-4">
-          <Logo /> {user ? <UserMenu user={user} /> : <AuthButtons />}
+        <div className="flex flex-row items-center py-4 justify-around md:justify-between">
+          <Logo /> {user && <UserMenu user={user} />}
         </div>
+        {!user && (
+          <div className="flex justify-end">
+            <AuthButtons />
+          </div>
+        )}
       </Container>
     </div>
   );

@@ -1,7 +1,7 @@
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 
-export default async function GetOrderNotificationInfo() {
+export default async function GetNavUser() {
   const currentUserr = await currentUser();
   if (!currentUserr) {
     return null;
