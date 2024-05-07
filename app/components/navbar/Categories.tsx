@@ -17,9 +17,7 @@ import { FaSeedling } from "react-icons/fa6";
 
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import Filters from "./filter.server";
-import { UserInfo } from "@/next-auth";
+import Filters from "./filter.client";
 
 export const categories = [
   {
