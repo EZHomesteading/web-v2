@@ -279,13 +279,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     <div>
       <div className={container}>
         <div className={body}>
-          <div className="flex items-center gap-1">
-            <div className="text-xs mb-1 text-gray-500 hidden sm:block">
-              {data.sender.name}
-            </div>
-            <div className="text-xs text-gray-400">
-              {format(new Date(data.createdAt), "p")}
-            </div>
+          <div className="text-xs text-gray-400 mx-1 mb-1">
+            {format(new Date(data.createdAt), "p")}
           </div>
           <div className={message}>
             <ImageModal
@@ -323,47 +318,35 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             )}
           </div>
           {isLast && isOwn && seenList.length > 0 && (
-            <div
-              className="
-            text-xs 
-            font-light 
-            text-gray-500
-            "
-            >
+            <div className="text-xs font-light text-gray-500">
               {`Seen by ${seenList}`}
             </div>
           )}
         </div>
       </div>
       {notOwn && isLast && data.messageOrder === "1" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden max-w-[90%] gap-y-2  items-end text-white py-2 px-3">
-              <button type="submit" onClick={onSubmit1} className="m">
-                Yes, That time works, Your order will be ready at that time.
-              </button>
-
-              <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
-              <button type="submit" onClick={onSubmit2} className="m">
-                No, that time does not work. Does{" "}
-                <span className="text-black">{validTime}</span> work instead? if
-                not, my hours of operation are
-              </button>
-
-              <button type="submit" onClick={onSubmit3} className="m">
-                My apologies, but one or more of these items is no longer
-                available, and this order has been canceled. Sorry for the
-                inconvenience. Feel free to delete this chat whenever you have
-                seen this message. If you do not delete this chat it will be
-                automatically deleted after 72 hours
-              </button>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+            <button type="submit" onClick={onSubmit1} className="m">
+              Yes, That time works, Your order will be ready at that time.
+            </button>
+            <DateState
+              hours={session?.data?.user.hours as ExtendedHours}
+              onSetTime={handleTime}
+            />
+            <button type="submit" onClick={onSubmit2} className="m">
+              No, that time does not work. Does{" "}
+              <span className="text-black">{validTime}</span> work instead? if
+              not, my hours of operation are
+            </button>
+            <button type="submit" onClick={onSubmit3} className="m">
+              My apologies, but one or more of these items is no longer
+              available, and this order has been canceled. Sorry for the
+              inconvenience. Feel free to delete this chat whenever you have
+              seen this message. If you do not delete this chat it will be
+              automatically deleted after 72 hours
+            </button>
           </div>
         </div>
       )}
