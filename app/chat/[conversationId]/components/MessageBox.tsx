@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
@@ -17,6 +17,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import ReviewButton from "@/app/components/ui/reviewButton";
 import { Outfit } from "next/font/google";
+import { IoTrash } from "react-icons/io5";
+import ConfirmModal from "./ConfirmModal";
+import CancelModal from "./CancelModal";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -27,6 +30,7 @@ interface MessageBoxProps {
   convoId: string;
   otherUsersId: any;
   order: any;
+  otherUserRole: string;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -35,12 +39,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   convoId,
   otherUsersId,
   order,
+  otherUserRole,
 }) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
   const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
-
+  const [cancel, setCancel] = useState(true);
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
 
@@ -48,9 +54,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
     .join(", ");
-
+  if (!session.data?.user?.id) {
+    return null;
+  }
   const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");
-  const avatar = clsx(isOwn && "order-2");
   const body = clsx("flex flex-grow flex-col ga", isOwn && "items-end");
   const message = clsx(
     `text-xs md:text-sm w-fit ${outfit.className}`,
@@ -262,7 +269,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     const date = formatTime(childTime);
     setValidTime(date);
   };
-
+  useEffect(() => {
+    if (
+      (data.messageOrder === "4" && isLast) ||
+      (data.messageOrder === "7" && isLast) ||
+      (data.messageOrder === "15" && isLast) ||
+      (data.messageOrder === "9" && isLast) ||
+      (data.messageOrder === "18" && isLast) ||
+      (data.messageOrder === "19" && isLast) ||
+      (data.messageOrder === "17" && isLast) ||
+      (data.messageOrder === "12" && isLast) ||
+      (data.messageOrder === "1.1" && isLast)
+    ) {
+      setCancel(false);
+    }
+  }),
+    [order];
   const hoursButton = () => {
     return (
       <span>
@@ -278,6 +300,38 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   return (
     <div>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+      />
+      <CancelModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        order={order}
+        otherUser={otherUsersId}
+        convoId={convoId}
+        otherUserRole={otherUserRole}
+      />
+      {cancel === true && isLast ? (
+        <button
+          type="submit"
+          onClick={() => setConfirmOpen(true)}
+          // onTouchMoveCapture={}
+          className="
+ rounded-full 
+ p-2 
+ bg-sky-500 
+ cursor-pointer 
+ hover:bg-sky-600 
+ mt-2
+ ml-1
+ mr-1
+ absolute top-[100px] right-2
+"
+        >
+          Cancel
+        </button>
+      ) : null}
       <div className={container}>
         <div className={body}>
           <div className="text-xs text-gray-400 mx-1 mb-1">
@@ -319,10 +373,40 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             )}
           </div>
           {data.messageOrder === "1.1" && isOwn ? (
-            <ReviewButton user={otherUsersId} buyer={false} />
+            <div className="flex flex-row absolute top-[100px] right-2">
+              <ReviewButton
+                buyerId={session.data?.user?.id}
+                sellerId={otherUsersId}
+              />{" "}
+              <div>
+                <div
+                  onClick={() => setConfirmOpen(true)}
+                  className="  gap-3 items-center cursor-pointer hover:opacity-75 "
+                >
+                  <div className="w-10 h-10 ml-2 bg-neutral-100 rounded-full text-black flex items-center justify-center">
+                    <IoTrash size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : null}
           {data.messageOrder === "1.1" && notOwn ? (
-            <ReviewButton user={otherUsersId} buyer={true} />
+            <div className="flex flex-row absolute top-[100px] right-2 ">
+              <ReviewButton
+                buyerId={otherUsersId}
+                sellerId={session.data?.user?.id}
+              />
+              <div>
+                <div
+                  onClick={() => setConfirmOpen(true)}
+                  className=" gap-3 items-center cursor-pointer hover:opacity-75"
+                >
+                  <div className="w-10 h-10 ml-2 bg-neutral-100 rounded-full text-black flex items-center justify-center">
+                    <IoTrash size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : null}
 
           {isLast && isOwn && seenList.length > 0 && (
