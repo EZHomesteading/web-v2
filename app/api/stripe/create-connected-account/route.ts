@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       email: user?.email,
       business_profile: {
         name: user?.name,
-        url: `https.ezhomesteading.vercel.app/store/${user?.id}`,
+        url: `https://www.ezhomesteading.com/store/${user?.id}`,
         product_description: "Agriculture and Farming",
         mcc: "0763",
       },

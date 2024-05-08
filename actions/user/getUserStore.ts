@@ -17,7 +17,20 @@ export default async function getUserStore(params: Params) {
         name: true,
         firstName: true,
         image: true,
-        listings: true,
+        listings: {
+          select: {
+            imageSrc: true,
+            title: true,
+            price: true,
+            id: true,
+            quantityType: true,
+            location: {
+              select: {
+                address: true,
+              },
+            },
+          },
+        },
         sellerReviews: {
           select: {
             id: true,
