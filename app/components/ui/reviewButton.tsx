@@ -7,21 +7,21 @@ import { useState } from "react";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 interface StatusProps {
-  user: any;
-  buyer: boolean;
+  buyerId: string;
+  sellerId: string;
 }
 
-const ReviewButton = ({ user, buyer }: StatusProps) => {
+const ReviewButton = ({ buyerId, sellerId }: StatusProps) => {
   return (
     <SheetCartC>
-      <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
+      <SheetTrigger className="border-[1px] bg-neutral-100 text-black px-2 py-2 rounded-lg shadow-lg">
         Write a review
       </SheetTrigger>
       <SheetContentF
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
-        user={user}
-        buyer={buyer}
+        sellerId={sellerId}
+        buyerId={buyerId}
       ></SheetContentF>
     </SheetCartC>
   );

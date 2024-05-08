@@ -60,88 +60,92 @@ const sheetVariants = cva(
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  user: any;
-  buyer: boolean;
+  sellerId: string;
+  buyerId: string;
 }
 
 const SheetContentF = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentCProps
->(({ side = "right", className, children, user, buyer, ...props }, ref) => {
-  const [rating, setRating] = React.useState(0);
-  const [text, setText] = React.useState("");
-  const [showSheet, setShowSheet] = React.useState(true);
+>(
+  (
+    { side = "right", className, children, sellerId, buyerId, ...props },
+    ref
+  ) => {
+    const [rating, setRating] = React.useState(0);
+    const [text, setText] = React.useState("");
+    const [showSheet, setShowSheet] = React.useState(true);
 
-  const handleRatingChange = (newRating: any) => {
-    setRating(newRating);
-    console.log(`New rating: ${newRating}`);
-  };
+    const handleRatingChange = (newRating: any) => {
+      setRating(newRating);
+      console.log(`New rating: ${newRating}`);
+    };
 
-  const handleTextChange = (e: any) => {
-    setText(e.target.value);
-  };
+    const handleTextChange = (e: any) => {
+      setText(e.target.value);
+    };
 
-  const handleSubmit = () => {
-    if (rating === 0 || text.trim() === "") {
-      console.log("Please enter a rating and text before submitting.");
-      return;
-    }
-    console.log("Typed text:", text);
-    axios.post("/api/review", {
-      rating: rating,
-      review: text,
-      reviewedId: user,
-      buyer: buyer,
-    });
-    // You can perform additional actions with the text here
-    closeSheet();
-  };
+    const handleSubmit = () => {
+      if (rating === 0 || text.trim() === "") {
+        console.log("Please enter a rating and text before submitting.");
+        return;
+      }
+      console.log("Typed text:", text);
+      axios.post("/api/review", {
+        rating: rating,
+        review: text,
+        sellerId: sellerId,
+        buyerId: buyerId,
+      });
+      // You can perform additional actions with the text here
+      closeSheet();
+    };
 
-  const closeSheet = () => {
-    setShowSheet(false);
-  };
+    const closeSheet = () => {
+      setShowSheet(false);
+    };
 
-  if (!showSheet) return null;
-  console.log(user);
-  return (
-    <SheetPortalC>
-      <SheetOverlayC />
-      <SheetPrimitive.Content
-        ref={ref}
-        className={cn(sheetVariants({ side }), className)}
-        {...props}
-      >
-        <div className="rounded-lg lg:w-1/2 lg:h-1/3 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-          <div>Write your review</div>
-          <div>
-            <h2>Star Rating</h2>
-            <ReactStars
-              count={5}
-              size={24}
-              color2={"#ffd700"}
-              value={rating}
-              onChange={handleRatingChange}
-              half={false}
-            />
+    if (!showSheet) return null;
+    return (
+      <SheetPortalC>
+        <SheetOverlayC />
+        <SheetPrimitive.Content
+          ref={ref}
+          className={cn(sheetVariants({ side }), className)}
+          {...props}
+        >
+          <div className="rounded-lg lg:w-1/2 lg:h-1/3 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
+            <div>Write your review</div>
+            <div>
+              <h2>Star Rating</h2>
+              <ReactStars
+                count={5}
+                size={24}
+                color2={"#ffd700"}
+                value={rating}
+                onChange={handleRatingChange}
+                half={false}
+              />
+            </div>
+            <textarea
+              className="w-[98%] h-[60%] m-2 resize-none p-2"
+              value={text}
+              onChange={handleTextChange}
+            ></textarea>
+            <div>
+              <SheetCloseC>
+                <button className="m-5">Close</button>
+              </SheetCloseC>
+              <button className="m-5" onClick={handleSubmit}>
+                Submit
+              </button>
+            </div>
           </div>
-          <textarea
-            className="w-[98%] h-[60%] m-2 resize-none p-2"
-            value={text}
-            onChange={handleTextChange}
-          ></textarea>
-          <div>
-            <SheetCloseC>
-              <button className="m-5">Close</button>
-            </SheetCloseC>
-            <button className="m-5" onClick={handleSubmit}>
-              Submit
-            </button>
-          </div>
-        </div>
-      </SheetPrimitive.Content>
-    </SheetPortalC>
-  );
-});
+        </SheetPrimitive.Content>
+      </SheetPortalC>
+    );
+  }
+);
 SheetContentF.displayName = SheetPrimitive.Content.displayName;
 
 export {
