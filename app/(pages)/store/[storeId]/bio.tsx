@@ -38,7 +38,7 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
-const Bio = ({ user, reviews }: Props) => {
+const Bio = ({ user }: Props) => {
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
       year: "numeric",
@@ -48,9 +48,9 @@ const Bio = ({ user, reviews }: Props) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", options);
   };
-  const counts = getReviewCounts(reviews || []);
-  const total = reviews.length || 0;
-  const averageRating = getAverageRating(reviews || []);
+  const counts = getReviewCounts(user?.sellerReviews || []);
+  const total = user?.sellerReviews.length || 0;
+  const averageRating = getAverageRating(user?.sellerReviews || []);
   return (
     <Sheet>
       <SheetTrigger>
@@ -191,18 +191,16 @@ const Bio = ({ user, reviews }: Props) => {
               <h3 className="sr-only">Recent reviews</h3>
 
               <div className="flow-root">
-                {/* <div className="-my-12 divide-y divide-gray-200">
-                  {reviews.map(async (review: any) => {
-                    const user = await getUserById({ userId: review.userId });
-
+                <div className="-my-12 divide-y divide-gray-200">
+                  {user.sellerReviews.map(async (review: any) => {
                     return (
                       <div key={review.id} className="py-12">
                         <div className="flex items-center">
-                          {user && <Avatar user={user} />}
+                          {review?.buyer.name && <Avatar user={review.buyer} />}
                           <div className="ml-4">
                             {user && (
                               <h4 className="text-sm font-bold text-gray-900">
-                                {user.name}
+                                {review?.buyer.name}
                               </h4>
                             )}
                             <div className="mt-1 flex items-center">
@@ -232,7 +230,7 @@ const Bio = ({ user, reviews }: Props) => {
                       </div>
                     );
                   })}
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

@@ -14,22 +14,19 @@ const outfit = Outfit({
   style: "normal",
 });
 interface StorePageProps {
-  listings: any[];
   storeUser: any;
   user: any;
   emptyState: React.ReactNode;
   following: any;
-  reviews: any;
 }
 
 const StorePage = ({
-  listings,
   storeUser,
   user,
   emptyState,
   following,
-  reviews,
 }: StorePageProps) => {
+  console.log(storeUser);
   return (
     <ClientOnly>
       <Container>
@@ -58,7 +55,7 @@ const StorePage = ({
           </div>
 
           <div className="flex justify-center">
-            <Bio reviews={reviews} user={storeUser} />
+            <Bio user={storeUser} />
           </div>
         </div>
 
@@ -76,7 +73,7 @@ const StorePage = ({
               gap-8
             "
           >
-            {listings.map((listing: any) => (
+            {storeUser?.listings?.map((listing: any) => (
               <ListingCard user={storeUser} key={listing.id} data={listing} />
             ))}
           </div>

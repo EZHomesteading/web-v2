@@ -13,9 +13,7 @@ function classNames(...classes: string[]) {
 }
 
 interface p {
-  buyerRevs?: any;
   user?: any;
-  average: any;
 }
 function getReviewCounts(reviews: Reviews[]) {
   const counts = [1, 2, 3, 4, 5].reduce((acc, rating) => {
@@ -33,10 +31,11 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
-export default function ProfilePage({ buyerRevs, user, average }: p) {
-  const counts = getReviewCounts(buyerRevs || []);
-  const total = buyerRevs.length || 0;
-  const averageRating = getAverageRating(buyerRevs || []);
+export default function ProfilePage({ user }: p) {
+  const counts = getReviewCounts(user?.buyerReviews || []);
+  const total = user?.buyerReviews.length || 0;
+  const averageRating = getAverageRating(user?.buyerReviews || []);
+  console.log(user);
   return (
     <div className={`${outfit.className} min-h-screen bg`}>
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
@@ -136,18 +135,17 @@ export default function ProfilePage({ buyerRevs, user, average }: p) {
 
           <div className="flow-root">
             <div className="-my-12 divide-y divide-gray-200">
-              {buyerRevs.map(async (review: any) => {
-                const user = await getUserById({ userId: review.userId });
-
+              {user?.buyerReviews.map(async (review: any) => {
                 return (
                   <div key={review.id} className="py-12">
-                    <div className="flex items-center">
-                      {user && <Avatar user={user} />}
+                    <div className="flex flex-row items-start">
+                      {review.seller && <Avatar user={review.seller} />}
                       <div className="ml-4">
-                        {user && (
-                          <h4 className="text-sm font-bold text-gray-900">
-                            {user.name}
-                          </h4>
+                        {review.seller && (
+                          <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
+                            <h4 className="text-lg">{review.seller.name}</h4>
+                            {review.seller.firstName}
+                          </div>
                         )}
                         <div className="mt-1 flex items-center">
                           {[...Array(5)].map((_, rating) => (
