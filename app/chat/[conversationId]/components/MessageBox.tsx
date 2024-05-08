@@ -16,11 +16,8 @@ import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import { Outfit } from "next/font/google";
-const outfit = Outfit({
-  subsets: ["latin-ext"],
-  display: "swap",
-});
+import ReviewButton from "@/app/components/ui/reviewButton";
+
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
@@ -317,6 +314,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               </div>
             )}
           </div>
+          {data.messageOrder === "1.1" && isOwn ? (
+            <ReviewButton user={otherUsersId} buyer={false} />
+          ) : null}
+          {data.messageOrder === "1.1" && notOwn ? (
+            <ReviewButton user={otherUsersId} buyer={true} />
+          ) : null}
+
           {isLast && isOwn && seenList.length > 0 && (
             <div className="text-xs font-light text-gray-500">
               {`Seen by ${seenList}`}
