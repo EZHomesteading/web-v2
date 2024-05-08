@@ -36,13 +36,14 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   const onDelete = useCallback(() => {
     setIsLoading(true);
     console.log(order);
+    axios.post("/api/messages", {
+      message: "I have canceled this item, because of reasons",
+      messageOrder: "1.1",
+      conversationId: convoId,
+      otherUserId: otherUser,
+    });
     axios
-      .post("/api/messages", {
-        message: "I have canceled this item, because of reasons",
-        messageOrder: "1.1",
-        conversationId: convoId,
-        otherUserId: otherUser,
-      })
+      .post("/api/updateListingOnCancel", { order: order })
       .then(() => {
         if (session.data?.user.id === order.sellerId) {
           if (session.data?.user.role === "COOP") {

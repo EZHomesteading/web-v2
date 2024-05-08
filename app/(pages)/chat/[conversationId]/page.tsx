@@ -24,8 +24,6 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const otherUser: any = otherUsers?.toString();
   const userId = otherUser;
   const otherUserRole = await getUserRoleById({ userId });
-  console.log(otherUser);
-  console.log(otherUserRole);
 
   if (!conversation) {
     return (

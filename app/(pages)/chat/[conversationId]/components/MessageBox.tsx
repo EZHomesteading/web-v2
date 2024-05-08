@@ -54,6 +54,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     isOwn ? "message text-white" : "bg-gray-100 rounded-lg",
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
+  console.log("ORDEWRRRRR", order.quantity);
   const onSubmit1 = () => {
     axios.post("/api/messages", {
       message: `Yes, That time works, Your order will be ready at that time. at ${session.data?.user.location?.address}`,
@@ -93,6 +94,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     axios.post("/api/update-order", { orderId: order.id, status: 4 });
+    axios.post("/api/updateListingOnCancel", { order: order });
   };
   const onSubmit4 = () => {
     axios.post("/api/messages", {
