@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         },
       },
       individual: {
+        phone: user?.phoneNumber ?? "",
         address: {
           line1: user?.location?.address[0],
           city: user?.location?.address[1],
