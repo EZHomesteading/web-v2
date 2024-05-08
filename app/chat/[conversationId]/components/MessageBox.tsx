@@ -17,7 +17,11 @@ import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import ReviewButton from "@/app/components/ui/reviewButton";
-
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
