@@ -9,7 +9,9 @@ import axios from "axios";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
-const endpointSecret: string = process.env.STRIPE_WEBHOOK_SECRET!;
+
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
 export async function POST(request: NextRequest) {
   const sig = request.headers.get("stripe-signature");
 
@@ -23,15 +25,16 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    const body = await request.text();
-    event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
-  } catch (err: any) {
-    console.error("Error constructing event:", err);
-    return NextResponse.json({ error: err.message }, { status: 400 });
+    event = stripe.webhooks.constructEvent(
+      await request.text(),
+      sig,
+      endpointSecret
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Webhook error" }, { status: 400 });
   }
-  console.log("Webhook Payload:", await request.text());
-  console.log("Signature:", request.headers.get("stripe-signature"));
-  console.log("Endpoint Secret:", endpointSecret);
+
   switch (event.type) {
     case "payment_intent.succeeded":
       const pi = event.data.object.metadata as any;
