@@ -1,8 +1,7 @@
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import RentModal from "@/app/components/modals/listing-modal";
-import ToasterProvider from "@/providers/ToasterProvider";
-
+import { Toaster } from "./components/ui/sonner";
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
@@ -24,12 +23,12 @@ export default async function RootLayout({
       <html lang="en">
         <body>
           <ClientOnly>
-            <ToasterProvider />
             <RentModal />
             <SearchModal />
             <CartModal />
           </ClientOnly>
           <main>{children}</main>
+          <Toaster theme="dark" />
         </body>
       </html>
     </SessionProvider>

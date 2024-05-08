@@ -1,8 +1,7 @@
 "use client";
 
 import { SheetCartC } from "@/app/components/ui/sheet-cart";
-import { SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { useState } from "react";
+import { SheetTrigger } from "@/app/components/ui/sheet";
 
 import { ExtendedHours } from "@/next-auth";
 import CustomTime from "./DatePicker";

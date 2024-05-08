@@ -64,14 +64,18 @@ const SubToggle = () => {
         <span title="Disable push notifications for this device?">
           <BellRing
             onClick={() => setPushNotificationsEnabled(false)}
-            className={`cursor-pointer ${loading ? "opacity-10" : ""} `}
+            className={`cursor-pointer bg-inherit text-white ${
+              loading ? "opacity-10" : ""
+            } `}
           />
         </span>
       ) : (
         <span title="Enable push notifications for this device?">
           <BellOff
             onClick={() => setPushNotificationsEnabled(true)}
-            className={`cursor-pointer ${loading ? "opacity-10" : ""} `}
+            className={`cursor-pointer bg-slate-900 text-white ${
+              loading ? "opacity-10" : ""
+            } `}
           />
         </span>
       )}

@@ -1,12 +1,12 @@
 import { currentUser } from "@/lib/auth";
-import getUserWithSellOrders from "@/actions/user/getUserWithSellOrders";
+import GetUserWithSellOrders from "@/actions/user/getUserWithSellOrders";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import getUserById from "@/actions/user/getUserById";
 import { SafeListing } from "@/types";
 import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
 import { getStatusText } from "@/app/dashboard/order-status";
-import { Order, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -22,91 +22,101 @@ const formatPrice = (price: number): string => {
 
 const Page = async () => {
   let user = await currentUser();
-  const seller = await getUserWithSellOrders({ userId: user?.id });
+  const seller = await GetUserWithSellOrders({ userId: user?.id });
+
+  const renderedCards = await Promise.all(
+    seller?.sellerOrders
+      .filter(
+        (order) =>
+          order.status >= 17 || order.status === 9 || order.status === 0
+      )
+      .map(async (order) => {
+        const listingPromises = order.listingIds.map((id) =>
+          GetListingsByListingIds({ listingIds: [id] })
+        );
+        const listings = await Promise.all(listingPromises).then((results) =>
+          results.flat()
+        );
+
+        const buyer = await getUserById({ userId: order.userId });
+        const statusText = getStatusText(
+          order.status,
+          false,
+          buyer?.name || "(Deleted User)",
+          seller?.name || "(Deleted User)"
+        );
+
+        return (
+          <Card key={order.id} className="sheet shadow-lg mb-4">
+            <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
+              {buyer?.name}
+              <Link
+                href={`/chat/${order.conversationId}`}
+                className="absolute top-2 lg:top-0 right-2 "
+              >
+                <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
+                  Go to Conversation
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
+              {listings.flatMap((listing: SafeListing) => {
+                const quantities = JSON.parse(order.quantity);
+                const quantityObj = quantities.find(
+                  (q: any) => q.id === listing.id
+                );
+                const quantity = quantityObj ? quantityObj.quantity : 0;
+
+                return (
+                  <div
+                    key={listing.id}
+                    className="flex flex-row items-center gap-2"
+                  >
+                    <Image
+                      src={listing.imageSrc}
+                      alt={listing.title}
+                      width={50}
+                      height={50}
+                      className="rounded-lg object-cover aspect-square"
+                    />
+                    <p>
+                      {quantity} {listing.quantityType} of {listing.title}{" "}
+                    </p>
+                  </div>
+                );
+              })}
+              <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
+              <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
+            </CardContent>
+            <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
+              Status changed{" "}
+              {formatDistanceToNow(new Date(order.updatedAt), {
+                addSuffix: true,
+              })}
+              : {statusText}
+            </div>
+          </Card>
+        );
+      }) || []
+  );
 
   return (
     <div className="min-h-screen w-full flex flex-col items-start">
       <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
         Sell Order History
       </h1>{" "}
-      <Link className="px-2 py-4" href="/dashboard/order-history/buy">
-        <Button>Go to Buy Order History</Button>
-      </Link>{" "}
+      {user?.role !== UserRole.CONSUMER && (
+        <Link className="px-2 py-4" href="/dashboard/order-history/buy">
+          <Button>Go to Buy Order History</Button>
+        </Link>
+      )}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
-        {seller?.sellerOrders
-          .filter(
-            (order) =>
-              order.status >= 17 || order.status == 9 || order.status == 0
-          )
-          .map(async (order) => {
-            const listings = await GetListingsByListingIds({
-              listingIds: order.listingIds,
-            });
-            const buyer = await getUserById({ userId: order.userId });
-            const statusText = getStatusText(
-              order.status,
-              true,
-              buyer?.name || "(Deleted User)",
-              seller?.name || "(Deleted User)"
-            );
-            return (
-              <Card key={order.id} className="sheet shadow-lg mb-4">
-                <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100">
-                  {buyer?.name}
-                  <Link
-                    href={`/chat/${order.conversationId}`}
-                    className="absolute top-2 lg:top-0 right-2 "
-                  >
-                    <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
-                      Go to Conversation
-                    </Button>
-                  </Link>
-                </CardHeader>
-                <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-                  {listings.map(async (listing: SafeListing) => {
-                    const quantities = JSON.parse(order.quantity);
-
-                    const quantityObj = quantities.find(
-                      (q: any) => q.id === listing.id
-                    );
-                    const quantity = quantityObj ? quantityObj.quantity : 0;
-                    return (
-                      <div
-                        key={listing.id}
-                        className="flex flex-row items-center gap-2"
-                      >
-                        <Image
-                          src={listing.imageSrc}
-                          alt={listing.title}
-                          width={50}
-                          height={50}
-                          className="rounded-lg object-cover aspect-square"
-                        />
-                        <p>
-                          {quantity} {listing.quantityType} of {listing.title}{" "}
-                        </p>
-                      </div>
-                    );
-                  })}
-                  <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>{" "}
-                  <div>
-                    Current Pick Up Date: {formatTime(order.pickupDate)}
-                  </div>{" "}
-                </CardContent>{" "}
-                <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row text-sm text-black items-start relative">
-                  Status changed{" "}
-                  {formatDistanceToNow(new Date(order.updatedAt), {
-                    addSuffix: true,
-                  })}
-                  : {statusText}
-                </div>
-              </Card>
-            );
-          })}{" "}
-      </main>{" "}
+        {renderedCards}
+      </main>
     </div>
   );
 };
+
 export default Page;
 
 const getOrdinalSuffix = (day: number) => {

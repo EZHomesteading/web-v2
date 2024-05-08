@@ -14,7 +14,6 @@ const outfit = Outfit({
   style: "normal",
 });
 interface StorePageProps {
-  listings: any[];
   storeUser: any;
   user: any;
   emptyState: React.ReactNode;
@@ -22,12 +21,12 @@ interface StorePageProps {
 }
 
 const StorePage = ({
-  listings,
   storeUser,
   user,
   emptyState,
   following,
 }: StorePageProps) => {
+  console.log(storeUser);
   return (
     <ClientOnly>
       <Container>
@@ -74,7 +73,7 @@ const StorePage = ({
               gap-8
             "
           >
-            {listings.map((listing: any) => (
+            {storeUser?.listings?.map((listing: any) => (
               <ListingCard user={storeUser} key={listing.id} data={listing} />
             ))}
           </div>

@@ -4,34 +4,37 @@ import Link from "next/link";
 import UserCard from "@/app/components/listings/user-card";
 
 interface UserCardProps {
-  users: any;
+  vendors: any;
   emptyState: React.ReactNode;
   totalPages: number;
-  prevPage: number;
-  nextPage: number;
   isPageOutOfRange: boolean;
   pageNumbers: number[];
   currentPage: number;
 }
 
 const UserCards = ({
-  users,
+  vendors,
   emptyState,
   totalPages,
-  prevPage,
-  nextPage,
   isPageOutOfRange,
   pageNumbers,
   currentPage,
 }: UserCardProps) => {
+  console.log("vendors", vendors);
   return (
     <ClientOnly>
       <Container>
         {emptyState || (
-          <div className="pt-5 grid md:grid-cols-2 w-full gap-2">
-            {users.map((user: any) => (
-              <UserCard user={user} key={user.id} />
-            ))}
+          <div className="pt-5 grid md:grid-cols-1 w-full gap-2">
+            {vendors.length === 0 ? (
+              emptyState
+            ) : (
+              <div className="pt-5 grid md:grid-cols-2 w-full gap-2">
+                {vendors.map((user: any) => (
+                  <UserCard user={user} key={user.id} />
+                ))}
+              </div>
+            )}
           </div>
         )}
         {totalPages > 1 && (

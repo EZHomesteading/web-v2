@@ -17,9 +17,7 @@ import { FaSeedling } from "react-icons/fa6";
 
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import Filters from "./filter";
-import { UserInfo } from "@/next-auth";
+import Filters from "./filter.client";
 
 export const categories = [
   {
@@ -84,25 +82,15 @@ export const categories = [
   },
 ];
 interface Props {
-  user?: UserInfo;
+  user?: any;
 }
 
 const Categories = ({ user }: Props) => {
-  const params = useSearchParams();
-  const q = params?.get("q");
-  const pathname = usePathname();
-
-  const isShopPage = pathname === "/market" && "/";
-
-  if (!isShopPage) {
-    return null;
-  }
-
   return (
     <Container>
       <div className="flex flex-row items-center">
         <div>
-          <Filters />
+          <Filters user={user} />
         </div>
         <div className="w-full p-0 sm:pt-4">
           <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
@@ -111,7 +99,6 @@ const Categories = ({ user }: Props) => {
                 key={item.label}
                 label={item.label}
                 icon={item.icon}
-                selected={q === item.label}
               />
             ))}
           </div>

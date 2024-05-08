@@ -209,54 +209,11 @@ const Dashboard = async () => {
             Recent Purchases
           </CardHeader>
           <CardContent className="sheet">
-            {(() => {
-              const userElements = recentPurchases.map(async (order) => {
-                const user = await prisma.user.findUnique({
-                  where: { id: order.sellerId },
-                  select: {
-                    id: true,
-                    name: true,
-                    firstName: true,
-                    image: true,
-                  },
-                });
-                if (!user) return null;
-                return (
-                  <div
-                    key={order.id}
-                    className="flex justify-between items-center mb-2"
-                  >
-                    <div className="flex flex-row items-center">
-                      <div>
-                        <Avatar user={user} />
-                      </div>
-                      <div className="flex flex-col ml-2">
-                        <strong className="text-lg">{user.name}</strong>{" "}
-                        {user.firstName}
-                      </div>
-                    </div>
-                    <div className="text-red-400">
-                      -{formatPrice(order.totalPrice * 10)}
-                    </div>
-                  </div>
-                );
-              });
-              return Promise.all(userElements);
-            })()}
-          </CardContent>
-        </Card>
-        {user?.role == UserRole.CONSUMER ? (
-          <></>
-        ) : (
-          <Card className="w-full sheet shadow-lg">
-            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
-              Recent Sales
-            </CardHeader>
-            <CardContent className="sheet">
-              {(() => {
-                const userElements = recentSales.map(async (order) => {
+            {recentPurchases.length > 0 ? (
+              await Promise.all(
+                recentPurchases.map(async (order) => {
                   const user = await prisma.user.findUnique({
-                    where: { id: order.userId },
+                    where: { id: order.sellerId },
                     select: {
                       id: true,
                       name: true,
@@ -279,14 +236,63 @@ const Dashboard = async () => {
                           {user.firstName}
                         </div>
                       </div>
-                      <div className="text-green-500">
-                        +{formatPrice(order.totalPrice * 10)}
+                      <div className="text-red-400">
+                        -{formatPrice(order.totalPrice * 10)}
                       </div>
                     </div>
                   );
-                });
-                return Promise.all(userElements);
-              })()}
+                })
+              )
+            ) : (
+              <div>No recent purchases</div>
+            )}
+          </CardContent>
+        </Card>
+        {user?.role == UserRole.CONSUMER ? (
+          <></>
+        ) : (
+          <Card className="w-full sheet shadow-lg">
+            <CardHeader className={`${outfit.className} text-xl md:2xl`}>
+              Recent Sales
+            </CardHeader>
+            <CardContent className="sheet">
+              {recentSales.length > 0 ? (
+                await Promise.all(
+                  recentSales.map(async (order) => {
+                    const user = await prisma.user.findUnique({
+                      where: { id: order.userId },
+                      select: {
+                        id: true,
+                        name: true,
+                        firstName: true,
+                        image: true,
+                      },
+                    });
+                    if (!user) return null;
+                    return (
+                      <div
+                        key={order.id}
+                        className="flex justify-between items-center mb-2"
+                      >
+                        <div className="flex flex-row items-center">
+                          <div>
+                            <Avatar user={user} />
+                          </div>
+                          <div className="flex flex-col ml-2">
+                            <strong className="text-lg">{user.name}</strong>{" "}
+                            {user.firstName}
+                          </div>
+                        </div>
+                        <div className="text-green-500">
+                          +{formatPrice(order.totalPrice * 10)}
+                        </div>
+                      </div>
+                    );
+                  })
+                )
+              ) : (
+                <div>No recent sales</div>
+              )}
             </CardContent>
           </Card>
         )}

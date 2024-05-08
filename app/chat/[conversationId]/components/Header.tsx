@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
       />
       <div
         className="
-        bg-white 
+        bg-slate-900 
         w-full 
         flex 
         border-b-[1px] 
@@ -53,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
         justify-between 
         items-center 
         shadow-sm
+        text-white
       "
       >
         <div className="flex gap-3 items-center">

@@ -1,22 +1,16 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import { currentUser } from "@/lib/auth";
-
-interface ILocation {
-  type: "Point";
-  coordinates: [number, number];
-}
+import { UserRole } from "@prisma/client";
 
 export interface IListingsParams {
   lat?: string;
   lng?: string;
-  category?: string;
-  location?: ILocation;
   q?: string;
-  subCategory?: string;
   radius?: string;
-  description?: string;
+  pickProduceMyself?: string;
+  c?: string;
+  p?: string;
 }
 
 export default async function GetListings(
@@ -25,19 +19,74 @@ export default async function GetListings(
   perPage: number
 ) {
   try {
-    const { lat, lng, radius, q } = params;
+    const { lat, lng, radius, q, pickProduceMyself, c, p } = params;
 
     let query: any = {};
 
-    let listings = await prisma.listing.findMany({
-      where: query,
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        user: true,
-      },
-    });
+    if (pickProduceMyself) {
+      query.pickProduceMyself = pickProduceMyself === "true";
+    }
+    let listings;
+    if (c === "true" && p === "true") {
+      listings = await prisma.listing.findMany({
+        where: {
+          user: {
+            role: {
+              in: [UserRole.COOP, UserRole.PRODUCER],
+            },
+          },
+          ...query,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: true,
+        },
+      });
+    } else if (c === "true") {
+      console.log("entered case 2");
+      listings = await prisma.listing.findMany({
+        where: {
+          user: {
+            role: UserRole.COOP,
+          },
+          ...query,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: true,
+        },
+      });
+    } else if (p === "true") {
+      console.log("entered case 3");
+      listings = await prisma.listing.findMany({
+        where: {
+          user: {
+            role: UserRole.PRODUCER,
+          },
+          ...query,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: true,
+        },
+      });
+    } else {
+      console.log("entered case 4");
+      listings = await prisma.listing.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: true,
+        },
+      });
+    }
 
     if (lat && lng && radius) {
       const userLocation = {
@@ -71,31 +120,10 @@ export default async function GetListings(
       );
       listings = sortedListings.map(({ listing }) => listing);
     }
-    const user = await currentUser();
-    if (user?.role === "PRODUCER") {
-      const fuseOptions = { keys: ["user.role"], threshold: 0.3 };
-      const fuse = new Fuse(listings, fuseOptions);
-      const results = fuse.search("coop");
-      listings = results.map((result) => result.item);
-      //remove producer listings from listings array.
-    }
-    if (user?.role === "CONSUMER") {
-      const fuseOptions = { keys: ["user.role"], threshold: 0.3 };
-      const fuse = new Fuse(listings, fuseOptions);
-      const results = fuse.search("coop");
-      listings = results.map((result) => result.item);
-      //remove producer listings from listings array.
-    }
+
     if (q) {
       const fuseOptions = {
-        keys: [
-          "user.name",
-          "title",
-          "category",
-          "subCategory",
-          "description",
-          "user.role",
-        ],
+        keys: ["user.name", "title", "category", "subCategory", "description"],
         threshold: 0.3,
       };
       const fuse = new Fuse(listings, fuseOptions);

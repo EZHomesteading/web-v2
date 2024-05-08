@@ -15,7 +15,7 @@ interface Props {
   sOrders: navSellOrder[];
 }
 
-const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
+const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   const notifications: {
     text: string;
     conversationId: string;
@@ -67,7 +67,7 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
       <Sheet>
         <SheetTrigger className="cursor-pointer">
           <div className="relative">
-            <IoMdNotificationsOutline className="h-9 w-9 " />
+            <IoMdNotificationsOutline className="h-10 w-10" />
             <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
               {notifications.length}
             </div>

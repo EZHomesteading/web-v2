@@ -5,26 +5,27 @@ import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import AuthButtons from "./auth-buttons";
 import SearchNative from "./search-native";
-import GetOrderNotificationInfo from "@/actions/user/getUserNav";
-
-const Navbar = async () => {
-  const user = await GetOrderNotificationInfo();
-
+interface p {
+  user?: any;
+}
+const Navbar = ({ user }: p) => {
   return (
-    <div className="relative w-full z-10">
-      <div className="py-1 sm:py-4">
+    <div className="relative w-full z-10 pb-2">
+      <div className="py-2 sm:py-4">
         <Container>
-          <div className="flex flex-row items-center justify-end sm:justify-between gap-3 md:gap-0">
+          <div className="flex flex-row items-center justify-end sm:justify-center xl:justify-between gap-3 md:gap-0">
             <Logo />
-            <div className="hidden sm:block">
+            <div className="hidden xl:block">
               <FindListingsComponent />
             </div>
-            <SearchNative />
-            <div>{user ? <UserMenu user={user} /> : <AuthButtons />}</div>
+            <div className="flex flex-row items-center gap-x-4">
+              <SearchNative />
+              {user ? <UserMenu user={user} /> : <AuthButtons />}
+            </div>
           </div>
         </Container>
       </div>
-      <Categories />
+      <Categories user={user} />
     </div>
   );
 };

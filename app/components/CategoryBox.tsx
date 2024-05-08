@@ -36,7 +36,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 
     const url = qs.stringifyUrl(
       {
-        url: "/shop",
+        url: "/market",
         query: updatedQuery,
       },
       { skipNull: true }
@@ -45,17 +45,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     router.push(url);
   }, [label, router, params]);
 
-  const baseStyles = `
-  flex 
-  flex-col 
-  items-center 
-  justify-center 
-  gap-2
-  p-3
-  border-b-2
-  transition
-  cursor-pointer
-`;
+  const baseStyles = `flex flex-col items-center justify-center gap-2 p-3 border-b-2 transition cursor-pointer`;
 
   const selectedStyles = selected
     ? "border-b-neutral-800 dark:border-b-neutral-200"
@@ -64,18 +54,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`
-        flex 
-        flex-col 
-        items-center 
-        justify-center 
-        gap-2
-        px-3
-        hover:text-neutral-800
-        transition
-        cursor-pointer
-        ${selected ? "border-b-neutral-800" : "border-transparent"}
-        ${selected ? "text-neutral-800" : "text-neutral-500"}
+      className={`flex flex-col items-center justify-center gap-2 px-3 hover:text-neutral-800 transition cursor-pointer ${
+        selected ? "border-b-neutral-800" : "border-transparent"
+      } ${selected ? "text-neutral-800" : "text-neutral-500"}
       `}
     >
       <Icon size={20} />
