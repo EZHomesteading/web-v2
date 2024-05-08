@@ -58,7 +58,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     isOwn ? `m text-white` : `mnot`,
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
-  console.log("ORDEWRRRRR", order.quantity);
   const onSubmit1 = () => {
     axios.post("/api/messages", {
       message: `Yes, That time works, Your order will be ready at that time. at ${session.data?.user.location?.address}`,
