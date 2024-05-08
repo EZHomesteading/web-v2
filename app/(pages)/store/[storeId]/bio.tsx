@@ -56,7 +56,7 @@ const Bio = ({ user }: Props) => {
       <SheetTrigger>
         <Button>More Info</Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="overflow-y-auto">
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
             <Avatar user={user} />
