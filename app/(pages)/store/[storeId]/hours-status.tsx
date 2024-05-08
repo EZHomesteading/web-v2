@@ -23,7 +23,6 @@ const OpenStatus = ({ hours }: StatusProps) => {
   }
   const currentDayIndex = (new Date().getDay() + 6) % 7;
   const todayHours = hours[currentDayIndex as keyof ExtendedHours];
-  console.log("todayhours:", todayHours);
   const open = isOpenNow(todayHours);
   return (
     <span className={`text-xs ${open ? "text-green-500" : "text-red-500"}`}>

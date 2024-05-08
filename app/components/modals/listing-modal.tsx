@@ -8,7 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/app/components/ui/carousel";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
@@ -140,21 +140,9 @@ const ListingModal = () => {
 
   const onNext = () => {
     if (step === STEPS.DESCRIPTION && !product) {
-      toast("Let us know what produce you have!", {
+      toast.error("Let us know what produce you have!", {
         duration: 2000,
         position: "bottom-right",
-        style: {
-          border: "2px solid #4CAF50",
-          padding: "16px",
-          color: "#4CAF50",
-        },
-        className:
-          "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
-        icon: "❓",
-        ariaProps: {
-          role: "status",
-          "aria-live": "polite",
-        },
       });
       return;
     }

@@ -33,7 +33,11 @@ const UserMenu = ({ user }: Props) => {
   const listingModal = useRentModal();
   return (
     <Sheet>
-      <div className="flex flex-row items-center justify-end">
+      <div className="flex flex-row items-center justify-around min-w-screen gap-x-6 md:gap-x-3">
+        <GiBarn
+          className="h-9 w-9 block sm:hidden"
+          onClick={() => router.push("/")}
+        />
         <CartIcon cart={user?.cart} />
 
         <NotificationIcon
@@ -57,30 +61,12 @@ const UserMenu = ({ user }: Props) => {
             onClick={() => {
               listingModal.onOpen();
             }}
-            className="hover:shadow-md hover:bg-green-100 hover:text-green-950 transition p-4 md:py-1 md:px-2 flex items-center gap-3 rounded-full cursor-pointer text-sm"
           >
-            <CiSquarePlus className="text-sm sm:text-md md:text-2xl" />
+            <CiSquarePlus className="w-10 h-10" />
           </div>
         )}
-        <SheetTrigger>
-          <div
-            className="
-          p-2
-          md:px-2
-          sm:border-[1px] 
-          sm:border-neutral-200 
-          flex 
-          flex-row 
-          items-center 
-          gap-3 
-          rounded-lg 
-          cursor-pointer 
-          hover:shadow-md 
-          transition
-          "
-          >
-            <AiOutlineMenu />
-          </div>
+        <SheetTrigger className="border-[1px] p-[2px] rounded-md">
+          <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>
       <SheetContent className={`${outfit.className} bg pt-5`}>

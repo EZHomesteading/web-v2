@@ -4,7 +4,7 @@ interface Params {
   userId?: string;
 }
 
-export default async function getUserById(params: Params) {
+export default async function getUserWithSellOrders(params: Params) {
   try {
     const { userId } = params;
 

@@ -5,7 +5,7 @@ import StoreStep from "./store-step";
 import StripeStep from "./stripe-step";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
 import { ExtendedHours } from "@/next-auth";

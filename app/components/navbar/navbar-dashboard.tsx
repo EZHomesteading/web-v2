@@ -28,6 +28,10 @@ interface NavigationItem {
   icon: React.ElementType;
   current: boolean;
 }
+
+interface p {
+  user?: any;
+}
 const conNav: NavigationItem[] = [
   {
     name: "Dashboard",
@@ -45,6 +49,12 @@ const conNav: NavigationItem[] = [
     name: "Orders",
     href: "/dashboard/reservations",
     icon: FaOpencart,
+    current: false,
+  },
+  {
+    name: "Order History",
+    href: "/dashboard/order-history",
+    icon: VscHistory,
     current: false,
   },
   {
@@ -105,8 +115,8 @@ const vendorNav: NavigationItem[] = [
   },
 
   {
-    name: "Transaction History",
-    href: "/dashboard/history",
+    name: "Order History",
+    href: "/dashboard/order-history",
     icon: VscHistory,
     current: false,
   },
@@ -139,11 +149,9 @@ const vendorNav: NavigationItem[] = [
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-const Navbar = async () => {
-  const user = await GetOrderNotificationInfo();
-
+const Navbar = ({ user }: p) => {
   return (
-    <div className="sheet">
+    <div className="sheet py-2 xl: p-0">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">
         <Container>
           <div className="flex flex-row items-center justify-end  gap-3 md:gap-0">

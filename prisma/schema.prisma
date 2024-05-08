@@ -62,13 +62,19 @@ model User {
   favoriteIds           String[] @db.ObjectId
   
   accounts              Account[]
+
   listings              Listing[]
+
   cart                  Cart[]
+
   following             Following?
-  reviews               Reviews[]
+
+  buyerReviews          Reviews[] @relation("buyer")
+  sellerReviews         Reviews[] @relation("seller")
 
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
+
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
@@ -84,15 +90,14 @@ model Following {
 
   model Reviews {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
-  userId                String @db.ObjectId
-  reviewedId            String @db.ObjectId
+  buyerId               String @db.ObjectId
+  sellerId              String @db.ObjectId
   review                String
   rating                Int
-  buyer                 Boolean 
-  user                   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  buyer                 User @relation(name:"buyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
   }
-
-
 
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId

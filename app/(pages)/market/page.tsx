@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-import { currentUser } from "@/lib/auth";
 import ClientOnly from "../../components/client/ClientOnly";
 import getListingsApi from "@/actions/listing/getListingsApi";
 import getUserwithCart from "@/actions/user/getUserWithCart";
@@ -13,6 +12,8 @@ interface ShopProps {
     lng?: string;
     radius?: string;
     page?: string;
+    c?: string;
+    p?: string;
   };
 }
 
@@ -25,7 +26,14 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const { q = "", lat = "", lng = "", radius = "" } = searchParams || {};
+  const {
+    q = "",
+    lat = "",
+    lng = "",
+    radius = "",
+    p = "",
+    c = "",
+  } = searchParams || {};
   let page = parseInt(searchParams?.page as string, 10);
   page = !page || page < 1 ? 1 : page;
   const perPage = 36;
@@ -36,6 +44,8 @@ const ShopPage = async ({
       lat,
       lng,
       radius,
+      p,
+      c,
     },
     page,
     perPage
