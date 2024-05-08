@@ -42,6 +42,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
   const session = useSession();
@@ -305,8 +306,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClose={() => setConfirmOpen(false)}
       />
       <CancelModal
-        isOpen={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
+        isOpen={cancelOpen}
+        onClose={() => setCancelOpen(false)}
         order={order}
         otherUser={otherUsersId}
         convoId={convoId}
@@ -315,7 +316,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {cancel === true && isLast ? (
         <button
           type="submit"
-          onClick={() => setConfirmOpen(true)}
+          onClick={() => setCancelOpen(true)}
           // onTouchMoveCapture={}
           className="
  rounded-full 
