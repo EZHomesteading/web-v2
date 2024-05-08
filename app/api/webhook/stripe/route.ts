@@ -65,6 +65,15 @@ export async function POST(request: NextRequest) {
           const t = await Promise.all(
             quantities.map(async (item: { id: string; quantity: number }) => {
               const listing = await getListingById({ listingId: item.id });
+              if (!listing) {
+                return "no listing with that ID";
+              }
+              const listings = await prisma.listing.update({
+                where: { id: item.id },
+                data: {
+                  stock: listing.stock - item.quantity,
+                },
+              });
               return listing
                 ? `${item.quantity} ${listing.quantityType} of ${listing.title}`
                 : "";
