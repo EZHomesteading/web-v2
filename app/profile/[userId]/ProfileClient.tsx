@@ -31,7 +31,7 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
-export default function ProfilePage({ user }: p) {
+export default function ProfileClient({ user }: p) {
   const counts = getReviewCounts(user?.buyerReviews || []);
   const total = user?.buyerReviews.length || 0;
   const averageRating = getAverageRating(user?.buyerReviews || []);
