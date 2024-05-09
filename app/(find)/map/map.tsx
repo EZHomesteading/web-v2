@@ -263,9 +263,21 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
   };
+  useEffect(() => {
+    const disableDefaultTouchBehavior = (event: TouchEvent) => {
+      event.preventDefault();
+    };
 
+    window.addEventListener("touchmove", disableDefaultTouchBehavior, {
+      passive: false,
+    });
+
+    return () => {
+      window.removeEventListener("touchmove", disableDefaultTouchBehavior);
+    };
+  }, []);
   return (
-    <div className="relative">
+    <div className="relative touch-none">
       {!isDrawingEnabled && (
         <Button className="absolute top-1 right-1 z-10" onClick={startDrawing}>
           Start Drawing
