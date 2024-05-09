@@ -8,6 +8,7 @@ import { Outfit } from "next/font/google";
 import Avatar from "@/app/components/Avatar";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
+import { CiEdit } from "react-icons/ci";
 
 const outfit = Outfit({
   subsets: ["latin"],
