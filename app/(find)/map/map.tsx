@@ -278,7 +278,9 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   };
 
   return (
-    <div className="relative touch-none">
+    <div
+      className={`relative touch-none ${isDrawingEnabled ? "opacity-95" : ""}`}
+    >
       {!isDrawingEnabled && (
         <Button className="absolute top-1 right-1 z-10" onClick={startDrawing}>
           Start Drawing
