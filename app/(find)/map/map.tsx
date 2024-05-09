@@ -8,7 +8,12 @@ import { Outfit } from "next/font/google";
 import Avatar from "@/app/components/Avatar";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
-import { CiEdit } from "react-icons/ci";
+import { CiCircleQuestion, CiEdit } from "react-icons/ci";
+import { MdOutlineEditOff } from "react-icons/md";
+import { CiBookmarkRemove } from "react-icons/ci";
+import { IoCheckmark } from "react-icons/io5";
+import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
+import { PopoverContent } from "@radix-ui/react-popover";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -306,24 +311,75 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     <div
       className={`relative touch-none ${isDrawingEnabled ? "opacity-80 " : ""}`}
     >
+      <Popover>
+        <PopoverTrigger
+          className={`${outfit.className} absolute top-11 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+        >
+          <CiCircleQuestion className="mr-1" size={20} />
+          Drawing Tool Usage
+        </PopoverTrigger>
+        <PopoverContent className="z-10 bg-slate-800 text-white mt-1 ml-1 rounded-md">
+          <ul className={`${outfit.className} p-2 rounded-md text-xs`}>
+            <li className="flex flex-row">
+              - Click
+              <button className="ml-1 text-xs bg-teal-600 hover:bg-teal-900 flex flex-row items-center rounded-md px-1 ">
+                <CiEdit size={15} className="mr-1" />
+                Start Drawing
+              </button>
+            </li>
+            <li>- Click or press and drag a shape</li>
+            <li className="flex flex-row">
+              - Click{" "}
+              <button className="ml-1 text-xs bg-green-600 hover:bg-green-800 flex flex-row items-center rounded-md px-1 ">
+                <IoCheckmark size={15} className="ml-1" />
+                Apply
+              </button>
+            </li>
+            <li>- Click on a marker for more info</li>
+            <li className="flex flex-row">
+              - Click{" "}
+              <button className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 ">
+                <CiBookmarkRemove size={15} className="ml-1" />
+                Remove Filters
+              </button>
+              to remove drawing filters
+            </li>
+          </ul>
+        </PopoverContent>
+      </Popover>
       {!isDrawingEnabled && (
-        <Button className="absolute top-1 right-1 z-10" onClick={startDrawing}>
+        <Button
+          className="absolute top-1 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
+          onClick={startDrawing}
+        >
+          <CiEdit size={20} className="mr-1" />
           Start Drawing
         </Button>
       )}
       {isDrawingEnabled && (
-        <Button className="absolute top-1 right-1 z-10" onClick={stopDrawing}>
+        <Button
+          className="absolute top-1 right-1 z-10 p-1 text-xs md:text-sm bg-red-500 hover:bg-red-700"
+          onClick={stopDrawing}
+        >
+          <MdOutlineEditOff size={20} className="ml-1" />
           Stop Drawing
         </Button>
       )}
-      <Button className="absolute top-1 left-1 z-10" onClick={resetMap}>
-        Remove Filters
-      </Button>
+      {drawnShape && (
+        <Button
+          className="absolute top-1 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
+          onClick={resetMap}
+        >
+          <CiBookmarkRemove size={20} className="ml-1" />
+          Remove Filters
+        </Button>
+      )}
       {isApplyButtonVisible && (
         <Button
-          className="absolute top-11 right-1 z-10"
+          className="p-1 text-xs sm:text-sm absolute top-11 right-1 z-10 bg-green-600 hover:bg-green-800"
           onClick={applyDrawnShape}
         >
+          <IoCheckmark size={20} className="ml-1" />
           Apply
         </Button>
       )}
