@@ -7,10 +7,6 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 import ImageModal from "./ImageModal";
 import axios from "axios";
 import DateState from "./dateStates";
