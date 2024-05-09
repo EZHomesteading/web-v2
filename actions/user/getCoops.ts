@@ -4,11 +4,6 @@ import { UserRole } from "@prisma/client";
 
 const getCoops = async () => {
   const session = await auth();
-
-  if (!session?.user?.email) {
-    return [];
-  }
-
   try {
     const users = await prisma.user.findMany({
       orderBy: {
@@ -16,22 +11,34 @@ const getCoops = async () => {
       },
       where: {
         role: UserRole.COOP,
-        NOT: {
-          email: session.user.email,
+        NOT: session?.user?.email
+          ? {
+              email: session.user.email,
+            }
+          : {},
+        listings: {
+          some: {},
         },
       },
-      include: {
-        listings: true,
+      select: {
+        id: true,
+        name: true,
+        firstName: true,
+        image: true,
+        location: {
+          select: {
+            coordinates: true,
+          },
+        },
+        listings: {
+          select: {
+            imageSrc: true,
+          },
+        },
       },
     });
 
-    const coops = users.map((user) => ({
-      name: user.name,
-      location: user?.location || null,
-      listingsCount: user.listings.length,
-    }));
-
-    return coops;
+    return users;
   } catch (error: any) {
     return [];
   }

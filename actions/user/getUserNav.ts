@@ -1,16 +1,18 @@
+import authCache from "@/auth-cache";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 
 export default async function GetNavUser() {
-  const currentUserr = await currentUser();
-  if (!currentUserr) {
+  const session = await authCache();
+  const User = session?.user;
+  if (!User) {
     return null;
   }
 
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: currentUserr?.id,
+        id: User?.id,
       },
       select: {
         id: true,

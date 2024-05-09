@@ -1,69 +1,43 @@
 "use client";
-
 import {
   GoogleMap,
   MarkerF,
-  InfoWindow,
   useLoadScript,
+  DrawingManager,
 } from "@react-google-maps/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Loading from "@/app/components/secondary-loader";
-import ClientOnly from "@/app/components/client/ClientOnly";
-import EmptyState from "@/app/components/EmptyState";
-import UserCards from "./user-cards";
-import { Location } from "@prisma/client";
+import InfoWindowCarousel from "./info-window-carousel";
+import Avatar from "../../components/Avatar";
+import Link from "next/link";
+import { Button } from "../../components/ui/button";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["200"],
+});
 
 interface MapProps {
-  coops: {
-    name: string;
-    location: Location | null;
-    listingsCount: number;
-  }[];
-  producers: {
-    name: string;
-    location: Location | null;
-    listingsCount: number;
-  }[];
-  vendors: any;
-  searchParams?: {
-    page?: string;
-  };
-  totalvendors: number;
+  coops: any;
+  producers: any;
 }
 
-const VendorsMap = ({
-  coops,
-  producers,
-  vendors,
-  totalvendors,
-  searchParams,
-}: MapProps) => {
-  const [filteredVendors, setFilteredVendors] = useState<any>();
-
-  let page = parseInt(searchParams?.page as string, 10);
-  page = !page || page < 1 ? 1 : page;
-  const perPage = 20;
-  const totalPages = Math.ceil(totalvendors / perPage);
-  const isPageOutOfRange = page > totalPages;
-
-  const pageNumbers = [];
-  const offsetNumber = 3;
-
-  for (let i = page - offsetNumber; i <= page + offsetNumber; i++) {
-    if (i >= 1 && i <= totalPages) {
-      pageNumbers.push(i);
-    }
-  }
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+const ListingsMap = ({ coops, producers }: MapProps) => {
+  const [filteredCoops, setFilteredCoops] = useState<any>([]);
+  const [filteredProducers, setFilteredProducers] = useState<any>([]);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
+    name: string;
+    image: string;
+    firstName: string;
+    id: string;
+    images: string[];
   } | null>(null);
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-  });
-  const onBoundsChange = () => {};
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const infoWindowRef = useRef<HTMLDivElement | null>(null);
 
   const mapOptions: google.maps.MapOptions = {
     center: { lat: 36.8508, lng: -76.2859 },
@@ -80,51 +54,52 @@ const VendorsMap = ({
     scrollwheel: true,
     minZoom: 4,
   };
-  useEffect(() => {
-    if (map) {
-      const listener = map.addListener("bounds_changed", () => {
-        const bounds = map.getBounds();
-        if (bounds) {
-          const { south, west, north, east } = bounds.toJSON();
 
-          const filteredVendors = [...coops, ...producers].filter((user) => {
-            if (user?.location?.coordinates) {
-              const coordinates = user?.location.coordinates;
-              const [lng, lat] = coordinates;
-              return lng >= west && lng <= east && lat >= south && lat <= north;
-            } else {
-              return null;
-            }
-            return false;
-          });
-          // setFilteredVendors(filteredVendors);
-          console.log("1", vendors);
-          console.log("2", filteredVendors);
-          onBoundsChange();
-        }
-      });
-
-      return () => {
-        google.maps.event.removeListener(listener);
-      };
-    }
-  }, [map, coops, producers, onBoundsChange]);
-
-  const handleMarkerClick = (coordinate: { lat: number; lng: number }) => {
-    setSelectedMarker(coordinate);
+  const handleMarkerClick = (
+    coordinate: { lat: number; lng: number },
+    name: string,
+    images: string[],
+    firstName: string,
+    image: string,
+    id: string
+  ) => {
+    setSelectedMarker({ ...coordinate, name, images, image, firstName, id });
   };
 
   const handleInfoWindowClose = () => {
     setSelectedMarker(null);
   };
 
+  const handleMapClick = (event: google.maps.MapMouseEvent) => {
+    if (
+      infoWindowRef.current &&
+      !infoWindowRef.current.contains(event.domEvent.target as Node)
+    ) {
+      handleInfoWindowClose();
+    }
+  };
+
+  useEffect(() => {
+    if (selectedMarker && mapRef.current) {
+      const map = mapRef.current;
+      const markerPosition = new google.maps.LatLng(
+        selectedMarker.lat,
+        selectedMarker.lng
+      );
+      map.panTo(markerPosition);
+    }
+  }, [selectedMarker]);
   const coopInfo = coops?.map((coop: any) => ({
     coordinates: {
       lat: coop.location.coordinates[1],
       lng: coop.location.coordinates[0],
     },
     name: coop.name,
-    listingsCount: coop?.listingsCount,
+    firstName: coop?.firstName,
+    image: coop?.image,
+    id: coop.id,
+    images: coop?.listings?.map((listing: any) => listing.imageSrc) || [],
+    listingsCount: coop?.listings?.length ?? 0,
   }));
 
   const producerInfo = producers?.map((producer: any) => ({
@@ -132,39 +107,72 @@ const VendorsMap = ({
       lat: producer?.location.coordinates[1],
       lng: producer?.location.coordinates[0],
     },
+    firstName: producer?.firstName,
+    image: producer?.image,
     name: producer?.name,
-    listingsCount: producer?.listingsCount,
+    id: coopInfo.id,
+    images: producer?.listings?.map((listing: any) => listing.imageSrc) || [],
+    listingsCount: producer?.listings?.length ?? 0,
   }));
+
+  const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
+    null
+  );
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
+    libraries: ["drawing", "geometry"],
+  });
+
+  const onPolylineComplete = (polyline: google.maps.Polyline) => {
+    const coordinates = polyline.getPath().getArray();
+    setDrawnShape(coordinates);
+
+    const polygonPath = coordinates.map((latLng) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+
+    const polygon = new google.maps.Polygon({
+      paths: polygonPath,
+    });
+
+    const filteredCoops = coopInfo.filter((coop: any) => {
+      const coopLatLng = new google.maps.LatLng(
+        coop.coordinates.lat,
+        coop.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    const filteredProducers = producerInfo.filter((producer: any) => {
+      const coopLatLng = new google.maps.LatLng(
+        producer.coordinates.lat,
+        producer.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    setFilteredCoops(filteredCoops);
+    setFilteredProducers(filteredProducers);
+  };
 
   if (!isLoaded) {
     return <Loading />;
   }
 
   return (
-    <div className="flex ">
-      <div className="w-1/2">
-        <UserCards
-          vendors={vendors}
-          emptyState={
-            vendors.length === 0 ? (
-              <ClientOnly>
-                <EmptyState showReset />
-              </ClientOnly>
-            ) : null
-          }
-          totalPages={totalPages}
-          isPageOutOfRange={isPageOutOfRange}
-          pageNumbers={pageNumbers}
-          currentPage={1}
-        />
-      </div>
-      <div className="w-1/2">
-        <GoogleMap
-          mapContainerClassName="h-screen"
-          options={mapOptions}
-          onLoad={(map) => setMap(map)}
-        >
-          {producerInfo.map((producer, index) => (
+    <div className="relative">
+      <GoogleMap
+        onLoad={(map) => {
+          mapRef.current = map;
+        }}
+        mapContainerClassName="h-[95vh] w-screen"
+        options={mapOptions}
+        onClick={handleMapClick}
+      >
+        {producerInfo.map((producer: any, index: number) => {
+          return (
             <MarkerF
               key={`producer-${index}`}
               position={producer.coordinates}
@@ -173,13 +181,24 @@ const VendorsMap = ({
                 scaledSize: new window.google.maps.Size(40, 40),
                 anchor: new window.google.maps.Point(20, 20),
               }}
-              onClick={() => handleMarkerClick(producer.coordinates)}
               label={{
                 text: `${producer.listingsCount}`,
               }}
+              onClick={() => {
+                handleMarkerClick(
+                  producer.coordinates,
+                  producer.name,
+                  producer.images,
+                  producer.firstName,
+                  producer.image,
+                  producer.id
+                );
+              }}
             />
-          ))}
-          {coopInfo.map((coop, index) => (
+          );
+        })}
+        {coopInfo.map((coop: any, index: number) => {
+          return (
             <MarkerF
               key={`coop-${index}`}
               position={coop.coordinates}
@@ -191,24 +210,71 @@ const VendorsMap = ({
               label={{
                 text: `${coop.listingsCount}`,
               }}
-              onClick={() => handleMarkerClick(coop.coordinates)}
+              onClick={() => {
+                handleMarkerClick(
+                  coop.coordinates,
+                  coop.name,
+                  coop.images,
+                  coop.firstName,
+                  coop.image,
+                  coop.id
+                );
+              }}
             />
-          ))}
-          {selectedMarker && (
-            <InfoWindow
-              position={selectedMarker}
-              onCloseClick={handleInfoWindowClose}
-            >
-              <div>
-                <p>lat: {selectedMarker.lat}</p>
-                <p>lng: {selectedMarker.lng}</p>
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      </div>
+          );
+        })}
+        <DrawingManager
+          onPolylineComplete={onPolylineComplete}
+          options={{
+            drawingControl: true,
+            drawingControlOptions: {
+              position: google.maps.ControlPosition.TOP_CENTER,
+              drawingModes: [google.maps.drawing.OverlayType.POLYLINE],
+            },
+            polylineOptions: {
+              strokeColor: "#FFFFF",
+              strokeWeight: 2,
+              clickable: false,
+              editable: false,
+              zIndex: 1,
+            },
+          }}
+        />
+      </GoogleMap>
+      {selectedMarker && (
+        <div
+          ref={infoWindowRef}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-1/4 bg-white rounded-lg shadow-md transition-opacity duration-500 ease-in-out p-0 m-0"
+          style={{ opacity: selectedMarker ? 1 : 0 }}
+        >
+          <div className="flex items-start flex-col bg-slate-200 rounded-b-lg">
+            <InfoWindowCarousel
+              handleInfoWindowClose={handleInfoWindowClose}
+              images={selectedMarker.images}
+            />
+            <header className="flex flex-row p-1 relative w-full">
+              <Avatar user={selectedMarker} />
+
+              <ul className="flex flex-col ml-1 pl-1">
+                <h1 className={`${outfit.className} text-sm `}>
+                  {selectedMarker.name}
+                </h1>
+                <li className={`${outfit.className} text-xs text-gray-600`}>
+                  {selectedMarker.firstName}
+                </li>
+              </ul>
+              <Link
+                href={`/store/${selectedMarker.id}`}
+                className="absolute right-1 top-1"
+              >
+                <Button>Go to Store</Button>
+              </Link>
+            </header>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default VendorsMap;
+export default ListingsMap;
