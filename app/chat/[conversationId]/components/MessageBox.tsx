@@ -7,8 +7,6 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
-
-import Avatar from "@/app/components/Avatar";
 import ImageModal from "./ImageModal";
 import axios from "axios";
 import DateState from "./dateStates";
@@ -21,6 +19,7 @@ import { Outfit } from "next/font/google";
 import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -43,6 +42,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
   const session = useSession();
@@ -50,7 +50,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [cancel, setCancel] = useState(true);
   const isOwn = session.data?.user?.email === data?.sender?.email;
   const notOwn = session.data?.user?.email !== data?.sender?.email;
-
+  useEffect(() => {
+    if (
+      (data.messageOrder === "4" && isLast) ||
+      (data.messageOrder === "7" && isLast) ||
+      (data.messageOrder === "15" && isLast) ||
+      (data.messageOrder === "9" && isLast) ||
+      (data.messageOrder === "18" && isLast) ||
+      (data.messageOrder === "19" && isLast) ||
+      (data.messageOrder === "17" && isLast) ||
+      (data.messageOrder === "12" && isLast) ||
+      (data.messageOrder === "1.1" && isLast)
+    ) {
+      setCancel(false);
+    }
+  }),
+    [order];
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
@@ -270,22 +285,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     const date = formatTime(childTime);
     setValidTime(date);
   };
-  useEffect(() => {
-    if (
-      (data.messageOrder === "4" && isLast) ||
-      (data.messageOrder === "7" && isLast) ||
-      (data.messageOrder === "15" && isLast) ||
-      (data.messageOrder === "9" && isLast) ||
-      (data.messageOrder === "18" && isLast) ||
-      (data.messageOrder === "19" && isLast) ||
-      (data.messageOrder === "17" && isLast) ||
-      (data.messageOrder === "12" && isLast) ||
-      (data.messageOrder === "1.1" && isLast)
-    ) {
-      setCancel(false);
-    }
-  }),
-    [order];
+
   const hoursButton = () => {
     return (
       <span>
@@ -306,8 +306,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClose={() => setConfirmOpen(false)}
       />
       <CancelModal
-        isOpen={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
+        isOpen={cancelOpen}
+        onClose={() => setCancelOpen(false)}
         order={order}
         otherUser={otherUsersId}
         convoId={convoId}
@@ -316,7 +316,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {cancel === true && isLast ? (
         <button
           type="submit"
-          onClick={() => setConfirmOpen(true)}
+          onClick={() => setCancelOpen(true)}
           // onTouchMoveCapture={}
           className="
  rounded-full 
