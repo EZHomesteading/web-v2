@@ -60,6 +60,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     maxZoom: 13,
     scrollwheel: true,
     minZoom: 4,
+    gestureHandling: "greedy",
   };
 
   const handleMarkerClick = (
