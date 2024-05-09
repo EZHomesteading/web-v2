@@ -9,7 +9,7 @@ interface NavbarProps {
 
 const NavbarFind = ({ user }: NavbarProps) => {
   return (
-    <div className="relative w-full z-10 shadow-sm">
+    <div className="relative w-full z-10 shadow-sm h-[64px]">
       <div className="py-4">
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">

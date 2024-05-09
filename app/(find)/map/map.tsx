@@ -295,7 +295,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        mapContainerClassName="h-[95vh] w-screen"
+        mapContainerClassName="h-[calc(100vh-64px)] w-screen"
         options={mapOptions}
         onClick={handleMapClick}
       >
