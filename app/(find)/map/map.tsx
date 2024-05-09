@@ -43,6 +43,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
     libraries: ["drawing", "geometry"],
+    version: "3.55",
   });
 
   const mapOptions: google.maps.MapOptions = {
@@ -149,6 +150,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         zoomControl: false,
         scrollwheel: false,
         disableDoubleClickZoom: false,
+        gestureHandling: "none",
       });
     }
   };
@@ -167,6 +169,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         zoomControl: true,
         scrollwheel: true,
         disableDoubleClickZoom: false,
+        gestureHandling: "greedy",
       });
     }
   };
@@ -269,15 +272,15 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         </Button>
       )}
       {isDrawingEnabled && (
-        <Button className="absolute top-11 right-1 z" onClick={stopDrawing}>
+        <Button className="absolute top-1 right-1 z" onClick={stopDrawing}>
           Stop Drawing
         </Button>
       )}
-      <Button className="absolute top-10 left-1 z" onClick={resetMap}>
+      <Button className="absolute top-1 left-1 z" onClick={resetMap}>
         Remove Filters
       </Button>
       {isApplyButtonVisible && (
-        <Button className="absolute top-1 right-1 z" onClick={applyDrawnShape}>
+        <Button className="absolute top-11 right-1 z" onClick={applyDrawnShape}>
           Apply
         </Button>
       )}
