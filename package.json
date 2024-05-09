@@ -34,6 +34,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
     "@react-google-maps/api": "^2.19.3",
+    "@react-google-maps/marker-clusterer": "^2.19.2",
     "@shadcn/ui": "^0.0.4",
     "@stripe/connect-js": "^3.3.4",
     "@stripe/react-connect-js": "^3.3.5",

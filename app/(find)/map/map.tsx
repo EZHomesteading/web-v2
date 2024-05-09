@@ -1,6 +1,11 @@
 "use client";
 
-import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  MarkerClustererF,
+  MarkerF,
+  useLoadScript,
+} from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
 import Loading from "@/app/components/secondary-loader";
 import InfoWindowCarousel from "./info-window-carousel";
@@ -14,6 +19,7 @@ import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
+import { url } from "inspector";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -305,6 +311,8 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     }
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
+    handleCenterChanged();
+    handleZoomChanged();
   };
 
   return (
@@ -395,54 +403,100 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         options={mapOptions}
         onClick={handleMapClick}
       >
-        {filteredProducers.map((producer: any, index: number) => (
-          <MarkerF
-            key={`producer-${index}`}
-            position={producer.coordinates}
-            icon={{
-              url: "https://i.ibb.co/TMnKw45/circle-2.png",
-              scaledSize: new window.google.maps.Size(40, 40),
-              anchor: new window.google.maps.Point(20, 20),
-            }}
-            onClick={() =>
-              handleMarkerClick(
-                producer.coordinates,
-                producer.name,
-                producer.images,
-                producer.firstName,
-                producer.image,
-                producer.id
-              )
-            }
-            label={{
-              text: `${producer.listingsCount}`,
-            }}
-          />
-        ))}
-        {filteredCoops.map((coop: any, index: number) => (
-          <MarkerF
-            key={`coop-${index}`}
-            position={coop.coordinates}
-            icon={{
-              url: "https://i.ibb.co/qyq0dhb/circle.png",
-              scaledSize: new window.google.maps.Size(40, 40),
-              anchor: new window.google.maps.Point(20, 20),
-            }}
-            label={{
-              text: `${coop.listingsCount}`,
-            }}
-            onClick={() =>
-              handleMarkerClick(
-                coop.coordinates,
-                coop.name,
-                coop.images,
-                coop.firstName,
-                coop.image,
-                coop.id
-              )
-            }
-          />
-        ))}
+        <MarkerClustererF
+          averageCenter
+          enableRetinaIcons
+          gridSize={60}
+          maxZoom={8}
+          // styles={[
+          //   {
+          //     url: "https://i.ibb.co/qyq0dhb/circle.png",
+          //     width: 70,
+          //     height: 70,
+          //     textSize: 20,
+          //     textColor: "#ffffff",
+          //     fontFamily: "Arial, sans-serif",
+          //   },
+          // ]}
+          calculator={(markers) => ({
+            text: markers.length.toString(),
+            index: markers.length,
+          })}
+        >
+          {(clusterer) =>
+            filteredProducers.map((producer: any, index: number) => (
+              <MarkerF
+                key={`producer-${index}`}
+                position={producer.coordinates}
+                icon={{
+                  url: "https://i.ibb.co/TMnKw45/circle-2.png",
+                  scaledSize: new window.google.maps.Size(40, 40),
+                  anchor: new window.google.maps.Point(20, 20),
+                }}
+                onClick={() =>
+                  handleMarkerClick(
+                    producer.coordinates,
+                    producer.name,
+                    producer.images,
+                    producer.firstName,
+                    producer.image,
+                    producer.id
+                  )
+                }
+                label={{
+                  text: `${producer.listingsCount}`,
+                }}
+              />
+            ))
+          }
+        </MarkerClustererF>
+        <MarkerClustererF
+          averageCenter
+          enableRetinaIcons
+          gridSize={60}
+          maxZoom={4}
+          // styles={[
+          //   {
+          //     url: "https://i.ibb.co/qyq0dhb/circle.png",
+          //     width: 70,
+          //     height: 70,
+          //     textSize: 20,
+          //     textColor: "green",
+          //     fontFamily: "Arial, sans-serif",
+          //   },
+          // ]}
+          calculator={(markers) => ({
+            text: markers.length.toString(),
+            index: markers.length,
+          })}
+        >
+          {(clusterer) =>
+            filteredCoops.map((coop: any, index: number) => (
+              <MarkerF
+                key={`coop-${index}`}
+                position={coop.coordinates}
+                icon={{
+                  url: "https://i.ibb.co/qyq0dhb/circle.png",
+                  scaledSize: new window.google.maps.Size(40, 40),
+                  anchor: new window.google.maps.Point(20, 20),
+                }}
+                label={{
+                  text: `${coop.listingsCount}`,
+                }}
+                onClick={() =>
+                  handleMarkerClick(
+                    coop.coordinates,
+                    coop.name,
+                    coop.images,
+                    coop.firstName,
+                    coop.image,
+                    coop.id
+                  )
+                }
+              />
+            ))
+          }
+        </MarkerClustererF>
       </GoogleMap>
       {selectedMarker && (
         <div
