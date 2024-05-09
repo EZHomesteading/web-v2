@@ -39,6 +39,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const mapRef = useRef<google.maps.Map | null>(null);
   const infoWindowRef = useRef<HTMLDivElement | null>(null);
 
+  const [isApplyButtonVisible, setIsApplyButtonVisible] = useState(false);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
     libraries: ["drawing", "geometry"],
@@ -132,6 +133,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const [filteredCoops, setFilteredCoops] = useState<any>(coopInfo);
   const [filteredProducers, setFilteredProducers] = useState<any>(producerInfo);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
 
@@ -140,20 +142,38 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   }
 
   const startDrawing = () => {
-    setIsDrawing(true);
+    setIsDrawingEnabled(true);
+    if (mapRef.current) {
+      mapRef.current.setOptions({
+        draggable: false,
+        zoomControl: false,
+        scrollwheel: false,
+        disableDoubleClickZoom: false,
+      });
+    }
   };
-
   const stopDrawing = () => {
     setIsDrawing(false);
+    setIsDrawingEnabled(false);
     setPolylinePath([]);
+    setIsApplyButtonVisible(false);
     if (polylineRef.current) {
       polylineRef.current.setMap(null);
       polylineRef.current = null;
     }
+    if (mapRef.current) {
+      mapRef.current.setOptions({
+        draggable: true,
+        zoomControl: true,
+        scrollwheel: true,
+        disableDoubleClickZoom: false,
+      });
+    }
   };
 
   const handleMouseDown = (event: google.maps.MapMouseEvent) => {
-    if (isDrawing && event.latLng) {
+    if (isDrawingEnabled && event.latLng) {
+      setIsDrawing(true);
       const path = polylineRef.current?.getPath();
       if (path) {
         path.push(event.latLng);
@@ -174,47 +194,62 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     }
   };
   const handleMouseMove = (event: google.maps.MapMouseEvent) => {
-    if (isDrawing && polylineRef.current && event.latLng) {
-      const path = polylineRef.current.getPath();
-      path.push(event.latLng);
-      setPolylinePath(path.getArray());
+    if (isDrawing && event.latLng) {
+      const path = polylineRef.current?.getPath();
+      if (path) {
+        path.push(event.latLng);
+        setPolylinePath(path.getArray());
+      }
     }
   };
-
   const handleMouseUp = () => {
     if (isDrawing) {
       setIsDrawing(false);
-      const coordinates = polylineRef.current?.getPath().getArray() || [];
-      setDrawnShape(coordinates);
-
-      const polygonPath = coordinates.map((latLng) => ({
-        lat: latLng.lat(),
-        lng: latLng.lng(),
-      }));
-
-      const polygon = new google.maps.Polygon({
-        paths: polygonPath,
-      });
-
-      const filteredCoops = coopInfo.filter((coop: any) => {
-        const coopLatLng = new google.maps.LatLng(
-          coop.coordinates.lat,
-          coop.coordinates.lng
-        );
-
-        return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
-      });
-      const filteredProducers = producerInfo.filter((producer: any) => {
-        const coopLatLng = new google.maps.LatLng(
-          producer.coordinates.lat,
-          producer.coordinates.lng
-        );
-
-        return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
-      });
-      setFilteredCoops(filteredCoops);
-      setFilteredProducers(filteredProducers);
+      const path = polylineRef.current?.getPath();
+      if (path && path.getLength() > 2) {
+        const firstPoint = path.getAt(0);
+        const lastPoint = path.getAt(path.getLength() - 1);
+        if (firstPoint && lastPoint) {
+          path.push(firstPoint);
+          setPolylinePath(path.getArray());
+        }
+      }
+      setIsApplyButtonVisible(true);
     }
+  };
+
+  const applyDrawnShape = () => {
+    const coordinates = polylineRef.current?.getPath().getArray() || [];
+    setDrawnShape(coordinates);
+
+    const polygonPath = coordinates.map((latLng) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+
+    const polygon = new google.maps.Polygon({
+      paths: polygonPath,
+    });
+
+    const filteredCoops = coopInfo.filter((coop: any) => {
+      const coopLatLng = new google.maps.LatLng(
+        coop.coordinates.lat,
+        coop.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    const filteredProducers = producerInfo.filter((producer: any) => {
+      const coopLatLng = new google.maps.LatLng(
+        producer.coordinates.lat,
+        producer.coordinates.lng
+      );
+
+      return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
+    });
+    setFilteredCoops(filteredCoops);
+    setFilteredProducers(filteredProducers);
+    stopDrawing();
   };
 
   const resetMap = () => {
@@ -228,19 +263,24 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
 
   return (
     <div className="relative">
-      {!isDrawing && (
+      {!isDrawingEnabled && (
         <Button className="absolute top-1 right-1 z" onClick={startDrawing}>
           Start Drawing
         </Button>
       )}
-      {isDrawing && (
+      {isDrawingEnabled && (
         <Button className="absolute top-1 right-1 z" onClick={stopDrawing}>
           Stop Drawing
         </Button>
       )}
       {polylinePath.length > 0 && (
-        <Button className="absolute top-1 left-1 z" onClick={resetMap}>
+        <Button className="absolute top-1 left-20 z" onClick={resetMap}>
           Remove Shape
+        </Button>
+      )}
+      {isApplyButtonVisible && (
+        <Button className="absolute top-1 left-1 z" onClick={applyDrawnShape}>
+          Apply
         </Button>
       )}
 
