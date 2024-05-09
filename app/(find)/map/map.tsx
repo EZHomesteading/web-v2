@@ -154,8 +154,32 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   if (!isLoaded) {
     return <Loading />;
   }
+  const handleCenterChanged = () => {
+    if (mapRef.current) {
+      const newCenter = mapRef.current.getCenter();
+      if (newCenter) {
+        setCurrentCenter({
+          lat: newCenter.lat(),
+          lng: newCenter.lng(),
+        });
+      }
+    }
+  };
+
+  const handleZoomChanged = () => {
+    if (mapRef.current) {
+      const newZoom = mapRef.current.getZoom();
+      if (newZoom !== undefined) {
+        setZoom(newZoom);
+      }
+    }
+  };
 
   const startDrawing = () => {
+    handleCenterChanged();
+    handleZoomChanged();
+    setFilteredCoops([]);
+    setFilteredProducers([]);
     setIsDrawingEnabled(true);
     if (mapRef.current) {
       mapRef.current.setOptions({
@@ -196,7 +220,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         setPolylinePath(path.getArray());
       } else {
         const polyline = new google.maps.Polyline({
-          strokeColor: "#FFFFF",
+          strokeColor: "#008080",
           strokeWeight: 2,
           clickable: false,
           editable: false,
@@ -279,7 +303,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
 
   return (
     <div
-      className={`relative touch-none ${isDrawingEnabled ? "opacity-95" : ""}`}
+      className={`relative touch-none ${isDrawingEnabled ? "opacity-80 " : ""}`}
     >
       {!isDrawingEnabled && (
         <Button className="absolute top-1 right-1 z-10" onClick={startDrawing}>
