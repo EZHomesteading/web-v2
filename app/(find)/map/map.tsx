@@ -267,20 +267,23 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   return (
     <div className="relative">
       {!isDrawingEnabled && (
-        <Button className="absolute top-1 right-1 z" onClick={startDrawing}>
+        <Button className="absolute top-1 right-1 z-10" onClick={startDrawing}>
           Start Drawing
         </Button>
       )}
       {isDrawingEnabled && (
-        <Button className="absolute top-1 right-1 z" onClick={stopDrawing}>
+        <Button className="absolute top-1 right-1 z-10" onClick={stopDrawing}>
           Stop Drawing
         </Button>
       )}
-      <Button className="absolute top-1 left-1 z" onClick={resetMap}>
+      <Button className="absolute top-1 left-1 z-10" onClick={resetMap}>
         Remove Filters
       </Button>
       {isApplyButtonVisible && (
-        <Button className="absolute top-11 right-1 z" onClick={applyDrawnShape}>
+        <Button
+          className="absolute top-11 right-1 z-10"
+          onClick={applyDrawnShape}
+        >
           Apply
         </Button>
       )}

@@ -8,9 +8,9 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   return (
-    <>
+    <div className="max-h-sreen">
       <NavbarFind user={session?.user} />
       {children};
-    </>
+    </div>
   );
 }
