@@ -269,17 +269,15 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         </Button>
       )}
       {isDrawingEnabled && (
-        <Button className="absolute top-1 right-1 z" onClick={stopDrawing}>
+        <Button className="absolute top-11 right-1 z" onClick={stopDrawing}>
           Stop Drawing
         </Button>
       )}
-      {polylinePath.length > 0 && (
-        <Button className="absolute top-1 left-20 z" onClick={resetMap}>
-          Remove Shape
-        </Button>
-      )}
+      <Button className="absolute top-10 left-1 z" onClick={resetMap}>
+        Remove Filters
+      </Button>
       {isApplyButtonVisible && (
-        <Button className="absolute top-1 left-1 z" onClick={applyDrawnShape}>
+        <Button className="absolute top-1 right-1 z" onClick={applyDrawnShape}>
           Apply
         </Button>
       )}
