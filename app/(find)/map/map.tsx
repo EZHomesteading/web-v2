@@ -137,7 +137,19 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
+  useEffect(() => {
+    const disableDefaultTouchBehavior = (event: TouchEvent) => {
+      event.preventDefault();
+    };
 
+    window.addEventListener("touchmove", disableDefaultTouchBehavior, {
+      passive: false,
+    });
+
+    return () => {
+      window.removeEventListener("touchmove", disableDefaultTouchBehavior);
+    };
+  }, []);
   if (!isLoaded) {
     return <Loading />;
   }
@@ -263,19 +275,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
   };
-  useEffect(() => {
-    const disableDefaultTouchBehavior = (event: TouchEvent) => {
-      event.preventDefault();
-    };
 
-    window.addEventListener("touchmove", disableDefaultTouchBehavior, {
-      passive: false,
-    });
-
-    return () => {
-      window.removeEventListener("touchmove", disableDefaultTouchBehavior);
-    };
-  }, []);
   return (
     <div className="relative touch-none">
       {!isDrawingEnabled && (
