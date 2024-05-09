@@ -16,9 +16,9 @@ const getCoops = async () => {
               email: session.user.email,
             }
           : {},
-        listings: {
-          some: {},
-        },
+        // listings: {
+        //   some: {},
+        // },
       },
       select: {
         id: true,

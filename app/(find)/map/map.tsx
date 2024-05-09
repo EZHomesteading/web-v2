@@ -2,9 +2,10 @@
 
 import {
   GoogleMap,
-  MarkerClustererF,
+  OverlayView,
   MarkerF,
   useLoadScript,
+  MarkerClustererF,
 } from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
 import Loading from "@/app/components/secondary-loader";
@@ -19,8 +20,6 @@ import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
-import { url } from "inspector";
-
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -163,6 +162,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       window.removeEventListener("touchmove", disableDefaultTouchBehavior);
     };
   }, []);
+
   if (!isLoaded) {
     return <Loading />;
   }
@@ -183,6 +183,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       const newZoom = mapRef.current.getZoom();
       if (newZoom !== undefined) {
         setZoom(newZoom);
+        setSelectedMarker(null);
       }
     }
   };
@@ -305,15 +306,71 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   };
 
   const resetMap = () => {
-    if (currentShape) {
-      currentShape.setMap(null);
-      setCurrentShape(null);
-    }
-    setFilteredCoops(coopInfo);
-    setFilteredProducers(producerInfo);
     handleCenterChanged();
     handleZoomChanged();
+
+    setFilteredCoops(coopInfo);
+    setFilteredProducers(producerInfo);
   };
+  // const getStateClusterData = () => {
+  //   const stateClusterData: {
+  //     [state: string]: {
+  //       position: google.maps.LatLngLiteral;
+  //       count: number;
+  //       color: string;
+  //     };
+  //   } = {};
+
+  //   const allMarkers = [...filteredCoops, ...filteredProducers];
+
+  //   allMarkers.forEach((marker) => {
+  //     const state = marker.state;
+
+  //     if (stateClusterData[state]) {
+  //       stateClusterData[state].count++;
+  //     } else {
+  //       stateClusterData[state] = {
+  //         position: getStateCenter(state),
+  //         count: 1,
+  //         color: getRandomColor(),
+  //       };
+  //     }
+  //   });
+
+  //   return Object.values(stateClusterData).map((cluster) => ({
+  //     text: cluster.count.toString(),
+  //     index: 1,
+  //     position: cluster.position,
+  //     color: cluster.color,
+  //   }));
+  // };
+
+  // const getStateCenter = (state: string) => {
+  //   // implement logic to calculate the center coordinates of each state
+  //   const stateCenters: {
+  //     [state: string]: google.maps.LatLngLiteral;
+  //   } = {
+  //     California: { lat: 37.2718745, lng: -119.2704153 },
+  //     Texas: { lat: 31.9685988, lng: -99.9018131 },
+  //     Virginia: { lat: 37.4316, lng: -78.6569 },
+  //   };
+
+  //   return stateCenters[state] || { lat: 0, lng: 0 };
+  // };
+
+  // const getRandomColor = () => {
+  //   const letters = "0123456789ABCDEF";
+  //   let color = "#";
+  //   for (let i = 0; i < 6; i++) {
+  //     color += letters[Math.floor(Math.random() * 16)];
+  //   }
+  //   return color;
+  // };
+  // const getRandomSkew = () => {
+  //   const skewX = Math.random() * 0.2 - 0.1;
+  //   const skewY = Math.random() * 0.2 - 0.1;
+  //   return { skewX, skewY };
+  // };
 
   return (
     <div
@@ -321,7 +378,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfit.className} absolute top-11 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${outfit.className} absolute top-1 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool Usage
@@ -375,7 +432,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       )}
       {drawnShape && (
         <Button
-          className="absolute top-1 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
+          className="absolute top-11 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
           onClick={resetMap}
         >
           <CiBookmarkRemove size={20} className="ml-1" />
@@ -408,80 +465,21 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
           enableRetinaIcons
           gridSize={60}
           maxZoom={8}
-          // styles={[
-          //   {
-          //     url: "https://i.ibb.co/qyq0dhb/circle.png",
-          //     width: 70,
-          //     height: 70,
-          //     textSize: 20,
-          //     textColor: "#ffffff",
-          //     fontFamily: "Arial, sans-serif",
-          //   },
-          // ]}
-          calculator={(markers) => ({
-            text: markers.length.toString(),
-            index: markers.length,
-          })}
-        >
-          {(clusterer) =>
-            filteredProducers.map((producer: any, index: number) => (
-              <MarkerF
-                key={`producer-${index}`}
-                position={producer.coordinates}
-                icon={{
-                  url: "https://i.ibb.co/TMnKw45/circle-2.png",
-                  scaledSize: new window.google.maps.Size(40, 40),
-                  anchor: new window.google.maps.Point(20, 20),
-                }}
-                onClick={() =>
-                  handleMarkerClick(
-                    producer.coordinates,
-                    producer.name,
-                    producer.images,
-                    producer.firstName,
-                    producer.image,
-                    producer.id
-                  )
-                }
-                label={{
-                  text: `${producer.listingsCount}`,
-                }}
-              />
-            ))
-          }
-        </MarkerClustererF>
-        <MarkerClustererF
-          averageCenter
-          enableRetinaIcons
-          gridSize={60}
-          maxZoom={4}
-          // styles={[
-          //   {
-          //     url: "https://i.ibb.co/qyq0dhb/circle.png",
-          //     width: 70,
-          //     height: 70,
-          //     textSize: 20,
-          //     textColor: "green",
-          //     fontFamily: "Arial, sans-serif",
-          //   },
-          // ]}
-          calculator={(markers) => ({
-            text: markers.length.toString(),
-            index: markers.length,
-          })}
+          // calculator={getStateClusterData}
         >
           {(clusterer) =>
             filteredCoops.map((coop: any, index: number) => (
               <MarkerF
                 key={`coop-${index}`}
                 position={coop.coordinates}
-                icon={{
-                  url: "https://i.ibb.co/qyq0dhb/circle.png",
-                  scaledSize: new window.google.maps.Size(40, 40),
-                  anchor: new window.google.maps.Point(20, 20),
-                }}
                 label={{
                   text: `${coop.listingsCount}`,
+                  fontSize: "10px",
+                }}
+                icon={{
+                  url: "https://i.ibb.co/qyq0dhb/circle.png",
+                  scaledSize: new window.google.maps.Size(28, 28),
+                  anchor: new window.google.maps.Point(25, 22),
                 }}
                 onClick={() =>
                   handleMarkerClick(
@@ -497,11 +495,46 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
             ))
           }
         </MarkerClustererF>
+        <MarkerClustererF
+          averageCenter
+          enableRetinaIcons
+          gridSize={60}
+          maxZoom={8}
+          // calculator={getStateClusterData}
+        >
+          {(clusterer) =>
+            filteredProducers.map((producer: any, index: number) => (
+              <MarkerF
+                key={`producer-${index}`}
+                position={producer.coordinates}
+                label={{
+                  text: `${producer.listingsCount}`,
+                  fontSize: "10px",
+                }}
+                icon={{
+                  url: "https://i.ibb.co/TMnKw45/circle-2.png",
+                  scaledSize: new window.google.maps.Size(28, 28),
+                  anchor: new window.google.maps.Point(25, 22),
+                }}
+                onClick={() =>
+                  handleMarkerClick(
+                    producer.coordinates,
+                    producer.name,
+                    producer.images,
+                    producer.firstName,
+                    producer.image,
+                    producer.id
+                  )
+                }
+              />
+            ))
+          }
+        </MarkerClustererF>
       </GoogleMap>
       {selectedMarker && (
         <div
           ref={infoWindowRef}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-1/4 bg-white rounded-lg shadow-md transition-opacity duration-500 ease-in-out p-0 m-0"
+          className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/4 bg-white rounded-lg shadow-md transition-opacity duration-500 ease-in-out p-0 m-0"
           style={{ opacity: selectedMarker ? 1 : 0 }}
         >
           <div className="flex items-start flex-col bg-slate-200 rounded-b-lg">
