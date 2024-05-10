@@ -2,7 +2,6 @@ import { Outfit } from "next/font/google";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { currentUser } from "@/lib/auth";
 import { Order, UserRole } from "@prisma/client";
-import getUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
 import getUserWithOrders from "@/actions/user/getUserWithOrders";
 import Link from "next/link";
 import { Button } from "../components/ui/button";
@@ -11,6 +10,8 @@ import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
 import getFollowers from "@/actions/follow/getFollowers";
+import PayoutButton from "./payout-button";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -40,7 +41,6 @@ const sumTotalPrice = (sellerOrders: Order[]): number => {
 
 const Dashboard = async () => {
   const followers = await getFollowers();
-  console.log(followers);
   const currentUserr = await currentUser();
   let buyOrdersLength = 0;
   let sellOrdersLength = 0;
@@ -48,6 +48,7 @@ const Dashboard = async () => {
   let recentSales: Order[] = [];
   let recentPurchases: Order[] = [];
   const user = await getUserWithOrders({ userId: currentUserr?.id });
+
   buyOrdersLength =
     user?.buyerOrders?.filter(
       (order) => ![0, 4, 7, 12, 15, 19].includes(order.status)
@@ -75,40 +76,55 @@ const Dashboard = async () => {
   return (
     <main className="grid grid-rows-[auto_auto_1fr] h-fit md:h-screen pt-1 md:pt-12 gap-3 px-3 pb-3 md:grid-rows-[auto_auto_1fr]">
       <h1 className="text-3xl font-bold mb-3">Dashboard</h1>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-5 md:gap-x-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 md:gap-x-3 xl:grid-cols-3  2xl:grid-cols-6">
         {" "}
         {user?.role == UserRole.CONSUMER ? (
           <></>
         ) : (
-          <Card className="w-full aspect-video sheet shadow-lg">
-            <CardHeader
-              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
-            >
-              Total Sales
-              <DashPopover c="The amount you've made based on completed orders" />
-            </CardHeader>
-            <CardContent className="sheet h-fit">
-              <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-                {formatPrice(totalSales)}
-              </div>
-              <Link
-                className="flex justify-end items-end"
-                href="/dashboard/my-store/settings"
+          <>
+            <Card className="w-full h-64 sheet shadow-lg">
+              <CardHeader
+                className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
               >
-                <Button className="mt-2">
-                  {user?.role === UserRole.COOP ? <>Co-op</> : <>Producer</>}{" "}
-                  Settings
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+                Total Sales
+                <DashPopover c="The amount you've made based on completed orders" />
+              </CardHeader>
+              <CardContent className="sheet">
+                <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
+                  {formatPrice(totalSales)}
+                </div>
+                <Link
+                  className="flex justify-end items-end"
+                  href="/dashboard/my-store/settings"
+                >
+                  <Button className="mt-2">
+                    {user?.role === UserRole.COOP ? <>Co-op</> : <>Producer</>}{" "}
+                    Settings
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+            <Card className="w-full h-64 sheet shadow-lg">
+              <CardHeader
+                className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
+              >
+                Incoming Payout Total
+                <DashPopover c="Payouts are sent on a weekly basis Wednesday to Wednesday at 12:00AM on Friday. Any complete orders on Thursay or Friday will be paid out the next Friday." />
+              </CardHeader>
+              <CardContent className="sheet h-fit">
+                <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
+                  {formatPrice(totalSales)}
+                </div>
+              </CardContent>
+            </Card>
+          </>
         )}
         {user?.role == UserRole.CONSUMER ? (
           <></>
         ) : (
           <Card className="w-full sheet shadow-lg">
             <CardHeader
-              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+              className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
             >
               Ongoing Sell Orders
               <DashPopover c="Check all store orders and reply to buyer messages." />
@@ -126,9 +142,9 @@ const Dashboard = async () => {
             </CardContent>
           </Card>
         )}
-        <Card className="w-full aspect-video sheet shadow-lg">
+        <Card className="w-full h-64 sheet shadow-lg">
           <CardHeader
-            className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+            className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
           >
             Ongoing Buy Orders
             <DashPopover c="Check your orders and reply to seller messages." />
@@ -145,11 +161,11 @@ const Dashboard = async () => {
             </Link>
           </CardContent>
         </Card>
-        <Card className="w-full aspect-video sheet shadow-lg">
+        <Card className="w-full h-64 sheet shadow-lg">
           <CardHeader
             className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
           >
-            Followers{" "}
+            Followers
             <DashPopover c="People who follow you, you cannot remove followers." />
           </CardHeader>
           <CardContent className="sheet">
@@ -167,11 +183,11 @@ const Dashboard = async () => {
         {user?.role == UserRole.CONSUMER ? (
           <></>
         ) : (
-          <Card className="w-full aspect-video sheet shadow-lg">
+          <Card className="w-full h-64 sheet shadow-lg">
             <CardHeader
-              className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
+              className={`${outfit.className} text-[.95rem] 2xl:text-lg flex flex-row gap-x-1`}
             >
-              Projected Harvest Payout{" "}
+              Projected Harvest Payout
               <DashPopover c="This number is estimated based on the value and quantity of your your projected harvest & assumes you sell all of it." />
             </CardHeader>
             <CardContent className="sheet">
@@ -197,10 +213,14 @@ const Dashboard = async () => {
               className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
             >
               Overview
-              <DashPopover c="This graphy indicates your sales month over month." />
+              <DashPopover c="This graph indicates your sales month over month." />
             </CardHeader>
             <CardContent className="sheet p-0">
-              <Overview sellerOrders={user?.sellerOrders ?? []} />
+              {totalSales === 0 ? (
+                <div className="px-6 pb-6">You have not sold anything yet.</div>
+              ) : (
+                <Overview sellerOrders={user?.sellerOrders ?? []} />
+              )}
             </CardContent>
           </Card>
         )}

@@ -46,6 +46,7 @@ export const {
         session.user.seenMessageIds = token.seenMessageIds as string[];
         session.user.favoriteIds = token.favoriteIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
+        session.user.totalPaidOut = token.totalPaidOut as number;
       }
       return session;
     },
@@ -72,6 +73,7 @@ export const {
       token.seenMessageIds = existingUser.seenMessageIds;
       token.favoriteIds = existingUser.favoriteIds;
       token.subscriptions = existingUser.subscriptions;
+      token.totalPaidOut = existingUser.totalPaidOut;
       return token;
     },
   },
