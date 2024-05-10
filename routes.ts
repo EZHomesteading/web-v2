@@ -37,6 +37,7 @@ export const authRoutes = [
   "/auth/error",
   "/auth/reset",
   "/auth/new-password",
+  "/api/stripe/create-connected-account",
 ];
 
 export const updateRoutes = ["/auth/become-a-co-op", "/auth/become-a-producer"];

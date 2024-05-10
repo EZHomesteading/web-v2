@@ -53,7 +53,6 @@ export async function POST(request: Request) {
       where: { id: userId },
       data: { stripeAccountId: account.id },
     });
-    console.log(updatedUser);
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error("Error creating Stripe connected account:", error);

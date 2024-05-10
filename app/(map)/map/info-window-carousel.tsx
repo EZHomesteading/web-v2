@@ -8,7 +8,6 @@ import {
   CarouselPrevious,
 } from "@/app/components/ui/carousel";
 import Image from "next/image";
-import { useState } from "react";
 
 interface Props {
   images: string[];
@@ -51,31 +50,3 @@ const InfoWindowCarousel = ({ images, handleInfoWindowClose }: Props) => {
 };
 
 export default InfoWindowCarousel;
-
-// <div className="relative ">
-//   <Carousel>
-//     <CarouselContent>
-//       {images.map((image, index) => (
-//         <CarouselItem key={index}>
-//           <div>
-//             <Card>
-//               <CardContent>
-//                 <Image
-//                   src={image}
-//                   alt={`Carousel Image ${index + 1}`}
-//                   width={300}
-//                   height={300}
-//                   className="object-cover"
-//                 />
-//               </CardContent>
-//             </Card>
-//           </div>
-//         </CarouselItem>
-//       ))}
-//     </CarouselContent>
-//     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-//       <CarouselPrevious />
-//       <CarouselNext />
-//     </div>
-//   </Carousel>
-// </div>

@@ -60,8 +60,6 @@
     "haversine-distance": "^1.2.1",
     "leaflet": "^1.9.3",
     "lodash": "^4.17.21",
-    "lodash.debounce": "^4.0.8",
-    "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.363.0",
     "multer": "^1.4.5-lts.1",
     "next": "^14.1.3",

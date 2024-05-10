@@ -1,4 +1,4 @@
-import Map from "@/app/(find)/map/map";
+import Map from "@/app/(map)/map/map";
 import GetCoops from "@/actions/user/getCoops";
 import getProducers from "@/actions/user/getProducers";
 

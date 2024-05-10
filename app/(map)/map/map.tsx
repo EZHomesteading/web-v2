@@ -2,7 +2,6 @@
 
 import {
   GoogleMap,
-  OverlayView,
   MarkerF,
   useLoadScript,
   MarkerClustererF,
@@ -20,14 +19,28 @@ import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
+
+interface MapUser {
+  id: string;
+  name: string;
+  firstName: string | null;
+  location: {
+    coordinates: number[];
+  } | null;
+  image: string | null;
+  listings: {
+    imageSrc: string;
+  }[];
+}
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
 
 interface MapProps {
-  coops: any;
-  producers: any;
+  coops: MapUser[];
+  producers: MapUser[];
 }
 
 const VendorsMap = ({ coops, producers }: MapProps) => {
@@ -111,38 +124,53 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     }
   }, [selectedMarker]);
 
-  const coopInfo = coops?.map((coop: any) => ({
-    coordinates: {
-      lat: coop.location.coordinates[1],
-      lng: coop.location.coordinates[0],
-    },
-    name: coop.name,
-    firstName: coop?.firstName,
-    image: coop?.image,
-    id: coop.id,
-    images: coop?.listings?.map((listing: any) => listing.imageSrc) || [],
-    listingsCount: coop?.listings?.length ?? 0,
-  }));
+  const coopInfo = coops
+    ?.map((coop: MapUser) => {
+      if (!coop.location) return null;
 
-  const producerInfo = producers?.map((producer: any) => ({
-    coordinates: {
-      lat: producer?.location.coordinates[1],
-      lng: producer?.location.coordinates[0],
-    },
-    firstName: producer?.firstName,
-    image: producer?.image,
-    name: producer?.name,
-    id: coopInfo.id,
-    images: producer?.listings?.map((listing: any) => listing.imageSrc) || [],
-    listingsCount: producer?.listings?.length ?? 0,
-  }));
+      return {
+        coordinates: {
+          lat: coop.location.coordinates[1],
+          lng: coop.location.coordinates[0],
+        },
+        name: coop.name,
+        firstName: coop?.firstName,
+        image: coop?.image,
+        id: coop.id,
+        images:
+          coop?.listings?.map(
+            (listing: { imageSrc: string }) => listing.imageSrc
+          ) || [],
+        listingsCount: coop?.listings?.length ?? 0,
+      };
+    })
+    .filter(Boolean);
+
+  const producerInfo = producers
+    ?.map((producer: MapUser) => {
+      if (!producer.location) return null;
+      return {
+        coordinates: {
+          lat: producer.location.coordinates[1],
+          lng: producer.location.coordinates[0],
+        },
+        name: producer.name,
+        firstName: producer?.firstName,
+        image: producer?.image,
+        id: producer.id,
+        images:
+          producer?.listings?.map(
+            (listing: { imageSrc: string }) => listing.imageSrc
+          ) || [],
+        listingsCount: producer?.listings?.length ?? 0,
+      };
+    })
+    .filter(Boolean);
 
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
-  const [currentShape, setCurrentShape] = useState<google.maps.Polyline | null>(
-    null
-  );
+
   const [filteredCoops, setFilteredCoops] = useState<any>(coopInfo);
   const [filteredProducers, setFilteredProducers] = useState<any>(producerInfo);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -383,7 +411,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool Usage
         </PopoverTrigger>
-        <PopoverContent className="z-10 bg-slate-800 text-white mt-1 ml-1 rounded-md">
+        <PopoverContent className=" bg-slate-800 text-white mt-1 ml-1 rounded-md z">
           <ul className={`${outfit.className} p-2 rounded-md text-xs`}>
             <li className="flex flex-row">
               - Click
@@ -479,6 +507,11 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
                 icon={{
                   url: "https://i.ibb.co/qyq0dhb/circle.png",
                   scaledSize: new window.google.maps.Size(28, 28),
+                  size: {
+                    height: 28,
+                    width: 28,
+                    equals: () => true,
+                  },
                   anchor: new window.google.maps.Point(25, 22),
                 }}
                 onClick={() =>
