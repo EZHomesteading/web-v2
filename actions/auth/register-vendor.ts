@@ -43,7 +43,7 @@ export const register = async (
   });
 
   const response = await fetch(
-    "http://localhost:3000/api/stripe/create-connected-account",
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
     {
       method: "POST",
       headers: {
