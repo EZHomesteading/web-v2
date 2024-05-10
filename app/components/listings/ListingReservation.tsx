@@ -1,8 +1,9 @@
 "use client";
 
 import { addDays, format } from "date-fns";
-import Button from "../Button";
-import useCart from "@/hooks/listing/use-cart";
+import { Button } from "@/app/components/ui/button";
+import useCartListing from "@/hooks/listing/use-cart-listing";
+import { useState } from "react";
 
 interface ListingReservationProps {
   listingId: string;
@@ -31,9 +32,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   user,
   toggleCart,
 }) => {
-  const { hasCart } = useCart({
+  const [quantity, setQuantity] = useState(1);
+  const { hasCart } = useCartListing({
     listingId,
     user,
+    quantity,
   });
   const description = product.description;
   const stock = product.stock;
@@ -48,6 +51,22 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     ? format(endDate, "MMM dd, yyyy")
     : "No expiry date";
 
+  const increaseQuantity = () => {
+    if (product.stock && quantity < product.stock) {
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    }
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity((prevQuantity) => prevQuantity - 1);
+    }
+  };
+
+  const handleToggleCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    await toggleCart(e, quantity);
+  };
   return (
     <>
       <div
@@ -77,14 +96,79 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
-        <div className="mb-1">
+        {!hasCart ? (
+          <div className="flex flex-row items-center gap-2">
+            <div
+              className="flex items-center bg-gray-200 rounded-full px-4 py-2"
+              style={{ width: "fit-content" }}
+            >
+              <button
+                className="text-gray-600 focus:outline-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  decreaseQuantity();
+                }}
+              >
+                -
+              </button>
+              <input
+                className="bg-transparent text-center appearance-none outline-none"
+                value={quantity}
+                min={1}
+                max={product.stock ?? undefined}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  if (
+                    !isNaN(value) &&
+                    value >= 1 &&
+                    value <= (product.stock ?? Infinity)
+                  ) {
+                    setQuantity(value);
+                  }
+                }}
+                style={{
+                  WebkitAppearance: "textfield",
+                  MozAppearance: "textfield",
+                  appearance: "textfield",
+                  width: "40px",
+                }}
+              />
+              <button
+                className="text-gray-600 focus:outline-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  increaseQuantity();
+                }}
+              >
+                +
+              </button>
+            </div>
+
+            <Button
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                handleToggleCart(e)
+              }
+              className="w-full bg-green-400 shadow-xl mb-[2px]"
+            >
+              {hasCart ? `Added to Cart` : "Add to Cart"}
+            </Button>
+          </div>
+        ) : (
           <Button
-            disabled={disabled}
-            label={hasCart ? `Added to Cart` : "Add to Cart"}
-            onClick={toggleCart}
-          />
-        </div>
-        <Button disabled={disabled} label={`Buy Now`} onClick={onSubmit} />
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+              handleToggleCart(e)
+            }
+            className="w-full bg-green-400 mb-[2px]"
+          >
+            {hasCart ? `Added to Cart` : "Add to Cart"}
+          </Button>
+        )}
+
+        <Button
+          disabled={disabled}
+          onClick={onSubmit}
+          className="w-full mt-1 bg-green-400 hover:bg-green-700"
+        >{`Buy Now`}</Button>
       </div>
     </>
   );

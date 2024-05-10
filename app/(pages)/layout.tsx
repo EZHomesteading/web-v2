@@ -7,7 +7,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const user = await GetOrderNotificationInfo();
-  console.log(user);
   return (
     <>
       <Navbar user={user} />

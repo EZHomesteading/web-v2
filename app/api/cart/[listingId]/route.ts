@@ -20,7 +20,7 @@ export async function POST(
 
   const { cartId, listingId } = params;
   const { quantity, pickup } = await request.json();
-
+  console.log(quantity);
   if (!listingId || typeof listingId !== "string") {
     throw new Error("Invalid ID");
   }

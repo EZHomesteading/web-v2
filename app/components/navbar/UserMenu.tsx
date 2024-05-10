@@ -69,7 +69,7 @@ const UserMenu = ({ user }: Props) => {
           <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>
-      <SheetContent className={`${outfit.className} bg pt-5`}>
+      <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
         <div>
           <div className="flex flex-row px-4">
             <Avatar user={user} />

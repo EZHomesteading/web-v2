@@ -22,6 +22,7 @@ export const publicRoutes = [
   "/api/messages",
   "/map",
   "/info",
+  "/api/uploadthing",
 ];
 
 /**
