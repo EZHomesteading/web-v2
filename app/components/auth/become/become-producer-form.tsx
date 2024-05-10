@@ -107,13 +107,25 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       const updatedValues = {
         ...values,
       };
-      const response = await fetch("/api/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedValues),
-      });
+      const stripeResponse = await axios.post(
+        "/api/stripe/create-connected-account",
+        {
+          userId: user?.id,
+        }
+      );
+      if (stripeResponse.status === 200) {
+        await fetch("/api/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedValues),
+        });
+      } else {
+        setError(
+          "An error occurred while creating the Stripe connected account. This occurs most often when you enter an invalid information, especially phone number."
+        );
+      }
     } catch (error) {
       setError("An error occurred. Please try again.");
     } finally {
