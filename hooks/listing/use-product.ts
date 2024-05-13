@@ -4154,10 +4154,7 @@ const formattedProducts = products.map((product) => ({
   label: product.name,
   cat: product.subCategory,
   photo: product.photo,
-  // shelfLife: product.shelfLife,
   category: product.category,
-  // price: product.suggestPrice,
-  // units: product.suggestedUnits,
 }));
 
 const useProducts = () => {

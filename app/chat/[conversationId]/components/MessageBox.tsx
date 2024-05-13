@@ -4,7 +4,6 @@ import clsx from "clsx";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import ImageModal from "./ImageModal";

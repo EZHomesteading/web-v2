@@ -4,14 +4,13 @@ import Stripe from "stripe";
 import getUserById from "@/actions/user/getUserById";
 import getOrderById from "@/actions/getOrderById";
 import getListingById from "@/actions/listing/getListingById";
-import axios from "axios";
-
+import AWS from "@/aws-config";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
+const sns = new AWS.SNS();
 export async function POST(request: NextRequest) {
   const sig = request.headers.get("stripe-signature");
 
@@ -125,6 +124,15 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
+            if (seller.phoneNumber) {
+              const params = {
+                Message: `New order received! Buyer: ${
+                  buyer.name
+                }, Items: ${titles}, Pickup Date: ${order.pickupDate.toLocaleString()}`,
+                PhoneNumber: seller.phoneNumber,
+              };
+              await sns.publish(params).promise();
+            }
           }
 
           if (seller.role === "PRODUCER") {
@@ -151,6 +159,13 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
+            if (seller.phoneNumber) {
+              const params = {
+                Message: `New order received! Buyer: ${buyer.name}, Items: ${titles}, Delivery Address: ${buyer.location?.address}`,
+                PhoneNumber: seller.phoneNumber,
+              };
+              await sns.publish(params).promise();
+            }
           }
         };
         postconversations();
