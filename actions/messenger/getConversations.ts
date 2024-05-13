@@ -5,7 +5,7 @@ const getConversations = async () => {
   const user = await currentUser();
 
   if (!user?.id) {
-    return [];
+    return { conversations: [], user: null };
   }
 
   try {
@@ -16,6 +16,9 @@ const getConversations = async () => {
       where: {
         userIds: {
           has: user.id,
+        },
+        NOT: {
+          id: user?.id,
         },
       },
       include: {
@@ -29,9 +32,9 @@ const getConversations = async () => {
       },
     });
 
-    return conversations;
+    return { conversations, user };
   } catch (error: any) {
-    return [];
+    return { conversations: [], user: null };
   }
 };
 

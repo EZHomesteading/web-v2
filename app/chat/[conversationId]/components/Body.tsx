@@ -2,27 +2,27 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
-import useConversation from "@/hooks/messenger/useConversation";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
-  otherUser: string | undefined;
+  otherUser: any;
   order: any;
-  otherUserRole: any;
+  user: any;
+  conversationId: any;
 }
 
 const Body: React.FC<BodyProps> = ({
   initialMessages = [],
   otherUser,
   order,
-  otherUserRole,
+  user,
+  conversationId,
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(initialMessages);
-  const { conversationId } = useConversation();
 
   useEffect(() => {
     axios.post(`/api/conversations/${conversationId}/seen`);
@@ -67,16 +67,17 @@ const Body: React.FC<BodyProps> = ({
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="flex flex-row-reverse"></div>
+      {/* <div className="flex flex-row-reverse"></div> */}
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}
+          user={user}
           convoId={conversationId}
-          otherUsersId={otherUser}
+          otherUsersId={otherUser.id}
           order={order}
-          otherUserRole={otherUserRole}
+          otherUserRole={otherUser.role}
         />
       ))}
       <div className="pt-24" ref={bottomRef} />

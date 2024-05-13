@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import authCache from "@/auth-cache";
 
 export const currentUser = async () => {
   const session = await auth();

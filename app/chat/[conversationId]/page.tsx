@@ -4,9 +4,7 @@ import getMessages from "@/actions/messenger/getMessages";
 import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
-import { currentUser } from "@/lib/auth";
 import GetOrderByConvoId from "@/actions/messenger/getOrderByConvoId";
-import getUserRoleById from "@/actions/messenger/getUserRoleById";
 
 interface IParams {
   conversationId: string;
@@ -14,17 +12,11 @@ interface IParams {
 }
 
 const ChatId = async ({ params }: { params: IParams }) => {
-  const user = await currentUser();
   const order = await GetOrderByConvoId(params.conversationId);
-  const conversation = await getConversationById(params.conversationId);
+  const conversationData = await getConversationById(params.conversationId);
   const messages = await getMessages(params.conversationId);
-  const userIds = conversation?.userIds;
-  const otherUsers = userIds?.filter((userId) => userId !== user?.id);
-  const otherUser: any = otherUsers?.toString();
-  const userId = otherUser;
-  const otherUserRole = await getUserRoleById({ userId });
 
-  if (!conversation) {
+  if (!conversationData) {
     return (
       <div className="lg:pl-80 h-full">
         <div className="h-full flex flex-col">
@@ -33,6 +25,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
       </div>
     );
   }
+  const { currentUser, otherUser, ...conversation } = conversationData;
 
   return (
     <div className="lg:pl-80 h-full">
@@ -40,9 +33,10 @@ const ChatId = async ({ params }: { params: IParams }) => {
         <Header conversation={conversation} />
         <Body
           initialMessages={messages}
-          otherUser={otherUser}
+          user={currentUser}
           order={order}
-          otherUserRole={otherUserRole}
+          otherUser={otherUser}
+          conversationId={conversationData.id}
         />
       </div>
     </div>

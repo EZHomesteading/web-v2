@@ -94,7 +94,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             
               transition
             "
-            src={data.imageSrc}
+            src={data.imageSrc[0]}
             alt={`${data.title} Listing Image`}
           />
           <div

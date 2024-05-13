@@ -121,7 +121,7 @@ const CartIcon = ({ cart }: c) => {
               {(userListings as CartItem[]).map((item) => (
                 <div key={item.id} className="flex items-center gap-4 mb-4">
                   <Image
-                    src={item.listing.imageSrc}
+                    src={item.listing.imageSrc[0]}
                     alt={item.listing.title}
                     height={100}
                     width={100}

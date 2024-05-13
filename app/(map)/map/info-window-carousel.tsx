@@ -23,7 +23,7 @@ const InfoWindowCarousel = ({ images, handleInfoWindowClose }: Props) => {
             <Card>
               <CardContent className="flex items-center justify-center relative aspect-video">
                 <Image
-                  src={image}
+                  src={image[0]}
                   alt={`Carousel Image ${index + 1}`}
                   fill
                   className="object-cover rounded-t-md"

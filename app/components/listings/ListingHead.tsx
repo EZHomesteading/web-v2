@@ -7,7 +7,7 @@ import { Location } from "@prisma/client";
 
 interface ListingHeadProps {
   title: string;
-  imageSrc: string;
+  imageSrc: string[];
   id: string;
   location: Location | null;
   user?: SafeUser | null;
@@ -34,7 +34,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       >
         {" "}
         <Image
-          src={imageSrc}
+          src={imageSrc[0]}
           fill
           className="object-cover w-full"
           alt={title}
