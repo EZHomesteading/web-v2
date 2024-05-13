@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import clsx from "clsx";
 import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/messenger/useConversation";
@@ -27,7 +26,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
 }) => {
   const items = initialItems;
   //const [items, setItems] = useState(initialItems);
-  const router = useRouter();
 
   const { conversationId, isOpen } = useConversation();
 
