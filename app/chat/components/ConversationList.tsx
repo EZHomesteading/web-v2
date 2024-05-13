@@ -1,8 +1,6 @@
 "use client";
 
-import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { find } from "lodash";
@@ -20,31 +18,29 @@ import axios from "axios";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
-  users: User[];
   title?: string;
+  user?: any;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
-  users,
+  user,
 }) => {
   const [items, setItems] = useState(initialItems);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
-  const session = useSession();
 
   const { conversationId, isOpen } = useConversation();
 
   const pusherKey = useMemo(() => {
-    return session.data?.user?.email;
-  }, [session.data?.user?.email]);
+    return user?.email;
+  }, [user?.email]);
 
   useEffect(() => {
     async function setUpServiceWorker() {
       try {
         await registerServiceWorker();
-        if (!session.data?.user?.subscriptions)
+        if (!user?.subscriptions)
           await axios.post("/api/update", {
             subscriptions: "[]",
           });
@@ -113,45 +109,34 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   return (
     <>
-      <SessionProvider>
-        <aside
-          className={clsx(
-            `
-        fixed
-        inset-y-20
-        pb-20
-        lg:pb-0
-        lg:w-80 
-        lg:block
-        overflow-y-auto 
-        border-gray-200 
-      `,
-            isOpen ? "hidden" : "block w-full left-0"
-          )}
-        >
-          <div className="px-5">
-            <div className="flex justify-between mb-4 pt-4 items-center">
-              <div className="text-2xl font-bold text-white">Messages</div>
+      <aside
+        className={clsx(
+          `fixed inset-y-20 pb-20 lg:pb-0 lg:w-80 lg:block overflow-y-auto border-gray-200`,
+          isOpen ? "hidden" : "block w-full left-0"
+        )}
+      >
+        <div className="px-5">
+          <div className="flex justify-between mb-4 pt-4 items-center">
+            <div className="text-2xl font-bold text-white">Messages</div>
 
-              <div
-                className="
+            <div
+              className="
                 
               "
-              >
-                <SubToggle />
-              </div>
+            >
+              <SubToggle />
             </div>
-
-            {items.map((item) => (
-              <ConversationBox
-                key={item.id}
-                data={item}
-                selected={conversationId === item.id}
-              />
-            ))}
           </div>
-        </aside>
-      </SessionProvider>
+
+          {items.map((item) => (
+            <ConversationBox
+              key={item.id}
+              data={item}
+              selected={conversationId === item.id}
+            />
+          ))}
+        </div>
+      </aside>
     </>
   );
 };

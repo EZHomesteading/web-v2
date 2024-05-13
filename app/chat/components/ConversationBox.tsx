@@ -3,7 +3,6 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import clsx from "clsx";
 
 import Avatar from "@/app/components/Avatar";
@@ -14,14 +13,15 @@ import { FullConversationType } from "@/types";
 interface ConversationBoxProps {
   data: FullConversationType;
   selected?: boolean;
+  user?: any;
 }
 
 const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
   selected,
+  user,
 }) => {
   const otherUser = useOtherUser(data);
-  const session = useSession();
   const router = useRouter();
   const mess: string = "this is an automated message";
 
@@ -35,10 +35,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     return messages[messages.length - 1];
   }, [data.messages]);
 
-  const userEmail = useMemo(
-    () => session.data?.user?.email,
-    [session.data?.user?.email]
-  );
+  const userEmail = useMemo(() => user?.email, [user?.email]);
 
   const hasSeen = useMemo(() => {
     if (!lastMessage) {
@@ -54,17 +51,17 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     return seenArray.filter((user) => user.email === userEmail).length !== 0;
   }, [userEmail, lastMessage]);
 
-  const lastMessageText = useMemo(() => {
-    if (lastMessage?.image) {
-      return "Sent an image";
-    }
+  // const lastMessageText = useMemo(() => {
+  //   if (lastMessage?.image) {
+  //     return "Sent an image";
+  //   }
 
-    if (lastMessage?.body) {
-      return lastMessage?.body;
-    }
+  //   if (lastMessage?.body) {
+  //     return lastMessage?.body;
+  //   }
 
-    return "Started a conversation";
-  }, [lastMessage]);
+  //   return "Started a conversation";
+  // }, [lastMessage]);
 
   return (
     <div

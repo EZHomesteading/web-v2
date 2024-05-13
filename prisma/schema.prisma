@@ -165,7 +165,7 @@ model Listing {
   quantityType  String
   price         Float
   description   String
-  imageSrc      String
+  imageSrc      String[]
   shelfLife     Int
   location      Location?
   coopRating    Int?

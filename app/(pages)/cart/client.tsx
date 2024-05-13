@@ -239,7 +239,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       >
                         <div className="flex-shrink-0">
                           <Image
-                            src={cartItem.listing.imageSrc}
+                            src={cartItem.listing.imageSrc[0]}
                             className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
                             width={100}
                             height={100}

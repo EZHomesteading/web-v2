@@ -14,6 +14,7 @@ export default function Home() {
         onUploadError={(error: Error) => {
           alert(`ERROR! ${error.message}`);
         }}
+        className="ut-allowed-content:hidden ut-button:bg-lime-800 ut-button:text-white aspect-square ut-button:w-48 ut-button:h-48 ut-button:border-green-500 ut-button:border-2 ut-button:focus:outline-green-500"
       />
     </main>
   );
