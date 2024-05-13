@@ -64,7 +64,7 @@ const Body: React.FC<BodyProps> = ({
       pusherClient.disconnect(); // Disconnect Pusher connection
     };
   }, [conversationId]);
-
+  console.log(user);
   return (
     <div className="flex-1 overflow-y-auto">
       {/* <div className="flex flex-row-reverse"></div> */}
