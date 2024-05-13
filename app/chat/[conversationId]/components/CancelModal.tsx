@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { FiAlertTriangle } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -32,12 +31,20 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   const router = useRouter();
   const { conversationId } = useConversation();
   const [isLoading, setIsLoading] = useState(false);
+  const [text, setText] = React.useState("");
+  const handleTextChange = (e: any) => {
+    setText(e.target.value);
+  };
 
-  const onDelete = useCallback(() => {
+  const onDelete = () => {
+    if (text === "") {
+      toast.error("no message enteredd");
+      return;
+    }
     setIsLoading(true);
     console.log(order);
     axios.post("/api/messages", {
-      message: "I have canceled this item, because of reasons",
+      message: `I have canceled this item, because: ${text}`,
       messageOrder: "1.1",
       conversationId: convoId,
       otherUserId: otherUser,
@@ -92,47 +99,24 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
         }
       })
       .finally(() => setIsLoading(false));
-  }, [router, conversationId, onClose]);
-
+  };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="sm:flex sm:items-start">
-        <div
-          className="
-            mx-auto 
-            flex 
-            h-12 
-            w-12 
-            flex-shrink-0 
-            items-center 
-            justify-center 
-            rounded-full 
-            bg-red-100 
-            sm:mx-0 
-            sm:h-10 
-            sm:w-10
-          "
-        >
-          <FiAlertTriangle
-            className="h-6 w-6 text-red-600"
-            aria-hidden="true"
-          />
-        </div>
-        <div
-          className="
-            mt-3 
-            text-center 
-            sm:ml-4 
-            sm:mt-0 
-            sm:text-left
-          "
-        >
+      <div className="sm:flex">
+        <div>
           <Dialog.Title
             as="h3"
             className="text-base font-semibold leading-6 text-gray-900"
           >
-            Cancel Order?
+            Reason for order cancellation?
           </Dialog.Title>
+          <textarea
+            className="w-[100%] h-[60%] resize-none  border-[2px] border-gray- rounded-sm"
+            name="cancel"
+            id="cancel"
+            value={text}
+            onChange={handleTextChange}
+          ></textarea>
           <div className="mt-2">
             <p className="text-sm text-gray-500">
               Are you sure you want to cancel this order? This action cannot be

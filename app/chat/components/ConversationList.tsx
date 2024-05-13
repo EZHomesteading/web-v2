@@ -1,12 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import clsx from "clsx";
-import { find } from "lodash";
 import { FullConversationType } from "@/types";
 import useConversation from "@/hooks/messenger/useConversation";
-import { pusherClient } from "@/lib/pusher";
+//import { pusherClient } from "@/lib/pusher";
 import ConversationBox from "./ConversationBox";
 import SubToggle from "./notificationButton";
 import { registerServiceWorker } from "@/hooks/messenger/serviceWorker";
@@ -26,15 +24,14 @@ const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
   user,
 }) => {
-  const [items, setItems] = useState(initialItems);
-
-  const router = useRouter();
+  const items = initialItems;
+  //const [items, setItems] = useState(initialItems);
 
   const { conversationId, isOpen } = useConversation();
 
-  const pusherKey = useMemo(() => {
-    return user?.email;
-  }, [user?.email]);
+  // const pusherKey = useMemo(() => {
+  //   return session.data?.user?.email;
+  // }, [session.data?.user?.email]);
 
   useEffect(() => {
     async function setUpServiceWorker() {
@@ -65,47 +62,48 @@ const ConversationList: React.FC<ConversationListProps> = ({
     syncPushSubscription();
   }, []);
 
-  useEffect(() => {
-    if (!pusherKey) {
-      return;
-    }
-    pusherClient.subscribe(pusherKey);
+  // useEffect(() => {
+  //   if (!pusherKey) {
+  //     return;
+  //   }
+  //   pusherClient.unsubscribe(pusherKey);
+  //   pusherClient.subscribe(pusherKey);
 
-    const updateHandler = (conversation: FullConversationType) => {
-      setItems((current) =>
-        current.map((currentConversation) => {
-          if (currentConversation.id === conversation.id) {
-            return {
-              ...currentConversation,
-              messages: conversation.messages,
-            };
-          }
+  //   const updateHandler = (conversation: FullConversationType) => {
+  //     setItems((current) =>
+  //       current.map((currentConversation) => {
+  //         if (currentConversation.id === conversation.id) {
+  //           return {
+  //             ...currentConversation,
+  //             messages: conversation.messages,
+  //           };
+  //         }
 
-          return currentConversation;
-        })
-      );
-    };
+  //         return currentConversation;
+  //       })
+  //     );
+  //   };
 
-    const newHandler = (conversation: FullConversationType) => {
-      setItems((current) => {
-        if (find(current, { id: conversation.id })) {
-          return current;
-        }
+  //   const newHandler = (conversation: FullConversationType) => {
+  //     setItems((current) => {
+  //       if (find(current, { id: conversation.id })) {
+  //         return current;
+  //       }
 
-        return [conversation, ...current];
-      });
-    };
+  //       return [conversation, ...current];
+  //     });
+  //   };
 
-    const removeHandler = (conversation: FullConversationType) => {
-      setItems((current) => {
-        return [...current.filter((convo) => convo.id !== conversation.id)];
-      });
-    };
+  //   const removeHandler = (conversation: FullConversationType) => {
+  //     setItems((current) => {
+  //       return [...current.filter((convo) => convo.id !== conversation.id)];
+  //     });
+  //   };
 
-    pusherClient.bind("conversation:update", updateHandler);
-    pusherClient.bind("conversation:new", newHandler);
-    pusherClient.bind("conversation:remove", removeHandler);
-  }, [pusherKey, router]);
+  //   pusherClient.bind("conversation:update", updateHandler);
+  //   pusherClient.bind("conversation:new", newHandler);
+  //   pusherClient.bind("conversation:remove", removeHandler);
+  // }, [pusherKey, router]);
 
   return (
     <>

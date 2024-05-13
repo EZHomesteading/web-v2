@@ -11,6 +11,7 @@ const useActiveChannel = () => {
     let channel = activeChannel;
 
     if (!channel) {
+      pusherClient.unsubscribe("presence-messenger");
       channel = pusherClient.subscribe("presence-messenger");
       setActiveChannel(channel);
     }
