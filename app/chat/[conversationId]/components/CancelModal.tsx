@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { FiAlertTriangle } from "react-icons/fi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -10,7 +9,6 @@ import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
 import useConversation from "@/hooks/messenger/useConversation";
 import { toast } from "react-hot-toast";
-import { GiConsoleController } from "react-icons/gi";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
