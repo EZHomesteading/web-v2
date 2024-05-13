@@ -7,9 +7,8 @@ import { currentUser } from "@/lib/auth";
 const HomePage = async () => {
   const user = await currentUser();
   return (
-    <div>
-      test
-      {/* {user ? (
+    <>
+      {user ? (
         user?.role == UserRole.COOP ? (
           <CoopHome user={user} />
         ) : user?.role == UserRole.PRODUCER ? (
@@ -19,8 +18,8 @@ const HomePage = async () => {
         )
       ) : (
         <Home />
-      )} */}
-    </div>
+      )}
+    </>
   );
 };
 

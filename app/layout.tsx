@@ -10,7 +10,7 @@ import CartModal from "./components/modals/cart-modal";
 export const metadata = {
   title: "EZHomesteading",
   description:
-    "Easily find fresh local organic produce near you. Join a community of EZH Producers and Co-ops near you.",
+    "Easily find fresh, local, and organic producer grown by people in your area.",
 };
 
 export default async function RootLayout({
@@ -20,21 +20,18 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   return (
-    <html>
-      <body>{children}</body>
-    </html>
-    // <SessionProvider session={session}>
-    //   <html lang="en">
-    //     <body>
-    //       <ClientOnly>
-    //         <RentModal />
-    //         <SearchModal />
-    //         <CartModal />
-    //       </ClientOnly>
-    //       <main>{children}</main>
-    //       <Toaster theme="dark" />
-    //     </body>
-    //   </html>
-    // </SessionProvider>
+    <SessionProvider session={session}>
+      <html lang="en">
+        <body>
+          <ClientOnly>
+            <RentModal />
+            <SearchModal />
+            <CartModal />
+          </ClientOnly>
+          <main>{children}</main>
+          <Toaster theme="dark" />
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

@@ -8,7 +8,7 @@ export default async function RootLayout({
   const user = await GetNavUser();
   return (
     <>
-      {/* <NavbarHome user={user} /> */}
+      <NavbarHome user={user} />
       {children}
     </>
   );
