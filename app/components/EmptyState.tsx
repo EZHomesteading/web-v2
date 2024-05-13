@@ -47,7 +47,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline
             label="Remove all filters"
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push("/market")}
           />
         )}
       </div>
@@ -56,7 +56,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline
             label="Find Produce"
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push("/market")}
           />
         )}
       </div>

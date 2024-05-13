@@ -1,8 +1,8 @@
-import Home from "@/app/(home)/home";
+import Home from "@/app/(home)/consumer-home";
 import CoopHome from "./coop-home";
 import ProducerHome from "./proucer-home";
-import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import { currentUser } from "@/lib/auth";
 
 const HomePage = async () => {
   const user = await currentUser();

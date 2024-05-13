@@ -8,6 +8,7 @@ import { getUserByEmail, getUserByName } from "@/data/user";
 import { Location, UserRole } from "@prisma/client";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import axios from "axios";
 
 export const register = async (
   values: z.infer<typeof RegisterVendorSchema>
@@ -41,11 +42,32 @@ export const register = async (
     },
   });
 
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.id }),
+    }
+  );
+
+  if (!response.ok) {
+    // Handle non-JSON response
+    const errorText = await response.text();
+    console.error("Error creating Stripe connected account:", errorText);
+    return {
+      error: "An error occurred while creating the Stripe connected account",
+    };
+  }
+  console.log(response);
+  const updatedUser = await response.json();
   await signIn("credentials", {
     email,
     password,
     redirectTo: DEFAULT_LOGIN_REDIRECT,
   });
 
-  return { user };
+  return { user: updatedUser };
 };

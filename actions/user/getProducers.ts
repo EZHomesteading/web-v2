@@ -5,10 +5,6 @@ import { UserRole } from "@prisma/client";
 const getProducers = async () => {
   const session = await auth();
 
-  if (!session?.user?.email) {
-    return [];
-  }
-
   try {
     const users = await prisma.user.findMany({
       orderBy: {
@@ -16,22 +12,34 @@ const getProducers = async () => {
       },
       where: {
         role: UserRole.PRODUCER,
-        NOT: {
-          email: session.user.email,
+        NOT: session?.user?.email
+          ? {
+              email: session.user.email,
+            }
+          : {},
+        listings: {
+          some: {},
         },
       },
-      include: {
-        listings: true,
+      select: {
+        id: true,
+        name: true,
+        firstName: true,
+        image: true,
+        location: {
+          select: {
+            coordinates: true,
+          },
+        },
+        listings: {
+          select: {
+            imageSrc: true,
+          },
+        },
       },
     });
 
-    const producers = users.map((user) => ({
-      name: user.name,
-      location: user?.location,
-      listingsCount: user.listings.length,
-    }));
-
-    return producers;
+    return users;
   } catch (error: any) {
     return [];
   }

@@ -13,13 +13,13 @@ const products = [
   },
   {
     name: "Strawberries",
-    category: "Fruits",
+    category: "RedFruitsBerry",
     subCategory: "Berry",
     photo: "/images/product-images/strawberry.webp",
   },
   {
     name: "Eggs",
-    category: "PoultryChicken",
+    category: "PoultryChickenEgg",
     subCategory: "egg",
     photo: "/images/product-images/egg.webp",
   },

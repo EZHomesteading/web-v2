@@ -22,6 +22,7 @@ export const publicRoutes = [
   "/api/messages",
   "/map",
   "/info",
+  "/api/uploadthing",
 ];
 
 /**
@@ -37,11 +38,11 @@ export const authRoutes = [
   "/auth/error",
   "/auth/reset",
   "/auth/new-password",
+  "/api/stripe/create-connected-account",
 ];
 
 export const updateRoutes = ["/auth/become-a-co-op", "/auth/become-a-producer"];
 
-// export const coopRoutes = ["/onboard", "/map"];
 /**
  * The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes

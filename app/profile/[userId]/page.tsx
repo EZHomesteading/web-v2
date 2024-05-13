@@ -1,6 +1,6 @@
 import getUserById from "@/actions/user/getUserById";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import ProfileClient from "@/app/(home)/profile/[userId]/ProfileClient";
+import ProfileClient from "./ProfileClient";
 import getUserWithBuyReviews from "@/actions/user/getUserWithBuyReviews";
 interface IParams {
   userId: string;
