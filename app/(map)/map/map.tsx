@@ -103,7 +103,6 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const handleInfoWindowClose = () => {
     setSelectedMarker(null);
   };
-
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (
       infoWindowRef.current &&

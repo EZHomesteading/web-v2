@@ -13,9 +13,7 @@ import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/avatar-group";
 
 interface HeaderProps {
-  conversation: Conversation & {
-    users: User[];
-  };
+  conversation: any;
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {

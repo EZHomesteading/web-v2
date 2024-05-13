@@ -19,6 +19,7 @@ import { Outfit } from "next/font/google";
 import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
+import { UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -31,11 +32,13 @@ interface MessageBoxProps {
   otherUsersId: any;
   order: any;
   otherUserRole: string;
+  user: any;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
   data,
   isLast,
+  user,
   convoId,
   otherUsersId,
   order,
@@ -45,11 +48,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
-  const session = useSession();
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [cancel, setCancel] = useState(true);
-  const isOwn = session.data?.user?.email === data?.sender?.email;
-  const notOwn = session.data?.user?.email !== data?.sender?.email;
+  const isOwn = user?.email === data?.sender?.email;
+  const notOwn = user?.email !== data?.sender?.email;
   useEffect(() => {
     if (
       (data.messageOrder === "4" && isLast) ||
@@ -70,7 +72,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
     .join(", ");
-  if (!session.data?.user?.id) {
+  if (user?.id) {
     return null;
   }
   const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");
@@ -82,12 +84,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   const onSubmit1 = () => {
     axios.post("/api/messages", {
-      message: `Yes, That time works, Your order will be ready at that time. at ${session.data?.user.location?.address}`,
+      message: `Yes, That time works, Your order will be ready at that time. at ${user.location?.address}`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    if (session.data?.user.role === "COOP") {
+    if (user.role === UserRole.COOP) {
       axios.post("/api/update-order", { orderId: order.id, status: 2 });
     } else {
       axios.post("/api/update-order", { orderId: order.id, status: 10 });
@@ -147,7 +149,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    if (session.data?.user.role === "COOP") {
+    if (user.role === UserRole.COOP) {
       axios.post("/api/update-order", { orderId: order.id, status: 17 });
     } else {
       axios.post("/api/update-order", { orderId: order.id, status: 9 });
@@ -174,7 +176,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    if (session.data?.user.role === "PRODUCER") {
+    if (user.role === UserRole.PRODUCER) {
       axios.post("/api/update-order", {
         orderId: order.id,
         status: 11,
@@ -212,7 +214,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    if (session.data?.user.role === "COOP") {
+    if (user.role === UserRole.COOP) {
       axios.post("/api/update-order", { orderId: order.id, status: 13 });
     } else {
       axios.post("/api/update-order", { orderId: order.id, status: 10 });
@@ -255,7 +257,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    if (session.data?.user.role === "PRODUCER") {
+    if (user.role === UserRole.PRODUCER) {
       axios.post("/api/update-order", {
         orderId: order.id,
         status: 11,
@@ -292,7 +294,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <Sheet>
           <SheetTrigger>HOURS</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-            <HoursDisplay coOpHours={session.data?.user.hours} />
+            <HoursDisplay coOpHours={user.hours} />
           </SheetContent>
         </Sheet>
       </span>
@@ -375,10 +377,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </div>
           {data.messageOrder === "1.1" && isOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2">
-              <ReviewButton
-                buyerId={session.data?.user?.id}
-                sellerId={otherUsersId}
-              />{" "}
+              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />{" "}
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
@@ -393,10 +392,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           ) : null}
           {data.messageOrder === "1.1" && notOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2 ">
-              <ReviewButton
-                buyerId={otherUsersId}
-                sellerId={session.data?.user?.id}
-              />
+              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
@@ -425,7 +421,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               Yes, That time works, Your order will be ready at that time.
             </button>
             <DateState
-              hours={session?.data?.user.hours as ExtendedHours}
+              hours={user.hours as ExtendedHours}
               onSetTime={handleTime}
             />
             <button type="submit" onClick={onSubmit2} className="m">
@@ -473,7 +469,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 time.
               </button>
               <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
+                hours={user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
               <button
@@ -503,7 +499,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Yes, That time works, Your order will be ready at that time.
               </button>
               <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
+                hours={user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
               <button
@@ -579,7 +575,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
+                hours={user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
               <button type="submit" onClick={onSubmit9} className="">
@@ -617,7 +613,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Yes, That time works, See you then!
               </button>
               <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
+                hours={user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
               <button
@@ -668,7 +664,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Yes, That time works. Your item will be delivered at that time.
               </button>
               <DateState
-                hours={session?.data?.user.hours as ExtendedHours}
+                hours={user.hours as ExtendedHours}
                 onSetTime={handleTime}
               />
               <button

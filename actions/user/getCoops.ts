@@ -19,6 +19,7 @@ const getCoops = async () => {
         // listings: {
         //   some: {},
         // },
+        // //comment
       },
       select: {
         id: true,
@@ -37,7 +38,6 @@ const getCoops = async () => {
         },
       },
     });
-
     return users;
   } catch (error: any) {
     return [];

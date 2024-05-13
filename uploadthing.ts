@@ -5,8 +5,8 @@ const f = createUploadthing();
 export const uploadRouter = {
   imageUploader: f({
     image: {
-      maxFileSize: "4MB",
-      maxFileCount: 4,
+      maxFileSize: "128KB",
+      maxFileCount: 3,
     },
   }).onUploadComplete((data) => {
     console.log("upload completed", data);

@@ -27,7 +27,13 @@ import { useCurrentUser } from "@/hooks/user/use-current-user";
 import ImageUpload from "@/app/components/inputs/ImageUpload";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
-
+import { UploadButton } from "@/utils/uploadthing";
+import { Outfit } from "next/font/google";
+import Image from "next/image";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 enum STEPS {
   DESCRIPTION = 0,
   INFO = 1,
@@ -84,7 +90,7 @@ const ListingModal = () => {
       location: "",
       stock: 1,
       quantityType: "",
-      imageSrc: "",
+      imageSrc: [],
       price: 1.5,
       title: "",
       description: "",
@@ -210,7 +216,6 @@ const ListingModal = () => {
       return null;
     }
   };
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.LOCATION) {
       return onNext();
@@ -320,6 +325,37 @@ const ListingModal = () => {
     return "Back";
   }, [step]);
 
+  const [imageStates, setImageStates] = useState(
+    [...Array(3)].map(() => ({
+      isHovered: false,
+      isFocused: false,
+    }))
+  );
+
+  const handleMouseEnter = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isHovered: true } : state
+      )
+    );
+  };
+
+  const handleMouseLeave = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isHovered: false } : state
+      )
+    );
+  };
+
+  const handleClick = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isFocused: !state.isFocused } : state
+      )
+    );
+  };
+
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
@@ -333,7 +369,7 @@ const ListingModal = () => {
             setProduct(value as ProductValue);
             setValue("title", value?.label);
             setValue("category", value?.category);
-            setValue("imageSrc", value?.photo);
+            setValue("imageSrc[0]", value?.photo);
             setValue("subCategory", value?.cat);
           }}
         />
@@ -512,18 +548,64 @@ const ListingModal = () => {
       </div>
     );
   }
-
+  console.log(imageSrc);
   if (step === STEPS.IMAGES) {
+    const imageSrc1 = imageSrc[0];
     bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Add a photo of your product"
-          subtitle="Show consumers what your product looks like!"
-        />
-        <ImageUpload
-          onChange={(value) => setCustomValue("imageSrc", value)}
-          value={imageSrc}
-        />
+      <div
+        className={`${outfit.className} flex flex-col gap-8 sm:justify-between items-stretch`}
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:justify-between">
+          <Heading
+            title="Add a photo of your product"
+            subtitle="Use the stock photo provided or upload your own"
+          />
+        </div>
+        <div className="flex flex-row gap-y-2">
+          <div className="relative aspect-square h-64">
+            <Image
+              src={imageSrc1}
+              fill
+              alt="Listing Image 1"
+              className="object-cover rounded-xl"
+            />
+          </div>
+          <div className="flex flex-col h-full gap-x-2">
+            {[...Array(2)].map((_, index) => (
+              <div key={index + 1}>
+                {watch(`imageSrc[${index + 1}]`) ? (
+                  <Image
+                    src={watch(`imageSrc[${index + 1}]`)}
+                    fill
+                    alt={`Listing Image ${index + 2}`}
+                    className="object-cover rounded-xl"
+                  />
+                ) : (
+                  <div className="border-2 border-black flex items-center justify-center rounded-xl">
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: any) => {
+                        const newImageSrc = [...watch("imageSrc")];
+                        newImageSrc[index + 1] = res[0].url;
+                        setValue("imageSrc", newImageSrc);
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
+                      className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2"
+                      content={{
+                        button({ ready }) {
+                          if (ready) return <div>Upload Image {index + 2}</div>;
+                          return "Getting ready...";
+                        },
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
