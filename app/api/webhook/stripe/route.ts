@@ -110,7 +110,8 @@ export async function POST(request: NextRequest) {
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
 
           const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
-          if ("EMAIL_NEW_ORDERS" in seller.notifications) {
+          console.log("seller notifs", seller.notifications);
+          if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
             const emailParams = {
               Destination: {
                 ToAddresses: [seller.email || "shortzach396@gmail.com"],
@@ -118,22 +119,55 @@ export async function POST(request: NextRequest) {
               Message: {
                 Body: {
                   Html: {
-                    Data: `
-                  <div style="background-color: #d1fae5; padding: 20px; text-align: center; font-family: Arial, sans-serif;">
-                  <h2 style="color: #10b981;">New Order Received</h2>
-                  <p>Hi ${seller.name},</p>
-                  <p>You have received a new order!</p>
-                  <div style="background-color: #ffffff; border-radius: 4px; padding: 20px; margin-top: 20px;">
-                    <p><strong>Buyer:</strong> ${buyer.name}</p>
-                    <p><strong>Items:</strong> ${titles}</p>
-                  </div>
-                  <p style="margin-top: 20px;">Please <a href="https://ezhomesteading.com/auth/login" style="color: #10b981;">log in</a> to your account to view the order details and fulfill the order.</p>
-                  <p style="margin-top: 20px;">
-                    Best regards,<br>
-                    EZHomesteading
-                  </p>
-                </div>
-                  `,
+                    Data: ` 
+                  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif;">
+                    <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; background-color: #ced9bb; padding: 8px; border-radius: 8px; width: 320px; aspect-ratio: 9/16;">
+                      <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center;">
+                        <img src="path/to/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" />
+                        EZHomesteading
+                      </header>
+                      <h1>Hi, ${seller.name}</h1>
+                      <p style="font-size: 12px;">You have a new order from ${
+                        buyer.name
+                      }</p>
+                      <p style="font-size: 24px;">Order Details:</p>
+                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; margin-bottom: 4px; border-top: 1px solid; border-bottom: 1px solid; padding-top: 8px; padding-bottom: 8px;">
+                        Items
+                        <div style="font-size: 14px; text-align: start;">
+                          ${titles
+                            .split(", ")
+                            .map((item) => `<li>${item}</li>`)
+                            .join("")}
+                        </div>
+                      </ul>
+                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; border-bottom: 1px solid; align-items: center; padding-top: 8px; padding-bottom: 8px;">
+                        Pickup Date
+                        <div>
+                          <li style="font-size: 14px;">${order.pickupDate.toLocaleString()}</li>
+                        </div>
+                      </ul>
+                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; border-bottom: 1px solid; align-items: center; padding-top: 8px; padding-bottom: 8px;">
+                        Order Total
+                        <div>
+                          <li style="font-size: 14px;">$${order.totalPrice.toFixed(
+                            2
+                          )}</li>
+                        </div>
+                      </ul>
+                      <a href="https://ezhomesteading.com/chat/${
+                        newConversation.id
+                      }" style="text-decoration: none;">
+                        <button style="background-color: #64748b; border-radius: 9999px; padding-top: 8px; padding-bottom: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; padding-left: 8px; padding-right: 8px; margin-top: 8px;">
+                          Go to conversation
+                        </button>
+                      </a>
+                      <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none;">
+                        <button style="background-color: #64748b; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; margin-top: 8px;">
+                          Go to sell orders
+                        </button>
+                      </a>
+                    </div>
+                  </div>`,
                   },
                 },
                 Subject: {
