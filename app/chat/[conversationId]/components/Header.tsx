@@ -72,6 +72,17 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
               {statusText}
             </div> */}
           </div>
+          <Link
+            href="/info/support"
+            target="_blank"
+            className="
+            block 
+            transition 
+            cursor-pointer
+           ml-[50px] text-center bg-sky-500  hover:bg-sky-600  rounded-lg px-4 py-2"
+          >
+            Contact Support
+          </Link>
         </div>
       </div>
     </>
