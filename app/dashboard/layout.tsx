@@ -17,7 +17,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 
       <div className="flex flex-col bg w-full">
         <NavbarDashboard user={user} />
-        <div className="sheet w-full border-t-[0px]">{children}</div>
+        <div className="sheet w-full border-t-[0px] min-h-screen">
+          {children}
+        </div>
       </div>
     </div>
   );

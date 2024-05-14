@@ -5,12 +5,21 @@ import getUserById from "@/actions/user/getUserById";
 import getOrderById from "@/actions/getOrderById";
 import getListingById from "@/actions/listing/getListingById";
 import AWS from "@/aws-config";
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 const sns = new AWS.SNS();
+const sesClient = new SESClient({
+  region: process.env.AWS_REGION as string,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+});
+
 export async function POST(request: NextRequest) {
   const sig = request.headers.get("stripe-signature");
 
@@ -67,7 +76,7 @@ export async function POST(request: NextRequest) {
               if (!listing) {
                 return "no listing with that ID";
               }
-              const listings = await prisma.listing.update({
+              await prisma.listing.update({
                 where: { id: item.id },
                 data: {
                   stock: listing.stock - item.quantity,
@@ -101,6 +110,48 @@ export async function POST(request: NextRequest) {
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
 
           const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
+
+          // if (notificaiton[4] === 1) {
+
+          // }
+          const emailParams = {
+            Destination: {
+              ToAddresses: [seller.email || "shortzach396@gmail.com"],
+            },
+            Message: {
+              Body: {
+                Html: {
+                  Data: `
+                  <div style="background-color: #d1fae5; padding: 20px; text-align: center; font-family: Arial, sans-serif;">
+                  <h2 style="color: #10b981;">New Order Received</h2>
+                  <p>Hi ${seller.name},</p>
+                  <p>You have received a new order!</p>
+                  <div style="background-color: #ffffff; border-radius: 4px; padding: 20px; margin-top: 20px;">
+                    <p><strong>Buyer:</strong> ${buyer.name}</p>
+                    <p><strong>Items:</strong> ${titles}</p>
+                  </div>
+                  <p style="margin-top: 20px;">Please <a href="https://ezhomesteading.com/auth/login" style="color: #10b981;">log in</a> to your account to view the order details and fulfill the order.</p>
+                  <p style="margin-top: 20px;">
+                    Best regards,<br>
+                    EZHomesteading
+                  </p>
+                </div>
+                  `,
+                },
+              },
+              Subject: {
+                Data: "New Order Received",
+              },
+            },
+            Source: "no-reply@ezhomesteading.com",
+          };
+
+          try {
+            await sesClient.send(new SendEmailCommand(emailParams));
+            console.log("Email sent to the seller");
+          } catch (error) {
+            console.error("Error sending email to the seller:", error);
+          }
 
           if (seller.role === "COOP") {
             const newMessage: any = await prisma.message.create({

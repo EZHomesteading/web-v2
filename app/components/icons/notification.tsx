@@ -73,7 +73,7 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
             </div>
           </div>
         </SheetTrigger>
-        <SheetContent className="pt-12 bg-neutral-400 border-none justify-start flex flex-col px-2 gap-y-2">
+        <SheetContent className="pt-12 bg-neutral-400 border-none justify-start flex flex-col px-2 gap-y-2 overflow-y-auto">
           {notifications.map((notification, index) => (
             <Link
               key={index}

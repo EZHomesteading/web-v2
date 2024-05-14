@@ -12,13 +12,9 @@ const secondaryNavigation: SecondaryNavigationItem[] = [
     href: "/dashboard/account-settings/general",
     current: true,
   },
+
   {
-    name: "Billing",
-    href: "/dashboard/account-settings/billing",
-    current: false,
-  },
-  {
-    name: "Preferences",
+    name: "Notifications",
     href: "/dashboard/account-settings/preferences",
     current: false,
   },

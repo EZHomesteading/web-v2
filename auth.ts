@@ -4,7 +4,7 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Location, UserRole } from "@prisma/client";
+import { Location, Notification, UserRole } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
 export const {
   handlers: { GET, POST },
@@ -47,6 +47,7 @@ export const {
         session.user.favoriteIds = token.favoriteIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
+        session.user.notifications = token.notifications as Notification;
       }
       return session;
     },
@@ -74,6 +75,7 @@ export const {
       token.favoriteIds = existingUser.favoriteIds;
       token.subscriptions = existingUser.subscriptions;
       token.totalPaidOut = existingUser.totalPaidOut;
+      token.notifications = existingUser.notifications;
       return token;
     },
   },
