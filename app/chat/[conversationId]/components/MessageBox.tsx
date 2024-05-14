@@ -71,7 +71,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
     .join(", ");
-  if (user?.id) {
+  if (!user?.id) {
     return null;
   }
   const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");

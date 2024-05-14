@@ -23,7 +23,7 @@ import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register-vendor";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import "react-phone-number-input/style.css";
+//import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
 export const ProducerRegisterForm = () => {
