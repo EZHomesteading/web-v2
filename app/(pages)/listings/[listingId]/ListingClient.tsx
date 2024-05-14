@@ -15,7 +15,6 @@ import ListingReservation from "@/app/components/listings/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { Location } from "@prisma/client";
-import FollowButton from "@/app/components/follow/followButton";
 
 interface ListingClientProps {
   listing: SafeListing & {

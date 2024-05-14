@@ -2,6 +2,9 @@ import { BsBasket } from "react-icons/bs";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
+import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   id: string;
@@ -84,6 +87,7 @@ const CartIcon = ({ cart }: c) => {
   if (!cart || cart.length === 0) {
     return null;
   }
+  const router = useRouter();
   const groupedListings: Record<string, CartItem[]> = cart.reduce(
     (acc: Record<string, CartItem[]>, item: CartItem) => {
       const userId = item.listing.user.id;
@@ -112,7 +116,33 @@ const CartIcon = ({ cart }: c) => {
         </SheetTrigger>
 
         <SheetContent className="bg px-4 py-4 min-h-screen overflow-y-auto">
-          <SheetHeader className="text-3xl mb-3">Cart</SheetHeader>
+          <SheetHeader className="text-3xl mb-3">
+            Cart
+            <div className=" flex flex-row justify-between mx-8 text-nowrap">
+              <Link href="/cart">
+                {" "}
+                <SheetTrigger
+                  className="
+         
+         cursor-pointer
+         text-center bg-green-400 hover:bg-green-700  rounded-lg px-4 py-2 text-sm"
+                >
+                  Go to Cart
+                </SheetTrigger>
+              </Link>
+              <Link href="/market">
+                <SheetTrigger
+                  className="
+           
+           cursor-pointer
+           text-center bg-green-400 hover:bg-green-700  ml-2 rounded-lg px-4 py-2 text-sm"
+                >
+                  Continue Shopping
+                </SheetTrigger>
+              </Link>
+            </div>
+          </SheetHeader>
+
           {Object.entries(groupedListings).map(([userId, userListings]) => (
             <div key={userId}>
               <h3 className="font-semibold mb-2">
@@ -127,7 +157,7 @@ const CartIcon = ({ cart }: c) => {
                     width={100}
                     className="w-16 h-16 object-cover rounded-xl"
                   />
-                  <div>
+                  <div className="flex flex-row justify-between w-full">
                     <h4 className="font-semibold">
                       {getQuantityWording(
                         item.listing.quantityType,
@@ -135,6 +165,20 @@ const CartIcon = ({ cart }: c) => {
                         item.listing.title
                       )}
                     </h4>
+                    <div>
+                      <button
+                        type="button"
+                        className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+                        onClick={async () => {
+                          const cartId = item.id;
+                          await axios.delete(`/api/cart/${cartId}`);
+                          router.refresh();
+                        }}
+                      >
+                        <span className="sr-only">Remove</span>
+                        <XMarkIconMini className="h-5 w-5" aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
