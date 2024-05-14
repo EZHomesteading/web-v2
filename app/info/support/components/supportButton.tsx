@@ -3,8 +3,6 @@
 import { SheetCartC, SheetContentS } from "@/app/components/ui/support-sheet";
 import { SheetTrigger } from "@/app/components/ui/sheet";
 
-import "react-datetime-picker/dist/DateTimePicker.css";
-
 interface StatusProps {
   email: string;
 }

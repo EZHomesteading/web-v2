@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 interface IUseCart {
   listingId: string;
   user?: any | null;
+  quantity?: number;
 }
 
 const useCart = ({ listingId, user }: IUseCart) => {
@@ -17,8 +18,11 @@ const useCart = ({ listingId, user }: IUseCart) => {
   }, [user, listingId]);
 
   const toggleCart = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement>) => {
+    async (e: React.MouseEvent<HTMLDivElement>, quantity: number) => {
       e.stopPropagation();
+      if (!quantity) {
+        quantity = 1;
+      }
       try {
         if (hasCart) {
           const matchingObject = cartItems.find(
@@ -31,7 +35,7 @@ const useCart = ({ listingId, user }: IUseCart) => {
             throw new Error("Listing ID is required");
           }
           await axios.post(`/api/cart/${listingId}`, {
-            quantity: 1,
+            quantity: quantity,
             pickup: null,
           });
         }
