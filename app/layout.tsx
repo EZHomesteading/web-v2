@@ -9,7 +9,8 @@ import CartModal from "./components/modals/cart-modal";
 
 export const metadata = {
   title: "EZHomesteading",
-  description: "",
+  description:
+    "Easily find fresh, local, and organic producer grown by people in your area.",
 };
 
 export default async function RootLayout({
