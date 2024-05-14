@@ -188,6 +188,16 @@ const Cart = ({ cartItems, user }: CartProps) => {
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Cart
             </h1>
+            <Link
+              href="/market"
+              className="
+              block 
+            transition 
+           cursor-pointer
+           text-center bg-green-400 hover:bg-green-700 rounded-lg px-4 py-2 text-sm"
+            >
+              Continue Shopping
+            </Link>
             <div className="justify-center">
               <Button
                 className="bg-red-300 text-black hover:bg-red-600 hover:text-white hover:shadow-lg shadow-md"
