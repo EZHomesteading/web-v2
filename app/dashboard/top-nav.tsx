@@ -1,4 +1,7 @@
+"use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface SecondaryNavigationItem {
   name: string;
@@ -15,14 +18,16 @@ const secondaryNavigation: SecondaryNavigationItem[] = [
 
   {
     name: "Notifications",
-    href: "/dashboard/account-settings/preferences",
+    href: "/dashboard/account-settings/notification-preferences",
     current: false,
   },
 ];
 
 const TopNav = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   return (
-    <header className="border-b border-white/5">
+    <header className="border-b border-white/5 mt-0 lg:mt-6">
       <nav className="flex overflow-x-auto py-4">
         <ul
           role="list"
@@ -30,14 +35,16 @@ const TopNav = () => {
         >
           {secondaryNavigation.map((item) => (
             <li key={item.name}>
-              <Link
-                href={item.href}
+              <div
+                onClick={() => router.push(item.href)}
                 className={
-                  item.current ? "text-green-900" : "hover:cursor-pointer"
+                  pathname === item.href
+                    ? "text-green-900"
+                    : "hover:cursor-pointer"
                 }
               >
                 {item.name}
-              </Link>
+              </div>
             </li>
           ))}
         </ul>

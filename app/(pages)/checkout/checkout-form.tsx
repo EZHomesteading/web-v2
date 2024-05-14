@@ -117,7 +117,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                         className="flex listings-start space-x-4 py-6"
                       >
                         <Image
-                          src={cartItem.listing.imageSrc}
+                          src={cartItem.listing.imageSrc[0]}
                           alt={cartItem.listing.title}
                           width={80}
                           height={80}

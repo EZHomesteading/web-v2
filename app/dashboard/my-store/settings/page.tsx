@@ -9,8 +9,8 @@ const StoreSettings = () => {
         <Link href="/dashboard">
           <Button>Dashboard</Button>
         </Link>
-        <Link href="/shop">
-          <Button>Shop</Button>
+        <Link href="/market">
+          <Button>Market</Button>
         </Link>
       </div>
     </div>

@@ -110,18 +110,15 @@ export async function POST(request: NextRequest) {
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
 
           const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
-
-          // if (notificaiton[4] === 1) {
-
-          // }
-          const emailParams = {
-            Destination: {
-              ToAddresses: [seller.email || "shortzach396@gmail.com"],
-            },
-            Message: {
-              Body: {
-                Html: {
-                  Data: `
+          if ("EMAIL_NEW_ORDERS" in seller.notifications) {
+            const emailParams = {
+              Destination: {
+                ToAddresses: [seller.email || "shortzach396@gmail.com"],
+              },
+              Message: {
+                Body: {
+                  Html: {
+                    Data: `
                   <div style="background-color: #d1fae5; padding: 20px; text-align: center; font-family: Arial, sans-serif;">
                   <h2 style="color: #10b981;">New Order Received</h2>
                   <p>Hi ${seller.name},</p>
@@ -137,22 +134,22 @@ export async function POST(request: NextRequest) {
                   </p>
                 </div>
                   `,
+                  },
+                },
+                Subject: {
+                  Data: "New Order Received",
                 },
               },
-              Subject: {
-                Data: "New Order Received",
-              },
-            },
-            Source: "no-reply@ezhomesteading.com",
-          };
+              Source: "no-reply@ezhomesteading.com",
+            };
 
-          try {
-            await sesClient.send(new SendEmailCommand(emailParams));
-            console.log("Email sent to the seller");
-          } catch (error) {
-            console.error("Error sending email to the seller:", error);
+            try {
+              await sesClient.send(new SendEmailCommand(emailParams));
+              console.log("Email sent to the seller");
+            } catch (error) {
+              console.error("Error sending email to the seller:", error);
+            }
           }
-
           if (seller.role === "COOP") {
             const newMessage: any = await prisma.message.create({
               include: {
