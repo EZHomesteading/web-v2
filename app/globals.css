@@ -66,6 +66,9 @@
   }
 }
 
+.phone {
+  aspect-ratio: 9/16;
+}
 .PhoneInputCountryIcon,
 .PhoneInputCountrySelect,
 .PhoneInputCountrySelectArrow {

@@ -14,6 +14,23 @@ enum UserRole {
   PRODUCER
 }
 
+enum Notification {
+  SMS_ALL_ORDERS
+  EMAIL_ALL_ORDERS
+  SMS_NEW_ORDERS
+  EMAIL_NEW_ORDERS
+  SMS_ORDER_UPDATES
+  EMAIL_ORDER_UPDATES
+  SMS_ORDER_CANCELED
+  EMAIL_ORDER_CANCELED
+  SMS_ORDER_COMPLETED
+  EMAIL_ORDER_COMPLETED
+  SMS_FOLLOWED_USER_LISTING
+  EMAIL_FOLLOWED_USER_LISTING
+  SMS_NEW_PRODUCER_LISTINGS
+  EMAIL_NEW_PRODUCER_LISTINGS
+}
+
 
 type Location {
   type String
@@ -51,6 +68,7 @@ model User {
   password              String?
   stripeAccountId       String?
   totalPaidOut          Int? @default(0)
+  notifications         Notification[] @default([])
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

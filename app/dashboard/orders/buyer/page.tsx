@@ -73,7 +73,7 @@ const Page = async () => {
                     className="flex flex-row items-center gap-2"
                   >
                     <Image
-                      src={listing.imageSrc}
+                      src={listing.imageSrc[0]}
                       alt={listing.title}
                       width={50}
                       height={50}

@@ -19,6 +19,14 @@ import {
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { Card, CardContent } from "../ui/card";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -81,22 +89,36 @@ const ListingCard: React.FC<ListingCardProps> = ({
             relative 
             overflow-hidden 
             rounded-xl
-            hover:shadow-xl
           "
         >
-          <Image
-            fill
-            className="
-              object-cover 
-              h-full 
-              w-full 
-              group-hover:scale-105
-            
-              transition
-            "
-            src={data.imageSrc[0]}
-            alt={`${data.title} Listing Image`}
-          />
+          <Carousel className="relative rounded-lg">
+            <CarouselContent>
+              {data.imageSrc.map((_, index) => (
+                <CarouselItem key={index}>
+                  <Card>
+                    <CardContent className="flex items-center justify-center relative aspect-sqaure h-64">
+                      <Image
+                        src={data.imageSrc[index]}
+                        alt={`Carousel Image ${index + 1}`}
+                        fill
+                        className="object-cover rounded-md hover:scale-105"
+                      />
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {data.imageSrc.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {data.imageSrc.map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                  />
+                ))}
+              </div>
+            )}
+          </Carousel>
           <div
             className="
             absolute

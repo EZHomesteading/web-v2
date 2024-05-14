@@ -6,15 +6,6 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "@/app/components/inputs/Input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
-import { MdOutlinePrivacyTip } from "react-icons/md";
-import { VscHistory } from "react-icons/vsc";
-import { PiCookieThin } from "react-icons/pi";
-import { GiSettingsKnobs } from "react-icons/gi";
-import { MdFavoriteBorder } from "react-icons/md";
-import { PiStorefrontThin } from "react-icons/pi";
-import { FaOpencart } from "react-icons/fa";
-import { HiOutlineDocument } from "react-icons/hi2";
-import { CgCommunity } from "react-icons/cg";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
@@ -29,73 +20,8 @@ import {
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
-import { FaDeleteLeft } from "react-icons/fa6";
 import ImageUpload from "@/app/components/inputs/profile-img-upload";
 import { useRouter } from "next/navigation";
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: React.ElementType;
-  current: boolean;
-}
-
-const navigation: NavigationItem[] = [
-  {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: GiSettingsKnobs,
-    current: true,
-  },
-  {
-    name: "Favorites",
-    href: "/dashboard/favorites",
-    icon: MdFavoriteBorder,
-    current: false,
-  },
-  {
-    name: "Current Orders",
-    href: "/dashboard/reservations",
-    icon: FaOpencart,
-    current: false,
-  },
-  {
-    name: "Store Settings",
-    href: "/dashboard/my-store",
-    icon: PiStorefrontThin,
-    current: false,
-  },
-  {
-    name: "Transaction History",
-    href: "/dashboard/trips",
-    icon: VscHistory,
-    current: false,
-  },
-  {
-    name: "Privacy Policy",
-    href: "/privacy-policy",
-    icon: MdOutlinePrivacyTip,
-    current: false,
-  },
-  {
-    name: "Terms of Service",
-    href: "#",
-    icon: HiOutlineDocument,
-    current: false,
-  },
-  {
-    name: "Cookies Policy",
-    href: "/cookie-policy",
-    icon: PiCookieThin,
-    current: false,
-  },
-  {
-    name: "Community Standards",
-    href: "/community-standards",
-    icon: CgCommunity,
-    current: false,
-  },
-];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -235,7 +161,7 @@ const Page = () => {
   return (
     <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
       <h1 className="sr-only">Account Settings</h1>
-      <h2 className="text-base font-semibold leading-7">
+      <h2 className="text-base font-semibold leading-7 mt-2">
         Personal Information
       </h2>
       <Card>

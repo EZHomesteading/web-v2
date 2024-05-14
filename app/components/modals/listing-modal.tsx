@@ -1,4 +1,16 @@
 "use client";
+import { CopyIcon } from "@radix-ui/react-icons";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/app/components/ui/dialog";
 
 import axios from "axios";
 import {
@@ -24,15 +36,14 @@ import { PiStorefrontThin } from "react-icons/pi";
 import Counter from "@/app/components/inputs/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import ImageUpload from "@/app/components/inputs/ImageUpload";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
 import Image from "next/image";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 import { BsBucket } from "react-icons/bs";
+import Button from "../Button";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -365,10 +376,42 @@ const ListingModal = () => {
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
-      <Heading
-        title="List your produce!"
-        subtitle="Please provide a name and brief description"
-      />
+      <div className="flex flex-row items-center justify-between w-full">
+        <Heading
+          title="List your produce!"
+          subtitle="Please provide a name and brief description"
+        />
+        <Dialog>
+          <DialogTrigger asChild>
+            <button>Suggest a new Listing</button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Propose a new Listing</DialogTitle>
+              <DialogDescription>
+                Please enter a title, category and brief keyword description
+              </DialogDescription>
+            </DialogHeader>
+            <ul className="flex flex-col items-start justify-center">
+              <li className="flex flex-row items-center justify-center">
+                <Label className="w-[80px]">Title</Label>
+                <input placeholder="Special Tomato" />
+              </li>
+              <li className="flex flex-row items-center justify-center">
+                <Label className="w-[80px]">Category</Label>
+                <input placeholder="Vegetable" />
+              </li>
+              <li className="flex flex-row items-center justify-center">
+                <Label className="w-[80px]">Description</Label>
+                <input placeholder="Red Seedless" />
+              </li>
+            </ul>
+            <button type="submit" className="px-3">
+              <span>Submit</span>
+            </button>
+          </DialogContent>
+        </Dialog>
+      </div>
       <div>
         <SearchClient
           value={product}
