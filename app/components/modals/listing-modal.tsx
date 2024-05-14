@@ -30,6 +30,9 @@ import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
 import Image from "next/image";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+
+import { BsBucket } from "react-icons/bs";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -168,8 +171,12 @@ const ListingModal = () => {
       return;
     }
 
-    if (step === STEPS.IMAGES && !imageSrc) {
-      toast.error("Please use the stock photo or upload a photo");
+    if (
+      step === STEPS.IMAGES &&
+      Array.isArray(imageSrc) &&
+      imageSrc.length === 0
+    ) {
+      toast.error("Please use the stock photo or upload atleast one photo");
       return;
     }
 
@@ -548,68 +555,83 @@ const ListingModal = () => {
       </div>
     );
   }
-  console.log(imageSrc);
   if (step === STEPS.IMAGES) {
-    const imageSrc1 = imageSrc[0];
     bodyContent = (
       <div
         className={`${outfit.className} flex flex-col gap-8 sm:justify-between items-stretch`}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:justify-between">
-          <Heading
-            title="Add a photo of your product"
-            subtitle="Use the stock photo provided or upload your own"
-          />
-        </div>
-        <div className="flex flex-row gap-y-2">
-          <div className="relative aspect-square h-64">
-            <Image
-              src={imageSrc1}
-              fill
-              alt="Listing Image 1"
-              className="object-cover rounded-xl"
-            />
-          </div>
-          <div className="flex flex-col h-full gap-x-2">
-            {[...Array(2)].map((_, index) => (
-              <div key={index + 1}>
-                {watch(`imageSrc[${index + 1}]`) ? (
+        <Heading
+          title="Add a photo"
+          subtitle="Feel free to include, only use, or get rid of the stock photo"
+        />
+        <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center">
+          {[...Array(3)].map((_, index) => (
+            <div
+              key={index}
+              className={`relative h-40 sm:h-60 w-48 transition-transform duration-300 rounded-xl ${
+                imageStates[index].isHovered ? "transform shadow-xl" : ""
+              } ${imageStates[index].isFocused ? "z-10" : "z-0"}`}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave(index)}
+              onClick={() => handleClick(index)}
+            >
+              {watch(`imageSrc[${index}]`) ? (
+                <>
                   <Image
-                    src={watch(`imageSrc[${index + 1}]`)}
+                    src={watch(`imageSrc[${index}]`)}
                     fill
-                    alt={`Listing Image ${index + 2}`}
+                    alt={`Listing Image ${index + 1}`}
                     className="object-cover rounded-xl"
                   />
-                ) : (
-                  <div className="border-2 border-black flex items-center justify-center rounded-xl">
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: any) => {
-                        const newImageSrc = [...watch("imageSrc")];
-                        newImageSrc[index + 1] = res[0].url;
-                        setValue("imageSrc", newImageSrc);
-                      }}
-                      onUploadError={(error: Error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                      className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2"
-                      content={{
-                        button({ ready }) {
-                          if (ready) return <div>Upload Image {index + 2}</div>;
-                          return "Getting ready...";
-                        },
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+                  <button
+                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newImageSrc = [...watch("imageSrc")];
+                      newImageSrc.splice(index, 1);
+                      setValue("imageSrc", newImageSrc);
+                    }}
+                  >
+                    <BsBucket />
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full">
+                  {" "}
+                  <UploadButton
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res: any) => {
+                      const newImageSrc = [...watch("imageSrc")];
+                      const emptyIndex = newImageSrc.findIndex((src) => !src);
+                      if (emptyIndex !== -1) {
+                        newImageSrc[emptyIndex] = res[0].url;
+                      } else {
+                        newImageSrc.push(res[0].url);
+                      }
+                      setValue("imageSrc", newImageSrc);
+                    }}
+                    onUploadError={(error: Error) => {
+                      alert(`ERROR! ${error.message}`);
+                    }}
+                    appearance={{
+                      container: "h-full w-max",
+                    }}
+                    className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                    content={{
+                      button({ ready }) {
+                        if (ready) return <div>Upload Image</div>;
+                        return "Getting ready...";
+                      },
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     );
   }
-
   if (step === STEPS.ORGANIC) {
     bodyContent = (
       <div className="flex flex-col gap-8">

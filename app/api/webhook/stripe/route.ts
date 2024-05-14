@@ -124,15 +124,15 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
-            if (seller.phoneNumber) {
-              const params = {
-                Message: `New order received! Buyer: ${
-                  buyer.name
-                }, Items: ${titles}, Pickup Date: ${order.pickupDate.toLocaleString()}`,
-                PhoneNumber: seller.phoneNumber,
-              };
-              await sns.publish(params).promise();
-            }
+            // if (seller.phoneNumber) {
+            //   const params = {
+            //     Message: `New order received! Buyer: ${
+            //       buyer.name
+            //     }, Items: ${titles}, Pickup Date: ${order.pickupDate.toLocaleString()}`,
+            //     PhoneNumber: seller.phoneNumber,
+            //   };
+            //   await sns.publish(params).promise();
+            // }
           }
 
           if (seller.role === "PRODUCER") {
@@ -159,13 +159,13 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
-            if (seller.phoneNumber) {
-              const params = {
-                Message: `New order received! Buyer: ${buyer.name}, Items: ${titles}, Delivery Address: ${buyer.location?.address}`,
-                PhoneNumber: seller.phoneNumber,
-              };
-              await sns.publish(params).promise();
-            }
+            // if (seller.phoneNumber) {
+            //   const params = {
+            //     Message: `New order received! Buyer: ${buyer.name}, Items: ${titles}, Delivery Address: ${buyer.location?.address}`,
+            //     PhoneNumber: seller.phoneNumber,
+            //   };
+            //   await sns.publish(params).promise();
+            // }
           }
         };
         postconversations();
