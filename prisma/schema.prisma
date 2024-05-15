@@ -14,6 +14,12 @@ enum UserRole {
   PRODUCER
 }
 
+enum DisputeReason {
+  NO_DELIVERY
+  SPOILED
+  OTHER
+}
+
 enum Notification {
   SMS_ALL_ORDERS
   EMAIL_ALL_ORDERS
@@ -232,6 +238,7 @@ model Order {
   conversationId        String?   @db.ObjectId
   payments              Payment[]
 
+  dispute               Dispute?
   buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
   seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
 }
@@ -282,4 +289,16 @@ model Message {
   
   senderId         String @db.ObjectId
   sender           User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model Dispute {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId          String @db.ObjectId @unique
+  email            String
+  phone            String
+  status           Int @default(0)
+  images           String[]
+  reason           DisputeReason
+  explanation      String[]
+  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

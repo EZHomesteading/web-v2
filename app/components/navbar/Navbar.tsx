@@ -3,11 +3,12 @@ import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import AuthButtons from "./auth-buttons";
 import SearchNative from "./search-native";
+
 interface p {
   user?: any;
 }
+
 const Navbar = ({ user }: p) => {
   return (
     <div className="relative w-full z-10 pb-2">
