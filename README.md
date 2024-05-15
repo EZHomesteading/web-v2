@@ -24,8 +24,8 @@ Farmer's markets frequently charge vendors up front for their space. These vendo
 - 💖 Code Formatter with [Prettier](https://prettier.io)
 - 💡 [Absolute Imports](https://nextjs.org/docs/app/building-your-application/configuring/absolute-imports-and-module-aliases) using `@` prefix
 - 🗂 [VSCode](https://code.visualstudio.com/) configuration: Debug, Settings, Tasks and Extensions
-- 🗺️ [Google Maps API](https://developers.google.com/maps) for autocomplete, nearby search, route optimization, and more
-- 📤 [Cloudinary](https://next.cloudinary.dev/) for image capture and upload
+- 🗺️ [Google Maps API](https://developers.google.com/maps) for autocomplete, nearby search, map drawing, and more
+- 📤 [UploadThing](https://docs.uploadthing.com/) for image capture and upload
 - 💬 [Pusher](https://pusher.com/docs/) for automated messaging
 - 🔔 [Web push](https://www.npmjs.com/package/web-push) for notifications 
 
