@@ -335,6 +335,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         isOpen={disputeOpen}
         onClose={() => setDisputeOpen(false)}
         user={user}
+        orderId={order.id}
+        conversationId={convoId}
+        otherUserId={otherUsersId}
       />
       <CancelModal
         isOpen={cancelOpen}

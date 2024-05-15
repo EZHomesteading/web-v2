@@ -9,58 +9,88 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/components/ui/dialog";
+
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import Image from "next/image";
 import { UploadButton } from "@/utils/uploadthing";
 import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
+
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
+
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+
+import axios from "axios";
+
 interface p {
   user?: any;
   isOpen?: boolean;
   onClose: () => void;
+  orderId: string;
+  conversationId: string;
+  otherUserId: string;
 }
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-const DisputeModal = ({ user, isOpen, onClose }: p) => {
+const DisputeModal = ({
+  user,
+  isOpen,
+  onClose,
+  orderId,
+  conversationId,
+  otherUserId,
+}: p) => {
   const [image, setImage] = useState("");
+  const [reason, setReason] = useState("");
+  const [comments, setComments] = useState("");
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
+  const [email, setEmail] = useState(user?.email || "");
+  console.log(user, orderId, conversationId, otherUserId);
+  const handleSubmit = async () => {
+    const data = {
+      orderId: orderId,
+      email: email,
+      phone: phone,
+      images: image ? [image] : [],
+      reason,
+      explanation: comments,
+    };
+    try {
+      await axios.post("/api/dispute", data);
+      await axios.post("/api/messages", {
+        message: `I am disputing this order.`,
+        messageOrder: "1.6",
+        conversationId: conversationId,
+        otherUserId: otherUserId,
+      });
+      onClose();
+    } catch (error) {
+      console.error("ERROR", error);
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="">
@@ -75,24 +105,34 @@ const DisputeModal = ({ user, isOpen, onClose }: p) => {
                 <Label htmlFor="email" className="text-right mr-1 w-[50px]">
                   Email
                 </Label>
-                <Input id="name" value={user?.email || ""} className="" />
+                <Input
+                  id="email"
+                  type="text"
+                  value={email}
+                  className=""
+                  onChange={handleEmailChange}
+                />
               </div>
 
               <div className="flex flex-row items-center">
-                <Label htmlFor="username" className="text-right mr-1">
+                <Label htmlFor="phone" className="text-right mr-1">
                   Phone
                 </Label>
                 <Input
-                  id="number"
-                  value={user?.phoneNumber || ""}
+                  id="phone"
+                  value={phone}
+                  onChange={handlePhoneChange}
                   className="col-span-3"
                 />
               </div>
               <div className="flex flex-col gap-4 items-start justify-start">
-                <Label htmlFor="username" className="text-right">
+                <Label htmlFor="reason" className="text-right">
                   Reason for Dispute
                 </Label>
-                <Select>
+                <Select
+                  onValueChange={(value) => setReason(value)}
+                  value={reason}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select a reason" />
                   </SelectTrigger>
@@ -164,12 +204,18 @@ const DisputeModal = ({ user, isOpen, onClose }: p) => {
                       </AlertDialog>
                     </div>
                   </>
-                )}
-                Add additional comments <Textarea />
+                )}{" "}
+                <Textarea
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="Add additional comments"
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Send</Button>
+              <Button type="submit" onClick={handleSubmit}>
+                Send
+              </Button>
             </DialogFooter>
           </Dialog>
         </div>
