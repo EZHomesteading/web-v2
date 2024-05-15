@@ -25,6 +25,20 @@ import {
   CarouselItem,
 } from "@/app/components/ui/carousel";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { Outfit } from "next/font/google";
+import { Work_Sans } from "next/font/google";
+
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["200"],
+});
+
+const work = Work_Sans({
+  display: "block",
+  subsets: ["latin"],
+  weight: ["300"],
+});
 
 interface ListingCardProps {
   data: SafeListing;
@@ -117,14 +131,18 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
         <div className="font-semibold text-lg">
           {" "}
-          <div className="font-semibold text-lg"> {data.title}</div>
-          <div className="font-light text-neutral-500">
+          <div className={`${outfit.className} text-lg`}>{data.title}</div>
+          <div
+            className={`font-light text-neutral-500 text-xs ${work.className}`}
+          >
             {data?.location?.address[1]}, {data?.location?.address[2]}
           </div>
         </div>
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
-            <div className="flex flex-row items-center gap-1">
+            <div
+              className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
+            >
               <div className="font-semibold"> ${data.price}</div>
               {data.quantityType && (
                 <div className="font-light">per {data.quantityType}</div>
