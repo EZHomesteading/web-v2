@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-import { Location } from "@prisma/client";
 
 export async function POST(request: Request) {
   const body = await request.json();
 
-  const { orderId, email, phone } = body;
+  const { orderId, email, phone, images, reason, explanation } = body;
 
   Object.keys(body).forEach((value: any) => {
     if (!body[value]) {
@@ -14,14 +13,7 @@ export async function POST(request: Request) {
   });
 
   const dispute = await prisma.dispute.create({
-    data: {},
+    data: { orderId, email, images, phone, reason },
   });
   return NextResponse.json(dispute);
 }
-// orderId          String @db.ObjectId @unique
-//   email            String
-//   phone            String
-//   status           Int @default(0)
-//   images           String[]
-//   reason           DisputeReason
-//   explanation      String[]
