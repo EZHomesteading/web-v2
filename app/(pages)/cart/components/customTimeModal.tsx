@@ -29,7 +29,7 @@ interface CustomTimeProps {
   onSetTime: any;
 }
 
-const ConfirmModal: React.FC<CustomTimeProps> = ({
+const CustomTimeModal: React.FC<CustomTimeProps> = ({
   isOpen,
   onClose,
   hours,
@@ -199,4 +199,4 @@ const ConfirmModal: React.FC<CustomTimeProps> = ({
   );
 };
 
-export default ConfirmModal;
+export default CustomTimeModal;
