@@ -294,11 +294,14 @@ model Message {
 model Dispute {
   id               String @id @default(auto()) @map("_id") @db.ObjectId
   orderId          String @db.ObjectId @unique
+  userId           String @db.ObjectId
   email            String
   phone            String
   status           Int @default(0)
   images           String[]
   reason           DisputeReason
   explanation      String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
   order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
