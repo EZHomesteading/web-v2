@@ -2,8 +2,8 @@
 
 import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
-import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { SheetTrigger } from "@/app/components/ui/sheet";
+import { useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 import "react-datetime-picker/dist/DateTimePicker.css";
