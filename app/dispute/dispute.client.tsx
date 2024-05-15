@@ -6,7 +6,12 @@ import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface Dispute {
   id: string;
   userId: string;
@@ -65,7 +70,9 @@ const DisputeComponent = ({ disputes }: p) => {
               <PopoverTrigger className="w-full col-span-1 border p-1">
                 <p>Buyer Info</p>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent
+                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+              >
                 <p>Email: {dispute.order.buyer.email}</p>
                 <p>Phone: {dispute.order.buyer.phoneNumber}</p>
                 <p>
@@ -84,7 +91,9 @@ const DisputeComponent = ({ disputes }: p) => {
               <PopoverTrigger className="w-full col-span-1 border p-1">
                 <p>Seller Info</p>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent
+                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+              >
                 <p>Email: {dispute.order.seller.email}</p>
                 <p>Phone: {dispute.order.seller.phoneNumber}</p>
                 <p>
@@ -105,7 +114,9 @@ const DisputeComponent = ({ disputes }: p) => {
                 <PopoverTrigger className="col-span-1 border p-1 w-full">
                   <p>Seller Info</p>
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent
+                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                >
                   <p>Email: {dispute.order.seller.email}</p>
                   <p>Phone: {dispute.order.seller.phoneNumber}</p>
                   <p>
@@ -124,7 +135,9 @@ const DisputeComponent = ({ disputes }: p) => {
                 <PopoverTrigger className="col-span-1 border p-1 w-full">
                   <p>Buyer Info</p>
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent
+                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                >
                   <p>Email: {dispute.order.buyer.email}</p>
                   <p>Phone: {dispute.order.buyer.phoneNumber}</p>
                   <p>
@@ -142,9 +155,8 @@ const DisputeComponent = ({ disputes }: p) => {
           </div>
           <div className="col-span-1 border p-1">
             <p>
-              Submitted:{" "}
               {formatDistanceToNow(new Date(dispute.createdAt), {
-                addSuffix: true,
+                addSuffix: false,
               })}
             </p>
           </div>
@@ -158,7 +170,9 @@ const DisputeComponent = ({ disputes }: p) => {
             <PopoverTrigger className="col-span-1 border p-1">
               Explanation
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent
+              className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+            >
               <p>{dispute.explanation}</p>
             </PopoverContent>
           </Popover>
@@ -167,11 +181,15 @@ const DisputeComponent = ({ disputes }: p) => {
             <PopoverTrigger className="col-span-1 border p-1">
               Images
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent
+              className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+            >
               {dispute.images.map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image}
+                  rounded-lg
+                  text-black
                   alt={`Dispute Image ${index}`}
                   height={100}
                   width={100}
