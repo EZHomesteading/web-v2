@@ -20,7 +20,7 @@ const Navbar = ({ user }: p) => {
             </div>
             <div className="flex flex-row items-center gap-x-4">
               <SearchNative />
-              {user ? <UserMenu user={user} /> : <AuthButtons />}
+              <UserMenu user={user} />
             </div>
           </div>
         </Container>

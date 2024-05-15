@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
-import CartIcon from "./cart-icon";
-import { Button } from "../ui/button";
+import CartIcon from "@/app/components/listings/cart-icon";
+import { Button } from "@/app/components/ui/button";
 import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -18,15 +18,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-import { Card, CardContent } from "../ui/card";
+} from "@/app/components/ui/carousel";
+import { Card, CardContent } from "@/app/components/ui/card";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -83,13 +81,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="flex flex-col w-full">
         <div
           onClick={() => router.push(`/listings/${data.id}`)}
-          className="
-            aspect-square 
-            w-full 
-            relative 
-            overflow-hidden 
-            rounded-xl
-          "
+          className="w-full relative overflow-hidden rounded-xl"
         >
           <Carousel className="relative rounded-lg">
             <CarouselContent>
@@ -119,13 +111,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
           </Carousel>
-          <div
-            className="
-            absolute
-            top-3
-            right-3
-          "
-          >
+          <div className="absolute top-3 right-3">
             <CartIcon listingId={data.id} user={user} />
           </div>
         </div>
@@ -162,7 +148,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   We cannot recover a listing after it has been deleted, this is
                   irreversible.
                 </AlertDialogDescription>
-
                 <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
                   <AlertDialogAction
                     className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"

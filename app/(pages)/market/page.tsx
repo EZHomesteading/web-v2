@@ -17,9 +17,12 @@ interface ShopProps {
   };
 }
 
-const DynamicShop = dynamic(() => import("@/app/(pages)/market/Shop"), {
-  ssr: true,
-});
+const MarketComponent = dynamic(
+  () => import("@/app/(pages)/market/market-component"),
+  {
+    ssr: true,
+  }
+);
 
 const ShopPage = async ({
   searchParams,
@@ -66,7 +69,7 @@ const ShopPage = async ({
   }
 
   return (
-    <DynamicShop
+    <MarketComponent
       listings={listings}
       user={user}
       emptyState={

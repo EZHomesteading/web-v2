@@ -17,8 +17,10 @@ import { GoPeople } from "react-icons/go";
 import Avatar from "../Avatar";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
-import CartIcon from "../icons/cart-icon";
-import { navUser } from "@/next-auth";
+import CartIcon from "@/app/components/icons/cart-icon";
+import { BsPersonPlus } from "react-icons/bs";
+import { PiPersonSimpleRunThin } from "react-icons/pi";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -44,40 +46,60 @@ const UserMenu = ({ user }: Props) => {
           sOrders={user?.sellerOrders}
           bOrders={user?.buyerOrders}
         />
-        {user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
-          <UpdateRoleAlert
-            heading="Would you like to become an EZH producer or co-op?"
-            description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
-            backButtonLabel="No thanks"
-            actionButtonLabel="More Info"
-            actionButtonHref="/info/ezh-roles"
-            actionButtonLabelTwo="Co-op Registration"
-            actionButtonHrefTwo="/auth/become-a-co-op"
-            actionButtonLabelThree="Producer Registration"
-            actionButtonHrefThree="/auth/become-a-producer"
-          />
+        {user ? (
+          user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
+            <UpdateRoleAlert
+              heading="Would you like to become an EZH producer or co-op?"
+              description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
+              backButtonLabel="No thanks"
+              actionButtonLabel="More Info"
+              actionButtonHref="/info/ezh-roles"
+              actionButtonLabelTwo="Co-op Registration"
+              actionButtonHrefTwo="/auth/become-a-co-op"
+              actionButtonLabelThree="Producer Registration"
+              actionButtonHrefThree="/auth/become-a-producer"
+            />
+          ) : (
+            <div
+              onClick={() => {
+                listingModal.onOpen();
+              }}
+            >
+              <CiSquarePlus className="w-10 h-10" />
+            </div>
+          )
         ) : (
-          <div
-            onClick={() => {
-              listingModal.onOpen();
-            }}
-          >
-            <CiSquarePlus className="w-10 h-10" />
-          </div>
+          <>
+            <UpdateRoleAlert
+              heading="Would you like to become an EZH producer or co-op?"
+              description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
+              backButtonLabel="No thanks"
+              actionButtonLabel="More Info"
+              actionButtonHref="/info/ezh-roles"
+              actionButtonLabelTwo="Co-op Registration"
+              actionButtonHrefTwo="/auth/register-co-op"
+              actionButtonLabelThree="Producer Registration"
+              actionButtonHrefThree="/auth/register-producer"
+            />
+          </>
         )}
+
         <SheetTrigger className="border-[1px] p-[2px] rounded-md">
           <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>
       <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
         <div>
-          <div className="flex flex-row px-4">
-            <Avatar user={user} />
-            <div className="flex flex-col ml-2">
-              <div className="font-bold">{user?.name}</div>
-              <div>{user?.firstName}</div>
+          {user && (
+            <div className="flex flex-row px-4">
+              <Avatar user={user} />
+              <div className="flex flex-col ml-2">
+                <div className="font-bold">{user?.name}</div>
+                <div>{user?.firstName}</div>
+              </div>
             </div>
-          </div>
+          )}
+
           <div>
             {user?.role === "COOP" ? (
               <div>
@@ -178,7 +200,30 @@ const UserMenu = ({ user }: Props) => {
                 </SheetTrigger>
               </>
             ) : (
-              <></>
+              <>
+                <SheetTrigger className="w-full">
+                  <MenuItem
+                    label="Sign In"
+                    icon={<PiPersonSimpleRunThin className="mr-2" />}
+                    onClick={() => router.push("/auth/login")}
+                  />
+                  <MenuItem
+                    label="Sign Up"
+                    icon={<BsPersonPlus className="mr-2" />}
+                    onClick={() => router.push("/auth/register")}
+                  />
+                  <MenuItem
+                    label="Market"
+                    icon={<CiShop className="mr-2" />}
+                    onClick={() => router.push("/market")}
+                  />
+                  <MenuItem
+                    label="Map"
+                    icon={<LiaMapMarkedSolid className="mr-2" />}
+                    onClick={() => router.push("/map")}
+                  />
+                </SheetTrigger>
+              </>
             )}
           </div>
         </div>
