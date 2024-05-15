@@ -8,7 +8,7 @@ import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import ImageModal from "./ImageModal";
 import axios from "axios";
-import DateState from "./dateStates";
+import CustomTimeModal2 from "./dateStates";
 import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
@@ -45,6 +45,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -281,9 +282,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     axios.post("/api/update-order", { orderId: order.id, status: 10 });
   };
 
-  const handleTime = (childTime: Date) => {
-    setDateTime(childTime);
-    const date = formatTime(childTime);
+  const handleTime = (childTime: any) => {
+    setDateTime(childTime.pickupTime);
+    const date = formatTime(childTime.pickupTime);
     setValidTime(date);
   };
 
@@ -302,6 +303,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   return (
     <div>
+      <CustomTimeModal2
+        isOpen={customTimeOpen}
+        onClose={() => setCustomTimeOpen(false)}
+        hours={user.hours}
+        onSetTime={handleTime}
+      />
       <ConfirmModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -318,7 +325,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <button
           type="submit"
           onClick={() => setCancelOpen(true)}
-          // onTouchMoveCapture={}
           className="
  rounded-full 
  p-2 
@@ -419,10 +425,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <button type="submit" onClick={onSubmit1} className="m">
               Yes, That time works, Your order will be ready at that time.
             </button>
-            <DateState
-              hours={user.hours as ExtendedHours}
-              onSetTime={handleTime}
-            />
+            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
             <button type="submit" onClick={onSubmit2} className="m">
               No, that time does not work. Does{" "}
               <span className="text-black">{validTime}</span> work instead? if
@@ -467,10 +470,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Fantastic, I will be there to pick up the item at the specified
                 time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
               <button
                 type="submit"
                 onClick={onSubmit8}
@@ -497,10 +500,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
               <button
                 type="submit"
                 onClick={onSubmit2}
@@ -573,10 +576,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button type="submit" onClick={onSubmit9} className="">
                 I can deliver these items to you at{" "}
                 <span className="text-black">{validTime}</span>, does that work?
@@ -611,10 +615,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, See you then!
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button
                 type="submit"
                 onClick={onSubmit11}
@@ -662,10 +667,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works. Your item will be delivered at that time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button
                 type="submit"
                 onClick={onSubmit13}
