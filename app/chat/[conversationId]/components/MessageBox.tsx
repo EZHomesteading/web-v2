@@ -247,14 +247,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const onSubmit12 = (img: string) => {
-    axios.post("/api/messages", {
+  const onSubmit12 = async (img: string) => {
+    await axios.post("/api/messages", {
       message: img,
       messageOrder: "img",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/messages", {
+    await axios.post("/api/messages", {
       message: "Your item has been delivered.",
       messageOrder: "6",
       conversationId: convoId,
@@ -582,6 +582,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 className={`m text-xs md:text-sm`}
               >
                 I have Received my order. Thank you!
+              </button>
+            </div>
+            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
+              <button
+                type="submit"
+                onClick={onSubmit6}
+                className={`m text-xs md:text-sm`}
+              >
+                Dispute Transaction
               </button>
             </div>
           </div>
