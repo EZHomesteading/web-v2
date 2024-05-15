@@ -8,7 +8,7 @@ import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import ImageModal from "./ImageModal";
 import axios from "axios";
-import DateState from "./dateStates";
+import CustomTimeModal2 from "./dateStates";
 import { ExtendedHours } from "@/next-auth";
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
@@ -19,6 +19,16 @@ import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
 import { UserRole } from "@prisma/client";
+
+import { UploadButton } from "@/utils/uploadthing";
+
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
+import DisputeModal from "./DisputeModal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -43,8 +53,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   order,
   otherUserRole,
 }) => {
+  const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
+  const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -236,8 +249,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const onSubmit12 = () => {
-    axios.post("/api/messages", {
+  const onSubmit12 = async (img: string) => {
+    await axios.post("/api/messages", {
+      message: img,
+      messageOrder: "img",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/messages", {
       message: "Your item has been delivered.",
       messageOrder: "6",
       conversationId: convoId,
@@ -281,9 +300,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     axios.post("/api/update-order", { orderId: order.id, status: 10 });
   };
 
-  const handleTime = (childTime: Date) => {
-    setDateTime(childTime);
-    const date = formatTime(childTime);
+  const handleTime = (childTime: any) => {
+    setDateTime(childTime.pickupTime);
+    const date = formatTime(childTime.pickupTime);
     setValidTime(date);
   };
 
@@ -302,9 +321,23 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   return (
     <div>
+      <CustomTimeModal2
+        isOpen={customTimeOpen}
+        onClose={() => setCustomTimeOpen(false)}
+        hours={user.hours}
+        onSetTime={handleTime}
+      />
       <ConfirmModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
+      />
+      <DisputeModal
+        isOpen={disputeOpen}
+        onClose={() => setDisputeOpen(false)}
+        user={user}
+        orderId={order.id}
+        conversationId={convoId}
+        otherUserId={otherUsersId}
       />
       <CancelModal
         isOpen={cancelOpen}
@@ -318,7 +351,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <button
           type="submit"
           onClick={() => setCancelOpen(true)}
-          // onTouchMoveCapture={}
           className="
  rounded-full 
  p-2 
@@ -344,21 +376,43 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               isOpen={true}
               onClose={() => setImageModalOpen(false)}
             />
-            {data.image ? (
-              <Image
-                alt="Image"
-                height="288"
-                width="288"
-                onClick={() => setImageModalOpen(true)}
-                src={data.image}
-                className="
-                object-cover 
-                 
-                hover:scale-110 
-                 
-                translate
-              "
-              />
+            {data.messageOrder === "img" ? (
+              <>
+                <div>
+                  <div className="m-5 relative">
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Image
+                          src={data.body || ""}
+                          height={180}
+                          width={180}
+                          alt="a"
+                          className="aspect-square rounded-lg object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                          Click to Enlarge
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="xl:flex xl:justify-center">
+                        <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                          {" "}
+                          <div>
+                            <Image
+                              src={data.body || ""}
+                              fill
+                              className="object-cover w-full"
+                              alt="a"
+                            />
+                          </div>
+                          <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                            Close
+                          </AlertDialogCancel>
+                        </div>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </>
             ) : (
               <div>
                 {data.messageOrder === "10" ||
@@ -419,10 +473,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <button type="submit" onClick={onSubmit1} className="m">
               Yes, That time works, Your order will be ready at that time.
             </button>
-            <DateState
-              hours={user.hours as ExtendedHours}
-              onSetTime={handleTime}
-            />
+            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
             <button type="submit" onClick={onSubmit2} className="m">
               No, that time does not work. Does{" "}
               <span className="text-black">{validTime}</span> work instead? if
@@ -467,10 +518,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 Fantastic, I will be there to pick up the item at the specified
                 time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
               <button
                 type="submit"
                 onClick={onSubmit8}
@@ -497,10 +548,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, Your order will be ready at that time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
               <button
                 type="submit"
                 onClick={onSubmit2}
@@ -543,6 +594,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 I have Received my order. Thank you!
               </button>
             </div>
+            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
+              <button
+                type="submit"
+                onClick={() => setDisputeOpen(true)}
+                className={`m text-xs md:text-sm`}
+              >
+                Dispute Transaction
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -573,10 +633,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button type="submit" onClick={onSubmit9} className="">
                 I can deliver these items to you at{" "}
                 <span className="text-black">{validTime}</span>, does that work?
@@ -611,10 +672,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works, See you then!
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button
                 type="submit"
                 onClick={onSubmit11}
@@ -636,13 +698,73 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit12}
-                className="m hover:bg-sky-600"
-              >
-                Your item has been delivered.
-              </button>
+              <div className="">
+                <div className=" p-2 rounded-lg">
+                  {!image && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: any) => {
+                        setImage(res[0].url);
+                        onSubmit12(res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
+                      appearance={{
+                        container: "h-full w-max",
+                      }}
+                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                      content={{
+                        button({ ready }) {
+                          if (ready)
+                            return (
+                              <div>Sent a photo of the delivered produce</div>
+                            );
+                          return "Getting ready...";
+                        },
+                      }}
+                    />
+                  )}
+                  {image && (
+                    <>
+                      <div>
+                        <div className="m-5 relative">
+                          <AlertDialog>
+                            <AlertDialogTrigger>
+                              <Image
+                                src={image}
+                                height={180}
+                                width={180}
+                                alt="a"
+                                className="aspect-square rounded-lg object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                                Click to Enlarge
+                              </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="xl:flex xl:justify-center">
+                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                                {" "}
+                                <div>
+                                  <Image
+                                    src={image}
+                                    fill
+                                    className="object-cover w-full"
+                                    alt="a"
+                                  />
+                                </div>
+                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                                  Close
+                                </AlertDialogCancel>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -662,10 +784,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 Yes, That time works. Your item will be delivered at that time.
               </button>
-              <DateState
-                hours={user.hours as ExtendedHours}
-                onSetTime={handleTime}
-              />
+              <button onClick={() => setCustomTimeOpen(true)}>
+                {" "}
+                SET TIME{" "}
+              </button>
+
               <button
                 type="submit"
                 onClick={onSubmit13}
@@ -685,13 +808,73 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit12}
-                className="m hover:bg-sky-600"
-              >
-                Your item has been delivered.
-              </button>
+              <div className="">
+                <div className=" p-2 rounded-lg">
+                  {!image && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: any) => {
+                        setImage(res[0].url);
+                        onSubmit12(res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
+                      appearance={{
+                        container: "h-full w-max",
+                      }}
+                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                      content={{
+                        button({ ready }) {
+                          if (ready)
+                            return (
+                              <div>Sent a photo of the delivered produce</div>
+                            );
+                          return "Getting ready...";
+                        },
+                      }}
+                    />
+                  )}
+                  {image && (
+                    <>
+                      <div>
+                        <div className="m-5 relative">
+                          <AlertDialog>
+                            <AlertDialogTrigger>
+                              <Image
+                                src={image}
+                                height={180}
+                                width={180}
+                                alt="a"
+                                className="aspect-square rounded-lg object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                                Click to Enlarge
+                              </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="xl:flex xl:justify-center">
+                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                                {" "}
+                                <div>
+                                  <Image
+                                    src={image}
+                                    fill
+                                    className="object-cover w-full"
+                                    alt="a"
+                                  />
+                                </div>
+                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                                  Close
+                                </AlertDialogCancel>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
