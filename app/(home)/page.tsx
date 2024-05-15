@@ -3,7 +3,7 @@ import CoopHome from "./coop-home";
 import ProducerHome from "./proucer-home";
 import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
-
+import AdminHome from "./admin-home";
 const HomePage = async () => {
   const user = await currentUser();
   return (
@@ -13,6 +13,8 @@ const HomePage = async () => {
           <CoopHome user={user} />
         ) : user?.role == UserRole.PRODUCER ? (
           <ProducerHome user={user} />
+        ) : user?.role == UserRole.ADMIN ? (
+          <AdminHome user={user} />
         ) : (
           <Home />
         )
