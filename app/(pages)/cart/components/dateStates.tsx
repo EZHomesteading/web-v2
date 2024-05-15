@@ -1,12 +1,20 @@
 "use client";
 
 import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
-import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
+import { SheetTrigger } from "@/app/components/ui/sheet";
+import { useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
-import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
+import CustomTimeModal from "./customTimeModal";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface StatusProps {
   hours: ExtendedHours;
@@ -17,7 +25,7 @@ interface StatusProps {
 
 const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
-
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const formatPickupTime = (selectedTime: any) => {
     if (!selectedTime) return "";
 
@@ -55,6 +63,14 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
 
   return (
     <SheetCartC>
+      <CustomTimeModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        hours={hours}
+        index={index}
+        cartGroup={cartGroup}
+        onSetTime={handleTimer}
+      />
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
         {selectedTime?.pickupTime ? (
           <>{formatPickupTime(selectedTime)}</>
@@ -69,14 +85,28 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         index={index}
         onSetTime={handleTimer}
       >
-        <Sheet>
-          <CustomTime
-            hours={hours}
-            index={index}
-            cartGroup={cartGroup}
-            onSetTime={handleTimer}
-          />
-        </Sheet>
+        <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
+          <SheetTrigger className="h-full w-full">
+            <Card className="bg-inherit border-none">
+              <CardHeader
+                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+              >
+                Set a custom pickup time{" "}
+              </CardHeader>
+              <CardContent className={`${outfit.className} mt-2`}>
+                Not in a rush? Feel free to set a pick up anytime within the
+                freshness window of your cart items and this co-op&apos;s open
+                hours.
+              </CardContent>
+            </Card>
+          </SheetTrigger>
+        </div>
+        {/* <CustomTime
+          hours={hours}
+          index={index}
+          cartGroup={cartGroup}
+          onSetTime={handleTimer}
+        /> */}
       </SheetContentC>
     </SheetCartC>
   );
