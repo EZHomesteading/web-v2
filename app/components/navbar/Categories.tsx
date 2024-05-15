@@ -87,25 +87,31 @@ interface Props {
 
 const Categories = ({ user }: Props) => {
   const pathname = usePathname();
-  const isMarket = "/";
+  const marketPathName = "/market";
+  let isMarket = false;
+  if (pathname === marketPathName) {
+    isMarket = true;
+  }
   return (
     <Container>
-      <div className="flex flex-row items-center">
-        <div>
-          <Filters user={user} />
-        </div>
-        <div className="w-full p-0 sm:pt-4">
-          <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
-            {categories.map((item) => (
-              <CategoryBox
-                key={item.label}
-                label={item.label}
-                icon={item.icon}
-              />
-            ))}
+      {isMarket ? (
+        <div className="flex flex-row items-center">
+          <div>
+            <Filters user={user} />
+          </div>
+          <div className="w-full p-0 sm:pt-4">
+            <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
+              {categories.map((item) => (
+                <CategoryBox
+                  key={item.label}
+                  label={item.label}
+                  icon={item.icon}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </Container>
   );
 };

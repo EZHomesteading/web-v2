@@ -20,6 +20,15 @@ import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
 import { UserRole } from "@prisma/client";
 
+import { UploadButton } from "@/utils/uploadthing";
+
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -43,6 +52,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   order,
   otherUserRole,
 }) => {
+  const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [customTimeOpen, setCustomTimeOpen] = useState(false);
@@ -237,7 +247,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const onSubmit12 = () => {
+  const onSubmit12 = (img: string) => {
+    axios.post("/api/messages", {
+      message: img,
+      messageOrder: "img",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
     axios.post("/api/messages", {
       message: "Your item has been delivered.",
       messageOrder: "6",
@@ -350,21 +366,43 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               isOpen={true}
               onClose={() => setImageModalOpen(false)}
             />
-            {data.image ? (
-              <Image
-                alt="Image"
-                height="288"
-                width="288"
-                onClick={() => setImageModalOpen(true)}
-                src={data.image}
-                className="
-                object-cover 
-                 
-                hover:scale-110 
-                 
-                translate
-              "
-              />
+            {data.messageOrder === "img" ? (
+              <>
+                <div>
+                  <div className="m-5 relative">
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Image
+                          src={data.body || ""}
+                          height={180}
+                          width={180}
+                          alt="a"
+                          className="aspect-square rounded-lg object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                          Click to Enlarge
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="xl:flex xl:justify-center">
+                        <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                          {" "}
+                          <div>
+                            <Image
+                              src={data.body || ""}
+                              fill
+                              className="object-cover w-full"
+                              alt="a"
+                            />
+                          </div>
+                          <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                            Close
+                          </AlertDialogCancel>
+                        </div>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </>
             ) : (
               <div>
                 {data.messageOrder === "10" ||
@@ -641,13 +679,73 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit12}
-                className="m hover:bg-sky-600"
-              >
-                Your item has been delivered.
-              </button>
+              <div className="">
+                <div className=" p-2 rounded-lg">
+                  {!image && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: any) => {
+                        setImage(res[0].url);
+                        onSubmit12(res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
+                      appearance={{
+                        container: "h-full w-max",
+                      }}
+                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                      content={{
+                        button({ ready }) {
+                          if (ready)
+                            return (
+                              <div>Sent a photo of the delivered produce</div>
+                            );
+                          return "Getting ready...";
+                        },
+                      }}
+                    />
+                  )}
+                  {image && (
+                    <>
+                      <div>
+                        <div className="m-5 relative">
+                          <AlertDialog>
+                            <AlertDialogTrigger>
+                              <Image
+                                src={image}
+                                height={180}
+                                width={180}
+                                alt="a"
+                                className="aspect-square rounded-lg object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                                Click to Enlarge
+                              </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="xl:flex xl:justify-center">
+                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                                {" "}
+                                <div>
+                                  <Image
+                                    src={image}
+                                    fill
+                                    className="object-cover w-full"
+                                    alt="a"
+                                  />
+                                </div>
+                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                                  Close
+                                </AlertDialogCancel>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -691,13 +789,73 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit12}
-                className="m hover:bg-sky-600"
-              >
-                Your item has been delivered.
-              </button>
+              <div className="">
+                <div className=" p-2 rounded-lg">
+                  {!image && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: any) => {
+                        setImage(res[0].url);
+                        onSubmit12(res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
+                      appearance={{
+                        container: "h-full w-max",
+                      }}
+                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                      content={{
+                        button({ ready }) {
+                          if (ready)
+                            return (
+                              <div>Sent a photo of the delivered produce</div>
+                            );
+                          return "Getting ready...";
+                        },
+                      }}
+                    />
+                  )}
+                  {image && (
+                    <>
+                      <div>
+                        <div className="m-5 relative">
+                          <AlertDialog>
+                            <AlertDialogTrigger>
+                              <Image
+                                src={image}
+                                height={180}
+                                width={180}
+                                alt="a"
+                                className="aspect-square rounded-lg object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                                Click to Enlarge
+                              </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="xl:flex xl:justify-center">
+                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                                {" "}
+                                <div>
+                                  <Image
+                                    src={image}
+                                    fill
+                                    className="object-cover w-full"
+                                    alt="a"
+                                  />
+                                </div>
+                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                                  Close
+                                </AlertDialogCancel>
+                              </div>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
