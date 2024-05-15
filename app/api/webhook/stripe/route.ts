@@ -120,54 +120,52 @@ export async function POST(request: NextRequest) {
                 Body: {
                   Html: {
                     Data: ` 
-                  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif;">
-                    <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; background-color: #ced9bb; padding: 8px; border-radius: 8px; width: 320px; aspect-ratio: 9/16;">
-                      <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center;">
-                        <img src="path/to/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" />
-                        EZHomesteading
-                      </header>
-                      <h1>Hi, ${seller.name}</h1>
-                      <p style="font-size: 12px;">You have a new order from ${
-                        buyer.name
-                      }</p>
-                      <p style="font-size: 24px;">Order Details:</p>
-                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; margin-bottom: 4px; border-top: 1px solid; border-bottom: 1px solid; padding-top: 8px; padding-bottom: 8px;">
-                        Items
-                        <div style="font-size: 14px; text-align: start;">
-                          ${titles
-                            .split(", ")
-                            .map((item) => `<li>${item}</li>`)
-                            .join("")}
-                        </div>
-                      </ul>
-                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; border-bottom: 1px solid; align-items: center; padding-top: 8px; padding-bottom: 8px;">
-                        Pickup Date
-                        <div>
-                          <li style="font-size: 14px;">${order.pickupDate.toLocaleString()}</li>
-                        </div>
-                      </ul>
-                      <ul style="display: grid; grid-template-columns: repeat(2, 1fr); font-size: 20px; border-bottom: 1px solid; align-items: center; padding-top: 8px; padding-bottom: 8px;">
-                        Order Total
-                        <div>
-                          <li style="font-size: 14px;">$${order.totalPrice.toFixed(
-                            2
-                          )}</li>
-                        </div>
-                      </ul>
-                      <a href="https://ezhomesteading.com/chat/${
-                        newConversation.id
-                      }" style="text-decoration: none;">
-                        <button style="background-color: #64748b; border-radius: 9999px; padding-top: 8px; padding-bottom: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; padding-left: 8px; padding-right: 8px; margin-top: 8px;">
-                          Go to conversation
-                        </button>
-                      </a>
-                      <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none;">
-                        <button style="background-color: #64748b; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; margin-top: 8px;">
-                          Go to sell orders
-                        </button>
-                      </a>
-                    </div>
-                  </div>`,
+                    <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
+  <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
+    <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
+      <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
+      <span>EZHomesteading</span>
+    </header>
+    <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${seller.name}</h1>
+    <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
+      buyer.name
+    }</p>
+
+      <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
+      <div style="margin-bottom: 8px;">
+        <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
+        <ul style="font-size: 14px;">
+          ${titles
+            .split(", ")
+            .map((item) => `<li>${item}</li>`)
+            .join("")}
+        </ul>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
+        <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
+      </div>
+      <div>
+        <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
+        <p style="font-size: 14px;">$${order.totalPrice.toFixed(2)}</p>
+      </div>
+
+    <a href="https://ezhomesteading.com/chat/${
+      newConversation.id
+    }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
+      <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+        Go to conversation
+      </button>
+    </a>
+    <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
+      <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+        Go to sell orders
+      </button>
+    </a>
+  </div>
+</div>
+                  
+`,
                   },
                 },
                 Subject: {

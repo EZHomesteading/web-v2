@@ -223,7 +223,7 @@ const Navbar = ({ user }: p) => {
               </SheetContent>
             </Sheet>
             <div className="z">
-              {user ? <UserMenu user={user} /> : <AuthButtons />}
+              <UserMenu user={user} />
             </div>
           </div>
         </Container>

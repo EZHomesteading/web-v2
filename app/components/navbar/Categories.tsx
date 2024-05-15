@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
 import {
   GiCoolSpices,
   GiGrainBundle,
@@ -12,12 +11,13 @@ import {
   GiMilkCarton,
 } from "react-icons/gi";
 import { LuNut, LuBeef } from "react-icons/lu";
-import { CiApple, CiFilter } from "react-icons/ci";
+import { CiApple } from "react-icons/ci";
 import { FaSeedling } from "react-icons/fa6";
 
 import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 import Filters from "./filter.client";
+import { usePathname } from "next/navigation";
 
 export const categories = [
   {
@@ -86,6 +86,8 @@ interface Props {
 }
 
 const Categories = ({ user }: Props) => {
+  const pathname = usePathname();
+  const isMarket = "/";
   return (
     <Container>
       <div className="flex flex-row items-center">

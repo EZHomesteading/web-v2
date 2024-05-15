@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { SafeListing } from "@/types";
-import CartIcon from "./cart-icon";
-import { Button } from "../ui/button";
+import CartIcon from "@/app/components/listings/cart-icon";
+import { Button } from "@/app/components/ui/button";
 import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -18,15 +18,27 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-import { Card, CardContent } from "../ui/card";
+} from "@/app/components/ui/carousel";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Outfit } from "next/font/google";
+import { Work_Sans } from "next/font/google";
+
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["200"],
+});
+
+const work = Work_Sans({
+  display: "block",
+  subsets: ["latin"],
+  weight: ["300"],
+});
 
 interface ListingCardProps {
   data: SafeListing;
@@ -83,13 +95,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="flex flex-col w-full">
         <div
           onClick={() => router.push(`/listings/${data.id}`)}
-          className="
-            aspect-square 
-            w-full 
-            relative 
-            overflow-hidden 
-            rounded-xl
-          "
+          className="w-full relative overflow-hidden rounded-xl"
         >
           <Carousel className="relative rounded-lg">
             <CarouselContent>
@@ -119,26 +125,24 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
           </Carousel>
-          <div
-            className="
-            absolute
-            top-3
-            right-3
-          "
-          >
+          <div className="absolute top-3 right-3">
             <CartIcon listingId={data.id} user={user} />
           </div>
         </div>
         <div className="font-semibold text-lg">
           {" "}
-          <div className="font-semibold text-lg"> {data.title}</div>
-          <div className="font-light text-neutral-500">
+          <div className={`${outfit.className} text-lg`}>{data.title}</div>
+          <div
+            className={`font-light text-neutral-500 text-xs ${work.className}`}
+          >
             {data?.location?.address[1]}, {data?.location?.address[2]}
           </div>
         </div>
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
-            <div className="flex flex-row items-center gap-1">
+            <div
+              className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
+            >
               <div className="font-semibold"> ${data.price}</div>
               {data.quantityType && (
                 <div className="font-light">per {data.quantityType}</div>
@@ -162,7 +166,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   We cannot recover a listing after it has been deleted, this is
                   irreversible.
                 </AlertDialogDescription>
-
                 <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
                   <AlertDialogAction
                     className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
