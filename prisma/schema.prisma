@@ -301,7 +301,7 @@ model Dispute {
   images           String[]
   reason           DisputeReason
   explanation      String
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

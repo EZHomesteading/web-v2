@@ -8,6 +8,7 @@ export default async function getDisputes() {
         userId: true,
         images: true,
         status: true,
+        reason: true,
         explanation: true,
         email: true,
         phone: true,
