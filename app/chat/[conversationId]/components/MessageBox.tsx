@@ -28,6 +28,7 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
+import DisputeModal from "./DisputeModal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
   const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
@@ -329,6 +331,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
       />
+      <DisputeModal
+        isOpen={disputeOpen}
+        onClose={() => setDisputeOpen(false)}
+        user={user}
+      />
       <CancelModal
         isOpen={cancelOpen}
         onClose={() => setCancelOpen(false)}
@@ -587,7 +594,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
               <button
                 type="submit"
-                onClick={onSubmit6}
+                onClick={() => setDisputeOpen(true)}
                 className={`m text-xs md:text-sm`}
               >
                 Dispute Transaction
