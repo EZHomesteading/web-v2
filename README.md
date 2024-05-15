@@ -37,8 +37,15 @@ Farmer's markets frequently charge vendors up front for their space. These vendo
 ├── .vscode                         # VSCode configuration
 ├── app                             # App folder for NextJs app router functionality
 │   ├── (pages)                     # All front-end pages except the landing page | authorization routes
-│   ├── (home)                      # Landing page
-│   ├── (auth)                      # Authorization pages
+│   ├── (home)                      # Landing pages
+│   ├── (map)                       # Map page
+│   ├── auth                        # Authorization pages
+│   ├── chat                        # Chat page
+│   ├── dashboard                   # Dashboard page with info on orders
+│   ├── dispute                     # Dispute page for admin users to handle disputes
+│   ├── info                        # Company info pages
+│   ├── onboard                     # Onboarding pages for sellers
+│   ├── profile                     # Profile page for all users
 │   ├── components                  # React components
 │   └── api                         # Api folder for post, delete, update requests
 │   globals.css                     # Global css
