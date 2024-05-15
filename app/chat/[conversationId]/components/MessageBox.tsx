@@ -6,10 +6,10 @@ import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import ImageModal from "./ImageModal";
+
 import axios from "axios";
 import CustomTimeModal2 from "./dateStates";
-import { ExtendedHours } from "@/next-auth";
+
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
@@ -372,10 +372,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             {format(new Date(data.createdAt), "p")}
           </div>
           <div className={message}>
-            <ImageModal
-              isOpen={true}
-              onClose={() => setImageModalOpen(false)}
-            />
             {data.messageOrder === "img" ? (
               <>
                 <div>
