@@ -52,19 +52,33 @@ const Body: React.FC<BodyProps> = ({
     };
 
     // Subscribe to the channel and bind event handlers
-    pusherClient.subscribe(conversationId);
-    pusherClient.bind("messages:new", messageHandler);
-    pusherClient.bind("message:update", updateMessageHandler);
+    const clearConnection = async () => {
+      pusherClient.disconnect();
+      pusherClient.unsubscribe("messenger");
+      pusherClient.unbind("messages:new", messageHandler);
+      pusherClient.unbind("message:update", updateMessageHandler);
+    };
+    const Connect = async () => {
+      pusherClient.connect();
+      pusherClient.subscribe("messenger");
+      pusherClient.bind("messages:new", messageHandler);
+      pusherClient.bind("message:update", updateMessageHandler);
+    };
+    const reConnect = async () => {
+      await clearConnection();
+      await Connect();
+    };
+    reConnect();
 
     // Cleanup function to unsubscribe and unbind event handlers
     return () => {
-      pusherClient.unsubscribe(conversationId);
+      pusherClient.unsubscribe("messenger");
       pusherClient.unbind("messages:new", messageHandler);
       pusherClient.unbind("message:update", updateMessageHandler);
       pusherClient.disconnect(); // Disconnect Pusher connection
     };
   }, [conversationId]);
-  console.log(user);
+
   return (
     <div className="flex-1 overflow-y-auto">
       {/* <div className="flex flex-row-reverse"></div> */}

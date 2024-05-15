@@ -94,6 +94,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     isOwn ? `m text-white` : `mnot`,
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
+  const notMessage = clsx(
+    `text-xs md:text-sm w-fit ${outfit.className}`,
+    isOwn ? ` text-white` : ``,
+    data.image ? "rounded-md p-0" : " "
+  );
   const onSubmit1 = () => {
     axios.post("/api/messages", {
       message: `Yes, That time works, Your order will be ready at that time. at ${user.location?.address}`,
@@ -371,45 +376,46 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="text-xs text-gray-400 mx-1 mb-1">
             {format(new Date(data.createdAt), "p")}
           </div>
-          <div className={message}>
-            {data.messageOrder === "img" ? (
-              <>
-                <div>
-                  <div className="m-5 relative">
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Image
-                          src={data.body || ""}
-                          height={180}
-                          width={180}
-                          alt="a"
-                          className="aspect-square rounded-lg object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                          Click to Enlarge
+
+          {data.messageOrder === "img" ? (
+            <>
+              <div className={notMessage}>
+                <div className="m-5 relative">
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Image
+                        src={data.body || ""}
+                        height={180}
+                        width={180}
+                        alt="a"
+                        className="aspect-square rounded-lg object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                        Click to Enlarge
+                      </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="xl:flex xl:justify-center">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                        {" "}
+                        <div>
+                          <Image
+                            src={data.body || ""}
+                            fill
+                            className="object-cover w-full"
+                            alt="a"
+                          />
                         </div>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="xl:flex xl:justify-center">
-                        <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                          {" "}
-                          <div>
-                            <Image
-                              src={data.body || ""}
-                              fill
-                              className="object-cover w-full"
-                              alt="a"
-                            />
-                          </div>
-                          <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                            Close
-                          </AlertDialogCancel>
-                        </div>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                          Close
+                        </AlertDialogCancel>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
-              </>
-            ) : (
+              </div>
+            </>
+          ) : (
+            <div className={message}>
               <div>
                 {data.messageOrder === "10" ||
                 data.messageOrder === "13" ||
@@ -422,8 +428,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   <div>{data.body}</div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
           {data.messageOrder === "1.1" && isOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2">
               <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />{" "}

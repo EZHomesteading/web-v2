@@ -59,7 +59,6 @@ const DisputeModal = ({
   const [comments, setComments] = useState("");
   const [phone, setPhone] = useState(user?.phoneNumber || "");
   const [email, setEmail] = useState(user?.email || "");
-  console.log(user, orderId, conversationId, otherUserId);
   const handleSubmit = async () => {
     const data = {
       userId: user.id,
