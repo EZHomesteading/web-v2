@@ -6,9 +6,8 @@ import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
-import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import ConfirmModal from "./customTimeModal";
+import CustomTimeModal from "./customTimeModal";
 import { Outfit } from "next/font/google";
 
 const outfit = Outfit({
@@ -64,7 +63,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
 
   return (
     <SheetCartC>
-      <ConfirmModal
+      <CustomTimeModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         hours={hours}
