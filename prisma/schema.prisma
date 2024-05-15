@@ -300,7 +300,7 @@ model Dispute {
   status           Int @default(0)
   images           String[]
   reason           DisputeReason
-  explanation      String[]
+  explanation      String
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)

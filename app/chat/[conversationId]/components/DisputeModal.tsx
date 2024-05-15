@@ -62,6 +62,7 @@ const DisputeModal = ({
   console.log(user, orderId, conversationId, otherUserId);
   const handleSubmit = async () => {
     const data = {
+      userId: user.id,
       orderId: orderId,
       email: email,
       phone: phone,
