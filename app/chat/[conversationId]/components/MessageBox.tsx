@@ -28,6 +28,7 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
+import DisputeModal from "./DisputeModal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
   const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<any>("(select your time)");
   const [dateTime, setDateTime] = useState<any>("");
@@ -247,14 +249,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const onSubmit12 = (img: string) => {
-    axios.post("/api/messages", {
+  const onSubmit12 = async (img: string) => {
+    await axios.post("/api/messages", {
       message: img,
       messageOrder: "img",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/messages", {
+    await axios.post("/api/messages", {
       message: "Your item has been delivered.",
       messageOrder: "6",
       conversationId: convoId,
@@ -328,6 +330,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       <ConfirmModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
+      />
+      <DisputeModal
+        isOpen={disputeOpen}
+        onClose={() => setDisputeOpen(false)}
+        user={user}
+        orderId={order.id}
+        conversationId={convoId}
+        otherUserId={otherUsersId}
       />
       <CancelModal
         isOpen={cancelOpen}
@@ -582,6 +592,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 className={`m text-xs md:text-sm`}
               >
                 I have Received my order. Thank you!
+              </button>
+            </div>
+            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
+              <button
+                type="submit"
+                onClick={() => setDisputeOpen(true)}
+                className={`m text-xs md:text-sm`}
+              >
+                Dispute Transaction
               </button>
             </div>
           </div>
