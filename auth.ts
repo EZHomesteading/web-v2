@@ -50,6 +50,7 @@ export const {
         session.user.notifications = token.notifications as Notification;
         session.user.SODT = token.SODT as number | undefined;
         session.user.bio = token.bio as string | undefined;
+        session.user.banner = token.banner as string | undefined;
       }
       return session;
     },
@@ -80,6 +81,7 @@ export const {
       token.notifications = existingUser.notifications;
       token.SODT = existingUser.SODT;
       token.bio = existingUser.bio;
+      token.banner = existingUser.banner;
       return token;
     },
   },
