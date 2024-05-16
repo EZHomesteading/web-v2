@@ -1,14 +1,8 @@
 "use client";
 
 import { HiChevronLeft } from "react-icons/hi";
-
-import { useMemo } from "react";
 import Link from "next/link";
-import { Conversation, User } from "@prisma/client";
-
 import useOtherUser from "@/hooks/messenger/useOtherUser";
-//import useActiveList from "@/hooks/messenger/useActiveList";
-
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/avatar-group";
 
@@ -18,16 +12,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {
   const otherUser = useOtherUser(conversation);
-
-  //const { members } = useActiveList();
-  //const isActive = members.indexOf(otherUser?.email!) !== -1;
-  // const statusText = useMemo(() => {
-  //   if (conversation.isGroup) {
-  //     return `${conversation.users.length} members`;
-  //   }
-
-  //   return isActive ? "Active" : "Offline";
-  // }, [conversation, isActive]);
 
   return (
     <>

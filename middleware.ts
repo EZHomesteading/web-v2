@@ -23,9 +23,9 @@ export default auth(async (req) => {
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString) ||
-    nextUrl.pathname.startsWith("/info/");
+    nextUrl.pathname.startsWith("/info/") ||
+    nextUrl.pathname.startsWith("/profile/");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  // const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null as unknown as void;
@@ -42,42 +42,7 @@ export default auth(async (req) => {
     return null as unknown as void;
   }
 
-  // if (isCoopRoute && user?.role !== UserRole.COOP) {
-  //   let callbackUrl = nextUrl.pathname;
-  //   if (nextUrl.search) {
-  //     callbackUrl += nextUrl.search;
-  //   }
-  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-  //   return Response.redirect(
-  //     new URL(`/shop?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-  //   );
-  // }
-
   if (!isLoggedIn && !isPublicRoute) {
-    // if (!isLoggedIn && isUpdateRoute) {
-    //   let callbackUrl = nextUrl.pathname;
-    //   if (nextUrl.search) {
-    //     callbackUrl += nextUrl.search;
-    //   }
-    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    //   const redirectUrl = updateRoutes.includes(callbackUrl)
-    //     ? DEFAULT_LOGIN_REDIRECT
-    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-    //   return Response.redirect(new URL(redirectUrl, nextUrl));
-    // }
-
-    // if (user?.role === "CONSUMER" && isUpdateRoute) {
-    //   let callbackUrl = nextUrl.pathname;
-    //   if (nextUrl.search) {
-    //     callbackUrl += nextUrl.search;
-    //   }
-    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    //   const redirectUrl = updateRoutes.includes(callbackUrl)
-    //     ? DEFAULT_LOGIN_REDIRECT
-    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-    //   return Response.redirect(new URL(redirectUrl, nextUrl));
-    // }
-
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
@@ -91,7 +56,6 @@ export default auth(async (req) => {
   return null as unknown as void;
 });
 
-// Optionally, don't invoke Middleware on some paths
 export const config = {
   matcher: [
     "/((?!.+\\.[\\w]+$|_next).*)",
