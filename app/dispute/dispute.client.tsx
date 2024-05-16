@@ -223,8 +223,8 @@ const DisputeComponent = ({ disputes }: p) => {
                     rounded-lg
                     text-black
                     alt={`Dispute Image ${index}`}
-                    height={100}
-                    width={100}
+                    height={1000}
+                    width={1000}
                   />
                 ))}
               </PopoverContent>
