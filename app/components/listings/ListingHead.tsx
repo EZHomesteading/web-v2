@@ -4,6 +4,8 @@ import { SafeUser } from "@/types";
 import Heading from "../Heading";
 import HeartButton from "./heart-button";
 import { Location } from "@prisma/client";
+import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
+import { Card, CardContent } from "../ui/card";
 
 interface ListingHeadProps {
   title: string;
@@ -32,13 +34,25 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           relative
         "
       >
-        {" "}
-        <Image
-          src={imageSrc[0]}
-          fill
-          className="object-cover w-full"
-          alt={title}
-        />
+        <Carousel>
+          <CarouselContent className="h-[60vh]">
+            {imageSrc.map((_, index) => (
+              <CarouselItem key={index}>
+                <Card>
+                  <CardContent className="flex items-center justify-center relative aspect-sqaure h-[60vh]">
+                    <Image
+                      src={imageSrc[index]}
+                      fill
+                      className="object-cover w-full"
+                      alt={title}
+                    />
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+
         <div
           className="
             absolute

@@ -9,7 +9,15 @@ import Link from "next/link";
 import { Outfit } from "next/font/google";
 import FilterButtons from "@/app/dispute/dispute-filters";
 import { UserRole } from "@prisma/client";
-
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { ExplanationDialog } from "./dispute.explanation";
+const sesClient = new SESClient({
+  region: process.env.AWS_REGION as string,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+});
 const statusTexts: { [key: number]: string } = {
   0: "UNRESOLVED",
   1: "RESOLVED",
@@ -39,6 +47,7 @@ interface Dispute {
       id: string;
       email: string;
       phoneNumber: string | null;
+      firstName: string | null;
       createdAt: Date;
       role: UserRole;
     };
@@ -46,6 +55,7 @@ interface Dispute {
       id: string;
       email: string;
       phoneNumber: string | null;
+      firstName: string | null;
       createdAt: Date;
       role: UserRole;
     };
@@ -67,7 +77,48 @@ const DisputeComponent = ({ disputes }: p) => {
   const [filteredDisputes, setFilteredDisputes] = useState(disputes);
   const [isConfirmVisible, setIsConfirmVisible] =
     useState<ConfirmVisibilityState>({});
+  const handleDenyAndConfirm = async (dispute: any, explanation: string) => {
+    setIsLoading(true);
 
+    const emailParams = {
+      Destination: {
+        ToAddresses: [dispute.order.buyer.email, dispute.order.seller.email],
+      },
+      Message: {
+        Body: {
+          Html: {
+            Data: `
+                <p>Dear ${dispute.order.buyer.firstName} and ${
+              dispute.order.seller.firstName
+            },</p>
+                <p>This email is regarding the dispute for order #${
+                  dispute.order.conversationId
+                }.</p>
+                <p>After reviewing the details of the dispute, the resolution is as follows:</p>
+                <p>${explanation}</p>
+                <p>The dispute has been marked as ${
+                  statusTexts[dispute.status]
+                }.</p>
+                <p>If you have any further questions or concerns, please feel free to reach out to our support team.</p>
+                <p>Best regards,</p>
+                <p>EzHomesteading Dispute Resolution Team</p>
+              `,
+          },
+        },
+        Subject: {
+          Data: "Order Dispute Update",
+        },
+      },
+      Source: "no-reply@ezhomesteading.com",
+    };
+
+    try {
+      await sesClient.send(new SendEmailCommand(emailParams));
+      console.log("Email sent to the seller");
+    } catch (error) {
+      console.error("Error sending email to the seller:", error);
+    }
+  };
   const toggleConfirmVisibility = (
     action: ConfirmAction,
     disputeId: string
@@ -255,11 +306,12 @@ const DisputeComponent = ({ disputes }: p) => {
 
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.approve ? (
-                <Button
-                  onClick={() => toggleConfirmVisibility("approve", dispute.id)}
-                >
-                  Confirm
-                </Button>
+                <ExplanationDialog
+                  dispute={dispute}
+                  onConfirm={(explanation) =>
+                    handleDenyAndConfirm(dispute, explanation)
+                  }
+                />
               ) : (
                 <Button
                   onClick={() => toggleConfirmVisibility("approve", dispute.id)}
@@ -270,11 +322,12 @@ const DisputeComponent = ({ disputes }: p) => {
             </div>
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.deny ? (
-                <Button
-                  onClick={() => toggleConfirmVisibility("deny", dispute.id)}
-                >
-                  Confirm
-                </Button>
+                <ExplanationDialog
+                  dispute={dispute}
+                  onConfirm={(explanation) =>
+                    handleDenyAndConfirm(dispute, explanation)
+                  }
+                />
               ) : (
                 <Button
                   onClick={() => toggleConfirmVisibility("deny", dispute.id)}
