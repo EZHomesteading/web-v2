@@ -19,6 +19,7 @@ export type UserInfo = DefaultSession["user"] & {
   subscriptions?: string;
   totalPaidOut?: number;
   notifications?: Notification;
+  SODT?: number;
 };
 
 type Times = {

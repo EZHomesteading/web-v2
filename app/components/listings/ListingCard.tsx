@@ -92,7 +92,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
   return (
     <div className="col-span-1 cursor-pointer group">
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full relative">
         <div
           onClick={() => router.push(`/listings/${data.id}`)}
           className="w-full relative overflow-hidden rounded-xl"

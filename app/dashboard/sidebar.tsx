@@ -84,8 +84,8 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Store Settings",
-    href: "/dashboard/my-store/settings",
+    name: "My Store",
+    href: "/dashboard/my-store",
     icon: PiStorefrontThin,
     current: false,
   },

@@ -10,6 +10,8 @@ import { SafeListing } from "@/types";
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
+import Link from "next/link";
+import { Button } from "@/app/components/ui/button";
 
 interface PropertiesClientProps {
   listings: SafeListing[];
@@ -45,19 +47,29 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 
   const onEdit = (id: string) => {
     id;
-    router.push(`/update-listing/${id}`);
+    router.push(`/dashboard/my-store/update-listing/${id}`);
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "auto" }} className="pt-12">
+    <div
+      style={{ height: "100vh", overflow: "auto" }}
+      className="pt-2 lg:pt-12"
+    >
       <Container style={{ minHeight: "100%" }}>
-        <Heading
-          title="Products"
-          subtitle="Modify your listings from this page"
-        />
+        <div className="flex justify-between items-center">
+          <Heading
+            title="Products"
+            subtitle="Modify your listings from this page"
+          />
+          <Link href="/dashboard/my-store/settings">
+            <Button>My Co-op Settings</Button>
+          </Link>
+        </div>
+
         <div
           className="
-          mt-10
+          mt-2
+          lg:mt-4
           grid 
           grid-cols-1 
           sm:grid-cols-2 

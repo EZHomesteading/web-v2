@@ -48,6 +48,7 @@ export const {
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
         session.user.notifications = token.notifications as Notification;
+        session.user.SODT = token.SODT as number | undefined;
       }
       return session;
     },
@@ -76,6 +77,7 @@ export const {
       token.subscriptions = existingUser.subscriptions;
       token.totalPaidOut = existingUser.totalPaidOut;
       token.notifications = existingUser.notifications;
+      token.SODT = existingUser.SODT;
       return token;
     },
   },
