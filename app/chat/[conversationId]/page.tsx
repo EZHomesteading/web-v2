@@ -26,18 +26,21 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const order = await GetOrderByConvoId(params.conversationId);
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
-
   return (
     <div className="lg:pl-80 h-full">
       <div className="h-full flex flex-col">
-        <Header conversation={conversation} />
-        <Body
-          initialMessages={messages}
-          user={currentUser}
-          order={order}
-          otherUser={otherUser}
-          conversationId={conversationData.id}
-        />
+        {conversationData && (
+          <>
+            <Header conversation={conversation} />
+            <Body
+              initialMessages={messages}
+              user={currentUser}
+              order={order}
+              otherUser={otherUser}
+              conversationId={conversationData.id}
+            />
+          </>
+        )}
       </div>
     </div>
   );
