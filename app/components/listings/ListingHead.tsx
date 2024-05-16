@@ -51,6 +51,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
+          {imageSrc.length > 1 && (
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {imageSrc.map((_, index) => (
+                <div
+                  key={index}
+                  className="w-2 h-2 rounded-full bg-white opacity-90 transition-opacity duration-200"
+                />
+              ))}
+            </div>
+          )}
         </Carousel>
 
         <div

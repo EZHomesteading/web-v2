@@ -22,7 +22,8 @@ export default auth(async (req) => {
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
-    publicRoutes.includes(filteredString);
+    publicRoutes.includes(filteredString) ||
+    nextUrl.pathname.startsWith("/info/");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
   // const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
 

@@ -18,8 +18,20 @@ const products = [
     photo: "/images/product-images/strawberry.webp",
   },
   {
-    name: "Eggs",
+    name: "Chicken Eggs",
     category: "PoultryChickenEgg",
+    subCategory: "egg",
+    photo: "/images/product-images/egg.webp",
+  },
+  {
+    name: "Duck Eggs",
+    category: "PoultryDuckEgg",
+    subCategory: "egg",
+    photo: "/images/product-images/egg.webp",
+  },
+  {
+    name: "Turkey Eggs",
+    category: "PoultryTurkeyEgg",
     subCategory: "egg",
     photo: "/images/product-images/egg.webp",
   },

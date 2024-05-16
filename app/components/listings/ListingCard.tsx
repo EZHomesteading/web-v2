@@ -102,7 +102,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {data.imageSrc.map((_, index) => (
                 <CarouselItem key={index}>
                   <Card>
-                    <CardContent className="">
+                    <CardContent className="flex items-center justify-center relative aspect-sqaure h-[16.5rem]">
                       <Image
                         src={data.imageSrc[index]}
                         alt={`Carousel Image ${index + 1}`}
