@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     notifications,
     bio,
     SODT,
+    banner,
   } = body;
   const user = await currentUser();
   if (!user) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
       notifications,
       bio,
       SODT,
+      banner,
     },
   });
   return NextResponse.json(updatedUser);

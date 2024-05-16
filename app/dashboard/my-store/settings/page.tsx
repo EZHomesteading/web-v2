@@ -4,19 +4,34 @@ import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import Input from "@/app/components/inputs/Input";
 import { UserRole } from "@prisma/client";
 import Link from "next/link";
-import { ExtendedHours, UserInfo } from "@/next-auth";
-import { CoOpHours } from "@/app/components/co-op-hours/co-op-hours";
+import { ExtendedHours } from "@/next-auth";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { DaySelect } from "@/app/components/co-op-hours/day-select";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import CoopHoursSlider from "@/app/components/co-op-hours/co-op-hours-slider";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 import Image from "next/image";
+import { Outfit } from "next/font/google";
+import { UploadButton } from "@/utils/uploadthing";
+import { Textarea } from "@/app/components/ui/textarea";
+
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["300"],
+});
 const days = [
   "Monday",
   "Tuesday",
@@ -106,46 +121,33 @@ const StoreSettings = () => {
     handleNextDay();
   };
   const currentDay = days[currentDayIndex];
-
+  const [banner, setBanner] = useState(user?.banner || "");
+  const [SODT, setSODT] = useState(user?.SODT || 0);
+  const [bio, setBio] = useState(user?.bio);
   const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<FieldValues>({
-    defaultValues: {
-      SODT: user?.SODT,
-      banner: user?.banner,
-      hours: user?.hours,
-    },
-  });
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const formData = {
-      ...data,
+      SODT: SODT,
+      bio: bio,
+      banner: banner,
+      hours: coOpHours,
     };
+    console.log(formData);
     axios
       .post("/api/update", formData)
       .then(() => {
-        router.refresh();
+        router.replace("/dashboard/my-store");
         toast.success("Your account details have changed");
       })
       .catch((error) => {
-        toast.error(error);
+        toast.error(error.message);
       })
       .finally(() => {
         setIsLoading(false);
-
-        return;
       });
-  };
-
-  const handleImageChange = (value: string) => {
-    setValue("banner", value);
   };
 
   return (
@@ -161,7 +163,7 @@ const StoreSettings = () => {
             Producer Store Settings
           </h2>
         )}
-        <Button>Update</Button>
+        <Button onClick={onSubmit}>Update</Button>
       </div>
       <Card>
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full pt-2">
@@ -238,13 +240,14 @@ const StoreSettings = () => {
           <ul>
             {user?.role === UserRole.COOP ? (
               <li>
-                This is the amount of time it takes between you getting an order
-                and preparing it.
+                This is the amount of time it takes between you{" "}
+                <em>agreeing </em> to a pick up time and preparing the order.
               </li>
             ) : (
               <li>
-                This is the amount of time it takes between you getting an order
-                and preparing it for delivery
+                This is the amount of time it takes between you{" "}
+                <em>agreeing to delivery time</em> and preparing it for
+                delivery.
               </li>
             )}
             <li>
@@ -259,27 +262,23 @@ const StoreSettings = () => {
               htmlFor="sodt"
               className="block text-sm font-medium leading-6"
             ></label>
-            {user?.role === UserRole.COOP ? (
-              <Input
-                id="SODT"
-                label="Set Out Time"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                isEmail={true}
-                required
-              />
-            ) : (
-              <Input
-                id="SODT"
-                label="Time to Begin Delivery"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                isEmail={true}
-                required
-              />
-            )}
+
+            <Select
+              onValueChange={(value) => setSODT(parseInt(value, 10))}
+              value={SODT.toString()}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={user?.SODT || "Select a Time"} />
+              </SelectTrigger>
+              <SelectContent className={`${outfit.className} sheet`}>
+                <SelectGroup>
+                  <SelectItem value="15">15 Minutes</SelectItem>
+                  <SelectItem value="30">30 Minutes</SelectItem>
+                  <SelectItem value="45">45 Minutes</SelectItem>
+                  <SelectItem value="60">1 Hour</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           <CardFooter className="flex justify-between m-0 p-0 pt-2">
@@ -288,12 +287,53 @@ const StoreSettings = () => {
         </CardContent>
       </Card>{" "}
       <Card>
+        <CardContent className="flex flex-col sheet pt-2 border-none shadow-lg w-full">
+          <h2 className="lg:text-3xl text-lg">Bio</h2>
+          <ul>
+            <li className="my-1">
+              Basic description of you and your store. (200 characters max)
+            </li>
+          </ul>
+          <div className="justify-center flex">
+            <Textarea
+              maxLength={200}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            />
+          </div>
+
+          <CardFooter className="flex justify-between m-0 p-0 pt-2">
+            A bio is recommended but not required
+          </CardFooter>
+        </CardContent>
+      </Card>{" "}
+      <Card>
         <CardContent className="flex flex-col sheet border-none shadow-lg w-full relative">
           <div className="m-0 p-0 pt-2">
-            <h1 className="text-lg lg:text-3xl">Store Banner Image</h1>
-
-            {!user?.banner ? (
-              <></>
+            <div className="flex justify-between">
+              <h1 className="text-lg lg:text-3xl">Store Banner Image</h1>
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: any) => {
+                  setBanner(res[0].url);
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                content={{
+                  button({ ready }) {
+                    if (ready) return <div>Upload a Banner</div>;
+                    return "Getting ready...";
+                  },
+                }}
+              />
+            </div>
+            {!banner ? (
+              <>You do not have a banner yet.</>
             ) : (
               <>
                 <ul>
@@ -301,6 +341,7 @@ const StoreSettings = () => {
                     This is your current store banner, which is visible on your
                     store
                   </li>
+                  <li>Click update after upload finishes to see changes</li>
                 </ul>
                 <div className="w-full pt-2 flex justify-center">
                   <div
