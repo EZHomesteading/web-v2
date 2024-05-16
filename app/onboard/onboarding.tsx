@@ -40,6 +40,7 @@ const Onboarding = ({ user, index }: Props) => {
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
     image?: string;
+    bio?: string;
   }>({});
 
   const [isLoading, setIsLoading] = useState(false);
@@ -78,11 +79,12 @@ const Onboarding = ({ user, index }: Props) => {
         stripeAccountId: user?.stripeAccountId,
       });
       if (response.status === 200) {
-        if (formData.image) {
+        if (formData.image || coOpHours || formData.bio) {
           try {
             const updateResponse = await axios.post("/api/update", {
               image: formData.image,
               hours: coOpHours,
+              bio: formData.bio,
             });
             if (updateResponse.status === 200) {
             } else {

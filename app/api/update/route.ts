@@ -16,6 +16,8 @@ export async function POST(request: Request) {
     hours,
     subscriptions,
     notifications,
+    bio,
+    SODT,
   } = body;
   const user = await currentUser();
   if (!user) {
@@ -34,6 +36,8 @@ export async function POST(request: Request) {
       subscriptions,
       hours,
       notifications,
+      bio,
+      SODT,
     },
   });
   return NextResponse.json(updatedUser);

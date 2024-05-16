@@ -59,7 +59,7 @@ const Bio = ({ user }: Props) => {
       <SheetContent className="overflow-y-auto">
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
-            <Avatar user={user} />
+            <Avatar image={user?.image} />
             <div
               className={`${outfit.className} weight-100 flex flex-col ml-2`}
             >
@@ -84,17 +84,9 @@ const Bio = ({ user }: Props) => {
               </div>
             </div>
           </div>
-          <h1>{user?.firstName}&apos; Bio</h1>
+          {!user?.firstName ? <>Bio</> : <h1>{user?.firstName}&apos;s Bio</h1>}
           <Card>
-            <CardContent className="py-2">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde
-              dolores magnam esse maiores reprehenderit minus dolor. At, nemo!
-              Voluptatibus adipisci ad quam inventore! Nemo magni velit,
-              accusamus nisi numquam non? Excepturi voluptate magnam aliquid
-              odit, sunt eaque doloribus nam maiores. Aspernatur deleniti libero
-              id eius error, aut ullam inventore consectetur est, veritatis
-              quidem reprehenderit illo qui velit, ad eligendi maiores!
-            </CardContent>
+            <CardContent className="py-2">{user?.bio}</CardContent>
           </Card>
           <div>
             <div className="lg:col-span-4 px-2">
@@ -196,7 +188,9 @@ const Bio = ({ user }: Props) => {
                     return (
                       <div key={review.id} className="py-12">
                         <div className="flex items-center">
-                          {review?.buyer.name && <Avatar user={review.buyer} />}
+                          {review?.buyer.name && (
+                            <Avatar image={review.buyer.image} />
+                          )}
                           <div className="ml-4">
                             {user && (
                               <h4 className="text-sm font-bold text-gray-900">
