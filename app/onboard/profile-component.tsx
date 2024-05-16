@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { UserInfo } from "@/next-auth";
+import { UploadButton } from "@/utils/uploadthing";
 import { ChangeEvent } from "react";
 
 interface Props {
@@ -35,10 +36,29 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
           <CardContent className="flex flex-row items-center">
             <div className="">
               <Label>Profile Image</Label>
-              <ImageUpload
-                onChange={handleImageChange}
-                value={formData.image || user?.image}
-              />
+              {!user?.image || formData.image ? (
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res: any) => {
+                    handleImageChange;
+                  }}
+                  onUploadError={(error: Error) => {
+                    alert(`ERROR! ${error.message}`);
+                  }}
+                  appearance={{
+                    container: "h-full w-max",
+                  }}
+                  className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                  content={{
+                    button({ ready }) {
+                      if (ready) return <div>Upload Image</div>;
+                      return "Getting ready...";
+                    },
+                  }}
+                />
+              ) : (
+                <Avatar image={formData.image || user?.image} />
+              )}
             </div>
           </CardContent>
         </Card>

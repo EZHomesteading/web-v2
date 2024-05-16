@@ -499,7 +499,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
               images={selectedMarker.images}
             />
             <header className="flex flex-row p-1 relative w-full">
-              <Avatar user={selectedMarker} />
+              <Avatar image={selectedMarker.image} />
 
               <ul className="flex flex-col ml-1 pl-1">
                 <h1 className={`${outfit.className} text-sm `}>

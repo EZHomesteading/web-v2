@@ -92,7 +92,7 @@ const UserMenu = ({ user }: Props) => {
         <div>
           {user && (
             <div className="flex flex-row px-4">
-              <Avatar user={user} />
+              <Avatar image={user?.image} />
               <div className="flex flex-col ml-2">
                 <div className="font-bold">{user?.name}</div>
                 <div>{user?.firstName}</div>

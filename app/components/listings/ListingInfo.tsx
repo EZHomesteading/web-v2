@@ -3,6 +3,7 @@
 import { UserInfo } from "@/next-auth";
 import { useRouter } from "next/navigation";
 import FollowButton from "../follow/followButton";
+import Avatar from "../Avatar";
 
 interface ListingInfoProps {
   user: UserInfo;
@@ -38,6 +39,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             className="flex items-center gap-2 hover:cursor-pointer"
             onClick={() => router.push(`/store/${user.id}`)}
           >
+            <span className="mt-3">
+              <Avatar image={user?.image} />
+            </span>
+
             <span>{user?.name}</span>
           </span>
           <FollowButton

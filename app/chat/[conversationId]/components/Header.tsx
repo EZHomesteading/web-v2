@@ -61,18 +61,20 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
           >
             <HiChevronLeft size={32} />
           </Link>
-          {conversation.isGroup ? (
-            <AvatarGroup users={conversation.users} />
-          ) : (
-            <Avatar user={otherUser} />
-          )}
-          <div className="flex flex-col">
-            <div>{conversation.name || otherUser.name}</div>
-            {/* <div className="text-sm font-light text-neutral-500">
-              {statusText}
-            </div> */}
+          <div className="flex flex-row items-start gap-x-2">
+            {conversation.isGroup ? (
+              <AvatarGroup users={conversation.users} />
+            ) : (
+              <Avatar image={otherUser.image} />
+            )}
+            <div className="flex flex-col text-3xl items-center justify-center">
+              <div>{conversation.name || otherUser.name}</div>
+              <div className="text-sm font-light text-neutral-500">
+                {otherUser.firstName}
+              </div>
+            </div>
           </div>
-          <Link
+          {/* <Link
             href="/info/support"
             target="_blank"
             className="
@@ -82,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
            ml-[50px] text-center bg-sky-500  hover:bg-sky-600  rounded-lg px-4 py-2"
           >
             Contact Support
-          </Link>
+          </Link> */}
         </div>
       </div>
     </>
