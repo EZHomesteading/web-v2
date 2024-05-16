@@ -2,7 +2,7 @@
 import { Button } from "@/app/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
@@ -26,7 +26,13 @@ import Image from "next/image";
 import { Outfit } from "next/font/google";
 import { UploadButton } from "@/utils/uploadthing";
 import { Textarea } from "@/app/components/ui/textarea";
+import { UpdateRoleAlert } from "@/app/components/modals/update-role-alert";
 
+import { IoStorefrontOutline } from "react-icons/io5";
+import { GiFruitTree } from "react-icons/gi";
+import { CiCircleInfo } from "react-icons/ci";
+import Cancel from "@/app/components/icons/cancel-svg";
+import homebg from "@/public/images/website-images/ezh-modal.jpg";
 const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
@@ -150,226 +156,289 @@ const StoreSettings = () => {
       });
   };
 
-  return (
-    <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
-      <h1 className="sr-only">Store Settings</h1>
-      <div className="w-full flex justify-between items-center mt-1">
-        {user?.role === UserRole.COOP ? (
-          <h2 className="text-base font-semibold leading-7">
-            Co-op Store Settings
-          </h2>
-        ) : (
-          <h2 className="text-base font-semibold leading-7">
-            Producer Store Settings
-          </h2>
-        )}
-        <Button onClick={onSubmit}>Update</Button>
-      </div>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full pt-2">
-          {user?.role === UserRole.COOP ? (
-            <h2 className="lg:text-3xl text-lg">Open & Close Hours</h2>
-          ) : (
-            <h2 className="lg:text-3xl text-lg">Delivery Hours</h2>
-          )}
-
-          <ul>
-            {user?.role === UserRole.COOP ? (
-              <li>
-                The hours when a producer can drop produce off and buyers can
-                pick up from your listing or co-op location.
-              </li>
-            ) : (
-              <li>The hours you can deliver to a co-op.</li>
-            )}
-          </ul>
-          <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit lg:h-[20vw] w-full justify-center">
-            <div className="flex flex-col items-center">
-              <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleClose}
-                    className="bg-red-900 text-[.75rem] mb-1"
-                  >
-                    Close on {currentDay}
-                  </Button>
-                </div>
-                <CoopHoursSlider
-                  day={currentDay}
-                  hours={currentDayHours}
-                  onChange={handleHourChange}
-                  onNextDay={handleNextDay}
-                  onPrevDay={handlePrevDay}
-                />
-                <CardFooter className="flex flex-col md:flex-row items-end justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
-                  <Sheet>
-                    <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 lg:mt-4 rounded-full">
-                      Apply This Schedule To
-                    </SheetTrigger>
-                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                      <DaySelect />
-                    </SheetContent>
-                  </Sheet>
-
-                  <Sheet>
-                    <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 rounded-full lg:mt-4">
-                      Visualize Your Current Schedule
-                    </SheetTrigger>
-                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                      <HoursDisplay coOpHours={coOpHours} />
-                    </SheetContent>
-                  </Sheet>
-                </CardFooter>
-              </CardContent>
-            </div>
-          </Card>
-
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            If you set hours to closed everyday, EZH users will not be able to
-            buy from you.
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet pt-2 border-none shadow-lg w-full">
-          {user?.role === UserRole.COOP ? (
-            <h2 className="lg:text-3xl text-lg">Set Out Time</h2>
-          ) : (
-            <h2 className="lg:text-3xl text-lg">Time to Begin Delivery</h2>
-          )}
-          <ul>
-            {user?.role === UserRole.COOP ? (
-              <li>
-                This is the amount of time it takes between you{" "}
-                <em>agreeing </em> to a pick up time and preparing the order.
-              </li>
-            ) : (
-              <li>
-                This is the amount of time it takes between you{" "}
-                <em>agreeing to delivery time</em> and preparing it for
-                delivery.
-              </li>
-            )}
-            <li>
-              This is important to understand.{" "}
-              <Link href="/info/sodt" className="text-blue-500">
-                More Info
-              </Link>
-            </li>
-          </ul>
-          <div className="justify-end flex">
-            <label
-              htmlFor="sodt"
-              className="block text-sm font-medium leading-6"
-            ></label>
-
-            <Select
-              onValueChange={(value) => setSODT(parseInt(value, 10))}
-              value={SODT.toString()}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={user?.SODT || "Select a Time"} />
-              </SelectTrigger>
-              <SelectContent className={`${outfit.className} sheet`}>
-                <SelectGroup>
-                  <SelectItem value="15">15 Minutes</SelectItem>
-                  <SelectItem value="30">30 Minutes</SelectItem>
-                  <SelectItem value="45">45 Minutes</SelectItem>
-                  <SelectItem value="60">1 Hour</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            This is required for your role.
-          </CardFooter>
-        </CardContent>
-      </Card>{" "}
-      <Card>
-        <CardContent className="flex flex-col sheet pt-2 border-none shadow-lg w-full">
-          <h2 className="lg:text-3xl text-lg">Bio</h2>
-          <ul>
-            <li className="my-1">
-              Basic description of you and your store. (200 characters max)
-            </li>
-          </ul>
-          <div className="justify-center flex">
-            <Textarea
-              maxLength={200}
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-            />
-          </div>
-
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            A bio is recommended but not required
-          </CardFooter>
-        </CardContent>
-      </Card>{" "}
-      <Card>
-        <CardContent className="flex flex-col sheet border-none shadow-lg w-full relative">
-          <div className="m-0 p-0 pt-2">
-            <div className="flex justify-between">
-              <h1 className="text-lg lg:text-3xl">Store Banner Image</h1>
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res: any) => {
-                  setBanner(res[0].url);
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  container: "h-full w-max",
-                }}
-                className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
-                content={{
-                  button({ ready }) {
-                    if (ready) return <div>Upload a Banner</div>;
-                    return "Getting ready...";
-                  },
-                }}
+  if (user?.role === UserRole.CONSUMER) {
+    return (
+      <div className="p-6">
+        <div>
+          <div>Why is this page empty?</div>
+          <div className="relative w-fit">
+            <div className="relative hidden xl:block">
+              <Image
+                src={homebg}
+                alt="Farmer Holding Basket of Vegetables"
+                placeholder="blur"
+                className="rounded-l-lg object-cover"
+                fill
               />
             </div>
-            {!banner ? (
-              <>You do not have a banner yet.</>
-            ) : (
-              <>
-                <ul>
-                  <li>
-                    This is your current store banner, which is visible on your
-                    store
-                  </li>
-                  <li>Click update after upload finishes to see changes</li>
-                </ul>
-                <div className="w-full pt-2 flex justify-center">
-                  <div
-                    className="w-[90vw] sm:w-[70vw] lg:w-[50vw] relative"
-                    style={{ aspectRatio: "8/1" }}
-                  >
-                    <Image
-                      src={
-                        user?.banner ||
-                        "/images/website-images/banner-example.jpg"
-                      }
-                      alt="Banner"
-                      fill
-                      className="object-fit"
-                    />
-                  </div>
+            <div className="mt-12 px-2">
+              <div>
+                <div className="text-black lg:text-2xl">
+                  Would you like to become an EZH producer or co-op?
                 </div>
-              </>
-            )}
-          </div>
+                <div className="text-black text-xs">
+                  You have to be a producer or co-op to add a product. There's
+                  no registration fee and and can be done in a few seconds.
+                </div>
+              </div>
 
-          <CardFooter className="m-0 p-0 pt-2">
-            A store banner is optional but recommended.
-          </CardFooter>
-        </CardContent>
-      </Card>
-    </div>
-  );
+              <div className="mt-10 flex flex-col sm:flex-row gap-5">
+                <Link
+                  href="/info/ezh-roles"
+                  className="flex flex-row items-center gap-x-2"
+                >
+                  <Button className="bg shadow-xl text-black">
+                    <CiCircleInfo className="mr-2" />
+                    More Info
+                  </Button>
+                </Link>
+
+                <Link
+                  href="/auth/become-a-co-op"
+                  className="flex flex-row items-center text-black gap-x-2"
+                >
+                  <Button className="bg shadow-xl text-black">
+                    <IoStorefrontOutline className="mr-2" />
+                    Become a Co-op
+                  </Button>
+                </Link>
+
+                <Link
+                  href="/auth/become-a-producer"
+                  className="flex flex-row items-center text-black gap-x-2"
+                >
+                  <Button className="bg shadow-xl text-black">
+                    <GiFruitTree className="mr-2" />
+                    Become a Producer
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  } else
+    return (
+      <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
+        <h1 className="sr-only">Store Settings</h1>
+        <div className="w-full flex justify-between items-center mt-1">
+          {user?.role === UserRole.COOP ? (
+            <h2 className="text-base font-semibold leading-7">
+              Co-op Store Settings
+            </h2>
+          ) : (
+            <h2 className="text-base font-semibold leading-7">
+              Producer Store Settings
+            </h2>
+          )}
+          <Button onClick={onSubmit}>Update</Button>
+        </div>
+        <Card>
+          <CardContent className="flex flex-col sheet  border-none shadow-lg w-full pt-2">
+            {user?.role === UserRole.COOP ? (
+              <h2 className="lg:text-3xl text-lg">Open & Close Hours</h2>
+            ) : (
+              <h2 className="lg:text-3xl text-lg">Delivery Hours</h2>
+            )}
+
+            <ul>
+              {user?.role === UserRole.COOP ? (
+                <li>
+                  The hours when a producer can drop produce off and buyers can
+                  pick up from your listing or co-op location.
+                </li>
+              ) : (
+                <li>The hours you can deliver to a co-op.</li>
+              )}
+            </ul>
+            <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit lg:h-[20vw] w-full justify-center">
+              <div className="flex flex-col items-center">
+                <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleClose}
+                      className="bg-red-900 text-[.75rem] mb-1"
+                    >
+                      Close on {currentDay}
+                    </Button>
+                  </div>
+                  <CoopHoursSlider
+                    day={currentDay}
+                    hours={currentDayHours}
+                    onChange={handleHourChange}
+                    onNextDay={handleNextDay}
+                    onPrevDay={handlePrevDay}
+                  />
+                  <CardFooter className="flex flex-col md:flex-row items-end justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
+                    <Sheet>
+                      <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 lg:mt-4 rounded-full">
+                        Apply This Schedule To
+                      </SheetTrigger>
+                      <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                        <DaySelect />
+                      </SheetContent>
+                    </Sheet>
+
+                    <Sheet>
+                      <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 rounded-full lg:mt-4">
+                        Visualize Your Current Schedule
+                      </SheetTrigger>
+                      <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                        <HoursDisplay coOpHours={coOpHours} />
+                      </SheetContent>
+                    </Sheet>
+                  </CardFooter>
+                </CardContent>
+              </div>
+            </Card>
+
+            <CardFooter className="flex justify-between m-0 p-0 pt-2">
+              If you set hours to closed everyday, EZH users will not be able to
+              buy from you.
+            </CardFooter>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col sheet pt-2 border-none shadow-lg w-full">
+            {user?.role === UserRole.COOP ? (
+              <h2 className="lg:text-3xl text-lg">Set Out Time</h2>
+            ) : (
+              <h2 className="lg:text-3xl text-lg">Time to Begin Delivery</h2>
+            )}
+            <ul>
+              {user?.role === UserRole.COOP ? (
+                <li>
+                  This is the amount of time it takes between you{" "}
+                  <em>agreeing </em> to a pick up time and preparing the order.
+                </li>
+              ) : (
+                <li>
+                  This is the amount of time it takes between you{" "}
+                  <em>agreeing to delivery time</em> and preparing it for
+                  delivery.
+                </li>
+              )}
+              <li>
+                This is important to understand.{" "}
+                <Link href="/info/sodt" className="text-blue-500">
+                  More Info
+                </Link>
+              </li>
+            </ul>
+            <div className="justify-end flex">
+              <label
+                htmlFor="sodt"
+                className="block text-sm font-medium leading-6"
+              ></label>
+
+              <Select
+                onValueChange={(value) => setSODT(parseInt(value, 10))}
+                value={SODT.toString()}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder={user?.SODT || "Select a Time"} />
+                </SelectTrigger>
+                <SelectContent className={`${outfit.className} sheet`}>
+                  <SelectGroup>
+                    <SelectItem value="15">15 Minutes</SelectItem>
+                    <SelectItem value="30">30 Minutes</SelectItem>
+                    <SelectItem value="45">45 Minutes</SelectItem>
+                    <SelectItem value="60">1 Hour</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <CardFooter className="flex justify-between m-0 p-0 pt-2">
+              This is required for your role.
+            </CardFooter>
+          </CardContent>
+        </Card>{" "}
+        <Card>
+          <CardContent className="flex flex-col sheet pt-2 border-none shadow-lg w-full">
+            <h2 className="lg:text-3xl text-lg">Bio</h2>
+            <ul>
+              <li className="my-1">
+                Basic description of you and your store. (200 characters max)
+              </li>
+            </ul>
+            <div className="justify-center flex">
+              <Textarea
+                maxLength={200}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
+            </div>
+
+            <CardFooter className="flex justify-between m-0 p-0 pt-2">
+              A bio is recommended but not required
+            </CardFooter>
+          </CardContent>
+        </Card>{" "}
+        <Card>
+          <CardContent className="flex flex-col sheet border-none shadow-lg w-full relative">
+            <div className="m-0 p-0 pt-2">
+              <div className="flex justify-between">
+                <h1 className="text-lg lg:text-3xl">Store Banner Image</h1>
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res: any) => {
+                    setBanner(res[0].url);
+                  }}
+                  onUploadError={(error: Error) => {
+                    alert(`ERROR! ${error.message}`);
+                  }}
+                  appearance={{
+                    container: "h-full w-max",
+                  }}
+                  className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                  content={{
+                    button({ ready }) {
+                      if (ready) return <div>Upload a Banner</div>;
+                      return "Getting ready...";
+                    },
+                  }}
+                />
+              </div>
+              {!banner ? (
+                <>You do not have a banner yet.</>
+              ) : (
+                <>
+                  <ul>
+                    <li>
+                      This is your current store banner, which is visible on
+                      your store
+                    </li>
+                    <li>Click update after upload finishes to see changes</li>
+                  </ul>
+                  <div className="w-full pt-2 flex justify-center">
+                    <div
+                      className="w-[90vw] sm:w-[70vw] lg:w-[50vw] relative"
+                      style={{ aspectRatio: "8/1" }}
+                    >
+                      <Image
+                        src={
+                          user?.banner ||
+                          "/images/website-images/banner-example.jpg"
+                        }
+                        alt="Banner"
+                        fill
+                        className="object-fit"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <CardFooter className="m-0 p-0 pt-2">
+              A store banner is optional but recommended.
+            </CardFooter>
+          </CardContent>
+        </Card>
+      </div>
+    );
 };
 
 export default StoreSettings;

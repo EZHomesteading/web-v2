@@ -36,7 +36,7 @@ const conNav: NavigationItem[] = [
   {
     name: "Orders",
     href: "/dashboard/orders",
-    icon: FaOpencart,
+    icon: LiaCartArrowDownSolid,
     current: false,
   },
   {
