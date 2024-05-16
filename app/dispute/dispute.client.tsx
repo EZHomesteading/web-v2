@@ -7,11 +7,19 @@ import Image from "next/image";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
+import FilterButtons from "./dispute-filters";
+const statusTexts: { [key: number]: string } = {
+  0: "UNRESOLVED",
+  1: "RESOLVED",
+  2: "ESCALATED",
+  3: "CLOSED",
+};
 
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface Dispute {
   id: string;
   userId: string;
@@ -42,8 +50,32 @@ interface Dispute {
 interface p {
   disputes: any;
 }
+interface ConfirmVisibilityState {
+  [key: string]: {
+    approve: boolean;
+    deny: boolean;
+  };
+}
+
+type ConfirmAction = "approve" | "deny";
 const DisputeComponent = ({ disputes }: p) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [filteredDisputes, setFilteredDisputes] = useState(disputes);
+  const [isConfirmVisible, setIsConfirmVisible] =
+    useState<ConfirmVisibilityState>({});
+
+  const toggleConfirmVisibility = (
+    action: ConfirmAction,
+    disputeId: string
+  ) => {
+    setIsConfirmVisible((prevState: ConfirmVisibilityState) => ({
+      ...prevState,
+      [disputeId]: {
+        ...prevState[disputeId],
+        [action]: !prevState[disputeId]?.[action],
+      },
+    }));
+  };
 
   useEffect(() => {
     if (disputes) {
@@ -58,165 +90,198 @@ const DisputeComponent = ({ disputes }: p) => {
   if (!disputes || disputes.length === 0) {
     return <div>No disputes found</div>;
   }
+
   return (
-    <div className="bg-black text-white">
-      {disputes.map((dispute: any) => (
-        <div
-          key={dispute.id}
-          className="grid grid-cols-10 items-start w-screen h-screen"
-        >
-          <div>
-            {dispute.userId === dispute.order.buyer.id ? (
-              <Popover>
-                <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Dispute Filer Info</p>
-                </PopoverTrigger>
-                <PopoverContent
-                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-                >
-                  <p>Email: {dispute.order.buyer.email}</p>
-                  <p>Phone: {dispute.order.buyer.phoneNumber}</p>
-                  <p>{dispute.order.buyer.role}</p>
-                  <p>
-                    Joined:{" "}
-                    {formatDistanceToNow(
-                      new Date(dispute.order.buyer.createdAt),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
-                  </p>
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <Popover>
-                <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Dispute Filer Info</p>
-                </PopoverTrigger>
-                <PopoverContent
-                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-                >
-                  <p>Email: {dispute.order.seller.email}</p>
-                  <p>Phone: {dispute.order.seller.phoneNumber}</p>
-                  <p>{dispute.order.seller.role}</p>
-                  <p>
-                    Joined:{" "}
-                    {formatDistanceToNow(
-                      new Date(dispute.order.seller.createdAt),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
-                  </p>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-          <div>
-            {dispute.userId === dispute.order.buyer.id ? (
-              <Popover>
-                <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Dispute Filed Against</p>
-                </PopoverTrigger>
-                <PopoverContent
-                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-                >
-                  <p>Email: {dispute.order.seller.email}</p>
-                  <p>Phone: {dispute.order.seller.phoneNumber}</p>
-                  <p>{dispute.order.seller.role}</p>
-                  <p>
-                    Joined:{" "}
-                    {formatDistanceToNow(
-                      new Date(dispute.order.seller.createdAt),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
-                  </p>
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <Popover>
-                <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Dispute Filed Against</p>
-                </PopoverTrigger>
-                <PopoverContent
-                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-                >
-                  <p>Email: {dispute.order.buyer.email}</p>
-                  <p>Phone: {dispute.order.buyer.phoneNumber}</p>
-                  <p>{dispute.order.buyer.role}</p>
-                  <p>
-                    Joined:{" "}
-                    {formatDistanceToNow(
-                      new Date(dispute.order.buyer.createdAt),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
-                  </p>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-          <div className="col-span-1 border p-1">
-            <p>
-              {formatDistanceToNow(new Date(dispute.createdAt), {
-                addSuffix: true,
-              })}
-            </p>
-          </div>
-          <div className="col-span-1 border p-1">
-            <p>Status: {dispute.status}</p>
-          </div>
-          <div className="col-span-1 border p-1">
-            <p>{dispute.reason}</p>
-          </div>
-          <Popover>
-            <PopoverTrigger className="col-span-1 border p-1">
-              Explanation
-            </PopoverTrigger>
-            <PopoverContent
-              className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-            >
-              <p>{dispute.explanation}</p>
-            </PopoverContent>
-          </Popover>
+    <div className="bg-black text-white min-h-screen">
+      <div className="grid grid-cols-10 fixed top-0 left-0 right-0 bg-gray-800 text-white py-2">
+        <div className="col-span-1 text-center">Dispute Filer Info</div>
+        <div className="col-span-1 text-center">Filed Against</div>
+        <div className="col-span-1 text-center">Reason</div>
+        <div className="col-span-1 text-center">Images</div>
+        <div className="col-span-1 text-center">Created</div>
+        <div className="col-span-1 text-center">Status</div>
+        <div className="col-span-1 text-center">Explanation</div>
 
-          <Popover>
-            <PopoverTrigger className="col-span-1 border p-1">
-              Images
-            </PopoverTrigger>
-            <PopoverContent
-              className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-            >
-              {dispute.images.map((image: any, index: number) => (
-                <Image
-                  key={index}
-                  src={image}
-                  rounded-lg
-                  text-black
-                  alt={`Dispute Image ${index}`}
-                  height={100}
-                  width={100}
-                />
-              ))}
-            </PopoverContent>
-          </Popover>
-
-          <div className="col-span-1 flex justify-center">
-            <Button>Approve</Button>
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <Button>Deny</Button>
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <Link href={`/chat/${dispute.order.conversationId}`}>
-              <Button>Chat</Button>
-            </Link>
-          </div>
+        <div className="col-span-1 flex justify-center">
+          <FilterButtons
+            disputes={disputes}
+            setFilteredDisputes={setFilteredDisputes}
+          />
         </div>
-      ))}
+      </div>
+      <div className="pt-12">
+        {filteredDisputes.map((dispute: any) => (
+          <div key={dispute.id} className="grid grid-cols-10 items-start ">
+            <div>
+              {dispute.userId === dispute.order.buyer.id ? (
+                <Popover>
+                  <PopoverTrigger className="col-span-1 border p-1 w-full">
+                    <p>{dispute.order.buyer.role}</p>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                  >
+                    <p>Email: {dispute.order.buyer.email}</p>
+                    <p>Phone: {dispute.order.buyer.phoneNumber}</p>
+                    <p>
+                      Joined:{" "}
+                      {formatDistanceToNow(
+                        new Date(dispute.order.buyer.createdAt),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Popover>
+                  <PopoverTrigger className="col-span-1 border p-1 w-full">
+                    <p>{dispute.order.seller.role}</p>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                  >
+                    <p>Email: {dispute.order.seller.email}</p>
+                    <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                    <p>
+                      Joined:{" "}
+                      {formatDistanceToNow(
+                        new Date(dispute.order.seller.createdAt),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+            <div>
+              {dispute.userId === dispute.order.buyer.id ? (
+                <Popover>
+                  <PopoverTrigger className="col-span-1 border p-1 w-full">
+                    <p>{dispute.order.seller.role}</p>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                  >
+                    <p>Email: {dispute.order.seller.email}</p>
+                    <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                    <p>
+                      Joined:{" "}
+                      {formatDistanceToNow(
+                        new Date(dispute.order.seller.createdAt),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Popover>
+                  <PopoverTrigger className="col-span-1 border p-1 w-full">
+                    <p>{dispute.order.buyer.role}</p>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                  >
+                    <p>Email: {dispute.order.buyer.email}</p>
+                    <p>Phone: {dispute.order.buyer.phoneNumber}</p>
+                    <p>
+                      Joined:{" "}
+                      {formatDistanceToNow(
+                        new Date(dispute.order.buyer.createdAt),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+            <div className="col-span-1 border p-1">
+              <p>{dispute.reason}</p>
+            </div>
+            <Popover>
+              <PopoverTrigger className="col-span-1 border p-1">
+                Images
+              </PopoverTrigger>
+              <PopoverContent
+                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+              >
+                {dispute.images.map((image: any, index: number) => (
+                  <Image
+                    key={index}
+                    src={image}
+                    rounded-lg
+                    text-black
+                    alt={`Dispute Image ${index}`}
+                    height={100}
+                    width={100}
+                  />
+                ))}
+              </PopoverContent>
+            </Popover>
+            <div className="col-span-1 border p-1">
+              <p>
+                {formatDistanceToNow(new Date(dispute.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
+            <div className="col-span-1 border p-1">
+              <p>{statusTexts[dispute.status] || "UNKNOWN"}</p>
+            </div>
+
+            <Popover>
+              <PopoverTrigger className="col-span-1 border p-1">
+                {dispute.explanation.length > 20
+                  ? `${dispute.explanation.slice(0, 20)}...`
+                  : dispute.explanation}
+              </PopoverTrigger>
+              <PopoverContent
+                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+              >
+                <p>{dispute.explanation}</p>
+              </PopoverContent>
+            </Popover>
+
+            <div className="col-span-1 flex justify-center">
+              {isConfirmVisible[dispute.id]?.approve ? (
+                <Button
+                  onClick={() => toggleConfirmVisibility("approve", dispute.id)}
+                >
+                  Confirm
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleConfirmVisibility("approve", dispute.id)}
+                >
+                  Approve
+                </Button>
+              )}
+            </div>
+            <div className="col-span-1 flex justify-center">
+              {isConfirmVisible[dispute.id]?.deny ? (
+                <Button
+                  onClick={() => toggleConfirmVisibility("deny", dispute.id)}
+                >
+                  Confirm
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleConfirmVisibility("deny", dispute.id)}
+                >
+                  Deny
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

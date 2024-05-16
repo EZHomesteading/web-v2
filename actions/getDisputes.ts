@@ -38,6 +38,9 @@ export default async function getDisputes() {
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
     if (!disputes) {
