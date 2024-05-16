@@ -12,9 +12,7 @@ interface IParams {
 }
 
 const ChatId = async ({ params }: { params: IParams }) => {
-  const order = await GetOrderByConvoId(params.conversationId);
   const conversationData = await getConversationById(params.conversationId);
-  const messages = await getMessages(params.conversationId);
 
   if (!conversationData) {
     return (
@@ -25,6 +23,8 @@ const ChatId = async ({ params }: { params: IParams }) => {
       </div>
     );
   }
+  const order = await GetOrderByConvoId(params.conversationId);
+  const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
 
   return (

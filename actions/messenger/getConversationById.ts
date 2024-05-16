@@ -1,5 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const getConversationById = async (conversationId: string) => {
   try {
@@ -54,6 +55,13 @@ const getConversationById = async (conversationId: string) => {
         : null,
     };
   } catch (error: any) {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2023"
+    ) {
+      console.log("Invalid conversationId:", conversationId);
+      return null;
+    }
     console.log(error, "SERVER_ERROR");
     return null;
   }
