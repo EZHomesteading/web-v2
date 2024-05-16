@@ -4,12 +4,14 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { UserInfo } from "@/next-auth";
+import { ChangeEvent } from "react";
 
 interface Props {
   user: UserInfo;
   formData: any;
   setFormData: any;
 }
+
 const ProfileComponent = ({ user, formData, setFormData }: Props) => {
   const handleImageChange = (value: string) => {
     setFormData((prevData: any) => ({
@@ -17,6 +19,7 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
       image: value,
     }));
   };
+
   const handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.target;
     setFormData((prevData: any) => ({
