@@ -76,6 +76,7 @@ model User {
   totalPaidOut          Int? @default(0)
   notifications         Notification[] @default([])
   SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
+  bio                   String? // bio for co-ops and producers (should consumer have bios?)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
