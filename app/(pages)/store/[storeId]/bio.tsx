@@ -97,7 +97,11 @@ const Bio = ({ user }: Props) => {
             </>
           )}
           {total === 0 ? (
-            <div>No reviews yet</div>
+            <div
+              className={`${outfit.className} flex justify-center text-2xl mt-5`}
+            >
+              No reviews found
+            </div>
           ) : (
             <>
               <div className="lg:col-span-4 px-2">
