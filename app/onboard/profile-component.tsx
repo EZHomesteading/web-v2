@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { UserInfo } from "@/next-auth";
+
 interface Props {
   user: UserInfo;
   formData: any;
@@ -16,6 +17,14 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
       image: value,
     }));
   };
+  const handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = event.target;
+    setFormData((prevData: any) => ({
+      ...prevData,
+      bio: value,
+    }));
+  };
+
   return (
     <Card className="grid w-full gap-2 bg lg:w-1/2 h-1/6 pt-2">
       <CardContent className="">
@@ -36,7 +45,8 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
             <Textarea
               placeholder="Add info you would like for people to know about you and your EZH store here."
               id="message"
-              className=""
+              onChange={handleBioChange}
+              value={formData.bio || user?.bio}
             />
           </CardContent>
         </Card>
