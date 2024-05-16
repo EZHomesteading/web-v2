@@ -43,10 +43,7 @@ export default async function getDisputes() {
       },
     });
 
-    if (!disputes) {
-      return null;
-    }
-    return disputes;
+    return disputes || [];
   } catch (error: any) {
     throw new Error(error);
   }

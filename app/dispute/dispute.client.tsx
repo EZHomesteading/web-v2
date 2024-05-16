@@ -1,13 +1,15 @@
 "use client";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
-import { Popover } from "../components/ui/popover";
+import { Popover } from "@/app/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import Image from "next/image";
-import { Button } from "../components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
-import FilterButtons from "./dispute-filters";
+import FilterButtons from "@/app/dispute/dispute-filters";
+import { UserRole } from "@prisma/client";
+
 const statusTexts: { [key: number]: string } = {
   0: "UNRESOLVED",
   1: "RESOLVED",
@@ -24,7 +26,7 @@ interface Dispute {
   id: string;
   userId: string;
   images: string[];
-  status: string;
+  status: number;
   reason: string;
   explanation: string;
   email: string;
@@ -32,23 +34,25 @@ interface Dispute {
   createdAt: Date;
   updatedAt: Date;
   order: {
-    conversationId: string;
+    conversationId: string | null;
     buyer: {
       id: string;
       email: string;
-      phoneNumber: string;
+      phoneNumber: string | null;
       createdAt: Date;
+      role: UserRole;
     };
     seller: {
       id: string;
       email: string;
-      phoneNumber: string;
+      phoneNumber: string | null;
       createdAt: Date;
+      role: UserRole;
     };
   };
 }
 interface p {
-  disputes: any;
+  disputes: Dispute[];
 }
 interface ConfirmVisibilityState {
   [key: string]: {
@@ -278,6 +282,11 @@ const DisputeComponent = ({ disputes }: p) => {
                   Deny
                 </Button>
               )}
+            </div>
+            <div className="col-span-1 flex justify-center">
+              <Link href={`/chat/${dispute.order.conversationId}`}>
+                <Button>Chat</Button>
+              </Link>
             </div>
           </div>
         ))}

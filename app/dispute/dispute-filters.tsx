@@ -80,7 +80,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
               htmlFor="statusLowToHigh"
               className="ml-2 text-sm font-medium text-gray-900"
             >
-              Status: Low to High
+              Urgent
             </label>
           </div>
           <div className="flex items-center">
@@ -95,7 +95,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
               htmlFor="statusHighToLow"
               className="ml-2 text-sm font-medium text-gray-900"
             >
-              Status: High to Low
+              Not Urgent
             </label>
           </div>
           <div className="flex items-center">
@@ -110,7 +110,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
               htmlFor="createdAtLowToHigh"
               className="ml-2 text-sm font-medium text-gray-900"
             >
-              Date Created: Low to High
+              Oldest
             </label>
           </div>
           <div className="flex items-center">
@@ -125,7 +125,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
               htmlFor="createdAtHighToLow"
               className="ml-2 text-sm font-medium text-gray-900"
             >
-              Date Created: High to Low
+              Recent
             </label>
           </div>
         </div>
