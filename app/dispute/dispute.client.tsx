@@ -65,60 +65,65 @@ const DisputeComponent = ({ disputes }: p) => {
           key={dispute.id}
           className="grid grid-cols-10 items-start w-screen h-screen"
         >
-          {dispute.userId === dispute.order.buyer.id ? (
-            <Popover>
-              <PopoverTrigger className="w-full col-span-1 border p-1">
-                <p>Buyer Info</p>
-              </PopoverTrigger>
-              <PopoverContent
-                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-              >
-                <p>Email: {dispute.order.buyer.email}</p>
-                <p>Phone: {dispute.order.buyer.phoneNumber}</p>
-                <p>
-                  Joined:{" "}
-                  {formatDistanceToNow(
-                    new Date(dispute.order.buyer.createdAt),
-                    {
-                      addSuffix: true,
-                    }
-                  )}
-                </p>
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <Popover>
-              <PopoverTrigger className="w-full col-span-1 border p-1">
-                <p>Seller Info</p>
-              </PopoverTrigger>
-              <PopoverContent
-                className={`${outfit.className} rounded-lg text-black p-2 sheet`}
-              >
-                <p>Email: {dispute.order.seller.email}</p>
-                <p>Phone: {dispute.order.seller.phoneNumber}</p>
-                <p>
-                  Joined:{" "}
-                  {formatDistanceToNow(
-                    new Date(dispute.order.seller.createdAt),
-                    {
-                      addSuffix: true,
-                    }
-                  )}
-                </p>
-              </PopoverContent>
-            </Popover>
-          )}
           <div>
             {dispute.userId === dispute.order.buyer.id ? (
               <Popover>
                 <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Seller Info</p>
+                  <p>Dispute Filer Info</p>
+                </PopoverTrigger>
+                <PopoverContent
+                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                >
+                  <p>Email: {dispute.order.buyer.email}</p>
+                  <p>Phone: {dispute.order.buyer.phoneNumber}</p>
+                  <p>{dispute.order.buyer.role}</p>
+                  <p>
+                    Joined:{" "}
+                    {formatDistanceToNow(
+                      new Date(dispute.order.buyer.createdAt),
+                      {
+                        addSuffix: true,
+                      }
+                    )}
+                  </p>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <Popover>
+                <PopoverTrigger className="col-span-1 border p-1 w-full">
+                  <p>Dispute Filer Info</p>
                 </PopoverTrigger>
                 <PopoverContent
                   className={`${outfit.className} rounded-lg text-black p-2 sheet`}
                 >
                   <p>Email: {dispute.order.seller.email}</p>
                   <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                  <p>{dispute.order.seller.role}</p>
+                  <p>
+                    Joined:{" "}
+                    {formatDistanceToNow(
+                      new Date(dispute.order.seller.createdAt),
+                      {
+                        addSuffix: true,
+                      }
+                    )}
+                  </p>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
+          <div>
+            {dispute.userId === dispute.order.buyer.id ? (
+              <Popover>
+                <PopoverTrigger className="col-span-1 border p-1 w-full">
+                  <p>Dispute Filed Against</p>
+                </PopoverTrigger>
+                <PopoverContent
+                  className={`${outfit.className} rounded-lg text-black p-2 sheet`}
+                >
+                  <p>Email: {dispute.order.seller.email}</p>
+                  <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                  <p>{dispute.order.seller.role}</p>
                   <p>
                     Joined:{" "}
                     {formatDistanceToNow(
@@ -133,13 +138,14 @@ const DisputeComponent = ({ disputes }: p) => {
             ) : (
               <Popover>
                 <PopoverTrigger className="col-span-1 border p-1 w-full">
-                  <p>Buyer Info</p>
+                  <p>Dispute Filed Against</p>
                 </PopoverTrigger>
                 <PopoverContent
                   className={`${outfit.className} rounded-lg text-black p-2 sheet`}
                 >
                   <p>Email: {dispute.order.buyer.email}</p>
                   <p>Phone: {dispute.order.buyer.phoneNumber}</p>
+                  <p>{dispute.order.buyer.role}</p>
                   <p>
                     Joined:{" "}
                     {formatDistanceToNow(
@@ -156,7 +162,7 @@ const DisputeComponent = ({ disputes }: p) => {
           <div className="col-span-1 border p-1">
             <p>
               {formatDistanceToNow(new Date(dispute.createdAt), {
-                addSuffix: false,
+                addSuffix: true,
               })}
             </p>
           </div>

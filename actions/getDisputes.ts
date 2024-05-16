@@ -23,6 +23,7 @@ export default async function getDisputes() {
                 email: true,
                 phoneNumber: true,
                 createdAt: true,
+                role: true,
               },
             },
             seller: {
@@ -31,6 +32,7 @@ export default async function getDisputes() {
                 email: true,
                 phoneNumber: true,
                 createdAt: true,
+                role: true,
               },
             },
           },
