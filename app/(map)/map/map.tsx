@@ -29,7 +29,7 @@ interface MapUser {
   } | null;
   image: string | null;
   listings: {
-    imageSrc: string;
+    imageSrc: string[];
   }[];
 }
 
@@ -138,7 +138,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         id: coop.id,
         images:
           coop?.listings?.map(
-            (listing: { imageSrc: string }) => listing.imageSrc
+            (listing: { imageSrc: string[] }) => listing.imageSrc
           ) || [],
         listingsCount: coop?.listings?.length ?? 0,
       };
@@ -159,7 +159,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         id: producer.id,
         images:
           producer?.listings?.map(
-            (listing: { imageSrc: string }) => listing.imageSrc
+            (listing: { imageSrc: string[] }) => listing.imageSrc
           ) || [],
         listingsCount: producer?.listings?.length ?? 0,
       };
