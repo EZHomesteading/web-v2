@@ -99,9 +99,6 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   return (
     <Card className="flex flex-col lg:flex-row justify-center items-center bg-inherit border-none md:shadow-xl h-fit">
       <div className="flex flex-col">
-        {/* <CardHeader className={`text-xl ${outfit.className}`}>
-          Set Your Hours
-        </CardHeader> */}
         <CardContent>
           <div className="flex justify-end">
             <Button onClick={handleClose} className="bg-red-900 text-[.75rem]">

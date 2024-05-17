@@ -6,20 +6,21 @@ import { usePathname } from "next/navigation";
 interface SecondaryNavigationItem {
   name: string;
   href: string;
-  current: boolean;
 }
 
 const secondaryNavigation: SecondaryNavigationItem[] = [
   {
     name: "General",
     href: "/dashboard/account-settings/general",
-    current: true,
   },
 
   {
     name: "Notifications",
     href: "/dashboard/account-settings/notification-preferences",
-    current: false,
+  },
+  {
+    name: "Store Settings",
+    href: "/dashboard/my-store/settings",
   },
 ];
 

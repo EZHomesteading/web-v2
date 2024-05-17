@@ -48,6 +48,9 @@ export const {
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
         session.user.notifications = token.notifications as Notification;
+        session.user.SODT = token.SODT as number | undefined;
+        session.user.bio = token.bio as string | undefined;
+        session.user.banner = token.banner as string | undefined;
       }
       return session;
     },
@@ -76,6 +79,9 @@ export const {
       token.subscriptions = existingUser.subscriptions;
       token.totalPaidOut = existingUser.totalPaidOut;
       token.notifications = existingUser.notifications;
+      token.SODT = existingUser.SODT;
+      token.bio = existingUser.bio;
+      token.banner = existingUser.banner;
       return token;
     },
   },

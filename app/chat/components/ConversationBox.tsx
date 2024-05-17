@@ -74,7 +74,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       {data.isGroup ? (
         <AvatarGroup users={data.users} />
       ) : (
-        <Avatar user={otherUser} />
+        <Avatar image={otherUser.image} />
       )}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">

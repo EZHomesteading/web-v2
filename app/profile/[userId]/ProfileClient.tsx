@@ -1,8 +1,8 @@
-import getUserById from "@/actions/user/getUserById";
 import Avatar from "@/app/components/Avatar";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";
+import Link from "next/link";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -35,14 +35,13 @@ export default function ProfileClient({ user }: p) {
   const counts = getReviewCounts(user?.buyerReviews || []);
   const total = user?.buyerReviews.length || 0;
   const averageRating = getAverageRating(user?.buyerReviews || []);
-  console.log(user);
   return (
     <div className={`${outfit.className} min-h-screen bg`}>
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
         <div className="lg:col-span-4">
           <div className="flex flex-row items-center">
             <div>
-              <Avatar user={user} />
+              <Avatar image={user?.image} />
             </div>
             <div className="flex flex-col ml-2">
               <div className="text-lg lg:text-2xl">{user?.name}</div>
@@ -138,35 +137,39 @@ export default function ProfileClient({ user }: p) {
               {user?.buyerReviews.map(async (review: any) => {
                 return (
                   <div key={review.id} className="py-12">
-                    <div className="flex flex-row items-start">
-                      {review.seller && <Avatar user={review.seller} />}
-                      <div className="ml-4">
+                    <div className="flex flex-col items-start">
+                      <Link
+                        href={`/store/${review.seller.id}`}
+                        className="flex flex-row items-start"
+                      >
                         {review.seller && (
-                          <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
-                            <h4 className="text-lg">{review.seller.name}</h4>
-                            {review.seller.firstName}
-                          </div>
+                          <Avatar image={review.seller.image} />
                         )}
-                        <div className="mt-1 flex items-center">
-                          {[...Array(5)].map((_, rating) => (
-                            <StarIcon
-                              key={rating}
-                              className={classNames(
-                                review.rating > rating
-                                  ? "text-yellow-400"
-                                  : "text-gray-300",
-                                "h-5 w-5 flex-shrink-0"
-                              )}
-                              aria-hidden="true"
-                            />
-                          ))}
+                        <div className="ml-4">
+                          {review.seller && (
+                            <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
+                              <h4 className="text-lg">{review.seller.name}</h4>
+                              {review.seller.firstName}
+                            </div>
+                          )}
                         </div>
-                        <p className="sr-only">
-                          {review?.rating} out of 5 stars
-                        </p>
+                      </Link>
+                      <div className="mt-1 flex items-center">
+                        {[...Array(5)].map((_, rating) => (
+                          <StarIcon
+                            key={rating}
+                            className={classNames(
+                              review.rating > rating
+                                ? "text-yellow-400"
+                                : "text-gray-300",
+                              "h-5 w-5 flex-shrink-0"
+                            )}
+                            aria-hidden="true"
+                          />
+                        ))}
                       </div>
+                      <p className="sr-only">{review?.rating} out of 5 stars</p>
                     </div>
-
                     <div
                       className="mt-4 space-y-6 text-base italic text-gray-600"
                       dangerouslySetInnerHTML={{ __html: review?.review }}

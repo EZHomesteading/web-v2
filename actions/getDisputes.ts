@@ -23,6 +23,8 @@ export default async function getDisputes() {
                 email: true,
                 phoneNumber: true,
                 createdAt: true,
+                role: true,
+                firstName: true,
               },
             },
             seller: {
@@ -31,17 +33,19 @@ export default async function getDisputes() {
                 email: true,
                 phoneNumber: true,
                 createdAt: true,
+                role: true,
+                firstName: true,
               },
             },
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    if (!disputes) {
-      return null;
-    }
-    return disputes;
+    return disputes || [];
   } catch (error: any) {
     throw new Error(error);
   }

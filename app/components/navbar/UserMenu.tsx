@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
-import { GiBarn } from "react-icons/gi";
+import { GiBarn, GiFruitTree } from "react-icons/gi";
 import { UserRole } from "@prisma/client";
 import { UpdateRoleAlert } from "../modals/update-role-alert";
 import { Outfit } from "next/font/google";
@@ -92,7 +92,7 @@ const UserMenu = ({ user }: Props) => {
         <div>
           {user && (
             <div className="flex flex-row px-4">
-              <Avatar user={user} />
+              <Avatar image={user?.image} />
               <div className="flex flex-col ml-2">
                 <div className="font-bold">{user?.name}</div>
                 <div>{user?.firstName}</div>
@@ -181,7 +181,7 @@ const UserMenu = ({ user }: Props) => {
                         onClick={() => router.push("/auth/become-a-co-op")}
                       />
                       <MenuItem
-                        icon={<FaStore className="mr-2" />}
+                        icon={<GiFruitTree className="mr-2" />}
                         label="Become a Producer"
                         onClick={() => router.push("/auth/become-a-producer")}
                       />

@@ -433,7 +433,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
           {data.messageOrder === "1.1" && isOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2">
-              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />{" "}
+              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />{" "}
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
@@ -448,7 +448,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           ) : null}
           {data.messageOrder === "1.1" && notOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2 ">
-              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />
+              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
