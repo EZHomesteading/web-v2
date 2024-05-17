@@ -118,6 +118,7 @@ model Following {
 
   model Reviews {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  reviewerId            String @db.ObjectId
   buyerId               String @db.ObjectId
   sellerId              String @db.ObjectId
   review                String
