@@ -24,6 +24,7 @@ export const publicRoutes = [
   "/info",
   "/api/uploadthing",
   "profile",
+  "/api/listing",
 ];
 
 /**
