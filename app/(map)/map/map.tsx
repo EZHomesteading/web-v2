@@ -19,6 +19,7 @@ import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
+import { MarkerClusterer } from "@react-google-maps/api";
 
 interface MapUser {
   id: string;
@@ -46,11 +47,11 @@ interface MapProps {
 const VendorsMap = ({ coops, producers }: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
     {
-      lat: 36.8508,
-      lng: -76.2859,
+      lat: 44.58,
+      lng: -103.46,
     }
   );
-  const [zoom, setZoom] = useState(11);
+  const [zoom, setZoom] = useState(4);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -434,61 +435,85 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         options={mapOptions}
         onClick={handleMapClick}
       >
-        {filteredCoops.map((coop: any, index: number) => (
-          <MarkerF
-            key={`coop-${index}`}
-            position={coop.coordinates}
-            label={{
-              text: `${coop.listingsCount}`,
-              fontSize: "10px",
-            }}
-            icon={{
-              url: "https://i.ibb.co/qyq0dhb/circle.png",
-              scaledSize: new window.google.maps.Size(28, 28),
-              size: {
-                height: 28,
-                width: 28,
-                equals: () => true,
-              },
-              anchor: new window.google.maps.Point(25, 22),
-            }}
-            onClick={() =>
-              handleMarkerClick(
-                coop.coordinates,
-                coop.name,
-                coop.images,
-                coop.firstName,
-                coop.image,
-                coop.id
-              )
-            }
-          />
-        ))}
-        {filteredProducers.map((producer: any, index: number) => (
-          <MarkerF
-            key={`producer-${index}`}
-            position={producer.coordinates}
-            label={{
-              text: `${producer.listingsCount}`,
-              fontSize: "10px",
-            }}
-            icon={{
-              url: "https://i.ibb.co/TMnKw45/circle-2.png",
-              scaledSize: new window.google.maps.Size(28, 28),
-              anchor: new window.google.maps.Point(25, 22),
-            }}
-            onClick={() =>
-              handleMarkerClick(
-                producer.coordinates,
-                producer.name,
-                producer.images,
-                producer.firstName,
-                producer.image,
-                producer.id
-              )
-            }
-          />
-        ))}
+        <MarkerClusterer
+          options={{
+            imagePath: "https://i.ibb.co/qyq0dhb/circle.png",
+            gridSize: 100,
+            maxZoom: 12, // Start clustering at zoom level 12
+            minimumClusterSize: 5,
+          }}
+        >
+          {(clusterer) =>
+            filteredCoops.map((coop: any, index: number) => (
+              <MarkerF
+                key={`coop-${index}`}
+                position={coop.coordinates}
+                label={{
+                  text: `${coop.listingsCount}`,
+                  fontSize: "8px",
+                }}
+                clusterer={clusterer}
+                icon={{
+                  url: "https://i.ibb.co/qyq0dhb/circle.png",
+                  scaledSize: new window.google.maps.Size(28, 28),
+                  size: {
+                    height: 28,
+                    width: 28,
+                    equals: () => true,
+                  },
+                  anchor: new window.google.maps.Point(30, 22),
+                }}
+                onClick={() =>
+                  handleMarkerClick(
+                    coop.coordinates,
+                    coop.name,
+                    coop.images,
+                    coop.firstName,
+                    coop.image,
+                    coop.id
+                  )
+                }
+              />
+            ))
+          }
+        </MarkerClusterer>
+        <MarkerClusterer
+          options={{
+            imagePath: "https://i.ibb.co/TMnKw45/circle-2.png",
+            gridSize: 100,
+            maxZoom: 12, // Start clustering at zoom level 12
+            minimumClusterSize: 5,
+          }}
+        >
+          {(clusterer) =>
+            filteredProducers.map((producer: any, index: number) => (
+              <MarkerF
+                key={`producer-${index}`}
+                position={producer.coordinates}
+                label={{
+                  text: `${producer.listingsCount}`,
+                  fontSize: "10px",
+                }}
+                icon={{
+                  url: "https://i.ibb.co/TMnKw45/circle-2.png",
+                  scaledSize: new window.google.maps.Size(28, 28),
+                  anchor: new window.google.maps.Point(25, 22),
+                }}
+                clusterer={clusterer}
+                onClick={() =>
+                  handleMarkerClick(
+                    producer.coordinates,
+                    producer.name,
+                    producer.images,
+                    producer.firstName,
+                    producer.image,
+                    producer.id
+                  )
+                }
+              />
+            ))
+          }
+        </MarkerClusterer>
       </GoogleMap>
       {selectedMarker && (
         <div
