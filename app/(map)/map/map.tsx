@@ -122,29 +122,32 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       map.panTo(markerPosition);
     }
   }, [selectedMarker]);
-
   const coopInfo = coops
     ?.map((coop: MapUser) => {
-      if (!coop.location) return null;
+      if (!coop.location || !coop.location.coordinates) return null;
+
+      const coordinates = coop.location.coordinates;
+      const images = coop.listings
+        ? coop.listings.flatMap(
+            (listing: { imageSrc: string[] }) => listing.imageSrc
+          )
+        : [];
+      const listingsCount = coop.listings ? coop.listings.length : 0;
 
       return {
         coordinates: {
-          lat: coop.location.coordinates[1],
-          lng: coop.location.coordinates[0],
+          lat: coordinates[1],
+          lng: coordinates[0],
         },
         name: coop.name,
         firstName: coop?.firstName,
         image: coop?.image,
         id: coop.id,
-        images:
-          coop?.listings?.map(
-            (listing: { imageSrc: string[] }) => listing.imageSrc
-          ) || [],
-        listingsCount: coop?.listings?.length ?? 0,
+        images: images,
+        listingsCount: listingsCount,
       };
     })
     .filter(Boolean);
-
   const producerInfo = producers
     ?.map((producer: MapUser) => {
       if (!producer.location) return null;
@@ -157,15 +160,15 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         firstName: producer?.firstName,
         image: producer?.image,
         id: producer.id,
-        images:
-          producer?.listings?.map(
-            (listing: { imageSrc: string[] }) => listing.imageSrc
-          ) || [],
+        images: producer?.listings?.length
+          ? producer.listings.flatMap(
+              (listing: { imageSrc: string[] }) => listing.imageSrc
+            )
+          : [],
         listingsCount: producer?.listings?.length ?? 0,
       };
     })
     .filter(Boolean);
-
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
