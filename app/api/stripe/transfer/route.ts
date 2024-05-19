@@ -18,34 +18,36 @@ export async function POST(request: NextRequest) {
   const { total, stripeAccountId, orderId, status } = body as TransferData;
 
   const order = await getOrderByIdTransfer({ orderId: orderId });
+
   if (!order) {
-    return null;
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
   } else if (
     order.status !== status ||
     order.seller.stripeAccountId !== stripeAccountId
   ) {
-    return null;
-  } else
-    try {
-      const transfer = await stripe.transfers.create({
-        amount: total,
-        currency: "usd",
-        destination: stripeAccountId,
-        description: "Transfer to vendor",
-      });
+    return NextResponse.json(
+      { error: "Invalid order status or Stripe account" },
+      { status: 400 }
+    );
+  }
 
-      return NextResponse.json(
-        {
-          message: "Transfer initiated successfully",
-          transfer,
-        },
-        { status: 200 }
-      );
-    } catch (error) {
-      console.error("Transfer error:", error);
-      return NextResponse.json(
-        { error: "Failed to initiate transfer" },
-        { status: 500 }
-      );
-    }
+  try {
+    const transfer = await stripe.transfers.create({
+      amount: total,
+      currency: "usd",
+      destination: stripeAccountId,
+      description: "Transfer to vendor",
+    });
+
+    return NextResponse.json(
+      { message: "Transfer initiated successfully", transfer },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Transfer error:", error);
+    return NextResponse.json(
+      { error: "Failed to initiate transfer" },
+      { status: 500 }
+    );
+  }
 }
