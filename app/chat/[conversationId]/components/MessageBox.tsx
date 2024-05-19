@@ -178,6 +178,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       total: order.totalPrice * 100,
       stripeAccountId: stripeAccountId,
       orderId: order.id,
+      status: order.status,
     });
   };
   const onSubmit7 = () => {
