@@ -5,6 +5,7 @@ import getUserById from "@/actions/user/getUserById";
 import getOrderById from "@/actions/getOrderById";
 import getListingById from "@/actions/listing/getListingById";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { UserRole } from "@prisma/client";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
               console.error("Error sending email to the seller:", error);
             }
           }
-          if (seller.role === "COOP") {
+          if (seller.role === UserRole.COOP) {
             const newMessage: any = await prisma.message.create({
               include: {
                 seen: true,
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
             // }
           }
 
-          if (seller.role === "PRODUCER") {
+          if (seller.role === UserRole.PRODUCER) {
             const newMessage: any = await prisma.message.create({
               include: {
                 seen: true,
