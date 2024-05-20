@@ -22,6 +22,8 @@ import {
 } from "@/app/components/ui/alert-dialog";
 import ImageUpload from "@/app/components/inputs/profile-img-upload";
 import { useRouter } from "next/navigation";
+import Avatar from "@/app/components/Avatar";
+import { UploadButton } from "@/utils/uploadthing";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -79,7 +81,6 @@ const Page = () => {
       return null;
     }
   };
-  // Function to handle form submission
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
@@ -158,6 +159,7 @@ const Page = () => {
     setValue("state", state);
     setValue("zip", zip);
   };
+  const [image, setImage] = useState(user?.image);
   return (
     <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
       <h1 className="sr-only">Account Settings</h1>
@@ -177,20 +179,28 @@ const Page = () => {
                   change at first.
                 </li>
               </ul>
-            </div>
-
-            <ImageUpload onChange={handleImageChange} value={user?.image} />
+            </div>{" "}
+            <Avatar image={image} />
           </div>
 
           <CardFooter className="flex justify-between m-0 p-0 pt-2">
             A profile picture is optional but we recommend it.
-            <Button
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-            >
-              Save
-            </Button>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: any) => {
+                setImage(res[0].url);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+              className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+              content={{
+                button({ ready }) {
+                  if (ready) return <div>Upload Profile Image</div>;
+                  return "Getting ready...";
+                },
+              }}
+            />
           </CardFooter>
         </CardContent>
       </Card>

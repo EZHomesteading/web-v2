@@ -6,7 +6,13 @@ import UnfollowIcon from "../icons/unfollow-svg";
 import FollowIcon from "../icons/follow-svg";
 import toast from "react-hot-toast";
 import { SafeUser } from "@/types";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["300"],
+});
 interface FollowButtonProps {
   followUserId: any;
   following: any;
@@ -43,9 +49,12 @@ const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
     };
 
     return (
-      <div onClick={handleFollow}>
-        {" "}
-        <FollowIcon />{" "}
+      <div
+        className={`${outfit.className} bg-slate-100 rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center`}
+        onClick={handleFollow}
+      >
+        <FollowIcon />
+        Follow
       </div>
     );
   } else {
@@ -57,8 +66,11 @@ const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
       console.log(resp);
     };
     return (
-      <div onClick={handleFollow}>
-        <UnfollowIcon />
+      <div
+        onClick={handleFollow}
+        className={`${outfit.className}bg-slate-100 rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center`}
+      >
+        <UnfollowIcon /> Unfollow
       </div>
     );
   }

@@ -15,15 +15,7 @@ export async function POST(request: NextRequest) {
   const createdOrders = [];
 
   for (const order of orders) {
-    const {
-      listingIds,
-      pickupDate,
-      quantity,
-      totalPrice,
-      status,
-      stripePaymentIntentId,
-      // payments,
-    } = order;
+    const { listingIds, pickupDate, quantity, totalPrice, status } = order;
 
     const requiredFields = [
       "userId",
@@ -60,12 +52,7 @@ export async function POST(request: NextRequest) {
           quantity,
           totalPrice,
           status,
-          stripePaymentIntentId,
-          stripeSessionId: "",
           fee: totalPrice * 0.06,
-          // payments: {
-          // create: payments,
-          //},
         },
         include: {
           buyer: true,

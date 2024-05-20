@@ -7,9 +7,9 @@ const getProducers = async () => {
 
   try {
     const users = await prisma.user.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
+      // orderBy: {
+      //   createdAt: "desc",
+      // },
       where: {
         role: UserRole.PRODUCER,
         NOT: session?.user?.email

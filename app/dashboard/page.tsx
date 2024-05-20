@@ -249,7 +249,7 @@ const Dashboard = async () => {
                     >
                       <div className="flex flex-row items-center">
                         <div>
-                          <Avatar user={user} />
+                          <Avatar image={user?.image} />
                         </div>
                         <div className="flex flex-col ml-2">
                           <strong className="text-lg">{user.name}</strong>{" "}
@@ -296,7 +296,7 @@ const Dashboard = async () => {
                       >
                         <div className="flex flex-row items-center">
                           <div>
-                            <Avatar user={user} />
+                            <Avatar image={user?.image} />
                           </div>
                           <div className="flex flex-col ml-2">
                             <strong className="text-lg">{user.name}</strong>{" "}
