@@ -17,7 +17,7 @@ export default auth(async (req) => {
   const firstIndex = path.indexOf("/");
   const index = path.indexOf("/", firstIndex + 1); // Find the index of the first "/"
   const filteredString = index !== -1 ? path.substring(0, index) : path;
-
+  // const isBlockedRoute = ""; //need to update in routes
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute =
@@ -41,7 +41,13 @@ export default auth(async (req) => {
     }
     return null as unknown as void;
   }
-
+  // if (!isLoggedIn && !isBlockedRoute) {
+  //   let callbackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callbackUrl += nextUrl.search;
+  //   }
+  //   return Response.redirect(new URL(`/auth/login`));
+  // }
   if (!isLoggedIn && !isPublicRoute) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
