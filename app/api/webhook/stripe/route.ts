@@ -4,14 +4,13 @@ import Stripe from "stripe";
 import getUserById from "@/actions/user/getUserById";
 import getOrderById from "@/actions/getOrderById";
 import getListingById from "@/actions/listing/getListingById";
-import AWS from "@/aws-config";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { UserRole } from "@prisma/client";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-const sns = new AWS.SNS();
 const sesClient = new SESClient({
   region: process.env.AWS_REGION as string,
   credentials: {
@@ -110,7 +109,6 @@ export async function POST(request: NextRequest) {
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
 
           const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
-          console.log("seller notifs", seller.notifications);
           if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
             const emailParams = {
               Destination: {
@@ -121,58 +119,61 @@ export async function POST(request: NextRequest) {
                   Html: {
                     Data: ` 
                     <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
-  <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
-    <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
-      <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
-      <span>EZHomesteading</span>
-    </header>
-    <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${seller.name}</h1>
-    <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
-      buyer.name
-    }</p>
+                      <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
+                        <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
+                          <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
+                          <span>EZHomesteading</span>
+                        </header>
+                        <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${
+                          seller.name
+                        }</h1>
+                        <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
+                          buyer.name
+                        }</p>
 
-      <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
-      <div style="margin-bottom: 8px;">
-        <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
-        <ul style="font-size: 14px;">
-          ${titles
-            .split(", ")
-            .map((item) => `<li>${item}</li>`)
-            .join("")}
-        </ul>
-      </div>
-      <div style="margin-bottom: 8px;">
-        <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
-        <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
-      </div>
-      <div>
-        <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
-        <p style="font-size: 14px;">$${order.totalPrice.toFixed(2)}</p>
-      </div>
+                          <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
+                          <div style="margin-bottom: 8px;">
+                            <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
+                            <ul style="font-size: 14px;">
+                              ${titles
+                                .split(", ")
+                                .map((item) => `<li>${item}</li>`)
+                                .join("")}
+                            </ul>
+                          </div>
+                          <div style="margin-bottom: 8px;">
+                            <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
+                            <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
+                            <p style="font-size: 14px;">$${order.totalPrice.toFixed(
+                              2
+                            )}</p>
+                          </div>
 
-    <a href="https://ezhomesteading.com/chat/${
-      newConversation.id
-    }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
-      <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-        Go to conversation
-      </button>
-    </a>
-    <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
-      <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-        Go to sell orders
-      </button>
-    </a>
-  </div>
-</div>
-                  
-`,
+                        <a href="https://ezhomesteading.com/chat/${
+                          newConversation.id
+                        }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
+                          <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+                            Go to conversation
+                          </button>
+                        </a>
+                        <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
+                          <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+                            Go to sell orders
+                          </button>
+                        </a>
+                      </div>
+                    </div>
+                    `,
                   },
                 },
                 Subject: {
                   Data: "New Order Received",
                 },
               },
-              Source: "no-reply@ezhomesteading.com",
+              Source: "disputes@ezhomesteading.com",
             };
 
             try {
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
               console.error("Error sending email to the seller:", error);
             }
           }
-          if (seller.role === "COOP") {
+          if (seller.role === UserRole.COOP) {
             const newMessage: any = await prisma.message.create({
               include: {
                 seen: true,
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
             // }
           }
 
-          if (seller.role === "PRODUCER") {
+          if (seller.role === UserRole.PRODUCER) {
             const newMessage: any = await prisma.message.create({
               include: {
                 seen: true,

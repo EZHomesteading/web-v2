@@ -10,7 +10,13 @@ import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+});
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
@@ -231,7 +237,12 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           </div>
         </div>
       ) : (
-        <div>loading</div>
+        <div
+          className={` ${outfit.className} flex items-center justify-center text-xl`}
+        >
+          If you do not immediately see the checkout section here, please relaod
+          the page.
+        </div>
       )}
     </>
   );

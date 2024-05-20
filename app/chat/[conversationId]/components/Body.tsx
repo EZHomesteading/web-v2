@@ -95,6 +95,7 @@ const Body: React.FC<BodyProps> = ({
           otherUsersId={otherUser.id}
           order={order}
           otherUserRole={otherUser.role}
+          stripeAccountId={otherUser.stripeAccountId}
         />
       ))}
       <div className="pt-24" ref={bottomRef} />

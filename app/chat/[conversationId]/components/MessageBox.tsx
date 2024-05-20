@@ -42,6 +42,7 @@ interface MessageBoxProps {
   order: any;
   otherUserRole: string;
   user: any;
+  stripeAccountId?: string;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -52,7 +53,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUsersId,
   order,
   otherUserRole,
+  stripeAccountId,
 }) => {
+  console.log("order in message box", order);
   const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -171,6 +174,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     } else {
       axios.post("/api/update-order", { orderId: order.id, status: 9 });
     }
+    axios.post("/api/stripe/transfer", {
+      total: order.totalPrice * 100,
+      stripeAccountId: stripeAccountId,
+      orderId: order.id,
+      status: order.status,
+    });
   };
   const onSubmit7 = () => {
     axios.post("/api/messages", {
@@ -433,7 +442,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
           {data.messageOrder === "1.1" && isOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2">
-              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />{" "}
+              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />{" "}
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
@@ -448,7 +457,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           ) : null}
           {data.messageOrder === "1.1" && notOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2 ">
-              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />
+              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}

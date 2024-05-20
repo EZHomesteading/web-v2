@@ -78,7 +78,6 @@ const SheetContentF = React.forwardRef<
 
     const handleRatingChange = (newRating: any) => {
       setRating(newRating);
-      console.log(`New rating: ${newRating}`);
     };
 
     const handleTextChange = (e: any) => {
@@ -87,17 +86,14 @@ const SheetContentF = React.forwardRef<
 
     const handleSubmit = () => {
       if (rating === 0 || text.trim() === "") {
-        console.log("Please enter a rating and text before submitting.");
         return;
       }
-      console.log("Typed text:", text);
       axios.post("/api/review", {
         rating: rating,
         review: text,
         sellerId: sellerId,
         buyerId: buyerId,
       });
-      // You can perform additional actions with the text here
       closeSheet();
     };
 

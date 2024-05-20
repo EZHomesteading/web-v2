@@ -36,7 +36,7 @@ const conNav: NavigationItem[] = [
   {
     name: "Orders",
     href: "/dashboard/orders",
-    icon: FaOpencart,
+    icon: LiaCartArrowDownSolid,
     current: false,
   },
   {
@@ -84,8 +84,8 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Store Settings",
-    href: "/dashboard/my-store/settings",
+    name: "My Store",
+    href: "/dashboard/my-store",
     icon: PiStorefrontThin,
     current: false,
   },

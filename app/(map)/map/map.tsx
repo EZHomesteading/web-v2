@@ -19,6 +19,7 @@ import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
+import { MarkerClusterer } from "@react-google-maps/api";
 
 interface MapUser {
   id: string;
@@ -29,7 +30,7 @@ interface MapUser {
   } | null;
   image: string | null;
   listings: {
-    imageSrc: string;
+    imageSrc: string[];
   }[];
 }
 
@@ -46,11 +47,11 @@ interface MapProps {
 const VendorsMap = ({ coops, producers }: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
     {
-      lat: 36.8508,
-      lng: -76.2859,
+      lat: 44.58,
+      lng: -103.46,
     }
   );
-  const [zoom, setZoom] = useState(11);
+  const [zoom, setZoom] = useState(4);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -122,29 +123,32 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       map.panTo(markerPosition);
     }
   }, [selectedMarker]);
-
   const coopInfo = coops
     ?.map((coop: MapUser) => {
-      if (!coop.location) return null;
+      if (!coop.location || !coop.location.coordinates) return null;
+
+      const coordinates = coop.location.coordinates;
+      const images = coop.listings
+        ? coop.listings.flatMap(
+            (listing: { imageSrc: string[] }) => listing.imageSrc
+          )
+        : [];
+      const listingsCount = coop.listings ? coop.listings.length : 0;
 
       return {
         coordinates: {
-          lat: coop.location.coordinates[1],
-          lng: coop.location.coordinates[0],
+          lat: coordinates[1],
+          lng: coordinates[0],
         },
         name: coop.name,
         firstName: coop?.firstName,
         image: coop?.image,
         id: coop.id,
-        images:
-          coop?.listings?.map(
-            (listing: { imageSrc: string }) => listing.imageSrc
-          ) || [],
-        listingsCount: coop?.listings?.length ?? 0,
+        images: images,
+        listingsCount: listingsCount,
       };
     })
     .filter(Boolean);
-
   const producerInfo = producers
     ?.map((producer: MapUser) => {
       if (!producer.location) return null;
@@ -157,15 +161,15 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         firstName: producer?.firstName,
         image: producer?.image,
         id: producer.id,
-        images:
-          producer?.listings?.map(
-            (listing: { imageSrc: string }) => listing.imageSrc
-          ) || [],
+        images: producer?.listings?.length
+          ? producer.listings.flatMap(
+              (listing: { imageSrc: string[] }) => listing.imageSrc
+            )
+          : [],
         listingsCount: producer?.listings?.length ?? 0,
       };
     })
     .filter(Boolean);
-
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
@@ -221,6 +225,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     setFilteredCoops([]);
     setFilteredProducers([]);
     setIsDrawingEnabled(true);
+
     if (mapRef.current) {
       mapRef.current.setOptions({
         draggable: false,
@@ -231,6 +236,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       });
     }
   };
+
   const stopDrawing = () => {
     setIsDrawing(false);
     setIsDrawingEnabled(false);
@@ -282,6 +288,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
       }
     }
   };
+
   const handleMouseUp = () => {
     if (isDrawing) {
       setIsDrawing(false);
@@ -339,65 +346,6 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
   };
-  // const getStateClusterData = () => {
-  //   const stateClusterData: {
-  //     [state: string]: {
-  //       position: google.maps.LatLngLiteral;
-  //       count: number;
-  //       color: string;
-  //     };
-  //   } = {};
-
-  //   const allMarkers = [...filteredCoops, ...filteredProducers];
-
-  //   allMarkers.forEach((marker) => {
-  //     const state = marker.state;
-
-  //     if (stateClusterData[state]) {
-  //       stateClusterData[state].count++;
-  //     } else {
-  //       stateClusterData[state] = {
-  //         position: getStateCenter(state),
-  //         count: 1,
-  //         color: getRandomColor(),
-  //       };
-  //     }
-  //   });
-
-  //   return Object.values(stateClusterData).map((cluster) => ({
-  //     text: cluster.count.toString(),
-  //     index: 1,
-  //     position: cluster.position,
-  //     color: cluster.color,
-  //   }));
-  // };
-
-  // const getStateCenter = (state: string) => {
-  //   // implement logic to calculate the center coordinates of each state
-  //   const stateCenters: {
-  //     [state: string]: google.maps.LatLngLiteral;
-  //   } = {
-  //     California: { lat: 37.2718745, lng: -119.2704153 },
-  //     Texas: { lat: 31.9685988, lng: -99.9018131 },
-  //     Virginia: { lat: 37.4316, lng: -78.6569 },
-  //   };
-
-  //   return stateCenters[state] || { lat: 0, lng: 0 };
-  // };
-
-  // const getRandomColor = () => {
-  //   const letters = "0123456789ABCDEF";
-  //   let color = "#";
-  //   for (let i = 0; i < 6; i++) {
-  //     color += letters[Math.floor(Math.random() * 16)];
-  //   }
-  //   return color;
-  // };
-  // const getRandomSkew = () => {
-  //   const skewX = Math.random() * 0.2 - 0.1;
-  //   const skewY = Math.random() * 0.2 - 0.1;
-  //   return { skewX, skewY };
-  // };
 
   return (
     <div
@@ -487,12 +435,13 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
         options={mapOptions}
         onClick={handleMapClick}
       >
-        <MarkerClustererF
-          averageCenter
-          enableRetinaIcons
-          gridSize={60}
-          maxZoom={8}
-          // calculator={getStateClusterData}
+        <MarkerClusterer
+          options={{
+            imagePath: "https://i.ibb.co/qyq0dhb/circle.png",
+            gridSize: 100,
+            maxZoom: 12, // Start clustering at zoom level 12
+            minimumClusterSize: 5,
+          }}
         >
           {(clusterer) =>
             filteredCoops.map((coop: any, index: number) => (
@@ -501,8 +450,9 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
                 position={coop.coordinates}
                 label={{
                   text: `${coop.listingsCount}`,
-                  fontSize: "10px",
+                  fontSize: "8px",
                 }}
+                clusterer={clusterer}
                 icon={{
                   url: "https://i.ibb.co/qyq0dhb/circle.png",
                   scaledSize: new window.google.maps.Size(28, 28),
@@ -511,7 +461,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
                     width: 28,
                     equals: () => true,
                   },
-                  anchor: new window.google.maps.Point(25, 22),
+                  anchor: new window.google.maps.Point(30, 22),
                 }}
                 onClick={() =>
                   handleMarkerClick(
@@ -526,13 +476,14 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
               />
             ))
           }
-        </MarkerClustererF>
-        <MarkerClustererF
-          averageCenter
-          enableRetinaIcons
-          gridSize={60}
-          maxZoom={8}
-          // calculator={getStateClusterData}
+        </MarkerClusterer>
+        <MarkerClusterer
+          options={{
+            imagePath: "https://i.ibb.co/TMnKw45/circle-2.png",
+            gridSize: 100,
+            maxZoom: 12, // Start clustering at zoom level 12
+            minimumClusterSize: 5,
+          }}
         >
           {(clusterer) =>
             filteredProducers.map((producer: any, index: number) => (
@@ -548,6 +499,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
                   scaledSize: new window.google.maps.Size(28, 28),
                   anchor: new window.google.maps.Point(25, 22),
                 }}
+                clusterer={clusterer}
                 onClick={() =>
                   handleMarkerClick(
                     producer.coordinates,
@@ -561,7 +513,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
               />
             ))
           }
-        </MarkerClustererF>
+        </MarkerClusterer>
       </GoogleMap>
       {selectedMarker && (
         <div
@@ -575,7 +527,7 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
               images={selectedMarker.images}
             />
             <header className="flex flex-row p-1 relative w-full">
-              <Avatar user={selectedMarker} />
+              <Avatar image={selectedMarker.image} />
 
               <ul className="flex flex-col ml-1 pl-1">
                 <h1 className={`${outfit.className} text-sm `}>

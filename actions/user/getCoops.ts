@@ -6,9 +6,9 @@ const getCoops = async () => {
   const session = await auth();
   try {
     const users = await prisma.user.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
+      // orderBy: {
+      //   createdAt: "desc",
+      // },
       where: {
         role: UserRole.COOP,
         NOT: session?.user?.email

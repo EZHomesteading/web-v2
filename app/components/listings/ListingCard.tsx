@@ -92,7 +92,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
   return (
     <div className="col-span-1 cursor-pointer group">
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full relative">
         <div
           onClick={() => router.push(`/listings/${data.id}`)}
           className="w-full relative overflow-hidden rounded-xl"
@@ -102,7 +102,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {data.imageSrc.map((_, index) => (
                 <CarouselItem key={index}>
                   <Card>
-                    <CardContent className="flex items-center justify-center relative aspect-sqaure h-64">
+                    <CardContent className="flex items-center justify-center relative aspect-sqaure h-[16.5rem]">
                       <Image
                         src={data.imageSrc[index]}
                         alt={`Carousel Image ${index + 1}`}

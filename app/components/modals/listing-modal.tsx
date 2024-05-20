@@ -1,12 +1,8 @@
 "use client";
-import { CopyIcon } from "@radix-ui/react-icons";
-
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -39,14 +35,20 @@ import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
-import { Outfit } from "next/font/google";
+import { Outfit, Zilla_Slab } from "next/font/google";
 import Image from "next/image";
 
 import { BsBucket } from "react-icons/bs";
-import Button from "../Button";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
+});
+
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
 });
 enum STEPS {
   DESCRIPTION = 0,
@@ -76,6 +78,7 @@ const ListingModal = () => {
   const router = useRouter();
   const rentModal = useRentModal();
   const [clicked, setClicked] = useState(false);
+  const [c, setC] = useState(false);
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
@@ -112,10 +115,10 @@ const ListingModal = () => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      street: user?.location?.address[0],
-      city: user?.location?.address[1],
-      zip: user?.location?.address[3],
-      state: user?.location?.address[2],
+      street: "",
+      city: "",
+      zip: "",
+      state: "",
       coopRating: 1,
     },
   });
@@ -294,6 +297,8 @@ const ListingModal = () => {
           setValue("zip", "");
           setValue("state", "");
           setValue("coopRating", 1);
+          setC(false);
+          setClicked(false);
           setProduct(undefined);
           setCoopRating(1);
           setStep(STEPS.DESCRIPTION);
@@ -444,8 +449,8 @@ const ListingModal = () => {
           title="Where is your farm or garden located?"
           subtitle="Help local consumers find you!"
         />
-        <div className="flex flex-row justify-evenly">
-          <div className="flex flex-col justify-center">
+        <div className="flex flex-col lg:flex-row justify-evenly">
+          <div className="flex flex-row lg:flex-col justify-center">
             <PiStorefrontThin
               size="5em"
               className={
@@ -454,19 +459,38 @@ const ListingModal = () => {
                   : "cursor-pointer hover:text-green-500"
               }
               onClick={() => {
+                setValue("street", user?.location?.address[0]);
+                setValue("city", user?.location?.address[1]);
+                setValue("state", user?.location?.address[2]);
+                setValue("zip", user?.location?.address[3]);
                 setClicked(true);
               }}
             />
-            Default Location
+            <ul>
+              <li className={`${outfit.className}`}>Use My Default Location</li>{" "}
+              {user?.location?.address.length === 4 ? (
+                <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+              ) : (
+                <li>Full Address not available</li>
+              )}
+            </ul>
           </div>
-          <div className="">
+          <div className={`${outfit.className} flex flex-row lg:flex-col `}>
             <BiSearch
               size="5em"
-              className="cursor-pointer hover:text-green-500"
-              onClick={toggleLocationInput}
+              className={
+                c
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
+              onClick={() => {
+                toggleLocationInput();
+                setClicked(false);
+                setC(true);
+              }}
               style={{ cursor: "pointer" }}
             />
-            Different Location
+            Use a Different Location
           </div>
         </div>
       </div>
@@ -482,10 +506,30 @@ const ListingModal = () => {
             subtitle="Help local consumers find you!"
           />
           <div className="flex flex-row justify-center space-x-4">
-            <PiStorefrontThin size="5em" className="w-1/2" />
+            <PiStorefrontThin
+              size="5em"
+              className={
+                clicked
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
+              onClick={() => {
+                setValue("street", user?.location?.address[0]);
+                setValue("city", user?.location?.address[1]);
+                setValue("state", user?.location?.address[2]);
+                setValue("zip", user?.location?.address[3]);
+                setClicked(true);
+                setC(false);
+                toggleLocationInput();
+              }}
+            />
             <BiSearch
               size="5em"
-              className="w-1/2"
+              className={
+                c
+                  ? "text-green-500 cursor-pointer"
+                  : "cursor-pointer hover:text-green-500"
+              }
               onClick={toggleLocationInput}
               style={{ cursor: "pointer" }}
             />

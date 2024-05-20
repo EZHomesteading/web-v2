@@ -4,13 +4,23 @@ interface Params {
   orderId?: string;
 }
 
-export default async function getOrderById(params: Params) {
+export default async function getOrderByIdTransfer(params: Params) {
   try {
     const { orderId } = params;
 
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
+      },
+      select: {
+        totalPrice: true,
+        status: true,
+        id: true,
+        seller: {
+          select: {
+            stripeAccountId: true,
+          },
+        },
       },
     });
 

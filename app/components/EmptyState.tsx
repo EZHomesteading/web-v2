@@ -19,10 +19,16 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   showShop,
 }) => {
   const pathname = usePathname();
-  const isMessagePage = pathname === "/messenger";
+  const isMessagePage =
+    pathname?.startsWith("/chat") || pathname?.startsWith("/messenger");
+  const isStorePage = pathname?.startsWith("/store");
   const router = useRouter();
   if (isMessagePage) {
     title = "Select a chat or start a new conversation";
+    subtitle = "";
+  }
+  if (isStorePage) {
+    title = "This user doesn't have any listings";
     subtitle = "";
   }
   const isFindPage = pathname === "/find-co-ops-and-producers";

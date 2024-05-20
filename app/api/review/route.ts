@@ -14,7 +14,8 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     return NextResponse.error();
   }
 
-  const { rating, review, sellerId, buyerId } = await request.json();
+  const { rating, review, sellerId, buyerId, reviewerId } =
+    await request.json();
   if (user.id === sellerId && user.id === buyerId) {
     toast.error("cant review own products");
     return;
@@ -23,6 +24,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     data: {
       buyerId,
       sellerId,
+      reviewerId,
       review,
       rating,
     },

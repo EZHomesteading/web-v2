@@ -17,14 +17,15 @@ export default auth(async (req) => {
   const firstIndex = path.indexOf("/");
   const index = path.indexOf("/", firstIndex + 1); // Find the index of the first "/"
   const filteredString = index !== -1 ? path.substring(0, index) : path;
-
+  // const isBlockedRoute = ""; //need to update in routes
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
-    publicRoutes.includes(filteredString);
+    publicRoutes.includes(filteredString) ||
+    nextUrl.pathname.startsWith("/info/") ||
+    nextUrl.pathname.startsWith("/profile/");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  // const isCoopRoute = coopRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null as unknown as void;
@@ -40,43 +41,14 @@ export default auth(async (req) => {
     }
     return null as unknown as void;
   }
-
-  // if (isCoopRoute && user?.role !== UserRole.COOP) {
+  // if (!isLoggedIn && !isBlockedRoute) {
   //   let callbackUrl = nextUrl.pathname;
   //   if (nextUrl.search) {
   //     callbackUrl += nextUrl.search;
   //   }
-  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-  //   return Response.redirect(
-  //     new URL(`/shop?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-  //   );
+  //   return Response.redirect(new URL(`/auth/login`));
   // }
-
   if (!isLoggedIn && !isPublicRoute) {
-    // if (!isLoggedIn && isUpdateRoute) {
-    //   let callbackUrl = nextUrl.pathname;
-    //   if (nextUrl.search) {
-    //     callbackUrl += nextUrl.search;
-    //   }
-    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    //   const redirectUrl = updateRoutes.includes(callbackUrl)
-    //     ? DEFAULT_LOGIN_REDIRECT
-    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-    //   return Response.redirect(new URL(redirectUrl, nextUrl));
-    // }
-
-    // if (user?.role === "CONSUMER" && isUpdateRoute) {
-    //   let callbackUrl = nextUrl.pathname;
-    //   if (nextUrl.search) {
-    //     callbackUrl += nextUrl.search;
-    //   }
-    //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    //   const redirectUrl = updateRoutes.includes(callbackUrl)
-    //     ? DEFAULT_LOGIN_REDIRECT
-    //     : `/auth/become-a-co-op?callbackUrl=${encodedCallbackUrl}`;
-    //   return Response.redirect(new URL(redirectUrl, nextUrl));
-    // }
-
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
@@ -90,7 +62,6 @@ export default auth(async (req) => {
   return null as unknown as void;
 });
 
-// Optionally, don't invoke Middleware on some paths
 export const config = {
   matcher: [
     "/((?!.+\\.[\\w]+$|_next).*)",
