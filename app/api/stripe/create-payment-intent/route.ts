@@ -20,10 +20,12 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    // orderIds.map(async (orderId: string) => {
-    //   const order = await getOrderById({ orderId });
-    //   console.log(order?.pickupDate);
-    // });
+    const b = orderIds.replace(/,(?=[^,]*$)/, "");
+    const orderIdsArray = JSON.parse(b);
+    orderIdsArray.map(async (orderId: string) => {
+      const order = await getOrderById({ orderId });
+      console.log(order?.pickupDate);
+    });
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,
       currency: "usd",

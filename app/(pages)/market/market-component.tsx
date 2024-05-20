@@ -1,7 +1,10 @@
 import Container from "@/app/components/Container";
+
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "../../components/client/ClientOnly";
 import Link from "next/link";
+
+import SessionStorageManager from "@/app/components/sessionStorageManager";
 
 interface ShopProps {
   listings: any[];
@@ -26,6 +29,7 @@ const Shop = ({
 }: ShopProps) => {
   return (
     <ClientOnly>
+      <SessionStorageManager />
       <Container>
         {emptyState || (
           <div className="pt-2 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">

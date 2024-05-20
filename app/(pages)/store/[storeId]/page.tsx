@@ -6,6 +6,8 @@ import getFollows from "@/actions/follow/getFollows";
 
 import getUserStore from "@/actions/user/getUserStore";
 
+import SessionStorageManager from "@/app/components/sessionStorageManager";
+
 interface StorePageProps {
   params: {
     storeId: string;
@@ -26,18 +28,23 @@ const StorePage = async ({ params }: StorePageProps) => {
   const following = await getFollows();
 
   return (
-    <DynamicStorePage
-      storeUser={storeUser}
-      user={user}
-      following={following}
-      emptyState={
-        storeUser?.listings.length === 0 ? (
-          <ClientOnly>
-            <EmptyState showReset />
-          </ClientOnly>
-        ) : null
-      }
-    />
+    <>
+      <ClientOnly>
+        <SessionStorageManager />
+      </ClientOnly>
+      <DynamicStorePage
+        storeUser={storeUser}
+        user={user}
+        following={following}
+        emptyState={
+          storeUser?.listings.length === 0 ? (
+            <ClientOnly>
+              <EmptyState showReset />
+            </ClientOnly>
+          ) : null
+        }
+      />
+    </>
   );
 };
 

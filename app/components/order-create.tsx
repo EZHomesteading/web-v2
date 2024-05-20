@@ -15,6 +15,7 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
+  sessionStorage.setItem("ORDER", "");
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
