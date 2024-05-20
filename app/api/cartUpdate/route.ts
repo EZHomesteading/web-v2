@@ -26,3 +26,13 @@ export async function POST(
     return NextResponse.json(updatedCartItem);
   }
 }
+export async function DELETE() {
+  const user = await currentUser();
+  if (!user) {
+    return;
+  }
+  // Delete a single cart item
+  await prisma.cart.deleteMany({ where: { userId: user.id } });
+
+  return NextResponse.json({ message: "Cart item deleted successfully" });
+}

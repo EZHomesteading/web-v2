@@ -86,7 +86,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
     return shelfLifeDisplay;
   };
   const handleDelete: any = async () => {
-    await axios.delete(`/api/cart`);
+    await axios.delete(`/api/cartUpdate`);
     router.refresh();
   };
   function convertToDate(dateString: string) {

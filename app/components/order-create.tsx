@@ -110,6 +110,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     }
 
     const post = async () => {
+      console.log(body);
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
       await datas.forEach((data: any) => {
