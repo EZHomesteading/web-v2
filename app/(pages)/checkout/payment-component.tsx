@@ -15,6 +15,7 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 export default function PaymentComponent() {
   const stripe = useStripe();
   const elements = useElements();
