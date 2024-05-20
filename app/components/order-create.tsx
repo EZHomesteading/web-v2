@@ -15,6 +15,7 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
+  sessionStorage.setItem("ORDER", "");
   const router = useRouter();
   const createOrder = () => {
     const body: any = [];
@@ -109,6 +110,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     }
 
     const post = async () => {
+      console.log(body);
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
       await datas.forEach((data: any) => {
@@ -143,7 +145,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     });
   };
   sessionStorage.setItem("Order", "");
-  const stock = cartItems.some((item: any) => item.listing.stock === 0);
+  const stock = cartItems.some((item: any) => item.listing.stock <= 0);
 
   if (stillExpiry === true) {
     return (

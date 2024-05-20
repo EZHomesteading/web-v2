@@ -18,28 +18,7 @@ export async function POST(request: Request) {
         id: otherUserId,
       },
     });
-    if (recipients?.subscriptions) {
-      const recipientSubs = recipients.subscriptions;
-      const formatrecipients = JSON.parse(recipientSubs);
-      const send = formatrecipients.map((subscription: PushSubscription) =>
-        webPush.sendNotification(
-          subscription,
-          JSON.stringify({
-            title: user.name,
-            body: message,
-            id: conversationId,
-          }),
-          {
-            vapidDetails: {
-              subject: "mailto:macrowwwwwwwwww.co@gmail.com",
-              publicKey: process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
-              privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
-            },
-          }
-        )
-      );
-      await Promise.all(send);
-    }
+
     const newMessage = await prisma.message.create({
       include: {
         seen: true,
@@ -96,7 +75,34 @@ export async function POST(request: Request) {
         messages: [lastMessage],
       });
     });
-
+    if (recipients?.subscriptions) {
+      try {
+        const recipientSubs = recipients.subscriptions;
+        const formatrecipients = JSON.parse(recipientSubs);
+        //console.log(recipients);
+        const send = formatrecipients.map((subscription: PushSubscription) =>
+          webPush.sendNotification(
+            subscription,
+            JSON.stringify({
+              title: user.name,
+              body: message,
+              id: conversationId,
+            }),
+            {
+              vapidDetails: {
+                subject: "mailto:macrowwwwwwwwww.co@gmail.com",
+                publicKey: process.env
+                  .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
+                privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
+              },
+            }
+          )
+        );
+        await Promise.all(send);
+      } catch (error) {
+        console.log("A users Push subscription has expired.");
+      }
+    }
     return NextResponse.json(newMessage);
   } catch (error) {
     console.log(error, "ERROR_MESSAGES");

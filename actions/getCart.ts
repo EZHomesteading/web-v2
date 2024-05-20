@@ -11,6 +11,7 @@ export const getAllCartItemsByUserId = async () => {
       },
       include: {
         user: true,
+
         listing: { include: { user: true } },
       },
       orderBy: { listing: { userId: "desc" } },

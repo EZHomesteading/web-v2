@@ -85,7 +85,7 @@ const Cart = ({ cartItems }: CartProps) => {
     return shelfLifeDisplay;
   };
   const handleDelete: any = async () => {
-    await axios.delete(`/api/cart`);
+    await axios.delete(`/api/cartUpdate`);
     router.refresh();
   };
   function convertToDate(dateString: string) {
@@ -335,7 +335,7 @@ const Cart = ({ cartItems }: CartProps) => {
                           </div>
 
                           <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                            {cartItem.listing.stock ? (
+                            {cartItem.listing.stock > 0 ? (
                               <CheckIcon
                                 className="h-5 w-5 flex-shrink-0 text-green-500"
                                 aria-hidden="true"
@@ -348,7 +348,7 @@ const Cart = ({ cartItems }: CartProps) => {
                             )}
 
                             <span>
-                              {cartItem.listing.stock
+                              {cartItem.listing.stock > 0
                                 ? "In stock"
                                 : `None in Stock`}
                             </span>
