@@ -30,9 +30,9 @@ const Slider = React.forwardRef<
         <SliderPrimitive.Track className="relative h-[1px] grow overflow-hidden rounded-full bg-zinc-600">
           <SliderPrimitive.Range className="absolute h-full" />
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-none bg-zinc-600" />
+        <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-none bg-slate-500" />
       </SliderPrimitive.Root>
-      <div className="pt-3 text-sm">
+      <div className="pt-3 text-sm font-medium">
         {value} {unit(singleValue)}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "../../components/client/ClientOnly";
-import getListingsApi from "@/actions/listing/getListingsApi";
+import getListingsApi from "@/actions/listing/getListingsMarket";
 import getUserwithCart from "@/actions/user/getUserWithCart";
 
 interface ShopProps {

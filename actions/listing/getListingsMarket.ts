@@ -67,7 +67,7 @@ export default async function GetListings(
       user?.role === UserRole.PRODUCER ||
       user?.role === UserRole.ADMIN
     ) {
-      if (c === "true" && p === "true") {
+      if (c === "t" && p === "t") {
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -96,7 +96,7 @@ export default async function GetListings(
             createdAt: "desc",
           },
         });
-      } else if (c === "true") {
+      } else if (c === "t") {
         console.log("entered case 2");
         listings = await prisma.listing.findMany({
           where: {
@@ -124,7 +124,7 @@ export default async function GetListings(
             createdAt: "desc",
           },
         });
-      } else if (p === "true") {
+      } else if (p === "t") {
         console.log("entered case 3");
         listings = await prisma.listing.findMany({
           where: {
