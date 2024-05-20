@@ -44,11 +44,22 @@ export default async function GetListings(
           ...query,
           stock: s === "f" ? { lt: 1 } : undefined,
         },
+        select: {
+          id: true,
+          title: true,
+          quantityType: true,
+          price: true,
+          imageSrc: true,
+          createdAt: true,
+          location: {
+            select: {
+              coordinates: true,
+              address: true,
+            },
+          },
+        },
         orderBy: {
           createdAt: "desc",
-        },
-        include: {
-          user: true,
         },
       });
     } else if (
@@ -67,11 +78,22 @@ export default async function GetListings(
             ...query,
             stock: s === "f" ? { lt: 1 } : undefined,
           },
+          select: {
+            id: true,
+            title: true,
+            quantityType: true,
+            price: true,
+            imageSrc: true,
+            createdAt: true,
+            location: {
+              select: {
+                coordinates: true,
+                address: true,
+              },
+            },
+          },
           orderBy: {
             createdAt: "desc",
-          },
-          include: {
-            user: true,
           },
         });
       } else if (c === "true") {
@@ -84,11 +106,22 @@ export default async function GetListings(
             ...query,
             stock: s === "f" ? { lt: 1 } : undefined,
           },
+          select: {
+            id: true,
+            title: true,
+            quantityType: true,
+            price: true,
+            imageSrc: true,
+            createdAt: true,
+            location: {
+              select: {
+                coordinates: true,
+                address: true,
+              },
+            },
+          },
           orderBy: {
             createdAt: "desc",
-          },
-          include: {
-            user: true,
           },
         });
       } else if (p === "true") {
@@ -104,8 +137,19 @@ export default async function GetListings(
           orderBy: {
             createdAt: "desc",
           },
-          include: {
-            user: true,
+          select: {
+            id: true,
+            title: true,
+            quantityType: true,
+            price: true,
+            imageSrc: true,
+            createdAt: true,
+            location: {
+              select: {
+                coordinates: true,
+                address: true,
+              },
+            },
           },
         });
       } else {
@@ -118,8 +162,19 @@ export default async function GetListings(
           orderBy: {
             createdAt: "desc",
           },
-          include: {
-            user: true,
+          select: {
+            id: true,
+            title: true,
+            quantityType: true,
+            price: true,
+            imageSrc: true,
+            createdAt: true,
+            location: {
+              select: {
+                coordinates: true,
+                address: true,
+              },
+            },
           },
         });
       }
