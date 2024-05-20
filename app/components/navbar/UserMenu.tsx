@@ -35,7 +35,7 @@ const UserMenu = ({ user }: Props) => {
   const listingModal = useRentModal();
   return (
     <Sheet>
-      <div className="flex flex-row items-center justify-around min-w-screen gap-x-6 md:gap-x-3">
+      <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
         <GiBarn
           className="h-9 w-9 block sm:hidden"
           onClick={() => router.push("/")}

@@ -20,6 +20,7 @@ export default async function getUserStore(params: Params) {
         bio: true,
         createdAt: true,
         role: true,
+        hours: true,
         listings: {
           select: {
             imageSrc: true,

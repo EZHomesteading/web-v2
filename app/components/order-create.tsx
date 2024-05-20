@@ -105,7 +105,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         quantity: JSON.stringify(quantities),
         totalPrice: summedTotalPrice,
         status: 0,
-        stripePaymentIntentId: "teststring",
       });
     }
 
@@ -143,7 +142,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
     });
   };
-  sessionStorage.setItem("ORDER", "");
+  sessionStorage.setItem("Order", "");
   const stock = cartItems.some((item: any) => item.listing.stock === 0);
 
   if (stillExpiry === true) {

@@ -41,7 +41,8 @@
     "app/components/listings/image-upload.jsx",
     "app/api/upload/route.js",
     "app/(home)/dashboard/orders/buyer",
-    "actions/user/getOrdersByUserIdtsx"
+    "actions/user/getOrdersByUserIdtsx",
+    "scripts/convert-date.js"
   ],
   "exclude": ["node_modules"]
 }

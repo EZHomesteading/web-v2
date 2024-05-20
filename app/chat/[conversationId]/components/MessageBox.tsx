@@ -42,6 +42,7 @@ interface MessageBoxProps {
   order: any;
   otherUserRole: string;
   user: any;
+  stripeAccountId?: string;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -52,7 +53,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUsersId,
   order,
   otherUserRole,
+  stripeAccountId,
 }) => {
+  console.log("order in message box", order);
   const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -171,6 +174,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     } else {
       axios.post("/api/update-order", { orderId: order.id, status: 9 });
     }
+    axios.post("/api/stripe/transfer", {
+      total: order.totalPrice * 100,
+      stripeAccountId: stripeAccountId,
+      orderId: order.id,
+      status: order.status,
+    });
   };
   const onSubmit7 = () => {
     axios.post("/api/messages", {
