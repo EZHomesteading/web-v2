@@ -28,6 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
+import { CartItem } from "@/actions/getCart";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -35,10 +36,10 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: any;
+  cartItems?: CartItem[];
 }
 
-const Cart = ({ cartItems }: CartProps) => {
+const Cart = ({ cartItems = [] }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
   const [checkoutPickup, setCheckoutPickup] = useState<any>("");
   const [stillExpiry, setStillExpiry] = useState(true);

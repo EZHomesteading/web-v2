@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
-import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 
 interface CustomTimeProps {
@@ -54,14 +53,14 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   };
 
   const buildArray = async () => {
-    if (date === undefined) {
+    if (date === undefined || hours === null) {
       return;
     }
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
     const newHours = hours[newHoursIndex as keyof ExtendedHours];
-    if (newHours === null) {
-      return; //early retur if co-op is closed
+    if (newHours === null || newHours === undefined || newHours.length === 0) {
+      return; //early return if co-op is closed, hours are undefined, or hours array is empty
     }
     const resultantArray = [];
     const roundedMin = roundNumber(currentMin);
@@ -131,7 +130,12 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                   Co-op Hours Each Day
                 </div>
                 <div className="mt-1">
-                  <HoursDisplay coOpHours={hours} />
+                  {" "}
+                  {hours === null ? (
+                    <div>This seller has not provided their hours.</div>
+                  ) : (
+                    <HoursDisplay coOpHours={hours} />
+                  )}
                 </div>
               </div>
             </div>

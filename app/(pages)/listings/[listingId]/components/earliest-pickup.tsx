@@ -27,14 +27,18 @@ const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
     const now = new Date();
     const currentMin = now.getHours() * 60 + now.getMinutes();
     let nextAvailableTime = null;
-    //console.log("user time in minutes:", currentMin);
+
     for (let i = 0; i < 7; i++) {
       const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
-      //console.log("index", newHoursIndex);
+
+      if (hours === null) {
+        continue; // Skip iteration if hours is null
+      }
+
       const newHours = hours[newHoursIndex];
 
       if (newHours === null) {
-        continue; //skips to next day if the co-op is closed
+        continue; // Skip to next day if the co-op is closed
       }
 
       if (newHours && newHours.length === 0) continue;
@@ -131,6 +135,25 @@ const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
       )}`;
     }
   };
+  if (
+    hours === null ||
+    (hours && Object.values(hours).every((dayHours) => dayHours === null))
+  ) {
+    return (
+      <Card className="bg-inherit border-none cursor-not-allowed opacity-50">
+        <CardHeader
+          className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+        >
+          Earliest pickup not available
+        </CardHeader>
+        <CardContent className={`${outfit.className}`}>
+          This co-op has not provided their hours. Please contact them for more
+          information.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
       <CardHeader
@@ -141,7 +164,7 @@ const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
       <CardContent className={`${outfit.className}`}>
         In a hurry? The earliest possible time for pickup from this co-op is{" "}
         <span className={`${outfit.className} text-lg`}>
-          {earliestPickupTime || "loading..."}
+          {earliestPickupTime}
         </span>
       </CardContent>
     </Card>
