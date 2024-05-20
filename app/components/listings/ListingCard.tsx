@@ -50,6 +50,7 @@ interface ListingCardProps {
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
   user?: UserInfo | null;
+  storeUser?: any;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({

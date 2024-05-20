@@ -144,7 +144,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     });
   };
   sessionStorage.setItem("Order", "");
-  const stock = cartItems.some((item: any) => item.listing.stock === 0);
+  const stock = cartItems.some((item: any) => item.listing.stock <= 0);
 
   if (stillExpiry === true) {
     return (

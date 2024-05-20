@@ -53,7 +53,6 @@ const StorePage = ({
               />
             </div>
           </div>
-
           <div className="flex justify-center">
             <Bio user={storeUser} />
           </div>
@@ -74,7 +73,12 @@ const StorePage = ({
             "
           >
             {storeUser?.listings?.map((listing: any) => (
-              <ListingCard user={storeUser} key={listing.id} data={listing} />
+              <ListingCard
+                user={user}
+                storeUser={storeUser}
+                key={listing.id}
+                data={listing}
+              />
             ))}
           </div>
         )}

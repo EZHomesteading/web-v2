@@ -1,9 +1,7 @@
 import Container from "@/app/components/Container";
-
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "../../components/client/ClientOnly";
 import Link from "next/link";
-
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 
 interface ShopProps {

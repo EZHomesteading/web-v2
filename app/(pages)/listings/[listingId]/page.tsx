@@ -1,13 +1,9 @@
-import { currentUser } from "@/lib/auth";
 import getListingById from "@/actions/listing/getListingById";
-
 import ClientOnly from "@/app/components/client/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
-
 import ListingClient from "./ListingClient";
 import getUserwithCart from "@/actions/user/getUserWithCart";
 import getFollows from "@/actions/follow/getFollows";
-
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 
 interface IParams {
