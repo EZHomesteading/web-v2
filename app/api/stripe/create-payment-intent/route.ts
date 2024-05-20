@@ -1,3 +1,4 @@
+import getOrderById from "@/actions/getOrderById";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -9,7 +10,20 @@ export async function POST(request: NextRequest) {
   const { totalSum, userId, orderTotals, body, email, orderIds } =
     await request.json();
   console.log("totalSum: ", totalSum);
+  console.log(orderIds);
+
   try {
+    if (orderIds === null) {
+      console.error("Error creating PaymentIntent:");
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 }
+      );
+    }
+    // orderIds.map(async (orderId: string) => {
+    //   const order = await getOrderById({ orderId });
+    //   console.log(order?.pickupDate);
+    // });
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,
       currency: "usd",
