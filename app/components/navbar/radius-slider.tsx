@@ -16,7 +16,7 @@ const Slider = React.forwardRef<
   const singleValue = Array.isArray(value) ? value[0] : value || 0;
   return (
     <div>
-      <div className="mb-3">Radius</div>
+      <div className="mb-3 text-xl">Radius</div>
       <SliderPrimitive.Root
         ref={ref}
         className={cn(
@@ -27,12 +27,12 @@ const Slider = React.forwardRef<
         onValueChange={onValueChange}
         {...props}
       >
-        <SliderPrimitive.Track className="relative h-[1px] grow overflow-hidden rounded-full bg-black">
+        <SliderPrimitive.Track className="relative h-[1px] grow overflow-hidden rounded-full bg-zinc-600">
           <SliderPrimitive.Range className="absolute h-full" />
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-[1px] border-gray-500 bg-white" />
+        <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-none bg-zinc-600" />
       </SliderPrimitive.Root>
-      <div>
+      <div className="pt-3 text-sm">
         {value} {unit(singleValue)}
       </div>
     </div>

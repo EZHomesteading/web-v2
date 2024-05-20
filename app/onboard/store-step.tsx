@@ -11,7 +11,7 @@ interface Props {
 const StoreStep = ({ coOpHours, setCoOpHours, user }: Props) => {
   return (
     <>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center w-full pt-2">
         {user ? (
           <CoOpHoursPage
             coOpHours={coOpHours}

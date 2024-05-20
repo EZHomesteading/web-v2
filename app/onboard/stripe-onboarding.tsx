@@ -6,7 +6,6 @@ import {
 import { loadConnectAndInitialize } from "@stripe/connect-js/pure";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import Loader from "@/app/components/secondary-loader";
 import { UserInfo } from "@/next-auth";
 
@@ -50,14 +49,13 @@ const AccountOnboardingUI = ({ user }: Props) => {
   }
 
   return (
-    <>
+    <div className="mt-0">
       <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
         <ConnectAccountOnboarding
           onExit={() => {
             console.log("The account has exited onboarding");
           }}
           fullTermsOfServiceUrl="https://ezhomesteading.vercel.app/tos"
-          recipientTermsOfServiceUrl="https://ezhomesteading.vercel.app/tos-recipient"
           privacyPolicyUrl="https://ezhomesteading.vercel.app/privacy-policy"
           skipTermsOfServiceCollection={false}
           collectionOptions={{
@@ -66,7 +64,7 @@ const AccountOnboardingUI = ({ user }: Props) => {
           }}
         />
       </ConnectComponentsProvider>
-    </>
+    </div>
   );
 };
 

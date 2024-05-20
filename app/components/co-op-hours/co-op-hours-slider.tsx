@@ -36,7 +36,7 @@ export default function CoopHoursSlider({
         <button onClick={onPrevDay}>
           <MdOutlineNavigateBefore className="h-10 w-10" />
         </button>
-        <div className={`${outfit.className} flex justify-center text-4xl`}>
+        <div className={`${outfit.className} flex justify-center text-2xl`}>
           {day}
         </div>
         <div className="flex justify-evenly">
