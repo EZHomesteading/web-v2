@@ -52,30 +52,33 @@ const Body: React.FC<BodyProps> = ({
     };
 
     // Subscribe to the channel and bind event handlers
+
     const clearConnection = async () => {
       pusherClient.disconnect();
-      pusherClient.unsubscribe("messenger");
+      pusherClient.unsubscribe(conversationId);
       pusherClient.unbind("messages:new", messageHandler);
       pusherClient.unbind("message:update", updateMessageHandler);
     };
-    const Connect = async () => {
-      pusherClient.connect();
-      pusherClient.subscribe("messenger");
-      pusherClient.bind("messages:new", messageHandler);
-      pusherClient.bind("message:update", updateMessageHandler);
-    };
-    const reConnect = async () => {
-      await clearConnection();
-      await Connect();
-    };
-    reConnect();
+    // const Connect = async () => {
+    //pusherClient.connect();
+    pusherClient.subscribe(conversationId);
+    pusherClient.bind("messages:new", messageHandler);
+    pusherClient.bind("message:update", updateMessageHandler);
+    // };
+    // const reConnect = async () => {
+    //   // await clearConnection();
+    //   await Connect();
+    // };
 
+    // if (pusherClient.connection.state == "disconnected") {
+    //   reConnect();
+    // }
     // Cleanup function to unsubscribe and unbind event handlers
     return () => {
-      pusherClient.unsubscribe("messenger");
+      pusherClient.unsubscribe(conversationId);
       pusherClient.unbind("messages:new", messageHandler);
       pusherClient.unbind("message:update", updateMessageHandler);
-      pusherClient.disconnect(); // Disconnect Pusher connection
+      //pusherClient.disconnect(); // Disconnect Pusher connection
     };
   }, [conversationId]);
 
