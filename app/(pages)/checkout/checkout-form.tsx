@@ -72,6 +72,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         setClientSecret(clientSecret);
       } catch (error) {
         console.error("Error fetching payment intents:", error);
+        window.location.replace("/cart");
       }
     };
 
