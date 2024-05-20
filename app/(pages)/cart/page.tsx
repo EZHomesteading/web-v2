@@ -24,5 +24,4 @@ const SearchPage = async () => {
     </ClientOnly>
   );
 };
-//
 export default SearchPage;
