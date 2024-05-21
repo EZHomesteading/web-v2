@@ -42,7 +42,7 @@ export default async function GetListings(
             role: UserRole.COOP,
           },
           ...query,
-          stock: s === "f" ? { lt: 1 } : undefined,
+          stock: s === "f" ? { lt: 1 } : { gt: 0 },
         },
         select: {
           id: true,
@@ -76,7 +76,7 @@ export default async function GetListings(
               },
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           select: {
             id: true,
@@ -104,7 +104,7 @@ export default async function GetListings(
               role: UserRole.COOP,
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           select: {
             id: true,
@@ -132,7 +132,7 @@ export default async function GetListings(
               role: UserRole.PRODUCER,
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           orderBy: {
             createdAt: "desc",
@@ -157,7 +157,7 @@ export default async function GetListings(
         listings = await prisma.listing.findMany({
           where: {
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           orderBy: {
             createdAt: "desc",

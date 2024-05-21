@@ -33,7 +33,6 @@ export default function CoopHoursSlider({
     setValues(newValues);
     onChange(newValues[0], newValues[1]);
   };
-  console.log(values);
   return (
     <div className="space-y-5">
       <div className="flex flex-row justify-between items-center">
