@@ -22,10 +22,15 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   const isMessagePage =
     pathname?.startsWith("/chat") || pathname?.startsWith("/messenger");
   const isStorePage = pathname?.startsWith("/store");
+  const isFollowingPage = pathname?.startsWith("/dashboard/follow");
   const router = useRouter();
   if (isMessagePage) {
     title = "Select a chat or start a new conversation";
     subtitle = "";
+  }
+  if (isFollowingPage) {
+    title = "No users found";
+    subtitle = "It looks like you aren't following anyone";
   }
   if (isStorePage) {
     title = "This user doesn't have any listings";

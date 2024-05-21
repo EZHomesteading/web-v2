@@ -1,4 +1,5 @@
 "use client";
+
 import CoopHoursSlider from "./co-op-hours-slider";
 import { useState } from "react";
 import { HoursDisplay } from "./hours-display";
@@ -7,7 +8,6 @@ import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { ExtendedHours } from "@/next-auth";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { UserRole } from "@prisma/client";
 import {
@@ -93,11 +93,19 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
 
   const handleClose = () => {
-    setCoOpHours((prevHours) => ({
-      ...prevHours,
-      [currentDayIndex]: null,
-    }));
-    handleNextDay();
+    if (coOpHours[currentDayIndex] === null) {
+      console.log("entered case 1");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: [{ open: 480, close: 1020 }],
+      }));
+    } else {
+      console.log("entered case 2");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: null,
+      }));
+    }
   };
   const currentDay = days[currentDayIndex];
   const defaultHours = {
@@ -106,9 +114,10 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
   const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
   const [SODT, setSODT] = useState<any>();
+  const isOpen = coOpHours[currentDayIndex] !== null;
   return (
     <>
-      <Card className="flex flex-col bg-inherit border-none shadow-xl md:mt-20 lg:w-2/3 w-5/6">
+      <Card className="flex flex-col bg-inherit border-none sm:shadow-xl md:mt-20 lg:w-2/3 w-full">
         <div className="flex flex-col">
           <CardHeader className={`${outfit.className} text-4xl`}>
             {user?.role == UserRole.COOP ? (
@@ -139,13 +148,18 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
               <Sheet>
                 <div
                   onClick={handleClose}
-                  className={`${outfit.className} bg-red-300 p-3  lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg text-center hover:cursor-pointer`}
+                  className={`text-[.75rem] mb-1 ${outfit.className} ${
+                    isOpen
+                      ? "bg-red-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg text-center hover:cursor-pointer hover:bg-red-500"
+                      : "bg-emerald-300 text-black p-3 hover:bg-emerald-500 hover:text-white lg:w-[50%] w-full rounded-full  shadow-lg text-lg text-center hover:cursor-pointer"
+                  }`}
                 >
-                  Close on {currentDay}
+                  {isOpen
+                    ? `Close on ${currentDay}`
+                    : `Reopen on ${currentDay}`}
                 </div>
                 <SheetTrigger
-                  onClick={handleApplyToAll}
-                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg`}
+                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
                 >
                   Apply This Schedule To Other Days
                 </SheetTrigger>
@@ -156,7 +170,7 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
 
               <Sheet>
                 <SheetTrigger
-                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg`}
+                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
                 >
                   Visualize Your Current Schedule
                 </SheetTrigger>
@@ -168,7 +182,7 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
           </CardContent>
         </div>
       </Card>
-      <Card className="flex flex-col bg-inherit border-none shadow-xl md:mt-20 lg:w-2/3 w-5/6 pt-5">
+      <Card className="flex flex-col bg-inherit border-none sm:shadow-xl md:mt-20 lg:w-2/3 w-full pt-5">
         <CardContent className={`${outfit.className} `}>
           {user?.role === UserRole.COOP ? (
             <h2 className="text-4xl">Set Out Time</h2>

@@ -26,13 +26,11 @@ import Image from "next/image";
 import { Outfit } from "next/font/google";
 import { UploadButton } from "@/utils/uploadthing";
 import { Textarea } from "@/app/components/ui/textarea";
-import { UpdateRoleAlert } from "@/app/components/modals/update-role-alert";
-
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import { CiCircleInfo } from "react-icons/ci";
-import Cancel from "@/app/components/icons/cancel-svg";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
+
 const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
@@ -96,6 +94,7 @@ const StoreSettings = () => {
       setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
     }
   };
+  const isOpen = coOpHours[currentDayIndex] !== null;
 
   const handleHourChange = (open: number, close: number) => {
     setCoOpHours((prevHours) => ({
@@ -120,12 +119,21 @@ const StoreSettings = () => {
   };
 
   const handleClose = () => {
-    setCoOpHours((prevHours) => ({
-      ...prevHours,
-      [currentDayIndex]: null,
-    }));
-    handleNextDay();
+    if (coOpHours[currentDayIndex] === null) {
+      console.log("entered case 1");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: [{ open: 480, close: 1020 }],
+      }));
+    } else {
+      console.log("entered case 2");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: null,
+      }));
+    }
   };
+
   const currentDay = days[currentDayIndex];
   const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
@@ -141,7 +149,6 @@ const StoreSettings = () => {
       banner: banner,
       hours: coOpHours,
     };
-    console.log(formData);
     axios
       .post("/api/update", formData)
       .then(() => {
@@ -253,16 +260,9 @@ const StoreSettings = () => {
               )}
             </ul>
             <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit lg:h-[20vw] w-full justify-center">
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col">
                 <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={handleClose}
-                      className="bg-red-900 text-[.75rem] mb-1"
-                    >
-                      Close on {currentDay}
-                    </Button>
-                  </div>
+                  <div className="flex justify-end"></div>
                   <CoopHoursSlider
                     day={currentDay}
                     hours={currentDayHours}
@@ -270,10 +270,24 @@ const StoreSettings = () => {
                     onNextDay={handleNextDay}
                     onPrevDay={handlePrevDay}
                   />
-                  <CardFooter className="flex flex-col md:flex-row items-end justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
+                  <CardFooter className="flex flex-col items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
                     <Sheet>
-                      <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 lg:mt-4 rounded-full">
-                        Apply This Schedule To
+                      <div
+                        onClick={handleClose}
+                        className={`text-[.75rem] mb-1 ${
+                          isOpen
+                            ? "bg-red-300 p-3  lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg text-center hover:cursor-pointer"
+                            : "bg-emerald-300 text-black p-3 hover:bg-emerald-500 hover:text-white lg:w-[50%] w-full rounded-full  shadow-lg text-lg text-center hover:cursor-pointer"
+                        }`}
+                      >
+                        {isOpen
+                          ? `Close on ${currentDay}`
+                          : `Reopen on ${currentDay}`}
+                      </div>
+                      <SheetTrigger
+                        className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
+                      >
+                        Apply This Schedule To Other Days
                       </SheetTrigger>
                       <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
                         <DaySelect />
@@ -281,7 +295,9 @@ const StoreSettings = () => {
                     </Sheet>
 
                     <Sheet>
-                      <SheetTrigger className="w-full lg:w-1/2 text-xs bg-slate-600 text-white p-2 rounded-full lg:mt-4">
+                      <SheetTrigger
+                        className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
+                      >
                         Visualize Your Current Schedule
                       </SheetTrigger>
                       <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
@@ -366,7 +382,7 @@ const StoreSettings = () => {
             <div className="justify-center flex">
               <Textarea
                 maxLength={200}
-                value={bio}
+                value={bio ?? ""}
                 onChange={(e) => setBio(e.target.value)}
               />
             </div>

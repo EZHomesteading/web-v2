@@ -20,14 +20,9 @@ import {
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
-import ImageUpload from "@/app/components/inputs/profile-img-upload";
 import { useRouter } from "next/navigation";
 import Avatar from "@/app/components/Avatar";
 import { UploadButton } from "@/utils/uploadthing";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const Page = () => {
   const user = useCurrentUser();
@@ -145,9 +140,7 @@ const Page = () => {
         location.replace("/");
       });
   };
-  const handleImageChange = (value: string) => {
-    setValue("image", value);
-  };
+
   const handleAddressSelect = ({
     street,
     city,
@@ -163,9 +156,16 @@ const Page = () => {
   return (
     <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
       <h1 className="sr-only">Account Settings</h1>
-      <h2 className="text-base font-semibold leading-7 mt-2">
-        Personal Information
-      </h2>
+      <header className="flex flex-row justify-between items-center mt-1">
+        <h2 className="text-base font-semibold leading-7">Account Settings</h2>
+        <Button
+          type="submit"
+          onClick={onSubmit}
+          className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+        >
+          Save Changes
+        </Button>
+      </header>
       <Card>
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
           <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
@@ -225,13 +225,6 @@ const Page = () => {
 
           <CardFooter className="flex justify-between m-0 p-0 pt-2">
             A username is required.
-            <Button
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-            >
-              Save
-            </Button>
           </CardFooter>
         </CardContent>
       </Card>
@@ -260,13 +253,6 @@ const Page = () => {
 
           <CardFooter className="flex justify-between m-0 p-0 pt-2">
             An email address is required.
-            <Button
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-            >
-              Save
-            </Button>
           </CardFooter>
         </CardContent>
       </Card>
@@ -295,13 +281,6 @@ const Page = () => {
             ) : (
               <>A phone number is not required.</>
             )}
-            <Button
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-            >
-              Save
-            </Button>
           </CardFooter>
         </CardContent>
       </Card>
@@ -358,13 +337,6 @@ const Page = () => {
                 improve your experience on EZH.
               </>
             )}
-            <Button
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-            >
-              Save
-            </Button>
           </CardFooter>
         </CardContent>
       </Card>
