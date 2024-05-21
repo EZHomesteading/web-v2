@@ -1,7 +1,45 @@
 import authCache from "@/auth-cache";
-import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 
+export interface NavUser {
+  id: string;
+  firstName: string | null;
+  role: string;
+  name: string;
+  email: string;
+  image: string | null;
+  cart: {
+    id: string;
+    quantity: number;
+    listing: {
+      imageSrc: string[];
+      quantityType: string;
+      title: string;
+      user: {
+        id: string;
+        name: string;
+      };
+    };
+  }[];
+  buyerOrders: {
+    id: string;
+    conversationId: string | null;
+    status: number;
+    updatedAt: Date;
+    seller: {
+      name: string;
+    };
+  }[];
+  sellerOrders: {
+    id: string;
+    conversationId: string | null;
+    status: number;
+    updatedAt: Date;
+    buyer: {
+      name: string;
+    };
+  }[];
+}
 export default async function GetNavUser() {
   const session = await authCache();
   const User = session?.user;
@@ -69,11 +107,10 @@ export default async function GetNavUser() {
       },
     });
 
-    if (user) {
-      user.firstName = user.firstName ?? "";
-      return user;
+    if (!user) {
+      return null;
     }
-    return null;
+    return user;
   } catch (error: any) {
     throw new Error(error);
   }

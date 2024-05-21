@@ -1,7 +1,7 @@
 "use client";
 import { Slider } from "@/app/components/ui/slider";
 import { Outfit } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { MdOutlineNavigateBefore } from "react-icons/md";
 
@@ -25,18 +25,22 @@ export default function CoopHoursSlider({
   onPrevDay,
 }: CoopHoursSliderProps) {
   const [values, setValues] = useState([hours.open, hours.close]);
+  useEffect(() => {
+    setValues([hours.open, hours.close]);
+  }, [hours]);
+
   const handleChange = (newValues: number[]) => {
     setValues(newValues);
     onChange(newValues[0], newValues[1]);
   };
-
+  console.log(values);
   return (
     <div className="space-y-5">
       <div className="flex flex-row justify-between items-center">
         <button onClick={onPrevDay}>
           <MdOutlineNavigateBefore className="h-10 w-10" />
         </button>
-        <div className={`${outfit.className} flex justify-center text-4xl`}>
+        <div className={`${outfit.className} flex justify-center text-2xl`}>
           {day}
         </div>
         <div className="flex justify-evenly">
@@ -46,21 +50,28 @@ export default function CoopHoursSlider({
         </div>
       </div>
       <div className="relative">
-        <Slider
-          defaultValue={[hours.open, hours.close]}
-          min={0}
-          max={1440}
-          step={15}
-          minStepsBetweenThumbs={2}
-          onValueChange={handleChange}
-          className="w-full"
-        />
-        <div
-          className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
-        >
-          <div>{formatTime(values[0])}</div>
-          <div>{formatTime(values[1])}</div>
-        </div>
+        {values[0] !== undefined && (
+          <>
+            <Slider
+              value={values}
+              min={0}
+              max={1440}
+              step={15}
+              minStepsBetweenThumbs={2}
+              onValueChange={handleChange}
+              className="w-full"
+            />
+
+            <>
+              <div
+                className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
+              >
+                <div>{formatTime(values[0])}</div>
+                <div>{formatTime(values[1])}</div>
+              </div>
+            </>
+          </>
+        )}{" "}
       </div>
     </div>
   );

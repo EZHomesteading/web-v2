@@ -2,10 +2,8 @@ import AccountOnboardingUI from "./stripe-onboarding";
 import { UserInfo } from "@/next-auth";
 interface Props {
   user: UserInfo;
-  formData: any;
-  setFormData: any;
 }
-const StripeStep = ({ user, formData, setFormData }: Props) => {
+const StripeStep = ({ user }: Props) => {
   return <>{user ? <AccountOnboardingUI user={user} /> : <></>}</>;
 };
 

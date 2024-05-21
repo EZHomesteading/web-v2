@@ -5,7 +5,14 @@ import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { UserInfo } from "@/next-auth";
 import { UploadButton } from "@/utils/uploadthing";
-import { ChangeEvent } from "react";
+import { Outfit } from "next/font/google";
+import { ChangeEvent, useState } from "react";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  weight: "300",
+});
 
 interface Props {
   user: UserInfo;
@@ -28,37 +35,42 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
       bio: value,
     }));
   };
-
+  const [image, setImage] = useState(user?.image);
   return (
-    <Card className="grid w-full gap-2 bg lg:w-1/2 h-1/6 pt-2">
-      <CardContent className="">
-        <Card className="bg-inherit border-none">
-          <CardContent className="flex flex-row items-center">
-            <div className="">
-              <Label>Profile Image</Label>
-              {!user?.image || formData.image ? (
-                <UploadButton
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res: any) => {
-                    handleImageChange;
-                  }}
-                  onUploadError={(error: Error) => {
-                    alert(`ERROR! ${error.message}`);
-                  }}
-                  appearance={{
-                    container: "h-full w-max",
-                  }}
-                  className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
-                  content={{
-                    button({ ready }) {
-                      if (ready) return <div>Upload Image</div>;
-                      return "Getting ready...";
-                    },
-                  }}
-                />
-              ) : (
-                <Avatar image={formData.image || user?.image} />
-              )}
+    <Card className="flex flex-col bg-inherit border-none shadow-xl md:mt-20 lg:w-2/3 w-5/6">
+      <CardContent className="onboard-right rounded-lg p-0">
+        <Card className=" border-none">
+          <CardContent className="flex items-center onboard-right w-full">
+            <div className="flex justify-between w-full">
+              <div className="flex flex-col gap-y-2">
+                <Label>Profile Image</Label>
+                <Avatar image={image} />
+              </div>
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: any) => {
+                  handleImageChange;
+                  setImage(res[0].url);
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                content={{
+                  button({ ready }) {
+                    if (ready)
+                      return (
+                        <div className={`${outfit.className}`}>
+                          Upload Image
+                        </div>
+                      );
+                    return "Getting ready...";
+                  },
+                }}
+              />
             </div>
           </CardContent>
         </Card>
@@ -68,8 +80,10 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
             <Textarea
               placeholder="Add info you would like for people to know about you and your EZH store here."
               id="message"
+              className="h-24 sm:h-32"
               onChange={handleBioChange}
-              value={formData.bio || user?.bio}
+              value={formData.bio || user?.bio || ""}
+              maxLength={300}
             />
           </CardContent>
         </Card>

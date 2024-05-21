@@ -1,3 +1,4 @@
+import GetNavUser from "@/actions/user/getUserNav";
 import NavbarFind from "./map/NavbarFind";
 import authCache from "@/auth-cache";
 
@@ -6,11 +7,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await authCache();
-
+  const user = await GetNavUser();
   return (
     <div className="h-sreen overflow-hidden touch-none">
-      <NavbarFind user={session?.user} />
+      <NavbarFind user={user} />
       <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
         {children};
       </div>

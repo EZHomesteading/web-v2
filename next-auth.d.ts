@@ -96,7 +96,9 @@ interface ExtendedHours extends Hours {
 type CartGroups = {
   cartGroup: CartGroup[];
 };
-
+type UserWithCart = UserInfo & {
+  cart: Cart;
+};
 declare module "next-auth" {
   interface Session {
     user: UserInfo;

@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { UserRole } from "@prisma/client";
-import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
 import "react-phone-number-input/style.css";

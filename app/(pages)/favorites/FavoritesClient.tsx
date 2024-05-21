@@ -3,10 +3,11 @@ import { SafeListing } from "@/types";
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
+import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {
   listings: SafeListing[];
-  user?: any | null;
+  user?: UserInfo | null;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({

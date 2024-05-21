@@ -131,6 +131,21 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       )}`;
     }
   };
+  if (Object.values(hours).every((dayHours) => dayHours === null)) {
+    return (
+      <Card className="bg-inherit border-none cursor-not-allowed opacity-50">
+        <CardHeader
+          className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+        >
+          Earliest pickup not available
+        </CardHeader>
+        <CardContent className={`${outfit.className}`}>
+          This co-op has not provided their hours. Please contact them for more
+          information.
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
       <CardHeader

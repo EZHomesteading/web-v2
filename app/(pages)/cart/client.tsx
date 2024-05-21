@@ -18,7 +18,7 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "@/app/(pages)/cart/components/counter";
 import DateState from "@/app/(pages)/cart/components/dateStates";
 import { ExtendedHours } from "@/next-auth";
-import { UserInfo, CartGroups } from "@/next-auth";
+import { CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";
@@ -28,6 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
+import { CartItem } from "@/actions/getCart";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -35,11 +36,10 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: any;
-  user?: UserInfo;
+  cartItems?: CartItem[];
 }
 
-const Cart = ({ cartItems, user }: CartProps) => {
+const Cart = ({ cartItems = [] }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
   const [checkoutPickup, setCheckoutPickup] = useState<any>("");
   const [stillExpiry, setStillExpiry] = useState(true);

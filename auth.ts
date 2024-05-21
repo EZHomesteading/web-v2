@@ -44,7 +44,6 @@ export const {
         session.user.updatedAt = token.updatedAt as Date | undefined;
         session.user.conversationIds = token.conversationIds as string[];
         session.user.seenMessageIds = token.seenMessageIds as string[];
-        session.user.favoriteIds = token.favoriteIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
         session.user.notifications = token.notifications as Notification;
@@ -75,7 +74,6 @@ export const {
       token.updatedAt = existingUser.updatedAt;
       token.conversationIds = existingUser.conversationIds;
       token.seenMessageIds = existingUser.seenMessageIds;
-      token.favoriteIds = existingUser.favoriteIds;
       token.subscriptions = existingUser.subscriptions;
       token.totalPaidOut = existingUser.totalPaidOut;
       token.notifications = existingUser.notifications;

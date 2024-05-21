@@ -42,7 +42,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   toggleCart,
 }) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const { hasCart } = useCartListing({
     listingId,

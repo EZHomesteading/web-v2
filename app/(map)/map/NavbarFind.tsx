@@ -1,10 +1,11 @@
+import { NavUser } from "@/actions/user/getUserNav";
 import Container from "@/app/components/Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";
 import { UserInfo } from "@/next-auth";
 
 interface NavbarProps {
-  user?: UserInfo;
+  user?: NavUser | null;
 }
 
 const NavbarFind = ({ user }: NavbarProps) => {

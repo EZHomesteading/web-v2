@@ -63,8 +63,8 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
     const newHours = hours[newHoursIndex as keyof ExtendedHours];
-    if (newHours === null) {
-      return; //early retur if co-op is closed
+    if (newHours === null || newHours === undefined) {
+      return; //early return if co-op is closed or hours are undefined
     }
     const resultantArray = [];
     const roundedMin = roundNumber(currentMin);

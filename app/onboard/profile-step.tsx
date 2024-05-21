@@ -9,7 +9,7 @@ interface Props {
 const ProfileStep = ({ setFormData, formData, user }: Props) => {
   return (
     <>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center w-full pt-2">
         {user ? (
           <ProfileComponent
             user={user}
@@ -17,7 +17,7 @@ const ProfileStep = ({ setFormData, formData, user }: Props) => {
             formData={formData}
           />
         ) : (
-          <div className="flex h-screen items-center justify-center">
+          <div className="flex items-center justify-center">
             You must be logged in as a co-op to access this page
           </div>
         )}
