@@ -65,7 +65,10 @@
     --ring: 240 4.9% 83.9% !important;
   }
 }
-
+.hideOverflow {
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
 .phone {
   aspect-ratio: 9/16;
 }

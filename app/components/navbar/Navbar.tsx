@@ -4,9 +4,11 @@ import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import SearchNative from "./search-native";
+import { UserInfo } from "@/next-auth";
+import { NavUser } from "@/actions/user/getUserNav";
 
 interface p {
-  user?: any;
+  user?: NavUser | null;
 }
 
 const Navbar = ({ user }: p) => {

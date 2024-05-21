@@ -11,7 +11,7 @@ import { SafeListing } from "@/types";
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
-import ListingReservation from "@/app/components/listings/ListingReservation";
+import ListingReservation from "@/app/(pages)/listings/[listingId]/components/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { Location } from "@prisma/client";
@@ -39,74 +39,74 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const onCreatePurchase = () => {
-    if (!user) {
-      router.push("/auth/login");
-    }
-    setIsLoading(true);
-    if (listing.user.role === "PROUDCER" && user.role === "COOP") {
-      toast
-        .promise(
-          axios.post("/api/listings", {
-            title: listing.title,
-            description: listing.description,
-            imageSrc: listing.imageSrc,
-            category: listing.category,
-            quantityType: listing.quantityType,
-            stock: 1,
-            shelfLife: listing.shelfLife,
-            subCategory: listing.subCategory,
-            price: listing.price,
-            location: user?.location,
-            userId: user.id,
-          }),
-          {
-            loading: "loading",
-            success: "success",
-            error: "failed",
-          }
-        )
+  //const onCreatePurchase = () => {
+  //if (!user) {
+  //  router.push("/auth/login");
+  // }
+  //setIsLoading(true);
+  //if (listing.user.role === "PROUDCER" && user.role === "COOP") {
+  // toast
+  //   .promise(
+  //     axios.post("/api/listings", {
+  //       title: listing.title,
+  //       description: listing.description,
+  //       imageSrc: listing.imageSrc,
+  //       category: listing.category,
+  //       quantityType: listing.quantityType,
+  //       stock: 1,
+  //       shelfLife: listing.shelfLife,
+  //       subCategory: listing.subCategory,
+  //       price: listing.price,
+  //       location: user?.location,
+  //       userId: user.id,
+  //     }),
+  //     {
+  //       loading: "loading",
+  //       success: "success",
+  //       error: "failed",
+  //     }
+  //   )
 
-        .finally(() => {
-          setIsLoading(false);
-        });
-      toast
-        .promise(
-          axios.post("/api/updateListing", {
-            id: listing.id,
-            stock: listing.stock - 1,
-          }),
-          {
-            loading: "loading",
-            success: "success",
-            error: "failed",
-          }
-        )
+  //   .finally(() => {
+  //     setIsLoading(false);
+  //   });
+  // toast
+  //   .promise(
+  //     axios.post("/api/updateListing", {
+  //       id: listing.id,
+  //       stock: listing.stock - 1,
+  //     }),
+  //     {
+  //       loading: "loading",
+  //       success: "success",
+  //       error: "failed",
+  //     }
+  //   )
 
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
+  //   .finally(() => {
+  //     setIsLoading(false);
+  //   });
+  //}
 
-    //buy all stock
-    //{
-    // toast
-    //   .promise(
-    //     axios.post("/api/updateListing", {
-    //       id: listing.id,
-    //       userId: currentUser.id,
-    //     }),
-    //     {
-    //       loading: "loading",
-    //       success: "success",
-    //       error: "failed",
-    //     }
-    //   )
-    //   .finally(() => {
-    //     setIsLoading(false);
-    //   });}
-    //}
-  };
+  //buy all stock
+  //{
+  // toast
+  //   .promise(
+  //     axios.post("/api/updateListing", {
+  //       id: listing.id,
+  //       userId: currentUser.id,
+  //     }),
+  //     {
+  //       loading: "loading",
+  //       success: "success",
+  //       error: "failed",
+  //     }
+  //   )
+  //   .finally(() => {
+  //     setIsLoading(false);
+  //   });}
+  //}
+  //};
 
   const adjustedListing = {
     ...listing,
@@ -157,8 +157,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
-              onSubmit={onCreatePurchase}
               disabled={isLoading}
+              hours={listing.user.hours}
             />
             <div className="mt-5">
               <ListingMap location={listing.location} />

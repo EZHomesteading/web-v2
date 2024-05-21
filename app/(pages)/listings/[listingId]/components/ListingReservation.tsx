@@ -4,6 +4,7 @@ import { addDays, format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import useCartListing from "@/hooks/listing/use-cart";
 import { useState } from "react";
+import DateState2 from "./DateState2";
 
 interface ListingReservationProps {
   listingId: string;
@@ -27,19 +28,20 @@ interface ListingReservationProps {
     userId: string;
     user: any;
   };
-  onSubmit: () => void;
+  hours: any;
   disabled?: boolean;
   toggleCart: any;
 }
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
   product,
-  onSubmit,
+  hours,
   disabled,
   listingId,
   user,
   toggleCart,
 }) => {
+  const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [quantity, setQuantity] = useState(1);
   const { hasCart } = useCartListing({
     listingId,
@@ -75,6 +77,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     e.stopPropagation();
     await toggleCart(e, quantity);
   };
+
+  const handleTimer = (childTime: Date) => {
+    setSelectedTime(childTime);
+  };
+
   return (
     <>
       <div
@@ -177,11 +184,14 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           </Button>
         )}
         <div>
-          <Button
+          <DateState2
+            hours={hours}
+            onSetTime={handleTimer}
+            quantity={quantity}
+            quantityType={quantityType}
             disabled={disabled}
-            onClick={onSubmit}
-            className="w-full mt-1 bg-green-400 hover:bg-green-700"
-          >{`Buy ${quantity} ${quantityType} Now`}</Button>
+            listing={product}
+          />
         </div>
       </div>
     </>

@@ -20,7 +20,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/app/components/ui/breadcrumb";
 import { useRouter } from "next/navigation";
@@ -104,55 +103,17 @@ const Onboarding = ({ user, index }: Props) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen w-[100vw] text-black">
-      <div className="onboard-left sm:w-2/5">
-        <div className="flex flex-col items-center justify-center sm:items-start lg:px-20 py-20">
-          <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
-            Finish your account setup
-          </h2>
-          {step === 2 && (
-            <div className="flex flex-row">
-              <div className="2xl:text-4xl text-lg font-bold tracking-tight">
-                Now, tell us about yourself
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                    <CiCircleInfo className="lg:text-4xl" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="popover border-none xl:absolute xl:bottom-10">
-                  A profile picture and description is not required, but it is
-                  recommended to encourage consumer confidence.
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-          {step === 1 && (
-            <div className="flex flex-row items-center ">
-              {" "}
-              <div className="2xl:text-5xl text-lg font-bold tracking-tight flex">
-                First, let&apos;s set your hours
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                    <CiCircleInfo className="lg:text-4xl" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="popover xl:absolute xl:bottom-10 text-black left-5">
-                  Use the sliders to set your open and close times for each day
-                  of the week, this will determine when consumers are allowed to
-                  pick up from your co-op location.
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-          {step === 3 && (
-            <div className="flex flex-col items-start">
+    <div className="h-screen">
+      <div className="flex flex-col sm:flex-row text-black">
+        <div className="onboard-left sm:w-2/5">
+          <div className="flex flex-col items-start pl-12 py-5 lg:py-20 ">
+            <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
+              Finish your account setup
+            </h2>
+            {step === 2 && (
               <div className="flex flex-row">
-                <div className="2xl:text-3xl text-lg font-bold tracking-tight">
-                  Finally, connect with Stripe for easy & secure payouts
+                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
+                  Now, tell us about yourself
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -160,150 +121,184 @@ const Onboarding = ({ user, index }: Props) => {
                       <CiCircleInfo className="lg:text-4xl" />
                     </Button>
                   </PopoverTrigger>
+                  <PopoverContent className="popover border-none xl:absolute xl:bottom-10">
+                    A profile picture and description is not required, but it is
+                    recommended to encourage consumer confidence.
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+            {step === 1 && (
+              <div className="flex flex-row items-center">
+                {" "}
+                <div className="2xl:text-5xl text-lg font-bold tracking-tight flex">
+                  First, let&apos;s set up your store
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                      <CiCircleInfo className="lg:text-4xl" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="popover xl:absolute xl:bottom-10 text-black left-5">
+                    Use the sliders to set your open and close times for each
+                    day of the week, this will determine when consumers are
+                    allowed to pick up from your co-op location.
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+            {step === 3 && (
+              <div className="flex flex-col items-start">
+                <div className="flex flex-row">
+                  <div className="2xl:text-3xl text-lg font-bold tracking-tight">
+                    Finally, connect with Stripe for easy & secure payouts
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                        <CiCircleInfo className="lg:text-4xl" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="popover xl:absolute xl:bottom-10">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            EZHomesteading partners with Stripe to keep your
+                            information as secure as possible. All of the
+                            information in this form is required by Stripe & the
+                            government for regulatory purposes. EZHomesteading
+                            does not have access to sensitive information such
+                            as your full SSN or bank accounting number.
+                          </p>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
+                      Why are we asking for this information?
+                    </Button>
+                  </PopoverTrigger>
                   <PopoverContent className="popover xl:absolute xl:bottom-10">
                     <div className="grid gap-4">
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">
-                          EZHomesteading partners with Stripe to keep your
-                          information as secure as possible. All of the
-                          information in this form is required by Stripe & the
-                          government for regulatory purposes. EZHomesteading
-                          does not have access to sensitive information such as
-                          your full SSN or bank accounting number.
+                        <p className="text-sm text-muted-foreground ">
+                          “Know Your Customer” (KYC) obligations for payments
+                          require Stripe to collect and maintain information on
+                          all Stripe account holders. These requirements come
+                          from our regulators and are intended to prevent abuse
+                          of the financial system, provide your potential
+                          customers with clear and useful information, and
+                          prevent material loss to your business or to Stripe.
+                          You can read more on that
+                          {""}
+                          <a
+                            href="https://support.stripe.com/questions/passport-id-or-drivers-license-upload-requirement"
+                            className="underline ml-1 text-blue-400"
+                          >
+                            here
+                          </a>
+                          .{" "}
+                          <strong>
+                            We do not use this information for any other
+                            purposes, and we take your privacy and the security
+                            of your data very seriously.
+                          </strong>
                         </p>
                       </div>
                     </div>
                   </PopoverContent>
                 </Popover>
               </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
-                    Why are we asking for this information?
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="popover xl:absolute xl:bottom-10">
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground ">
-                        “Know Your Customer” (KYC) obligations for payments
-                        require Stripe to collect and maintain information on
-                        all Stripe account holders. These requirements come from
-                        our regulators and are intended to prevent abuse of the
-                        financial system, provide your potential customers with
-                        clear and useful information, and prevent material loss
-                        to your business or to Stripe. You can read more on that
-                        {""}
-                        <a
-                          href="https://support.stripe.com/questions/passport-id-or-drivers-license-upload-requirement"
-                          className="underline ml-1 text-blue-400"
-                        >
-                          here
-                        </a>
-                        .{" "}
-                        <strong>
-                          We do not use this information for any other purposes,
-                          and we take your privacy and the security of your data
-                          very seriously.
-                        </strong>
-                      </p>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
+            )}
+            <Breadcrumb
+              className={`${outfit.className} text-black pt-5 z-10 text-xs`}
+            >
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/" className="text-xs">
+                    Home
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 1
+                      ? "font-bold cursor-none text-xs"
+                      : "font-normal cursor-pointer text-xs "
+                  }
+                  onMouseDown={() => setStep(1)}
+                >
+                  Co-op
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 2
+                      ? "font-bold cursor-none text-xs"
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(2)}
+                >
+                  Profile
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 3
+                      ? "font-bold cursor-none "
+                      : "font-normal cursor-pointer text-xs"
+                  }
+                  onMouseDown={() => setStep(3)}
+                >
+                  Stripe
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </div>
+
+        <div className="sm:w-3/5 onboard-right relative">
+          {step === 1 && (
+            <div className="sm:min-h-screen  hideOverflow py-20">
+              <StoreStep
+                coOpHours={coOpHours}
+                setCoOpHours={setCoOpHours}
+                user={user}
+              />
             </div>
           )}
-          <Breadcrumb
-            className={`${outfit.className} text-black absolute bottom-5 z-10`}
-          >
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem
-                className={
-                  step === 1
-                    ? "font-bold cursor-none"
-                    : "font-normal cursor-pointer"
-                }
-                onMouseDown={() => setStep(1)}
-              >
-                Co-op
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem
-                className={
-                  step === 2
-                    ? "font-bold cursor-none"
-                    : "font-normal cursor-pointer"
-                }
-                onMouseDown={() => setStep(2)}
-              >
-                Profile
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem
-                className={
-                  step === 3
-                    ? "font-bold cursor-none"
-                    : "font-normal cursor-pointer"
-                }
-                onMouseDown={() => setStep(3)}
-              >
-                Stripe
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          {step === 2 && (
+            <div className="sm:min-h-screen h-[calc(100vh-264px)] hideOverflow py-20">
+              <ProfileStep
+                formData={formData}
+                setFormData={setFormData}
+                user={user}
+              />
+            </div>
+          )}
+          {step === 3 && (
+            <div className="mb-4 min-h-screen p-6">
+              <StripeStep user={user} />
+            </div>
+          )}
+          {step > 1 && (
+            <IoReturnDownBack
+              onClick={handlePrevious}
+              className="absolute bottom-0 left-5 text-6xl hover:cursor-pointer"
+            />
+          )}
+
+          {step < 4 && (
+            <IoReturnDownForward
+              onClick={handleNext}
+              className="absolute bottom-0 right-5 text-6xl hover:cursor-pointer"
+            />
+          )}
         </div>
-      </div>
-
-      <div className="sm:w-3/5 onboard-right relative">
-        {step === 1 && (
-          <div className="md:pt-[20%]">
-            <StoreStep
-              coOpHours={coOpHours}
-              setCoOpHours={setCoOpHours}
-              user={user}
-            />
-          </div>
-        )}
-        {step === 2 && (
-          <div className="md:pt-[20%]">
-            <ProfileStep
-              formData={formData}
-              setFormData={setFormData}
-              user={user}
-            />
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="mt-20">
-            <StripeStep
-              formData={formData}
-              setFormData={setFormData}
-              user={user}
-            />
-          </div>
-        )}
-        {step > 1 && (
-          <button
-            onClick={handlePrevious}
-            className="absolute bottom-5 left-5 xl:text-[100px]"
-          >
-            <IoReturnDownBack />
-          </button>
-        )}
-
-        {step < 4 && (
-          <button
-            onClick={handleNext}
-            className="absolute bottom-5 right-5 xl:text-[100px]"
-          >
-            <IoReturnDownForward />
-          </button>
-        )}
       </div>
     </div>
   );

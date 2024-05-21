@@ -27,6 +27,7 @@ import {
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
+import { Location } from "@prisma/client";
 
 const outfit = Outfit({
   display: "swap",
@@ -41,7 +42,14 @@ const work = Work_Sans({
 });
 
 interface ListingCardProps {
-  data: SafeListing;
+  data: {
+    id: string;
+    imageSrc: string[];
+    location: Location;
+    price: number;
+    title: string;
+    quantityType: string;
+  };
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
@@ -50,6 +58,7 @@ interface ListingCardProps {
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
   user?: UserInfo | null;
+  storeUser?: any;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({

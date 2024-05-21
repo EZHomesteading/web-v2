@@ -11,6 +11,7 @@ import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
 import { Outfit } from "next/font/google";
+import { CartItem } from "@/actions/getCart";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ const stripePromise = loadStripe(
 );
 
 interface CheckoutFormProps {
-  cartItems: any;
+  cartItems: CartItem[];
 }
 
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
@@ -72,6 +73,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
         setClientSecret(clientSecret);
       } catch (error) {
         console.error("Error fetching payment intents:", error);
+        window.location.replace("/cart");
       }
     };
 

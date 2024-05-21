@@ -11,10 +11,10 @@ const outfit = Outfit({
 
 interface Props {
   hours: ExtendedHours;
-  index: number;
+
   onSetTime: any;
 }
-const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
+const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
@@ -27,14 +27,18 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
     const now = new Date();
     const currentMin = now.getHours() * 60 + now.getMinutes();
     let nextAvailableTime = null;
-    //console.log("user time in minutes:", currentMin);
+
     for (let i = 0; i < 7; i++) {
       const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
-      //console.log("index", newHoursIndex);
+
+      if (hours === null) {
+        continue; // Skip iteration if hours is null
+      }
+
       const newHours = hours[newHoursIndex];
 
       if (newHours === null) {
-        continue; //skips to next day if the co-op is closed
+        continue; // Skip to next day if the co-op is closed
       }
 
       if (newHours && newHours.length === 0) continue;
@@ -97,7 +101,7 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
 
   const handleAsSoonAsPossible = () => {
     if (nextAvailableTime) {
-      onSetTime({ pickupTime: nextAvailableTime, index: index });
+      onSetTime({ pickupTime: nextAvailableTime });
     }
     //console.log(nextAvailableTime);
   };
@@ -131,7 +135,10 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       )}`;
     }
   };
-  if (Object.values(hours).every((dayHours) => dayHours === null)) {
+  if (
+    hours === null ||
+    (hours && Object.values(hours).every((dayHours) => dayHours === null))
+  ) {
     return (
       <Card className="bg-inherit border-none cursor-not-allowed opacity-50">
         <CardHeader
@@ -146,6 +153,7 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       </Card>
     );
   }
+
   return (
     <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
       <CardHeader
@@ -156,11 +164,11 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       <CardContent className={`${outfit.className}`}>
         In a hurry? The earliest possible time for pickup from this co-op is{" "}
         <span className={`${outfit.className} text-lg`}>
-          {earliestPickupTime || "loading..."}
+          {earliestPickupTime}
         </span>
       </CardContent>
     </Card>
   );
 };
 
-export default EarliestPickup;
+export default EarliestPickup2;

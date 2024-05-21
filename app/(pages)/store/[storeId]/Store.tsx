@@ -7,15 +7,19 @@ import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
 import FollowButton from "@/app/components/follow/followButton";
+import { StoreUser } from "@/actions/user/getUserStore";
+import { ExtendedHours, UserWithCart } from "@/next-auth";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
   style: "normal",
 });
+
 interface StorePageProps {
   storeUser: any;
-  user: any;
+  user?: any;
   emptyState: React.ReactNode;
   following: any;
 }
@@ -26,13 +30,17 @@ const StorePage = ({
   emptyState,
   following,
 }: StorePageProps) => {
-  console.log(storeUser);
   return (
     <ClientOnly>
       <Container>
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
-            <Avatar image={storeUser.image} />
+            {storeUser?.image ? (
+              <Avatar image={storeUser?.image} />
+            ) : (
+              <Avatar image={``} />
+            )}
+
             <div
               className={`${outfit.className} weight-100 flex flex-col ml-2`}
             >
@@ -40,20 +48,19 @@ const StorePage = ({
                 <div className="font-bold text-2xl lg:text-4xl">
                   {storeUser?.name}
                 </div>
-                <OpenStatus hours={storeUser.hours} />
+                {storeUser?.hours && <OpenStatus hours={storeUser?.hours} />}
               </div>
 
               <div>{storeUser?.firstName}</div>
             </div>
             <div className="pl-[10px]">
               <FollowButton
-                followUserId={storeUser.id}
+                followUserId={storeUser?.id}
                 following={following}
                 user={user}
               />
             </div>
           </div>
-
           <div className="flex justify-center">
             <Bio user={storeUser} />
           </div>
@@ -74,7 +81,12 @@ const StorePage = ({
             "
           >
             {storeUser?.listings?.map((listing: any) => (
-              <ListingCard user={storeUser} key={listing.id} data={listing} />
+              <ListingCard
+                user={user}
+                storeUser={storeUser}
+                key={listing.id}
+                data={listing}
+              />
             ))}
           </div>
         )}

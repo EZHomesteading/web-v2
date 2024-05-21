@@ -18,7 +18,7 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "@/app/(pages)/cart/components/counter";
 import DateState from "@/app/(pages)/cart/components/dateStates";
 import { ExtendedHours } from "@/next-auth";
-import { UserInfo, CartGroups } from "@/next-auth";
+import { CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";
@@ -28,6 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
+import { CartItem } from "@/actions/getCart";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -35,11 +36,10 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: any;
-  user?: UserInfo;
+  cartItems?: CartItem[];
 }
 
-const Cart = ({ cartItems, user }: CartProps) => {
+const Cart = ({ cartItems = [] }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
   const [checkoutPickup, setCheckoutPickup] = useState<any>("");
   const [stillExpiry, setStillExpiry] = useState(true);
@@ -86,7 +86,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
     return shelfLifeDisplay;
   };
   const handleDelete: any = async () => {
-    await axios.delete(`/api/cart`);
+    await axios.delete(`/api/cartUpdate`);
     router.refresh();
   };
   function convertToDate(dateString: string) {
@@ -336,7 +336,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                           </div>
 
                           <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                            {cartItem.listing.stock ? (
+                            {cartItem.listing.stock > 0 ? (
                               <CheckIcon
                                 className="h-5 w-5 flex-shrink-0 text-green-500"
                                 aria-hidden="true"
@@ -349,7 +349,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                             )}
 
                             <span>
-                              {cartItem.listing.stock
+                              {cartItem.listing.stock > 0
                                 ? "In stock"
                                 : `None in Stock`}
                             </span>

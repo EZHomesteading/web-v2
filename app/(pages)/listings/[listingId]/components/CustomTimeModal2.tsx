@@ -17,24 +17,20 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
-import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
   hours: ExtendedHours;
-  index: number;
-  cartGroup: CartGroup | null;
   onSetTime: any;
 }
 
-const CustomTimeModal: React.FC<CustomTimeProps> = ({
+const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   isOpen,
   onClose,
   hours,
-  index,
-  cartGroup,
+
   onSetTime,
 }) => {
   const now = new Date();
@@ -57,14 +53,14 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   };
 
   const buildArray = async () => {
-    if (date === undefined) {
+    if (date === undefined || hours === null) {
       return;
     }
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
     const newHours = hours[newHoursIndex as keyof ExtendedHours];
-    if (newHours === null || newHours === undefined) {
-      return; //early return if co-op is closed or hours are undefined
+    if (newHours === null || newHours === undefined || newHours.length === 0) {
+      return; //early return if co-op is closed, hours are undefined, or hours array is empty
     }
     const resultantArray = [];
     const roundedMin = roundNumber(currentMin);
@@ -119,7 +115,6 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
     if (date && option) {
       onSetTime({
         pickupTime: insertTimeIntoDatetime(date, option),
-        index: index,
       });
     }
   };
@@ -135,7 +130,12 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
                   Co-op Hours Each Day
                 </div>
                 <div className="mt-1">
-                  <HoursDisplay coOpHours={hours} />
+                  {" "}
+                  {hours === null ? (
+                    <div>This seller has not provided their hours.</div>
+                  ) : (
+                    <HoursDisplay coOpHours={hours} />
+                  )}
                 </div>
               </div>
             </div>
@@ -160,7 +160,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
                   selected={date}
                   onSelect={setDate}
                   fromMonth={now}
-                  disabled={{ before: now, after: cartGroup?.expiry }}
+                  disabled={{ before: now }}
                   initialFocus
                 />
               </PopoverContent>
@@ -199,4 +199,4 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   );
 };
 
-export default CustomTimeModal;
+export default CustomTimeModal2;

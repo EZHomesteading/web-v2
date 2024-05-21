@@ -1,13 +1,12 @@
-import { SafeListing } from "@/types";
-
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
 import getUserById from "@/actions/user/getUserById";
+import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {
   follows: any;
-  user?: any | null;
+  user?: UserInfo | null;
   followarr: any;
 }
 
@@ -16,7 +15,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   followarr,
   user,
 }) => {
-  console.log(follows);
   return (
     <Container>
       <Heading title="Following" subtitle="List of stores you're following!" />

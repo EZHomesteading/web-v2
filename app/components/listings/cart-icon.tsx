@@ -15,7 +15,7 @@ const CartButton: React.FC<CartButtonProps> = ({ listingId, user }) => {
   });
   return (
     <div
-      onClick={toggleCart}
+      onClick={(e) => toggleCart(e, 1)}
       className="
         relative
         hover:opacity-80

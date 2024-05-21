@@ -1,7 +1,27 @@
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
-import { orderBy } from "lodash";
-
+import { JsonValue } from "@prisma/client/runtime/library";
+export type CartItem = {
+  id: string;
+  quantity: number;
+  listing: {
+    id: string;
+    title: string;
+    price: number;
+    stock: number;
+    quantityType: string | null;
+    shelfLife: number;
+    createdAt: Date;
+    imageSrc: string[];
+    userId: string;
+    subCategory: string;
+    user: {
+      id: string;
+      name: string;
+      hours: JsonValue;
+    };
+  };
+};
 export const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
   try {
@@ -9,9 +29,30 @@ export const getAllCartItemsByUserId = async () => {
       where: {
         userId: user!.id,
       },
-      include: {
-        user: true,
-        listing: { include: { user: true } },
+      select: {
+        id: true,
+        quantity: true,
+        listing: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            stock: true,
+            quantityType: true,
+            shelfLife: true,
+            createdAt: true,
+            imageSrc: true,
+            userId: true,
+            subCategory: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                hours: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { listing: { userId: "desc" } },
     });

@@ -1,4 +1,5 @@
 "use client";
+
 import CoopHoursSlider from "./co-op-hours-slider";
 import { useState } from "react";
 import { HoursDisplay } from "./hours-display";
@@ -7,8 +8,17 @@ import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { ExtendedHours } from "@/next-auth";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { UserRole } from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import Link from "next/link";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -83,11 +93,19 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
   };
 
   const handleClose = () => {
-    setCoOpHours((prevHours) => ({
-      ...prevHours,
-      [currentDayIndex]: null,
-    }));
-    handleNextDay();
+    if (coOpHours[currentDayIndex] === null) {
+      console.log("entered case 1");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: [{ open: 480, close: 1020 }],
+      }));
+    } else {
+      console.log("entered case 2");
+      setCoOpHours((prevHours) => ({
+        ...prevHours,
+        [currentDayIndex]: null,
+      }));
+    }
   };
   const currentDay = days[currentDayIndex];
   const defaultHours = {
@@ -95,49 +113,128 @@ const CoOpHoursPage = ({ coOpHours, setCoOpHours, user }: Props) => {
     close: 1020,
   };
   const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
-
+  const [SODT, setSODT] = useState<any>();
+  const isOpen = coOpHours[currentDayIndex] !== null;
   return (
-    <Card className="flex flex-col lg:flex-row justify-center items-center bg-inherit border-none md:shadow-xl h-fit">
-      <div className="flex flex-col">
-        <CardContent>
-          <div className="flex justify-end">
-            <Button onClick={handleClose} className="bg-red-900 text-[.75rem]">
-              Close on {currentDay}
-            </Button>
-          </div>
-          <CoopHoursSlider
-            day={currentDay}
-            hours={currentDayHours}
-            onChange={handleHourChange}
-            onNextDay={handleNextDay}
-            onPrevDay={handlePrevDay}
-          />
-          <CardFooter className="flex flex-col md:flex-row items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
-            <Sheet>
-              <SheetTrigger>
-                <Button className="mb-0 text-xs" onClick={handleApplyToAll}>
-                  Apply This Schedule To
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                <DaySelect />
-              </SheetContent>
-            </Sheet>
+    <>
+      <Card className="flex flex-col bg-inherit border-none sm:shadow-xl md:mt-20 lg:w-2/3 w-full">
+        <div className="flex flex-col">
+          <CardHeader className={`${outfit.className} text-4xl`}>
+            {user?.role == UserRole.COOP ? (
+              <ul className={`${outfit.className}`}>
+                <li className="text-4xl">Set Your Hours</li>
+                <li className="text-sm">
+                  Control when people drop off and pickup from your store
+                </li>
+              </ul>
+            ) : (
+              <ul className={`${outfit.className}`}>
+                <li className="text-4xl">Set Delivery Hours</li>
+                <li className="text-sm">
+                  Control when co-ops request a drop off time
+                </li>
+              </ul>
+            )}
+          </CardHeader>
+          <CardContent className=" w-full p-4">
+            <CoopHoursSlider
+              day={currentDay}
+              hours={currentDayHours}
+              onChange={handleHourChange}
+              onNextDay={handleNextDay}
+              onPrevDay={handlePrevDay}
+            />
+            <CardFooter className="flex flex-col items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
+              <Sheet>
+                <div
+                  onClick={handleClose}
+                  className={`text-[.75rem] mb-1 ${outfit.className} ${
+                    isOpen
+                      ? "bg-red-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg text-center hover:cursor-pointer hover:bg-red-500"
+                      : "bg-emerald-300 text-black p-3 hover:bg-emerald-500 hover:text-white lg:w-[50%] w-full rounded-full  shadow-lg text-lg text-center hover:cursor-pointer"
+                  }`}
+                >
+                  {isOpen
+                    ? `Close on ${currentDay}`
+                    : `Reopen on ${currentDay}`}
+                </div>
+                <SheetTrigger
+                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
+                >
+                  Apply This Schedule To Other Days
+                </SheetTrigger>
+                <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                  <DaySelect />
+                </SheetContent>
+              </Sheet>
 
-            <Sheet>
-              <SheetTrigger>
-                <Button className="text-xs w-full lg:w-fit">
+              <Sheet>
+                <SheetTrigger
+                  className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
+                >
                   Visualize Your Current Schedule
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                <HoursDisplay coOpHours={coOpHours} />
-              </SheetContent>
-            </Sheet>
-          </CardFooter>
+                </SheetTrigger>
+                <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                  <HoursDisplay coOpHours={coOpHours} />
+                </SheetContent>
+              </Sheet>
+            </CardFooter>
+          </CardContent>
+        </div>
+      </Card>
+      <Card className="flex flex-col bg-inherit border-none sm:shadow-xl md:mt-20 lg:w-2/3 w-full pt-5">
+        <CardContent className={`${outfit.className} `}>
+          {user?.role === UserRole.COOP ? (
+            <h2 className="text-4xl">Set Out Time</h2>
+          ) : (
+            <h2 className="text-4xl">Time to Begin Delivery</h2>
+          )}
+          <ul>
+            {user?.role === UserRole.COOP ? (
+              <li>
+                This is the amount of time it takes between you{" "}
+                <em>agreeing </em> to a pick up time and preparing the order.
+              </li>
+            ) : (
+              <li>
+                This is the amount of time it takes between you{" "}
+                <em>agreeing to delivery time</em> and preparing it for
+                delivery.
+              </li>
+            )}
+            <li>
+              This is important to understand.{" "}
+              <Link href="/info/sodt" className="text-blue-500">
+                More Info
+              </Link>
+            </li>
+          </ul>
+          <div className="justify-end flex">
+            <label
+              htmlFor="sodt"
+              className="block text-sm font-medium leading-6"
+            ></label>
+
+            <Select
+              onValueChange={(value) => setSODT(parseInt(value, 10))}
+              // value={SODT.toString()}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={user?.SODT || "Select a Time"} />
+              </SelectTrigger>
+              <SelectContent className={`${outfit.className} sheet`}>
+                <SelectGroup>
+                  <SelectItem value="15">15 Minutes</SelectItem>
+                  <SelectItem value="30">30 Minutes</SelectItem>
+                  <SelectItem value="45">45 Minutes</SelectItem>
+                  <SelectItem value="60">1 Hour</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
-      </div>
-    </Card>
+      </Card>
+    </>
   );
 };
 

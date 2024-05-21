@@ -77,6 +77,8 @@ const SearchLocation = () => {
         ...(lat ? { lat: lat.toString() } : {}),
         ...(lng ? { lng: lng.toString() } : {}),
         ...(radius ? { radius: radius.toString() } : {}),
+        ...{ p: "true" },
+        ...{ c: "true" },
       };
 
       const url = qs.stringifyUrl(
