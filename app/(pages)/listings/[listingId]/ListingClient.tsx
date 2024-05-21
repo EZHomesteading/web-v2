@@ -1,13 +1,9 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { addDays, format } from "date-fns";
-
 import { SafeListing } from "@/types";
-
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
@@ -30,10 +26,14 @@ const ListingClient: React.FC<ListingClientProps> = ({
   user,
   following,
 }) => {
+  const listingRole = listing.user.role;
+  const listingUser = listing.user.id;
   const listingId = listing.id;
   const { toggleCart } = useCart({
     listingId,
     user,
+    listingRole,
+    listingUser,
   });
   const router = useRouter();
 

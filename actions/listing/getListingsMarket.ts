@@ -57,6 +57,12 @@ export default async function GetListings(
               address: true,
             },
           },
+          user: {
+            select: {
+              id: true,
+              role: true,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -91,6 +97,12 @@ export default async function GetListings(
                 address: true,
               },
             },
+            user: {
+              select: {
+                id: true,
+                role: true,
+              },
+            },
           },
           orderBy: {
             createdAt: "desc",
@@ -117,6 +129,12 @@ export default async function GetListings(
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },
@@ -150,6 +168,12 @@ export default async function GetListings(
                 address: true,
               },
             },
+            user: {
+              select: {
+                id: true,
+                role: true,
+              },
+            },
           },
         });
       } else {
@@ -173,6 +197,12 @@ export default async function GetListings(
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },

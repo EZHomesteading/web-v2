@@ -1,22 +1,24 @@
-import getUserwithCart from "@/actions/user/getUserWithCart";
+import getListingById from "@/actions/listing/getListingById";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 interface IUseCart {
   listingId: string;
   user?: any | null;
   quantity?: number;
+  listingRole: string;
+  listingUser: string;
 }
 
-const useCart = ({ listingId, user }: IUseCart) => {
+const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
   const router = useRouter();
   const cartItems = user?.cart || [];
+
   const hasCart = useMemo(() => {
     return cartItems.some((item: any) => item.listingId === listingId);
   }, [user, listingId]);
-
   const toggleCart = useCallback(
     async (e: React.MouseEvent<HTMLDivElement>, quantity: number) => {
       e.stopPropagation();
@@ -42,7 +44,18 @@ const useCart = ({ listingId, user }: IUseCart) => {
         router.refresh();
         toast.success("Your cart was updated!");
       } catch (error) {
-        toast.error("Something went wrong.");
+        console.log(user.id, listingUser);
+        if (listingUser === user.id) {
+          toast.error("Can't add your own listings to cart");
+        } else if (
+          (user.role === "PRODUCER" && listingRole === "PRODUCER") ||
+          (listingRole === "PRODUCER" && user.role === "CONSUMER") ||
+          (listingRole === "PRODUCER" && !user)
+        ) {
+          toast.error("Must be a Co-Op to add Producers listings");
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     },
     [user, hasCart, listingId, router]

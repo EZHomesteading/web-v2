@@ -71,6 +71,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   secondActionId,
   onSecondAction,
   secondActionLabel,
+  storeUser,
 }) => {
   const router = useRouter();
   const handleCancel = useCallback(
@@ -135,7 +136,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
             )}
           </Carousel>
           <div className="absolute top-3 right-3">
-            <CartIcon listingId={data.id} user={user} />
+            <CartIcon
+              listingId={data.id}
+              user={user}
+              listingRole={storeUser.role}
+              listingUser={storeUser.id}
+            />
           </div>
         </div>
         <div className="font-semibold text-lg">
