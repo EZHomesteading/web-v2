@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ColumnDef,
   flexRender,
@@ -10,8 +11,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/app/components/ui/table";
 import { useEffect, useState } from "react";
@@ -81,7 +80,62 @@ export function DaySelect({
     },
   });
   const [allDaysSelected, setAllDaysSelected] = useState(false);
+  const [weekDaysSelected, setWeekDaysSelected] = useState(false);
+  const [weekendDaysSelected, setWeekendDaysSelected] = useState(false);
 
+  const handleWeekDaysChange = (checked: boolean) => {
+    setWeekDaysSelected(checked);
+    if (checked) {
+      const weekDaysSelected = data.reduce((acc, row) => {
+        if (row.id >= 0 && row.id <= 4) {
+          acc[row.id] = true;
+        }
+        return acc;
+      }, {} as Record<number, boolean>);
+      setRowSelection((prevRowSelection) => ({
+        ...prevRowSelection,
+        ...weekDaysSelected,
+      }));
+    } else {
+      const weekDaysDeselected = data.reduce((acc, row) => {
+        if (row.id >= 0 && row.id <= 4) {
+          acc[row.id] = false;
+        }
+        return acc;
+      }, {} as Record<number, boolean>);
+      setRowSelection((prevRowSelection) => ({
+        ...prevRowSelection,
+        ...weekDaysDeselected,
+      }));
+    }
+  };
+
+  const handleWeekendDaysChange = (checked: boolean) => {
+    setWeekendDaysSelected(checked);
+    if (checked) {
+      const weekendDaysSelected = data.reduce((acc, row) => {
+        if (row.id === 5 || row.id === 6) {
+          acc[row.id] = true;
+        }
+        return acc;
+      }, {} as Record<number, boolean>);
+      setRowSelection((prevRowSelection) => ({
+        ...prevRowSelection,
+        ...weekendDaysSelected,
+      }));
+    } else {
+      const weekendDaysDeselected = data.reduce((acc, row) => {
+        if (row.id === 5 || row.id === 6) {
+          acc[row.id] = false;
+        }
+        return acc;
+      }, {} as Record<number, boolean>);
+      setRowSelection((prevRowSelection) => ({
+        ...prevRowSelection,
+        ...weekendDaysDeselected,
+      }));
+    }
+  };
   const handleEveryDayChange = (checked: boolean) => {
     setAllDaysSelected(checked);
     if (checked) {
@@ -124,6 +178,26 @@ export function DaySelect({
         />
         <h1 className={`${outfit.className} font-semibold`}>
           Apply to Everyday
+        </h1>
+      </div>
+      <div className="flex flex-row items-center p-2 gap-2">
+        <Checkbox
+          checked={weekDaysSelected}
+          onCheckedChange={handleWeekDaysChange}
+          aria-label="Select all days"
+        />
+        <h1 className={`${outfit.className} font-semibold`}>
+          Apply to Week Days
+        </h1>
+      </div>
+      <div className="flex flex-row items-center p-2 gap-2">
+        <Checkbox
+          checked={weekendDaysSelected}
+          onCheckedChange={handleWeekendDaysChange}
+          aria-label="Select all days"
+        />
+        <h1 className={`${outfit.className} font-semibold`}>
+          Apply to Weekends
         </h1>
       </div>
       <div className="rounded-md border bg shadow-lg">
