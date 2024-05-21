@@ -1,6 +1,6 @@
 import { ExtendedHours } from "@/next-auth";
 interface StatusProps {
-  hours: ExtendedHours;
+  hours?: ExtendedHours;
 }
 
 const isOpenNow = (

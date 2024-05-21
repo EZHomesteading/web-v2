@@ -15,7 +15,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   followarr,
   user,
 }) => {
-  console.log(follows);
   return (
     <Container>
       <Heading title="Following" subtitle="List of stores you're following!" />

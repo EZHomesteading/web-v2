@@ -5,9 +5,10 @@ import { currentUser } from "@/lib/auth";
 import getFollows from "@/actions/follow/getFollows";
 
 import FavoritesClient from "./FavoritesClient";
+import authCache from "@/auth-cache";
 
 const ListingPage = async () => {
-  const user = await currentUser();
+  const session = await authCache();
   const followarr = await getFollows();
   const follows = followarr?.follows;
   if (!follows) {
@@ -23,7 +24,11 @@ const ListingPage = async () => {
 
   return (
     <ClientOnly>
-      <FavoritesClient follows={follows} user={user} followarr={followarr} />
+      <FavoritesClient
+        follows={follows}
+        user={session?.user}
+        followarr={followarr}
+      />
     </ClientOnly>
   );
 };

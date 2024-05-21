@@ -35,7 +35,7 @@ const StorePage = async ({ params }: StorePageProps) => {
         user={user}
         following={following}
         emptyState={
-          storeUser?.listings.length === 0 ? (
+          !storeUser || storeUser?.listings.length === 0 ? (
             <ClientOnly>
               <EmptyState showReset />
             </ClientOnly>

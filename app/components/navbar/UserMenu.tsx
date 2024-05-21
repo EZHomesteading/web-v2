@@ -20,6 +20,7 @@ import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import { PiPersonSimpleRunThin } from "react-icons/pi";
+import { NavUser } from "@/actions/user/getUserNav";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ const outfit = Outfit({
   weight: ["100"],
 });
 interface Props {
-  user: any;
+  user?: any;
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
