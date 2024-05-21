@@ -5,8 +5,6 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { SafeListing } from "@/types";
-
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
@@ -14,7 +12,7 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 
 interface PropertiesClientProps {
-  listings: SafeListing[];
+  listings: any;
   user?: any | null;
 }
 
@@ -81,7 +79,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           
         "
         >
-          {listings.map((listing: SafeListing) => (
+          {listings.map((listing: any) => (
             <ListingCard
               key={listing.id}
               data={listing}
@@ -93,6 +91,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
               secondActionLabel="Edit"
               onSecondAction={onEdit}
               user={user}
+              storeUser={user}
             />
           ))}
         </div>

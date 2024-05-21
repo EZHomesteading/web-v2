@@ -51,6 +51,7 @@ export default async function GetListings(
           price: true,
           imageSrc: true,
           createdAt: true,
+          stock: true,
           location: {
             select: {
               coordinates: true,
@@ -91,6 +92,7 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
@@ -125,6 +127,7 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
@@ -162,6 +165,7 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
@@ -193,6 +197,7 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,

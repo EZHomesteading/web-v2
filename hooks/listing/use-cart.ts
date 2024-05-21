@@ -8,8 +8,8 @@ interface IUseCart {
   listingId: string;
   user?: any | null;
   quantity?: number;
-  listingRole: string;
-  listingUser: string;
+  listingRole?: string;
+  listingUser?: string;
 }
 
 const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {

@@ -49,6 +49,7 @@ interface ListingCardProps {
     price: number;
     title: string;
     quantityType: string;
+    stock: number;
   };
   onAction?: (id: string) => void;
   disabled?: boolean;
@@ -136,12 +137,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
             )}
           </Carousel>
           <div className="absolute top-3 right-3">
-            <CartIcon
-              listingId={data.id}
-              user={user}
-              listingRole={storeUser.role}
-              listingUser={storeUser.id}
-            />
+            {data.stock <= 0 ? (
+              <></>
+            ) : (
+              <CartIcon
+                listingId={data.id}
+                user={user}
+                listingRole={storeUser.role}
+                listingUser={storeUser.id}
+              />
+            )}
           </div>
         </div>
         <div className="font-semibold text-lg">
