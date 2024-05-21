@@ -14,7 +14,14 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 
 interface PropertiesClientProps {
-  listings: SafeListing[];
+  listings: {
+    id: string;
+    imageSrc: string[];
+    location: any;
+    price: number;
+    title: string;
+    quantityType: string;
+  }[];
   user?: any | null;
 }
 
@@ -81,7 +88,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           
         "
         >
-          {listings.map((listing: SafeListing) => (
+          {listings.map((listing) => (
             <ListingCard
               key={listing.id}
               data={listing}

@@ -2,7 +2,7 @@
 import { Button } from "@/app/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
@@ -34,7 +34,6 @@ import homebg from "@/public/images/website-images/ezh-modal.jpg";
 const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
-  weight: ["300"],
 });
 const days = [
   "Monday",
@@ -48,6 +47,7 @@ const days = [
 
 const StoreSettings = () => {
   const user = useCurrentUser();
+  console.log("user hours", user?.hours);
   let defaultHours;
   if (user?.hours) {
     defaultHours = user?.hours;
@@ -63,7 +63,7 @@ const StoreSettings = () => {
     };
   }
   const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
-
+  console.log("hours in my store settings", coOpHours);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
 
   const handleNextDay = () => {
@@ -76,11 +76,6 @@ const StoreSettings = () => {
           ...prevHours,
           [nextIndex]: [defaultHours],
         }));
-      } else {
-        setCoOpHours((prevHours) => ({
-          ...prevHours,
-          [nextIndex]: null,
-        }));
       }
 
       return nextIndex;
@@ -88,11 +83,18 @@ const StoreSettings = () => {
   };
 
   const handlePrevDay = () => {
-    if (currentDayIndex == 0) {
-      setCurrentDayIndex(6);
-    } else {
-      setCurrentDayIndex((prevIndex) => (prevIndex - 1) % days.length);
-    }
+    setCurrentDayIndex((prevIndex) => {
+      const newIndex = prevIndex === 0 ? 6 : prevIndex - 1;
+      const prevDayHours = coOpHours[newIndex]?.[0];
+
+      if (prevDayHours === null) {
+        setCoOpHours((prevHours) => ({
+          ...prevHours,
+          [newIndex]: [{ open: 480, close: 1020 }],
+        }));
+      }
+      return newIndex;
+    });
   };
   const isOpen = coOpHours[currentDayIndex] !== null;
 
@@ -114,8 +116,14 @@ const StoreSettings = () => {
     });
   };
 
-  const handleSpecificDays = () => {
-    const currentTimes = coOpHours[currentDayIndex];
+  const handleSpecificDays = (selectedDays: number[]) => {
+    setCoOpHours((prevHours) => {
+      const updatedHours: ExtendedHours = { ...prevHours };
+      selectedDays.forEach((dayId) => {
+        updatedHours[dayId] = coOpHours[currentDayIndex];
+      });
+      return updatedHours;
+    });
   };
 
   const handleClose = () => {
@@ -290,13 +298,22 @@ const StoreSettings = () => {
                         Apply This Schedule To Other Days
                       </SheetTrigger>
                       <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                        <DaySelect />
+                        <DaySelect
+                          handleSpecificDays={handleSpecificDays}
+                          handleApplyToAll={handleApplyToAll}
+                          currentDayIndex={currentDayIndex}
+                        />
+                        <SheetTrigger
+                          className={`${outfit.className} bg-slate-500 hover:bg-slate-600 p-2 rounded-full text-lg px-4`}
+                        >
+                          Apply Changes
+                        </SheetTrigger>
                       </SheetContent>
                     </Sheet>
 
                     <Sheet>
                       <SheetTrigger
-                        className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500`}
+                        className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black text-lg hover:bg-slate-500 shadow-xl`}
                       >
                         Visualize Your Current Schedule
                       </SheetTrigger>
