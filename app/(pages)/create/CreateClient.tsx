@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import useRentModal from "@/hooks/modal/use-listing-modal";
+
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import { UserInfo } from "@/next-auth";
@@ -80,7 +80,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [quantityType, setQuantityType] = useState("");
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
-  const rentModal = useRentModal();
+
   const [clicked, setClicked] = useState(false);
   const [c, setC] = useState(false);
 
@@ -275,7 +275,7 @@ const CreateClient = ({ user, index }: Props) => {
 
         .then(() => {
           toast.success("Listing created!");
-          rentModal.onClose();
+
           setValue("category", "");
           setValue("subCategory", "");
           setValue("location", "");
@@ -309,6 +309,7 @@ const CreateClient = ({ user, index }: Props) => {
         })
         .finally(() => {
           setIsLoading(false);
+          router.push("/dashboard/my-store");
         });
     } else {
       setIsLoading(false);

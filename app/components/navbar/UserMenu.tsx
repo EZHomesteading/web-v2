@@ -6,7 +6,6 @@ import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { CiShop, CiSquarePlus } from "react-icons/ci";
 import { useRouter } from "next/navigation";
-import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
@@ -33,7 +32,6 @@ interface Props {
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
-  const listingModal = useRentModal();
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
@@ -63,7 +61,7 @@ const UserMenu = ({ user }: Props) => {
           ) : (
             <div
               onClick={() => {
-                listingModal.onOpen();
+                router.push("/create");
               }}
             >
               <CiSquarePlus className="w-10 h-10" />
