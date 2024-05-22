@@ -1,5 +1,6 @@
+"use client";
+
 import { CgCommunity } from "react-icons/cg";
-import { FaOpencart } from "react-icons/fa";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { HiOutlineDocument } from "react-icons/hi";
 import { MdOutlinePrivacyTip } from "react-icons/md";
@@ -9,8 +10,14 @@ import Logo from "../components/navbar/Logo";
 import { UserRole } from "@prisma/client";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
-import { TbShoppingCartDollar } from "react-icons/tb";
-import GetRoleGate from "@/actions/user/getRoleGate";
+import {
+  TbLayoutSidebarLeftCollapse,
+  TbShoppingCartDollar,
+} from "react-icons/tb";
+import { useEffect, useState } from "react";
+import { TbLayoutSidebarRightCollapseFilled } from "react-icons/tb";
+import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
+
 interface p {
   role?: UserRole;
 }
@@ -135,16 +142,38 @@ const vendorNav: NavigationItem[] = [
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
 const Sidebar = ({ role }: p) => {
+  const [isCollapsed, setIsCollapsed] = useState<any>();
+  useEffect(() => {
+    let storedCollapsed = sessionStorage.getItem("sidebarCollapsed");
+    if (storedCollapsed) {
+      storedCollapsed = JSON.parse(storedCollapsed);
+      setIsCollapsed(storedCollapsed);
+    } else {
+      return;
+    }
+  });
+
+  const toggleSidebar = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    sessionStorage.setItem(
+      "sidebarCollapsed",
+      JSON.stringify(newCollapsedState)
+    );
+  };
+
   return (
     <>
-      <div className="hidden lg:block w-72 h-full">
-        <div className="flex grow flex-col gap-y-6 px-6 overflow-auto">
+      <div
+        className={`hidden lg:block relative h-full ${
+          isCollapsed ? "w-16" : "w-72"
+        } transition-width duration-300`}
+      >
+        <div className="flex grow  flex-col gap-y-6 px-6">
           <nav className="flex flex-2 flex-col">
-            <div className="hidden">
-              <Logo />
-            </div>
-            <ul role="list" className="flex flex-2 flex-col gap-y-3">
+            <ul role="list" className="flex flex-2 flex-col gap-y-3 relative">
               {role !== UserRole.CONSUMER ? (
                 <>
                   {vendorNav.map((item) => (
@@ -155,14 +184,15 @@ const Sidebar = ({ role }: p) => {
                           item.current
                             ? "bg-gray-81"
                             : "text-gray-401 hover:text-white hover:bg-gray-800",
-                          "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                          "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold",
+                          isCollapsed ? "justify-center" : ""
                         )}
                       >
                         <item.icon
                           className="h-7 w-6 shrink-0"
                           aria-hidden="true"
                         />
-                        {item.name}
+                        {!isCollapsed && item.name}
                       </a>
                     </li>
                   ))}
@@ -177,22 +207,34 @@ const Sidebar = ({ role }: p) => {
                           item.current
                             ? "bg-gray-81"
                             : "text-gray-401 hover:text-white hover:bg-gray-800",
-                          "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                          "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold",
+                          isCollapsed ? "justify-center" : ""
                         )}
                       >
                         <item.icon
                           className="h-7 w-6 shrink-0"
                           aria-hidden="true"
                         />
-                        {item.name}
+                        {!isCollapsed && item.name}
                       </a>
                     </li>
                   ))}
                 </>
-              )}
-            </ul>
+              )}{" "}
+            </ul>{" "}
           </nav>
         </div>
+        {isCollapsed ? (
+          <TbLayoutSidebarRightCollapse
+            onClick={toggleSidebar}
+            className="text-gray-401 hover:text-white w-10 h-10 absolute r-0 b-0"
+          />
+        ) : (
+          <TbLayoutSidebarLeftCollapse
+            onClick={toggleSidebar}
+            className="text-gray-401 hover:text-white w-10 h-10"
+          />
+        )}
       </div>
     </>
   );

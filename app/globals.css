@@ -272,7 +272,9 @@ body::-webkit-scrollbar-thumb {
 .authlayouttext {
   color: #ced9bb !important;
 }
-
+.transition-width {
+  transition-property: width;
+}
 .onboard-left,
 .popover,
 .bg {

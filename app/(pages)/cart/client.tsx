@@ -43,7 +43,6 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   const [validTime, setValidTime] = useState<any>();
   const [checkoutPickup, setCheckoutPickup] = useState<any>("");
   const [stillExpiry, setStillExpiry] = useState(true);
-  console.log(cartItems);
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) =>
@@ -51,11 +50,11 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       0
     )
   );
-  const total2 = cartItems[0].listing.price * cartItems[0].quantity;
-  console.log(total2);
+
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
+
   useEffect(() => {
     const newTotal = cartItems.reduce(
       (acc: number, cartItem: any) =>
