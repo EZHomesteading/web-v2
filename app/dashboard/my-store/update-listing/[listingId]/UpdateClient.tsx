@@ -14,6 +14,7 @@ import Image from "next/image";
 import { BsBucket } from "react-icons/bs";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Textarea } from "@/app/components/ui/textarea";
+import { createEmails } from "@/hooks/user/email-Users";
 
 interface UpdateListingProps {
   listing: SafeListing;
@@ -39,6 +40,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       imageSrc: listing?.imageSrc ?? [],
       category: listing?.category,
       quantityType: listing?.quantityType,
+      emailList: listing?.emailList,
     },
   });
   const [description, setDescription] = useState(listing.description);
@@ -71,8 +73,18 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
     [router]
   );
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
+    if (listing.stock === 0) {
+      if (!listing.emailList) {
+      } else {
+        await createEmails(listing.emailList.list, listing);
+
+        data.emailList.list = null;
+        data.emailList = null;
+        console.log(data);
+      }
+    }
     const formData = {
       ...data,
       stock: parseInt(data.stock),
@@ -81,6 +93,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       imageSrc: watch("imageSrc"),
       description: description,
     };
+    console.log(data);
     axios
       .post("/api/updateListing", formData)
       .then(() => {
