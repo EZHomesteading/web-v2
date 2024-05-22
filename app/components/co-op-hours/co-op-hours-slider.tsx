@@ -36,15 +36,19 @@ export default function CoopHoursSlider({
   return (
     <div className="space-y-5">
       <div className="flex flex-row justify-center items-center">
-        <button onClick={onPrevDay}>
-          <MdOutlineNavigateBefore className="h-10 w-10" />
-        </button>
-        <div className={`${outfit.className} flex justify-center text-2xl`}>
+        <div className="flex justify-end w-12">
+          <button onClick={onPrevDay} className="mr-2">
+            <MdOutlineNavigateBefore className="h-10 w-10" />
+          </button>
+        </div>
+        <div
+          className={`${outfit.className} flex justify-center text-xl sm:text-2xl`}
+        >
           Primary {day} Hours
         </div>
-        <div className="flex">
-          <button onClick={onNextDay}>
-            <MdOutlineNavigateNext className="h-10 w-10" />
+        <div className="flex justify-end w-12">
+          <button onClick={onNextDay} className="ml-2">
+            <MdOutlineNavigateNext className="h-10 w-10 " />
           </button>
         </div>
       </div>

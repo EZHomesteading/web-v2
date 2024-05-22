@@ -103,10 +103,12 @@ const Onboarding = ({ user, index }: Props) => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <div className="flex flex-col md:flex-row text-black">
         <div className="onboard-left md:w-2/5">
-          <div className="flex flex-col items-start pl-12 py-5 lg:py-20 ">
+          <div
+            className={` ${outfit.className} flex flex-col items-start pl-6 py-5`}
+          >
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
               Finish your account setup
             </h2>
@@ -215,11 +217,11 @@ const Onboarding = ({ user, index }: Props) => {
               </div>
             )}
             <Breadcrumb
-              className={`${outfit.className} text-black pt-5 z-10 text-xs`}
+              className={`${outfit.className} text-black pt-0 sm:pt-2 z-10 text-[.5rem]`}
             >
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className="text-xs">
+                  <BreadcrumbLink href="/" className="text-[.5rem]">
                     Home
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -227,8 +229,8 @@ const Onboarding = ({ user, index }: Props) => {
                 <BreadcrumbItem
                   className={
                     step === 1
-                      ? "font-bold cursor-none text-xs"
-                      : "font-normal cursor-pointer text-xs "
+                      ? "font-bold cursor-none text-[.5rem]"
+                      : "font-normal cursor-pointer text-[.5rem] "
                   }
                   onMouseDown={() => setStep(1)}
                 >
@@ -238,8 +240,8 @@ const Onboarding = ({ user, index }: Props) => {
                 <BreadcrumbItem
                   className={
                     step === 2
-                      ? "font-bold cursor-none text-xs"
-                      : "font-normal cursor-pointer"
+                      ? "font-bold cursor-none text-[.5rem]"
+                      : "font-normal cursor-pointer text-[.5rem]"
                   }
                   onMouseDown={() => setStep(2)}
                 >
@@ -249,8 +251,8 @@ const Onboarding = ({ user, index }: Props) => {
                 <BreadcrumbItem
                   className={
                     step === 3
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer text-xs"
+                      ? "font-bold cursor-none text-[.5rem] "
+                      : "font-normal cursor-pointer text-[.5rem]"
                   }
                   onMouseDown={() => setStep(3)}
                 >
@@ -263,7 +265,7 @@ const Onboarding = ({ user, index }: Props) => {
 
         <div className="md:w-3/5 onboard-right relative">
           {step === 1 && (
-            <div className="sm:min-h-screen  hideOverflow lg:py-20">
+            <div className="md:min-h-screen h-[calc(100vh-132px)] hideOverflow">
               <StoreStep
                 coOpHours={coOpHours}
                 setCoOpHours={setCoOpHours}
@@ -272,7 +274,7 @@ const Onboarding = ({ user, index }: Props) => {
             </div>
           )}
           {step === 2 && (
-            <div className="sm:min-h-screen h-[calc(100vh-264px)] hideOverflow py-20">
+            <div className="md:min-h-screen h-[calc(100vh-131px)] hideOverflow">
               <ProfileStep
                 formData={formData}
                 setFormData={setFormData}

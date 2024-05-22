@@ -338,7 +338,7 @@ const StoreSettings = () => {
               )}
               <li>Please refresh after clicking update to see changes</li>
             </ul>
-            <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit lg:h-[20vw] w-full justify-center">
+            <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
               <div className="flex flex-col">
                 <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
                   <div className="flex justify-end"></div>
