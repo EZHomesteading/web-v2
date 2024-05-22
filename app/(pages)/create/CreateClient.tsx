@@ -64,13 +64,7 @@ interface Props {
   user: UserInfo;
   index: number;
 }
-const ProducerClient = ({ user, index }: Props) => {
-  const [formData, setFormData] = useState<{
-    hours?: ExtendedHours;
-    image?: string;
-    bio?: string;
-  }>({});
-
+const CreateClient = ({ user, index }: Props) => {
   type AddressComponents = {
     street: string;
     city: string;
@@ -945,4 +939,4 @@ const ProducerClient = ({ user, index }: Props) => {
   );
 };
 
-export default ProducerClient;
+export default CreateClient;
