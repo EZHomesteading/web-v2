@@ -44,6 +44,12 @@ type Location {
   address String[]
 }
 
+type notifList {
+  list String[]
+}
+
+
+
 type Hours {
   0 Times[] @map("0")
   1 Times[] @map("1")
@@ -198,10 +204,14 @@ model Listing {
   coopRating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
+  emailList     notifList?
+  smsList       notifList?
 
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
   cart          Cart[]
 }
+
+
 
 model Cart {
   id            String @id @default(auto()) @map("_id") @db.ObjectId

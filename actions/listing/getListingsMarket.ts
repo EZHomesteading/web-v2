@@ -46,10 +46,17 @@ export default async function GetListings(
           price: true,
           imageSrc: true,
           createdAt: true,
+          stock: true,
           location: {
             select: {
               coordinates: true,
               address: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              role: true,
             },
           },
         },
@@ -80,10 +87,17 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },
@@ -108,10 +122,17 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },
@@ -139,10 +160,17 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },
@@ -164,10 +192,17 @@ export default async function GetListings(
             price: true,
             imageSrc: true,
             createdAt: true,
+            stock: true,
             location: {
               select: {
                 coordinates: true,
                 address: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                role: true,
               },
             },
           },
