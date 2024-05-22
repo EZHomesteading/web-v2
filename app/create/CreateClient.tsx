@@ -811,48 +811,6 @@ const CreateClient = ({ user, index }: Props) => {
                       }}
                     />
                   </div>
-                  {/* <Carousel
-                  opts={{
-                    align: "start",
-                  }}
-                  className="w-1/3"
-                >
-                  <CarouselContent>
-                    {[
-                      "lb",
-                      "oz",
-                      "none",
-                      "kg",
-                      "gram",
-                      "bushel",
-                      "dozen",
-                      "carton",
-                      "",
-                    ].map((word, index) => (
-                      <CarouselItem
-                        key={index}
-                        className="md:basis-1/2 lg:basis-1/3 "
-                      >
-                        <div
-                          className="flex items-center justify-center p-3 hover:cursor-pointer"
-                          onClick={() => handleCarouselItemClick(word)}
-                        >
-                          <span
-                            className={`text-md ${
-                              quantityType === word
-                                ? "font-bold text-green-300"
-                                : ""
-                            }`}
-                          >
-                            {word}
-                          </span>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>*/}
                 </div>
                 <hr />
                 <div className="mb-3">
@@ -1021,7 +979,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 4 && <div></div>}
+            {step === 4 && <div> INSERT HOURS COMPONENT HERE</div>}
             {step > 1 && (
               <IoReturnDownBack
                 onClick={handlePrevious}
