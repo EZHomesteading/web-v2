@@ -1,6 +1,4 @@
 "use client";
-import { useMemo } from "react";
-
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import { UserInfo } from "@/next-auth";
@@ -29,13 +27,6 @@ import {
 } from "@/app/components/ui/dialog";
 
 import axios from "axios";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/app/components/ui/carousel";
 import { toast } from "sonner";
 import { useState } from "react";
 import { BiSearch } from "react-icons/bi";
@@ -56,6 +47,7 @@ import { Outfit, Zilla_Slab } from "next/font/google";
 import Image from "next/image";
 
 import { BsBucket } from "react-icons/bs";
+import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -77,7 +69,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(index);
-  const [quantityType, setQuantityType] = useState("");
+  const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
 
@@ -86,15 +78,6 @@ const CreateClient = ({ user, index }: Props) => {
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
-  };
-
-  const handleCarouselItemClick = (word: string) => {
-    setQuantityType(word);
-    setValue("quantityType", word, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    });
   };
 
   let {
@@ -262,7 +245,10 @@ const CreateClient = ({ user, index }: Props) => {
         imageSrc: data.imageSrc,
         stock: parseInt(data.stock, 10),
         shelfLife: shelfLife,
-        quantityType: data.quantityType === "none" ? "" : data.quantityType,
+        quantityType:
+          data.quantityType === "none" || data.quantityType === "each"
+            ? ""
+            : data.quantityType,
         location: {
           type: "Point",
           coordinates: [geoData.lng, geoData.lat],
@@ -275,7 +261,6 @@ const CreateClient = ({ user, index }: Props) => {
 
         .then(() => {
           toast.success("Listing created!");
-
           setValue("category", "");
           setValue("subCategory", "");
           setValue("location", "");
@@ -300,7 +285,7 @@ const CreateClient = ({ user, index }: Props) => {
           setCoopRating(1);
           setCertificationChecked(false);
           setShowLocationInput(false);
-          setQuantityType("");
+          setQuantityType(undefined);
         })
         .catch(() => {
           toast.error(
@@ -687,7 +672,16 @@ const CreateClient = ({ user, index }: Props) => {
                     errors={errors}
                   />
                 </div>
-                <Carousel
+                <div className="w-1/3">
+                  <UnitSelect
+                    value={quantityType}
+                    onChange={(value) => {
+                      setQuantityType(value as QuantityTypeValue);
+                      setValue("quantityType", value?.value);
+                    }}
+                  />
+                </div>
+                {/* <Carousel
                   opts={{
                     align: "start",
                   }}
@@ -728,7 +722,7 @@ const CreateClient = ({ user, index }: Props) => {
                   </CarouselContent>
                   <CarouselPrevious />
                   <CarouselNext />
-                </Carousel>
+                </Carousel>*/}
               </div>
               <hr />
               <div className="mb-3">
