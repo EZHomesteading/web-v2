@@ -736,68 +736,6 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 6 && (
-              <div className="sm:min-h-screen h-[calc(100vh-264px)] hideOverflow py-20">
-                <div className="flex flex-col gap-8">
-                  <Heading title="" />
-                  <div className="flex flex-col lg:flex-row justify-evenly">
-                    <div className="flex flex-row lg:flex-col justify-center">
-                      <PiStorefrontThin
-                        size="5em"
-                        className={
-                          clicked
-                            ? "text-green-500 cursor-pointer"
-                            : "cursor-pointer hover:text-green-500"
-                        }
-                        onClick={() => {
-                          setValue("street", user?.location?.address[0]);
-                          setValue("city", user?.location?.address[1]);
-                          setValue("state", user?.location?.address[2]);
-                          setValue("zip", user?.location?.address[3]);
-                          setClicked(true);
-                        }}
-                      />
-                      <ul>
-                        <li className={`${outfit.className}`}>
-                          Use My Default Location
-                        </li>{" "}
-                        {user?.location?.address.length === 4 ? (
-                          <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
-                        ) : (
-                          <li>Full Address not available</li>
-                        )}
-                      </ul>
-                    </div>
-                    <div
-                      className={`${outfit.className} flex flex-row lg:flex-col `}
-                    >
-                      <BiSearch
-                        size="5em"
-                        className={
-                          c
-                            ? "text-green-500 cursor-pointer"
-                            : "cursor-pointer hover:text-green-500"
-                        }
-                        onClick={() => {
-                          toggleLocationInput();
-                          setClicked(false);
-                          setC(true);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      />
-                      Use a Different Location
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-8">
-                    <LocationSearchInput
-                      address={watch("address")}
-                      setAddress={(address) => setValue("address", address)}
-                      onAddressParsed={handleAddressSelect}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {step === 2 && (
               <div className="flex flex-col gap-4">
@@ -900,6 +838,64 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
+
+            {step === 3 && (
+              <div className="flex flex-col gap-8">
+                <Heading title="" />
+                <div className="flex flex-col gap-y-2">
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                    // onChange={(e) => handleCheckboxChange(e)}
+                    />
+                    <Label>This produce is not genetically modified</Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                    // onChange={(e) => handleCheckboxChange(e)}
+                    />
+                    <Label>
+                      This produce was not grown with inorganic fertilizers
+                    </Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                    // onChange={(e) => handleCheckboxChange(e)}
+                    />
+                    <Label>
+                      This produce was not grown with inorganic pestacides
+                    </Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                    // onChange={(e) => handleCheckboxChange(e)}
+                    />
+                    <Label>This produce was not modified after harvest</Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 font-extrabold items-center">
+                    <Checkbox
+                    // onChange={(e) => handleCheckboxChange(e, true)}
+                    />
+                    <Label className="font-bold">
+                      I certify that all of the above information is accurate
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            )}
+            {step === 4 && <div> INSERT HOURS COMPONENT HERE</div>}
+            {step > 1 && (
+              <IoReturnDownBack
+                onClick={handlePrevious}
+                className="absolute bottom-0 left-5 text-6xl hover:cursor-pointer"
+              />
+            )}
+
+            {step < 7 && (
+              <IoReturnDownForward
+                onClick={handleNext}
+                className="absolute bottom-0 right-5 text-6xl hover:cursor-pointer"
+              />
+            )}
             {step === 5 && (
               <div
                 className={`${outfit.className} flex flex-col gap-8 sm:justify-between items-stretch`}
@@ -976,62 +972,67 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 3 && (
-              <div className="flex flex-col gap-8">
-                <Heading title="" />
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
-                    />
-                    <Label>This produce is not genetically modified</Label>
+            {step === 6 && (
+              <div className="sm:min-h-screen h-[calc(100vh-264px)] hideOverflow py-20">
+                <div className="flex flex-col gap-8">
+                  <Heading title="" />
+                  <div className="flex flex-col lg:flex-row justify-evenly">
+                    <div className="flex flex-row lg:flex-col justify-center">
+                      <PiStorefrontThin
+                        size="5em"
+                        className={
+                          clicked
+                            ? "text-green-500 cursor-pointer"
+                            : "cursor-pointer hover:text-green-500"
+                        }
+                        onClick={() => {
+                          setValue("street", user?.location?.address[0]);
+                          setValue("city", user?.location?.address[1]);
+                          setValue("state", user?.location?.address[2]);
+                          setValue("zip", user?.location?.address[3]);
+                          setClicked(true);
+                        }}
+                      />
+                      <ul>
+                        <li className={`${outfit.className}`}>
+                          Use My Default Location
+                        </li>{" "}
+                        {user?.location?.address.length === 4 ? (
+                          <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                        ) : (
+                          <li>Full Address not available</li>
+                        )}
+                      </ul>
+                    </div>
+                    <div
+                      className={`${outfit.className} flex flex-row lg:flex-col `}
+                    >
+                      <BiSearch
+                        size="5em"
+                        className={
+                          c
+                            ? "text-green-500 cursor-pointer"
+                            : "cursor-pointer hover:text-green-500"
+                        }
+                        onClick={() => {
+                          toggleLocationInput();
+                          setClicked(false);
+                          setC(true);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      />
+                      Use a Different Location
+                    </div>
                   </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
+                  <div className="flex flex-col gap-8">
+                    <LocationSearchInput
+                      address={watch("address")}
+                      setAddress={(address) => setValue("address", address)}
+                      onAddressParsed={handleAddressSelect}
                     />
-                    <Label>
-                      This produce was not grown with inorganic fertilizers
-                    </Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
-                    />
-                    <Label>
-                      This produce was not grown with inorganic pestacides
-                    </Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
-                    />
-                    <Label>This produce was not modified after harvest</Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 font-extrabold items-center">
-                    <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e, true)}
-                    />
-                    <Label className="font-bold">
-                      I certify that all of the above information is accurate
-                    </Label>
                   </div>
                 </div>
               </div>
-            )}
-            {step === 4 && <div> INSERT HOURS COMPONENT HERE</div>}
-            {step > 1 && (
-              <IoReturnDownBack
-                onClick={handlePrevious}
-                className="absolute bottom-0 left-5 text-6xl hover:cursor-pointer"
-              />
-            )}
-
-            {step < 7 && (
-              <IoReturnDownForward
-                onClick={handleNext}
-                className="absolute bottom-0 right-5 text-6xl hover:cursor-pointer"
-              />
             )}
           </div>
         </div>
