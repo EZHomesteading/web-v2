@@ -5,6 +5,8 @@ import { Button } from "@/app/components/ui/button";
 import useCartListing from "@/hooks/listing/use-cart";
 import { useState } from "react";
 import DateState2 from "./DateState2";
+import { divIcon } from "leaflet";
+import NotifyModal from "./NotifyModal";
 
 interface ListingReservationProps {
   listingId: string;
@@ -41,6 +43,8 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   user,
   toggleCart,
 }) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [quantity, setQuantity] = useState(1);
   const { hasCart } = useCartListing({
@@ -84,6 +88,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 
   return (
     <>
+      <NotifyModal
+        isOpen={confirmOpen}
+        listingId={listingId}
+        onClose={() => setConfirmOpen(false)}
+        userEmail={user?.email}
+      />
       <div
         className="
         bg-white 
@@ -112,87 +122,101 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
         <hr />
-        {!hasCart ? (
-          <div className="flex flex-col items-center gap-2">
-            <div className=" flex flex-row justify-center items-center mt-2 ">
-              Set Quantity
-              <div
-                className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
-                style={{ width: "fit-content" }}
-              >
-                <button
-                  className="text-gray-600 focus:outline-none"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    decreaseQuantity();
-                  }}
-                >
-                  -
-                </button>
-                <input
-                  className="bg-transparent text-center appearance-none outline-none"
-                  value={quantity}
-                  min={1}
-                  max={product.stock ?? undefined}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (
-                      !isNaN(value) &&
-                      value >= 1 &&
-                      value <= (product.stock ?? Infinity)
-                    ) {
-                      setQuantity(value);
-                    }
-                  }}
-                  style={{
-                    WebkitAppearance: "textfield",
-                    MozAppearance: "textfield",
-                    appearance: "textfield",
-                    width: "40px",
-                  }}
-                />
-                <button
-                  className="text-gray-600 focus:outline-none"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    increaseQuantity();
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
+        {product.stock <= 0 ? (
+          <div>
+            <div className="p-2">Item is out of stock</div>
             <Button
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                handleToggleCart(e)
-              }
+              onClick={() => setConfirmOpen(true)}
               className="w-full bg-green-400 shadow-xl mb-[2px]"
             >
-              {hasCart
-                ? `Added to Cart`
-                : `Add ${quantity} ${quantityType} to Cart`}
+              Notify me when in stock
             </Button>
           </div>
         ) : (
-          <Button
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              handleToggleCart(e)
-            }
-            className="w-full bg-green-400 mb-[2px]"
-          >
-            {hasCart ? `Added to Cart` : "Add to Cart"}
-          </Button>
+          <>
+            {!hasCart ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className=" flex flex-row justify-center items-center mt-2 ">
+                  Set Quantity
+                  <div
+                    className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
+                    style={{ width: "fit-content" }}
+                  >
+                    <button
+                      className="text-gray-600 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        decreaseQuantity();
+                      }}
+                    >
+                      -
+                    </button>
+                    <input
+                      className="bg-transparent text-center appearance-none outline-none"
+                      value={quantity}
+                      min={1}
+                      max={product.stock ?? undefined}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (
+                          !isNaN(value) &&
+                          value >= 1 &&
+                          value <= (product.stock ?? Infinity)
+                        ) {
+                          setQuantity(value);
+                        }
+                      }}
+                      style={{
+                        WebkitAppearance: "textfield",
+                        MozAppearance: "textfield",
+                        appearance: "textfield",
+                        width: "40px",
+                      }}
+                    />
+                    <button
+                      className="text-gray-600 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        increaseQuantity();
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <Button
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                    handleToggleCart(e)
+                  }
+                  className="w-full bg-green-400 shadow-xl mb-[2px]"
+                >
+                  {hasCart
+                    ? `Added to Cart`
+                    : `Add ${quantity} ${quantityType} to Cart`}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                  handleToggleCart(e)
+                }
+                className="w-full bg-green-400 mb-[2px]"
+              >
+                {hasCart ? `Added to Cart` : "Add to Cart"}
+              </Button>
+            )}
+            <div>
+              <DateState2
+                hours={hours}
+                onSetTime={handleTimer}
+                quantity={quantity}
+                quantityType={quantityType}
+                disabled={disabled}
+                listing={product}
+              />
+            </div>
+          </>
         )}
-        <div>
-          <DateState2
-            hours={hours}
-            onSetTime={handleTimer}
-            quantity={quantity}
-            quantityType={quantityType}
-            disabled={disabled}
-            listing={product}
-          />
-        </div>
       </div>
     </>
   );

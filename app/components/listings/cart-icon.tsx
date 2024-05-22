@@ -6,12 +6,21 @@ import useCart from "@/hooks/listing/use-cart";
 interface CartButtonProps {
   listingId: string;
   user?: any | null;
+  listingRole: string;
+  listingUser: string;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ listingId, user }) => {
+const CartButton: React.FC<CartButtonProps> = ({
+  listingId,
+  user,
+  listingRole,
+  listingUser,
+}) => {
   const { hasCart, toggleCart } = useCart({
     listingId,
     user,
+    listingRole,
+    listingUser,
   });
   return (
     <div

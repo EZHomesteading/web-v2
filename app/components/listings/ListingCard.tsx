@@ -49,6 +49,7 @@ interface ListingCardProps {
     price: number;
     title: string;
     quantityType: string;
+    stock: number;
   };
   onAction?: (id: string) => void;
   disabled?: boolean;
@@ -59,6 +60,7 @@ interface ListingCardProps {
   onSecondAction?: (id: string) => void;
   user?: UserInfo | null;
   storeUser?: any;
+  priority?: boolean;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -71,6 +73,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
   secondActionId,
   onSecondAction,
   secondActionLabel,
+  storeUser,
+  priority,
 }) => {
   const router = useRouter();
   const handleCancel = useCallback(
@@ -117,6 +121,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         alt={`Carousel Image ${index + 1}`}
                         fill
                         className="object-cover rounded-md hover:scale-105"
+                        sizes="(max-width: 640) 100vw, (max-width: 764px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                        priority={index === 0 && priority}
                       />
                     </CardContent>
                   </Card>
@@ -135,7 +141,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
             )}
           </Carousel>
           <div className="absolute top-3 right-3">
-            <CartIcon listingId={data.id} user={user} />
+            {data.stock <= 0 ? (
+              <></>
+            ) : (
+              <CartIcon
+                listingId={data.id}
+                user={user}
+                listingRole={storeUser.role}
+                listingUser={storeUser.id}
+              />
+            )}
           </div>
         </div>
         <div className="font-semibold text-lg">

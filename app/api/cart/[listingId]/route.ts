@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 import getListingById from "@/actions/listing/getListingById";
-import toast from "react-hot-toast";
+
+import toast from "sonner";
 
 interface CartParams {
   cartId?: string;
@@ -31,8 +32,22 @@ export async function POST(
       return NextResponse.error();
     }
     if (listing.userId === user.id) {
-      toast.error("Cant add your own products");
-      throw new Error("Cant add Own products");
+      return NextResponse.json(
+        { error: "Can't add your own listings to cart" },
+        { status: 400 }
+      );
+    }
+    if (
+      (listing.user.role === "PRODUCER" && user.role === "PRODUCER") ||
+      (listing.user.role === "PRODUCER" && user.role === "CONSUMER") ||
+      (listing.user.role === "PRODUCER" && !user)
+    ) {
+      return NextResponse.json(
+        {
+          error: "Must be a Co-Op to add Producers listings",
+        },
+        { status: 400 }
+      );
     }
 
     const createdCartItem = await prisma.cart.create({

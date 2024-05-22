@@ -34,6 +34,11 @@ export async function POST(
       toast.error("Cant add your own products");
       throw new Error("Cant add Own products");
     }
+    console.log(listing.user.role, user.role);
+    if (listing.user.role === "PRODUCER" && user.role === "PRODUCER") {
+      toast.error("Cant add your own products");
+      throw new Error("Cant add Own products");
+    }
 
     const createdCartItem = await prisma.cart.create({
       data: {
