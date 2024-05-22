@@ -28,7 +28,7 @@ import {
 
 import axios from "axios";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import SearchClient, {
@@ -107,6 +107,7 @@ const CreateClient = ({ user, index }: Props) => {
       zip: "",
       state: "",
       coopRating: 1,
+      minOrder: 1,
     },
   });
 
@@ -132,6 +133,7 @@ const CreateClient = ({ user, index }: Props) => {
   const shelfLifeMonths = watch("shelfLifeMonths");
   const shelfLifeYears = watch("shelfLifeYears");
   const imageSrc = watch("imageSrc");
+  const minOrder = watch("minOrder");
   const quantity = watch("stock");
   const price = watch("price");
   const description = watch("description");
@@ -237,6 +239,7 @@ const CreateClient = ({ user, index }: Props) => {
     if (geoData) {
       const formData = {
         title: data.title,
+        minOrder: data.minOrder,
         description: data.description,
         category: data.category,
         subCategory: data.subCategory,
@@ -279,6 +282,7 @@ const CreateClient = ({ user, index }: Props) => {
           setValue("zip", "");
           setValue("state", "");
           setValue("coopRating", 1);
+          setValue("minOrder", 1);
           setC(false);
           setClicked(false);
           setProduct(undefined);
@@ -351,6 +355,10 @@ const CreateClient = ({ user, index }: Props) => {
       toast.error("Please enter a price greater than 0.");
       return;
     }
+    if (step === 2 && (minOrder <= 0 || !quantity)) {
+      toast.error("Please enter a minimum order greater than 0.");
+      return;
+    }
     if (step === 5) {
       if (!product) {
         toast.error("Let us know what produce you have!", {
@@ -366,6 +374,9 @@ const CreateClient = ({ user, index }: Props) => {
         return;
       } else if (quantity <= 0 || !quantity) {
         toast.error("Quantity must be greater than 0");
+        return;
+      } else if (minOrder <= 0 || !quantity) {
+        toast.error("Please enter a minimum order greater than 0.");
         return;
       } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
         toast.error("Please use the stock photo or upload at least one photo");
@@ -401,6 +412,15 @@ const CreateClient = ({ user, index }: Props) => {
   const handlePrevious = () => {
     setStep(step - 1);
   };
+  useEffect(() => {
+    if (quantity <= 0) {
+      setValue("stock", 1);
+    }
+    if (minOrder <= 0) {
+      setValue("minOrder", 1);
+    }
+  }),
+    [quantity, minOrder];
 
   return (
     <div className="h-screen">
@@ -609,6 +629,11 @@ const CreateClient = ({ user, index }: Props) => {
                     } else if (quantity <= 0 || !quantity) {
                       toast.error("Quantity must be greater than 0");
                       return;
+                    } else if (minOrder <= 0 || !quantity) {
+                      toast.error(
+                        "Please enter a minimum order greater than 0."
+                      );
+                      return;
                     } else if (
                       Array.isArray(imageSrc) &&
                       imageSrc.length === 0
@@ -776,9 +801,12 @@ const CreateClient = ({ user, index }: Props) => {
 
             {step === 2 && (
               <div className="flex flex-col gap-4">
-                <Heading title="" subtitle="" />
-                <div className="flex flex-col gap-8 w-1/2">
-                  <div>
+                <Heading
+                  title=""
+                  subtitle="Is it not worth your time for someone to order less than a certain amount of this item? Set a minimum order requirement, or leave it at 1"
+                />
+                <div className="flex flex-row items-center gap-16 w-full">
+                  <div className="w-1/2">
                     <Input
                       id="price"
                       label="Price per unit"
@@ -788,6 +816,16 @@ const CreateClient = ({ user, index }: Props) => {
                       register={register}
                       errors={errors}
                       formatPrice
+                    />
+                  </div>
+                  <div className="w-1/2">
+                    <Input
+                      id="minOrder"
+                      label="Minimum order"
+                      type="number"
+                      disabled={isLoading}
+                      register={register}
+                      errors={errors}
                     />
                   </div>
                 </div>
@@ -802,7 +840,7 @@ const CreateClient = ({ user, index }: Props) => {
                       errors={errors}
                     />
                   </div>
-                  <div className="w-1/4">
+                  <div className="w-1/2">
                     <UnitSelect
                       value={quantityType}
                       onChange={(value) => {
@@ -812,51 +850,53 @@ const CreateClient = ({ user, index }: Props) => {
                     />
                   </div>
                 </div>
-                <hr />
-                <div className="mb-3">
-                  <Label className="text-lg">
-                    Estimated Shelf Life
-                    <div className="mb-3 text-sm">
-                      <Counter
-                        onChange={(value) =>
-                          setCustomValue("shelfLifeDays", value)
-                        }
-                        value={shelfLifeDays}
-                        title="Days"
-                        subtitle=""
-                      />
-                    </div>
-                    <div className="mb-3 text-sm">
-                      <Counter
-                        onChange={(value) =>
-                          setCustomValue("shelfLifeWeeks", value)
-                        }
-                        value={shelfLifeWeeks}
-                        title="Weeks"
-                        subtitle=""
-                      />
-                    </div>
-                    <div className="mb-3 text-sm">
-                      <Counter
-                        onChange={(value) =>
-                          setCustomValue("shelfLifeMonths", value)
-                        }
-                        value={shelfLifeMonths}
-                        title="Months"
-                        subtitle=""
-                      />
-                    </div>
-                    <div className="mb-3 text-sm">
-                      <Counter
-                        onChange={(value) =>
-                          setCustomValue("shelfLifeYears", value)
-                        }
-                        value={shelfLifeYears}
-                        title="Years"
-                        subtitle=""
-                      />
-                    </div>
-                  </Label>
+                <hr className="mb-3 w-5/8" />
+                <div className="mb-3 flex justify-center text-center ">
+                  <div className="mb-3 w-1/4">
+                    <Label className="text-lg ">
+                      Estimated Shelf Life
+                      <div className="mb-3 text-sm">
+                        <Counter
+                          onChange={(value) =>
+                            setCustomValue("shelfLifeDays", value)
+                          }
+                          value={shelfLifeDays}
+                          title="Days"
+                          subtitle=""
+                        />
+                      </div>
+                      <div className="mb-3 text-sm">
+                        <Counter
+                          onChange={(value) =>
+                            setCustomValue("shelfLifeWeeks", value)
+                          }
+                          value={shelfLifeWeeks}
+                          title="Weeks"
+                          subtitle=""
+                        />
+                      </div>
+                      <div className="mb-3 text-sm">
+                        <Counter
+                          onChange={(value) =>
+                            setCustomValue("shelfLifeMonths", value)
+                          }
+                          value={shelfLifeMonths}
+                          title="Months"
+                          subtitle=""
+                        />
+                      </div>
+                      <div className="mb-3 text-sm">
+                        <Counter
+                          onChange={(value) =>
+                            setCustomValue("shelfLifeYears", value)
+                          }
+                          value={shelfLifeYears}
+                          title="Years"
+                          subtitle=""
+                        />
+                      </div>
+                    </Label>
+                  </div>
                 </div>
               </div>
             )}
