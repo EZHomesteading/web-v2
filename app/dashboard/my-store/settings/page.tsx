@@ -36,7 +36,6 @@ import {
   PopoverContent,
 } from "@/app/components/ui/popover";
 import { Input } from "@/app/components/ui/input";
-import { XCircleIcon } from "@heroicons/react/20/solid";
 import { PiTrashSimpleThin } from "react-icons/pi";
 
 const outfit = Outfit({

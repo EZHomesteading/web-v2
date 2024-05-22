@@ -121,7 +121,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         alt={`Carousel Image ${index + 1}`}
                         fill
                         className="object-cover rounded-md hover:scale-105"
-                        sizes="(max-width: 640) 100vw, (max-width: 764px) 50vw, (max-width: 1010px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                        sizes="(max-width: 640) 100vw, (max-width: 764px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                         priority={index === 0 && priority}
                       />
                     </CardContent>

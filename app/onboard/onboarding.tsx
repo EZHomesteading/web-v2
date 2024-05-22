@@ -104,8 +104,8 @@ const Onboarding = ({ user, index }: Props) => {
 
   return (
     <div className="h-screen">
-      <div className="flex flex-col sm:flex-row text-black">
-        <div className="onboard-left sm:w-2/5">
+      <div className="flex flex-col md:flex-row text-black">
+        <div className="onboard-left md:w-2/5">
           <div className="flex flex-col items-start pl-12 py-5 lg:py-20 ">
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
               Finish your account setup
@@ -261,9 +261,9 @@ const Onboarding = ({ user, index }: Props) => {
           </div>
         </div>
 
-        <div className="sm:w-3/5 onboard-right relative">
+        <div className="md:w-3/5 onboard-right relative">
           {step === 1 && (
-            <div className="sm:min-h-screen  hideOverflow py-20">
+            <div className="sm:min-h-screen  hideOverflow lg:py-20">
               <StoreStep
                 coOpHours={coOpHours}
                 setCoOpHours={setCoOpHours}
