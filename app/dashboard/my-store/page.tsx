@@ -13,7 +13,6 @@ const PropertiesPage = async () => {
   }
 
   const listings = await getListingsByUserId({ userId: user.id });
-
   if (listings.length === 0) {
     return (
       <ClientOnly>

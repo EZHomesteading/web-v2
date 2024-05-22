@@ -33,17 +33,16 @@ export default function CoopHoursSlider({
     setValues(newValues);
     onChange(newValues[0], newValues[1]);
   };
-  console.log(values);
   return (
     <div className="space-y-5">
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-row justify-center items-center">
         <button onClick={onPrevDay}>
           <MdOutlineNavigateBefore className="h-10 w-10" />
         </button>
         <div className={`${outfit.className} flex justify-center text-2xl`}>
-          {day}
+          Primary {day} Hours
         </div>
-        <div className="flex justify-evenly">
+        <div className="flex">
           <button onClick={onNextDay}>
             <MdOutlineNavigateNext className="h-10 w-10" />
           </button>
@@ -55,7 +54,7 @@ export default function CoopHoursSlider({
             <Slider
               value={values}
               min={0}
-              max={1440}
+              max={1439}
               step={15}
               minStepsBetweenThumbs={2}
               onValueChange={handleChange}

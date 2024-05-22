@@ -9,12 +9,15 @@ export interface IListingsParams {
   lng?: string;
   q?: string;
   radius?: string;
-  pickProduceMyself?: string;
+  pm?: string;
   c?: string;
   p?: string;
   s?: string;
 }
-
+// pm = pick produce myself
+// c = coops
+// p = producers
+// s = stock
 export default async function GetListings(
   params: IListingsParams,
   page: number,
@@ -22,18 +25,10 @@ export default async function GetListings(
 ) {
   const user = await currentUser();
   try {
-    const { lat, lng, radius, q, pickProduceMyself, c, p, s } = params;
+    const { lat, lng, radius, q, pm, c, p, s } = params;
 
     let query: any = {};
 
-    if (pickProduceMyself) {
-      query.pickProduceMyself = pickProduceMyself === "true";
-    }
-    if (s === "f") {
-      query.stock = {
-        lt: 1,
-      };
-    }
     let listings: any[] = [];
     if (!user || user?.role === UserRole.CONSUMER) {
       listings = await prisma.listing.findMany({
@@ -42,7 +37,7 @@ export default async function GetListings(
             role: UserRole.COOP,
           },
           ...query,
-          stock: s === "f" ? { lt: 1 } : undefined,
+          stock: s === "f" ? { lt: 1 } : { gt: 0 },
         },
         select: {
           id: true,
@@ -83,7 +78,7 @@ export default async function GetListings(
               },
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           select: {
             id: true,
@@ -118,7 +113,7 @@ export default async function GetListings(
               role: UserRole.COOP,
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           select: {
             id: true,
@@ -153,7 +148,7 @@ export default async function GetListings(
               role: UserRole.PRODUCER,
             },
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           orderBy: {
             createdAt: "desc",
@@ -185,7 +180,7 @@ export default async function GetListings(
         listings = await prisma.listing.findMany({
           where: {
             ...query,
-            stock: s === "f" ? { lt: 1 } : undefined,
+            stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
           orderBy: {
             createdAt: "desc",

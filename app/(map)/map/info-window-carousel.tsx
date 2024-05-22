@@ -27,6 +27,7 @@ const InfoWindowCarousel = ({ images, handleInfoWindowClose }: Props) => {
                   alt={`Carousel Image ${index + 1}`}
                   fill
                   className="object-cover rounded-t-md"
+                  sizes="(max-width: 640) 100vw, (max-width: 764px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
                 <button
                   className="text-black bg-white rounded-full hover:text-gray-700 absolute top-1 right-1 h-5 w-5 flex items-center justify-center"
