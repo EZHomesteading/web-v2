@@ -170,9 +170,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
               className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
             >
               <div className="font-semibold"> ${data.price}</div>
-              {data.quantityType && (
-                <div className="font-light">per {data.quantityType}</div>
-              )}
+
+              <div className="font-light">per {data.quantityType}</div>
             </div>
           </div>
           <div className="flex justify-end">
