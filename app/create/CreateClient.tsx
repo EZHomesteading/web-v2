@@ -3,7 +3,6 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
-import { ExtendedHours } from "@/next-auth";
 import {
   Popover,
   PopoverContent,
@@ -36,7 +35,7 @@ import SearchClient, {
 } from "@/app/components/client/SearchClient";
 import Heading from "@/app/components/Heading";
 
-import Input from "@/app/components/inputs/Input";
+import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
 import Counter from "@/app/components/inputs/Counter";
@@ -48,14 +47,19 @@ import Image from "next/image";
 
 import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
+import { Textarea } from "../components/ui/textarea";
+import Map from "./components/location-map";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface Props {
   user: UserInfo;
   index: number;
 }
+
 const CreateClient = ({ user, index }: Props) => {
   type AddressComponents = {
     street: string;
@@ -110,62 +114,6 @@ const CreateClient = ({ user, index }: Props) => {
       minOrder: 1,
     },
   });
-
-  const handleCheckboxChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    isCertificationCheckbox = false
-  ) => {
-    const checked = event.target.checked;
-    if (isCertificationCheckbox) {
-      setCertificationChecked(checked);
-      if (checked && coopRating === 1) {
-        setCoopRating(2);
-      }
-    } else {
-      let newRating = checked ? coopRating + 1 : coopRating - 1;
-      newRating = Math.max(1, Math.min(newRating, 5));
-      setCoopRating(newRating);
-    }
-  };
-
-  const shelfLifeDays = watch("shelfLifeDays");
-  const shelfLifeWeeks = watch("shelfLifeWeeks");
-  const shelfLifeMonths = watch("shelfLifeMonths");
-  const shelfLifeYears = watch("shelfLifeYears");
-  const imageSrc = watch("imageSrc");
-  const minOrder = watch("minOrder");
-  const quantity = watch("stock");
-  const price = watch("price");
-  const description = watch("description");
-
-  const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
-  };
-
-  const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
-
   const handleAddressSelect = ({
     street,
     city,
@@ -176,6 +124,55 @@ const CreateClient = ({ user, index }: Props) => {
     setValue("city", city);
     setValue("state", state);
     setValue("zip", zip);
+  };
+
+  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
+  const [checkbox2Checked, setCheckbox2Checked] = useState(false);
+  const [checkbox3Checked, setCheckbox3Checked] = useState(false);
+  const [checkbox4Checked, setCheckbox4Checked] = useState(false);
+
+  const handleCheckboxChange = (checked: boolean, index: number) => {
+    let newRating = checked ? coopRating + 1 : coopRating - 1;
+    newRating = Math.max(1, Math.min(newRating, 5));
+    setCoopRating(newRating);
+
+    switch (index) {
+      case 0:
+        setCheckbox1Checked(checked);
+        break;
+      case 1:
+        setCheckbox2Checked(checked);
+        break;
+      case 2:
+        setCheckbox3Checked(checked);
+        break;
+      case 3:
+        setCheckbox4Checked(checked);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleCertificationCheckboxChange = (checked: boolean) => {
+    setCertificationChecked(checked);
+  };
+  const [enterManually, setEnterManually] = useState(false);
+  const shelfLifeDays = watch("shelfLifeDays");
+  const shelfLifeWeeks = watch("shelfLifeWeeks");
+  const shelfLifeMonths = watch("shelfLifeMonths");
+  const shelfLifeYears = watch("shelfLifeYears");
+  const imageSrc = watch("imageSrc");
+  const minOrder = watch("minOrder");
+  const quantity = watch("stock");
+  const price = watch("price");
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   };
 
   const [imageStates, setImageStates] = useState(
@@ -208,25 +205,14 @@ const CreateClient = ({ user, index }: Props) => {
       )
     );
   };
-  let defaultHours;
-  if (user?.hours) {
-    defaultHours = user?.hours;
-  } else {
-    defaultHours = {
-      0: [{ open: 480, close: 1020 }],
-      1: [{ open: 480, close: 1020 }],
-      2: [{ open: 480, close: 1020 }],
-      3: [{ open: 480, close: 1020 }],
-      4: [{ open: 480, close: 1020 }],
-      5: [{ open: 480, close: 1020 }],
-      6: [{ open: 480, close: 1020 }],
-    };
-  }
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [center, setCenter] = useState<any>();
+
+  const [description, setDescription] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
     setIsLoading(true);
 
     const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
-    console.log(user);
     const geoData = await getLatLngFromAddress(fullAddress);
 
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -240,10 +226,10 @@ const CreateClient = ({ user, index }: Props) => {
       const formData = {
         title: data.title,
         minOrder: data.minOrder,
-        description: data.description,
+        description: description,
         category: data.category,
         subCategory: data.subCategory,
-        coopRating: data.coopRating,
+        coopRating: coopRating,
         price: formattedPrice,
         imageSrc: data.imageSrc,
         stock: parseInt(data.stock, 10),
@@ -293,7 +279,11 @@ const CreateClient = ({ user, index }: Props) => {
         })
         .catch(() => {
           toast.error(
-            "Please make sure you've added information for all of the fields."
+            "Please make sure you've added information for all of the fields.",
+            {
+              duration: 2000,
+              position: "bottom-center",
+            }
           );
         })
         .finally(() => {
@@ -302,43 +292,60 @@ const CreateClient = ({ user, index }: Props) => {
         });
     } else {
       setIsLoading(false);
-      toast.error("Please select or enter a valid address.");
+      toast.error("Please select or enter a valid address.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
     }
   };
-  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
   const handleNext = async () => {
     if (step === 1 && !product) {
       toast.error("Let us know what produce you have!", {
         duration: 2000,
-        position: "bottom-right",
+        position: "bottom-center",
       });
       return;
     }
 
     if (step === 1 && !description) {
-      toast.error("Please write a brief description");
+      toast.error("Please write a brief description", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
 
     if (step === 2 && !quantityType) {
-      toast.error("Please enter a unit for your listing");
+      toast.error("Please enter a unit for your listing", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
 
     if (step === 2 && (quantity <= 0 || !quantity)) {
-      toast.error("Quantity must be greater than 0");
+      toast.error("Quantity must be greater than 0", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
 
     if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
-      toast.error("Please use the stock photo or upload atleast one photo");
+      toast.error("Please use the stock photo or upload atleast one photo", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
 
-    // if (step === STEPS.ORGANIC && !certificationChecked) {
-    //   toast.error("You must certify that the above information is accurate.");
-    //   return;
-    // }
+    if (step === 3 && !certificationChecked) {
+      toast.error("You must certify that the above information is accurate.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
 
     if (
       step === 2 &&
@@ -347,16 +354,25 @@ const CreateClient = ({ user, index }: Props) => {
       shelfLifeMonths <= 0 &&
       shelfLifeYears <= 0
     ) {
-      toast.error("Shelf life must be at least 1 day");
+      toast.error("Shelf life must be at least 1 day", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
 
     if (step === 2 && (price <= 0 || !quantity)) {
-      toast.error("Please enter a price greater than 0.");
+      toast.error("Please enter a price greater than 0.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
     if (step === 2 && (minOrder <= 0 || !quantity)) {
-      toast.error("Please enter a minimum order greater than 0.");
+      toast.error("Please enter a minimum order greater than 0.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
       return;
     }
     if (step === 5) {
@@ -367,43 +383,56 @@ const CreateClient = ({ user, index }: Props) => {
         });
         return;
       } else if (!description) {
-        toast.error("Please write a brief description");
+        toast.error("Please write a brief description", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       } else if (!quantityType) {
-        toast.error("Please enter a unit for your listing");
+        toast.error("Please enter a unit for your listing", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       } else if (quantity <= 0 || !quantity) {
-        toast.error("Quantity must be greater than 0");
+        toast.error("Quantity must be greater than 0", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       } else if (minOrder <= 0 || !quantity) {
-        toast.error("Please enter a minimum order greater than 0.");
+        toast.error("Please enter a minimum order greater than 0.", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
-        toast.error("Please use the stock photo or upload at least one photo");
+        toast.error("Please use the stock photo or upload at least one photo", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
-      }
-
-      // if (step === STEPS.ORGANIC && !certificationChecked) {
-      //   toast.error("You must certify that the above information is accurate.");
-      //   return;
-      // }
-      else if (
+      } else if (
         shelfLifeDays <= 0 &&
         shelfLifeWeeks <= 0 &&
         shelfLifeMonths <= 0 &&
         shelfLifeYears <= 0
       ) {
-        toast.error("Shelf life must be at least 1 day");
+        toast.error("Shelf life must be at least 1 day", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       } else if (price <= 0 || !quantity) {
-        toast.error("Please enter a price greater than 0.");
+        toast.error("Please enter a price greater than 0.", {
+          duration: 2000,
+          position: "bottom-center",
+        });
         return;
       }
     }
-    if (step === 6) {
+    if (step === 5) {
       handleSubmit(onSubmit)();
-
-      //router.push("/dashboard/my-store");
     } else {
       setStep(step + 1);
     }
@@ -421,19 +450,37 @@ const CreateClient = ({ user, index }: Props) => {
     }
   }),
     [quantity, minOrder];
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
 
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
   return (
-    <div className="h-screen">
+    <div className={`${outfit.className}`}>
       <div className="flex flex-col md:flex-row text-black">
-        <div className="onboard-left md:w-2/5">
-          <div className="flex flex-col items-start pl-12 py-5 lg:py-20 ">
+        <div className="onboard-left md:w-2/5 md:h-screen">
+          <div className="flex flex-col items-start pl-6 py-5 md:py-20 ">
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
-              Create Your New Listing
+              List Your Excess Produce
             </h2>
             {step === 1 && (
               <div className="flex flex-row">
                 <div className="2xl:text-4xl text-lg font-bold tracking-tight">
-                  Tell us about the Product
+                  First, let&apos;s go over the basics
                 </div>
               </div>
             )}
@@ -441,7 +488,7 @@ const CreateClient = ({ user, index }: Props) => {
               <div className="flex flex-row items-center">
                 {" "}
                 <div className="2xl:text-5xl text-lg font-bold tracking-tight flex">
-                  Share some basics about your product
+                  Next, Provide Some General Info
                 </div>
               </div>
             )}
@@ -457,37 +504,29 @@ const CreateClient = ({ user, index }: Props) => {
                         <CiCircleInfo className="lg:text-4xl" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="popover xl:absolute xl:bottom-10">
+                    <PopoverContent
+                      className={`${outfit.className} popover xl:absolute xl:bottom-10`}
+                    >
                       <div className="grid gap-4">
                         <div className="space-y-2">
                           <p className="text-sm text-muted-foreground">
-                            EZHomesteading will periodically test certain farms
-                            foodstuffs to ensure the validity of these claims.
+                            EZHomesteading will randomly & anonymously purchase
+                            goods from sellers to test the validity of
+                            certifications & promote consumer confidence
                           </p>
                         </div>
                       </div>
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
-                  Select all that apply to increase your EZH Organic Rating
-                </div>
               </div>
             )}
+
             {step === 4 && (
               <div className="flex flex-col items-start">
                 <div className="flex flex-row">
                   <div className="2xl:text-3xl text-lg font-bold tracking-tight">
-                    Set up your store hours If you haven't already.
-                  </div>
-                </div>
-              </div>
-            )}
-            {step === 5 && (
-              <div className="flex flex-col items-start">
-                <div className="flex flex-row">
-                  <div className="2xl:text-3xl text-lg font-bold tracking-tight">
-                    Add a photo
+                    You're Almost Done, We Just Need Some Pictures
                   </div>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -512,7 +551,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 6 && (
+            {step === 5 && (
               <div className="flex flex-col items-start">
                 <div className="flex flex-row">
                   <div className="2xl:text-3xl text-lg font-bold tracking-tight">
@@ -542,96 +581,95 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            <Breadcrumb
-              className={`${outfit.className} text-black pt-5 z-10 text-xs`}
-            >
-              <BreadcrumbList>
+            <Breadcrumb className={`${outfit.className} text-black pt-1 z-10 `}>
+              <BreadcrumbList className="text-[.6rem]">
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className="text-xs">
-                    Home
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
                     step === 1
-                      ? "font-bold cursor-none text-xs"
-                      : "font-normal cursor-pointer text-xs "
+                      ? "font-bold cursor-none"
+                      : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(1)}
                 >
-                  Description
+                  General
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
                     step === 2
-                      ? "font-bold cursor-none text-xs"
+                      ? "font-bold cursor-none"
                       : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(2)}
                 >
-                  Info
+                  Specifics
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
                     step === 3
                       ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer text-xs"
+                      : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(3)}
                 >
                   Rating
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
+
                 <BreadcrumbItem
                   className={
                     step === 4
                       ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer text-xs"
+                      : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(4)}
-                >
-                  Hours
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 5
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer text-xs"
-                  }
-                  onMouseDown={() => setStep(5)}
                 >
                   Photos
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
-                    step === 6
+                    step === 5
                       ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer text-xs"
+                      : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => {
                     if (!product) {
                       toast.error("Let us know what produce you have!", {
                         duration: 2000,
-                        position: "bottom-right",
+                        position: "bottom-center",
                       });
                       return;
                     } else if (!description) {
-                      toast.error("Please write a brief description");
+                      toast.error("Please write a brief description", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
                       return;
                     } else if (!quantityType) {
-                      toast.error("Please enter a unit for your listing");
+                      toast.error("Please enter a unit for your listing", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
                       return;
                     } else if (quantity <= 0 || !quantity) {
-                      toast.error("Quantity must be greater than 0");
+                      toast.error("Quantity must be greater than 0", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
                       return;
                     } else if (minOrder <= 0 || !quantity) {
                       toast.error(
-                        "Please enter a minimum order greater than 0."
+                        "Please enter a minimum order greater than 0.",
+                        {
+                          duration: 2000,
+                          position: "bottom-center",
+                        }
                       );
                       return;
                     } else if (
@@ -639,28 +677,32 @@ const CreateClient = ({ user, index }: Props) => {
                       imageSrc.length === 0
                     ) {
                       toast.error(
-                        "Please use the stock photo or upload at least one photo"
+                        "Please use the stock photo or upload at least one photo",
+                        {
+                          duration: 2000,
+                          position: "bottom-center",
+                        }
                       );
                       return;
-                    }
-
-                    // if (step === STEPS.ORGANIC && !certificationChecked) {
-                    //   toast.error("You must certify that the above information is accurate.");
-                    //   return;
-                    // }
-                    else if (
+                    } else if (
                       shelfLifeDays <= 0 &&
                       shelfLifeWeeks <= 0 &&
                       shelfLifeMonths <= 0 &&
                       shelfLifeYears <= 0
                     ) {
-                      toast.error("Shelf life must be at least 1 day");
+                      toast.error("Shelf life must be at least 1 day", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
                       return;
                     } else if (price <= 0 || !quantity) {
-                      toast.error("Please enter a price greater than 0.");
+                      toast.error("Please enter a price greater than 0.", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
                       return;
                     } else {
-                      setStep(6);
+                      setStep(5);
                     }
                   }}
                 >
@@ -672,17 +714,19 @@ const CreateClient = ({ user, index }: Props) => {
         </div>
 
         <div className="md:w-3/5 onboard-right relative">
-          <div className="sm:min-h-screen mx-[5%] hideOverflow lg:py-20">
+          <div className=" mx-[5%] md:py-20">
             {step === 1 && (
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-row items-center justify-between w-full">
+              <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full">
+                <div className="flex md:flex-row md:items-center md:justify-between w-full flex-col items-start">
                   <Heading
-                    title="List your produce!"
-                    subtitle="Please provide a name and brief description"
+                    title="Provide a name and description"
+                    subtitle="Max length of 300 characters for description"
                   />
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button>Suggest a new Listing</button>
+                      <button className="bg-slate-500 shadow-sm p-2 rounded-full text-white text-xs">
+                        Suggest a new Listing
+                      </button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
@@ -725,133 +769,145 @@ const CreateClient = ({ user, index }: Props) => {
                   />
                 </div>
                 <hr />
-                <div className="z-0">
-                  <Input
-                    id="description"
-                    label="Description"
-                    disabled={isLoading}
-                    register={register}
-                    errors={errors}
-                  />
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="flex flex-col gap-4">
-                <Heading
-                  title=""
-                  subtitle="Is it not worth your time for someone to order less than a certain amount of this item? Set a minimum order requirement, or leave it at 1"
+                <Textarea
+                  id="description"
+                  placeholder="Description"
+                  disabled={isLoading}
+                  className="h-[30vh] shadow-md text-[14px] bg"
+                  maxLength={300}
+                  onChange={(e) => setDescription(e.target.value)}
+                  value={description}
                 />
-                <div className="flex flex-row items-center gap-16 w-full">
-                  <div className="w-1/2">
-                    <Input
-                      id="price"
-                      label="Price per unit"
-                      type="number"
-                      step="0.01"
-                      disabled={isLoading}
-                      register={register}
-                      errors={errors}
-                      formatPrice
-                    />
+              </div>
+            )}
+            {step === 2 && (
+              <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full">
+                <div className={`text-start`}>
+                  <div className="text-xl sm:text-2xl font-bold">
+                    Add Quantity, Shelf Life, and Units
                   </div>
-                  <div className="w-1/2">
-                    <Input
-                      id="minOrder"
-                      label="Minimum order"
-                      type="number"
-                      disabled={isLoading}
-                      register={register}
-                      errors={errors}
-                    />
+                  <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.5rem]">
+                    Not worth your time for someone to order less than a certain
+                    amount of this item? Set a minimum order requirement, or
+                    leave it at 1
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-16 w-full">
-                  <div className="w-1/2">
-                    <Input
-                      id="stock"
-                      label="Quantity"
-                      type="number"
-                      disabled={isLoading}
-                      register={register}
-                      errors={errors}
-                    />
+                <div className="flex flex-col justify-center items-start gap-2">
+                  <div className="w-full xl:w-2/3">
+                    <div className="flex flex-row gap-2">
+                      <div className="w-1/2">
+                        <Input
+                          id="stock"
+                          label="Quantity"
+                          type="number"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />{" "}
+                      </div>
+                      <div className="w-1/2">
+                        <UnitSelect
+                          value={quantityType}
+                          onChange={(value) => {
+                            setQuantityType(value as QuantityTypeValue);
+                            setValue("quantityType", value?.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-row gap-2 mt-2">
+                      <div className="w-1/2">
+                        <Input
+                          id="price"
+                          label="Price per unit"
+                          type="number"
+                          step="0.01"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                          formatPrice
+                        />{" "}
+                      </div>
+                      <div className="w-1/2">
+                        <Input
+                          id="minOrder"
+                          label="Minimum order"
+                          type="number"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-1/2">
-                    <UnitSelect
-                      value={quantityType}
-                      onChange={(value) => {
-                        setQuantityType(value as QuantityTypeValue);
-                        setValue("quantityType", value?.value);
-                      }}
-                    />
-                  </div>
-                </div>
-                <hr className="mb-3 w-5/8" />
-                <div className="mb-3 flex justify-center text-center ">
-                  <div className="mb-3 w-1/4">
-                    <Label className="text-lg ">
-                      Estimated Shelf Life
-                      <div className="mb-3 text-sm">
-                        <Counter
-                          onChange={(value) =>
-                            setCustomValue("shelfLifeDays", value)
-                          }
-                          value={shelfLifeDays}
-                          title="Days"
-                          subtitle=""
-                        />
-                      </div>
-                      <div className="mb-3 text-sm">
-                        <Counter
-                          onChange={(value) =>
-                            setCustomValue("shelfLifeWeeks", value)
-                          }
-                          value={shelfLifeWeeks}
-                          title="Weeks"
-                          subtitle=""
-                        />
-                      </div>
-                      <div className="mb-3 text-sm">
-                        <Counter
-                          onChange={(value) =>
-                            setCustomValue("shelfLifeMonths", value)
-                          }
-                          value={shelfLifeMonths}
-                          title="Months"
-                          subtitle=""
-                        />
-                      </div>
-                      <div className="mb-3 text-sm">
-                        <Counter
-                          onChange={(value) =>
-                            setCustomValue("shelfLifeYears", value)
-                          }
-                          value={shelfLifeYears}
-                          title="Years"
-                          subtitle=""
-                        />
-                      </div>
-                    </Label>
+                  <div className="m-0 p-0 md:mb-3  border-black border-[1px] w-full"></div>
+                  <div className="w-full lg:w-1/2">
+                    <Label className="text-xl">Estimated Shelf Life </Label>
+                    <div className="mt-2 space-y-2">
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeDays", value)
+                        }
+                        value={shelfLifeDays}
+                        title="Days"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeWeeks", value)
+                        }
+                        value={shelfLifeWeeks}
+                        title="Weeks"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeMonths", value)
+                        }
+                        value={shelfLifeMonths}
+                        title="Months"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeYears", value)
+                        }
+                        value={shelfLifeYears}
+                        title="Years"
+                        subtitle=""
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-
             {step === 3 && (
-              <div className="flex flex-col gap-8">
-                <Heading title="" />
+              <div className="flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full">
+                <div className={`text-start`}>
+                  <div className="text-xl sm:text-2xl font-bold">
+                    Help Us Keep EZHomesteading Honestly Organic
+                  </div>
+                  <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                    Your base score is one, only check the boxes if they are
+                    accurate
+                  </div>
+                </div>
                 <div className="flex flex-col gap-y-2">
                   <div className="flex flex-row gap-x-2 items-center">
                     <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
+                      checked={checkbox1Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 0)
+                      }
                     />
                     <Label>This produce is not genetically modified</Label>
                   </div>
                   <div className="flex flex-row gap-x-2 items-center">
                     <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
+                      checked={checkbox2Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 1)
+                      }
                     />
                     <Label>
                       This produce was not grown with inorganic fertilizers
@@ -859,7 +915,10 @@ const CreateClient = ({ user, index }: Props) => {
                   </div>
                   <div className="flex flex-row gap-x-2 items-center">
                     <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
+                      checked={checkbox3Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 2)
+                      }
                     />
                     <Label>
                       This produce was not grown with inorganic pestacides
@@ -867,13 +926,19 @@ const CreateClient = ({ user, index }: Props) => {
                   </div>
                   <div className="flex flex-row gap-x-2 items-center">
                     <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e)}
+                      checked={checkbox4Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 3)
+                      }
                     />
                     <Label>This produce was not modified after harvest</Label>
                   </div>
                   <div className="flex flex-row gap-x-2 font-extrabold items-center">
                     <Checkbox
-                    // onChange={(e) => handleCheckboxChange(e, true)}
+                      checked={certificationChecked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCertificationCheckboxChange(checked)
+                      }
                     />
                     <Label className="font-bold">
                       I certify that all of the above information is accurate
@@ -882,7 +947,6 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 4 && <div> INSERT HOURS COMPONENT HERE</div>}
             {step > 1 && (
               <IoReturnDownBack
                 onClick={handlePrevious}
@@ -890,18 +954,21 @@ const CreateClient = ({ user, index }: Props) => {
               />
             )}
 
-            {step < 7 && (
+            {step < 6 && (
               <IoReturnDownForward
                 onClick={handleNext}
                 className="absolute bottom-0 right-5 text-6xl hover:cursor-pointer"
               />
             )}
-            {step === 5 && (
+            {step === 4 && (
               <div
-                className={`${outfit.className} flex flex-col gap-8 sm:justify-between items-stretch`}
+                className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full`}
               >
-                <Heading title="" />
-                <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center">
+                <Heading
+                  title="Take or Add Photos of your Product"
+                  subtitle="Actual photos are preferred over images from the web, click upload image to capture or add a photo"
+                />
+                <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center  ">
                   {[...Array(3)].map((_, index) => (
                     <div
                       key={index}
@@ -935,7 +1002,7 @@ const CreateClient = ({ user, index }: Props) => {
                           </button>
                         </>
                       ) : (
-                        <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full">
+                        <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full bg">
                           {" "}
                           <UploadButton
                             endpoint="imageUploader"
@@ -957,7 +1024,7 @@ const CreateClient = ({ user, index }: Props) => {
                             appearance={{
                               container: "h-full w-max",
                             }}
-                            className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+                            className="ut-allowed-content:hidden ut-button:bg-transparent ut-button:text-black ut-button:w-[160px] ut-button:sm:w-[240px] ut-button:px-2 ut-button:h-full"
                             content={{
                               button({ ready }) {
                                 if (ready) return <div>Upload Image</div>;
@@ -972,65 +1039,108 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 6 && (
-              <div className="sm:min-h-screen h-[calc(100vh-264px)] hideOverflow py-20">
+            {step === 5 && (
+              <div className=" h-[calc(100vh-138.39px)] md:h-full hideOverflow">
                 <div className="flex flex-col gap-8">
-                  <Heading title="" />
-                  <div className="flex flex-col lg:flex-row justify-evenly">
-                    <div className="flex flex-row lg:flex-col justify-center">
-                      <PiStorefrontThin
-                        size="5em"
-                        className={
-                          clicked
-                            ? "text-green-500 cursor-pointer"
-                            : "cursor-pointer hover:text-green-500"
-                        }
-                        onClick={() => {
-                          setValue("street", user?.location?.address[0]);
-                          setValue("city", user?.location?.address[1]);
-                          setValue("state", user?.location?.address[2]);
-                          setValue("zip", user?.location?.address[3]);
-                          setClicked(true);
-                        }}
-                      />
-                      <ul>
-                        <li className={`${outfit.className}`}>
-                          Use My Default Location
-                        </li>{" "}
-                        {user?.location?.address.length === 4 ? (
-                          <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
-                        ) : (
-                          <li>Full Address not available</li>
-                        )}
-                      </ul>
+                  <Heading
+                    title="Add an Address"
+                    subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
+                  />
+                  {!c && (
+                    <div className="flex flex-col lg:flex-row justify-evenly">
+                      <div className="flex flex-row lg:flex-col justify-center">
+                        <PiStorefrontThin
+                          size="5em"
+                          className={
+                            clicked
+                              ? "text-green-500 cursor-pointer"
+                              : "cursor-pointer hover:text-green-500"
+                          }
+                          onClick={() => {
+                            setValue("street", user?.location?.address[0]);
+                            setValue("city", user?.location?.address[1]);
+                            setValue("state", user?.location?.address[2]);
+                            setValue("zip", user?.location?.address[3]);
+                            setClicked(true);
+                            setC(false);
+                          }}
+                        />
+                        <ul>
+                          <li className={`${outfit.className}`}>
+                            Use My Default Location
+                          </li>{" "}
+                          {user?.location?.address.length === 4 ? (
+                            <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                          ) : (
+                            <li>Full Address not available</li>
+                          )}
+                        </ul>
+                      </div>
+                      <div
+                        className={`${outfit.className} flex flex-row lg:flex-col `}
+                      >
+                        <BiSearch
+                          size="5em"
+                          className={
+                            c
+                              ? "light cursor-pointer"
+                              : "cursor-pointer hover:text-green-500"
+                          }
+                          onClick={() => {
+                            toggleLocationInput();
+                            setClicked(false);
+                            setC(true);
+                          }}
+                          style={{ cursor: "pointer" }}
+                        />
+                        <div>
+                          <div>Use a Different Location</div>
+                          <div className="text-xs">
+                            If your selling location differs from you default
+                            address
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div
-                      className={`${outfit.className} flex flex-row lg:flex-col `}
-                    >
-                      <BiSearch
-                        size="5em"
-                        className={
-                          c
-                            ? "text-green-500 cursor-pointer"
-                            : "cursor-pointer hover:text-green-500"
-                        }
-                        onClick={() => {
-                          toggleLocationInput();
-                          setClicked(false);
-                          setC(true);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      />
-                      Use a Different Location
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-8">
-                    <LocationSearchInput
-                      address={watch("address")}
-                      setAddress={(address) => setValue("address", address)}
-                      onAddressParsed={handleAddressSelect}
-                    />
-                  </div>
+                  )}
+                  <LocationSearchInput
+                    address={watch("address")}
+                    setAddress={(address) => setValue("address", address)}
+                    onAddressParsed={handleAddressSelect}
+                  />
+                  {selectedAddress && (
+                    <>
+                      <div className="flex flex-col gap-0 w-full items-center">
+                        <div className="w-2/3">
+                          <Input
+                            id="street"
+                            register={register}
+                            label="Street Adress"
+                            errors={errors}
+                          />
+                          <Input
+                            id="city"
+                            register={register}
+                            label="City"
+                            errors={errors}
+                          />
+                          <Input
+                            id="state"
+                            register={register}
+                            label="State"
+                            errors={errors}
+                          />{" "}
+                          <Input
+                            id="zip"
+                            register={register}
+                            label="Zip"
+                            errors={errors}
+                          />
+                        </div>
+                      </div>
+                      {center && <Map center={center} />}
+                    </>
+                  )}
                 </div>
               </div>
             )}

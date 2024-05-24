@@ -33,18 +33,22 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
             <div>{option.label}</div>
           </div>
         )}
+        components={{
+          DropdownIndicator: () => null,
+          IndicatorSeparator: () => null,
+        }}
         classNames={{
-          control: () => "p-3 border-2",
-          input: () => "text-lg",
-          option: () => "text-lg",
+          control: () => "p-2 bg shadow-md ",
+          input: () => "text-2xl text-black",
+          option: () => "text-xs",
         }}
         theme={(theme) => ({
           ...theme,
-          borderRadius: 6,
+          borderRadius: 5,
           colors: {
             ...theme.colors,
-            primary: "black",
-            primary25: "#ffe4e6",
+            primary: "#ced9bb",
+            primary25: "#ced9bb",
           },
         })}
       />
