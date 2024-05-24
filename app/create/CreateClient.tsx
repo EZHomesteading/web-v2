@@ -114,18 +114,6 @@ const CreateClient = ({ user, index }: Props) => {
       minOrder: 1,
     },
   });
-  const handleAddressSelect = ({
-    street,
-    city,
-    state,
-    zip,
-  }: AddressComponents) => {
-    setValue("street", street);
-    setValue("city", city);
-    setValue("state", state);
-    setValue("zip", zip);
-  };
-
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [checkbox2Checked, setCheckbox2Checked] = useState(false);
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
@@ -205,8 +193,47 @@ const CreateClient = ({ user, index }: Props) => {
       )
     );
   };
-  const [selectedAddress, setSelectedAddress] = useState("");
-  const [center, setCenter] = useState<any>();
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
+
+  const handleAddressSelect = async ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+
+    const address = `${street}, ${city}, ${state} ${zip}`;
+    const latLng = await getLatLngFromAddress(address);
+
+    if (latLng) {
+      setCenter(latLng);
+      setMarker(latLng);
+    } else {
+      console.error("Failed to geocode address");
+    }
+  };
 
   const [description, setDescription] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
@@ -450,25 +477,12 @@ const CreateClient = ({ user, index }: Props) => {
     }
   }),
     [quantity, minOrder];
-  const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
+    lat: 44.58,
+    lng: -103.46,
+  });
+  const [marker, setMarker] = useState<google.maps.LatLngLiteral>();
 
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
   return (
     <div className={`${outfit.className}`}>
       <div className="flex flex-col md:flex-row text-black">
@@ -1040,107 +1054,116 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step === 5 && (
-              <div className=" h-[calc(100vh-138.39px)] md:h-full hideOverflow">
+              <div className=" h-[calc(100vh-138.39px)] md:h-full ">
                 <div className="flex flex-col gap-8">
                   <Heading
                     title="Add an Address"
                     subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
                   />
-                  {!c && (
-                    <div className="flex flex-col lg:flex-row justify-evenly">
-                      <div className="flex flex-row lg:flex-col justify-center">
-                        <PiStorefrontThin
-                          size="5em"
-                          className={
-                            clicked
-                              ? "text-green-500 cursor-pointer"
-                              : "cursor-pointer hover:text-green-500"
-                          }
-                          onClick={() => {
-                            setValue("street", user?.location?.address[0]);
-                            setValue("city", user?.location?.address[1]);
-                            setValue("state", user?.location?.address[2]);
-                            setValue("zip", user?.location?.address[3]);
-                            setClicked(true);
-                            setC(false);
-                          }}
-                        />
-                        <ul>
-                          <li className={`${outfit.className}`}>
-                            Use My Default Location
-                          </li>{" "}
-                          {user?.location?.address.length === 4 ? (
-                            <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
-                          ) : (
-                            <li>Full Address not available</li>
-                          )}
-                        </ul>
-                      </div>
-                      <div
-                        className={`${outfit.className} flex flex-row lg:flex-col `}
-                      >
-                        <BiSearch
-                          size="5em"
-                          className={
-                            c
-                              ? "light cursor-pointer"
-                              : "cursor-pointer hover:text-green-500"
-                          }
-                          onClick={() => {
-                            toggleLocationInput();
-                            setClicked(false);
-                            setC(true);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        />
-                        <div>
-                          <div>Use a Different Location</div>
-                          <div className="text-xs">
-                            If your selling location differs from you default
-                            address
+                  <div className="flex flex-col lg:flex-row justify-evenly">
+                    {!c && (
+                      <>
+                        <div className="flex flex-row lg:flex-col justify-center">
+                          <PiStorefrontThin
+                            size="5em"
+                            className={
+                              clicked
+                                ? "text-green-500 cursor-pointer"
+                                : "cursor-pointer hover:text-green-500"
+                            }
+                            onClick={() => {
+                              setValue("street", user?.location?.address[0]);
+                              setValue("city", user?.location?.address[1]);
+                              setValue("state", user?.location?.address[2]);
+                              setValue("zip", user?.location?.address[3]);
+                              setClicked(true);
+                              setC(false);
+                            }}
+                          />
+                          <ul>
+                            <li className={`${outfit.className}`}>
+                              Use My Default Location
+                            </li>{" "}
+                            {user?.location?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                            ) : (
+                              <li>Full Address not available</li>
+                            )}
+                          </ul>
+                        </div>
+                        <div
+                          className={`${outfit.className} flex flex-row lg:flex-col `}
+                        >
+                          <BiSearch
+                            size="5em"
+                            className={
+                              c
+                                ? "light cursor-pointer"
+                                : "cursor-pointer hover:text-green-500"
+                            }
+                            onClick={() => {
+                              setClicked(false);
+                              setC(true);
+                            }}
+                            style={{ cursor: "pointer" }}
+                          />
+                          <div>
+                            <div>Use a Different Location</div>
+                            <div className="text-xs">
+                              If your selling location differs from you default
+                              address
+                            </div>
                           </div>
                         </div>
+                      </>
+                    )}
+                  </div>
+                  {c && (
+                    <div className="relative">
+                      <div className="absolute w-1/2 top-4 left-1/2 transform -translate-x-1/2 z">
+                        <LocationSearchInput
+                          address={watch("address")}
+                          setAddress={(address) => setValue("address", address)}
+                          onAddressParsed={handleAddressSelect}
+                        />
+                      </div>
+                      <div className="rounded-lg">
+                        {" "}
+                        <Map center={center} marker={marker} />
                       </div>
                     </div>
                   )}
-                  <LocationSearchInput
-                    address={watch("address")}
-                    setAddress={(address) => setValue("address", address)}
-                    onAddressParsed={handleAddressSelect}
-                  />
-                  {selectedAddress && (
-                    <>
-                      <div className="flex flex-col gap-0 w-full items-center">
-                        <div className="w-2/3">
-                          <Input
-                            id="street"
-                            register={register}
-                            label="Street Adress"
-                            errors={errors}
-                          />
-                          <Input
-                            id="city"
-                            register={register}
-                            label="City"
-                            errors={errors}
-                          />
-                          <Input
-                            id="state"
-                            register={register}
-                            label="State"
-                            errors={errors}
-                          />{" "}
-                          <Input
-                            id="zip"
-                            register={register}
-                            label="Zip"
-                            errors={errors}
-                          />
-                        </div>
+
+                  {/* <>
+                    <div className="flex flex-col gap-0 w-full items-center">
+                      <div className="w-2/3">
+                        <Input
+                          id="street"
+                          register={register}
+                          label="Street Adress"
+                          errors={errors}
+                        />
+                        <Input
+                          id="city"
+                          register={register}
+                          label="City"
+                          errors={errors}
+                        />
+                        <Input
+                          id="state"
+                          register={register}
+                          label="State"
+                          errors={errors}
+                        />{" "}
+                        <Input
+                          id="zip"
+                          register={register}
+                          label="Zip"
+                          errors={errors}
+                        />
                       </div>
-                      {center && <Map center={center} />}
-                    </>
-                  )}
+                    </div>
+                  </> */}
                 </div>
               </div>
             )}

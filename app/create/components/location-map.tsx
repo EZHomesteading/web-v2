@@ -6,9 +6,10 @@ import Loading from "@/app/components/secondary-loader";
 
 interface MapProps {
   center: any;
+  marker: any;
 }
 
-const Map = ({ center }: MapProps) => {
+const Map = ({ center, marker }: MapProps) => {
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const { isLoaded } = useLoadScript({
@@ -31,7 +32,7 @@ const Map = ({ center }: MapProps) => {
     maxZoom: 13,
     scrollwheel: true,
     minZoom: 4,
-    gestureHandling: "greedy",
+    gestureHandling: "none",
   };
 
   if (!isLoaded) {
@@ -39,22 +40,26 @@ const Map = ({ center }: MapProps) => {
   }
 
   return (
-    <GoogleMap
-      onLoad={(map) => {
-        mapRef.current = map;
-      }}
-      mapContainerClassName="h-[calc(20vh-64px)] w-full"
-      options={mapOptions}
-    >
-      <MarkerF
-        position={center}
-        icon={{
-          url: "https://i.ibb.co/TMnKw45/circle-2.png",
-          scaledSize: new window.google.maps.Size(28, 28),
-          anchor: new window.google.maps.Point(25, 22),
+    <div className="rounded-lg">
+      <GoogleMap
+        onLoad={(map) => {
+          mapRef.current = map;
         }}
-      />
-    </GoogleMap>
+        mapContainerClassName="h-[calc(40vh-64px)] w-full"
+        options={mapOptions}
+      >
+        {marker && (
+          <MarkerF
+            position={center}
+            icon={{
+              url: "https://i.ibb.co/TMnKw45/circle-2.png",
+              scaledSize: new window.google.maps.Size(28, 28),
+              anchor: new window.google.maps.Point(25, 22),
+            }}
+          />
+        )}
+      </GoogleMap>
+    </div>
   );
 };
 
