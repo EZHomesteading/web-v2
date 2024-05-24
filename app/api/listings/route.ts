@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     quantityType,
     stock,
     shelfLife,
-
+    minOrder,
     location,
     price,
     subCategory,
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       shelfLife,
       subCategory,
       price,
-
+      minOrder,
       location: location as Location,
 
       coopRating,
