@@ -63,6 +63,7 @@ const UserMenu = ({ user }: Props) => {
               onClick={() => {
                 router.push("/create");
               }}
+              className="hover:cursor-pointer"
             >
               <CiSquarePlus className="w-10 h-10" />
             </div>
@@ -83,7 +84,7 @@ const UserMenu = ({ user }: Props) => {
           </>
         )}
 
-        <SheetTrigger className="border-[1px] p-[2px] rounded-md">
+        <SheetTrigger className="border-none p-[2px] rounded-md">
           <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>
