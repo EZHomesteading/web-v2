@@ -1,8 +1,4 @@
-import ListingInfo from "@/app/components/listings/ListingInfo";
 import { QuantityTypeValue } from "./UnitSelect";
-import ListingClient from "@/app/(pages)/listings/[listingId]/ListingClient";
-import ListingHead from "@/app/components/listings/ListingHead";
-import ListingReservation from "@/app/(pages)/listings/[listingId]/components/ListingReservation";
 import {
   Carousel,
   CarouselContent,
@@ -35,7 +31,7 @@ const Emulator = ({
   stock,
   quantityType,
   price,
-  imageSrc,
+  imageSrc = [],
   user,
   shelfLife,
   city,
@@ -63,7 +59,7 @@ const Emulator = ({
             setV(true);
           }}
         >
-          Show Phone
+          Show Mobile Preview
         </Button>
       )}
       <div
@@ -83,34 +79,37 @@ const Emulator = ({
               </div>
               <div className="pt-10 pb-8 h-[600px] overflow-y-auto">
                 <div className="w-full h-[30vh] overflow-hidden rounded-xl relative">
-                  <Carousel>
-                    <CarouselContent className="h-[30vh]">
-                      {imageSrc.map((_, index) => (
-                        <CarouselItem key={index}>
-                          <Card>
-                            <CardContent className="flex items-center justify-center relative aspect-square h-[30vh]">
-                              <Image
-                                src={imageSrc[index]}
-                                fill
-                                className="object-cover w-full"
-                                alt={product?.label}
-                              />
-                            </CardContent>
-                          </Card>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    {imageSrc.length > 1 && (
-                      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {" "}
+                  {Array.isArray(imageSrc) && imageSrc.length > 0 && (
+                    <Carousel>
+                      <CarouselContent className="h-[30vh]">
                         {imageSrc.map((_, index) => (
-                          <div
-                            key={index}
-                            className="w-2 h-2 rounded-full bg-white opacity-90 transition-opacity duration-200"
-                          />
+                          <CarouselItem key={index}>
+                            <Card>
+                              <CardContent className="flex items-center justify-center relative aspect-square h-[30vh]">
+                                <Image
+                                  src={imageSrc[index]}
+                                  fill
+                                  className="object-cover w-full"
+                                  alt={product?.label}
+                                />
+                              </CardContent>
+                            </Card>
+                          </CarouselItem>
                         ))}
-                      </div>
-                    )}
-                  </Carousel>
+                      </CarouselContent>
+                      {imageSrc.length > 1 && (
+                        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                          {imageSrc.map((_, index) => (
+                            <div
+                              key={index}
+                              className="w-2 h-2 rounded-full bg-white opacity-90 transition-opacity duration-200"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </Carousel>
+                  )}
                 </div>
                 <div className="mt-2 px-4">
                   <Heading
