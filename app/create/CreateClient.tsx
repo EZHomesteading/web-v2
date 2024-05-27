@@ -24,17 +24,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/components/ui/dialog";
-
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import Emulator from "./components/emulator";
 import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
-import Heading from "@/app/components/Heading";
 
+import Heading from "@/app/components/Heading";
 import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
@@ -42,13 +42,13 @@ import Counter from "@/app/components/inputs/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
-import { Outfit, Zilla_Slab } from "next/font/google";
+import { Outfit } from "next/font/google";
 import Image from "next/image";
 
 import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
-import { Textarea } from "../components/ui/textarea";
-import Map from "./components/location-map";
+import { Textarea } from "@/app/components/ui/textarea";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -212,8 +212,9 @@ const CreateClient = ({ user, index }: Props) => {
       return null;
     }
   };
-
-  const handleAddressSelect = async ({
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const handleAddressSelect = ({
     street,
     city,
     state,
@@ -223,18 +224,9 @@ const CreateClient = ({ user, index }: Props) => {
     setValue("city", city);
     setValue("state", state);
     setValue("zip", zip);
-
-    const address = `${street}, ${city}, ${state} ${zip}`;
-    const latLng = await getLatLngFromAddress(address);
-
-    if (latLng) {
-      setCenter(latLng);
-      setMarker(latLng);
-    } else {
-      console.error("Failed to geocode address");
-    }
+    setCity(city);
+    setState(state);
   };
-
   const [description, setDescription] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
     setIsLoading(true);
@@ -325,6 +317,7 @@ const CreateClient = ({ user, index }: Props) => {
       });
     }
   };
+
   const handleNext = async () => {
     if (step === 1 && !product) {
       toast.error("Let us know what produce you have!", {
@@ -464,10 +457,10 @@ const CreateClient = ({ user, index }: Props) => {
       setStep(step + 1);
     }
   };
-
   const handlePrevious = () => {
     setStep(step - 1);
   };
+
   useEffect(() => {
     if (quantity <= 0) {
       setValue("stock", 1);
@@ -477,39 +470,34 @@ const CreateClient = ({ user, index }: Props) => {
     }
   }),
     [quantity, minOrder];
-  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
-    lat: 44.58,
-    lng: -103.46,
-  });
-  const [marker, setMarker] = useState<google.maps.LatLngLiteral>();
 
   return (
     <div className={`${outfit.className}`}>
       <div className="flex flex-col md:flex-row text-black">
-        <div className="onboard-left md:w-2/5 md:h-screen">
-          <div className="flex flex-col items-start pl-6 py-5 md:py-20 ">
+        <div className="onboard-left md:w-2/5 md:min-h-screen relative">
+          <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
               List Your Excess Produce
             </h2>
             {step === 1 && (
-              <div className="flex flex-row">
+              <div className="flex flex-row fade-in">
                 <div className="2xl:text-4xl text-lg font-bold tracking-tight">
                   First, let&apos;s go over the basics
                 </div>
               </div>
             )}
             {step === 2 && (
-              <div className="flex flex-row items-center">
+              <div className="flex flex-row items-center fade-in">
                 {" "}
-                <div className="2xl:text-5xl text-lg font-bold tracking-tight flex">
+                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
                   Next, Provide Some General Info
                 </div>
               </div>
             )}
             {step === 3 && (
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
-                  <div className="2xl:text-3xl text-lg font-bold tracking-tight">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
                     Tell us how you grow your produce
                   </div>
                   <Popover>
@@ -537,9 +525,9 @@ const CreateClient = ({ user, index }: Props) => {
             )}
 
             {step === 4 && (
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
-                  <div className="2xl:text-3xl text-lg font-bold tracking-tight">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
                     You're Almost Done, We Just Need Some Pictures
                   </div>
                   <Popover>
@@ -566,9 +554,9 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step === 5 && (
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
-                  <div className="2xl:text-3xl text-lg font-bold tracking-tight">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tight">
                     Where is your farm or garden located?
                   </div>
                   <Popover>
@@ -725,12 +713,33 @@ const CreateClient = ({ user, index }: Props) => {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
+          <div className="hidden 2xl:block mt-8">
+            <div className="sticky bottom-0 left-0 right-0 px-6">
+              <Emulator
+                product={product}
+                description={description}
+                stock={quantity}
+                quantityType={quantityType}
+                price={price}
+                imageSrc={imageSrc}
+                user={user}
+                shelfLife={
+                  shelfLifeDays +
+                  shelfLifeWeeks * 7 +
+                  shelfLifeMonths * 30 +
+                  shelfLifeYears * 365
+                }
+                city={city}
+                state={state}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="md:w-3/5 onboard-right relative">
           <div className=" mx-[5%] md:py-20">
             {step === 1 && (
-              <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full">
+              <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full fade-in">
                 <div className="flex md:flex-row md:items-center md:justify-between w-full flex-col items-start">
                   <Heading
                     title="Provide a name and description"
@@ -788,14 +797,14 @@ const CreateClient = ({ user, index }: Props) => {
                   placeholder="Description"
                   disabled={isLoading}
                   className="h-[30vh] shadow-md text-[14px] bg"
-                  maxLength={300}
+                  maxLength={500}
                   onChange={(e) => setDescription(e.target.value)}
                   value={description}
                 />
               </div>
             )}
             {step === 2 && (
-              <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full">
+              <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full fade-in">
                 <div className={`text-start`}>
                   <div className="text-xl sm:text-2xl font-bold">
                     Add Quantity, Shelf Life, and Units
@@ -896,7 +905,9 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step === 3 && (
-              <div className="flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full">
+              <div
+                className={`flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full fade-in`}
+              >
                 <div className={`text-start`}>
                   <div className="text-xl sm:text-2xl font-bold">
                     Help Us Keep EZHomesteading Honestly Organic
@@ -976,7 +987,7 @@ const CreateClient = ({ user, index }: Props) => {
             )}
             {step === 4 && (
               <div
-                className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full`}
+                className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full fade-in`}
               >
                 <Heading
                   title="Take or Add Photos of your Product"
@@ -1054,116 +1065,93 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step === 5 && (
-              <div className=" h-[calc(100vh-138.39px)] md:h-full ">
-                <div className="flex flex-col gap-8">
+              <div
+                className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
+              >
+                <div className="flex flex-col">
                   <Heading
                     title="Add an Address"
                     subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
                   />
-                  <div className="flex flex-col lg:flex-row justify-evenly">
-                    {!c && (
-                      <>
-                        <div className="flex flex-row lg:flex-col justify-center">
-                          <PiStorefrontThin
-                            size="5em"
-                            className={
-                              clicked
-                                ? "text-green-500 cursor-pointer"
-                                : "cursor-pointer hover:text-green-500"
-                            }
-                            onClick={() => {
-                              setValue("street", user?.location?.address[0]);
-                              setValue("city", user?.location?.address[1]);
-                              setValue("state", user?.location?.address[2]);
-                              setValue("zip", user?.location?.address[3]);
-                              setClicked(true);
-                              setC(false);
-                            }}
-                          />
-                          <ul>
-                            <li className={`${outfit.className}`}>
-                              Use My Default Location
-                            </li>{" "}
-                            {user?.location?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
-                            ) : (
-                              <li>Full Address not available</li>
-                            )}
-                          </ul>
-                        </div>
-                        <div
-                          className={`${outfit.className} flex flex-row lg:flex-col `}
-                        >
-                          <BiSearch
-                            size="5em"
-                            className={
-                              c
-                                ? "light cursor-pointer"
-                                : "cursor-pointer hover:text-green-500"
-                            }
-                            onClick={() => {
-                              setClicked(false);
-                              setC(true);
-                            }}
-                            style={{ cursor: "pointer" }}
-                          />
-                          <div>
-                            <div>Use a Different Location</div>
-                            <div className="text-xs">
-                              If your selling location differs from you default
-                              address
-                            </div>
+                  <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                    <Card
+                      className={
+                        clicked
+                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                      }
+                      onClick={() => {
+                        setValue("street", user?.location?.address[0]);
+                        setValue("city", user?.location?.address[1]);
+                        setValue("state", user?.location?.address[2]);
+                        setValue("zip", user?.location?.address[3]);
+                        setClicked(true);
+                        setC(false);
+                        setCity(user?.location?.address[1] || "");
+                        setState(user?.location?.address[2] || "");
+                      }}
+                    >
+                      <CardHeader className="">
+                        <div className="text-start">
+                          <div className="text-xl sm:text-2xl font-bold">
+                            Use My Default Address
+                          </div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            <ul>
+                              <li className={`${outfit.className}`}></li>{" "}
+                              {user?.location?.address.length === 4 ? (
+                                <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                              ) : (
+                                <li>Full Address not available</li>
+                              )}
+                            </ul>
                           </div>
                         </div>
-                      </>
-                    )}
+                      </CardHeader>
+                      <CardContent className="flex justify-end ">
+                        <PiStorefrontThin size="5em" />
+                      </CardContent>
+                    </Card>
+                    <Card
+                      className={
+                        c
+                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                      }
+                      onClick={() => {
+                        toggleLocationInput();
+                        setClicked(false);
+                        setC(true);
+                      }}
+                    >
+                      <CardHeader>
+                        <div className="text-start">
+                          <div className="text-xl sm:text-2xl font-bold">
+                            Use a Different Location
+                          </div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            If your selling location differs from you default
+                            address
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex justify-end">
+                        {!c ? (
+                          <BiSearch size="5em" style={{ cursor: "pointer" }} />
+                        ) : (
+                          <div className="w-full">
+                            <LocationSearchInput
+                              address={watch("address")}
+                              setAddress={(address) =>
+                                setValue("address", address)
+                              }
+                              onAddressParsed={handleAddressSelect}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
-                  {c && (
-                    <div className="relative">
-                      <div className="absolute w-1/2 top-4 left-1/2 transform -translate-x-1/2 z">
-                        <LocationSearchInput
-                          address={watch("address")}
-                          setAddress={(address) => setValue("address", address)}
-                          onAddressParsed={handleAddressSelect}
-                        />
-                      </div>
-                      <div className="rounded-lg">
-                        {" "}
-                        <Map center={center} marker={marker} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* <>
-                    <div className="flex flex-col gap-0 w-full items-center">
-                      <div className="w-2/3">
-                        <Input
-                          id="street"
-                          register={register}
-                          label="Street Adress"
-                          errors={errors}
-                        />
-                        <Input
-                          id="city"
-                          register={register}
-                          label="City"
-                          errors={errors}
-                        />
-                        <Input
-                          id="state"
-                          register={register}
-                          label="State"
-                          errors={errors}
-                        />{" "}
-                        <Input
-                          id="zip"
-                          register={register}
-                          label="Zip"
-                          errors={errors}
-                        />
-                      </div>
-                    </div>
-                  </> */}
                 </div>
               </div>
             )}

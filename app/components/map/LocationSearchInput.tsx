@@ -72,9 +72,9 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
             <div style={{ position: "relative" }}>
               <input
                 {...getInputProps({
-                  placeholder: "Search by Address",
+                  placeholder: "Search by address, city, zip, and state",
                   className:
-                    "peer w-full p-2  font-light rounded-t-md transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none",
+                    "peer w-full p-4 pt-6 font-light border-2 rounded-[20px] transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none",
                 })}
               />
 
@@ -86,16 +86,13 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                   left: 0,
                   right: 0,
                   zIndex: 1000,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
                 }}
               >
                 {suggestions
                   .slice(0, 3)
                   .map((suggestion: Suggestion, index: number) => {
                     const className = suggestion.active
-                      ? "suggestion-item--active bg"
+                      ? "suggestion-item--active bg-green-100"
                       : "suggestion-item bg-white";
                     const style = {
                       backgroundColor: suggestion.active
@@ -104,6 +101,9 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                       cursor: "pointer",
                       padding: ".5rem",
                       fontSize: "1rem",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     };
                     return (
                       <div
@@ -111,7 +111,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                           className,
                           style,
                         })}
-                        key={suggestion.id}
+                        key={suggestion.id || index}
                       >
                         <span>{suggestion.description}</span>
                       </div>
