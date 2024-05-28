@@ -19,6 +19,7 @@ export type StoreUser = {
     title: string;
     price: number;
     id: string;
+    minOrder: number | null;
     quantityType: string;
     location: {
       address: string;
@@ -58,6 +59,7 @@ export default async function getUserStore(params: Params) {
             imageSrc: true,
             title: true,
             price: true,
+            minOrder: true,
             id: true,
             quantityType: true,
             location: {

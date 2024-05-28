@@ -48,6 +48,22 @@ const Dashboard = async () => {
   let recentSales: Order[] = [];
   let recentPurchases: Order[] = [];
   const user = await getUserWithOrders({ userId: currentUserr?.id });
+  const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+  const balance = await stripe.balance.retrieve({
+    stripeAccount: currentUserr?.stripeAccountId,
+  });
+  //console.log("bal", balance.available[0].amount);
+  const transfers = await stripe.transfers.list({
+    destination: currentUserr?.stripeAccountId,
+    limit: 1000000,
+  });
+
+  const totalTransferred = transfers.data.reduce(
+    (total: number, transfer: any) => total + transfer.amount,
+    0
+  );
+  //console.log("tranfers", transfers);
+  //console.log("totaltranfers", totalTransferred);
 
   buyOrdersLength =
     user?.buyerOrders?.filter(
@@ -91,7 +107,7 @@ const Dashboard = async () => {
               </CardHeader>
               <CardContent className="sheet">
                 <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-                  {formatPrice(totalSales)}
+                  {formatPrice(totalTransferred / 100)}
                 </div>
                 <Link
                   className="flex justify-end items-end"
@@ -113,7 +129,7 @@ const Dashboard = async () => {
               </CardHeader>
               <CardContent className="sheet h-fit">
                 <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-                  {formatPrice(totalSales)}
+                  {formatPrice(balance.available[0].amount)}
                 </div>
               </CardContent>
             </Card>
