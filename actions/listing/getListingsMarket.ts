@@ -47,9 +47,12 @@ export default async function GetListings(
           quantityType: true,
           price: true,
           imageSrc: true,
+          subCategory: true,
+          category: true,
           createdAt: true,
           minOrder: true,
           stock: true,
+          description: true,
           location: {
             select: {
               coordinates: true,
@@ -60,6 +63,7 @@ export default async function GetListings(
             select: {
               id: true,
               role: true,
+              name: true,
             },
           },
         },
@@ -93,7 +97,10 @@ export default async function GetListings(
             minOrder: true,
             imageSrc: true,
             createdAt: true,
+            subCategory: true,
+            category: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -104,6 +111,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
@@ -126,10 +134,13 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            category: true,
+            subCategory: true,
             imageSrc: true,
             minOrder: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -140,6 +151,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
@@ -165,10 +177,13 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            subCategory: true,
+            category: true,
             minOrder: true,
             imageSrc: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -179,6 +194,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
@@ -197,11 +213,14 @@ export default async function GetListings(
             id: true,
             title: true,
             quantityType: true,
+            subCategory: true,
+            category: true,
             price: true,
             imageSrc: true,
             minOrder: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -212,6 +231,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },

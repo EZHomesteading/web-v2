@@ -20,6 +20,8 @@ import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
+import { Libraries } from "@googlemaps/js-api-loader";
+const libraries: Libraries = ["drawing", "geometry"];
 
 interface MapUser {
   id: string;
@@ -42,16 +44,12 @@ const outfit = Outfit({
 interface MapProps {
   coops: MapUser[];
   producers: MapUser[];
+  coordinates: { lat: number; lng: number };
 }
 
-const VendorsMap = ({ coops, producers }: MapProps) => {
-  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    {
-      lat: 44.58,
-      lng: -103.46,
-    }
-  );
-  const [zoom, setZoom] = useState(4);
+const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
+  const [currentCenter, setCurrentCenter] = useState(coordinates);
+  const [zoom, setZoom] = useState(8);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -67,8 +65,9 @@ const VendorsMap = ({ coops, producers }: MapProps) => {
   const [isApplyButtonVisible, setIsApplyButtonVisible] = useState(false);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-    libraries: ["drawing", "geometry"],
+    libraries,
     version: "3.55",
+    preventGoogleFontsLoading: true,
   });
 
   const mapOptions: google.maps.MapOptions = {
