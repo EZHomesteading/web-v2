@@ -1,3 +1,4 @@
+//server side page layout for the stripe/connect routs
 import { currentUser } from "@/lib/auth";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import ConnectClient from "./ConnectClient";

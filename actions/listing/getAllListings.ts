@@ -1,3 +1,4 @@
+// action to get all listing on the database
 import prisma from "@/lib/prismadb";
 
 export default async function GetAllListings() {

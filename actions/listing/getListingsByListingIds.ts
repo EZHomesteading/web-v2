@@ -1,3 +1,4 @@
+//action to get multiple listings based on their ID's
 import prisma from "@/lib/prismadb";
 
 export interface Params {

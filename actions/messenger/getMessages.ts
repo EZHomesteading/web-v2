@@ -1,3 +1,4 @@
+//get all messages based on conversation ID
 import prisma from "@/lib/prismadb";
 
 const getMessages = async (conversationId: string) => {

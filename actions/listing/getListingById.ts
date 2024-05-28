@@ -1,3 +1,4 @@
+// action to get a listing based on its ID
 import prisma from "@/lib/prismadb";
 
 interface IParams {
