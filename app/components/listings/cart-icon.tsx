@@ -8,6 +8,7 @@ interface CartButtonProps {
   user?: any | null;
   listingRole: string;
   listingUser: string;
+  listingMin: number | null;
 }
 
 const CartButton: React.FC<CartButtonProps> = ({
@@ -15,6 +16,7 @@ const CartButton: React.FC<CartButtonProps> = ({
   user,
   listingRole,
   listingUser,
+  listingMin,
 }) => {
   const { hasCart, toggleCart } = useCart({
     listingId,
@@ -22,9 +24,12 @@ const CartButton: React.FC<CartButtonProps> = ({
     listingRole,
     listingUser,
   });
+  if (!listingMin) {
+    listingMin = 1;
+  }
   return (
     <div
-      onClick={(e) => toggleCart(e, 1)}
+      onClick={(e) => toggleCart(e, listingMin)}
       className="
         relative
         hover:opacity-80
