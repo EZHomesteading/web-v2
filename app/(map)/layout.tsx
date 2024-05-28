@@ -1,6 +1,5 @@
 import GetNavUser from "@/actions/user/getUserNav";
 import NavbarFind from "./map/NavbarFind";
-import authCache from "@/auth-cache";
 
 export default async function RootLayout({
   children,

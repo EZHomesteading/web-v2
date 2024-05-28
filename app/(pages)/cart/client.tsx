@@ -45,7 +45,8 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   const [stillExpiry, setStillExpiry] = useState(true);
   const [total, setTotal] = useState(
     cartItems.reduce(
-      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      (acc: number, cartItem: any) =>
+        acc + cartItem.listing.price * cartItem.quantity,
       0
     )
   );
@@ -53,9 +54,11 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
   };
+
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      (acc: number, cartItem: any) =>
+        acc + cartItem.listing.price * cartItem.quantity,
       0
     );
     setTotal(newTotal);

@@ -1,4 +1,6 @@
 import Script from "next/script";
+import { LiaMapMarkedSolid } from "react-icons/lia";
+import { PiMapPin } from "react-icons/pi";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -17,7 +19,7 @@ interface LocationSearchInputProps {
 }
 
 const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
-  address,
+  address = "",
   setAddress,
   onAddressParsed,
 }) => {
@@ -70,11 +72,15 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
           <div>
             <div style={{ position: "relative" }}>
+              <LiaMapMarkedSolid
+                className="absolute top-3 left-1"
+                size="3rem"
+              />
               <input
                 {...getInputProps({
                   placeholder: "Search by address, city, zip, and state",
                   className:
-                    "peer w-full p-4 pt-6 font-light border-2 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed",
+                    "peer w-full p-4 pt-6 font-light border-2 rounded-[20px] transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-12",
                 })}
               />
 
@@ -88,28 +94,35 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                   zIndex: 1000,
                 }}
               >
-                {suggestions.slice(0, 3).map((suggestion: Suggestion) => {
-                  const className = suggestion.active
-                    ? "suggestion-item--active bg-green-100"
-                    : "suggestion-item bg-white";
-                  const style = {
-                    backgroundColor: suggestion.active ? "#fafafa" : "#ffffff",
-                    cursor: "pointer",
-                    padding: ".5rem",
-                    fontSize: "1rem",
-                  };
-                  return (
-                    <div
-                      {...getSuggestionItemProps(suggestion, {
-                        className,
-                        style,
-                      })}
-                      key={suggestion.id}
-                    >
-                      <span>{suggestion.description}</span>
-                    </div>
-                  );
-                })}
+                {suggestions
+                  .slice(0, 3)
+                  .map((suggestion: Suggestion, index: number) => {
+                    const className = suggestion.active
+                      ? "suggestion-item--active bg-green-100"
+                      : "suggestion-item bg-white";
+                    const style = {
+                      backgroundColor: suggestion.active
+                        ? "#fafafa"
+                        : "#ffffff",
+                      cursor: "pointer",
+                      padding: ".5rem",
+                      fontSize: "1rem",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    };
+                    return (
+                      <div
+                        {...getSuggestionItemProps(suggestion, {
+                          className,
+                          style,
+                        })}
+                        key={suggestion.id || index}
+                      >
+                        <span>{suggestion.description}</span>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </div>

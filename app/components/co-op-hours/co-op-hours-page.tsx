@@ -237,28 +237,33 @@ const CoOpHoursPage = ({ user }: Props) => {
   };
   return (
     <>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none lg:shadow-lg w-full pt-2">
+      <Card className={` ${outfit.className} w-full border-none`}>
+        <CardContent className="flex flex-col sheet  border-none w-full pb-0 md:pt-20 pt-0">
           {user?.role === UserRole.COOP ? (
-            <h2 className="lg:text-3xl text-lg">Open & Close Hours</h2>
+            <h2 className="lg:text-4xl text-3xl">Open & Close Hours</h2>
           ) : (
             <h2 className="lg:text-3xl text-lg">Delivery Hours</h2>
           )}
 
           <ul>
             {user?.role === UserRole.COOP ? (
-              <li>
+              <li className="text-[.6rem] sm:text-[.75rem]">
                 The hours when a producer can drop produce off and buyers can
                 pick up from your listing or co-op location.
               </li>
             ) : (
-              <li>The hours you can deliver to a co-op.</li>
+              <li className="text-[.5rem] sm:text-[.75rem]">
+                The hours you can deliver to a co-op.
+              </li>
             )}
+            <em className="text-[.5rem] sm:text-[.75rem]">
+              If you set hours to closed everyday, EZH users will not be able to
+              buy from you.
+            </em>
           </ul>
           <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
             <div className="flex flex-col">
-              <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
-                <div className="flex justify-end"></div>
+              <CardContent className="p-0 sm:w-fit lg:w-[50vw]">
                 <CoopHoursSlider
                   day={currentDay}
                   hours={currentDayHours}
@@ -533,37 +538,38 @@ const CoOpHoursPage = ({ user }: Props) => {
             </div>
           </Card>
 
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            If you set hours to closed everyday, EZH users will not be able to
-            buy from you.
-          </CardFooter>
+          <CardFooter className="flex justify-between m-0 p-0 pt-2"></CardFooter>
         </CardContent>
       </Card>
-      <Card className="flex flex-col bg-inherit border-none sm:shadow-xl md:mt-20 lg:w-2/3 w-full pt-5">
-        <CardContent className={`${outfit.className} `}>
+      <Card className="flex flex-col bg-inherit w-full border-none">
+        <CardContent
+          className={`${outfit.className} border-t-[1px] border-neutal-200 pt-3`}
+        >
           {user?.role === UserRole.COOP ? (
-            <h2 className="text-4xl">Set Out Time</h2>
+            <h2 className="text-3xl lg:text-4xl">Set Out Time</h2>
           ) : (
-            <h2 className="text-4xl">Time to Begin Delivery</h2>
+            <h2 className="text-3xl lg:text-4xl">Time to Begin Delivery</h2>
           )}
           <ul>
             {user?.role === UserRole.COOP ? (
-              <li>
+              <li className="text-[.5rem] sm:text-sm">
                 This is the amount of time it takes between you{" "}
                 <em>agreeing </em> to a pick up time and preparing the order.
               </li>
             ) : (
-              <li>
+              <li className="text-[.5rem] sm:text-sm">
                 This is the amount of time it takes between you{" "}
                 <em>agreeing to delivery time</em> and preparing it for
                 delivery.
               </li>
             )}
-            <li>
-              This is important to understand.{" "}
-              <Link href="/info/sodt" className="text-blue-500">
-                More Info
-              </Link>
+            <li className="text-[.5rem] sm:text-sm">
+              <em>
+                This is important to understand.{" "}
+                <Link href="/info/sodt" className="text-blue-500">
+                  More Info
+                </Link>
+              </em>
             </li>
           </ul>
           <div className="justify-end flex">
@@ -576,10 +582,10 @@ const CoOpHoursPage = ({ user }: Props) => {
               onValueChange={(value) => setSODT(parseInt(value, 10))}
               // value={SODT.toString()}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
                 <SelectValue placeholder={user?.SODT || "Select a Time"} />
               </SelectTrigger>
-              <SelectContent className={`${outfit.className} sheet`}>
+              <SelectContent className={`${outfit.className} bg-slate-300`}>
                 <SelectGroup>
                   <SelectItem value="15">15 Minutes</SelectItem>
                   <SelectItem value="30">30 Minutes</SelectItem>

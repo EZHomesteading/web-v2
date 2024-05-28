@@ -1,3 +1,11 @@
+import NavbarInfo from "@/app/info/navbar-info";
+
+export const metadata = {
+  title: "EZHomesteading Info",
+  description:
+    "Info on everything EZHomesteading related. From general virtual farmers market info to optimizing your EZH store to efficient search for fresh, local, organic, and organic produce near you.",
+};
+
 export default async function RootLayout({
   children,
 }: {
@@ -5,7 +13,10 @@ export default async function RootLayout({
 }) {
   return (
     <>
-      <main className="sheet">{children}</main>
+      <main className="sheet relative min-h-screen">
+        <NavbarInfo />
+        {children}
+      </main>
     </>
   );
 }

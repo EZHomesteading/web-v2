@@ -1,0 +1,1206 @@
+"use client";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { UserInfo } from "@/next-auth";
+import { CiCircleInfo } from "react-icons/ci";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
+import { Button } from "@/app/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/app/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/app/components/ui/dialog";
+import axios from "axios";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { BiSearch } from "react-icons/bi";
+import { useRouter } from "next/navigation";
+import Emulator from "./components/emulator";
+import SearchClient, {
+  ProductValue,
+} from "@/app/components/client/SearchClient";
+
+import Heading from "@/app/components/Heading";
+import Input from "@/app/create/components/listing-input";
+import { Label } from "@/app/components/ui/label";
+import { PiStorefrontThin } from "react-icons/pi";
+import Counter from "@/app/components/inputs/Counter";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import { UploadButton } from "@/utils/uploadthing";
+import { Outfit } from "next/font/google";
+import Image from "next/image";
+
+import { BsBucket } from "react-icons/bs";
+import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
+import { Textarea } from "@/app/components/ui/textarea";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { addDays, format } from "date-fns";
+import Help from "./components/help";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+interface Props {
+  user: UserInfo;
+  index: number;
+}
+
+const CreateClient = ({ user, index }: Props) => {
+  type AddressComponents = {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
+  const [coopRating, setCoopRating] = useState(1);
+  const [certificationChecked, setCertificationChecked] = useState(false);
+  const [showLocationInput, setShowLocationInput] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(index);
+  const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
+  const [product, setProduct] = useState<ProductValue>();
+  const router = useRouter();
+
+  const [clicked, setClicked] = useState(false);
+  const [c, setC] = useState(false);
+
+  const toggleLocationInput = () => {
+    setShowLocationInput(!showLocationInput);
+  };
+
+  let {
+    register,
+    setValue,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      category: "",
+      subCategory: "",
+      location: "",
+      stock: null,
+      quantityType: "",
+      imageSrc: [],
+      price: null,
+      title: "",
+      description: "",
+      shelfLifeDays: 0,
+      shelfLifeWeeks: 0,
+      shelfLifeMonths: 0,
+      shelfLifeYears: 0,
+      street: "",
+      city: "",
+      zip: "",
+      state: "",
+      coopRating: 1,
+      minOrder: null,
+    },
+  });
+  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
+  const [checkbox2Checked, setCheckbox2Checked] = useState(false);
+  const [checkbox3Checked, setCheckbox3Checked] = useState(false);
+  const [checkbox4Checked, setCheckbox4Checked] = useState(false);
+
+  const handleCheckboxChange = (checked: boolean, index: number) => {
+    let newRating = checked ? coopRating + 1 : coopRating - 1;
+    newRating = Math.max(1, Math.min(newRating, 5));
+    setCoopRating(newRating);
+
+    switch (index) {
+      case 0:
+        setCheckbox1Checked(checked);
+        break;
+      case 1:
+        setCheckbox2Checked(checked);
+        break;
+      case 2:
+        setCheckbox3Checked(checked);
+        break;
+      case 3:
+        setCheckbox4Checked(checked);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleCertificationCheckboxChange = (checked: boolean) => {
+    setCertificationChecked(checked);
+  };
+  const shelfLifeDays = watch("shelfLifeDays");
+  const shelfLifeWeeks = watch("shelfLifeWeeks");
+  const shelfLifeMonths = watch("shelfLifeMonths");
+  const shelfLifeYears = watch("shelfLifeYears");
+  const imageSrc = watch("imageSrc");
+  const minOrder = watch("minOrder");
+  const quantity = watch("stock");
+  const price = watch("price");
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
+
+  const [imageStates, setImageStates] = useState(
+    [...Array(3)].map(() => ({
+      isHovered: false,
+      isFocused: false,
+    }))
+  );
+
+  const handleMouseEnter = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isHovered: true } : state
+      )
+    );
+  };
+
+  const handleMouseLeave = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isHovered: false } : state
+      )
+    );
+  };
+
+  const handleClick = (index: number) => {
+    setImageStates((prevStates) =>
+      prevStates.map((state, i) =>
+        i === index ? { ...state, isFocused: !state.isFocused } : state
+      )
+    );
+  };
+  const getLatLngFromAddress = async (address: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const handleAddressSelect = ({
+    street,
+    city,
+    state,
+    zip,
+  }: AddressComponents) => {
+    setValue("street", street);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("zip", zip);
+    setCity(city);
+    setState(state);
+  };
+  const [description, setDescription] = useState("");
+  const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
+    setIsLoading(true);
+
+    const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
+    const geoData = await getLatLngFromAddress(fullAddress);
+
+    const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
+    const shelfLife =
+      parseInt(data.shelfLifeDays, 10) +
+      parseInt(data.shelfLifeWeeks, 10) * 7 +
+      parseInt(data.shelfLifeMonths, 10) * 30 +
+      parseInt(data.shelfLifeYears, 10) * 365;
+
+    if (geoData) {
+      const formData = {
+        title: data.title,
+        minOrder: data.minOrder,
+        description: description,
+        category: data.category,
+        subCategory: data.subCategory,
+        coopRating: coopRating,
+        price: formattedPrice,
+        imageSrc: data.imageSrc,
+        stock: parseInt(data.stock, 10),
+        shelfLife: shelfLife,
+        quantityType:
+          data.quantityType === "none" || data.quantityType === "each"
+            ? ""
+            : data.quantityType,
+        location: {
+          type: "Point",
+          coordinates: [geoData.lng, geoData.lat],
+          address: [data.street, data.city, data.state, data.zip],
+        },
+      };
+      axios
+
+        .post("/api/listings", formData)
+
+        .then(() => {
+          toast.success("Listing created!");
+          setValue("category", "");
+          setValue("subCategory", "");
+          setValue("location", "");
+          setValue("stock", null);
+          setValue("quantityType", "");
+          setValue("imageSrc", "");
+          setValue("price", null);
+          setValue("title", "");
+          setValue("description", "");
+          setValue("shelfLifeDays", 0);
+          setValue("shelfLifeWeeks", 0);
+          setValue("shelfLifeMonths", 0);
+          setValue("shelfLifeYears", 0);
+          setValue("street", "");
+          setValue("city", "");
+          setValue("zip", "");
+          setValue("state", "");
+          setValue("coopRating", 1);
+          setValue("minOrder", 1);
+          setC(false);
+          setClicked(false);
+          setProduct(undefined);
+          setCoopRating(1);
+          setCertificationChecked(false);
+          setShowLocationInput(false);
+          setQuantityType(undefined);
+        })
+        .catch(() => {
+          toast.error(
+            "Please make sure you've added information for all of the fields.",
+            {
+              duration: 2000,
+              position: "bottom-center",
+            }
+          );
+        })
+        .finally(() => {
+          setIsLoading(false);
+          router.push("/dashboard/my-store");
+        });
+    } else {
+      setIsLoading(false);
+      toast.error("Please select or enter a valid address.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+    }
+  };
+
+  const handleNext = async () => {
+    if (step === 1 && !product) {
+      toast.error("Let us know what produce you have!", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 1 && !description) {
+      toast.error("Please write a brief description", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 2 && !quantityType) {
+      toast.error("Please enter a unit for your listing", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 2 && (quantity <= 0 || !quantity)) {
+      toast.error("Quantity must be greater than 0", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
+      toast.error("Please use the stock photo or upload atleast one photo", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 3 && !certificationChecked) {
+      toast.error("You must certify that the above information is accurate.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (
+      step === 2 &&
+      shelfLifeDays <= 0 &&
+      shelfLifeWeeks <= 0 &&
+      shelfLifeMonths <= 0 &&
+      shelfLifeYears <= 0
+    ) {
+      toast.error("Shelf life must be at least 1 day", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    if (step === 2 && (price <= 0 || !price)) {
+      toast.error("Please enter a price greater than 0.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+    if (step === 2 && (minOrder <= 0 || !quantity)) {
+      toast.error("Please enter a minimum order greater than 0.", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+    if (step === 5) {
+      if (!product) {
+        toast.error("Let us know what produce you have!", {
+          duration: 2000,
+          position: "bottom-right",
+        });
+        return;
+      } else if (!description) {
+        toast.error("Please write a brief description", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (!quantityType) {
+        toast.error("Please enter a unit for your listing", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (quantity <= 0 || !quantity) {
+        toast.error("Quantity must be greater than 0", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (minOrder <= 0 || !quantity) {
+        toast.error("Please enter a minimum order greater than 0.", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
+        toast.error("Please use the stock photo or upload at least one photo", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (
+        shelfLifeDays <= 0 &&
+        shelfLifeWeeks <= 0 &&
+        shelfLifeMonths <= 0 &&
+        shelfLifeYears <= 0
+      ) {
+        toast.error("Shelf life must be at least 1 day", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (price <= 0 || !quantity) {
+        toast.error("Please enter a price greater than 0.", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      }
+    }
+    if (step === 5) {
+      handleSubmit(onSubmit)();
+    } else {
+      setStep(step + 1);
+    }
+  };
+  const handlePrevious = () => {
+    setStep(step - 1);
+  };
+
+  useEffect(() => {
+    if (quantity <= 0) {
+      setValue("stock", 1);
+    }
+    if (minOrder <= 0) {
+      setValue("minOrder", 1);
+    }
+  }),
+    [quantity, minOrder];
+  const shelfLife =
+    parseInt(shelfLifeDays, 10) +
+    parseInt(shelfLifeWeeks, 10) * 7 +
+    parseInt(shelfLifeMonths, 10) * 30 +
+    parseInt(shelfLifeYears, 10) * 365;
+  let expiryDate = "";
+  if (shelfLife) {
+    const endDate = addDays(new Date(), shelfLife);
+    expiryDate = format(endDate, "MMM d, yyyy");
+  }
+  return (
+    <div className={`${outfit.className} relative w-full`}>
+      <div className="absolute top-2 right-2 md:left-2">
+        <Help step={step} />
+      </div>
+      <div className="flex flex-col md:flex-row text-black w-full">
+        <div className="onboard-left md:w-2/5 md:min-h-screen">
+          <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
+            <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
+              List Your Excess Produce
+            </h2>
+            {step === 1 && (
+              <div className="flex flex-row fade-in">
+                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
+                  First, let&apos;s go over the basics
+                </div>
+              </div>
+            )}
+            {step === 2 && (
+              <div className="flex flex-row items-center fade-in">
+                {" "}
+                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
+                  Next, Provide Some General Info
+                </div>
+              </div>
+            )}
+            {step === 3 && (
+              <div className="flex flex-col items-start fade-in">
+                <div className="flex flex-row">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
+                    Tell us how you grow your produce
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                        <CiCircleInfo className="lg:text-4xl" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className={`${outfit.className} popover xl:absolute xl:bottom-10`}
+                    >
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            EZHomesteading will randomly & anonymously purchase
+                            goods from sellers to test the validity of
+                            certifications & promote consumer confidence
+                          </p>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="flex flex-col items-start fade-in">
+                <div className="flex flex-row">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
+                    You're Almost Done, We Just Need Some Pictures
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                        <CiCircleInfo className="lg:text-4xl" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="popover xl:absolute xl:bottom-10">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            EZHomesteading reccomends that Producers upload at
+                            least one photo of their actual product.
+                          </p>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
+                  Feel free to include, only use, or get rid of the stock photo
+                </div>
+              </div>
+            )}
+            {step === 5 && (
+              <div className="flex flex-col items-start fade-in">
+                <div className="flex flex-row">
+                  <div className="2xl:text-4xl text-lg font-bold tracking-tight">
+                    Where is your farm or garden located?
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
+                        <CiCircleInfo className="lg:text-4xl" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="popover xl:absolute xl:bottom-10">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            EZHomesteading uses data provided by you to generate
+                            the default location. We do not track your location
+                            unless you have given us permission.
+                          </p>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
+                  Help local consumers find you!
+                </div>
+              </div>
+            )}
+            <Breadcrumb className={`${outfit.className} text-black pt-1 z-10 `}>
+              <BreadcrumbList className="text-[.6rem]">
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 1
+                      ? "font-bold cursor-none"
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(1)}
+                >
+                  General
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 2
+                      ? "font-bold cursor-none"
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(2)}
+                >
+                  Specifics
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 3
+                      ? "font-bold cursor-none "
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(3)}
+                >
+                  Rating
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+
+                <BreadcrumbItem
+                  className={
+                    step === 4
+                      ? "font-bold cursor-none "
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(4)}
+                >
+                  Photos
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem
+                  className={
+                    step === 5
+                      ? "font-bold cursor-none "
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => {
+                    if (!product) {
+                      toast.error("Let us know what produce you have!", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else if (!description) {
+                      toast.error("Please write a brief description", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else if (!quantityType) {
+                      toast.error("Please enter a unit for your listing", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else if (quantity <= 0 || !quantity) {
+                      toast.error("Quantity must be greater than 0", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else if (minOrder <= 0 || !quantity) {
+                      toast.error(
+                        "Please enter a minimum order greater than 0.",
+                        {
+                          duration: 2000,
+                          position: "bottom-center",
+                        }
+                      );
+                      return;
+                    } else if (
+                      Array.isArray(imageSrc) &&
+                      imageSrc.length === 0
+                    ) {
+                      toast.error(
+                        "Please use the stock photo or upload at least one photo",
+                        {
+                          duration: 2000,
+                          position: "bottom-center",
+                        }
+                      );
+                      return;
+                    } else if (
+                      shelfLifeDays <= 0 &&
+                      shelfLifeWeeks <= 0 &&
+                      shelfLifeMonths <= 0 &&
+                      shelfLifeYears <= 0
+                    ) {
+                      toast.error("Shelf life must be at least 1 day", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else if (price <= 0 || !quantity) {
+                      toast.error("Please enter a price greater than 0.", {
+                        duration: 2000,
+                        position: "bottom-center",
+                      });
+                      return;
+                    } else {
+                      setStep(5);
+                    }
+                  }}
+                >
+                  Location
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+          <div className="hidden emulator-container mt-8">
+            <div className="sticky bottom-0 left-0 right-0 px-6">
+              <Emulator
+                product={product}
+                description={description}
+                stock={quantity}
+                quantityType={quantityType}
+                price={price}
+                imageSrc={imageSrc}
+                user={user}
+                shelfLife={
+                  shelfLifeDays +
+                  shelfLifeWeeks * 7 +
+                  shelfLifeMonths * 30 +
+                  shelfLifeYears * 365
+                }
+                city={city}
+                state={state}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="md:w-3/5 onboard-right relative">
+          <div className=" mx-[5%] md:py-20">
+            {step === 1 && (
+              <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full fade-in">
+                <div className="flex md:flex-row md:items-center md:justify-between w-full flex-col items-start">
+                  <Heading
+                    title="Provide a name and description"
+                    subtitle="Max length of 300 characters for description"
+                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="bg-slate-500 shadow-sm p-2 rounded-full text-white text-xs">
+                        Suggest a new Listing
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Propose a new Listing</DialogTitle>
+                        <DialogDescription>
+                          Please enter a title, category and brief keyword
+                          description
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ul className="flex flex-col items-start justify-center">
+                        <li className="flex flex-row items-center justify-center">
+                          <Label className="w-[80px]">Title</Label>
+                          <input placeholder="Special Tomato" />
+                        </li>
+                        <li className="flex flex-row items-center justify-center">
+                          <Label className="w-[80px]">Category</Label>
+                          <input placeholder="Vegetable" />
+                        </li>
+                        <li className="flex flex-row items-center justify-center">
+                          <Label className="w-[80px]">Description</Label>
+                          <input placeholder="Red Seedless" />
+                        </li>
+                      </ul>
+                      <button type="submit" className="px-3">
+                        <span>Submit</span>
+                      </button>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                <div>
+                  <SearchClient
+                    value={product}
+                    onChange={(value) => {
+                      setProduct(value as ProductValue);
+                      setValue("title", value?.label);
+                      setValue("category", value?.category);
+                      setValue("imageSrc[0]", value?.photo);
+                      setValue("subCategory", value?.cat);
+                    }}
+                  />
+                </div>
+                <hr />
+                <Textarea
+                  id="description"
+                  placeholder="It's reccomended to include key information about your listing in the description. This will help the algorithm when users search"
+                  disabled={isLoading}
+                  className="h-[30vh] shadow-md text-[14px] bg"
+                  maxLength={500}
+                  onChange={(e) => setDescription(e.target.value)}
+                  value={description}
+                />
+              </div>
+            )}
+            {step === 2 && (
+              <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full fade-in">
+                <div className={`text-start`}>
+                  <div className="text-xl sm:text-2xl font-bold">
+                    Add Quantity, Shelf Life, and Units
+                  </div>
+                  <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.5rem]">
+                    Not worth your time for someone to order less than a certain
+                    amount of this item? Set a minimum order requirement, or
+                    leave it at 1
+                  </div>
+                </div>
+                <div className="flex flex-col justify-center items-start gap-2">
+                  <div className="w-full xl:w-2/3">
+                    <div className="flex flex-row gap-2">
+                      <div className="w-1/2">
+                        <Input
+                          id="stock"
+                          label="Quantity"
+                          type="number"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                          watch={watch}
+                          setValue={setValue}
+                        />{" "}
+                      </div>
+                      <div className="w-1/2">
+                        <UnitSelect
+                          value={quantityType}
+                          onChange={(value) => {
+                            setQuantityType(value as QuantityTypeValue);
+                            setValue("quantityType", value?.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-row gap-2 mt-2">
+                      <div className="w-1/2">
+                        <Input
+                          id="price"
+                          label="Price per unit"
+                          type="number"
+                          step="0.01"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                          formatPrice
+                          watch={watch}
+                          setValue={setValue}
+                        />
+                      </div>
+                      <div className="w-1/2">
+                        <Input
+                          id="minOrder"
+                          label="Minimum order"
+                          type="number"
+                          disabled={isLoading}
+                          register={register}
+                          errors={errors}
+                          watch={watch}
+                          setValue={setValue}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full"></div>
+                  <div className="w-full lg:w-1/2">
+                    <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
+                      <Label className="text-xl">Estimated Shelf Life </Label>
+                      <div className="text-xs">
+                        {shelfLife ? (
+                          <>Estimated Expiry Date: {expiryDate}</>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-1 space-y-2">
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeDays", value)
+                        }
+                        value={shelfLifeDays}
+                        title="Days"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeWeeks", value)
+                        }
+                        value={shelfLifeWeeks}
+                        title="Weeks"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeMonths", value)
+                        }
+                        value={shelfLifeMonths}
+                        title="Months"
+                        subtitle=""
+                      />
+                      <Counter
+                        onChange={(value) =>
+                          setCustomValue("shelfLifeYears", value)
+                        }
+                        value={shelfLifeYears}
+                        title="Years"
+                        subtitle=""
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {step === 3 && (
+              <div
+                className={`flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full fade-in`}
+              >
+                <div className={`text-start`}>
+                  <div className="text-xl sm:text-2xl font-bold">
+                    Help Us Keep EZHomesteading Honestly Organic
+                  </div>
+                  <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                    Your base score is one, only check the boxes if they are
+                    accurate
+                  </div>
+                </div>
+                <div className="flex flex-col gap-y-2">
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                      checked={checkbox1Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 0)
+                      }
+                    />
+                    <Label>This produce is not genetically modified</Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                      checked={checkbox2Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 1)
+                      }
+                    />
+                    <Label>
+                      This produce was not grown with inorganic fertilizers
+                    </Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                      checked={checkbox3Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 2)
+                      }
+                    />
+                    <Label>
+                      This produce was not grown with inorganic pestacides
+                    </Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 items-center">
+                    <Checkbox
+                      checked={checkbox4Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked, 3)
+                      }
+                    />
+                    <Label>This produce was not modified after harvest</Label>
+                  </div>
+                  <div className="flex flex-row gap-x-2 font-extrabold items-center">
+                    <Checkbox
+                      checked={certificationChecked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCertificationCheckboxChange(checked)
+                      }
+                    />
+                    <Label className="font-bold">
+                      I certify that all of the above information is accurate
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            )}
+            {step > 1 && (
+              <Button
+                onClick={handlePrevious}
+                className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+              >
+                Back
+              </Button>
+            )}
+            {step === 5 && (
+              <Button
+                onClick={handleNext}
+                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+              >
+                Finish
+              </Button>
+            )}
+            {step < 5 && (
+              <Button
+                onClick={handleNext}
+                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+              >
+                Next
+              </Button>
+            )}
+            {step === 4 && (
+              <div
+                className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full fade-in`}
+              >
+                <Heading
+                  title="Take or Add Photos of your Product"
+                  subtitle="Actual photos are preferred over images from the web, click upload image to capture or add a photo"
+                />
+                <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center  ">
+                  {[...Array(3)].map((_, index) => (
+                    <div
+                      key={index}
+                      className={`relative h-40 sm:h-60 w-48 transition-transform duration-300 rounded-xl ${
+                        imageStates[index].isHovered
+                          ? "transform shadow-xl"
+                          : ""
+                      } ${imageStates[index].isFocused ? "z-10" : "z-0"}`}
+                      onMouseEnter={() => handleMouseEnter(index)}
+                      onMouseLeave={() => handleMouseLeave(index)}
+                      onClick={() => handleClick(index)}
+                    >
+                      {watch(`imageSrc[${index}]`) ? (
+                        <>
+                          <Image
+                            src={watch(`imageSrc[${index}]`)}
+                            fill
+                            alt={`Listing Image ${index + 1}`}
+                            className="object-cover rounded-xl"
+                          />
+                          <button
+                            className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newImageSrc = [...watch("imageSrc")];
+                              newImageSrc.splice(index, 1);
+                              setValue("imageSrc", newImageSrc);
+                            }}
+                          >
+                            <BsBucket />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full bg">
+                          {" "}
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(res: any) => {
+                              const newImageSrc = [...watch("imageSrc")];
+                              const emptyIndex = newImageSrc.findIndex(
+                                (src) => !src
+                              );
+                              if (emptyIndex !== -1) {
+                                newImageSrc[emptyIndex] = res[0].url;
+                              } else {
+                                newImageSrc.push(res[0].url);
+                              }
+                              setValue("imageSrc", newImageSrc);
+                            }}
+                            onUploadError={(error: Error) => {
+                              alert(`ERROR! ${error.message}`);
+                            }}
+                            appearance={{
+                              container: "h-full w-max",
+                            }}
+                            className="ut-allowed-content:hidden ut-button:bg-transparent ut-button:text-black ut-button:w-[160px] ut-button:sm:w-[240px] ut-button:px-2 ut-button:h-full"
+                            content={{
+                              button({ ready }) {
+                                if (ready) return <div>Upload Image</div>;
+                                return "Getting ready...";
+                              },
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {step === 5 && (
+              <div
+                className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
+              >
+                <div className="flex flex-col">
+                  <Heading
+                    title="Add an Address"
+                    subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
+                  />
+                  <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                    <Card
+                      className={
+                        clicked
+                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                      }
+                      onClick={() => {
+                        setValue("street", user?.location?.address[0]);
+                        setValue("city", user?.location?.address[1]);
+                        setValue("state", user?.location?.address[2]);
+                        setValue("zip", user?.location?.address[3]);
+                        setClicked(true);
+                        setC(false);
+                        setCity(user?.location?.address[1] || "");
+                        setState(user?.location?.address[2] || "");
+                      }}
+                    >
+                      <CardHeader className="pt-2 sm:pt-6">
+                        <div className="text-start">
+                          <div className="text-xl sm:text-2xl font-bold">
+                            Use My Default Address
+                          </div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            <ul>
+                              <li className={`${outfit.className}`}></li>{" "}
+                              {user?.location?.address.length === 4 ? (
+                                <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                              ) : (
+                                <li>Full Address not available</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex justify-end pb-0 sm:pb-6">
+                        <PiStorefrontThin size="5em" className="text-sm" />
+                      </CardContent>
+                    </Card>
+                    <Card
+                      className={
+                        c
+                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                      }
+                      onClick={() => {
+                        toggleLocationInput();
+                        setClicked(false);
+                        setC(true);
+                      }}
+                    >
+                      <CardHeader className="pt-2 sm:pt-6">
+                        <div className="text-start">
+                          <div className="text-xl sm:text-2xl font-bold">
+                            Use a Different Location
+                          </div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            If your selling location differs from you default
+                            address
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex justify-end pb-2 sm:pb-6">
+                        {!c ? (
+                          <BiSearch
+                            size="5em"
+                            style={{ cursor: "pointer" }}
+                            className="text-sm"
+                          />
+                        ) : (
+                          <div className="w-full">
+                            <LocationSearchInput
+                              address={watch("address")}
+                              setAddress={(address) =>
+                                setValue("address", address)
+                              }
+                              onAddressParsed={handleAddressSelect}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CreateClient;

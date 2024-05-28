@@ -6,7 +6,6 @@ import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { CiShop, CiSquarePlus } from "react-icons/ci";
 import { useRouter } from "next/navigation";
-import useRentModal from "@/hooks/modal/use-listing-modal";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
@@ -33,7 +32,6 @@ interface Props {
 }
 const UserMenu = ({ user }: Props) => {
   const router = useRouter();
-  const listingModal = useRentModal();
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
@@ -48,7 +46,7 @@ const UserMenu = ({ user }: Props) => {
           bOrders={user?.buyerOrders}
         />
         {user ? (
-          user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
+          user?.role === UserRole.CONSUMER ? (
             <UpdateRoleAlert
               heading="Would you like to become an EZH producer or co-op?"
               description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
@@ -63,8 +61,9 @@ const UserMenu = ({ user }: Props) => {
           ) : (
             <div
               onClick={() => {
-                listingModal.onOpen();
+                router.push("/create");
               }}
+              className="hover:cursor-pointer"
             >
               <CiSquarePlus className="w-10 h-10" />
             </div>
@@ -85,7 +84,7 @@ const UserMenu = ({ user }: Props) => {
           </>
         )}
 
-        <SheetTrigger className="border-[1px] p-[2px] rounded-md">
+        <SheetTrigger className="border-none p-[2px] rounded-md">
           <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>
