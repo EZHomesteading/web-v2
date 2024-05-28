@@ -171,6 +171,8 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            subCategory: true,
+            category: true,
             minOrder: true,
             imageSrc: true,
             createdAt: true,
