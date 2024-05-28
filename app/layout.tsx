@@ -5,12 +5,26 @@ import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
-import { Metadata } from "next";
 
 export const metadata = {
-  title: "EZHomesteading - Fresh, Local, Organic",
+  title: "EZHomesteading - Fresh, Local, Organic Produce",
   description:
-    "Easily find fresh, local, and organic producer grown by people in your area. Join a community of homesteaders and small scale farmers and sell or purchase with ease!",
+    "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
+  keywords: [
+    "ezhomesteading",
+    "produce near me",
+    "virtual farmer's market",
+    "fresh food",
+    "local food",
+    "organic food",
+  ],
+  openGraph: {
+    title: "EZHomesteading - Fresh, Local, Organic Produce",
+    description:
+      "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
+    url: "https://www.ezhomesteading.com/",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({

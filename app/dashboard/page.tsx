@@ -10,8 +10,31 @@ import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
 import getFollowers from "@/actions/follow/getFollowers";
-import PayoutButton from "./payout-button";
 
+export const metadata = {
+  title: "Dashboard EZHomesteading",
+  description:
+    "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
+  keywords: [
+    "registration",
+    "seller",
+    "vendor",
+    "ezh",
+    "ezhomesteading",
+    "produce near me",
+    "virtual farmer's market",
+    "fresh food",
+    "local food",
+    "organic food",
+  ],
+  openGraph: {
+    title: "Dashboard EZHomesteading",
+    description:
+      "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
+    url: "https://www.ezhomesteading.com/dashboard",
+    type: "website",
+  },
+};
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
