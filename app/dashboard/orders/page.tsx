@@ -45,9 +45,43 @@ const Page = async () => {
           buyer?.name || "(Deleted User)",
           seller?.name || "(Deleted User)"
         );
+        const metadata = {
+          title: `${user?.name} Buy Orders | EZHomesteading`,
+          description: "Track your ongoing buy orders.",
+          keywords: [
+            "buy",
+            "orders",
+            "vendor",
+            "ezh",
+            "ezhomesteading",
+            "produce near me",
+            "virtual farmer's market",
+            "fresh food",
+            "local food",
+            "organic food",
+          ],
+          openGraph: {
+            title: `${user?.name} Buy Orders | EZHomesteading`,
+            description: "Track your ongoing buy orders.",
+            url: "https://www.ezhomesteading.com/dashboard/orders",
+            type: "website",
+          },
+        };
 
         return (
           <>
+            <head>
+              <title>{metadata.title}</title>
+              <meta name="description" content={metadata.description} />
+              <meta name="keywords" content={metadata.keywords.join(", ")} />
+              <meta property="og:title" content={metadata.openGraph.title} />
+              <meta
+                property="og:description"
+                content={metadata.openGraph.description}
+              />
+              <meta property="og:url" content={metadata.openGraph.url} />
+              <meta property="og:type" content={metadata.openGraph.type} />
+            </head>
             <Card key={order.id} className="sheet shadow-lg mb-4">
               <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
                 {seller?.name}
