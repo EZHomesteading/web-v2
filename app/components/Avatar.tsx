@@ -7,7 +7,7 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 interface AvatarProps {
-  image?: string;
+  image?: string | null;
 }
 
 const Avatar: React.FC<AvatarProps> = ({ image }: AvatarProps) => {

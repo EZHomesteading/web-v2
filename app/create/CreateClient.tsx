@@ -50,6 +50,7 @@ import { Textarea } from "@/app/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
+import InputField from "./components/suggestion-input";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -479,6 +480,26 @@ const CreateClient = ({ user, index }: Props) => {
     const endDate = addDays(new Date(), shelfLife);
     expiryDate = format(endDate, "MMM d, yyyy");
   }
+  const [suggestionName, setSuggestionName] = useState("");
+  const [suggestionCategory, setSuggestionCategory] = useState("");
+  const [suggestionSubCategory, setSuggestionSubCategory] = useState("");
+  const handleSuggestionSubmit = () => {
+    const body = {
+      name: suggestionName,
+      subCategory: suggestionSubCategory,
+      category: suggestionCategory,
+    };
+    console.log(body);
+    try {
+      axios.post("/api/suggestion", body);
+      toast.success("Your request has been recieved!");
+      setSuggestionCategory("");
+      setSuggestionName("");
+      setSuggestionSubCategory("");
+    } catch (error) {
+      toast.error("an error occured");
+    }
+  };
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
@@ -770,23 +791,35 @@ const CreateClient = ({ user, index }: Props) => {
                           description
                         </DialogDescription>
                       </DialogHeader>
-                      <ul className="flex flex-col items-start justify-center">
-                        <li className="flex flex-row items-center justify-center">
-                          <Label className="w-[80px]">Title</Label>
-                          <input placeholder="Special Tomato" />
+                      <ul className="">
+                        <li>
+                          <InputField
+                            id="suggestionName"
+                            placeholder="Name"
+                            value={suggestionName}
+                            onChange={setSuggestionName}
+                          />
                         </li>
-                        <li className="flex flex-row items-center justify-center">
-                          <Label className="w-[80px]">Category</Label>
-                          <input placeholder="Vegetable" />
+                        <li>
+                          <InputField
+                            id="suggestionCategory"
+                            placeholder="Category"
+                            value={suggestionCategory}
+                            onChange={setSuggestionCategory}
+                          />
                         </li>
-                        <li className="flex flex-row items-center justify-center">
-                          <Label className="w-[80px]">Description</Label>
-                          <input placeholder="Red Seedless" />
+                        <li>
+                          <InputField
+                            id="suggestionSubCategory"
+                            placeholder="Sub Category"
+                            value={suggestionSubCategory}
+                            onChange={setSuggestionSubCategory}
+                          />
                         </li>
                       </ul>
-                      <button type="submit" className="px-3">
-                        <span>Submit</span>
-                      </button>
+                      <DialogTrigger onClick={handleSuggestionSubmit}>
+                        <div className="px-3">Submit</div>
+                      </DialogTrigger>
                     </DialogContent>
                   </Dialog>
                 </div>

@@ -5,26 +5,23 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  // coopRoutes,
 } from "@/routes";
-import { UserRole } from "@prisma/client";
-import { currentUser } from "./lib/auth";
 const { auth } = NextAuth(authConfig);
 export default auth(async (req) => {
-  const user = await currentUser();
   const { nextUrl } = req;
   const path = nextUrl.pathname;
   const firstIndex = path.indexOf("/");
-  const index = path.indexOf("/", firstIndex + 1); // Find the index of the first "/"
+  const index = path.indexOf("/", firstIndex + 1);
   const filteredString = index !== -1 ? path.substring(0, index) : path;
-  // const isBlockedRoute = ""; //need to update in routes
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString) ||
     nextUrl.pathname.startsWith("/info/") ||
-    nextUrl.pathname.startsWith("/profile/");
+    nextUrl.pathname.startsWith("/profile/") ||
+    nextUrl.pathname.startsWith("/store/") ||
+    nextUrl.pathname.startsWith("/listings/");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
@@ -41,24 +38,10 @@ export default auth(async (req) => {
     }
     return null as unknown as void;
   }
-  // if (!isLoggedIn && !isBlockedRoute) {
-  //   let callbackUrl = nextUrl.pathname;
-  //   if (nextUrl.search) {
-  //     callbackUrl += nextUrl.search;
-  //   }
-  //   return Response.redirect(new URL(`/auth/login`));
-  // }
-  if (!isLoggedIn && !isPublicRoute) {
-    let callbackUrl = nextUrl.pathname;
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
-    }
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    return Response.redirect(
-      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
-  }
 
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL(`/auth/login`, nextUrl));
+  }
   return null as unknown as void;
 });
 
@@ -67,10 +50,6 @@ export const config = {
     "/((?!.+\\.[\\w]+$|_next).*)",
     "/",
     "/(api|trpc)(.*)",
-    "/my-store",
-    "/dashboard",
-    "/transaction-history",
-    "/favorites",
     "/conversations/:path*",
     "/users/:path*",
   ],
