@@ -7,7 +7,8 @@ import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
 
 export const metadata = {
-  title: "EZHomesteading - Fresh, Local, Organic Produce",
+  title:
+    "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
   description:
     "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
   keywords: [

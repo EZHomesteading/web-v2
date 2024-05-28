@@ -47,20 +47,24 @@ const Dashboard = async () => {
   let recentSales: Order[] = [];
   let recentPurchases: Order[] = [];
   const user = await getUserWithOrders({ userId: currentUserr?.id });
-  const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-  const balance = await stripe.balance.retrieve({
-    stripeAccount: currentUserr?.stripeAccountId,
-  });
-  //console.log("bal", balance.available[0].amount);
-  const transfers = await stripe.transfers.list({
-    destination: currentUserr?.stripeAccountId,
-    limit: 1000000,
-  });
+  let balance = null;
+  let totalTransferred = 0;
 
-  const totalTransferred = transfers.data.reduce(
-    (total: number, transfer: any) => total + transfer.amount,
-    0
-  );
+  if (user?.role !== UserRole.CONSUMER) {
+    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+    balance = await stripe.balance.retrieve({
+      stripeAccount: currentUserr?.stripeAccountId,
+    });
+    const transfers = await stripe.transfers.list({
+      destination: currentUserr?.stripeAccountId,
+      limit: 1000,
+    });
+
+    totalTransferred = transfers.data.reduce(
+      (total: number, transfer: any) => total + transfer.amount,
+      0
+    );
+  }
   const metadata = {
     title: `${user?.name} |  Dashboard | EZHomesteading`,
     description:
