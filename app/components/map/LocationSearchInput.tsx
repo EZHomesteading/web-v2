@@ -1,4 +1,6 @@
 import Script from "next/script";
+import { LiaMapMarkedSolid } from "react-icons/lia";
+import { PiMapPin } from "react-icons/pi";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -70,11 +72,15 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
           <div>
             <div style={{ position: "relative" }}>
+              <LiaMapMarkedSolid
+                className="absolute top-3 left-1"
+                size="3rem"
+              />
               <input
                 {...getInputProps({
                   placeholder: "Search by address, city, zip, and state",
                   className:
-                    "peer w-full p-4 pt-6 font-light border-2 rounded-[20px] transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none",
+                    "peer w-full p-4 pt-6 font-light border-2 rounded-[20px] transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-12",
                 })}
               />
 

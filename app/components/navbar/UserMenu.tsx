@@ -46,7 +46,7 @@ const UserMenu = ({ user }: Props) => {
           bOrders={user?.buyerOrders}
         />
         {user ? (
-          user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
+          user?.role === UserRole.CONSUMER ? (
             <UpdateRoleAlert
               heading="Would you like to become an EZH producer or co-op?"
               description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."

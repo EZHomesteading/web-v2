@@ -43,7 +43,7 @@ const Emulator = ({
     expiryDate = format(endDate, "MMM d, yyyy");
   }
   const [showOverlay, setShowOverlay] = useState(false);
-  const [v, setV] = useState(true);
+  const [v, setV] = useState(false);
   const handleMouseEnter = () => {
     setShowOverlay(true);
     setTimeout(() => {
@@ -74,12 +74,11 @@ const Emulator = ({
           <div className="relative w-full max-w-xs mx-auto">
             <div className="absolute inset-0 bg-black rounded-3xl"></div>
             <div className="relative bg-white shadow-lg rounded-[30px] mx-2 my-6 overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-8 bg-black rounded-t-[30px] flex justify-center items-center z-10">
+              <div className="absolute top-0 left-0 right-0 h-12 bg-black rounded-t-[30px] flex justify-center items-center z-10">
                 <div className="w-24 h-1 bg-gray-400 rounded"></div>
               </div>
-              <div className="pt-10 pb-8 h-[600px] overflow-y-auto">
-                <div className="w-full h-[30vh] overflow-hidden rounded-xl relative">
-                  {" "}
+              <div className="pt-12 pb-12 h-[600px] overflow-y-auto">
+                <div className="w-full h-[30vh] overflow-hidden rounded-xl relative px-1 pt-1">
                   {Array.isArray(imageSrc) && imageSrc.length > 0 && (
                     <Carousel>
                       <CarouselContent className="h-[30vh]">
@@ -90,7 +89,7 @@ const Emulator = ({
                                 <Image
                                   src={imageSrc[index]}
                                   fill
-                                  className="object-cover w-full"
+                                  className="object-cover w-full rounded-lg"
                                   alt={product?.label}
                                 />
                               </CardContent>
@@ -119,10 +118,10 @@ const Emulator = ({
                     }
                   />
                   <div className="col-span-4 flex flex-col gap-8">
-                    <div className="flex flex-col gap-2">
-                      <div className="text-xl font-semibold flex flex-row items-center">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-md font-semibold flex flex-row items-center">
                         <span style={{ marginRight: "5px" }}>Sold by</span>
-                        <span className="flex items-center gap-2 hover:cursor-pointer">
+                        <span className="flex items-center gap-1 hover:cursor-pointer">
                           <span className="mt-3">
                             <Avatar image={user?.image} />
                           </span>
@@ -131,11 +130,11 @@ const Emulator = ({
                       </div>
                     </div>
                   </div>
-                  <div className="text-lg font-light text-neutral-500 p-2">
+                  <div className="text-sm font-light text-neutral-500 p-1 break-words">
                     {description}
                   </div>
                   <hr />
-                  <div className="flex flex-row items-center p-2">
+                  <div className="flex flex-row items-center p-1">
                     {stock} {quantityType?.value} remaining at ${price}
                     {quantityType && (
                       <div className="font-light pl-[5px]">
@@ -145,7 +144,7 @@ const Emulator = ({
                   </div>
                   <hr />
                   {shelfLife ? (
-                    <div className="p-2">
+                    <div className="p-1">
                       Expected Expiry Date: {expiryDate}
                     </div>
                   ) : (
@@ -153,9 +152,9 @@ const Emulator = ({
                   )}
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-8 bg-black rounded-b-[30px] z-10"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-black rounded-b-[30px] z-10"></div>
             </div>
-            <div className="absolute top-24 right-0 w-1 h-10 bg-black rounded-l z-20"></div>
+            <div className="absolute top-14 right-0 w-1 h-10 bg-black rounded-l z-20"></div>
             <div className="absolute top-40 right-0 w-1 h-20 bg-black rounded-l z-20"></div>
           </div>
         )}

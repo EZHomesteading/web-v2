@@ -325,3 +325,8 @@ body::-webkit-scrollbar-thumb {
 .buttonsNotActive {
   opacity: 0.4 !important;
 }
+@media (min-width: 768px) and (min-height: 950px) {
+  .emulator-container {
+    display: block;
+  }
+}

@@ -5,6 +5,8 @@ import {
   FieldValues,
   RegisterOptions,
   UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 
@@ -19,6 +21,8 @@ interface InputProps {
   errors: FieldErrors;
   step?: string;
   validationRules?: RegisterOptions<FieldValues>;
+  watch: UseFormWatch<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -30,10 +34,20 @@ const Input: React.FC<InputProps> = ({
   required,
   errors,
   validationRules,
+  watch,
+  setValue,
+  type,
 }) => {
   let registerOptions: RegisterOptions<FieldValues> = {
     required: required ? "This field is required" : false,
     ...validationRules,
+  };
+  const validateInput = (value: string) => {
+    if (type === "number") {
+      const regex = formatPrice ? /^\d*(\.\d{0,2})?$/ : /^\d*$/;
+      return regex.test(value);
+    }
+    return true;
   };
 
   return (
@@ -49,7 +63,10 @@ const Input: React.FC<InputProps> = ({
         <input
           id={id}
           disabled={disabled}
-          {...register(id, registerOptions)}
+          {...register(id, {
+            value: type === "number",
+            ...registerOptions,
+          })}
           placeholder=""
           className={`
           peer
@@ -74,6 +91,17 @@ const Input: React.FC<InputProps> = ({
               : "focus:border-black"
           } 
         `}
+          value={isNaN(watch(id)) || watch(id) === undefined ? "" : watch(id)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "" || validateInput(value)) {
+              setValue(id, value === "" ? undefined : value, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+              });
+            }
+          }}
         />
         <label
           className={`

@@ -1,6 +1,5 @@
 "use client";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { IoReturnDownBack, IoReturnDownForward } from "react-icons/io5";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
 import {
@@ -49,6 +48,8 @@ import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { addDays, format } from "date-fns";
+import Help from "./components/help";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -90,16 +91,15 @@ const CreateClient = ({ user, index }: Props) => {
     handleSubmit,
     watch,
     formState: { errors },
-    reset,
   } = useForm<FieldValues>({
     defaultValues: {
       category: "",
       subCategory: "",
       location: "",
-      stock: 1,
+      stock: null,
       quantityType: "",
       imageSrc: [],
-      price: 1.5,
+      price: null,
       title: "",
       description: "",
       shelfLifeDays: 0,
@@ -111,7 +111,7 @@ const CreateClient = ({ user, index }: Props) => {
       zip: "",
       state: "",
       coopRating: 1,
-      minOrder: 1,
+      minOrder: null,
     },
   });
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
@@ -145,7 +145,6 @@ const CreateClient = ({ user, index }: Props) => {
   const handleCertificationCheckboxChange = (checked: boolean) => {
     setCertificationChecked(checked);
   };
-  const [enterManually, setEnterManually] = useState(false);
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
@@ -272,10 +271,10 @@ const CreateClient = ({ user, index }: Props) => {
           setValue("category", "");
           setValue("subCategory", "");
           setValue("location", "");
-          setValue("stock", 1);
+          setValue("stock", null);
           setValue("quantityType", "");
           setValue("imageSrc", "");
-          setValue("price", 1.5);
+          setValue("price", null);
           setValue("title", "");
           setValue("description", "");
           setValue("shelfLifeDays", 0);
@@ -381,7 +380,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 2 && (price <= 0 || !quantity)) {
+    if (step === 2 && (price <= 0 || !price)) {
       toast.error("Please enter a price greater than 0.", {
         duration: 2000,
         position: "bottom-center",
@@ -470,11 +469,23 @@ const CreateClient = ({ user, index }: Props) => {
     }
   }),
     [quantity, minOrder];
-
+  const shelfLife =
+    parseInt(shelfLifeDays, 10) +
+    parseInt(shelfLifeWeeks, 10) * 7 +
+    parseInt(shelfLifeMonths, 10) * 30 +
+    parseInt(shelfLifeYears, 10) * 365;
+  let expiryDate = "";
+  if (shelfLife) {
+    const endDate = addDays(new Date(), shelfLife);
+    expiryDate = format(endDate, "MMM d, yyyy");
+  }
   return (
-    <div className={`${outfit.className}`}>
-      <div className="flex flex-col md:flex-row text-black">
-        <div className="onboard-left md:w-2/5 md:min-h-screen relative">
+    <div className={`${outfit.className} relative w-full`}>
+      <div className="absolute top-2 right-2 md:left-2">
+        <Help step={step} />
+      </div>
+      <div className="flex flex-col md:flex-row text-black w-full">
+        <div className="onboard-left md:w-2/5 md:min-h-screen">
           <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
               List Your Excess Produce
@@ -713,7 +724,7 @@ const CreateClient = ({ user, index }: Props) => {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="hidden 2xl:block mt-8">
+          <div className="hidden emulator-container mt-8">
             <div className="sticky bottom-0 left-0 right-0 px-6">
               <Emulator
                 product={product}
@@ -794,7 +805,7 @@ const CreateClient = ({ user, index }: Props) => {
                 <hr />
                 <Textarea
                   id="description"
-                  placeholder="Description"
+                  placeholder="It's reccomended to include key information about your listing in the description. This will help the algorithm when users search"
                   disabled={isLoading}
                   className="h-[30vh] shadow-md text-[14px] bg"
                   maxLength={500}
@@ -826,6 +837,8 @@ const CreateClient = ({ user, index }: Props) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
+                          watch={watch}
+                          setValue={setValue}
                         />{" "}
                       </div>
                       <div className="w-1/2">
@@ -849,7 +862,9 @@ const CreateClient = ({ user, index }: Props) => {
                           register={register}
                           errors={errors}
                           formatPrice
-                        />{" "}
+                          watch={watch}
+                          setValue={setValue}
+                        />
                       </div>
                       <div className="w-1/2">
                         <Input
@@ -859,14 +874,25 @@ const CreateClient = ({ user, index }: Props) => {
                           disabled={isLoading}
                           register={register}
                           errors={errors}
+                          watch={watch}
+                          setValue={setValue}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="m-0 p-0 md:mb-3  border-black border-[1px] w-full"></div>
+                  <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full"></div>
                   <div className="w-full lg:w-1/2">
-                    <Label className="text-xl">Estimated Shelf Life </Label>
-                    <div className="mt-2 space-y-2">
+                    <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
+                      <Label className="text-xl">Estimated Shelf Life </Label>
+                      <div className="text-xs">
+                        {shelfLife ? (
+                          <>Estimated Expiry Date: {expiryDate}</>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-1 space-y-2">
                       <Counter
                         onChange={(value) =>
                           setCustomValue("shelfLifeDays", value)
@@ -973,17 +999,28 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step > 1 && (
-              <IoReturnDownBack
+              <Button
                 onClick={handlePrevious}
-                className="absolute bottom-0 left-5 text-6xl hover:cursor-pointer"
-              />
+                className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+              >
+                Back
+              </Button>
             )}
-
-            {step < 6 && (
-              <IoReturnDownForward
+            {step === 5 && (
+              <Button
                 onClick={handleNext}
-                className="absolute bottom-0 right-5 text-6xl hover:cursor-pointer"
-              />
+                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+              >
+                Finish
+              </Button>
+            )}
+            {step < 5 && (
+              <Button
+                onClick={handleNext}
+                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+              >
+                Next
+              </Button>
             )}
             {step === 4 && (
               <div
@@ -1091,7 +1128,7 @@ const CreateClient = ({ user, index }: Props) => {
                         setState(user?.location?.address[2] || "");
                       }}
                     >
-                      <CardHeader className="">
+                      <CardHeader className="pt-2 sm:pt-6">
                         <div className="text-start">
                           <div className="text-xl sm:text-2xl font-bold">
                             Use My Default Address
@@ -1108,8 +1145,8 @@ const CreateClient = ({ user, index }: Props) => {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex justify-end ">
-                        <PiStorefrontThin size="5em" />
+                      <CardContent className="flex justify-end pb-0 sm:pb-6">
+                        <PiStorefrontThin size="5em" className="text-sm" />
                       </CardContent>
                     </Card>
                     <Card
@@ -1124,7 +1161,7 @@ const CreateClient = ({ user, index }: Props) => {
                         setC(true);
                       }}
                     >
-                      <CardHeader>
+                      <CardHeader className="pt-2 sm:pt-6">
                         <div className="text-start">
                           <div className="text-xl sm:text-2xl font-bold">
                             Use a Different Location
@@ -1135,9 +1172,13 @@ const CreateClient = ({ user, index }: Props) => {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex justify-end">
+                      <CardContent className="flex justify-end pb-2 sm:pb-6">
                         {!c ? (
-                          <BiSearch size="5em" style={{ cursor: "pointer" }} />
+                          <BiSearch
+                            size="5em"
+                            style={{ cursor: "pointer" }}
+                            className="text-sm"
+                          />
                         ) : (
                           <div className="w-full">
                             <LocationSearchInput
