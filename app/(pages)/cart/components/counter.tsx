@@ -97,10 +97,10 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
 
         cartItem.quantity =
           newQuantity > maxQuantity ? maxQuantity : newQuantity;
-      } else if (newQuantity < 1) {
-        setQuantity(1);
-        setInputValue(1);
-        cartItem.quantity = 1;
+      } else if (newQuantity < cartItem.listing.minOrder) {
+        setQuantity(cartItem.listing.minOrder);
+        setInputValue(cartItem.listing.minOrder);
+        cartItem.quantity = cartItem.listing.minOrder;
       } else {
         setQuantity(newQuantity);
         setInputValue(newQuantity);
@@ -110,12 +110,16 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
   };
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      (acc: number, cartItem: any) =>
+        acc + cartItem.listing.price * cartItem.quantity,
       0
+      //console.log(cartItem.quantity)
     );
+    //console.log(newTotal);
     setTotal(newTotal);
   }, [cartItems, hover, quantity]);
   useEffect(() => {
+    //console.log(total);
     onDataChange(total);
   }, [total, onDataChange]);
 

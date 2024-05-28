@@ -80,12 +80,14 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     //Handle the last user's items
     if (userItems.length > 0) {
       const summedTotalPrice = userItems.reduce(
-        (acc: any, curr: any) => acc + curr.price,
+        (acc: any, curr: any) => acc + curr.listing.price,
         0
       );
+      //console.log(userItems);
       const allListings = userItems.reduce((acc: any, curr: any) => {
-        if (!acc.includes(curr.listingId.toString())) {
-          return [...acc, curr.listingId.toString()];
+        console.log(curr.listing.id);
+        if (!acc.includes(curr.listing.id.toString())) {
+          return [...acc, curr.listing.id.toString()];
         }
         return acc;
       }, []);
@@ -93,7 +95,9 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       const quantities = allListings.map((listingId: string) => {
         const listingQuantity = userItems.reduce(
           (acc: any, curr: any) =>
-            curr.listingId.toString() === listingId ? acc + curr.quantity : acc,
+            curr.listing.id.toString() === listingId
+              ? acc + curr.quantity
+              : acc,
           0
         );
         return { id: listingId, quantity: listingQuantity };

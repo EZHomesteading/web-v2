@@ -53,6 +53,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
 
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
+    //console.log(childTotal);
   };
 
   useEffect(() => {
@@ -138,10 +139,10 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     //setCheckoutPickup(mappedCartItems);
     return arr;
   }
-  useEffect(() => {
-    console.log(checkoutPickup);
-  }),
-    [checkoutPickup];
+  // useEffect(() => {
+  //   console.log(checkoutPickup);
+  // }),
+  //   [checkoutPickup];
   useEffect(() => {
     if (validTime) {
       if (checkoutPickup === "") {
@@ -152,7 +153,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
         setStillExpiry(
           initialPickupBuild.some((item: any) => !item.pickupTime)
         );
-        console.log(stillExpiry);
+        //console.log(stillExpiry);
         setCheckoutPickup(initialPickupBuild);
       } else {
         const updatePickupBuild = updateObjectWithCartIndex(
@@ -160,9 +161,9 @@ const Cart = ({ cartItems = [] }: CartProps) => {
           validTime.index
         );
         setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
-        console.log(stillExpiry);
+        //console.log(stillExpiry);
         setCheckoutPickup(updatePickupBuild);
-        console.log(checkoutPickup);
+        // console.log(checkoutPickup);
       }
     }
   }),
