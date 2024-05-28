@@ -5,11 +5,12 @@ import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
+import { Metadata } from "next";
 
 export const metadata = {
-  title: "EZHomesteading",
+  title: "EZHomesteading - Fresh, Local, Organic",
   description:
-    "Easily find fresh, local, and organic producer grown by people in your area.",
+    "Easily find fresh, local, and organic producer grown by people in your area. Join a community of homesteaders and small scale farmers and sell or purchase with ease!",
 };
 
 export default async function RootLayout({

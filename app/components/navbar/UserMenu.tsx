@@ -46,7 +46,7 @@ const UserMenu = ({ user }: Props) => {
           bOrders={user?.buyerOrders}
         />
         {user ? (
-          user?.role !== UserRole.COOP && user?.role != UserRole.PRODUCER ? (
+          user?.role === UserRole.CONSUMER ? (
             <UpdateRoleAlert
               heading="Would you like to become an EZH producer or co-op?"
               description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
@@ -63,6 +63,7 @@ const UserMenu = ({ user }: Props) => {
               onClick={() => {
                 router.push("/create");
               }}
+              className="hover:cursor-pointer"
             >
               <CiSquarePlus className="w-10 h-10" />
             </div>
@@ -83,7 +84,7 @@ const UserMenu = ({ user }: Props) => {
           </>
         )}
 
-        <SheetTrigger className="border-[1px] p-[2px] rounded-md">
+        <SheetTrigger className="border-none p-[2px] rounded-md">
           <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
         </SheetTrigger>
       </div>

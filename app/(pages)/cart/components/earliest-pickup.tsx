@@ -22,71 +22,83 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
   useEffect(() => {
     calculateEarliestPickupTime();
   }, []);
-
+  console.log(hours);
   const calculateEarliestPickupTime = () => {
     const now = new Date();
+    const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
+    console.log(currentDayIndex, "current day index");
     const currentMin = now.getHours() * 60 + now.getMinutes();
     let nextAvailableTime = null;
-    //console.log("user time in minutes:", currentMin);
-    for (let i = 0; i < 7; i++) {
-      const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
-      //console.log("index", newHoursIndex);
-      const newHours = hours[newHoursIndex];
 
-      if (newHours === null) {
-        continue; //skips to next day if the co-op is closed
+    for (let i = 0; i < 7; i++) {
+      const newHoursIndex = ((currentDayIndex + i) % 7) as keyof ExtendedHours;
+      const newHours = hours[newHoursIndex];
+      console.log(newHoursIndex, "new hours index");
+      console.log(newHours, "new hours");
+
+      if (newHours === null || (newHours && newHours.length === 0)) {
+        continue; // Skip to the next day if the seller is closed or has no hours
       }
 
-      if (newHours && newHours.length === 0) continue;
+      let foundSlot = false;
 
-      const openTime = newHours ? newHours[0].open : 0; // time the co-op opens on the day
-      const closeTime = newHours ? newHours[0].close : 0; // time the co-op closes on the day
-      //console.log("open time for co-op", openTime);
-      //console.log("closing time for co-op", closeTime);
+      for (const hourSlot of newHours) {
+        const openTime = hourSlot.open;
+        const closeTime = hourSlot.close;
 
-      if (i === 0 && currentMin < closeTime) {
-        // if the user is trying to buy today and before the co-op is closed, proceed
-        if (currentMin < openTime) {
-          // if the user is trying to buy today and before the co-op is open, pick up is when the co-op opens plus 30 minutes
-          // we will need another check here that if the time difference between co-op open time and order time is less than the co-ops set out time, the pick up time is the order time plus set out time
-          //console.log("entered case 1");
+        if (i === 0) {
+          // Check if the buyer is buying on the same day as the seller's hours
+          if (currentMin < openTime) {
+            // If the buyer is buying before the seller's current open slot
+            if (openTime - currentMin >= 30) {
+              // If the time difference is 30 minutes or more, set the pickup time to the seller's opening time
+              nextAvailableTime = new Date(now);
+              nextAvailableTime.setHours(
+                Math.floor(openTime / 60),
+                openTime % 60,
+                0,
+                0
+              );
+              foundSlot = true;
+              break;
+            }
+          } else if (currentMin >= openTime && currentMin + 40 < closeTime) {
+            // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
+            nextAvailableTime = new Date(now);
+            nextAvailableTime.setMinutes(currentMin + 40); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
+            foundSlot = true;
+            break;
+          }
+        } else {
+          // Set the pickup time to the seller's opening time on the next available day
           nextAvailableTime = new Date(now);
+          nextAvailableTime.setDate(now.getDate() + i);
           nextAvailableTime.setHours(
             Math.floor(openTime / 60),
             openTime % 60,
             0,
             0
           );
-          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
-        } else {
-          // if the user is buying today after the co-op has opened but before they close, the pick up is now plus the set out time
-          //console.log("entered case 2");
-          nextAvailableTime = new Date(now);
-          nextAvailableTime.setMinutes(now.getMinutes() + 30);
+          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes());
+          foundSlot = true;
+          break;
         }
-        break;
-      } else if (i > 0) {
-        //console.log("entered case 3");
-        nextAvailableTime = new Date(now);
-        nextAvailableTime.setDate(now.getDate() + i);
-        if (newHours) {
-          nextAvailableTime.setHours(
-            Math.floor(newHours[0].open / 60),
-            newHours[0].open % 60,
-            0,
-            0
-          );
-        }
-        nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
-        break;
+      }
+
+      if (foundSlot) {
+        break; // Exit the loop if a valid pickup time is found
       }
     }
-    if (nextAvailableTime) {
-      const formattedEarliestTime = formatPickupTime({
-        pickupTime: nextAvailableTime,
-      });
-      setEarliestPickupTime(formattedEarliestTime);
+
+    if (!nextAvailableTime) {
+      // If no available time is found within the next 7 days, return null
+      return null;
     }
+
+    const formattedEarliestTime = formatPickupTime({
+      pickupTime: nextAvailableTime,
+    });
+    setEarliestPickupTime(formattedEarliestTime);
 
     return nextAvailableTime;
   };
@@ -99,7 +111,6 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
     if (nextAvailableTime) {
       onSetTime({ pickupTime: nextAvailableTime, index: index });
     }
-    //console.log(nextAvailableTime);
   };
 
   const formatPickupTime = (selectedTimer: any) => {
