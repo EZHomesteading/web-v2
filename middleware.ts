@@ -5,7 +5,6 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  reAuthRoutes,
 } from "@/routes";
 const { auth } = NextAuth(authConfig);
 export default auth(async (req) => {
@@ -20,8 +19,9 @@ export default auth(async (req) => {
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString) ||
     nextUrl.pathname.startsWith("/info/") ||
-    nextUrl.pathname.startsWith("/profile/");
-  const isReAuthRoute = reAuthRoutes.includes(nextUrl.pathname);
+    nextUrl.pathname.startsWith("/profile/") ||
+    nextUrl.pathname.startsWith("/store/") ||
+    nextUrl.pathname.startsWith("/listings/");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
@@ -38,20 +38,10 @@ export default auth(async (req) => {
     }
     return null as unknown as void;
   }
-  if (!isLoggedIn && isReAuthRoute) {
+
+  if (!isLoggedIn && !isPublicRoute) {
     return Response.redirect(new URL(`/auth/login`, nextUrl));
   }
-  if (!isLoggedIn && !isPublicRoute) {
-    let callbackUrl = nextUrl.pathname;
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
-    }
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    return Response.redirect(
-      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
-  }
-
   return null as unknown as void;
 });
 
@@ -60,10 +50,6 @@ export const config = {
     "/((?!.+\\.[\\w]+$|_next).*)",
     "/",
     "/(api|trpc)(.*)",
-    "/my-store",
-    "/dashboard",
-    "/transaction-history",
-    "/favorites",
     "/conversations/:path*",
     "/users/:path*",
   ],
