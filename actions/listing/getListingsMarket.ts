@@ -46,6 +46,7 @@ export default async function GetListings(
           price: true,
           imageSrc: true,
           createdAt: true,
+          minOrder: true,
           stock: true,
           location: {
             select: {
@@ -85,6 +86,7 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            minOrder: true,
             imageSrc: true,
             createdAt: true,
             stock: true,
@@ -121,6 +123,7 @@ export default async function GetListings(
             quantityType: true,
             price: true,
             imageSrc: true,
+            minOrder: true,
             createdAt: true,
             stock: true,
             location: {
@@ -158,6 +161,7 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            minOrder: true,
             imageSrc: true,
             createdAt: true,
             stock: true,
@@ -191,6 +195,7 @@ export default async function GetListings(
             quantityType: true,
             price: true,
             imageSrc: true,
+            minOrder: true,
             createdAt: true,
             stock: true,
             location: {

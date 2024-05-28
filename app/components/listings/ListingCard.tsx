@@ -50,6 +50,7 @@ interface ListingCardProps {
     title: string;
     quantityType: string;
     stock: number;
+    minOrder: number | null;
   };
   onAction?: (id: string) => void;
   disabled?: boolean;
@@ -151,6 +152,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 user={user}
                 listingRole={storeUser.role}
                 listingUser={storeUser.id}
+                listingMin={data.minOrder}
               />
             )}
           </div>

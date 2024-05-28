@@ -289,6 +289,15 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                                   </p>
                                 )}
                               </div>
+                              {cartItem.listing.minOrder === null ||
+                              cartItem.listing.minOrder === 1 ? (
+                                <></>
+                              ) : (
+                                <div className=" sm:border-l border-none sm:border-gray-200  text-gray-500 text-xs sm:text-sm">
+                                  Minimum order: {cartItem.listing.minOrder}{" "}
+                                  {cartItem.listing.quantityType}
+                                </div>
+                              )}
                               <div className="mt-1 text-sm font-medium text-gray-900 flex flex-row">
                                 ${cartItem.listing.price}{" "}
                                 {cartItem.listing.quantityType ? (
