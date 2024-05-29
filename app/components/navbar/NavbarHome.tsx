@@ -1,7 +1,7 @@
+//homepage default navbar
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
-import AuthButtons from "./auth-buttons";
 interface p {
   user?: any;
 }

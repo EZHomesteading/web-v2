@@ -1,5 +1,5 @@
 "use client";
-
+//coop hours component with slider
 import CoopHoursSlider from "./co-op-hours-slider";
 import { useState } from "react";
 import { HoursDisplay } from "./hours-display";

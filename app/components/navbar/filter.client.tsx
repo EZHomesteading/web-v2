@@ -1,4 +1,5 @@
 "use client";
+//filters sidebar popover component
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import { Slider } from "./radius-slider";
 import { Switch } from "../ui/switch";
@@ -11,7 +12,6 @@ import { GiFruitTree } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { BsPersonWalking } from "react-icons/bs";
-import { MapIcon } from "@heroicons/react/20/solid";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
 import { Checkbox } from "../ui/checkbox";
 

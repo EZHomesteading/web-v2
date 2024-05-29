@@ -1,10 +1,9 @@
+//my listing page parent element
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
-
 import { currentUser } from "@/lib/auth";
 import getListingsByUserId from "@/actions/listing/getListingsByUserId";
-
-import PropertiesClient from "./PropertiesClient";
+import ListingsClient from "./ListingsClient";
 
 const PropertiesPage = async () => {
   const user = await currentUser();
@@ -26,7 +25,7 @@ const PropertiesPage = async () => {
 
   return (
     <ClientOnly>
-      <PropertiesClient listings={listings} user={user} />
+      <ListingsClient listings={listings} user={user} />
     </ClientOnly>
   );
 };

@@ -1,5 +1,5 @@
 "use client";
-
+//default header component
 interface HeadingProps {
   title: string;
   subtitle?: string;

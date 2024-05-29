@@ -1,3 +1,4 @@
+//update role modal
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,7 +10,6 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
-import { Button } from "@/app/components/ui/button";
 import Cancel from "@/app/components/icons/cancel-svg";
 import Link from "next/link";
 import { CiCircleInfo, CiSquarePlus } from "react-icons/ci";

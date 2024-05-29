@@ -1,5 +1,5 @@
 "use client";
-
+//logout button
 import { logout } from "@/actions/auth/logout";
 
 interface LogoutButtonProps {

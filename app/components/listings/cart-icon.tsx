@@ -1,5 +1,5 @@
 "use client";
-
+//cart icon component, handles toggler cart
 import { BiBasket } from "react-icons/bi";
 import useCart from "@/hooks/listing/use-cart";
 

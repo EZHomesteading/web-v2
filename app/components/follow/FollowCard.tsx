@@ -1,10 +1,8 @@
 "use client";
-
+//following card component
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { SafeListing } from "@/types";
-import CartIcon from "../listings/cart-icon";
 import { Button } from "../ui/button";
 import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
@@ -19,9 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { StarIcon } from "@radix-ui/react-icons";
-import { Trash2Icon } from "lucide-react";
-import axios from "axios";
 import FollowButton from "./followButton";
 
 interface ListingCardProps {
@@ -77,14 +72,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
   );
 
   const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-  };
 
   return (
     <div className="col-span-1 cursor-pointer">

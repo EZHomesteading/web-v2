@@ -1,5 +1,5 @@
 "use client";
-
+//info pages parent component
 import Select from "react-select";
 import useInfoPages from "@/app/info/use-info-pages";
 

@@ -1,9 +1,7 @@
 "use client";
-
+//cart modals component
 import useCartModal from "@/hooks/modal/use-cart-modal";
-
 import Modal from "./Modal";
-import Heading from "../Heading";
 
 const CartModal = () => {
   const cartModal = useCartModal();

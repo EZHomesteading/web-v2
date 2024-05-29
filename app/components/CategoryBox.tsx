@@ -1,4 +1,5 @@
 "use client";
+//query based category boxes for use on market page
 import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";

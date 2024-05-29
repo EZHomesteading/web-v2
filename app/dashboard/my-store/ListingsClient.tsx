@@ -1,25 +1,21 @@
 "use client";
-
+//my listings page
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 
-interface PropertiesClientProps {
+interface ListingsClientProps {
   listings: any;
   user?: any | null;
 }
 
-const PropertiesClient: React.FC<PropertiesClientProps> = ({
-  listings,
-  user,
-}) => {
+const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
 
@@ -100,4 +96,4 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
   );
 };
 
-export default PropertiesClient;
+export default ListingsClient;

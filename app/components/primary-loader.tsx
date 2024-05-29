@@ -1,5 +1,5 @@
 "use client";
-
+//spinning loading icon
 import { PuffLoader } from "react-spinners";
 
 const Loader = () => {

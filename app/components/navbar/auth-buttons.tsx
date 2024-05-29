@@ -1,3 +1,4 @@
+//sign in and sign out buttons
 import Link from "next/link";
 
 const AuthButtons = () => {

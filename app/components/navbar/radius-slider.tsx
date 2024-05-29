@@ -1,3 +1,4 @@
+//radius slider component for search filters popover component
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";

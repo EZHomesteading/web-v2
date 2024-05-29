@@ -1,5 +1,5 @@
 "use client";
-
+//default modal component
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 

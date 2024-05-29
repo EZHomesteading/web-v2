@@ -1,5 +1,5 @@
 "use client";
-
+//renders buttons at bottom of auth form for becoem coop and becoem producer
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { Header } from "@/app/components/auth/header";
 

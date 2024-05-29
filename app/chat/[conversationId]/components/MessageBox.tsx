@@ -18,7 +18,6 @@ import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
 import { UserRole } from "@prisma/client";
-
 import { UploadButton } from "@/utils/uploadthing";
 
 import {
@@ -108,7 +107,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   // all onsubmit options dependent on messages in chat.
-
   const onSubmit1 = () => {
     //coop seller confirms order pickup time
     axios.post("/api/messages", {

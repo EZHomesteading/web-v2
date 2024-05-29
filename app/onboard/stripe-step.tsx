@@ -1,3 +1,4 @@
+//stripe setup parent element
 import AccountOnboardingUI from "./stripe-onboarding";
 import { UserInfo } from "@/next-auth";
 interface Props {

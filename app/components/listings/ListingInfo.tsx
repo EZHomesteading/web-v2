@@ -1,5 +1,5 @@
 "use client";
-
+//listing information component, displays user selling and follow button
 import { UserInfo } from "@/next-auth";
 import { useRouter } from "next/navigation";
 import FollowButton from "../follow/followButton";
