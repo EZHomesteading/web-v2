@@ -26,6 +26,7 @@ interface ListingReservationProps {
     description: string;
     imageSrc: string[];
     shelfLife: number;
+    minOrder: number | null;
     coopRating: number | null;
     userId: string;
     user: any;
@@ -46,7 +47,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(product.minOrder || 1);
   const { hasCart } = useCartListing({
     listingId,
     user,
@@ -72,7 +73,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   };
 
   const decreaseQuantity = () => {
-    if (quantity > 1) {
+    if (product.minOrder === null) {
+      product.minOrder = 1;
+    }
+    if (quantity > product.minOrder) {
+      console.log(product.minOrder);
       setQuantity((prevQuantity) => prevQuantity - 1);
     }
   };
@@ -134,6 +139,16 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           </div>
         ) : (
           <>
+            {product.minOrder === null || product.minOrder === 1 ? (
+              <></>
+            ) : (
+              <>
+                <div className="flex flex-row items-center p-2">
+                  Minimum order: {product.minOrder} {quantityType}
+                </div>
+                <hr />
+              </>
+            )}
             {!hasCart ? (
               <div className="flex flex-col items-center gap-2">
                 <div className=" flex flex-row justify-center items-center mt-2 ">

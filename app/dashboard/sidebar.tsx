@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { TbLayoutSidebarRightCollapseFilled } from "react-icons/tb";
 import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
+import Link from "next/link";
 
 interface p {
   role?: UserRole;
@@ -168,7 +169,7 @@ const Sidebar = ({ role }: p) => {
     <>
       <div
         className={`hidden lg:block relative h-full ${
-          isCollapsed ? "w-16" : "w-72"
+          isCollapsed ? "w-10" : "w-64"
         } transition-width duration-300`}
       >
         <div className="flex grow  flex-col gap-y-6 px-6">
@@ -178,14 +179,12 @@ const Sidebar = ({ role }: p) => {
                 <>
                   {vendorNav.map((item) => (
                     <li key={item.name}>
-                      <a
+                      <Link
                         href={item.href}
                         className={classNames(
-                          item.current
-                            ? "bg-gray-81"
-                            : "text-gray-401 hover:text-white hover:bg-gray-800",
+                          item.current ? "" : "text-gray-401 hover:text-white ",
                           "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold",
-                          isCollapsed ? "justify-center" : ""
+                          isCollapsed ? "justify-end" : ""
                         )}
                       >
                         <item.icon
@@ -193,7 +192,7 @@ const Sidebar = ({ role }: p) => {
                           aria-hidden="true"
                         />
                         {!isCollapsed && item.name}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </>
@@ -206,7 +205,7 @@ const Sidebar = ({ role }: p) => {
                         className={classNames(
                           item.current
                             ? "bg-gray-81"
-                            : "text-gray-401 hover:text-white hover:bg-gray-800",
+                            : "text-gray-401 hover:text-white",
                           "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold",
                           isCollapsed ? "justify-center" : ""
                         )}
@@ -227,12 +226,12 @@ const Sidebar = ({ role }: p) => {
         {isCollapsed ? (
           <TbLayoutSidebarRightCollapse
             onClick={toggleSidebar}
-            className="text-gray-401 hover:text-white w-10 h-10 absolute r-0 b-0"
+            className=" hover:text-white w-10 h-10 absolute bottom-50 right-1 transform translate-x-1/2 translate-y-1/2 hover:cursor-pointer transition-transform duration-300"
           />
         ) : (
           <TbLayoutSidebarLeftCollapse
             onClick={toggleSidebar}
-            className="text-gray-401 hover:text-white w-10 h-10"
+            className=" hover:text-white w-10 h-10 absolute bottom-50 right-1 transform -translate-x-1/2 translate-y-1/2 hover:cursor-pointer transition-transform duration-300"
           />
         )}
       </div>

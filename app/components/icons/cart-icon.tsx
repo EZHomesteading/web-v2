@@ -5,7 +5,16 @@ import Link from "next/link";
 import axios from "axios";
 import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
-
+import { Outfit, Zilla_Slab } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 interface CartItem {
   id: string;
   quantity: number;
@@ -104,7 +113,7 @@ const CartIcon = ({ cart }: c) => {
   //   return null;
   // }
   return (
-    <>
+    <div className={`${outfit.className}`}>
       <Sheet>
         <SheetTrigger>
           <div className="relative">
@@ -115,17 +124,18 @@ const CartIcon = ({ cart }: c) => {
           </div>
         </SheetTrigger>
 
-        <SheetContent className="bg px-4 py-4 min-h-screen overflow-y-auto">
-          <SheetHeader className="text-3xl mb-3">
-            Cart
-            <div className=" flex flex-row justify-between mx-8 text-nowrap">
+        <SheetContent
+          className={`${outfit.className} bg px-4 py-4 min-h-screen overflow-y-auto`}
+        >
+          <SheetHeader className="text-3xl mb-3 font-bold">
+            <div className=" flex flex-row justify-start text-nowrap">
               <Link href="/cart">
                 {" "}
                 <SheetTrigger
                   className="
          
          cursor-pointer
-         text-center bg-green-400 hover:bg-green-700  rounded-lg px-4 py-2 text-sm"
+         text-center bg-emerald-950 text-white hover:bg-green-700  rounded-full shadow-sm px-4 py-2 text-sm "
                 >
                   Go to Cart
                 </SheetTrigger>
@@ -135,12 +145,13 @@ const CartIcon = ({ cart }: c) => {
                   className="
            
            cursor-pointer
-           text-center bg-green-400 hover:bg-green-700  ml-2 rounded-lg px-4 py-2 text-sm"
+           text-center bg-emerald-950 hover:bg-green-700 text-white  ml-2 rounded-full px-4 py-2 text-sm"
                 >
                   Continue Shopping
                 </SheetTrigger>
               </Link>
             </div>
+            Cart
           </SheetHeader>
 
           {Object.entries(groupedListings).map(([userId, userListings]) => (
@@ -153,12 +164,12 @@ const CartIcon = ({ cart }: c) => {
                   <Image
                     src={item.listing.imageSrc[0]}
                     alt={item.listing.title}
-                    height={100}
-                    width={100}
+                    height={80}
+                    width={80}
                     className="w-16 h-16 object-cover rounded-xl"
                   />
                   <div className="flex flex-row justify-between w-full">
-                    <h4 className="font-semibold">
+                    <h4 className={`${zilla.className} text-sm font-light`}>
                       {getQuantityWording(
                         item.listing.quantityType,
                         item.quantity,
@@ -184,14 +195,9 @@ const CartIcon = ({ cart }: c) => {
               ))}
             </div>
           ))}
-          <Link href="/cart">
-            <SheetTrigger className="w-full shadow-xl mb-2 text-md py-1 rounded-xl">
-              Go to Cart
-            </SheetTrigger>
-          </Link>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 };
 

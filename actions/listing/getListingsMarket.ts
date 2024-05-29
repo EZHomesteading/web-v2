@@ -45,8 +45,12 @@ export default async function GetListings(
           quantityType: true,
           price: true,
           imageSrc: true,
+          subCategory: true,
+          category: true,
           createdAt: true,
+          minOrder: true,
           stock: true,
+          description: true,
           location: {
             select: {
               coordinates: true,
@@ -57,6 +61,7 @@ export default async function GetListings(
             select: {
               id: true,
               role: true,
+              name: true,
             },
           },
         },
@@ -85,9 +90,13 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            minOrder: true,
             imageSrc: true,
             createdAt: true,
+            subCategory: true,
+            category: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -98,6 +107,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
@@ -106,7 +116,6 @@ export default async function GetListings(
           },
         });
       } else if (c === "t") {
-        console.log("entered case 2");
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -120,9 +129,13 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            category: true,
+            subCategory: true,
             imageSrc: true,
+            minOrder: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -133,6 +146,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
@@ -141,7 +155,6 @@ export default async function GetListings(
           },
         });
       } else if (p === "t") {
-        console.log("entered case 3");
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -158,9 +171,13 @@ export default async function GetListings(
             title: true,
             quantityType: true,
             price: true,
+            subCategory: true,
+            category: true,
+            minOrder: true,
             imageSrc: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -171,12 +188,12 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },
         });
       } else {
-        console.log("entered case 4");
         listings = await prisma.listing.findMany({
           where: {
             ...query,
@@ -189,10 +206,14 @@ export default async function GetListings(
             id: true,
             title: true,
             quantityType: true,
+            subCategory: true,
+            category: true,
             price: true,
             imageSrc: true,
+            minOrder: true,
             createdAt: true,
             stock: true,
+            description: true,
             location: {
               select: {
                 coordinates: true,
@@ -203,6 +224,7 @@ export default async function GetListings(
               select: {
                 id: true,
                 role: true,
+                name: true,
               },
             },
           },

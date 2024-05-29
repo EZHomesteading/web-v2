@@ -15,6 +15,7 @@ export type CartItem = {
     imageSrc: string[];
     userId: string;
     subCategory: string;
+    minOrder: number | null;
     user: {
       id: string;
       name: string;
@@ -32,12 +33,14 @@ export const getAllCartItemsByUserId = async () => {
       select: {
         id: true,
         quantity: true,
+
         listing: {
           select: {
             id: true,
             title: true,
             price: true,
             stock: true,
+            minOrder: true,
             quantityType: true,
             shelfLife: true,
             createdAt: true,
