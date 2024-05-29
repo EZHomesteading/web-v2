@@ -1,9 +1,11 @@
-import getUserById from "@/actions/user/getUserById";
+//server side component for rendering users reviews, total rating and other information set up by the users.
+
+//import getUserById from "@/actions/user/getUserById";
 import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { UserInfo } from "@/next-auth";
+//import { UserInfo } from "@/next-auth";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";

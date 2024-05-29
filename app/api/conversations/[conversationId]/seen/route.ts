@@ -1,5 +1,5 @@
+//route to handle seen messages with pusher
 import { NextResponse } from "next/server";
-
 import { currentUser } from "@/lib/auth";
 import { pusherServer } from "@/lib/pusher";
 import prisma from "@/lib/prismadb";

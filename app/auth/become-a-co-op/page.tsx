@@ -1,3 +1,4 @@
+//server layout for coop conversion
 import { BecomeCoop } from "@/app/components/auth/become/become-co-op-form";
 import { currentUser } from "@/lib/auth";
 const BecomeCoopPage = async () => {

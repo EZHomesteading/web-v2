@@ -1,3 +1,4 @@
+//server side layout for users dynamically generated stores.
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";

@@ -1,3 +1,4 @@
+//stripe create account and update user with stripe ID
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import Stripe from "stripe";

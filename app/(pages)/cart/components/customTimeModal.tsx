@@ -139,7 +139,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
     return inputDatetime;
   }
 
-  // Function to set the selected time option
+  // Function to set the selected time option, and send it to the parent element
   const setTime = (option: string) => {
     if (date && option) {
       onSetTime({

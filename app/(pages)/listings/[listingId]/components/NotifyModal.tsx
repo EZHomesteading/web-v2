@@ -1,5 +1,5 @@
 "use client";
-
+//modal to allow users to sign up for email notifications when the product is back in stock
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
@@ -44,6 +44,7 @@ const NotifyModal: React.FC<ConfirmModalProps> = ({
     console.log(listingId);
     setIsLoading(true);
     try {
+      //email subscription API route
       await axios.post("/api/emailSub", {
         id: listingId,
         email: text,

@@ -1,5 +1,5 @@
 "use client";
-
+//  modified date picker layout for buy now button. skips cart page altogether.
 import { SheetCartC, SheetContentC } from "@/app/components/ui/reservePicker";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { SheetTrigger } from "@/app/components/ui/sheet";

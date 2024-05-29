@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
 import Modal from "@/app/components/modals/chatmodals/Modal";
-
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import {
   Popover,
@@ -17,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
-import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 
 interface CustomTimeProps {
