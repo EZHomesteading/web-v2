@@ -1,3 +1,4 @@
+// server side layour for chat page
 import getConversations from "@/actions/messenger/getConversations";
 import ConversationList from "./components/ConversationList";
 import NavbarHome from "../components/navbar/navbar-chat";

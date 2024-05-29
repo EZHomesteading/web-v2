@@ -317,3 +317,11 @@ model Dispute {
   updatedAt        DateTime @updatedAt
   order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
+
+model Suggestion {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  name             String @unique
+  category         String
+  subCategory      String
+  createAt         DateTime @default(now())
+}
