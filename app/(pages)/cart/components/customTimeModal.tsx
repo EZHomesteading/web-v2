@@ -119,6 +119,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
       return inputDatetime;
     }
 
+    //destructuring match result object, time is unused, but is necessary to pass to function properly.
     const [time, hours, minutes, meridiem] = matchResult;
     let parsedHours = parseInt(hours, 10);
 

@@ -1,5 +1,5 @@
 "use client";
-
+//header component for chat pages, simply displays some information about the chat.
 import { HiChevronLeft } from "react-icons/hi";
 import Link from "next/link";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
