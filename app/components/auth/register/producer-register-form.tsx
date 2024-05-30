@@ -132,7 +132,7 @@ export const ProducerRegisterForm = () => {
       label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      showSocial
+      // showSocial
       activeTab={activeTab}
       onTabChange={handleTabChange}
     >
@@ -247,7 +247,7 @@ export const ProducerRegisterForm = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}

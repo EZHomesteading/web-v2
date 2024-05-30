@@ -138,7 +138,7 @@ export const CoOpRegisterForm = () => {
       label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      showSocial
+      // showSocial
       activeTab={activeTab}
       onTabChange={handleTabChange}
     >
@@ -253,7 +253,7 @@ export const CoOpRegisterForm = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Co-Op Name</FormLabel>
+                    <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
