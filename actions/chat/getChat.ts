@@ -1,6 +1,6 @@
-//get conversation by ID
-import { currentUser } from "@/lib/auth";
+// get conversation based on current user
 import prisma from "@/lib/prismadb";
+import { currentUser } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const getConversationById = async (conversationId: string) => {
@@ -73,4 +73,60 @@ const getConversationById = async (conversationId: string) => {
   }
 };
 
-export default getConversationById;
+const getConversations = async () => {
+  const user = await currentUser();
+
+  if (!user?.id) {
+    return { conversations: [], user: null };
+  }
+
+  try {
+    const conversations = await prisma.conversation.findMany({
+      orderBy: {
+        lastMessageAt: "desc",
+      },
+      where: {
+        userIds: {
+          has: user.id,
+        },
+        NOT: {
+          id: user?.id,
+        },
+      },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            sender: true,
+            seen: true,
+          },
+        },
+      },
+    });
+
+    return { conversations, user };
+  } catch (error: any) {
+    return { conversations: [], user: null };
+  }
+};
+const getMessages = async (conversationId: string) => {
+  try {
+    const messages = await prisma.message.findMany({
+      where: {
+        conversationId: conversationId,
+      },
+      include: {
+        sender: true,
+        seen: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return messages;
+  } catch (error: any) {
+    return [];
+  }
+};
+export { getConversations, getConversationById, getMessages };

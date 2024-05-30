@@ -14,7 +14,6 @@ interface ListingInfoProps {
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
   user,
-  description,
   followUserId,
   following,
 }) => {
@@ -37,7 +36,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <span style={{ marginRight: "5px" }}>Sold by</span>
           <span
             className="flex items-center gap-2 hover:cursor-pointer"
-            onClick={() => router.push(`/store/${user.id}`)}
+            onClick={() => router.push(`/store/${user.url}`)}
           >
             <span className="mt-3">
               <Avatar image={user?.image} />
