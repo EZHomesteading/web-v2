@@ -2,9 +2,9 @@
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import getOrderById from "@/actions/getOrderById";
-import getListingById from "@/actions/listing/getListingById";
+import { getListingById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { UserRole } from "@prisma/client";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

@@ -13,13 +13,7 @@ const nextConfig = {
         hostname: "utfs.io",
       },
     ],
-    domains: [
-      "res.cloudinary.com",
-      "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com",
-      "images.pexels.com",
-      "as1.ftcdn.net",
-    ],
+    domains: ["res.cloudinary.com", "lh3.googleusercontent.com"],
   },
   async headers() {
     return [

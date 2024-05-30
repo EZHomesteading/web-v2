@@ -7,6 +7,7 @@ interface Props {
   formData: any;
   setFormData: any;
 }
+
 const ProfileStep = ({ setFormData, formData, user }: Props) => {
   return (
     <>

@@ -2,7 +2,7 @@
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {

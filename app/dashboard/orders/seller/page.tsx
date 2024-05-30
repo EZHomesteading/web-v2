@@ -1,15 +1,16 @@
 import { currentUser } from "@/lib/auth";
-import GetUserWithSellOrders from "@/actions/user/getUserWithSellOrders";
+import { getUserWithSellOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
-import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
+import { GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { Fragment } from "react";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -22,7 +23,7 @@ const formatPrice = (price: number): string => {
 
 const Page = async () => {
   let user = await currentUser();
-  const seller = await GetUserWithSellOrders({ userId: user?.id });
+  const seller = await getUserWithSellOrders({ userId: user?.id });
 
   const renderedCards = await Promise.all(
     seller?.sellerOrders
@@ -32,7 +33,7 @@ const Page = async () => {
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>
-          GetListingsByListingIds({ listingIds: [id] })
+          GetListingsByIds({ listingIds: [id] })
         );
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
@@ -45,57 +46,94 @@ const Page = async () => {
           buyer?.name || "(Deleted User)",
           seller?.name || "(Deleted User)"
         );
+        const metadata = {
+          title: `${user?.name} Sell Orders | EZHomesteading`,
+          description: "Track your ongoing sell orders.",
+          keywords: [
+            "seller",
+            "orders",
+            "vendor",
+            "ezh",
+            "ezhomesteading",
+            "produce near me",
+            "virtual farmer's market",
+            "fresh food",
+            "local food",
+            "organic food",
+          ],
+          openGraph: {
+            title: `${user?.name}'s Dashboard | EZHomesteading`,
+            description:
+              "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
+            url: "https://www.ezhomesteading.com/dashboard/orders/seller",
+            type: "website",
+          },
+        };
 
         return (
-          <Card key={order.id} className="sheet shadow-lg mb-4">
-            <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
-              {buyer?.name}
-              <Link
-                href={`/chat/${order.conversationId}`}
-                className="absolute top-2 lg:top-0 right-2 "
-              >
-                <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
-                  Go to Conversation
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-              {listings.flatMap((listing: SafeListing) => {
-                const quantities = JSON.parse(order.quantity);
-                const quantityObj = quantities.find(
-                  (q: any) => q.id === listing.id
-                );
-                const quantity = quantityObj ? quantityObj.quantity : 0;
+          <>
+            <head>
+              <title>{metadata.title}</title>
+              <meta name="description" content={metadata.description} />
+              <meta name="keywords" content={metadata.keywords.join(", ")} />
+              <meta property="og:title" content={metadata.openGraph.title} />
+              <meta
+                property="og:description"
+                content={metadata.openGraph.description}
+              />
+              <meta property="og:url" content={metadata.openGraph.url} />
+              <meta property="og:type" content={metadata.openGraph.type} />
+            </head>
+            <Card key={order.id} className="sheet shadow-lg mb-4">
+              <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
+                {buyer?.name}
+                <Link
+                  href={`/chat/${order.conversationId}`}
+                  className="absolute top-2 lg:top-0 right-2 "
+                >
+                  <Button className="text-xs py-1 px-2  bg-slate-600 rounded-full">
+                    Go to Conversation
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
+                {listings.flatMap((listing: SafeListing) => {
+                  const quantities = JSON.parse(order.quantity);
+                  const quantityObj = quantities.find(
+                    (q: any) => q.id === listing.id
+                  );
+                  const quantity = quantityObj ? quantityObj.quantity : 0;
 
-                return (
-                  <div
-                    key={listing.id}
-                    className="flex flex-row items-center gap-2"
-                  >
-                    <Image
-                      src={listing.imageSrc[0]}
-                      alt={listing.title}
-                      width={50}
-                      height={50}
-                      className="rounded-lg object-cover aspect-square"
-                    />
-                    <p>
-                      {quantity} {listing.quantityType} of {listing.title}{" "}
-                    </p>
-                  </div>
-                );
-              })}
-              <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
-              <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
-            </CardContent>
-            <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
-              Status changed{" "}
-              {formatDistanceToNow(new Date(order.updatedAt), {
-                addSuffix: true,
-              })}
-              : {statusText}
-            </div>
-          </Card>
+                  return (
+                    <div
+                      key={listing.id}
+                      className="flex flex-row items-center gap-2"
+                    >
+                      <Image
+                        src={listing.imageSrc[0]}
+                        alt={listing.title}
+                        width={50}
+                        height={50}
+                        className="rounded-lg object-cover aspect-square"
+                      />
+                      <p>
+                        {quantity} {listing.quantityType} of {listing.title}{" "}
+                      </p>
+                    </div>
+                  );
+                })}
+                <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
+                <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
+              </CardContent>
+              <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
+                Status changed{" "}
+                {formatDistanceToNow(new Date(order.updatedAt), {
+                  addSuffix: true,
+                })}
+                : {statusText}
+              </div>
+            </Card>
+          </>
         );
       }) || []
   );
@@ -111,7 +149,9 @@ const Page = async () => {
         </Link>
       )}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
-        {renderedCards}
+        {renderedCards.map((card, index: number) => (
+          <Fragment key={index}>{card}</Fragment>
+        ))}
       </main>
     </div>
   );

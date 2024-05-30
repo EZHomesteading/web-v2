@@ -2,8 +2,8 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "../../components/client/ClientOnly";
-import getListingsApi from "@/actions/listing/getListingsMarket";
-import getUserwithCart from "@/actions/user/getUserWithCart";
+import { GetListingsMarket } from "@/actions/getListings";
+import { getUserwithCart } from "@/actions/getUser";
 
 interface ShopProps {
   userId?: string;
@@ -44,7 +44,7 @@ const ShopPage = async ({
   page = !page || page < 1 ? 1 : page;
   const perPage = 36;
 
-  const { listings, totalItems } = await getListingsApi(
+  const { listings, totalItems } = await GetListingsMarket(
     {
       q,
       lat,

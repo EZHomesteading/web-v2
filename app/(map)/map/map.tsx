@@ -1,11 +1,6 @@
 "use client";
 //this file contains all mapping functionality
-import {
-  GoogleMap,
-  MarkerF,
-  useLoadScript,
-  MarkerClustererF,
-} from "@react-google-maps/api";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
 import Loading from "@/app/components/secondary-loader";
 import InfoWindowCarousel from "./info-window-carousel";

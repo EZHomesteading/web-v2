@@ -121,7 +121,7 @@ model Following {
   @@unique([userId])
   }
 
-  model Reviews {
+model Reviews {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   reviewerId            String @db.ObjectId
   buyerId               String @db.ObjectId
@@ -131,7 +131,7 @@ model Following {
 
   buyer                 User @relation(name:"buyer", fields: [buyerId], references: [id], onDelete: Cascade)
   seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
-  }
+}
 
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -211,8 +211,6 @@ model Listing {
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
   cart          Cart[]
 }
-
-
 
 model Cart {
   id            String @id @default(auto()) @map("_id") @db.ObjectId

@@ -1,5 +1,5 @@
 //update listing parent lement
-import getListingById from "@/actions/listing/getListingById";
+import { getListingById } from "@/actions/getListings";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import UpdateClient from "./UpdateClient";
 

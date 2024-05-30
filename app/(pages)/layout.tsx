@@ -1,5 +1,5 @@
 //base server side layout for all (pages) children
-import GetOrderNotificationInfo from "@/actions/user/getUserNav";
+import { getNavUser } from "@/actions/getUser";
 import Navbar from "@/app/components/navbar/Navbar";
 
 export default async function RootLayout({
@@ -7,7 +7,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await GetOrderNotificationInfo();
+  const user = await getNavUser();
   return (
     <>
       <Navbar user={user} />

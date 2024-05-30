@@ -1,5 +1,5 @@
 //server side layout navbar for logo and usermenu on the map page
-import { NavUser } from "@/actions/user/getUserNav";
+import { NavUser } from "@/actions/getUser";
 import Container from "@/app/components/Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";

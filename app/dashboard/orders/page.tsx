@@ -1,10 +1,10 @@
 import { currentUser } from "@/lib/auth";
-import GetUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
+import { getUserWithBuyOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
-import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
+import { GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
@@ -22,7 +22,7 @@ const formatPrice = (price: number): string => {
 
 const Page = async () => {
   let user = await currentUser();
-  const buyer = await GetUserWithBuyOrders({ userId: user?.id });
+  const buyer = await getUserWithBuyOrders({ userId: user?.id });
 
   const renderedCards = await Promise.all(
     buyer?.buyerOrders
@@ -32,7 +32,7 @@ const Page = async () => {
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>
-          GetListingsByListingIds({ listingIds: [id] })
+          GetListingsByIds({ listingIds: [id] })
         );
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
@@ -45,9 +45,43 @@ const Page = async () => {
           buyer?.name || "(Deleted User)",
           seller?.name || "(Deleted User)"
         );
+        const metadata = {
+          title: `${user?.name} Buy Orders | EZHomesteading`,
+          description: "Track your ongoing buy orders.",
+          keywords: [
+            "buy",
+            "orders",
+            "vendor",
+            "ezh",
+            "ezhomesteading",
+            "produce near me",
+            "virtual farmer's market",
+            "fresh food",
+            "local food",
+            "organic food",
+          ],
+          openGraph: {
+            title: `${user?.name} Buy Orders | EZHomesteading`,
+            description: "Track your ongoing buy orders.",
+            url: "https://www.ezhomesteading.com/dashboard/orders",
+            type: "website",
+          },
+        };
 
         return (
           <>
+            <head>
+              <title>{metadata.title}</title>
+              <meta name="description" content={metadata.description} />
+              <meta name="keywords" content={metadata.keywords.join(", ")} />
+              <meta property="og:title" content={metadata.openGraph.title} />
+              <meta
+                property="og:description"
+                content={metadata.openGraph.description}
+              />
+              <meta property="og:url" content={metadata.openGraph.url} />
+              <meta property="og:type" content={metadata.openGraph.type} />
+            </head>
             <Card key={order.id} className="sheet shadow-lg mb-4">
               <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
                 {seller?.name}

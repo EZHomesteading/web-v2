@@ -5,7 +5,7 @@ import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import SearchNative from "./search-native";
-import { NavUser } from "@/actions/user/getUserNav";
+import { NavUser } from "@/actions/getUser";
 
 interface p {
   user?: NavUser | null;

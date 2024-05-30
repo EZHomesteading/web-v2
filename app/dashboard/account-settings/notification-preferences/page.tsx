@@ -6,7 +6,6 @@ import { useState } from "react";
 
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import { UserRole } from "@prisma/client";
 
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";

@@ -1,5 +1,5 @@
 //map server side layout
-import GetNavUser from "@/actions/user/getUserNav";
+import { getNavUser } from "@/actions/getUser";
 import NavbarFind from "./map/NavbarFind";
 
 export default async function RootLayout({
@@ -7,7 +7,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await GetNavUser();
+  const user = await getNavUser();
   return (
     <div className="h-sreen overflow-hidden touch-none">
       <NavbarFind user={user} />
