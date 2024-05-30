@@ -3,7 +3,7 @@ import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getUserById } from "@/actions/getUser";
-import getOrderById from "@/actions/getOrderById";
+import { getOrderById } from "@/actions/getOrder";
 import { getListingById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { UserRole } from "@prisma/client";
