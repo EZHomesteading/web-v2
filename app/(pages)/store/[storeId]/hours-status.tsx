@@ -1,3 +1,4 @@
+//logic to show whether a users is currently open, based on hours they set.
 import { ExtendedHours } from "@/next-auth";
 interface StatusProps {
   hours?: ExtendedHours;

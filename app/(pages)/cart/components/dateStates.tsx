@@ -1,5 +1,5 @@
 "use client";
-
+//parent element for date picker and handling of datepicker related data to be sent to the cart parent element.
 import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { SheetTrigger } from "@/app/components/ui/sheet";
@@ -27,6 +27,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const formatPickupTime = (selectedTime: any) => {
+    // formats pickup time from date type to date string readable by our other formatters.
     if (!selectedTime) return "";
 
     const { pickupTime } = selectedTime;
@@ -55,7 +56,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       )}`;
     }
   };
-
+  //function to pass data to parent element
   const handleTimer = (childTime: Date) => {
     onSetTime(childTime);
     setSelectedTime(childTime);
@@ -101,12 +102,6 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
             </Card>
           </SheetTrigger>
         </div>
-        {/* <CustomTime
-          hours={hours}
-          index={index}
-          cartGroup={cartGroup}
-          onSetTime={handleTimer}
-        /> */}
       </SheetContentC>
     </SheetCartC>
   );

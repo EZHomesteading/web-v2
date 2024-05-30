@@ -1,5 +1,5 @@
 "use client";
-
+//custom time input modal for buy now page, modified from one in cart.
 import React, { useState, useEffect } from "react";
 
 import Modal from "@/app/components/modals/chatmodals/Modal";
@@ -37,6 +37,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   const [date, setDate] = useState<Date | undefined>(now); //current time
   const [options, setOptions] = useState<string[]>([]); // array of times with 15 minute intervals
 
+  // Function to format minutes to a readable time string (e.g., 1:30 PM)
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -46,13 +47,15 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     return `${formattedHours}:${formattedMins} ${ampm}`;
   };
 
+  // Function to round minutes to the nearest 30 minutes interval
   const roundNumber = (n: number) => {
     if (n > 0) return Math.ceil(n / 30) * 30;
     else if (n < 0) return Math.floor(n / 30) * 30;
     else return 30;
   };
-
+  // Function to build an array of available time options
   const buildArray = async () => {
+    // Early return if date is undefined
     if (date === undefined || hours === null) {
       return;
     }
@@ -67,7 +70,9 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     if (date.getDate() < now.getDate()) {
       return;
     }
+    // If the selected date is today and the current time is past the opening time
     if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
+      // Add time options from the current rounded time to the closing time
       for (let i = roundedMin; i <= newHours[0].close; i += 30) {
         const time = formatTime(i);
         resultantArray.push(time);
@@ -75,6 +80,8 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
       setOptions(resultantArray);
       return;
     }
+
+    // Add time options from the opening time to the closing time
     for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
       const time = formatTime(i);
       resultantArray.push(time);
@@ -82,14 +89,17 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     setOptions(resultantArray);
   };
 
+  // useEffect hook to rebuild the options array whenever the date changes
   useEffect(() => {
     setOptions([]);
     buildArray();
   }, [date]);
 
+  // Function to insert a time string into a datetime object
   function insertTimeIntoDatetime(datetime: Date, timeString: string) {
     const inputDatetime = new Date(datetime);
 
+    // If the time string is invalid, log an error and return the input datetime
     const matchResult = timeString.match(/(\d+):(\d+)\s*(\w*)/i);
     if (!matchResult) {
       console.error("Invalid time string format:", timeString);
@@ -97,6 +107,8 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     }
     const [time, hours, minutes, meridiem] = matchResult;
     let parsedHours = parseInt(hours, 10);
+
+    // Handle AM/PM format
     if (meridiem) {
       const isPM = meridiem.toUpperCase() === "PM";
       if (isPM && parsedHours < 12) {
@@ -105,12 +117,13 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
         parsedHours = 0;
       }
     } else {
-      parsedHours = parsedHours % 24;
+      parsedHours = parsedHours % 24; // Handle 24-hour format
     }
     const parsedMinutes = parseInt(minutes, 10);
     inputDatetime.setHours(parsedHours, parsedMinutes, 0, 0);
     return inputDatetime;
   }
+  // Function to set the selected time option, and send it to the parent element
   const setTime = (option: string) => {
     if (date && option) {
       onSetTime({

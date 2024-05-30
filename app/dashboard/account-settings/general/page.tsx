@@ -1,5 +1,5 @@
 "use client";
-
+//general account settings page
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";

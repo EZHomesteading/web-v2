@@ -1,3 +1,4 @@
+//action to get the current users followers
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 

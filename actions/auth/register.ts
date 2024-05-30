@@ -1,5 +1,5 @@
 "use server";
-
+//auth action for registering a new consumer/regular account
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";

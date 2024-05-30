@@ -1,3 +1,4 @@
+//profile setup parent component
 import { UserInfo } from "@/next-auth";
 import ProfileComponent from "./profile-component";
 

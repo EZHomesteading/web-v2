@@ -1,3 +1,4 @@
+// route to update a listing
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 

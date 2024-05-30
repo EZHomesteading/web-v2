@@ -1,5 +1,5 @@
 "use client";
-
+//location map (unused in create?)
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useRef } from "react";
 import Loading from "@/app/components/secondary-loader";

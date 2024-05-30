@@ -1,3 +1,4 @@
+//generated info windows with carousels of images on map.
 import Cancel from "@/app/components/icons/cancel-svg";
 import { Card, CardContent } from "@/app/components/ui/card";
 import {

@@ -1,6 +1,7 @@
+//create new conversation with current user in it
+//beleive this has the functionality to add multiple users to a single chat but have not tested this.
 import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
 import prisma from "@/lib/prismadb";
 import { pusherServer } from "@/lib/pusher";
 

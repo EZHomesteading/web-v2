@@ -1,5 +1,5 @@
+//error card component for auth
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-
 import { CardWrapper } from "./login/card-wrapper-login";
 
 export const ErrorCard = () => {

@@ -1,8 +1,9 @@
 "use client";
+//user menu popover component
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { AiOutlineMenu } from "react-icons/ai";
 import MenuItem from "./MenuItem";
-import { FaComment, FaHeart, FaSignOutAlt, FaStore } from "react-icons/fa";
+import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { CiShop, CiSquarePlus } from "react-icons/ci";
 import { useRouter } from "next/navigation";
@@ -19,7 +20,6 @@ import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import { PiPersonSimpleRunThin } from "react-icons/pi";
-import { NavUser } from "@/actions/user/getUserNav";
 
 const outfit = Outfit({
   subsets: ["latin"],

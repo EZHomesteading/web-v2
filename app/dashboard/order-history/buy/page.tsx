@@ -1,3 +1,4 @@
+//buy history page
 import { currentUser } from "@/lib/auth";
 import GetUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";

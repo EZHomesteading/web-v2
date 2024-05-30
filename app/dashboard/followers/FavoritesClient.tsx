@@ -1,4 +1,4 @@
-import { SafeListing } from "@/types";
+//display followers page
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";

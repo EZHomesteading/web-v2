@@ -1,3 +1,4 @@
+//map server side layout
 import GetNavUser from "@/actions/user/getUserNav";
 import NavbarFind from "./map/NavbarFind";
 

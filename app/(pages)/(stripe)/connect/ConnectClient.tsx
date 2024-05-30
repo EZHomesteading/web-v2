@@ -1,5 +1,5 @@
 "use client";
-
+//stripe client connection handling/ and page for users to connect to stripe.
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";

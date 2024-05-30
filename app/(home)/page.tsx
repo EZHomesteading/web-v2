@@ -1,3 +1,4 @@
+//server side page layout for the homepage
 import Home from "@/app/(home)/consumer-home";
 import CoopHome from "./coop-home";
 import ProducerHome from "./proucer-home";

@@ -1,3 +1,4 @@
+//base server side layout for all (pages) children
 import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 import Navbar from "@/app/components/navbar/Navbar";
 

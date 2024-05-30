@@ -1,4 +1,5 @@
 "use client";
+//onboarding page
 import { useState } from "react";
 import ProfileStep from "./profile-step";
 import StoreStep from "./store-step";

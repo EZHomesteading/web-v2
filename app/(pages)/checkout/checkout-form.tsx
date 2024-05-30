@@ -1,5 +1,5 @@
 "use client";
-
+//checkout form, handling creation of payment intents/users inputs.
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";

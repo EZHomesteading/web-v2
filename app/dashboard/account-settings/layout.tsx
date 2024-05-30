@@ -1,5 +1,5 @@
 import TopNav from "../top-nav";
-
+//notification setting parent element
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col w-full">

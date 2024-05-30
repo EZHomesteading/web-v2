@@ -1,5 +1,5 @@
 "use client";
-
+//session storage parent provider
 import { useEffect } from "react";
 
 const SessionStorageManager = () => {

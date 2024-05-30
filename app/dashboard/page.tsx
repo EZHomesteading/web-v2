@@ -1,3 +1,4 @@
+//dashboard parent element
 import { Outfit } from "next/font/google";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { currentUser } from "@/lib/auth";

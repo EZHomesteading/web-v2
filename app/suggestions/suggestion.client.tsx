@@ -1,4 +1,5 @@
 "use client";
+//admin only suggestion page
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { UserRole } from "@prisma/client";
 import { Card, CardContent } from "../components/ui/card";

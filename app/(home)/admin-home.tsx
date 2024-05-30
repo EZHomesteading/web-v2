@@ -1,7 +1,7 @@
+//homepage displayed if user role is ADMIN
 import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
-import StripeButton from "./stripe-onboard";
 import { Button } from "../components/ui/button";
 
 const outfit = Outfit({
@@ -14,7 +14,7 @@ interface Props {
   user: UserInfo;
 }
 
-const CoopHome = ({ user }: Props) => {
+const AdminHome = ({ user }: Props) => {
   return (
     <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
       <header className="py-12">
@@ -43,4 +43,4 @@ const CoopHome = ({ user }: Props) => {
   );
 };
 
-export default CoopHome;
+export default AdminHome;

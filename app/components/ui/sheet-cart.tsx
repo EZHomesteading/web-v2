@@ -1,12 +1,10 @@
 "use client";
-
+//shadCN sheet component CUSTOMISED
 import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader } from "./card";
 import { Outfit } from "next/font/google";
 import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
 import { ExtendedHours } from "@/next-auth";

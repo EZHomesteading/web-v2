@@ -1,8 +1,8 @@
+// route to follow users
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 import getFollows from "@/actions/follow/getFollows";
-import toast from "react-hot-toast";
 
 interface IParams {
   follows?: string;

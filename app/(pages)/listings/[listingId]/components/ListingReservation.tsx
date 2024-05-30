@@ -1,11 +1,10 @@
 "use client";
-
+//component for displaying add to cart, buy now button, information about the product and a counter for the user to choose how much of the product to add to cart
 import { addDays, format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import useCartListing from "@/hooks/listing/use-cart";
 import { useState } from "react";
 import DateState2 from "./DateState2";
-import { divIcon } from "leaflet";
 import NotifyModal from "./NotifyModal";
 
 interface ListingReservationProps {

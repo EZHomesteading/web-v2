@@ -1,4 +1,5 @@
 "use client";
+//settings page
 import { Button } from "@/app/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";

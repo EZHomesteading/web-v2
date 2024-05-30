@@ -1,3 +1,4 @@
+//menu item button component
 interface MenuItemProps {
   onClick: () => void;
   label: string;

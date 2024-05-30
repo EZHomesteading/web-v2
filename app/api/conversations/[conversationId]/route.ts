@@ -1,9 +1,8 @@
+//delete conversation route.
 import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
 import prisma from "@/lib/prismadb";
 import { pusherServer } from "@/lib/pusher";
-
 interface IParams {
   conversationId?: string;
 }

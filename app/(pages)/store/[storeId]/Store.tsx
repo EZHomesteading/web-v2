@@ -1,4 +1,5 @@
 "use client";
+//client side layout for users store page
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
@@ -7,9 +8,6 @@ import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
 import FollowButton from "@/app/components/follow/followButton";
-import { StoreUser } from "@/actions/user/getUserStore";
-import { ExtendedHours, UserWithCart } from "@/next-auth";
-import { JsonValue } from "@prisma/client/runtime/library";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -80,6 +78,7 @@ const StorePage = ({
               gap-8
             "
           >
+            {/* dynamically map users listings */}
             {storeUser?.listings?.map((listing: any) => (
               <ListingCard
                 user={user}

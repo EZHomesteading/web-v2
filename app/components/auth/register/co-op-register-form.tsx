@@ -1,5 +1,5 @@
 "use client";
-
+//coop registration with location handling
 import * as z from "zod";
 import AuthLocation from "../auth-location";
 import { useEffect, useState, useTransition } from "react";

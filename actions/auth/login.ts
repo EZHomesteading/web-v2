@@ -1,5 +1,5 @@
 "use server";
-
+//auth action for logging users in.
 import * as z from "zod";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";

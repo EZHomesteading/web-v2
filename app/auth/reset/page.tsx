@@ -1,3 +1,4 @@
+//server layout for reset password
 import { ResetForm } from "@/app/components/auth/reset-form";
 
 const ResetPage = () => {

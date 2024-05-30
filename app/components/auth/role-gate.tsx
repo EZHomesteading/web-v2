@@ -1,5 +1,5 @@
 "use client";
-
+//auth page to tell users they need a different role to view certain content
 import { UserRole } from "@prisma/client";
 
 import { useCurrentRole } from "@/hooks/user/use-current-role";

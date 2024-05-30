@@ -1,3 +1,4 @@
+//server layout for coop registration
 import { CoOpRegisterForm } from "@/app/components/auth/register/co-op-register-form";
 export const metadata = {
   title: "EZH Co-op Registration",

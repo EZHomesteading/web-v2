@@ -1,6 +1,6 @@
+// server side layout for conversation open chat page
 import getConversationById from "@/actions/messenger/getConversationById";
 import getMessages from "@/actions/messenger/getMessages";
-
 import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";

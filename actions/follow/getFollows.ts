@@ -1,3 +1,5 @@
+//action to get the current users followed peoples
+
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 
