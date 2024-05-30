@@ -23,7 +23,7 @@ const CoopHome = ({ user }: Props) => {
           <div className={`${outfit.className} `}>
             {!user?.stripeAccountId || !user?.hours || !user?.image ? (
               <>
-                <span className="text-green-200 tracking font-medium">
+                <span className="text-green-200 tracking font-medium text-xl">
                   You&apos;re almost ready to start getting payed
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
@@ -33,7 +33,7 @@ const CoopHome = ({ user }: Props) => {
               </>
             ) : (
               <>
-                <span className="text-green-200 tracking font-medium text-sm">
+                <span className="text-green-200 tracking font-medium text-xl">
                   Congrats on setting up your account
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
