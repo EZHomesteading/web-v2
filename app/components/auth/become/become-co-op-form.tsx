@@ -63,7 +63,6 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
     zip: string;
   }) => {
     const { street, city, state, zip } = parsedAddress;
-    console.log("address:", parsedAddress);
     const latLng = await getLatLngFromAddress(
       `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
     );

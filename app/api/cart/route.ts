@@ -1,16 +1,12 @@
-// route to create update and delete users carts, with logic to prevent producers from adding other producers items. consumers from buying producers items
-//beleive this to be a duplicate route, that may not ever be used.
+//extra cart route including a delete all
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import toast from "react-hot-toast";
-import { getListingById } from "@/actions/getListings";
 
 interface CartParams {
   cartId?: string;
   listingId?: string;
 }
-
 export async function POST(
   request: Request,
   { params }: { params: CartParams }
@@ -19,50 +15,7 @@ export async function POST(
   if (!user) {
     return NextResponse.error();
   }
-
-  const { cartId, listingId } = params;
-  const { quantity, pickup } = await request.json();
-
-  if (!listingId || typeof listingId !== "string") {
-    throw new Error("Invalid ID");
-  }
-
-  if (!cartId && listingId && user.id) {
-    const listing = await getListingById({ listingId });
-    if (!listing) {
-      return NextResponse.error();
-    }
-    if (listing.userId === user.id) {
-      toast.error("Cant add your own products");
-      throw new Error("Cant add Own products");
-    }
-    console.log(listing.user.role, user.role);
-    if (listing.user.role === "PRODUCER" && user.role === "PRODUCER") {
-      toast.error("Cant add Producer products");
-      throw new Error("Cant add Producer products");
-    }
-    if (listing.user.role === "PRODUCER" && user.role === "CONSUMER") {
-      toast.error("Cant add Producer products");
-      throw new Error("Cant add Producer products");
-    }
-
-    const createdCartItem = await prisma.cart.create({
-      data: {
-        userId: user.id,
-        listingId,
-        quantity,
-        pickup,
-        price: listing.price * quantity,
-      },
-      include: {
-        user: true,
-        listing: true,
-      },
-    });
-    return NextResponse.json(createdCartItem);
-  }
-
-  //??not sure this block is ever used??
+  const { quantity, pickup, cartId } = await request.json();
   // Update a single cart item
   if (cartId) {
     const updatedCartItem = await prisma.cart.update({
@@ -70,27 +23,15 @@ export async function POST(
       data: { quantity, pickup },
     });
     return NextResponse.json(updatedCartItem);
-  } else {
-    const { sellerId, pickup } = await request.json();
-    // Update multiple cart items with the same seller and user
-    const updatedCartItems = await prisma.cart.updateMany({
-      where: {
-        userId: user.id,
-        listingId: sellerId,
-      },
-      data: { pickup },
-    });
-    return NextResponse.json(updatedCartItems);
   }
 }
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: CartParams }
-) {
-  const { listingId } = params;
-  // Delete a single cart item
-  await prisma.cart.delete({ where: { id: listingId } });
+export async function DELETE() {
+  const user = await currentUser();
+  if (!user) {
+    return;
+  }
+  // Delete all cart items
+  await prisma.cart.deleteMany({ where: { userId: user.id } });
 
   return NextResponse.json({ message: "Cart item deleted successfully" });
 }

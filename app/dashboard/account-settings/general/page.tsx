@@ -1,7 +1,7 @@
 "use client";
 //general account settings page
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "@/app/components/inputs/Input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
@@ -23,6 +23,7 @@ import {
 import { useRouter } from "next/navigation";
 import Avatar from "@/app/components/Avatar";
 import { UploadButton } from "@/utils/uploadthing";
+import PhoneInput from "react-phone-number-input";
 
 const Page = () => {
   const user = useCurrentUser();
@@ -57,7 +58,9 @@ const Page = () => {
   setValue("city", user?.location?.address[1]);
   setValue("state", user?.location?.address[2]);
   setValue("zip", user?.location?.address[3]);
+
   const getLatLngFromAddress = async (address: string) => {
+    console.log(address);
     const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
@@ -76,6 +79,7 @@ const Page = () => {
       return null;
     }
   };
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
@@ -85,6 +89,7 @@ const Page = () => {
       );
     }
     if (fullAddress !== "") {
+      console.log(fullAddress);
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
 
@@ -97,6 +102,7 @@ const Page = () => {
             address: [data.street, data.city, data.state, data.zip],
           },
         };
+        console.log(formData);
         axios
           .post("/api/update", formData)
           .then(() => {
@@ -107,6 +113,7 @@ const Page = () => {
             toast.error(error);
           })
           .finally(() => {
+            window.location.reload();
             setIsLoading(false);
 
             return;
@@ -122,6 +129,7 @@ const Page = () => {
             toast.error(error);
           })
           .finally(() => {
+            window.location.reload();
             setIsLoading(false);
           });
     }
@@ -160,7 +168,7 @@ const Page = () => {
         <h2 className="text-base font-semibold leading-7">Account Settings</h2>
         <Button
           type="submit"
-          onClick={onSubmit}
+          onClick={handleSubmit(onSubmit)}
           className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
         >
           Save Changes
@@ -218,7 +226,6 @@ const Page = () => {
               disabled={isLoading}
               register={register}
               errors={errors}
-              isUsername={true}
               required
             />
           </div>
@@ -240,6 +247,7 @@ const Page = () => {
               htmlFor="email"
               className="block text-sm font-medium leading-6"
             ></label>
+
             <Input
               id="email"
               label="Email address"
@@ -267,12 +275,22 @@ const Page = () => {
               htmlFor="phoneNumber"
               className="block text-sm font-medium leading-6"
             ></label>
-            <Input
+
+            <PhoneInput
+              className="bg-white rounded-lg p-4 right-4 "
               id="phoneNumber"
-              label="Phone Number"
               disabled={isLoading}
-              register={register}
-              errors={errors}
+              placeholder="(743) 216-9078"
+              value={user?.phoneNumber as any}
+              onChange={(value) => setValue("phoneNumber", value)}
+              format="(###) ###-####"
+              style={{
+                backgroundColor: "inherit",
+              }}
+              international={false}
+              defaultCountry="US"
+              countrySelectProps={{ disabled: true }}
+              maxLength={14}
             />
           </div>
           <CardFooter className="flex justify-between m-0 p-0 pt-2">

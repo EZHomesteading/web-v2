@@ -10,6 +10,7 @@ export type UserInfo = DefaultSession["user"] & {
   image?: string;
   location?: Location;
   hours?: Hours;
+  url?: string;
   stripeAccountId?: string;
   createdAt?: Date;
   updatedAt?: Date;

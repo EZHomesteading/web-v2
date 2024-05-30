@@ -22,11 +22,22 @@ export const register = async (
   const { firstName, email, password, name, location, role, phoneNumber } =
     validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
+  const url = convertToUrl(name);
   const existingName = await getUserByName(name);
   const existingUser = await getUserByEmail(email);
-
+  const existingUrl = await prisma.user.findFirst({
+    where: {
+      url: {
+        equals: url,
+        mode: "insensitive",
+      },
+    },
+  });
+  if (existingUrl && !existingName) {
+    return { error: "Similar display name is already in use" };
+  }
   if (existingUser || existingName) {
-    return { error: "Email or username already in use!" };
+    return { error: "Email or display name is already in use!" };
   }
 
   const user = await prisma.user.create({
@@ -38,6 +49,7 @@ export const register = async (
       location: location as Location,
       password: hashedPassword,
       role: role as UserRole,
+      url,
     },
   });
 
@@ -70,3 +82,10 @@ export const register = async (
 
   return { user: updatedUser };
 };
+function convertToUrl(displayName: string): string {
+  return displayName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-+/g, "-");
+}

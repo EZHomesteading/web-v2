@@ -4,7 +4,7 @@ import ClientOnly from "@/app/components/client/ClientOnly";
 import EmptyState from "@/app/components/EmptyState";
 import ListingClient from "./ListingClient";
 import { getUserwithCart } from "@/actions/getUser";
-import getFollows from "@/actions/follow/getFollows";
+import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 
 interface IParams {

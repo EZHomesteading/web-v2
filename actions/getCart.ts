@@ -24,7 +24,7 @@ export type CartItem = {
     };
   };
 };
-export const getAllCartItemsByUserId = async () => {
+const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
   try {
     const cartItems = await prisma.cart.findMany({
@@ -66,7 +66,7 @@ export const getAllCartItemsByUserId = async () => {
   }
 };
 
-export const getCartItemById = async (cartId: string) => {
+const getCartItemById = async (cartId: string) => {
   try {
     const cartItem = await prisma.cart.findUnique({
       where: {
@@ -92,3 +92,5 @@ export const getCartItemById = async (cartId: string) => {
     throw new Error(error);
   }
 };
+
+export { getAllCartItemsByUserId, getCartItemById };

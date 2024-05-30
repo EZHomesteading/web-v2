@@ -2,27 +2,27 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import getFollows from "@/actions/follow/getFollows";
+import { getFollows } from "@/actions/getFollow";
 import { getUserStore } from "@/actions/getUser";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 import { getUserwithCart } from "@/actions/getUser";
 
 interface StorePageProps {
   params: {
-    storeId: string;
+    url: string;
   };
 }
 
 const DynamicStorePage = dynamic(
-  () => import("@/app/(pages)/store/[storeId]/Store"),
+  () => import("@/app/(pages)/store/[url]/Store"),
   {
     ssr: true,
   }
 );
 
 const StorePage = async ({ params }: StorePageProps) => {
-  const { storeId } = params;
-  const storeUser = await getUserStore({ userId: storeId });
+  const { url } = params;
+  const storeUser = await getUserStore({ url: url });
   const user = await getUserwithCart();
   const following = await getFollows();
 

@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 
-import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { Label } from "@/app/components/ui/label";
 import { Checkbox } from "@/app/components/ui/checkbox";
@@ -33,7 +32,6 @@ const Notification: { [key: string]: string } = {
 const Page = () => {
   const user = useCurrentUser();
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const [notificationPreferences, setNotificationPreferences] = useState<
     string[]
@@ -95,11 +93,11 @@ const Page = () => {
       await axios.post("/api/update", {
         notifications: notificationPreferences,
       });
-      router.refresh();
       toast.success("Your notification preferences have been updated");
     } catch (error: any) {
       toast.error(error.message);
     } finally {
+      window.location.reload();
       setIsLoading(false);
     }
   };
