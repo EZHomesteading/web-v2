@@ -226,6 +226,7 @@ const Page = () => {
               disabled={isLoading}
               register={register}
               errors={errors}
+              isUsername={true}
               required
             />
           </div>
