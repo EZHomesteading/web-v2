@@ -10,7 +10,7 @@ import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
-import getFollowers from "@/actions/follow/getFollowers";
+import { getFollowers } from "@/actions/getFollow";
 
 const outfit = Outfit({
   subsets: ["latin"],

@@ -2,10 +2,8 @@
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
-import getFollowers from "@/actions/follow/getFollowers";
-
 import FavoritesClient from "./FavoritesClient";
-import getFollows from "@/actions/follow/getFollows";
+import { getFollowers, getFollows } from "@/actions/getFollow";
 
 const ListingPage = async () => {
   const followarr = await getFollowers();

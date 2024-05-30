@@ -1,5 +1,5 @@
 //tranfer $$ between stripe and users on site.
-import getOrderByIdTransfer from "@/actions/getOrderByIdTransfer";
+import { getOrderByIdTransfer } from "@/actions/getOrder";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
