@@ -1,7 +1,7 @@
 // server side layour for chat page
-import getConversations from "@/actions/messenger/getConversations";
 import ConversationList from "./components/ConversationList";
 import NavbarHome from "../components/navbar/navbar-chat";
+import { getConversations } from "@/actions/chat/getChat";
 
 export default async function ConversationsLayout({
   children,

@@ -11,7 +11,7 @@ import { registerServiceWorker } from "@/hooks/messenger/serviceWorker";
 import {
   getCurrentPushSubscription,
   sendPushSubscriptionToServer,
-} from "@/actions/messenger/pushService";
+} from "@/actions/chat/pushService";
 import axios from "axios";
 
 interface ConversationListProps {

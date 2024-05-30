@@ -10,7 +10,9 @@ interface p {
 interface Params {
   userId?: string;
 }
-
+interface IStoreParams {
+  url?: string;
+}
 const getVendors = async ({ role }: p) => {
   const session = await authCache();
   try {
@@ -191,13 +193,15 @@ const getUserById = async (params: Params) => {
   }
 };
 // this gets the coop or producer on /store/[storeId] with their listings
-const getUserStore = async (params: Params) => {
+const getUserStore = async (params: IStoreParams) => {
   try {
-    const { userId } = params;
-
-    const user = await prisma.user.findUnique({
+    const { url } = params;
+    const user = await prisma.user.findFirst({
       where: {
-        id: userId,
+        url: {
+          equals: url,
+          mode: "insensitive",
+        },
       },
       select: {
         id: true,

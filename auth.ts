@@ -6,6 +6,7 @@ import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
 import { Location, Notification, UserRole } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -40,6 +41,7 @@ export const {
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
+        session.user.url = token.url as string;
         session.user.createdAt = token.createdAt as Date | undefined;
         session.user.updatedAt = token.updatedAt as Date | undefined;
         session.user.conversationIds = token.conversationIds as string[];
@@ -67,6 +69,7 @@ export const {
       token.location = existingUser.location;
       token.image = existingUser.image;
       token.hours = existingUser.hours;
+      token.url = existingUser.url;
       token.role = existingUser.role;
       token.password = existingUser.password;
       token.stripeAccountId = existingUser.stripeAccountId;

@@ -1,10 +1,10 @@
 // server side layout for conversation open chat page
-import getConversationById from "@/actions/messenger/getConversationById";
-import getMessages from "@/actions/messenger/getMessages";
+import { getConversationById } from "@/actions/chat/getChat";
+import { getMessages } from "@/actions/chat/getChat";
 import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
-import GetOrderByConvoId from "@/actions/messenger/getOrderByConvoId";
+import { GetOrderByConvoId } from "@/actions/getOrder";
 
 interface IParams {
   conversationId: string;

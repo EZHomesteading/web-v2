@@ -81,9 +81,25 @@ export const RegisterVendorSchema = z
     confirmPassword: z
       .string()
       .min(4, { message: "Minimum 4 characters required" }),
-    name: z.string().min(1, {
-      message: "Name is required",
-    }),
+    name: z
+      .string()
+      .min(4, { message: "Name must be at least 4 characters long" })
+      .regex(/^[a-zA-Z0-9&' ]+$/, {
+        message:
+          "Name can only contain letters, numbers, &, ', and single spaces",
+      })
+      .regex(/^(?!.*  ).*$/, {
+        message: "Name cannot contain more than one consecutive space",
+      })
+      .refine(
+        (value) => {
+          const totalChars = value.length;
+          const letterCount = value.replace(/[^a-zA-Z]/g, "").length;
+          const letterPercentage = (letterCount / totalChars) * 100;
+          return letterPercentage >= 80;
+        },
+        { message: "Name must contain at least 80% letters" }
+      ),
     phoneNumber: z.string().min(10).max(16),
     location: z.object({
       type: z.literal("Point"),
