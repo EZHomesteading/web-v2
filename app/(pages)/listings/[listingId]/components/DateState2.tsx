@@ -55,7 +55,7 @@ const DateState2 = ({
     });
 
     const post = async () => {
-      await axios.delete(`/api/cartUpdate`);
+      await axios.delete(`/api/cart`);
       try {
         await axios.post(`/api/cart/${listing.id}`, {
           quantity: quantity,
