@@ -70,8 +70,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
               title={listing.title}
               location={listing.location}
               imageSrc={listing.imageSrc}
-              id={listing.id}
-              user={user}
             />
             <div className="flex flex-col h-full">
               <ListingInfo

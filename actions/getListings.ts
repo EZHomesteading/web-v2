@@ -6,23 +6,13 @@ import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 
 // Interface for defining the search parameters
-export interface IListingsParams {
-  lat?: string;
-  lng?: string;
-  q?: string;
-  radius?: string;
-  pm?: string;
-  c?: string;
-  p?: string;
-  s?: string;
-}
 
 // Main function to fetch listings based on search parameters
-export default async function GetListings(
+const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
   perPage: number
-) {
+) => {
   const user = await currentUser();
   try {
     const { lat, lng, radius, q, pm, c, p, s } = params;
@@ -300,4 +290,140 @@ export default async function GetListings(
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+// get an array of listings from an array of listing ids
+const GetListingsByIds = async (params: Params) => {
+  try {
+    const { listingIds } = params;
+    let listings = await prisma.listing.findMany({
+      where: {
+        id: {
+          in: listingIds,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+// get a single listing by id
+const getListingById = async (params: IParams) => {
+  try {
+    const { listingId } = params;
+
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    return {
+      ...listing,
+      createdAt: listing.createdAt.toString(),
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toString(),
+        updatedAt: listing.user.updatedAt.toString(),
+        emailVerified: listing.user.emailVerified?.toString() || null,
+      },
+    };
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(error);
+  }
+};
+const GetListingsByUserId = async (params: IListingsOrderParams) => {
+  try {
+    const { userId } = params;
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
+    let listings = await prisma.listing.findMany({
+      where: query,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+export interface IListingsOrderParams {
+  userId?: string;
+}
+
+const GetListingsByOrderId = async (params: IListingsOrderParams) => {
+  try {
+    const { userId } = params;
+
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
+
+    let listings = await prisma.listing.findMany({
+      where: query,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export {
+  GetListingsByIds,
+  GetListingsMarket,
+  getListingById,
+  GetListingsByOrderId,
+  GetListingsByUserId,
+};
+export interface IListingsParams {
+  lat?: string;
+  lng?: string;
+  q?: string;
+  radius?: string;
+  pm?: string;
+  c?: string;
+  p?: string;
+  s?: string;
+}
+export interface Params {
+  listingIds: string[];
+}
+interface IParams {
+  listingId?: string;
 }

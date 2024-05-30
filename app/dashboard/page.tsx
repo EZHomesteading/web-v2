@@ -3,7 +3,7 @@ import { Outfit } from "next/font/google";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { currentUser } from "@/lib/auth";
 import { Order, UserRole } from "@prisma/client";
-import getUserWithOrders from "@/actions/user/getUserWithOrders";
+import { getUserWithOrders } from "@/actions/getUser";
 import Link from "next/link";
 import { Button } from "../components/ui/button";
 import Avatar from "../components/Avatar";

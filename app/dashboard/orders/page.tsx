@@ -1,10 +1,10 @@
 import { currentUser } from "@/lib/auth";
-import GetUserWithBuyOrders from "@/actions/user/getUserWithBuyOrders";
+import { getUserWithBuyOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
-import GetListingsByListingIds from "@/actions/listing/getListingsByListingIds";
+import { GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
@@ -22,7 +22,7 @@ const formatPrice = (price: number): string => {
 
 const Page = async () => {
   let user = await currentUser();
-  const buyer = await GetUserWithBuyOrders({ userId: user?.id });
+  const buyer = await getUserWithBuyOrders({ userId: user?.id });
 
   const renderedCards = await Promise.all(
     buyer?.buyerOrders
@@ -32,7 +32,7 @@ const Page = async () => {
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>
-          GetListingsByListingIds({ listingIds: [id] })
+          GetListingsByIds({ listingIds: [id] })
         );
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
