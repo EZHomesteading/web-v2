@@ -4,7 +4,6 @@ import { Button } from "@/app/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
@@ -151,7 +150,6 @@ const StoreSettings = () => {
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
   const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
-  const router = useRouter();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const formData = {
@@ -163,7 +161,7 @@ const StoreSettings = () => {
     axios
       .post("/api/update", formData)
       .then(() => {
-        router.replace("/dashboard/my-store");
+        window.location.replace("/dashboard/my-store");
         toast.success("Your account details have changed");
       })
       .catch((error) => {

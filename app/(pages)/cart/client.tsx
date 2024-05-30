@@ -97,7 +97,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
 
   // Function to delete the cart
   const handleDelete: any = async () => {
-    await axios.delete(`/api/cartUpdate`);
+    await axios.delete(`/api/cart`);
     router.refresh();
   };
 
