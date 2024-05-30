@@ -6,6 +6,7 @@ import { ExtendedHours } from "@/next-auth";
 interface p {
   role: UserRole;
 }
+
 interface Params {
   userId?: string;
 }
@@ -65,7 +66,6 @@ const getUsers = async () => {
   }
 };
 const getUserWithBuyOrders = async (params: Params) => {
-  const session = await authCache();
   try {
     const { userId } = params;
 
