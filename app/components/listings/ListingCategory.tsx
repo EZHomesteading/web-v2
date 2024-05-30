@@ -1,4 +1,5 @@
 "use client";
+//category navbar icon elements
 import { IconType } from "react-icons";
 
 interface CategoryViewProps {

@@ -1,3 +1,4 @@
+//location handler for all auth actions
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,

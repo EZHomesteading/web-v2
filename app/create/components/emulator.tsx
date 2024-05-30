@@ -1,3 +1,4 @@
+//phone view emulator
 import { QuantityTypeValue } from "./UnitSelect";
 import {
   Carousel,

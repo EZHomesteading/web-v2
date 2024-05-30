@@ -1,14 +1,15 @@
+//dashboard layout parent element
 import NavbarDashboard from "@/app/components/navbar/navbar-dashboard";
 import { Outfit } from "next/font/google";
 import Sidebar from "./sidebar";
-import GetOrderNotificationInfo from "@/actions/user/getUserNav";
+import { getNavUser } from "@/actions/getUser";
 
 const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
 });
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await GetOrderNotificationInfo();
+  const user = await getNavUser();
   return (
     <div className={`${outfit.className} flex flex-row h-full`}>
       <div className="bg py-3 pt-12">

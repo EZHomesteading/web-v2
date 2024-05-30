@@ -1,5 +1,5 @@
 "use client";
-
+//default emptystate component
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";

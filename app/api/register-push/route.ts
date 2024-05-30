@@ -1,13 +1,11 @@
+//register and delete push notification subscriptions. via service worker.
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
-
 import prisma from "@/lib/prismadb";
 import { PushSubscription } from "web-push";
 
 export async function POST(request: Request) {
   const body: PushSubscription = await request.json();
-  //type newSubscription = PushSubscription | undefined;
-  //   const subscription: PushSubscription | undefined = await request.json()
   const parsed = JSON.stringify([body]);
   const endpoint = body.endpoint;
   const user = await currentUser();

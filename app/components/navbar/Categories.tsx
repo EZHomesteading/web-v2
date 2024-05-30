@@ -1,5 +1,5 @@
 "use client";
-
+//display categories navbar component
 import {
   GiCoolSpices,
   GiGrainBundle,

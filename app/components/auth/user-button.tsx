@@ -1,5 +1,5 @@
 "use client";
-
+//logout / exit button component
 import { ExitIcon } from "@radix-ui/react-icons";
 
 import {

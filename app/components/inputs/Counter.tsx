@@ -1,5 +1,5 @@
 "use client";
-
+//basic counter component
 import { useCallback } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 

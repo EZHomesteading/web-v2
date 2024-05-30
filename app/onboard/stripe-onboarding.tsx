@@ -1,4 +1,5 @@
 "use client";
+//stripe setup component
 import {
   ConnectAccountOnboarding,
   ConnectComponentsProvider,

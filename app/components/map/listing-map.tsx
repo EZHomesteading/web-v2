@@ -1,5 +1,5 @@
 "use client";
-
+//map component for listing pages. displays single circle roughly around the sellers location
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";

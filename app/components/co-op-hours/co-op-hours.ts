@@ -1,3 +1,4 @@
+//coop hours type declaration
 export type CoOpHours = {
   day: string;
   open: string;

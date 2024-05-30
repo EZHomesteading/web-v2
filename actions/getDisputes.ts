@@ -1,3 +1,4 @@
+//action to get all disputes (used for admins only)
 import prisma from "@/lib/prismadb";
 
 export default async function getDisputes() {

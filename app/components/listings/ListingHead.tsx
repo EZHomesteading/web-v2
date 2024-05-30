@@ -1,8 +1,7 @@
 "use client";
+//listing image and image carousel component
 import Image from "next/image";
-import { SafeUser } from "@/types";
 import Heading from "../Heading";
-import HeartButton from "./heart-button";
 import { Location } from "@prisma/client";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
@@ -10,17 +9,13 @@ import { Card, CardContent } from "../ui/card";
 interface ListingHeadProps {
   title: string;
   imageSrc: string[];
-  id: string;
   location: Location | null;
-  user?: SafeUser | null;
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
   title,
   imageSrc,
-  id,
   location,
-  user,
 }) => {
   return (
     <>
@@ -71,7 +66,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           "
         >
           {" "}
-          <HeartButton listingId={id} user={user} />
         </div>
       </div>
       <div className="mt-2">

@@ -1,8 +1,8 @@
-import { NavUser } from "@/actions/user/getUserNav";
+//server side layout navbar for logo and usermenu on the map page
+import { NavUser } from "@/actions/getUser";
 import Container from "@/app/components/Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";
-import { UserInfo } from "@/next-auth";
 
 interface NavbarProps {
   user?: NavUser | null;

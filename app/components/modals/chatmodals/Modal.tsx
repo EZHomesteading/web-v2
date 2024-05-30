@@ -1,5 +1,5 @@
 "use client";
-
+//default modal template specifically for chat components
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { IoClose } from "react-icons/io5";

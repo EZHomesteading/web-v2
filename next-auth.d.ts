@@ -38,6 +38,7 @@ type Hours = {
   5: Times[];
   6: Times[];
 };
+
 type navBuyOrder = {
   id: string;
   conversationId: string;
@@ -47,6 +48,7 @@ type navBuyOrder = {
     name: string;
   };
 };
+
 type navSellOrder = {
   id: string;
   conversationId: string;

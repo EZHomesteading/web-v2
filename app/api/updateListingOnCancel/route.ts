@@ -1,4 +1,5 @@
-import getListingById from "@/actions/listing/getListingById";
+//route to update only listing stock when an order is cancelled
+import { getListingById } from "@/actions/getListings";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
 

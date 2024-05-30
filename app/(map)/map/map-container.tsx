@@ -1,6 +1,5 @@
 // map-container.tsx
 "use client";
-import { useEffect, useState } from "react";
 import Map from "@/app/(map)/map/map";
 
 interface p {

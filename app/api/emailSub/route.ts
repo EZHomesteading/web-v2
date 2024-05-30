@@ -1,6 +1,7 @@
+//update listings with list of emails subscribed to send notifications when stock is updated.
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-import getListingById from "@/actions/listing/getListingById";
+import { getListingById } from "@/actions/getListings";
 
 export async function POST(request: Request) {
   function containsString(arr: any, str: any) {

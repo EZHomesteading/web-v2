@@ -1,6 +1,6 @@
+//location seach input component with places autocomplete
 import Script from "next/script";
 import { LiaMapMarkedSolid } from "react-icons/lia";
-import { PiMapPin } from "react-icons/pi";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,

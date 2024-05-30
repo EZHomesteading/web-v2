@@ -1,3 +1,4 @@
+//profile setup parent component
 import { UserInfo } from "@/next-auth";
 import ProfileComponent from "./profile-component";
 
@@ -6,6 +7,7 @@ interface Props {
   formData: any;
   setFormData: any;
 }
+
 const ProfileStep = ({ setFormData, formData, user }: Props) => {
   return (
     <>

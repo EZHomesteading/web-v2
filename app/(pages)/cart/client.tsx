@@ -1,5 +1,5 @@
 "use client";
-
+//cart renderign and handling of all cart related data dynamically as the user changes inputs.
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
@@ -40,22 +40,24 @@ interface CartProps {
 }
 
 const Cart = ({ cartItems = [] }: CartProps) => {
-  const [validTime, setValidTime] = useState<any>();
-  const [checkoutPickup, setCheckoutPickup] = useState<any>("");
-  const [stillExpiry, setStillExpiry] = useState(true);
+  // State variables
+  const [validTime, setValidTime] = useState<any>(); // Stores the valid pickup time
+  const [checkoutPickup, setCheckoutPickup] = useState<any>(""); // Stores the checkout pickup data
+  const [stillExpiry, setStillExpiry] = useState(true); // Indicates if there are still items with expiry date
   const [total, setTotal] = useState(
     cartItems.reduce(
       (acc: number, cartItem: any) =>
         acc + cartItem.listing.price * cartItem.quantity,
       0
     )
-  );
+  ); // Calculates the total price of all items in the cart
 
+  // Function to update the total from a child component
   const handleDataFromChild = (childTotal: any) => {
     setTotal(childTotal);
-    //console.log(childTotal);
   };
 
+  // Update the total whenever cartItems or total changes
   useEffect(() => {
     const newTotal = cartItems.reduce(
       (acc: number, cartItem: any) =>
@@ -65,12 +67,15 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     setTotal(newTotal);
   }, [cartItems, total]);
 
+  // Helper function to round a number to a specified precision
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
   }
 
   const router = useRouter();
+
+  // Function to calculate and display the shelf life or expiry date of a listing
   const shelfLife = (listing: SafeListing) => {
     const adjustedListing = {
       ...listing,
@@ -89,22 +94,24 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       : "This product is non-perisable";
     return shelfLifeDisplay;
   };
+
+  // Function to delete the cart
   const handleDelete: any = async () => {
     await axios.delete(`/api/cartUpdate`);
     router.refresh();
   };
+
+  // Function to convert a date string to a Date object
   function convertToDate(dateString: string) {
-    // Remove the leading text "Estimated Expiry Date: "
     const datePart = dateString.split(": ")[1];
-
-    // Convert the date string to a Date object
     const dateObj = new Date(datePart);
-
     return dateObj;
   }
+
+  // Group cart items by user and calculate the earliest expiry date for each group
   const mappedCartItems: CartGroups = cartItems.reduce(
     (acc: any, cartItem: any, index: number) => {
-      const expiry = convertToDate(shelfLife(cartItem.listing)); // Replace with the actual expiry date calculation
+      const expiry = convertToDate(shelfLife(cartItem.listing));
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
 
@@ -126,6 +133,8 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     },
     []
   );
+
+  // Function to update an object in an array with the pickup time and remove the expiry property
   function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {
     let foundObject = null;
 
@@ -136,13 +145,10 @@ const Cart = ({ cartItems = [] }: CartProps) => {
         foundObject = obj;
       }
     });
-    //setCheckoutPickup(mappedCartItems);
     return arr;
   }
-  // useEffect(() => {
-  //   console.log(checkoutPickup);
-  // }),
-  //   [checkoutPickup];
+
+  // Update the checkoutPickup state whenever validTime changes
   useEffect(() => {
     if (validTime) {
       if (checkoutPickup === "") {
@@ -153,7 +159,6 @@ const Cart = ({ cartItems = [] }: CartProps) => {
         setStillExpiry(
           initialPickupBuild.some((item: any) => !item.pickupTime)
         );
-        //console.log(stillExpiry);
         setCheckoutPickup(initialPickupBuild);
       } else {
         const updatePickupBuild = updateObjectWithCartIndex(
@@ -161,17 +166,18 @@ const Cart = ({ cartItems = [] }: CartProps) => {
           validTime.index
         );
         setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
-        //console.log(stillExpiry);
         setCheckoutPickup(updatePickupBuild);
-        // console.log(checkoutPickup);
       }
     }
   }),
     [validTime];
+
+  // Function to update the validTime state from a child component
   const handleTime = (childTime: Date) => {
     setValidTime(childTime);
   };
-  //console.log(mappedCartItems);
+
+  // Function to find an object in an array based on the cartIndex property
   function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
     let foundObject = null;
 
@@ -394,27 +400,6 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                     ${Round(total, 2)}
                   </dd>
                 </div>
-
-                {/* <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                  <dt className="flex text-sm text-gray-600">
-                    <span>Tax Estimate</span>
-                    <a
-                      href="#"
-                      className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">
-                        Learn more about how tax is calculated
-                      </span>
-                      <QuestionMarkCircleIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </dt>
-                  <dd className="text-sm font-medium text-gray-900">
-                    ${Round(total * 0.08, 2)}
-                  </dd>
-                </div> */}
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex text-sm text-gray-600">
                     <span>EZH Processing Fees Always</span>

@@ -1,10 +1,9 @@
 "use client";
-
+//consumer registration form
 import * as z from "zod";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { RegisterSchema } from "@/schemas";
 import { Input } from "@/app/components/ui/input";
 import {
@@ -21,7 +20,6 @@ import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register";
 import { useRouter } from "next/navigation";
-import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 import PasswordInput from "./password-input";
 
 export const RegisterForm = () => {

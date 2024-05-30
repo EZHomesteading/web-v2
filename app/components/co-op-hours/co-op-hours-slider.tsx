@@ -1,4 +1,5 @@
 "use client";
+//coop hours slider component
 import { Slider } from "@/app/components/ui/slider";
 import { Outfit } from "next/font/google";
 import { useEffect, useState } from "react";

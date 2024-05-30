@@ -1,3 +1,4 @@
+//get only the users role based on the users ID
 import prisma from "@/lib/prismadb";
 
 interface Params {

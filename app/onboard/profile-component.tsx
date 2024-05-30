@@ -1,5 +1,6 @@
+//profile setup page for extra information for onboarding COOP's / Producers
 import Avatar from "@/app/components/Avatar";
-import ImageUpload from "@/app/components/inputs/profile-img-upload";
+//import ImageUpload from "@/app/components/inputs/profile-img-upload";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";

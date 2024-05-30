@@ -1,8 +1,10 @@
+// route to create update and delete users carts, with logic to prevent producers from adding other producers items. consumers from buying producers items
+//beleive this to be a duplicate route, that may not ever be used.
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import getListingById from "@/actions/listing/getListingById";
 import toast from "react-hot-toast";
+import { getListingById } from "@/actions/getListings";
 
 interface CartParams {
   cartId?: string;
@@ -36,8 +38,12 @@ export async function POST(
     }
     console.log(listing.user.role, user.role);
     if (listing.user.role === "PRODUCER" && user.role === "PRODUCER") {
-      toast.error("Cant add your own products");
-      throw new Error("Cant add Own products");
+      toast.error("Cant add Producer products");
+      throw new Error("Cant add Producer products");
+    }
+    if (listing.user.role === "PRODUCER" && user.role === "CONSUMER") {
+      toast.error("Cant add Producer products");
+      throw new Error("Cant add Producer products");
     }
 
     const createdCartItem = await prisma.cart.create({
@@ -56,6 +62,7 @@ export async function POST(
     return NextResponse.json(createdCartItem);
   }
 
+  //??not sure this block is ever used??
   // Update a single cart item
   if (cartId) {
     const updatedCartItem = await prisma.cart.update({

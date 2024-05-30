@@ -1,7 +1,7 @@
+//chat navbar parent component
 import Link from "next/link";
 import Container from "../Container";
 import UserMenu from "./UserMenu";
-import AuthButtons from "./auth-buttons";
 import { Outfit } from "next/font/google";
 
 const outfit = Outfit({

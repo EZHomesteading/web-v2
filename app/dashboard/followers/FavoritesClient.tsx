@@ -1,22 +1,18 @@
-import { SafeListing } from "@/types";
+//display followers page
 
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
-import getUserById from "@/actions/user/getUserById";
-
+import { getUserById } from "@/actions/getUser";
 interface FavoritesClientProps {
-  user?: any | null;
   followarr: any;
   myFollow: any;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   followarr,
-  user,
   myFollow,
 }) => {
-  console.log("receivedState", followarr);
   return (
     <Container>
       <Heading title="Followers" subtitle="List of people following you." />
@@ -34,9 +30,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         "
       >
         {followarr.map(async (follow: any) => {
-          console.log(follow);
           const shop = await getUserById({ userId: follow.userId });
-          console.log(shop);
           return (
             <FollowCard
               user={follow.userId}

@@ -1,4 +1,5 @@
 "use client";
+//listing seach bar component with places autocomplete, sending queries to url
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,

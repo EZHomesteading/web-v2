@@ -1,5 +1,5 @@
 "use client";
-
+//producer register form with location handling
 import * as z from "zod";
 import AuthLocation from "../auth-location";
 import { useEffect, useState, useTransition } from "react";
@@ -26,6 +26,7 @@ import axios from "axios";
 //import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
+
 export const ProducerRegisterForm = () => {
   const router = useRouter();
   const [address, setAddress] = useState<string>("");

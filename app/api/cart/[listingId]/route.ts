@@ -1,10 +1,8 @@
+// route to create update and delete users carts, with logic to prevent producers from adding other producers items. consumers from buying producers items
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import getListingById from "@/actions/listing/getListingById";
-
-import toast from "sonner";
-
+import { getListingById } from "@/actions/getListings";
 interface CartParams {
   cartId?: string;
   listingId?: string;
@@ -66,6 +64,7 @@ export async function POST(
     return NextResponse.json(createdCartItem);
   }
 
+  //??Not sure thsi code block is ever used??
   // Update a single cart item
   if (cartId) {
     const updatedCartItem = await prisma.cart.update({

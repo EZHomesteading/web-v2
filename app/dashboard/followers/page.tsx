@@ -1,17 +1,15 @@
+//display followers parent element
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 
-import { currentUser } from "@/lib/auth";
 import getFollowers from "@/actions/follow/getFollowers";
 
 import FavoritesClient from "./FavoritesClient";
 import getFollows from "@/actions/follow/getFollows";
 
 const ListingPage = async () => {
-  const user = await currentUser();
   const followarr = await getFollowers();
   const myFollow = await getFollows();
-  console.log("initial state", followarr);
   if (!followarr) {
     return (
       <ClientOnly>
@@ -25,7 +23,7 @@ const ListingPage = async () => {
 
   return (
     <ClientOnly>
-      <FavoritesClient user={user} followarr={followarr} myFollow={myFollow} />
+      <FavoritesClient followarr={followarr} myFollow={myFollow} />
     </ClientOnly>
   );
 };

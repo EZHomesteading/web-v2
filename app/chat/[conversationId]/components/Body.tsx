@@ -1,4 +1,5 @@
 "use client";
+//body component for messenger, this is where pusher is initialised, map over all messages
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
@@ -51,19 +52,16 @@ const Body: React.FC<BodyProps> = ({
       );
     };
 
-    // Subscribe to the channel and bind event handlers
+    // this is all still a mess because of pusher creating infinite connections (in contact with pusher team to try to resolve)
 
-    const clearConnection = async () => {
-      pusherClient.disconnect();
-      pusherClient.unsubscribe(conversationId);
-      pusherClient.unbind("messages:new", messageHandler);
-      pusherClient.unbind("message:update", updateMessageHandler);
-    };
+    // const clearConnection = async () => {
+    //   pusherClient.disconnect();
+    //   pusherClient.unsubscribe(conversationId);
+    //   pusherClient.unbind("messages:new", messageHandler);
+    //   pusherClient.unbind("message:update", updateMessageHandler);
+    // };
     // const Connect = async () => {
     //pusherClient.connect();
-    pusherClient.subscribe(conversationId);
-    pusherClient.bind("messages:new", messageHandler);
-    pusherClient.bind("message:update", updateMessageHandler);
     // };
     // const reConnect = async () => {
     //   // await clearConnection();
@@ -73,6 +71,12 @@ const Body: React.FC<BodyProps> = ({
     // if (pusherClient.connection.state == "disconnected") {
     //   reConnect();
     // }
+
+    // Subscribe to the channel and bind event handlers
+    pusherClient.subscribe(conversationId);
+    pusherClient.bind("messages:new", messageHandler);
+    pusherClient.bind("message:update", updateMessageHandler);
+
     // Cleanup function to unsubscribe and unbind event handlers
     return () => {
       pusherClient.unsubscribe(conversationId);
@@ -84,7 +88,6 @@ const Body: React.FC<BodyProps> = ({
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {/* <div className="flex flex-row-reverse"></div> */}
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}

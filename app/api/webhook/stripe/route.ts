@@ -1,9 +1,10 @@
+// stripe webhook, for handling any extra action whenever a specific even happens via stripe.
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import getOrderById from "@/actions/getOrderById";
-import getListingById from "@/actions/listing/getListingById";
+import { getListingById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { UserRole } from "@prisma/client";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
 
   switch (event.type) {
     case "payment_intent.succeeded":
+      // Extract relevant data from the Stripe event
       const pi = event.data.object.metadata as any;
       const buyerId = pi.userId;
       const a = pi.orderIds;
@@ -53,22 +55,23 @@ export async function POST(request: NextRequest) {
       await prisma.cart.deleteMany({
         where: { userId: pi.userId },
       });
-
+      // Loop through each order in the payment
       for (const orderId of orderIds) {
         const postconversations = async () => {
+          // Fetch order details
           const order = await getOrderById({ orderId });
           if (!order) {
             return;
           }
-
+          // Fetch buyer and seller details
           const seller = await getUserById({ userId: order.sellerId });
           const buyer = await getUserById({ userId: buyerId });
 
           if (!seller || !buyer) {
             return "one of users is missings";
           }
+          // Update listing stock based on the purchased quantities, and parse out quantities from the array on the order object.
           const quantities = JSON.parse(order.quantity);
-
           const t = await Promise.all(
             quantities.map(async (item: { id: string; quantity: number }) => {
               const listing = await getListingById({ listingId: item.id });
@@ -88,7 +91,7 @@ export async function POST(request: NextRequest) {
           );
 
           const titles = t.filter(Boolean).join(", ");
-
+          // Create a new conversation between buyer and seller
           const newConversation: any = await prisma.conversation.create({
             data: {
               users: {
@@ -99,17 +102,20 @@ export async function POST(request: NextRequest) {
               users: true,
             },
           });
+          // Update the order with the new conversation ID and status
           const orderUpdate: any = await prisma.order.update({
             where: { id: order.id },
             data: { conversationId: newConversation.id, status: 1 },
           });
 
+          // Prepare message bodies for buyer and seller
           const coopBody = `Hi ${
             seller.name
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
-
           const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
+          // Send email notification to the seller if enabled
           if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
+            // Prepare email parameters
             const emailParams = {
               Destination: {
                 ToAddresses: [seller.email || "shortzach396@gmail.com"],
@@ -183,6 +189,7 @@ export async function POST(request: NextRequest) {
               console.error("Error sending email to the seller:", error);
             }
           }
+          // Create a new message in the conversation based on the seller's role
           if (seller.role === UserRole.COOP) {
             const newMessage: any = await prisma.message.create({
               include: {
@@ -217,16 +224,14 @@ export async function POST(request: NextRequest) {
           }
 
           if (seller.role === UserRole.PRODUCER) {
-            const newMessage: any = await prisma.message.create({
+            const newMessage = await prisma.message.create({
               include: {
                 seen: true,
                 sender: true,
               },
               data: {
                 body: producerBody,
-
                 messageOrder: "10",
-
                 conversation: {
                   connect: { id: newConversation.id },
                 },

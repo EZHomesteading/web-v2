@@ -1,10 +1,11 @@
+//server side layout for users dynamically generated stores.
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import getFollows from "@/actions/follow/getFollows";
-import getUserStore from "@/actions/user/getUserStore";
+import { getUserStore } from "@/actions/getUser";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
-import getUserwithCart from "@/actions/user/getUserWithCart";
+import { getUserwithCart } from "@/actions/getUser";
 
 interface StorePageProps {
   params: {

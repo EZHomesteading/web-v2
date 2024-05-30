@@ -1,11 +1,11 @@
+//default navbar parent element
 import Categories from "./Categories";
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import SearchNative from "./search-native";
-import { UserInfo } from "@/next-auth";
-import { NavUser } from "@/actions/user/getUserNav";
+import { NavUser } from "@/actions/getUser";
 
 interface p {
   user?: NavUser | null;

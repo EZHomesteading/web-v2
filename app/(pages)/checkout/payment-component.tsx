@@ -1,5 +1,5 @@
 "use client";
-
+//stripe payment component
 import { Button } from "@/app/components/ui/button";
 import {
   PaymentElement,

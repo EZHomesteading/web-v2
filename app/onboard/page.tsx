@@ -1,3 +1,4 @@
+//onboarding parent element
 import { currentUser } from "@/lib/auth";
 import Onboarding from "./onboarding";
 

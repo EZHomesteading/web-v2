@@ -1,28 +1,18 @@
+//action to get listings based on search params in the market pages.
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
 import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 
-export interface IListingsParams {
-  lat?: string;
-  lng?: string;
-  q?: string;
-  radius?: string;
-  pm?: string;
-  c?: string;
-  p?: string;
-  s?: string;
-}
-// pm = pick produce myself
-// c = coops
-// p = producers
-// s = stock
-export default async function GetListings(
+// Interface for defining the search parameters
+
+// Main function to fetch listings based on search parameters
+const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
   perPage: number
-) {
+) => {
   const user = await currentUser();
   try {
     const { lat, lng, radius, q, pm, c, p, s } = params;
@@ -30,14 +20,16 @@ export default async function GetListings(
     let query: any = {};
 
     let listings: any[] = [];
+    // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
+      // Fetch listings from cooperatives only
       listings = await prisma.listing.findMany({
         where: {
           user: {
             role: UserRole.COOP,
           },
           ...query,
-          stock: s === "f" ? { lt: 1 } : { gt: 0 },
+          stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: {
           id: true,
@@ -74,7 +66,9 @@ export default async function GetListings(
       user?.role === UserRole.PRODUCER ||
       user?.role === UserRole.ADMIN
     ) {
+      // Case 2: If the user is a cooperative, producer, or admin
       if (c === "t" && p === "t") {
+        // Fetch listings from coops and producers
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -116,6 +110,7 @@ export default async function GetListings(
           },
         });
       } else if (c === "t") {
+        // Case 3: Fetch listings from cooperatives only
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -155,6 +150,7 @@ export default async function GetListings(
           },
         });
       } else if (p === "t") {
+        // Case 4: Fetch listings from producers only
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -194,6 +190,7 @@ export default async function GetListings(
           },
         });
       } else {
+        // Case 5: Fetch all listings
         listings = await prisma.listing.findMany({
           where: {
             ...query,
@@ -231,6 +228,8 @@ export default async function GetListings(
         });
       }
     }
+
+    // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -264,6 +263,7 @@ export default async function GetListings(
       listings = sortedListings.map(({ listing }) => listing);
     }
 
+    // If a search query is provided, filter listings by title, description, etc.
     if (q) {
       const fuseOptions = {
         keys: ["user.name", "title", "category", "subCategory", "description"],
@@ -274,11 +274,13 @@ export default async function GetListings(
       listings = results.map((result) => result.item);
     }
 
+    // Paginate the listings
     const totalItems = listings.length;
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     const paginatedListings = listings.slice(startIndex, endIndex);
 
+    // Convert createdAt dates to ISO strings
     const safeListings = paginatedListings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
@@ -288,4 +290,140 @@ export default async function GetListings(
   } catch (error: any) {
     throw new Error(error);
   }
+};
+
+// get an array of listings from an array of listing ids
+const GetListingsByIds = async (params: Params) => {
+  try {
+    const { listingIds } = params;
+    let listings = await prisma.listing.findMany({
+      where: {
+        id: {
+          in: listingIds,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+// get a single listing by id
+const getListingById = async (params: IParams) => {
+  try {
+    const { listingId } = params;
+
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    return {
+      ...listing,
+      createdAt: listing.createdAt.toString(),
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toString(),
+        updatedAt: listing.user.updatedAt.toString(),
+        emailVerified: listing.user.emailVerified?.toString() || null,
+      },
+    };
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(error);
+  }
+};
+const GetListingsByUserId = async (params: IListingsOrderParams) => {
+  try {
+    const { userId } = params;
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
+    let listings = await prisma.listing.findMany({
+      where: query,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+export interface IListingsOrderParams {
+  userId?: string;
+}
+
+const GetListingsByOrderId = async (params: IListingsOrderParams) => {
+  try {
+    const { userId } = params;
+
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
+
+    let listings = await prisma.listing.findMany({
+      where: query,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const safeListings = listings.map((listing) => ({
+      ...listing,
+      createdAt: listing.createdAt.toISOString(),
+    }));
+
+    return safeListings;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export {
+  GetListingsByIds,
+  GetListingsMarket,
+  getListingById,
+  GetListingsByOrderId,
+  GetListingsByUserId,
+};
+export interface IListingsParams {
+  lat?: string;
+  lng?: string;
+  q?: string;
+  radius?: string;
+  pm?: string;
+  c?: string;
+  p?: string;
+  s?: string;
+}
+export interface Params {
+  listingIds: string[];
+}
+interface IParams {
+  listingId?: string;
 }

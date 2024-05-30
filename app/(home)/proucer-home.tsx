@@ -1,3 +1,4 @@
+//homepage displayed if user role is PRODUCER
 import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
@@ -12,7 +13,7 @@ interface Props {
   user: UserInfo;
 }
 
-const CoopHome = ({ user }: Props) => {
+const ProducerHome = ({ user }: Props) => {
   return (
     <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
       <header className="py-12">
@@ -40,4 +41,4 @@ const CoopHome = ({ user }: Props) => {
   );
 };
 
-export default CoopHome;
+export default ProducerHome;
