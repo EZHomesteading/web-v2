@@ -2,7 +2,7 @@
 
 import { User } from "@prisma/client";
 import Image from "next/image";
-
+//avatar group for chat features
 interface AvatarGroupProps {
   users?: User[];
 }

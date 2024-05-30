@@ -1,7 +1,6 @@
 "use client";
-
+//yet another search modal default component
 import useSearchModal from "@/hooks/modal/useSearchModal";
-
 import Modal from "./modal-search";
 import Heading from "../Heading";
 import FindListingsComponent from "./search-listings-native";

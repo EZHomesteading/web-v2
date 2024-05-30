@@ -1,13 +1,10 @@
 "use client";
-
+//shadCN sheet component CUSTOMISED
 import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
-import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
-import ReactStars from "react-stars";
-import axios from "axios";
 import toast from "react-hot-toast";
 
 const outfit = Outfit({

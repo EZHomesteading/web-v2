@@ -1,3 +1,4 @@
+//user profile page parent element
 import getUserById from "@/actions/user/getUserById";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import ProfileClient from "./ProfileClient";

@@ -1,3 +1,4 @@
+//market server side layout with search parameters for grabbing data
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "../../components/client/ClientOnly";

@@ -1,5 +1,5 @@
+//create messages, and handle pusher subscriptions and pushing on new message.
 import { NextResponse } from "next/server";
-
 import { currentUser } from "@/lib/auth";
 import { pusherServer } from "@/lib/pusher";
 import prisma from "@/lib/prismadb";
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
             }),
             {
               vapidDetails: {
-                subject: "mailto:macrowwwwwwwwww.co@gmail.com",
+                subject: "mailto:ezhomesteading@gmail.com",
                 publicKey: process.env
                   .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
                 privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,

@@ -1,5 +1,5 @@
 "use client";
-
+//avatar component to be used anywhere
 import Image from "next/image";
 import {
   AlertDialog,

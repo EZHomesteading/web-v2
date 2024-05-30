@@ -1,4 +1,5 @@
 "use client";
+//create listing parent client element
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
@@ -69,7 +70,7 @@ const CreateClient = ({ user, index }: Props) => {
     state: string;
     zip: string;
   };
-
+  //seclare use state variables
   const [coopRating, setCoopRating] = useState(1);
   const [certificationChecked, setCertificationChecked] = useState(false);
   const [showLocationInput, setShowLocationInput] = useState(false);
@@ -78,14 +79,13 @@ const CreateClient = ({ user, index }: Props) => {
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
-
   const [clicked, setClicked] = useState(false);
   const [c, setC] = useState(false);
 
   const toggleLocationInput = () => {
     setShowLocationInput(!showLocationInput);
   };
-
+  //declare formstate default values
   let {
     register,
     setValue,
@@ -115,6 +115,7 @@ const CreateClient = ({ user, index }: Props) => {
       minOrder: null,
     },
   });
+  //checkbox usestates
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [checkbox2Checked, setCheckbox2Checked] = useState(false);
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
@@ -193,6 +194,8 @@ const CreateClient = ({ user, index }: Props) => {
       )
     );
   };
+
+  //geocoding from autocompleted adress inputs
   const getLatLngFromAddress = async (address: string) => {
     const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -242,6 +245,7 @@ const CreateClient = ({ user, index }: Props) => {
       parseInt(data.shelfLifeYears, 10) * 365;
 
     if (geoData) {
+      //onsubmit formstate to formdata=data to pass to create listing api endpoint
       const formData = {
         title: data.title,
         minOrder: data.minOrder,
@@ -317,7 +321,7 @@ const CreateClient = ({ user, index }: Props) => {
       });
     }
   };
-
+  //step handlers so that proper pages render
   const handleNext = async () => {
     if (step === 1 && !product) {
       toast.error("Let us know what produce you have!", {

@@ -1,10 +1,5 @@
+// action to get a listing based on an orderID
 import prisma from "@/lib/prismadb";
-import haversine from "haversine-distance";
-
-interface ILocation {
-  type: "Point";
-  coordinates: [number, number];
-}
 
 export interface IListingsParams {
   userId?: string;

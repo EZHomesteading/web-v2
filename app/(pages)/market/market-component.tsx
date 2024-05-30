@@ -1,3 +1,4 @@
+//render market product cards on server, with toggle cart buttons
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "../../components/client/ClientOnly";
@@ -49,6 +50,7 @@ const Shop = ({
             ) : (
               <div className="flex justify-center items-end mt-16">
                 <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
+                  {/* builds cards dynamically based on data passed in */}
                   {pageNumbers.map((pageNumber, index) => (
                     <Link
                       key={index}

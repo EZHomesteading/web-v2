@@ -1,5 +1,5 @@
 "use client";
-
+//modal to confirm that user wants to delete that chat, should only be able to delete if messages are at a finalised state such as completed or cancelled.
 import React, { useCallback, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { FiAlertTriangle } from "react-icons/fi";

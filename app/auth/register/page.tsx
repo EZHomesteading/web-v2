@@ -1,3 +1,4 @@
+//server layout for consumer/default registration
 import { RegisterForm } from "@/app/components/auth/register/register-form";
 
 const RegisterPage = () => {

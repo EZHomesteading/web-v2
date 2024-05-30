@@ -1,9 +1,9 @@
 "use client";
+//order create component, called when cart and buy now button is succesfulkly clicked
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { useEffect } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
@@ -36,6 +36,9 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     cartItems.forEach(async (cartItem: any, index: number) => {
       //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
 
+      //complex map of orders and items in cart to produce accurate orders to be passed to the checkout forms.
+      //at one point only God and Maguire knew how this worked. Now only God knows
+      // WORK ON THIS FUNCTION AT RISK OF ANGERING GOD
       if (cartItem.listing.userId !== prevUserId) {
         if (prevUserId !== null) {
           const summedTotalPrice = userItems.reduce(

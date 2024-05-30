@@ -1,5 +1,5 @@
 "use client";
-
+//category selector input component
 interface UnitBoxProps {
   label: string; // Label for the category
   selected?: boolean; // Optional prop indicating if the category is selected

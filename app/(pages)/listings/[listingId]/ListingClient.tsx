@@ -1,5 +1,5 @@
 "use client";
-
+//client side layout for listing page
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addDays, format } from "date-fns";
@@ -36,9 +36,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
     listingUser,
   });
   const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
 
+  //adjusting listings shelflife to be accurate. and be in date format.
   const adjustedListing = {
     ...listing,
     createdAt: new Date(listing.createdAt),

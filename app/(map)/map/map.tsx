@@ -1,5 +1,5 @@
 "use client";
-
+//this file contains all mapping functionality
 import {
   GoogleMap,
   MarkerF,
@@ -172,7 +172,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
-
+  // State variables for drawing functionality
   const [filteredCoops, setFilteredCoops] = useState<any>(coopInfo);
   const [filteredProducers, setFilteredProducers] = useState<any>(producerInfo);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -193,9 +193,11 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
     };
   }, []);
 
+  // Render a loading component if the Google Maps script is not loaded
   if (!isLoaded) {
     return <Loading />;
   }
+
   const handleCenterChanged = () => {
     if (mapRef.current) {
       const newCenter = mapRef.current.getCenter();

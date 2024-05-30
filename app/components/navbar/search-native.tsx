@@ -1,4 +1,5 @@
 "use client";
+//search bar parent element
 import useSearchModal from "@/hooks/modal/useSearchModal";
 import { BiSearch } from "react-icons/bi";
 

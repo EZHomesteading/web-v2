@@ -1,3 +1,4 @@
+//server side layout for the cart page, pulling all cart items that belong to a user.
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { getAllCartItemsByUserId } from "@/actions/getCart";

@@ -1,3 +1,4 @@
+//coop hours parent element
 import CoOpHoursPage from "@/app/components/co-op-hours/co-op-hours-page";
 import { UserInfo } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";

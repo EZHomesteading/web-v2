@@ -1,3 +1,4 @@
+//server layout for new user
 import { NewVerificationForm } from "@/app/components/auth/new-verification-form";
 
 const NewVerificationPage = () => {

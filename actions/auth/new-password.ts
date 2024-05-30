@@ -1,8 +1,7 @@
 "use server";
-
+//auth action for setting a new password
 import * as z from "zod";
 import bcrypt from "bcryptjs";
-
 import { NewPasswordSchema } from "@/schemas";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { getUserByEmail } from "@/data/user";

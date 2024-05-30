@@ -1,5 +1,5 @@
 "use client";
-
+//modal that handles order cancellation(need to add logic to start refun process dependent on step the order is cancelled)
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
-import useConversation from "@/hooks/messenger/useConversation";
 import { toast } from "react-hot-toast";
 
 interface ConfirmModalProps {
@@ -29,7 +28,6 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const session = useSession();
   const router = useRouter();
-  const { conversationId } = useConversation();
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = React.useState("");
   const handleTextChange = (e: any) => {
@@ -37,12 +35,13 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   };
 
   const onDelete = () => {
+    //early return if the user ahs not entered a message, tell the user why
     if (text === "") {
       toast.error("no message enteredd");
       return;
     }
     setIsLoading(true);
-    console.log(order);
+    //axios post is always the same. post a message with the users input text
     axios.post("/api/messages", {
       message: `I have canceled this item, because: ${text}`,
       messageOrder: "1.1",
@@ -52,8 +51,11 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     axios
       .post("/api/updateListingOnCancel", { order: order })
       .then(() => {
+        //sependent on who cancelled, set order status appropriately.
         if (session.data?.user.id === order.sellerId) {
+          //if seller cancels
           if (session.data?.user.role === "COOP") {
+            //if seller is coop
             axios
               .post("/api/update-order", { orderId: order.id, status: 4 })
               .then(() => {
@@ -61,6 +63,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
                 router.refresh();
               });
           } else {
+            //if seller is producer(can be else as consumers cant create listings)
             axios
               .post("/api/update-order", { orderId: order.id, status: 12 })
               .then(() => {
@@ -69,11 +72,14 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               });
           }
         } else {
+          //if canceling user is not seller
           if (session.data?.user.role === "COOP") {
+            //if cancelling user is coop
             if (
               session.data?.user.role === "COOP" &&
               otherUserRole === "COOP"
             ) {
+              //if both users are coop's
               axios
                 .post("/api/update-order", { orderId: order.id, status: 7 })
                 .then(() => {
@@ -81,6 +87,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
                   router.refresh();
                 });
             } else {
+              //if only person cancelling is coop buying from producer
               axios
                 .post("/api/update-order", { orderId: order.id, status: 15 })
                 .then(() => {
@@ -89,6 +96,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
                 });
             }
           } else {
+            //if consumer cancels
             axios
               .post("/api/update-order", { orderId: order.id, status: 7 })
               .then(() => {

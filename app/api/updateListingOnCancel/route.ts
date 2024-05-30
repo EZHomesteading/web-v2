@@ -1,3 +1,4 @@
+//route to update only listing stock when an order is cancelled
 import getListingById from "@/actions/listing/getListingById";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";

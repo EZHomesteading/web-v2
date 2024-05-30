@@ -1,3 +1,4 @@
+//homepage displayed if user role is CONSUMER or none.
 import Link from "next/link";
 import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/app/components/listings/search-listings";

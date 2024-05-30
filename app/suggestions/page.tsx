@@ -1,4 +1,5 @@
 "use server";
+//admin only suggestion page parent element
 import prisma from "@/lib/prisma";
 import SuggestionClient from "./suggestion.client";
 import { handleApprove } from "./handle-approve";

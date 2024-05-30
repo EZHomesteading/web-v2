@@ -1,3 +1,4 @@
+//display people a user is following page
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";

@@ -1,3 +1,4 @@
+//dashboard layout parent element
 import NavbarDashboard from "@/app/components/navbar/navbar-dashboard";
 import { Outfit } from "next/font/google";
 import Sidebar from "./sidebar";

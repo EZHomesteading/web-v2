@@ -1,4 +1,5 @@
 "use client";
+//regular text input component with error handling and detecting of what should go in the input.
 import toast from "react-hot-toast";
 import { useState } from "react";
 import {

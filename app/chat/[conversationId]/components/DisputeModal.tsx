@@ -1,13 +1,12 @@
 "use client";
+//modal for users to be able to submit a transaction dispute for later review by admins
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/app/components/ui/dialog";
 
 import { Input } from "@/app/components/ui/input";

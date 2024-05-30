@@ -1,5 +1,5 @@
 "use client";
-
+//search bar parent element
 import Select from "react-select";
 import useProduct from "@/hooks/listing/use-product";
 

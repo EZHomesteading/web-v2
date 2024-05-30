@@ -1,5 +1,5 @@
 "use server";
-
+//auth action for registering a new coop/producer/vendor
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
@@ -8,7 +8,6 @@ import { getUserByEmail, getUserByName } from "@/data/user";
 import { Location, UserRole } from "@prisma/client";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import axios from "axios";
 
 export const register = async (
   values: z.infer<typeof RegisterVendorSchema>

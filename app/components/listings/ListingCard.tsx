@@ -1,9 +1,8 @@
 "use client";
-
+//listing card component, can be mapped over to create multiple cards on same page.
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { SafeListing } from "@/types";
 import CartIcon from "@/app/components/listings/cart-icon";
 import { Button } from "@/app/components/ui/button";
 import { UserInfo } from "@/next-auth";

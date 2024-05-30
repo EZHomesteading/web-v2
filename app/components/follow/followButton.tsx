@@ -1,11 +1,10 @@
 "use client";
-
+//follow button component
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UnfollowIcon from "../icons/unfollow-svg";
 import FollowIcon from "../icons/follow-svg";
 import toast from "react-hot-toast";
-import { SafeUser } from "@/types";
 import { Outfit } from "next/font/google";
 
 const outfit = Outfit({

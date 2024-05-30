@@ -1,3 +1,4 @@
+//delete user by current user.
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
@@ -8,11 +9,11 @@ export async function DELETE(request: Request) {
     return NextResponse.error();
   }
 
-  const listing = await prisma.user.deleteMany({
+  const userDel = await prisma.user.deleteMany({
     where: {
       id: user.id,
     },
   });
 
-  return NextResponse.json(listing);
+  return NextResponse.json(userDel);
 }

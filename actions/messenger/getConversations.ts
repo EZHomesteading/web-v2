@@ -1,3 +1,4 @@
+// get conversation based on current user
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 
