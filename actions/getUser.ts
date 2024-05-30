@@ -65,6 +65,7 @@ const getUsers = async () => {
     return [];
   }
 };
+
 const getUserWithBuyOrders = async (params: Params) => {
   try {
     const { userId } = params;
@@ -189,7 +190,7 @@ const getUserById = async (params: Params) => {
     throw new Error(error);
   }
 };
-
+// this gets the coop or producer on /store/[storeId] with their listings
 const getUserStore = async (params: Params) => {
   try {
     const { userId } = params;
@@ -249,6 +250,7 @@ const getUserStore = async (params: Params) => {
     throw new Error(error);
   }
 };
+
 const getUserwithCart = async () => {
   const session = await authCache();
   if (session?.user) {

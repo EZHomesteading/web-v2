@@ -1,8 +1,8 @@
 //user profile page parent element
-import getUserById from "@/actions/user/getUserById";
+import { getUserById } from "@/actions/getUser";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import ProfileClient from "./ProfileClient";
-import getUserWithBuyReviews from "@/actions/user/getUserWithBuyReviews";
+import { getUserWithBuyReviews } from "@/actions/getUser";
 interface IParams {
   userId: string;
 }
