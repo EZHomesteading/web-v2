@@ -51,7 +51,7 @@ const Dashboard = async () => {
   let balance = null;
   let totalTransferred = 0;
 
-  if (user?.role !== UserRole.CONSUMER) {
+  if (user?.stripeAccountId) {
     const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
     balance = await stripe.balance.retrieve({
       stripeAccount: currentUserr?.stripeAccountId,
@@ -172,7 +172,7 @@ const Dashboard = async () => {
                 </CardHeader>
                 <CardContent className="sheet h-fit">
                   <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-                    {formatPrice(balance.available[0].amount)}
+                    {balance ? formatPrice(balance.available[0].amount) : 0}
                   </div>
                 </CardContent>
               </Card>
