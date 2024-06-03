@@ -318,7 +318,7 @@ const Dashboard = async () => {
                           </div>
                         </div>
                         <div className="text-red-400">
-                          -{formatPrice(order.totalPrice * 10)}
+                          -{formatPrice(order.totalPrice)}
                         </div>
                       </div>
                     );
@@ -365,7 +365,7 @@ const Dashboard = async () => {
                             </div>
                           </div>
                           <div className="text-green-500">
-                            +{formatPrice(order.totalPrice * 10)}
+                            +{formatPrice(order.totalPrice)}
                           </div>
                         </div>
                       );

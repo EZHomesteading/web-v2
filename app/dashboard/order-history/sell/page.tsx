@@ -87,7 +87,7 @@ const Page = async () => {
                   </div>
                 );
               })}
-              <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
+              <div>Order Total: {formatPrice(order.totalPrice)}</div>
               <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
             </CardContent>
             <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
