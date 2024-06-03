@@ -1,5 +1,5 @@
 "use server";
-//auth action for registering a new coop/producer/vendor
+// auth action for registering a new coop/producer/vendor
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
@@ -21,23 +21,13 @@ export const register = async (
 
   const { firstName, email, password, name, location, role, phoneNumber } =
     validatedFields.data;
+
   const hashedPassword = await bcrypt.hash(password, 10);
-  const url = convertToUrl(name);
-  const existingName = await getUserByName(name);
+  const url = await generateUniqueUrl(name, location as Location);
   const existingUser = await getUserByEmail(email);
-  const existingUrl = await prisma.user.findFirst({
-    where: {
-      url: {
-        equals: url,
-        mode: "insensitive",
-      },
-    },
-  });
-  if (existingUrl && !existingName) {
-    return { error: "Similar display name is already in use" };
-  }
-  if (existingUser || existingName) {
-    return { error: "Email or display name is already in use!" };
+
+  if (existingUser) {
+    return { error: "Email is already in use!" };
   }
 
   const user = await prisma.user.create({
@@ -72,7 +62,7 @@ export const register = async (
       error: "An error occurred while creating the Stripe connected account",
     };
   }
-  console.log(response);
+
   const updatedUser = await response.json();
   await signIn("credentials", {
     email,
@@ -82,6 +72,74 @@ export const register = async (
 
   return { user: updatedUser };
 };
+
+async function generateUniqueUrl(
+  displayName: string,
+  location: Location
+): Promise<string> {
+  let url = convertToUrl(displayName);
+  let uniqueUrl = url;
+
+  while (true) {
+    const existingUrl = await prisma.user.findFirst({
+      where: {
+        url: {
+          equals: uniqueUrl,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (!existingUrl) {
+      break;
+    }
+
+    uniqueUrl = `${location.address[2]}-${url}`;
+
+    const existingCityUrl = await prisma.user.findFirst({
+      where: {
+        url: {
+          equals: uniqueUrl,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    if (!existingCityUrl) {
+      break;
+    }
+
+    let counter = 1;
+    let numberAppended = false;
+
+    while (true) {
+      const randomNumber = Math.floor(Math.random() * 10);
+      const urlWithNumber = numberAppended
+        ? `${uniqueUrl}${randomNumber}`
+        : `${uniqueUrl}-${randomNumber}`;
+
+      const existingUrlWithNumber = await prisma.user.findFirst({
+        where: {
+          url: {
+            equals: urlWithNumber,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      if (!existingUrlWithNumber) {
+        uniqueUrl = urlWithNumber;
+        break;
+      }
+
+      numberAppended = true;
+      counter++;
+    }
+  }
+
+  return uniqueUrl;
+}
+
 function convertToUrl(displayName: string): string {
   return displayName
     .toLowerCase()

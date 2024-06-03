@@ -84,6 +84,7 @@ export const RegisterVendorSchema = z
     name: z
       .string()
       .min(4, { message: "Name must be at least 4 characters long" })
+      .max(20, { message: "Name cannot be more than 20 characters" })
       .regex(/^[a-zA-Z0-9&' ]+$/, {
         message:
           "Name can only contain letters, numbers, &, ', and single spaces",

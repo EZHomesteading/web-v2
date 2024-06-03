@@ -76,12 +76,12 @@ export const LoginForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email or Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="jd123 or jd@gmail.com"
+                      placeholder="johnnyappleseed@gmail.com"
                       type="text"
                     />
                   </FormControl>

@@ -19,18 +19,12 @@ export const login = async (
 
   const { email, password } = validatedFields.data;
 
-  const isEmail = email.includes("@");
-
   let existingUser;
 
-  if (isEmail) {
-    existingUser = await getUserByEmail(email);
-  } else {
-    existingUser = await getUserByName(email);
-  }
+  existingUser = await getUserByEmail(email);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "Email or username does not exist" };
+    return { error: "Email does not exist" };
   }
 
   try {
