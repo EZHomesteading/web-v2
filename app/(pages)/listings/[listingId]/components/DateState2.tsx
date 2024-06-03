@@ -26,6 +26,7 @@ interface StatusProps {
   quantityType: string;
   disabled?: boolean;
   listing: any;
+  user: any;
 }
 
 const DateState2 = ({
@@ -34,6 +35,7 @@ const DateState2 = ({
   quantity,
   quantityType,
   disabled,
+  user,
 }: StatusProps) => {
   const router = useRouter();
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
@@ -90,11 +92,23 @@ const DateState2 = ({
         onClose={() => setConfirmOpen(false)}
         hours={hours}
         onSetTime={handleTimer}
+        user={user}
       />
       <SheetTrigger className="w-full">
         <Button
           disabled={disabled}
-          onClick={() => null}
+          onClick={() => {
+            if (!user) {
+              let callbackUrl = window.location.href;
+              // if (nextUrl.search) {
+              //   callbackUrl += nextUrl.search;
+              // }
+              const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+              router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
+              return;
+            }
+          }}
           className="w-full mt-1 bg-green-400 hover:bg-green-700"
         >{`Buy ${quantity} ${quantityType} Now`}</Button>
       </SheetTrigger>

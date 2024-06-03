@@ -24,13 +24,14 @@ interface CustomTimeProps {
   onClose: () => void;
   hours: ExtendedHours;
   onSetTime: any;
+  user: any;
 }
 
 const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   isOpen,
   onClose,
   hours,
-
+  user,
   onSetTime,
 }) => {
   const now = new Date();
