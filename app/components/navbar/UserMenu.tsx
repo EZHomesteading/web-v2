@@ -205,7 +205,15 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Sign In"
                     icon={<PiPersonSimpleRunThin className="mr-2" />}
-                    onClick={() => router.push("/auth/login")}
+                    onClick={() => {
+                      let callbackUrl = window.location.href;
+                      const encodedCallbackUrl =
+                        encodeURIComponent(callbackUrl);
+
+                      router.push(
+                        `/auth/login?callbackUrl=${encodedCallbackUrl}`
+                      );
+                    }}
                   />
                   <MenuItem
                     label="Sign Up"
