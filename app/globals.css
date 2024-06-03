@@ -298,7 +298,10 @@ body::-webkit-scrollbar-thumb {
     opacity: 1;
   }
 }
-
+body::-webkit-scrollbar {
+  display: none;
+  scroll-behavior: smooth;
+}
 .fade-in {
   animation: fadeIn 0.75s ease-in;
 }

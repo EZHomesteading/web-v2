@@ -5,8 +5,13 @@ import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
+import { Metadata } from "next";
+import type { Viewport } from "next";
 
-export const metadata = {
+export const viewport: Viewport = {
+  themeColor: "black",
+};
+export const metadata: Metadata = {
   title:
     "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
   description:
@@ -26,6 +31,7 @@ export const metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
+  manifest: "/manifest.json",
 };
 
 export default async function RootLayout({

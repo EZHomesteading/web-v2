@@ -42,6 +42,7 @@ export default auth(async (req) => {
   if (!isLoggedIn && !isPublicRoute) {
     return Response.redirect(new URL(`/auth/login`, nextUrl));
   }
+
   return null as unknown as void;
 });
 

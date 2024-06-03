@@ -1,9 +1,7 @@
-import { getListingById } from "@/actions/getListings";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
-
 interface IUseCart {
   listingId: string;
   user?: any | null;
@@ -22,6 +20,17 @@ const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
   const toggleCart = useCallback(
     async (e: React.MouseEvent<HTMLDivElement>, quantity: number) => {
       e.stopPropagation();
+      if (!user) {
+        let callbackUrl = window.location.href;
+        // if (nextUrl.search) {
+        //   callbackUrl += nextUrl.search;
+        // }
+        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+        router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
+        return;
+      }
+
       if (!quantity) {
         quantity = 1;
       }
