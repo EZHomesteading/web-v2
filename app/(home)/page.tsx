@@ -5,6 +5,7 @@ import ProducerHome from "./proucer-home";
 import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 import AdminHome from "./admin-home";
+import NoAuthHome from "./no-auth-home";
 const HomePage = async () => {
   const user = await currentUser();
   return (
@@ -20,7 +21,7 @@ const HomePage = async () => {
           <Home />
         )
       ) : (
-        <Home />
+        <NoAuthHome />
       )}
     </>
   );

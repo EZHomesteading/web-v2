@@ -23,19 +23,16 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
   useEffect(() => {
     calculateEarliestPickupTime();
   }, []);
-  console.log(hours);
+
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
-    console.log(currentDayIndex, "current day index");
     const currentMin = now.getHours() * 60 + now.getMinutes();
     let nextAvailableTime = null;
 
     for (let i = 0; i < 7; i++) {
       const newHoursIndex = ((currentDayIndex + i) % 7) as keyof ExtendedHours;
       const newHours = hours[newHoursIndex];
-      console.log(newHoursIndex, "new hours index");
-      console.log(newHours, "new hours");
 
       if (newHours === null || (newHours && newHours.length === 0)) {
         continue; // Skip to the next day if the seller is closed or has no hours
@@ -43,12 +40,14 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
 
       let foundSlot = false;
 
-      for (const hourSlot of newHours) {
-        const openTime = hourSlot.open;
-        const closeTime = hourSlot.close;
+      if (i === 0) {
+        // Check if the buyer is buying on the same day as the seller's hours
+        let foundSlotOnSameDay = false;
 
-        if (i === 0) {
-          // Check if the buyer is buying on the same day as the seller's hours
+        for (const hourSlot of newHours) {
+          const openTime = hourSlot.open;
+          const closeTime = hourSlot.close;
+
           if (currentMin < openTime) {
             // If the buyer is buying before the seller's current open slot
             if (openTime - currentMin >= 30) {
@@ -60,39 +59,46 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
                 0,
                 0
               );
-              foundSlot = true;
+              foundSlotOnSameDay = true;
               break;
             }
           } else if (currentMin >= openTime && currentMin + 40 < closeTime) {
             // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
             nextAvailableTime = new Date(now);
-            nextAvailableTime.setMinutes(currentMin + 40); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
-            foundSlot = true;
+            const futureMin = currentMin + 40;
+            const futureHours = Math.floor(futureMin / 60);
+            const futureMinutes = futureMin % 60;
+            nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
+            foundSlotOnSameDay = true;
             break;
           }
-        } else {
-          // Set the pickup time to the seller's opening time on the next available day
-          nextAvailableTime = new Date(now);
-          nextAvailableTime.setDate(now.getDate() + i);
-          nextAvailableTime.setHours(
-            Math.floor(openTime / 60),
-            openTime % 60,
-            0,
-            0
-          );
-          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes());
+        }
+
+        if (foundSlotOnSameDay) {
           foundSlot = true;
           break;
         }
+      } else {
+        // Set the pickup time to the seller's opening time on the next available day
+        const openTime = newHours[0].open;
+        nextAvailableTime = new Date(now);
+        nextAvailableTime.setDate(now.getDate() + i);
+        nextAvailableTime.setHours(
+          Math.floor(openTime / 60),
+          openTime % 60,
+          0,
+          0
+        );
+        foundSlot = true;
+        break;
       }
 
       if (foundSlot) {
-        break; // Exit the loop if a valid pickup time is found
+        break;
       }
     }
 
     if (!nextAvailableTime) {
-      // If no available time is found within the next 7 days, return null
       return null;
     }
 
@@ -168,7 +174,7 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       <CardContent className={`${outfit.className}`}>
         In a hurry? The earliest possible time for pickup from this co-op is{" "}
         <span className={`${outfit.className} text-lg`}>
-          {earliestPickupTime || "loading..."}
+          {earliestPickupTime || "not available"}
         </span>
       </CardContent>
     </Card>
