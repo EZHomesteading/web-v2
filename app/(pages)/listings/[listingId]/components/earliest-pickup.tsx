@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { useEffect, useState } from "react";
+
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
@@ -16,7 +17,7 @@ interface Props {
   onSetTime: any;
 }
 const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
-  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
+  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); // datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
   );

@@ -8,8 +8,6 @@ export const publicRoutes = [
   "/",
   "/market",
   "/api/webhook/stripe",
-  "/api/conversations",
-  "/api/messages",
   "/map",
   "/api/uploadthing",
   "/info",
