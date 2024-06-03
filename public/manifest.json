@@ -1,16 +1,22 @@
 {
+  "id": "2",
   "name": "EZHomesteading",
   "short_name": "EZH",
   "icons": [
     {
-      "src": "/images/",
+      "src": "ezh-logo192.jpg",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/jpg"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "ezh-logo384.jpg",
+      "sizes": "384x384",
+      "type": "image/jpg"
+    },
+    {
+      "src": "ezh-logo512.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpg"
     }
   ],
   "theme_color": "#ffffff",
