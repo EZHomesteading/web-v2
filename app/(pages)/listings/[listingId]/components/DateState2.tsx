@@ -100,9 +100,6 @@ const DateState2 = ({
           onClick={() => {
             if (!user) {
               let callbackUrl = window.location.href;
-              // if (nextUrl.search) {
-              //   callbackUrl += nextUrl.search;
-              // }
               const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
               router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
