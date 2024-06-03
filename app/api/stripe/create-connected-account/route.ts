@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       email: user?.email,
       business_profile: {
         name: user?.name,
-        url: `https://www.ezhomesteading.com/store/${user?.id}`,
+        url: `https://www.ezhomesteading.com/store/${user?.url}`,
         product_description: "Agriculture and Farming",
         mcc: "0763",
       },
