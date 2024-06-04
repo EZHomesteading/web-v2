@@ -23,7 +23,9 @@ sw.addEventListener("push", (event) => {
     await sw.registration.showNotification(title, {
       body,
       badge: "/images/ezh-logo-no-text.png",
+      // action: [{ title: "open chat", action: "open_chat" }],
       tag: id,
+      // renotify: true,
       data: { id },
     });
   }
@@ -43,9 +45,9 @@ sw.addEventListener("notificationclick", (event) => {
     const channelId = notification.data.id;
 
     if (windowClients.length > 0) {
-      sw.clients.openWindow("/autochat/" + channelId);
+      sw.clients.openWindow("/chat/" + channelId);
     } else {
-      sw.clients.openWindow("/autochat/" + channelId);
+      sw.clients.openWindow("/chat/" + channelId);
     }
   }
   event.waitUntil(handleNotificationClick());
