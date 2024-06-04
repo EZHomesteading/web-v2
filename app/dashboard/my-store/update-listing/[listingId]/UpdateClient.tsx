@@ -4,7 +4,7 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Input from "@/inputs/Input";
+import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
 import { Button } from "@/app/components/ui/button";
 import { SafeListing } from "@/types";
