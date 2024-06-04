@@ -40,7 +40,7 @@ export default function Home() {
             src={homebg}
             alt="Home Page"
             fill
-            className="object-fit"
+            className="object-cover 2xl:object-fit"
             sizes="100vw"
           />{" "}
           <div className="absolute inset-0 bg-black bg-opacity-60"></div>

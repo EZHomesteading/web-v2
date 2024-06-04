@@ -10,7 +10,7 @@ import { NavUser } from "@/actions/getUser";
 interface p {
   user?: NavUser | null;
 }
-
+const apiKey = process.env.MAPS_KEY as string;
 const Navbar = ({ user }: p) => {
   return (
     <div className="relative w-full z-10 pb-2">
@@ -19,7 +19,7 @@ const Navbar = ({ user }: p) => {
           <div className="flex flex-row items-center justify-end sm:justify-center xl:justify-between gap-3 md:gap-0">
             <Logo />
             <div className="hidden xl:block">
-              <FindListingsComponent />
+              <FindListingsComponent apiKey={apiKey} />
             </div>
             <div className="flex flex-row items-center gap-x-4">
               <SearchNative />
