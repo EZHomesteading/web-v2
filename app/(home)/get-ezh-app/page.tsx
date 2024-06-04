@@ -83,8 +83,12 @@ const Page = () => {
 
   const IOSSafariComponent = () => (
     <div>
-      <h3></h3>
-      <p></p>
+      <h3>iOS Installation</h3>
+      <ul className="list-disc">
+        <li>Press the Share Button within the browser</li>
+        <li>Press 'Add to Homescreen'</li>
+        <li>Press on the EZHomesteading Icon to open the app</li>
+      </ul>
     </div>
   );
 
@@ -103,7 +107,7 @@ const Page = () => {
       </Button>
       <p>or</p>
       <ul>
-        <li>Press the button on the right side of search bar</li>
+        <li>Press the download button on the right side of search bar</li>
         <li>Press Install</li>
       </ul>
     </div>
