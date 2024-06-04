@@ -3,7 +3,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Input from "@/inputs/Input";
+import Input from "../../components/Input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
