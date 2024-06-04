@@ -193,6 +193,31 @@ const getUserById = async (params: Params) => {
     throw new Error(error);
   }
 };
+const getFavCardUser = async (params: Params) => {
+  try {
+    const { userId } = params;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        url: true,
+        image: true,
+        name: true,
+        id: true,
+        location: true,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 // this gets the coop or producer on /store/[storeId] with their listings
 const getUserStore = async (params: IStoreParams) => {
   try {
@@ -375,6 +400,7 @@ const getRoleGate = async () => {
 };
 
 export {
+  getFavCardUser,
   getVendors,
   getUsers,
   getUserWithSellOrders,
