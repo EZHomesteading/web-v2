@@ -15,8 +15,6 @@ import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
-import { Libraries } from "@googlemaps/js-api-loader";
-const libraries: Libraries = ["drawing", "geometry"];
 
 interface MapUser {
   id: string;
@@ -60,11 +58,11 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
   const [isApplyButtonVisible, setIsApplyButtonVisible] = useState(false);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-    libraries,
+    libraries: ["drawing", "geometry"],
     version: "3.55",
     preventGoogleFontsLoading: true,
   });
-
+  console.log(isLoaded);
   const mapOptions: google.maps.MapOptions = {
     center: currentCenter,
     zoom: zoom,
@@ -174,6 +172,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
+  console.log(isDrawing, "is drawing", isDrawingEnabled, "isDrawingEnabled");
   useEffect(() => {
     const disableDefaultTouchBehavior = (event: TouchEvent) => {
       event.preventDefault();
@@ -253,7 +252,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
     }
   };
 
-  const handleMouseDown = (event: google.maps.MapMouseEvent) => {
+  const handleMouseDown = (event: any) => {
     if (isDrawingEnabled && event.latLng) {
       setIsDrawing(true);
       const path = polylineRef.current?.getPath();
