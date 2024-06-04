@@ -38,7 +38,7 @@ import Heading from "@/app/components/Heading";
 import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
 import { PiStorefrontThin } from "react-icons/pi";
-import Counter from "@/app/components/inputs/Counter";
+import Counter from "@/app/create/components/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
@@ -61,9 +61,10 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
+  apiKey: string;
 }
 
-const CreateClient = ({ user, index }: Props) => {
+const CreateClient = ({ user, index, apiKey }: Props) => {
   type AddressComponents = {
     street: string;
     city: string;
@@ -268,9 +269,7 @@ const CreateClient = ({ user, index }: Props) => {
         },
       };
       axios
-
         .post("/api/listings", formData)
-
         .then(() => {
           toast.success("Listing created!");
           setValue("category", "");
@@ -931,7 +930,7 @@ const CreateClient = ({ user, index }: Props) => {
                     </div>
                     <div className="mt-1 space-y-2">
                       <Counter
-                        onChange={(value) =>
+                        onChange={(value: number) =>
                           setCustomValue("shelfLifeDays", value)
                         }
                         value={shelfLifeDays}
@@ -939,7 +938,7 @@ const CreateClient = ({ user, index }: Props) => {
                         subtitle=""
                       />
                       <Counter
-                        onChange={(value) =>
+                        onChange={(value: number) =>
                           setCustomValue("shelfLifeWeeks", value)
                         }
                         value={shelfLifeWeeks}
@@ -947,7 +946,7 @@ const CreateClient = ({ user, index }: Props) => {
                         subtitle=""
                       />
                       <Counter
-                        onChange={(value) =>
+                        onChange={(value: number) =>
                           setCustomValue("shelfLifeMonths", value)
                         }
                         value={shelfLifeMonths}
@@ -955,7 +954,7 @@ const CreateClient = ({ user, index }: Props) => {
                         subtitle=""
                       />
                       <Counter
-                        onChange={(value) =>
+                        onChange={(value: number) =>
                           setCustomValue("shelfLifeYears", value)
                         }
                         value={shelfLifeYears}
@@ -1224,6 +1223,7 @@ const CreateClient = ({ user, index }: Props) => {
                                 setValue("address", address)
                               }
                               onAddressParsed={handleAddressSelect}
+                              apiKey={apiKey}
                             />
                           </div>
                         )}
