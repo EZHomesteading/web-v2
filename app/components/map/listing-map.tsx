@@ -15,7 +15,7 @@ const ListingMap = ({ location }: MapProps) => {
   function Geocoding() {
     const initMap = async (zoom: number) => {
       const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
+        apiKey: process.env.MAPS_KEY as string,
         version: "weekly",
       });
       const { Map } = await loader.importLibrary("maps");

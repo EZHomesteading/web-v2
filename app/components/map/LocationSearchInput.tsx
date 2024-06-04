@@ -130,7 +130,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
       <Script
         async
         defer
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.MAPS_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
       />
     </>
   );
