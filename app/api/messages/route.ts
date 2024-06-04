@@ -79,8 +79,9 @@ export async function POST(request: Request) {
       try {
         const recipientSubs = recipients.subscriptions;
         const formatrecipients = JSON.parse(recipientSubs);
-        //console.log(recipients);
-        const send = formatrecipients.map((subscription: PushSubscription) =>
+        console.log(formatrecipients);
+        const send = formatrecipients.map((subscription: PushSubscription) => {
+          console.log(subscription);
           webPush.sendNotification(
             subscription,
             JSON.stringify({
@@ -96,8 +97,8 @@ export async function POST(request: Request) {
                 privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
               },
             }
-          )
-        );
+          );
+        });
         await Promise.all(send);
       } catch (error) {
         console.log("A users Push subscription has expired.");

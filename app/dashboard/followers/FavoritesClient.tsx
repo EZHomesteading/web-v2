@@ -3,7 +3,7 @@
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
-import { getUserById } from "@/actions/getUser";
+import { getFavCardUser } from "@/actions/getUser";
 interface FavoritesClientProps {
   followarr: any;
   myFollow: any;
@@ -30,7 +30,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         "
       >
         {followarr.map(async (follow: any) => {
-          const shop = await getUserById({ userId: follow.userId });
+          const shop = await getFavCardUser({ userId: follow.userId });
           return (
             <FollowCard
               user={follow.userId}

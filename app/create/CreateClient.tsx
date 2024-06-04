@@ -98,10 +98,10 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       category: "",
       subCategory: "",
       location: "",
-      stock: null,
+      stock: 1,
       quantityType: "",
       imageSrc: [],
-      price: null,
+      price: 1,
       title: "",
       description: "",
       shelfLifeDays: 0,
@@ -113,7 +113,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       zip: "",
       state: "",
       coopRating: 1,
-      minOrder: null,
+      minOrder: 1,
     },
   });
   //checkbox usestates
@@ -249,7 +249,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       //onsubmit formstate to formdata=data to pass to create listing api endpoint
       const formData = {
         title: data.title,
-        minOrder: data.minOrder,
+        minOrder: parseInt(data.minOrder),
         description: description,
         category: data.category,
         subCategory: data.subCategory,
@@ -298,6 +298,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
           setCertificationChecked(false);
           setShowLocationInput(false);
           setQuantityType(undefined);
+          router.push("/dashboard/my-store");
         })
         .catch(() => {
           toast.error(
@@ -310,7 +311,6 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
         })
         .finally(() => {
           setIsLoading(false);
-          router.push("/dashboard/my-store");
         });
     } else {
       setIsLoading(false);
