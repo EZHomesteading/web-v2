@@ -72,12 +72,12 @@ const FollowCard: React.FC<ListingCardProps> = ({
   );
 
   const [isHovering, setIsHovering] = useState(false);
-
+  console.log(data);
   return (
     <div className="col-span-1 cursor-pointer">
       <div className="flex flex-col w-full">
         <div
-          onClick={() => router.push(`/store/${data.id}`)}
+          onClick={() => router.push(`/store/${data.url}`)}
           className=" aspect-square w-full relative overflow-hidden rounded-xl hover:shadow-xl "
         >
           <Image
