@@ -39,7 +39,7 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
     "sellAndSource"
   );
   const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    const apiKey = process.env.MAPS_KEY;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
     )}&key=${apiKey}`;

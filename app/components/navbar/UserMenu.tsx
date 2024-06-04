@@ -20,6 +20,7 @@ import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import { PiPersonSimpleRunThin } from "react-icons/pi";
+import { Button } from "../ui/button";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -197,6 +198,9 @@ const UserMenu = ({ user }: Props) => {
                     label="Logout"
                     onClick={() => signOut()}
                   />
+                  <Button onClick={() => router.push("/get-ezh-app")}>
+                    Install the EZH App
+                  </Button>
                 </SheetTrigger>
               </>
             ) : (
@@ -229,7 +233,10 @@ const UserMenu = ({ user }: Props) => {
                     label="Map"
                     icon={<LiaMapMarkedSolid className="mr-2" />}
                     onClick={() => router.push("/map")}
-                  />
+                  />{" "}
+                  <Button onClick={() => router.push("/get-ezh-app")}>
+                    Install the EZH App
+                  </Button>
                 </SheetTrigger>
               </>
             )}
