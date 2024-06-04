@@ -26,6 +26,7 @@ const getVendors = async ({ role }: p) => {
         name: true,
         firstName: true,
         image: true,
+        url: true,
         location: {
           select: {
             coordinates: true,

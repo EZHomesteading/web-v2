@@ -49,17 +49,19 @@ interface Props {
 
 const CoOpHoursPage = ({ user }: Props) => {
   let defaultHours;
-  defaultHours = user?.hours || [
-    {
-      0: [{ open: 480, close: 1020 }],
-      1: [{ open: 480, close: 1020 }],
-      2: [{ open: 480, close: 1020 }],
-      3: [{ open: 480, close: 1020 }],
-      4: [{ open: 480, close: 1020 }],
-      5: [{ open: 480, close: 1020 }],
-      6: [{ open: 480, close: 1020 }],
-    },
-  ];
+  if (!user?.hours) {
+    defaultHours = {
+      0: null,
+      1: null,
+      2: null,
+      3: null,
+      4: null,
+      5: null,
+      6: null,
+    };
+  } else {
+    defaultHours = user?.hours;
+  }
 
   const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
 
