@@ -19,12 +19,14 @@ interface ListingClientProps {
   };
   user?: any | null;
   following: any;
+  apiKey?: string;
 }
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
   user,
   following,
+  apiKey,
 }) => {
   const listingRole = listing.user.role;
   const listingUser = listing.user.id;
@@ -90,7 +92,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
               hours={listing.user.hours}
             />
             <div className="mt-5">
-              <ListingMap location={listing.location} />
+              {apiKey && (
+                <ListingMap location={listing.location} apiKey={apiKey} />
+              )}
             </div>
           </div>
         </div>

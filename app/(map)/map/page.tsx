@@ -1,15 +1,21 @@
 //map routes server side page layout
 import { getVendors } from "@/actions/getUser";
 import authCache from "@/auth-cache";
-import MapContainer from "./map-container";
+import Map from "@/app/(map)/map/map";
 import { UserRole } from "@prisma/client";
+import Container from "@/app/components/Container";
+import Logo from "@/app/components/navbar/Logo";
+import UserMenu from "@/app/components/navbar/UserMenu";
 
 const MapPage = async () => {
+  const map_api_key = process.env.MAPS_KEY as string;
   const [coops, producers] = await Promise.all([
     getVendors({ role: UserRole.COOP }),
     getVendors({ role: UserRole.PRODUCER }),
   ]);
+  console.log(coops);
   const session = await authCache();
+  const user = session?.user;
   const userLocation = session?.user?.location?.coordinates ?? [];
   const defaultLocation = { lat: 44.58, lng: -103.46 };
   const initialLocation =
@@ -17,11 +23,26 @@ const MapPage = async () => {
       ? { lat: userLocation[1], lng: userLocation[0] }
       : defaultLocation;
   return (
-    <MapContainer
-      coops={coops}
-      producers={producers}
-      initialLocation={initialLocation}
-    />
+    <div className="h-sreen overflow-hidden touch-none">
+      <div className="relative w-full z-10 shadow-sm h-[64px]">
+        <div className="py-4">
+          <Container>
+            <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
+              <Logo />
+              <UserMenu user={user} />
+            </div>
+          </Container>
+        </div>
+      </div>
+      <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
+        <Map
+          coordinates={initialLocation || defaultLocation}
+          coops={coops}
+          producers={producers}
+          mk={map_api_key}
+        />
+      </div>
+    </div>
   );
 };
 

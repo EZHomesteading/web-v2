@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 import { PushSubscription } from "web-push";
+import { filter } from "lodash";
 
 export async function POST(request: Request) {
   const body: PushSubscription = await request.json();
@@ -17,27 +18,27 @@ export async function POST(request: Request) {
     return NextResponse.error();
   }
   const subs = (user.subscriptions as string) || "[]";
-  if (subs === "[]") {
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        subscriptions: parsed,
-      },
-    });
+  // if (subs === "[]") {
+  //   const updatedUser = await prisma.user.update({
+  //     where: { id: user.id },
+  //     data: {
+  //       subscriptions: parsed,
+  //     },
+  //   });
 
-    return NextResponse.json(updatedUser);
-  }
+  //   return NextResponse.json(updatedUser);
+  // }
 
   const filterMe = JSON.parse(subs);
   const updatesubscriptions = filterMe.filter(
     (subscription: PushSubscription) => subscription.endpoint !== endpoint
   );
-  updatesubscriptions.push(parsed);
-
+  updatesubscriptions.push(body);
+  console.log("filterme", filterMe, "updatesubscriptions", updatesubscriptions);
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
-      subscriptions: parsed,
+      subscriptions: JSON.stringify(updatesubscriptions),
     },
   });
 
@@ -61,6 +62,7 @@ export async function DELETE(request: Request) {
   const updatesubscriptions = filterMe.filter(
     (subscription: PushSubscription) => subscription.endpoint !== endpoint
   );
+  console.log(filterMe);
   const updatedUser = await prisma.user.update({
     where: {
       id: user.id,

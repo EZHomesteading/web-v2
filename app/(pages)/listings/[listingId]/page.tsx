@@ -10,7 +10,7 @@ import SessionStorageManager from "@/app/components/sessionStorageManager";
 interface IParams {
   listingId?: string;
 }
-
+const apiKey = process.env.MAPS_KEY as string;
 const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
   const user = await getUserwithCart();
@@ -30,7 +30,12 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   return (
     <ClientOnly>
       <SessionStorageManager />
-      <ListingClient listing={listing} following={following} user={user} />
+      <ListingClient
+        listing={listing}
+        following={following}
+        user={user}
+        apiKey={apiKey}
+      />
     </ClientOnly>
   );
 };

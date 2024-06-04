@@ -7,17 +7,20 @@ import { MdOutlinePrivacyTip } from "react-icons/md";
 import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
 import { VscHistory } from "react-icons/vsc";
 import Logo from "../components/navbar/Logo";
+import { RiUserHeartLine } from "react-icons/ri";
 import { UserRole } from "@prisma/client";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
+import { RiUserShared2Line } from "react-icons/ri";
 import {
   TbLayoutSidebarLeftCollapse,
   TbShoppingCartDollar,
 } from "react-icons/tb";
 import { useEffect, useState } from "react";
-import { TbLayoutSidebarRightCollapseFilled } from "react-icons/tb";
 import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import Link from "next/link";
+import { GiCorn } from "react-icons/gi";
+import { TbClockDollar } from "react-icons/tb";
 
 interface p {
   role?: UserRole;
@@ -42,15 +45,22 @@ const conNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Orders",
-    href: "/dashboard/orders",
+    name: "Ongoing Buy Orders",
+    href: "/dashboard/orders/buyer",
     icon: LiaCartArrowDownSolid,
     current: false,
   },
+
   {
-    name: "Order History",
+    name: "Buy Order History",
     href: "/dashboard/order-history",
     icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Following",
+    href: "/dashboard/following",
+    icon: RiUserShared2Line,
     current: false,
   },
   {
@@ -86,9 +96,9 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Sell Orders",
-    href: "/dashboard/orders/seller",
-    icon: TbShoppingCartDollar,
+    name: "Profile Settings",
+    href: "/dashboard/account-settings/general",
+    icon: GiSettingsKnobs,
     current: false,
   },
   {
@@ -98,21 +108,53 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Buy Orders",
-    href: "/dashboard/orders/buyer",
-    icon: LiaCartArrowDownSolid,
-    current: false,
-  },
-  {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
+    name: "Store Settings",
+    href: "/dashboard/my-store/settings",
     icon: GiSettingsKnobs,
     current: false,
   },
   {
-    name: "Order History",
+    name: "Ongoing Sell Orders",
+    href: "/dashboard/orders/seller",
+    icon: TbShoppingCartDollar,
+    current: false,
+  },
+
+  {
+    name: "Ongoing Buy Orders",
+    href: "/dashboard/orders/buyer",
+    icon: LiaCartArrowDownSolid,
+    current: false,
+  },
+
+  {
+    name: "Buy Order History",
     href: "/dashboard/order-history",
     icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Sell Order History",
+    href: "/dashboard/order-history/sell",
+    icon: TbClockDollar,
+    current: false,
+  },
+  {
+    name: "Followers",
+    href: "/dashboard/followers",
+    icon: RiUserHeartLine,
+    current: false,
+  },
+  {
+    name: "Following",
+    href: "/dashboard/following",
+    icon: RiUserShared2Line,
+    current: false,
+  },
+  {
+    name: "Project Harvest",
+    href: "/project-havest",
+    icon: GiCorn,
     current: false,
   },
   {

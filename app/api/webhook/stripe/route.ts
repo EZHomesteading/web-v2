@@ -7,6 +7,7 @@ import { getOrderById } from "@/actions/getOrder";
 import { getListingById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { UserRole } from "@prisma/client";
+import webPush, { PushSubscription } from "web-push";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
 });
@@ -212,6 +213,38 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
+
+            try {
+              if (!seller.subscriptions) {
+                console.log("A users Push subscription has expired.");
+                return;
+              }
+              const formatrecipients = JSON.parse(seller.subscriptions);
+              console.log(formatrecipients);
+              const send = formatrecipients.map(
+                (subscription: PushSubscription) =>
+                  webPush.sendNotification(
+                    subscription,
+                    JSON.stringify({
+                      title: "You have a new order!",
+                      body: coopBody,
+                      id: newConversation.id,
+                    }),
+                    {
+                      vapidDetails: {
+                        subject: "mailto:ezhomesteading@gmail.com",
+                        publicKey: process.env
+                          .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
+                        privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
+                      },
+                    }
+                  )
+              );
+              await Promise.all(send);
+            } catch (error) {
+              console.log("A users Push subscription has expired.");
+            }
+
             // if (seller.phoneNumber) {
             //   const params = {
             //     Message: `New order received! Buyer: ${
@@ -245,6 +278,36 @@ export async function POST(request: NextRequest) {
                 },
               },
             });
+            try {
+              if (!seller.subscriptions) {
+                console.log("A users Push subscription has expired.");
+                return;
+              }
+              const formatrecipients = JSON.parse(seller.subscriptions);
+              console.log(formatrecipients);
+              const send = formatrecipients.map(
+                (subscription: PushSubscription) =>
+                  webPush.sendNotification(
+                    subscription,
+                    JSON.stringify({
+                      title: "You have a new order!",
+                      body: producerBody,
+                      id: newConversation.id,
+                    }),
+                    {
+                      vapidDetails: {
+                        subject: "mailto:ezhomesteading@gmail.com",
+                        publicKey: process.env
+                          .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
+                        privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
+                      },
+                    }
+                  )
+              );
+              await Promise.all(send);
+            } catch (error) {
+              console.log("A users Push subscription has expired.");
+            }
             // if (seller.phoneNumber) {
             //   const params = {
             //     Message: `New order received! Buyer: ${buyer.name}, Items: ${titles}, Delivery Address: ${buyer.location?.address}`,

@@ -26,6 +26,7 @@ const getVendors = async ({ role }: p) => {
         name: true,
         firstName: true,
         image: true,
+        url: true,
         location: {
           select: {
             coordinates: true,
@@ -181,6 +182,31 @@ const getUserById = async (params: Params) => {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+const getFavCardUser = async (params: Params) => {
+  try {
+    const { userId } = params;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        url: true,
+        image: true,
+        name: true,
+        id: true,
+        location: true,
       },
     });
 
@@ -374,6 +400,7 @@ const getRoleGate = async () => {
 };
 
 export {
+  getFavCardUser,
   getVendors,
   getUsers,
   getUserWithSellOrders,
