@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       try {
         const recipientSubs = recipients.subscriptions;
         const formatrecipients = JSON.parse(recipientSubs);
-        //console.log(recipients);
+        console.log(formatrecipients);
         const send = formatrecipients.map((subscription: PushSubscription) =>
           webPush.sendNotification(
             subscription,

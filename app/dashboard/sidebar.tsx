@@ -86,9 +86,9 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Sell Orders",
-    href: "/dashboard/orders/seller",
-    icon: TbShoppingCartDollar,
+    name: "Profile Settings",
+    href: "/dashboard/account-settings/general",
+    icon: GiSettingsKnobs,
     current: false,
   },
   {
@@ -98,20 +98,52 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Buy Orders",
-    href: "/dashboard/orders/buyer",
-    icon: LiaCartArrowDownSolid,
-    current: false,
-  },
-  {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
+    name: "Store Settings",
+    href: "/dashboard/my-store/settings",
     icon: GiSettingsKnobs,
     current: false,
   },
   {
-    name: "Order History",
+    name: "Ongoing Sell Orders",
+    href: "/dashboard/orders/seller",
+    icon: TbShoppingCartDollar,
+    current: false,
+  },
+
+  {
+    name: "Ongoing Buy Orders",
+    href: "/dashboard/orders/buyer",
+    icon: LiaCartArrowDownSolid,
+    current: false,
+  },
+
+  {
+    name: "Buy Order History",
     href: "/dashboard/order-history",
+    icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Sell Order History",
+    href: "/dashboard/order-history/sell",
+    icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Followers",
+    href: "/dashboard/followers",
+    icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Following",
+    href: "/dashboard/following",
+    icon: VscHistory,
+    current: false,
+  },
+  {
+    name: "Project Harvest",
+    href: "/project-havest",
     icon: VscHistory,
     current: false,
   },
