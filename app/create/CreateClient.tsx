@@ -268,9 +268,7 @@ const CreateClient = ({ user, index }: Props) => {
         },
       };
       axios
-
         .post("/api/listings", formData)
-
         .then(() => {
           toast.success("Listing created!");
           setValue("category", "");

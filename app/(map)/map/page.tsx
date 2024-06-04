@@ -3,21 +3,46 @@ import { getVendors } from "@/actions/getUser";
 import authCache from "@/auth-cache";
 import Map from "@/app/(map)/map/map";
 import { UserRole } from "@prisma/client";
+import Container from "@/app/components/Container";
+import Logo from "@/app/components/navbar/Logo";
+import UserMenu from "@/app/components/navbar/UserMenu";
 
 const MapPage = async () => {
+  const map_api_key = process.env.MAPS_KEY as string;
   const [coops, producers] = await Promise.all([
     getVendors({ role: UserRole.COOP }),
     getVendors({ role: UserRole.PRODUCER }),
   ]);
-  // const session = await authCache();
-  // const userLocation = session?.user?.location?.coordinates ?? [];
-  // const defaultLocation = { lat: 44.58, lng: -103.46 };
-  // const initialLocation =
-  //   userLocation.length > 0
-  //     ? { lat: userLocation[1], lng: userLocation[0] }
-  //     : defaultLocation;
+  console.log(coops);
+  const session = await authCache();
+  const user = session?.user;
+  const userLocation = session?.user?.location?.coordinates ?? [];
+  const defaultLocation = { lat: 44.58, lng: -103.46 };
+  const initialLocation =
+    userLocation.length > 0
+      ? { lat: userLocation[1], lng: userLocation[0] }
+      : defaultLocation;
   return (
-    <Map coordinates={{ lat: 0, lng: 0 }} coops={coops} producers={producers} />
+    <div className="h-sreen overflow-hidden touch-none">
+      <div className="relative w-full z-10 shadow-sm h-[64px]">
+        <div className="py-4">
+          <Container>
+            <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
+              <Logo />
+              <UserMenu user={user} />
+            </div>
+          </Container>
+        </div>
+      </div>
+      <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
+        <Map
+          coordinates={initialLocation || defaultLocation}
+          coops={coops}
+          producers={producers}
+          mk={map_api_key}
+        />
+      </div>
+    </div>
   );
 };
 

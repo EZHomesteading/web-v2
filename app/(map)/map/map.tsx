@@ -15,6 +15,7 @@ import { IoCheckmark } from "react-icons/io5";
 import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
+import { Libraries } from "@googlemaps/js-api-loader";
 
 interface MapUser {
   id: string;
@@ -27,6 +28,7 @@ interface MapUser {
   listings: {
     imageSrc: string[];
   }[];
+  url: string | null;
 }
 
 const outfit = Outfit({
@@ -38,11 +40,12 @@ interface MapProps {
   coops: MapUser[];
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
+  mk: string;
 }
-
-const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
+const libraries: Libraries = ["drawing", "geometry"];
+const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState(coordinates);
-  const [zoom, setZoom] = useState(8);
+  const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
     lat: number;
     lng: number;
@@ -51,17 +54,19 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
     firstName: string;
     id: string;
     images: string[];
+    url: string;
   } | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const infoWindowRef = useRef<HTMLDivElement | null>(null);
 
   const [isApplyButtonVisible, setIsApplyButtonVisible] = useState(false);
+
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
-    libraries: ["drawing", "geometry"],
+    googleMapsApiKey: mk,
+    libraries: libraries,
     version: "3.55",
-    preventGoogleFontsLoading: true,
   });
+
   console.log(isLoaded);
   const mapOptions: google.maps.MapOptions = {
     center: currentCenter,
@@ -86,9 +91,19 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
     images: string[],
     firstName: string,
     image: string,
-    id: string
+    id: string,
+    url: string
   ) => {
-    setSelectedMarker({ ...coordinate, name, images, image, firstName, id });
+    setSelectedMarker({
+      ...coordinate,
+      name,
+      images,
+      image,
+      firstName,
+      id,
+      url,
+    });
+    console.log(coordinates, name, url);
     setCurrentCenter(coordinate);
     setZoom(13);
   };
@@ -126,7 +141,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
           )
         : [];
       const listingsCount = coop.listings ? coop.listings.length : 0;
-
+      const url = coop.url;
       return {
         coordinates: {
           lat: coordinates[1],
@@ -138,12 +153,13 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
         id: coop.id,
         images: images,
         listingsCount: listingsCount,
+        url: url,
       };
     })
     .filter(Boolean);
   const producerInfo = producers
     ?.map((producer: MapUser) => {
-      if (!producer.location) return null;
+      if (!producer.location || !producer.location.coordinates) return null;
       return {
         coordinates: {
           lat: producer.location.coordinates[1],
@@ -159,6 +175,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
             )
           : [],
         listingsCount: producer?.listings?.length ?? 0,
+        url: producer.url,
       };
     })
     .filter(Boolean);
@@ -465,7 +482,8 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
                     coop.images,
                     coop.firstName,
                     coop.image,
-                    coop.id
+                    coop.id,
+                    coop.url
                   )
                 }
               />
@@ -502,7 +520,8 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
                     producer.images,
                     producer.firstName,
                     producer.image,
-                    producer.id
+                    producer.id,
+                    producer.url
                   )
                 }
               />
@@ -533,7 +552,7 @@ const VendorsMap = ({ coops, producers, coordinates }: MapProps) => {
                 </p>
               </ul>
               <Link
-                href={`/store/${selectedMarker.id}`}
+                href={`/store/${selectedMarker.url}`}
                 className="absolute right-1 top-1"
               >
                 <Button>Go to Store</Button>

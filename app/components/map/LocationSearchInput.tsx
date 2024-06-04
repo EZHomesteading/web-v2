@@ -4,7 +4,6 @@ import { LiaMapMarkedSolid } from "react-icons/lia";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
-  getLatLng,
 } from "react-places-autocomplete";
 
 interface LocationSearchInputProps {
