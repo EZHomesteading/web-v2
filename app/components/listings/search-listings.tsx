@@ -16,7 +16,7 @@ import { BsBasket } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
 
 const getLatLngFromAddress = async (address: string) => {
-  const apiKey = process.env.MAPS_KEY;
+  const apiKey = process.env.MAPS_KEY as string;
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
   )}&key=${apiKey}&loading=async&libraries=places`;
@@ -34,8 +34,10 @@ const getLatLngFromAddress = async (address: string) => {
     return null;
   }
 };
-
-const SearchLocation = () => {
+interface p {
+  apiKey: string;
+}
+const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -268,7 +270,7 @@ const SearchLocation = () => {
       <Script
         async
         defer
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places&callback=lazyLoadMap`}
       />
     </div>
   );

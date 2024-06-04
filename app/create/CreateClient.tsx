@@ -61,9 +61,10 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
+  apiKey: string;
 }
 
-const CreateClient = ({ user, index }: Props) => {
+const CreateClient = ({ user, index, apiKey }: Props) => {
   type AddressComponents = {
     street: string;
     city: string;
@@ -1222,6 +1223,7 @@ const CreateClient = ({ user, index }: Props) => {
                                 setValue("address", address)
                               }
                               onAddressParsed={handleAddressSelect}
+                              apiKey={apiKey}
                             />
                           </div>
                         )}

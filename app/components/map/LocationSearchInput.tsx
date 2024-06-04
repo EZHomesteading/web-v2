@@ -15,12 +15,14 @@ interface LocationSearchInputProps {
     state: string;
     zip: string;
   }) => void;
+  apiKey: string;
 }
 
 const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   address = "",
   setAddress,
   onAddressParsed,
+  apiKey,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -130,7 +132,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
       <Script
         async
         defer
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.MAPS_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places&callback=lazyLoadMap`}
       />
     </>
   );

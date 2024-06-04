@@ -7,15 +7,16 @@ import { Location } from "@/next-auth";
 
 interface MapProps {
   location: Location | null;
+  apiKey: string;
 }
 
-const ListingMap = ({ location }: MapProps) => {
+const ListingMap = ({ location, apiKey }: MapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   function Geocoding() {
     const initMap = async (zoom: number) => {
       const loader = new Loader({
-        apiKey: process.env.MAPS_KEY as string,
+        apiKey: apiKey,
         version: "weekly",
       });
       const { Map } = await loader.importLibrary("maps");
@@ -70,7 +71,7 @@ const ListingMap = ({ location }: MapProps) => {
 
   return (
     <>
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_MAPS_API_KEY as string}>
+      <APIProvider apiKey={apiKey}>
         <Geocoding />
       </APIProvider>
       <div
