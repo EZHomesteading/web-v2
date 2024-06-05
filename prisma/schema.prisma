@@ -100,9 +100,6 @@ model User {
 
   following             Following?
 
-  buyerReviews          Reviews[] @relation("buyer")
-  sellerReviews         Reviews[] @relation("seller")
-
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
 
@@ -123,13 +120,10 @@ model Following {
 model Reviews {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   reviewerId            String @db.ObjectId
-  buyerId               String @db.ObjectId
-  sellerId              String @db.ObjectId
+  reviewedId            String @db.ObjectId
+  buyer                 Boolean
   review                String
   rating                Int
-
-  buyer                 User @relation(name:"buyer", fields: [buyerId], references: [id], onDelete: Cascade)
-  seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model Account {

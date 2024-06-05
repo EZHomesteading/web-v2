@@ -6,8 +6,8 @@ import { TfiDownload } from "react-icons/tfi";
 import { FaAndroid } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaLinux } from "react-icons/fa";
+import PWAInstall from "@/app/(home)/get-ezh-app/pwa";
 import { BsWindows } from "react-icons/bs";
-import useDeviceInfo from "../../../hooks/get-device-info";
 import { useEffect, useState } from "react";
 
 enum DEVICE {
@@ -36,11 +36,17 @@ const zilla = Zilla_Slab({
   weight: ["300"],
   subsets: ["latin"],
 });
-
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 const Page = () => {
   const [device, setDevice] = useState(DEVICE.UNKNOWN);
   const [browser, setBrowser] = useState(BROWSER.UNKNOWN);
-  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
@@ -64,13 +70,6 @@ const Page = () => {
       setBrowser(BROWSER.FIREFOX);
     } else if (/Edge/i.test(userAgent)) {
       setBrowser(BROWSER.EDGE);
-    }
-
-    if (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true
-    ) {
-      setIsPWAInstalled(true);
     }
   }, []);
 
@@ -101,15 +100,7 @@ const Page = () => {
 
   const WindowsComponent = () => (
     <div className={`${zilla.className} text-lg`}>
-      <h3>Press the Install Button Below</h3>
-      <Button className={`${outfit.className} text-xl font-light`}>
-        Install
-      </Button>
-      <p>or</p>
-      <ul>
-        <li>Press the download button on the right side of search bar</li>
-        <li>Press Install</li>
-      </ul>
+      <PWAInstall />
     </div>
   );
 
@@ -127,10 +118,6 @@ const Page = () => {
     </div>
   );
 
-  const openPWA = () => {
-    window.location.href = "/manifest.json";
-  };
-
   return (
     <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen">
       <div className="lg:col-span-1 hidden lg:block"></div>
@@ -142,16 +129,7 @@ const Page = () => {
           <div className={`${zilla.className} lg:text-xl mb-1`}>
             The user experience on the app is significantly better
           </div>
-          {isPWAInstalled ? (
-            <Button className="relative pl-7" onClick={openPWA}>
-              Open PWA
-            </Button>
-          ) : (
-            <Button className="relative pl-7">
-              <TfiDownload className="text-white absolute left-2 top-3 text-md" />
-              Go to Set Up
-            </Button>
-          )}
+
           <ul
             className={`${zilla.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
           >
@@ -166,18 +144,21 @@ const Page = () => {
             <li>Automatically syncs with the website with more features</li>
             <li>No Play Store/App Store installation required</li>
           </ul>
-          <div className="flex gap-x-2">
-            <Card className="w-1/3 sheet shadow-md">
-              <CardHeader
-                className={`${outfit.className} text-7xl font-semibold`}
-              >
-                90%
-              </CardHeader>
-              <CardContent className={`${outfit.className} text-2xl`}>
-                Browser Support
-              </CardContent>
-            </Card>
-            <Card className="sheet w-full shadow-md">
+          <div className="grid 2xl:grid-rows-1  2xl:grid-cols-4 w-[100%] gap-2 ">
+            <div className="grid grid-cols-2 2xl:grid-cols-1">
+              <Card className="grid-row-1 2xl:grid-col-1 sheet shadow-md">
+                <CardHeader
+                  className={`${outfit.className} text-7xl font-semibold`}
+                >
+                  90%
+                </CardHeader>
+                <CardContent className={`${outfit.className} text-2xl`}>
+                  Browser Support
+                </CardContent>
+              </Card>
+              <div className="grid-col-1 2xl:hidden"></div>
+            </div>
+            <Card className="sheet 2xl:grid-col-3 grid-row-1 shadow-md 2xl:w-[700px]">
               <CardHeader
                 className={`${outfit.className} text-3xl font-semibold`}
               >
