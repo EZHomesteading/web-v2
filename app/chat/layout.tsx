@@ -2,7 +2,11 @@
 import ConversationList from "./components/ConversationList";
 import NavbarHome from "../components/navbar/navbar-chat";
 import { getConversations } from "@/actions/chat/getChat";
+import type { Viewport } from "next";
 
+export const viewport: Viewport = {
+  themeColor: "rgb(15 23 42)",
+};
 export default async function ConversationsLayout({
   children,
 }: {

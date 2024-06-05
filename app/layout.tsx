@@ -6,10 +6,9 @@ import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
 import { Metadata } from "next";
-import type { Viewport } from "next";
-
+import { Viewport } from "next";
 export const viewport: Viewport = {
-  themeColor: "green",
+  themeColor: "#ced9bb",
 };
 export const metadata: Metadata = {
   title:
