@@ -50,9 +50,20 @@ const PwaInstall = () => {
     <>
       {showInstallBtn &&
       !window.matchMedia("(display-mode: standalone)").matches ? (
-        <Button onClick={handleInstallClick}>Add to Home Screen</Button>
+        <>
+          <h3>Press the Install Button Below</h3>
+          <Button onClick={handleInstallClick}>Add to Home Screen</Button>
+          <p>or</p>
+          <ul>
+            <li>Press the download button on the right side of search bar</li>
+            <li>Press Install</li>
+          </ul>
+        </>
       ) : (
-        <Button onClick={openPwa}>Open PWA</Button>
+        <div>
+          You've already installed the EZH app on this device. It should be on
+          your device's homescreen or app list
+        </div>
       )}
     </>
   );
