@@ -31,7 +31,6 @@ const DateState = ({
   index,
   role,
 }: StatusProps) => {
-  console.log(hours);
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const formatPickupTime = (selectedTime: any) => {
