@@ -27,6 +27,7 @@ interface CustomTimeProps {
   index: number;
   cartGroup: CartGroup | null;
   onSetTime: any;
+  role: string;
 }
 
 const CustomTimeModal: React.FC<CustomTimeProps> = ({
@@ -36,6 +37,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   index,
   cartGroup,
   onSetTime,
+  role,
 }) => {
   const now = new Date();
   // useState hooks to manage the state of the date and options
@@ -158,7 +160,9 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
             <div className="grid gap-4">
               <div className="bg-white">
                 <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                  Co-op Hours Each Day
+                  {role === "PRODUCER"
+                    ? `Producer Hours Each Day`
+                    : `Co-op Hours Each Day`}
                 </div>
                 <div className="mt-1">
                   <HoursDisplay coOpHours={hours} />

@@ -78,13 +78,14 @@ const DateState = ({
         index={index}
         cartGroup={cartGroup}
         onSetTime={handleTimer}
+        role={role}
       />
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
         {role === "PRODUCER" ? (
           selectedTime?.pickupTime ? (
             <>{formatPickupTime(selectedTime)}</>
           ) : (
-            "Set Drop-off Time"
+            "Set Delivery Time"
           )
         ) : selectedTime?.pickupTime ? (
           <>{formatPickupTime(selectedTime)}</>
@@ -98,6 +99,7 @@ const DateState = ({
         hours={hours}
         index={index}
         onSetTime={handleTimer}
+        role={role}
       >
         <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
           <SheetTrigger className="h-full w-full">
@@ -105,12 +107,19 @@ const DateState = ({
               <CardHeader
                 className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
               >
-                Set a custom pickup time{" "}
+                {" "}
+                {role === "PRODUCER"
+                  ? `Set a custom delivery time`
+                  : `Set a custom pickup time`}
               </CardHeader>
               <CardContent className={`${outfit.className} mt-2`}>
-                Not in a rush? Feel free to set a pick up anytime within the
-                freshness window of your cart items and this co-op&apos;s open
-                hours.
+                {role === "PRODUCER"
+                  ? `Don't need it ASAP? Feel free to set a delivery time anytime within the
+                  freshness window of your cart items and this producers delivery
+                  hours.`
+                  : `Not in a rush? Feel free to set a pick up anytime within the
+                  freshness window of your cart items and this co-op's open
+                  hours.`}
               </CardContent>
             </Card>
           </SheetTrigger>

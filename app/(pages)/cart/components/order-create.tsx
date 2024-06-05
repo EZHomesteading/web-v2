@@ -3,9 +3,13 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { SafeListing } from "@/types";
+import { addDays, format } from "date-fns";
+import { useState } from "react";
+import SoonExpiryModal from "./soonExpiryModal";
 dayjs.extend(utc);
 
 interface Create {
@@ -15,8 +19,53 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
+  const [soonExpiry, setSoonExpiry] = useState(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   sessionStorage.setItem("ORDER", "");
   const router = useRouter();
+  const now = new Date();
+  const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+  const shelfLife = (listing: any) => {
+    const adjustedListing = {
+      ...listing,
+      createdAt: new Date(listing.createdAt),
+      endDate:
+        listing.shelfLife !== -1
+          ? addDays(new Date(listing.createdAt), listing.shelfLife)
+          : null,
+    };
+
+    return adjustedListing.endDate;
+  };
+  const soonExpiryHandler = async () => {
+    if (soonExpiry === 0) {
+      setSoonExpiry(1);
+    }
+  };
+  const soonExpiryHandler2 = async () => {
+    if (soonExpiry === 0) {
+      setSoonExpiry(2);
+    }
+  };
+  cartItems.map(async (cartItem: any) => {
+    const percentExpiry = new Date(
+      now.getTime() + cartItem.listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
+    );
+
+    const expiry = shelfLife(cartItem.listing);
+
+    if (expiry < threeDaysLater) {
+      await soonExpiryHandler();
+      console.log(soonExpiry);
+      return;
+    }
+    if (expiry < percentExpiry) {
+      await soonExpiryHandler2();
+      console.log(soonExpiry);
+      return;
+    }
+  });
   const createOrder = () => {
     const body: any = [];
     let currentpickuparr: any = null;
@@ -86,9 +135,8 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         (acc: any, curr: any) => acc + curr.listing.price,
         0
       );
-      //console.log(userItems);
+
       const allListings = userItems.reduce((acc: any, curr: any) => {
-        console.log(curr.listing.id);
         if (!acc.includes(curr.listing.id.toString())) {
           return [...acc, curr.listing.id.toString()];
         }
@@ -117,7 +165,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     }
 
     const post = async () => {
-      console.log(body);
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
       await datas.forEach((data: any) => {
@@ -165,9 +212,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         </Button>
       </div>
     );
-  }
-
-  if (stock === true) {
+  } else if (stock === true) {
     return (
       <div>
         <Button
@@ -175,6 +220,23 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
           className="bg-red-300 text-black hover:text-white hover:bg-red-600 shadow-md hover:shadow-xl hover:cursor-not-allowed w-full"
         >
           Unable to Checkout
+        </Button>
+      </div>
+    );
+  } else if (soonExpiry !== 0) {
+    return (
+      <div>
+        <SoonExpiryModal
+          isOpen={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          soonExpiry={soonExpiry}
+          createOrder={createOrder}
+        />
+        <Button
+          onClick={() => setConfirmOpen(true)}
+          className="bg-green-300 text-black hover:text-white hover:bg-green-600 shadow-md hover:shadow-xl hover:cursor-not-allowed w-full"
+        >
+          Checkout
         </Button>
       </div>
     );

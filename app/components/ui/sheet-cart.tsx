@@ -63,6 +63,7 @@ interface SheetContentCProps
   hours: ExtendedHours;
   index: number;
   onSetTime: any;
+  role: string;
 }
 
 const SheetContentC = React.forwardRef<
@@ -70,7 +71,16 @@ const SheetContentC = React.forwardRef<
   SheetContentCProps
 >(
   (
-    { side = "right", className, children, index, hours, onSetTime, ...props },
+    {
+      side = "right",
+      className,
+      children,
+      index,
+      hours,
+      onSetTime,
+      role,
+      ...props
+    },
     ref
   ) => (
     <SheetPortalC>
@@ -82,7 +92,12 @@ const SheetContentC = React.forwardRef<
         {...props}
       >
         <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-          <EarliestPickup hours={hours} index={index} onSetTime={onSetTime} />
+          <EarliestPickup
+            hours={hours}
+            index={index}
+            onSetTime={onSetTime}
+            role={role}
+          />
         </SheetPrimitive.Close>
         <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
           {" "}
