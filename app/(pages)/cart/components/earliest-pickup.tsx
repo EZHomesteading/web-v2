@@ -14,8 +14,9 @@ interface Props {
   hours: ExtendedHours;
   index: number;
   onSetTime: any;
+  role: string;
 }
-const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
+const EarliestPickup = ({ hours, onSetTime, index, role }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
@@ -158,8 +159,11 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
           Earliest pickup not available
         </CardHeader>
         <CardContent className={`${outfit.className}`}>
-          This co-op has not provided their hours. Please contact them for more
-          information.
+          {role === "PRODUCER"
+            ? `This Producer has not provided their hours. Please contact them for more
+                  information.`
+            : `This co-op has not provided their hours. Please contact them for more
+                  information.`}
         </CardContent>
       </Card>
     );
@@ -169,10 +173,15 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       <CardHeader
         className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
       >
-        Pickup as soon as possible
+        {role === "PRODUCER"
+          ? `Get delivered as soon as possible`
+          : `Pickup as soon as possible`}
       </CardHeader>
       <CardContent className={`${outfit.className}`}>
-        In a hurry? The earliest possible time for pickup from this co-op is{" "}
+        {role === "PRODUCER"
+          ? `In a hurry? The earliest possible delivery time from this producer is `
+          : `In a hurry? The earliest possible time for pickup from this co-op is `}
+
         <span className={`${outfit.className} text-lg`}>
           {earliestPickupTime || "not available"}
         </span>
