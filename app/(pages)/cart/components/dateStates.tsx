@@ -17,13 +17,20 @@ const outfit = Outfit({
 });
 
 interface StatusProps {
+  role: string;
   hours: ExtendedHours;
   onSetTime: any;
   index: number;
   cartGroup: CartGroup | null;
 }
 
-const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
+const DateState = ({
+  hours,
+  cartGroup,
+  onSetTime,
+  index,
+  role,
+}: StatusProps) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const formatPickupTime = (selectedTime: any) => {
@@ -71,9 +78,16 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         index={index}
         cartGroup={cartGroup}
         onSetTime={handleTimer}
+        role={role}
       />
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
-        {selectedTime?.pickupTime ? (
+        {role === "PRODUCER" ? (
+          selectedTime?.pickupTime ? (
+            <>{formatPickupTime(selectedTime)}</>
+          ) : (
+            "Set Delivery Time"
+          )
+        ) : selectedTime?.pickupTime ? (
           <>{formatPickupTime(selectedTime)}</>
         ) : (
           "Set Pickup Time"
@@ -85,6 +99,7 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         hours={hours}
         index={index}
         onSetTime={handleTimer}
+        role={role}
       >
         <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
           <SheetTrigger className="h-full w-full">
@@ -92,12 +107,19 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
               <CardHeader
                 className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
               >
-                Set a custom pickup time{" "}
+                {" "}
+                {role === "PRODUCER"
+                  ? `Set a custom delivery time`
+                  : `Set a custom pickup time`}
               </CardHeader>
               <CardContent className={`${outfit.className} mt-2`}>
-                Not in a rush? Feel free to set a pick up anytime within the
-                freshness window of your cart items and this co-op&apos;s open
-                hours.
+                {role === "PRODUCER"
+                  ? `Don't need it ASAP? Feel free to set a delivery time anytime within the
+                  freshness window of your cart items and this producers delivery
+                  hours.`
+                  : `Not in a rush? Feel free to set a pick up anytime within the
+                  freshness window of your cart items and this co-op's open
+                  hours.`}
               </CardContent>
             </Card>
           </SheetTrigger>

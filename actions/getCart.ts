@@ -53,6 +53,7 @@ const getAllCartItemsByUserId = async () => {
                 id: true,
                 name: true,
                 hours: true,
+                role: true,
               },
             },
           },

@@ -9,7 +9,7 @@ import { Metadata } from "next";
 import type { Viewport } from "next";
 
 export const viewport: Viewport = {
-  themeColor: "black",
+  themeColor: "green",
 };
 export const metadata: Metadata = {
   title:
