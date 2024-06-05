@@ -1,7 +1,10 @@
 //onboarding parent element
 import { currentUser } from "@/lib/auth";
 import Onboarding from "./onboarding";
-
+import { Viewport } from "next";
+export const viewport: Viewport = {
+  themeColor: "#ced9bb",
+};
 const Page = async () => {
   const user = await currentUser();
   let index = 1;

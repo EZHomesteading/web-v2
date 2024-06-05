@@ -38,31 +38,29 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
     return adjustedListing.endDate;
   };
-  const soonExpiryHandler = async () => {
-    if (soonExpiry === 0) {
-      setSoonExpiry(1);
-    }
-  };
-  const soonExpiryHandler2 = async () => {
-    if (soonExpiry === 0) {
-      setSoonExpiry(2);
-    }
-  };
+
   cartItems.map(async (cartItem: any) => {
     const percentExpiry = new Date(
       now.getTime() + cartItem.listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
     );
 
     const expiry = shelfLife(cartItem.listing);
-
+    if (expiry < now) {
+      if (soonExpiry === 1 || soonExpiry === 2 || soonExpiry === 0) {
+        setSoonExpiry(3);
+      }
+      return;
+    }
     if (expiry < threeDaysLater) {
-      await soonExpiryHandler();
-      console.log(soonExpiry);
+      if (soonExpiry === 0) {
+        setSoonExpiry(1);
+      }
       return;
     }
     if (expiry < percentExpiry) {
-      await soonExpiryHandler2();
-      console.log(soonExpiry);
+      if (soonExpiry === 0) {
+        setSoonExpiry(2);
+      }
       return;
     }
   });

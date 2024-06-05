@@ -1,24 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-
 import Modal from "@/app/components/modals/chatmodals/Modal";
-
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/app/components/ui/popover";
 import { Button } from "@/app/components/ui/button";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/app/components/ui/calendar";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { Separator } from "@/app/components/ui/separator";
-import { CartGroup } from "@/next-auth";
-import { ExtendedHours } from "@/next-auth";
 
 interface CustomTimeProps {
   isOpen?: boolean;
@@ -43,7 +26,13 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
                 <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
                   {soonExpiry === 1
                     ? `One or more of the products in you cart expires in less than three days!`
-                    : `one or more of the products in your cart is nearing its expiry date!`}
+                    : null}
+                  {soonExpiry === 2
+                    ? `One or more of the products in your cart is nearing its expiry date!`
+                    : null}
+                  {soonExpiry === 3
+                    ? `One or more of the products in your cart is past its expiry date!`
+                    : null}
                 </div>
                 <Button
                   onClick={onClose}
