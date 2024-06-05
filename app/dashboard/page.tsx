@@ -67,7 +67,7 @@ const Dashboard = async () => {
     );
   }
   const metadata = {
-    title: `${user?.name} |  Dashboard | EZHomesteading`,
+    title: `${user?.name}'s Dashboard`,
     description:
       "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
     keywords: [
@@ -83,7 +83,7 @@ const Dashboard = async () => {
       "organic food",
     ],
     openGraph: {
-      title: `${user?.name}'s Dashboard | EZHomesteading`,
+      title: `${user?.name}'s Dashboard`,
       description:
         "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
       url: "https://www.ezhomesteading.com/dashboard",
@@ -118,7 +118,11 @@ const Dashboard = async () => {
   return (
     <>
       <head>
-        <title>{metadata.title}</title>
+        {user?.name ? (
+          <title className="pwa-title">{metadata.title}</title>
+        ) : (
+          <title>Dashboard</title>
+        )}
         <meta name="description" content={metadata.description} />
         <meta name="keywords" content={metadata.keywords.join(", ")} />
         <meta property="og:title" content={metadata.openGraph.title} />
