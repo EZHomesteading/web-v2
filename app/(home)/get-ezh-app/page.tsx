@@ -6,8 +6,8 @@ import { TfiDownload } from "react-icons/tfi";
 import { FaAndroid } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaLinux } from "react-icons/fa";
+import PWAInstall from "@/app/(home)/get-ezh-app/pwa";
 import { BsWindows } from "react-icons/bs";
-import useDeviceInfo from "../../../hooks/get-device-info";
 import { useEffect, useState } from "react";
 
 enum DEVICE {
@@ -36,11 +36,17 @@ const zilla = Zilla_Slab({
   weight: ["300"],
   subsets: ["latin"],
 });
-
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 const Page = () => {
   const [device, setDevice] = useState(DEVICE.UNKNOWN);
   const [browser, setBrowser] = useState(BROWSER.UNKNOWN);
-  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
@@ -64,13 +70,6 @@ const Page = () => {
       setBrowser(BROWSER.FIREFOX);
     } else if (/Edge/i.test(userAgent)) {
       setBrowser(BROWSER.EDGE);
-    }
-
-    if (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true
-    ) {
-      setIsPWAInstalled(true);
     }
   }, []);
 
@@ -142,16 +141,7 @@ const Page = () => {
           <div className={`${zilla.className} lg:text-xl mb-1`}>
             The user experience on the app is significantly better
           </div>
-          {isPWAInstalled ? (
-            <Button className="relative pl-7" onClick={openPWA}>
-              Open PWA
-            </Button>
-          ) : (
-            <Button className="relative pl-7">
-              <TfiDownload className="text-white absolute left-2 top-3 text-md" />
-              Go to Set Up
-            </Button>
-          )}
+          <PWAInstall />
           <ul
             className={`${zilla.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
           >
