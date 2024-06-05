@@ -17,13 +17,20 @@ const outfit = Outfit({
 });
 
 interface StatusProps {
+  role: string;
   hours: ExtendedHours;
   onSetTime: any;
   index: number;
   cartGroup: CartGroup | null;
 }
 
-const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
+const DateState = ({
+  hours,
+  cartGroup,
+  onSetTime,
+  index,
+  role,
+}: StatusProps) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const formatPickupTime = (selectedTime: any) => {
@@ -73,7 +80,13 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         onSetTime={handleTimer}
       />
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
-        {selectedTime?.pickupTime ? (
+        {role === "PRODUCER" ? (
+          selectedTime?.pickupTime ? (
+            <>{formatPickupTime(selectedTime)}</>
+          ) : (
+            "Set Drop-off Time"
+          )
+        ) : selectedTime?.pickupTime ? (
           <>{formatPickupTime(selectedTime)}</>
         ) : (
           "Set Pickup Time"

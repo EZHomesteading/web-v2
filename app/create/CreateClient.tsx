@@ -198,7 +198,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
 
   //geocoding from autocompleted adress inputs
   const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+    console.log(address);
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
     )}&key=${apiKey}`;
@@ -207,6 +207,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
+        console.log(lat, lng, "responce", response);
         return { lat, lng };
       } else {
         throw new Error("Geocoding failed");
@@ -236,6 +237,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     setIsLoading(true);
 
     const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
+    //console.log(fullAddress);
     const geoData = await getLatLngFromAddress(fullAddress);
 
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));

@@ -13,7 +13,7 @@ const Map = ({ center, marker }: MapProps) => {
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
+    googleMapsApiKey: process.env.MAPS_KEY as string,
     libraries: ["drawing", "geometry"],
     version: "3.55",
   });

@@ -241,6 +241,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                             {cartItem.listing.user.name}
                           </p>
                           <DateState
+                            role={cartItem.listing.user.role}
                             hours={
                               cartItem?.listing.user.hours as ExtendedHours
                             }
