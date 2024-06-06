@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { Button } from "../../../components/ui/button";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { SafeListing } from "@/types";
-import { addDays, format } from "date-fns";
+
+import { addDays } from "date-fns";
 import { useState } from "react";
 import SoonExpiryModal from "./soonExpiryModal";
 dayjs.extend(utc);
@@ -19,7 +19,7 @@ interface Create {
 }
 
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
-  const [soonExpiry, setSoonExpiry] = useState(0);
+  let expiredArray: any = [];
   const [confirmOpen, setConfirmOpen] = useState(false);
   sessionStorage.setItem("ORDER", "");
   const router = useRouter();
@@ -43,27 +43,33 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     const percentExpiry = new Date(
       now.getTime() + cartItem.listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
     );
-
     const expiry = shelfLife(cartItem.listing);
+    const adjustedListings = {
+      listingId: cartItem.listing.id,
+      title: cartItem.listing.title,
+      sellerName: cartItem.listing.user.name,
+      expiry: expiry,
+      soonValue: 3,
+    };
+
     if (expiry < now) {
-      if (soonExpiry === 1 || soonExpiry === 2 || soonExpiry === 0) {
-        setSoonExpiry(3);
-      }
+      expiredArray.push(adjustedListings);
+      console.log(expiredArray);
       return;
-    }
-    if (expiry < threeDaysLater) {
-      if (soonExpiry === 0) {
-        setSoonExpiry(1);
-      }
+    } else if (expiry < threeDaysLater) {
+      adjustedListings.soonValue = 1;
+      expiredArray.push(adjustedListings);
+      console.log(expiredArray);
       return;
-    }
-    if (expiry < percentExpiry) {
-      if (soonExpiry === 0) {
-        setSoonExpiry(2);
-      }
+    } else if (expiry < percentExpiry) {
+      adjustedListings.soonValue = 2;
+      expiredArray.push(adjustedListings);
+      console.log(expiredArray);
       return;
     }
   });
+  console.log(expiredArray);
+
   const createOrder = () => {
     const body: any = [];
     let currentpickuparr: any = null;
@@ -221,13 +227,13 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         </Button>
       </div>
     );
-  } else if (soonExpiry !== 0) {
+  } else if (expiredArray.length !== 0) {
     return (
       <div>
         <SoonExpiryModal
           isOpen={confirmOpen}
           onClose={() => setConfirmOpen(false)}
-          soonExpiry={soonExpiry}
+          expiryArr={expiredArray}
           createOrder={createOrder}
         />
         <Button
