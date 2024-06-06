@@ -23,18 +23,9 @@ const getVendors = async ({ role }: p) => {
       },
       select: {
         id: true,
-        name: true,
-        firstName: true,
-        image: true,
-        url: true,
         location: {
           select: {
             coordinates: true,
-          },
-        },
-        listings: {
-          select: {
-            imageSrc: true,
           },
         },
       },
@@ -148,21 +139,6 @@ const getUserWithBuyReviews = async (params: Params) => {
         name: true,
         firstName: true,
         image: true,
-        buyerReviews: {
-          select: {
-            id: true,
-            review: true,
-            rating: true,
-            seller: {
-              select: {
-                id: true,
-                name: true,
-                firstName: true,
-                image: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -249,21 +225,6 @@ const getUserStore = async (params: IStoreParams) => {
             location: {
               select: {
                 address: true,
-              },
-            },
-          },
-        },
-        sellerReviews: {
-          select: {
-            id: true,
-            review: true,
-            rating: true,
-            buyer: {
-              select: {
-                id: true,
-                name: true,
-                firstName: true,
-                image: true,
               },
             },
           },

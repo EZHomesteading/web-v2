@@ -17,7 +17,6 @@ const MapPage = async () => {
     getVendors({ role: UserRole.COOP }),
     getVendors({ role: UserRole.PRODUCER }),
   ]);
-  console.log(coops);
   const session = await authCache();
   const user = session?.user;
   const userLocation = session?.user?.location?.coordinates ?? [];
