@@ -103,7 +103,6 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
       console.error("Error fetching marker info:", error);
     }
   };
-  console.log(selectedMarker);
   const handleInfoWindowClose = () => {
     setSelectedMarker(null);
   };
@@ -331,9 +330,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const resetMap = () => {
     handleCenterChanged();
     handleZoomChanged();
-
-    setFilteredCoops(coopInfo);
-    setFilteredProducers(producerInfo);
+    setShowCoops(true);
+    setShowProducers(true);
   };
 
   return (

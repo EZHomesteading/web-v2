@@ -50,9 +50,9 @@ const Bio = ({ user }: Props) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", options);
   };
-  const counts = getReviewCounts(user?.sellerReviews || []);
-  const total = user?.sellerReviews.length || 0;
-  const averageRating = getAverageRating(user?.sellerReviews || []);
+  // const counts = getReviewCounts(user?.sellerReviews || []);
+  // const total = user?.sellerReviews.length || 0;
+  // const averageRating = getAverageRating(user?.sellerReviews || []);
   return (
     <Sheet>
       <SheetTrigger>
@@ -86,7 +86,7 @@ const Bio = ({ user }: Props) => {
               </div>
             </div>
           </div>
-          {user?.bio && (
+          {/* {user?.bio && (
             <>
               {!user?.firstName ? (
                 <>Bio</>
@@ -244,7 +244,7 @@ const Bio = ({ user }: Props) => {
                 </div>
               </div>
             </>
-          )}
+          )} */}
         </div>
       </SheetContent>
     </Sheet>
