@@ -6,7 +6,11 @@ import { UserRole } from "@prisma/client";
 import Container from "@/app/components/Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";
+import type { Viewport } from "next";
 
+export const viewport: Viewport = {
+  themeColor: "white",
+};
 const MapPage = async () => {
   const map_api_key = process.env.MAPS_KEY as string;
   const [coops, producers] = await Promise.all([
