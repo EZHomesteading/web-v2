@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     location,
     price,
     subCategory,
-    coopRating,
+    rating,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -48,8 +48,7 @@ export async function POST(request: Request) {
       price,
       minOrder,
       location: location as Location,
-
-      coopRating,
+      rating,
       userId: user.id!,
     },
   });
