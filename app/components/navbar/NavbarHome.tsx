@@ -7,7 +7,7 @@ interface p {
 }
 const NavbarHome = ({ user }: p) => {
   return (
-    <div className="absolute w-full z-10 text-white">
+    <div className="absolute w-full z-10 ">
       <Container>
         <div className="flex flex-row items-center py-4 justify-around md:justify-between">
           <Logo /> <UserMenu user={user} />

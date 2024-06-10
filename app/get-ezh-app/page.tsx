@@ -6,9 +6,12 @@ import { TfiDownload } from "react-icons/tfi";
 import { FaAndroid } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaLinux } from "react-icons/fa";
-import PWAInstall from "@/app/(home)/get-ezh-app/pwa";
+import PWAInstall from "@/app/get-ezh-app/pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import NavbarHome from "../components/navbar/NavbarHome";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 
 enum DEVICE {
   ANDROID = "Android",
@@ -75,8 +78,12 @@ const Page = () => {
 
   const AndroidComponent = () => (
     <div>
-      <h3>Android-specific content</h3>
-      <p>This is dummy content for Android devices.</p>
+      <h3>Android Installation</h3>
+      <ul className="list-disc">
+        <li>Press the three dots in the browser</li>
+        <li>Press 'Install App'</li>
+        <li>Press on the EZHomesteading Icon to open the app</li>
+      </ul>
     </div>
   );
 
@@ -117,9 +124,10 @@ const Page = () => {
       <p>This is dummy content for Linux devices.</p>
     </div>
   );
-
+  const user = useCurrentUser();
   return (
-    <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen">
+    <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen relative">
+      <NavbarHome user={user} />
       <div className="lg:col-span-1 hidden lg:block"></div>
       <div className="col-span-3 lg:col-span-2 xl:col-span-2">
         <h2 className={`${outfit.className} pt-10 lg:text-5xl text-2xl`}>
@@ -199,6 +207,10 @@ const Page = () => {
           {device === DEVICE.MAC && <MacComponent />}
           {device === DEVICE.LINUX && <LinuxComponent />}
         </div>
+        <ul>
+          <li>device: {device}</li>
+          <li>browser: {browser}</li>
+        </ul>
       </div>
     </div>
   );
