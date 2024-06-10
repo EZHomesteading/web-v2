@@ -4,6 +4,14 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -87,6 +95,11 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     setShowLocationInput(!showLocationInput);
   };
   //declare formstate default values
+  let usersodt = null;
+  if (user.SODT) {
+    usersodt = user.SODT;
+  }
+  console.log(usersodt);
   let {
     register,
     setValue,
@@ -95,7 +108,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      sodt: 60,
+      sodt: usersodt,
       category: "",
       subCategory: "",
       location: "",
@@ -522,14 +535,6 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       toast.error("an error occured");
     }
   };
-  useEffect(() => {
-    if (sodt > 120) {
-      setValue("sodt", 120);
-    }
-    if (sodt < 0) {
-      setValue("sodt", 0);
-    }
-  }, [sodt]);
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
@@ -945,27 +950,87 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                     <div className="w-1/2">
                       <div className="flex flex-row gap-2 mt-2">
                         {user.role === "COOP" ? (
-                          <Input
-                            id="sodt"
-                            label="Set out time in minutes"
-                            type="number"
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                            watch={watch}
-                            setValue={setValue}
-                          />
+                          <div>
+                            Select average time to set out this product,
+                            pre-populates with your accounts Set out time, if
+                            there is none, you must set one.
+                            <Select
+                              onValueChange={(value: any) => {
+                                setValue("sodt", value);
+                              }}
+                            >
+                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
+                                {usersodt ? (
+                                  <SelectValue
+                                    placeholder={`${usersodt} Minutes `}
+                                  />
+                                ) : (
+                                  <SelectValue placeholder={"Select a Time"} />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent
+                                className={`${outfit.className} bg-slate-300`}
+                              >
+                                <SelectGroup>
+                                  <SelectItem value="15">15 Minutes</SelectItem>
+                                  <SelectItem value="30">30 Minutes</SelectItem>
+                                  <SelectItem value="45">45 Minutes</SelectItem>
+                                  <SelectItem value="60">1 Hour</SelectItem>
+                                  <SelectItem value="75">
+                                    1 Hour 15 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="90">
+                                    1 Hour 30 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="105">
+                                    1 Hour 45 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="120">2 Hours</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         ) : (
-                          <Input
-                            id="sodt"
-                            label="Delivery time in minutes"
-                            type="number"
-                            disabled={isLoading}
-                            register={register}
-                            errors={errors}
-                            watch={watch}
-                            setValue={setValue}
-                          />
+                          <div>
+                            Select average time to deliver this product,
+                            pre-populates with your accounts delivery time, if
+                            there is none, you must set one.
+                            <Select
+                              onValueChange={(value: any) => {
+                                setValue("sodt", value);
+                              }}
+                            >
+                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
+                                {usersodt ? (
+                                  <SelectValue
+                                    placeholder={`${usersodt} Minutes `}
+                                  />
+                                ) : (
+                                  <SelectValue placeholder={"Select a Time"} />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent
+                                className={`${outfit.className} bg-slate-300`}
+                              >
+                                <SelectGroup>
+                                  <SelectItem value="15">15 Minutes</SelectItem>
+                                  <SelectItem value="30">30 Minutes</SelectItem>
+                                  <SelectItem value="45">45 Minutes</SelectItem>
+                                  <SelectItem value="60">1 Hour</SelectItem>
+                                  <SelectItem value="75">
+                                    1 Hour 15 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="90">
+                                    1 Hour 30 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="105">
+                                    1 Hour 45 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="120">2 Hours</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         )}
                       </div>
                     </div>
