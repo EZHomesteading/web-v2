@@ -14,6 +14,7 @@ export async function POST(request: Request) {
 
   const {
     title,
+    SODT,
     description,
     imageSrc,
     category,
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
     data: {
       title,
       description,
+      SODT,
       imageSrc,
       category,
       quantityType,

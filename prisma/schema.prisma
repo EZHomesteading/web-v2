@@ -175,6 +175,7 @@ model TwoFactorConfirmation {
 
 model Listing {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
+   SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
   title         String
   species       String?
   category      String 

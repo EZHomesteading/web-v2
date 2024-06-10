@@ -51,6 +51,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       0
     )
   ); // Calculates the total price of all items in the cart
+  let sodt = [];
 
   // Function to update the total from a child component
   const handleDataFromChild = (childTotal: any) => {
@@ -133,6 +134,54 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     },
     []
   );
+  const handleSodtMap: CartGroups = cartItems.reduce(
+    (acc: any, cartItem: any, index: number) => {
+      const sodt = cartItem.listing.SODT;
+      const usersodt = cartItem.listing.user.SODT;
+      const existingOrder = acc[acc.length - 1];
+      const prevCartItem = cartItems[index - 1];
+      console.log("sodt", sodt, "usersodt", usersodt, "cartitem", cartItem);
+      if (
+        existingOrder &&
+        prevCartItem?.listing.userId === cartItem.listing.userId
+      ) {
+        if (
+          (sodt === null || sodt === undefined) &&
+          (usersodt === null || usersodt === undefined)
+        ) {
+          existingOrder.sodt = 60;
+        } else if (sodt && existingOrder.sodt < sodt) {
+          existingOrder.sodt = sodt;
+        } else if (existingOrder.sodt < usersodt) {
+          existingOrder.sodt = usersodt;
+        }
+      }
+      if (prevCartItem?.listing.userId !== cartItem.listing.userId) {
+        if (
+          (sodt === null || sodt === undefined) &&
+          (usersodt === null || usersodt === undefined)
+        ) {
+          acc.push({
+            sodt: 60,
+            cartIndex: index,
+          });
+        } else if (sodt) {
+          acc.push({
+            sodt,
+            cartIndex: index,
+          });
+        } else {
+          acc.push({
+            sodt: usersodt,
+            cartIndex: index,
+          });
+        }
+      }
+      return acc;
+    },
+    []
+  );
+  console.log(handleSodtMap);
 
   // Function to update an object in an array with the pickup time and remove the expiry property
   function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {

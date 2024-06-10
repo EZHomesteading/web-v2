@@ -10,6 +10,7 @@ export type CartItem = {
     title: string;
     price: number;
     stock: number;
+    SODT: number | null;
     quantityType: string | null;
     shelfLife: number;
     createdAt: Date;
@@ -19,6 +20,7 @@ export type CartItem = {
     minOrder: number | null;
     user: {
       id: string;
+      SODT: number | null;
       name: string;
       hours: JsonValue;
     };
@@ -41,6 +43,7 @@ const getAllCartItemsByUserId = async () => {
             title: true,
             price: true,
             stock: true,
+            SODT: true,
             minOrder: true,
             quantityType: true,
             shelfLife: true,
@@ -53,6 +56,7 @@ const getAllCartItemsByUserId = async () => {
                 id: true,
                 name: true,
                 hours: true,
+                SODT: true,
                 role: true,
               },
             },
