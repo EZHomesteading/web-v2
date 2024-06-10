@@ -1,5 +1,4 @@
 //user profile page parent element
-import { getUserById } from "@/actions/getUser";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import ProfileClient from "./ProfileClient";
 import { getUserWithBuyReviews } from "@/actions/getUser";
@@ -9,10 +8,18 @@ interface IParams {
 
 const ProfilePage = async ({ params }: { params: IParams }) => {
   const { userId } = params;
-  const profileUser = await getUserWithBuyReviews({ userId: userId });
+  const data = await getUserWithBuyReviews({ userId: userId });
+  if (!data) {
+    return <div>No user found</div>;
+  }
+
+  const { user, reviews } = data;
+  if (!user) {
+    return <div></div>;
+  }
   return (
     <ClientOnly>
-      {profileUser ? <ProfileClient user={profileUser} /> : <>No user found</>}
+      <ProfileClient user={user} reviews={reviews} />
     </ClientOnly>
   );
 };

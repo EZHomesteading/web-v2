@@ -6,11 +6,12 @@ import { SheetTrigger } from "@/app/components/ui/sheet";
 import "react-datetime-picker/dist/DateTimePicker.css";
 
 interface StatusProps {
-  buyerId: string;
-  sellerId: string;
+  reviewerId: string;
+  reviewedId: string;
+  buyer: boolean;
 }
 
-const ReviewButton = ({ buyerId, sellerId }: StatusProps) => {
+const ReviewButton = ({ reviewedId, reviewerId, buyer }: StatusProps) => {
   return (
     <SheetCartC>
       <SheetTrigger className="border-[1px] bg-neutral-100 text-black px-2 py-2 rounded-lg shadow-lg">
@@ -19,8 +20,9 @@ const ReviewButton = ({ buyerId, sellerId }: StatusProps) => {
       <SheetContentF
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
-        sellerId={sellerId}
-        buyerId={buyerId}
+        reviewedId={reviewedId}
+        reviewerId={reviewerId}
+        buyer={buyer}
       ></SheetContentF>
     </SheetCartC>
   );

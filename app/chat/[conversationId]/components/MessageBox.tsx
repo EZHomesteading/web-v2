@@ -476,7 +476,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           {/* if order is complete and is your message, display review button with buyer id passed  */}
           {data.messageOrder === "1.1" && isOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2">
-              <ReviewButton buyerId={otherUsersId} sellerId={user?.id} />{" "}
+              <ReviewButton
+                reviewedId={otherUsersId}
+                reviewerId={user?.id}
+                buyer={false}
+              />{" "}
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}
@@ -492,7 +496,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           {/* if order is complete and is NOT your message, display review button with seller id passed  */}
           {data.messageOrder === "1.1" && notOwn ? (
             <div className="flex flex-row absolute top-[100px] right-2 ">
-              <ReviewButton buyerId={user?.id} sellerId={otherUsersId} />
+              <ReviewButton
+                reviewerId={user?.id}
+                reviewedId={otherUsersId}
+                buyer={true}
+              />
               <div>
                 <div
                   onClick={() => setConfirmOpen(true)}

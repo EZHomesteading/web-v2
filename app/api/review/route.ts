@@ -15,19 +15,19 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     return NextResponse.error();
   }
 
-  const { rating, review, sellerId, buyerId, reviewerId } =
+  const { rating, review, reviewedId, reviewerId, buyer } =
     await request.json();
-  if (user.id === sellerId && user.id === buyerId) {
-    toast.error("cant review own products");
+  if (user.id === reviewedId && buyer === true) {
+    toast.error("Can't review own products");
     return;
   }
   const newReview = await prisma.reviews.create({
     data: {
-      buyerId,
-      sellerId,
+      reviewedId,
       reviewerId,
       review,
       rating,
+      buyer,
     },
   });
   return NextResponse.json(newReview);

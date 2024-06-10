@@ -106,7 +106,6 @@ model User {
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
-  
 }
 
 model Following {

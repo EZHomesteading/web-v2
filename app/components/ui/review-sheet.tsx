@@ -59,8 +59,9 @@ const sheetVariants = cva(
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  sellerId: string;
-  buyerId: string;
+  reviewerId: string;
+  reviewedId: string;
+  buyer: boolean;
 }
 
 const SheetContentF = React.forwardRef<
@@ -68,7 +69,15 @@ const SheetContentF = React.forwardRef<
   SheetContentCProps
 >(
   (
-    { side = "right", className, children, sellerId, buyerId, ...props },
+    {
+      side = "right",
+      className,
+      children,
+      reviewedId,
+      reviewerId,
+      buyer,
+      ...props
+    },
     ref
   ) => {
     const [rating, setRating] = React.useState(0);
@@ -90,8 +99,9 @@ const SheetContentF = React.forwardRef<
       axios.post("/api/review", {
         rating: rating,
         review: text,
-        sellerId: sellerId,
-        buyerId: buyerId,
+        reviewedId: reviewedId,
+        reviewerId: reviewerId,
+        buyer: buyer,
       });
       closeSheet();
     };

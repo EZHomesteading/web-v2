@@ -1,7 +1,8 @@
 import prisma from "@/lib/prismadb";
-import { UserRole } from "@prisma/client";
+import { Reviews, UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { ExtendedHours } from "@/next-auth";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 interface p {
   role: UserRole;
@@ -127,31 +128,83 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
   }
 };
 
-const getUserWithBuyReviews = async (params: Params) => {
+interface User {
+  id: string;
+  name: string;
+  firstName: string | null;
+  image: string | null;
+  url: string | null;
+  createdAt: Date;
+}
+
+interface Review {
+  id: string;
+  reviewerId: string;
+  reviewedId: string;
+  buyer: boolean;
+  review: string;
+  rating: number;
+}
+
+type ReviewerData = Pick<User, "id" | "name" | "firstName" | "image" | "url">;
+
+type ReviewWithReviewer = Review & {
+  reviewer: ReviewerData | null;
+};
+
+const getUserWithBuyReviews = async (
+  params: Params
+): Promise<{
+  user: User;
+  reviews: ReviewWithReviewer[];
+} | null> => {
   try {
     const { userId } = params;
 
     const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+      where: { id: userId },
       select: {
         id: true,
         name: true,
         firstName: true,
         image: true,
+        url: true,
+        createdAt: true,
       },
     });
+
+    const reviews = await prisma.reviews.findMany({
+      where: {
+        reviewedId: userId,
+        buyer: false,
+      },
+    });
+
+    const reviewsWithReviewer = await Promise.all(
+      reviews.map(async (review) => {
+        const reviewer = await prisma.user.findUnique({
+          where: { id: review.reviewerId },
+          select: {
+            id: true,
+            name: true,
+            firstName: true,
+            image: true,
+            url: true,
+          },
+        });
+        return { ...review, reviewer };
+      })
+    );
 
     if (!user) {
       return null;
     }
-    return user;
+
+    return { user, reviews: reviewsWithReviewer };
   } catch (error: any) {
     throw new Error(error);
   }
 };
-
 const getUserById = async (params: Params) => {
   try {
     const { userId } = params;
@@ -196,7 +249,29 @@ const getFavCardUser = async (params: Params) => {
   }
 };
 // this gets the coop or producer on /store/[storeId] with their listings
-const getUserStore = async (params: IStoreParams) => {
+
+interface Listing {
+  id: string;
+  title: string;
+  price: number;
+  minOrder: number | null;
+  imageSrc: string[];
+  quantityType: string;
+  location: {
+    address: string[];
+  } | null;
+}
+
+interface StoreData {
+  user: any & {
+    listings: Listing[];
+  };
+  reviews: ReviewWithReviewer[];
+}
+
+const getUserStore = async (
+  params: IStoreParams
+): Promise<StoreData | null> => {
   try {
     const { url } = params;
     const user = await prisma.user.findFirst({
@@ -232,12 +307,37 @@ const getUserStore = async (params: IStoreParams) => {
         },
       },
     });
+    const reviews = await prisma.reviews.findMany({
+      where: {
+        reviewedId: user?.id,
+        buyer: true,
+      },
+    });
+
+    const reviewsWithReviewer = await Promise.all(
+      reviews.map(async (review) => {
+        const reviewer = await prisma.user.findUnique({
+          where: { id: review.reviewerId },
+          select: {
+            id: true,
+            name: true,
+            firstName: true,
+            image: true,
+            url: true,
+          },
+        });
+        return { ...review, reviewer };
+      })
+    );
 
     if (!user) {
       return null;
     }
 
-    return user;
+    return {
+      user: { ...user, listings: user.listings },
+      reviews: reviewsWithReviewer,
+    };
   } catch (error: any) {
     throw new Error(error);
   }
