@@ -76,8 +76,8 @@ model User {
   role                  UserRole @default(CONSUMER)
   password              String?
   stripeAccountId       String?
-  totalPaidOut          Int? @default(0)
-  notifications         Notification[] @default([])
+  totalPaidOut          Int?
+  notifications         Notification[]
   SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
   bio                   String? // bio for co-ops and producers (should consumer have bios?)
   banner                String? // banner for co-op and producer stores

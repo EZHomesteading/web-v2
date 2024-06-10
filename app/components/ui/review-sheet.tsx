@@ -4,16 +4,21 @@ import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Outfit } from "next/font/google";
+import { Outfit, Zilla_Slab } from "next/font/google";
 import ReactStars from "react-stars";
 import axios from "axios";
+import { Textarea } from "./textarea";
 
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
   display: "swap",
 });
-
+const zilla = Zilla_Slab({
+  weight: ["300"],
+  display: "auto",
+  subsets: ["latin"],
+});
 const SheetCartC = SheetPrimitive.Root;
 
 const SheetTriggerC = SheetPrimitive.Trigger;
@@ -119,10 +124,9 @@ const SheetContentF = React.forwardRef<
           className={cn(sheetVariants({ side }), className)}
           {...props}
         >
-          <div className="rounded-lg lg:w-1/2 lg:h-1/3 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-            <div>Write your review</div>
+          <div className="rounded-lg p-2 mx-2 cursor-pointer w-5/6 sm:w-2/3 lg:w-1/3 2xl:w-1/6 h-fit flex flex-col items-center opacity-100 bg-slate-300">
+            <div className={`${outfit.className} text-2xl`}>Leave a Review</div>
             <div>
-              <h2>Star Rating</h2>
               <ReactStars
                 count={5}
                 size={24}
@@ -132,16 +136,20 @@ const SheetContentF = React.forwardRef<
                 half={false}
               />
             </div>
-            <textarea
-              className="w-[98%] h-[60%] m-2 resize-none p-2"
+            <Textarea
+              className={`${zilla.className} w-full h-[300px] m-2 resize-none p-2 text-[1rem]`}
               value={text}
               onChange={handleTextChange}
-            ></textarea>
-            <div>
-              <SheetCloseC>
-                <button className="m-5">Close</button>
+              maxLength={500}
+            />
+            <div className={`${outfit.className}`}>
+              <SheetCloseC className="m-5 bg-slate-600 text-white rounded-full py-1 px-4">
+                Close
               </SheetCloseC>
-              <button className="m-5" onClick={handleSubmit}>
+              <button
+                className="m-5 bg-slate-600 text-white rounded-full py-1 px-4"
+                onClick={handleSubmit}
+              >
                 Submit
               </button>
             </div>
