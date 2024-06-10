@@ -1,6 +1,8 @@
 //ezh logo component
+"use client";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const outfit = Outfit({
   weight: ["100"],
@@ -10,12 +12,19 @@ const outfit = Outfit({
 });
 
 const Logo = () => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
+
   return (
     <div
-      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 text-grey hidden xl:block`}
+      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 hidden xl:block`}
     >
       <Link href="/">
-        <h1 className={`${outfit.className} hover:text-green-800`}>
+        <h1
+          className={`${outfit.className} hover:text-green-800 ${
+            white ? "text-white" : "text-black"
+          }`}
+        >
           EZ Homesteading
         </h1>
       </Link>

@@ -6,7 +6,7 @@ import MenuItem from "./MenuItem";
 import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { CiShop, CiSquarePlus } from "react-icons/ci";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
@@ -32,6 +32,8 @@ interface Props {
   user?: any;
 }
 const UserMenu = ({ user }: Props) => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   const router = useRouter();
   return (
     <Sheet>
@@ -66,7 +68,11 @@ const UserMenu = ({ user }: Props) => {
               }}
               className="hover:cursor-pointer"
             >
-              <CiSquarePlus className="w-10 h-10" />
+              <CiSquarePlus
+                className={`w-8 h-8 lg:w-8 lg:h-8 ${
+                  white ? "text-white" : "text-black"
+                }`}
+              />
             </div>
           )
         ) : (
@@ -86,7 +92,11 @@ const UserMenu = ({ user }: Props) => {
         )}
 
         <SheetTrigger className="border-none p-[2px] rounded-md">
-          <AiOutlineMenu className="w-8 h-8 lg:w-8 lg:h-8" />
+          <AiOutlineMenu
+            className={`w-8 h-8 lg:w-8 lg:h-8 ${
+              white ? "text-white" : "text-black"
+            }`}
+          />
         </SheetTrigger>
       </div>
       <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
