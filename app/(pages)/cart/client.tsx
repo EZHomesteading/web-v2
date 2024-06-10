@@ -140,7 +140,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       const usersodt = cartItem.listing.user.SODT;
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
-      console.log("sodt", sodt, "usersodt", usersodt, "cartitem", cartItem);
+      //console.log("sodt", sodt, "usersodt", usersodt, "cartitem", cartItem);
       if (
         existingOrder &&
         prevCartItem?.listing.userId === cartItem.listing.userId
@@ -181,7 +181,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     },
     []
   );
-  console.log(handleSodtMap);
+  const sodtarr = handleSodtMap;
 
   // Function to update an object in an array with the pickup time and remove the expiry property
   function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {
@@ -280,7 +280,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                   const prevCartItem = cartItems[index - 1];
 
                   return (
-                    <div key={cartItem.listingId}>
+                    <div key={index}>
                       {prevCartItem?.listing.userId !==
                       cartItem.listing.userId ? (
                         <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
@@ -295,6 +295,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                               cartItem?.listing.user.hours as ExtendedHours
                             }
                             onSetTime={handleTime}
+                            sodtarr={sodtarr}
                             index={index}
                             cartGroup={findObjectWithCartIndex(
                               mappedCartItems,
