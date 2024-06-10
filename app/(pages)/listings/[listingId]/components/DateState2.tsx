@@ -27,6 +27,7 @@ interface StatusProps {
   disabled?: boolean;
   listing: any;
   user: any;
+  sodt: any;
 }
 
 const DateState2 = ({
@@ -35,6 +36,7 @@ const DateState2 = ({
   quantity,
   quantityType,
   disabled,
+  sodt,
   user,
 }: StatusProps) => {
   const router = useRouter();
@@ -114,6 +116,7 @@ const DateState2 = ({
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         hours={hours}
         onSetTime={handleTimer}
+        sodt={sodt}
       >
         <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
           <SheetTrigger className="h-full w-full">

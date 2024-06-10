@@ -90,6 +90,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               product={adjustedListing}
               disabled={isLoading}
               hours={listing.user.hours}
+              sodt={[listing.SODT, listing.user.SODT]}
             />
             <div className="mt-5">
               {apiKey && (

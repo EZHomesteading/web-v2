@@ -33,6 +33,7 @@ interface ListingReservationProps {
   hours: any;
   disabled?: boolean;
   toggleCart: any;
+  sodt: any;
 }
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
@@ -42,6 +43,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   listingId,
   user,
   toggleCart,
+  sodt,
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -221,6 +223,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
             )}
             <div>
               <DateState2
+                sodt={sodt}
                 hours={hours}
                 onSetTime={handleTimer}
                 quantity={quantity}
