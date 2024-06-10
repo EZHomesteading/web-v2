@@ -538,7 +538,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
-        <Help step={step} />
+        <Help role={user.role} step={step} />
       </div>
       <div className="flex flex-col md:flex-row text-black w-full">
         <div className="onboard-left md:w-2/5 md:min-h-screen">
