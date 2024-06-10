@@ -10,6 +10,7 @@ export const publicRoutes = [
   "/api/webhook/stripe",
   "/map",
   "/get-ezh-app",
+  "/api/user/marker-info",
 ];
 /**
  * An array of routes that are used for authentication
