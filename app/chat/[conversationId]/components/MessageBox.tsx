@@ -166,7 +166,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit5 = () => {
     //coop has set out the order
     axios.post("/api/messages", {
-      message: "Your order is ready to be picked up!",
+      message: `Your order is ready to be picked up at ${user.location.address}!`,
       messageOrder: "6",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -532,7 +532,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="text-sm text-gray-500">Your response options</div>
           <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <button type="submit" onClick={onSubmit1} className="m">
-              Yes, That time works, Your order will be ready at that time.
+              Yes, That time works, Your order will be ready at that time. at{" "}
+              {user.location?.address}
             </button>
             <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
             <button type="submit" onClick={onSubmit2} className="m">
@@ -559,7 +560,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="m">
-                Your order is ready to be picked up!
+                Your order is ready to be picked up at {user.location.address}!
               </button>
             </div>
           </div>
@@ -610,7 +611,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 onClick={onSubmit1}
                 className="message hover:bg-sky"
               >
-                Yes, That time works, Your order will be ready at that time.
+                Yes, That time works, Your order will be ready at that time. at{" "}
+                {user.location?.address}
               </button>
               <button onClick={() => setCustomTimeOpen(true)}>
                 {" "}
@@ -638,7 +640,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="">
-                Your order is ready to be picked up!
+                Your order is ready to be picked up at {user.location.address}!
               </button>
             </div>
           </div>
