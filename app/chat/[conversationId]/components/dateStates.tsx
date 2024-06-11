@@ -21,7 +21,6 @@ interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
   hours: ExtendedHours;
-
   onSetTime: any;
 }
 

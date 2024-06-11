@@ -1,5 +1,6 @@
 //homepage displayed if user role is CONSUMER or none.
 import Link from "next/link";
+import arrow from "@/public/images/website-images/arrow-icon.svg";
 import { Outfit } from "next/font/google";
 import Image from "next/image";
 // import Image from "next/image";
@@ -7,6 +8,7 @@ import Image from "next/image";
 // import consumer from "@/public/images/website-images/ezhconsumer.webp";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
 import homebg from "@/public/images/website-images/ezh-bg2.jpg";
+import { Button } from "../components/ui/button";
 
 const footerNavigation = {
   shop: [
@@ -43,34 +45,53 @@ export default function Home() {
             className="object-cover 2xl:object-fit"
             sizes="100vw"
           />{" "}
-          <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-60 "></div>
         </div>
-        <div className="absolute top-[15%] left-[15%]">
-          <div className={` 2xl:text-7xl text-md font-light`}>Easily Find</div>
-          <span className="text-green-200 tracking font-medium text-7xl">
-            Fresh
-          </span>
-          <span className="text-xl mr-2 font-semibold">, </span>
-          <span className="text-green-400 font-bold text-7xl">Local</span>
-          <span className="text-xl mr-2">
-            ,{""} &{""}
-          </span>
-          <span className="text-green-600 text-7xl font-semibold">Organic</span>{" "}
-          <span className="text-xl mr-2 tracking-wide">with </span>
-          <h2 className="2xl:text-5xl text-2xl font-bold tracking-tight outfit">
-            <div
-              className={`${outfit.className} text-green-900 2xl:text-[6rem] font-extrabold tracking-tight`}
-            >
-              EZ Homesteading
+        <div className="absolute top-[15%] sm:top-[30%] left-[8%] sm:left-[5%] md:left-[15%]">
+          <div className="flex flex-col">
+            <div className={` 2xl:text-3xl text-lg font-light `}>
+              Easily Find
             </div>
-          </h2>
-          <p className="2xl:text-lg text-xs mb-2 text-extralight">
-            Find local produce in your area. Join a community of EZH consumers,
+            <div className="flex flex-col sm:flex-row">
+              <div>
+                <span className="text-green-200 tracking font-medium text-5xl md:text-6xl">
+                  Fresh
+                </span>
+                <span className="text-xl mr-2 font-semibold">, </span>
+              </div>
+              <div>
+                <span className="text-green-400 font-bold text-5xl md:text-6xl">
+                  Local
+                </span>
+                <span className="text-xl mr-2">
+                  ,{""} &{""}
+                </span>
+              </div>
+              <div>
+                <span className="text-green-600 text-5xl md:text-6xl font-semibold">
+                  Organic
+                </span>{" "}
+                <span className="text-xl ml-1 tracking-wide">with </span>
+              </div>
+            </div>
+            <h2 className="2xl:text-5xl text-4xl font-bold tracking-tight outfit">
+              <div
+                className={`${outfit.className} text-green-950 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
+              >
+                EZ Homesteading
+              </div>
+            </h2>
+          </div>
+          <p className="2xl:text-lg text-[.5rem] mb-2 text-extralight">
+            Find produce in your area. Join a community of EZH consumers,
             co-ops, & producers.
           </p>
-          {/* <div className="flex">
-        <FindListingsComponent />
-      </div> */}
+          <Button className="shadow-xl pr-8 bg-emerald-400 hover:bg-emerald-100 text-black relative group sm:text-lg rounded-full py-6">
+            Find Produce Near Me
+            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
+              <Image src={arrow} alt="Arrow Icon" width={18} height={18} />
+            </span>
+          </Button>
         </div>
 
         {/* <section className="flex flex-col items-stary justify-start text-start px-4">

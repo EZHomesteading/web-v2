@@ -32,6 +32,7 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
