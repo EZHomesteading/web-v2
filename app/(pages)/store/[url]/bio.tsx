@@ -5,7 +5,6 @@ import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-//import { UserInfo } from "@/next-auth";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";
@@ -40,7 +39,7 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
-const Bio = ({ user }: Props) => {
+const Bio = ({ user, reviews }: Props) => {
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
       year: "numeric",
@@ -50,9 +49,9 @@ const Bio = ({ user }: Props) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", options);
   };
-  // const counts = getReviewCounts(user?.sellerReviews || []);
-  // const total = user?.sellerReviews.length || 0;
-  // const averageRating = getAverageRating(user?.sellerReviews || []);
+  const counts = getReviewCounts(reviews || []);
+  const total = reviews.length || 0;
+  const averageRating = getAverageRating(reviews || []);
   return (
     <Sheet>
       <SheetTrigger>
@@ -86,7 +85,7 @@ const Bio = ({ user }: Props) => {
               </div>
             </div>
           </div>
-          {/* {user?.bio && (
+          {user?.bio && (
             <>
               {!user?.firstName ? (
                 <>Bio</>
@@ -200,17 +199,17 @@ const Bio = ({ user }: Props) => {
 
                 <div className="flow-root">
                   <div className="-my-12 divide-y divide-gray-200">
-                    {user.sellerReviews.map(async (review: any) => {
+                    {reviews.map((review: any) => {
                       return (
                         <div key={review.id} className="py-12">
                           <div className="flex items-center">
-                            {review?.buyer.name && (
-                              <Avatar image={review.buyer.image} />
+                            {review?.reviewer.name && (
+                              <Avatar image={review.reviewer.image} />
                             )}
                             <div className="ml-4">
-                              {user && (
+                              {review.reviewer && (
                                 <h4 className="text-sm font-bold text-gray-900">
-                                  {review?.buyer.name}
+                                  {review?.reviewer.name}
                                 </h4>
                               )}
                               <div className="mt-1 flex items-center">
@@ -244,7 +243,7 @@ const Bio = ({ user }: Props) => {
                 </div>
               </div>
             </>
-          )} */}
+          )}
         </div>
       </SheetContent>
     </Sheet>

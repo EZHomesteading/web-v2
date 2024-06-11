@@ -23,7 +23,6 @@ export async function POST(request: Request) {
       country: "US",
       type: "custom",
       business_type: "individual",
-      email: user?.email,
       business_profile: {
         name: user?.name,
         url: `https://www.ezhomesteading.com/store/${user?.url}`,
@@ -37,15 +36,6 @@ export async function POST(request: Request) {
         },
         transfers: {
           requested: true,
-        },
-      },
-      individual: {
-        phone: user?.phoneNumber ?? "",
-        address: {
-          line1: user?.location?.address[0],
-          city: user?.location?.address[1],
-          state: user?.location?.address[2],
-          postal_code: user?.location?.address[3],
         },
       },
     });

@@ -12,13 +12,14 @@ const outfit = Outfit({
   subsets: ["latin"],
   weight: ["300"],
 });
+
 interface FollowButtonProps {
   followUserId: any;
   following: any;
   user: any;
 }
+
 const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
-  console.log(user?.id);
   const router = useRouter();
   function checkStringMatch(str: any, arr: any) {
     if (typeof str !== "string" || !Array.isArray(arr)) {
@@ -45,20 +46,18 @@ const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
         toast.error("Can't follow yourself.");
         return;
       }
-      const resp = await axios.post(`/api/follow/`, {
+      await axios.post(`/api/follow/`, {
         follows: followUserId,
       });
       router.refresh();
-      console.log(resp);
     };
 
     return (
       <div
-        className={`${outfit.className} bg-slate-100 rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center`}
         onClick={handleFollow}
+        className={`${outfit.className} bg-slate-300  rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <FollowIcon />
-        Follow
+        <FollowIcon /> <div className="pl-1">Follow</div>
       </div>
     );
   } else {
@@ -72,9 +71,9 @@ const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
     return (
       <div
         onClick={handleUnfollow}
-        className={`${outfit.className} bg-slate-100 rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center`}
+        className={`${outfit.className} bg-slate-300  rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <UnfollowIcon /> Unfollow
+        <UnfollowIcon /> <div className="pl-1"> Following</div>
       </div>
     );
   }
