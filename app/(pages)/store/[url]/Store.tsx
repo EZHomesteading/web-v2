@@ -16,25 +16,20 @@ const outfit = Outfit({
 });
 
 interface StorePageProps {
-  storeUser: any;
+  store: any;
   user?: any;
   emptyState: React.ReactNode;
   following: any;
 }
 
-const StorePage = ({
-  storeUser,
-  user,
-  emptyState,
-  following,
-}: StorePageProps) => {
+const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
   return (
     <ClientOnly>
       <Container>
         <div className="flex justify-between">
           <div className="flex flex-row items-center">
-            {storeUser?.image ? (
-              <Avatar image={storeUser?.image} />
+            {store?.user?.image ? (
+              <Avatar image={store?.user?.image} />
             ) : (
               <Avatar image={``} />
             )}
@@ -44,24 +39,26 @@ const StorePage = ({
             >
               <div className="flex flex-row items-center gap-x-2">
                 <div className="font-bold text-2xl lg:text-4xl">
-                  {storeUser?.name}
+                  {store?.user?.name}
                 </div>
-                {storeUser?.hours && <OpenStatus hours={storeUser?.hours} />}
+                {store?.user?.hours && (
+                  <OpenStatus hours={store?.user?.hours} />
+                )}
               </div>
 
-              <div>{storeUser?.firstName}</div>
-            </div>
-            <div className="pl-[10px]">
-              <FollowButton
-                followUserId={storeUser?.id}
-                following={following}
-                user={user}
-              />
+              <div>{store?.user?.firstName}</div>
             </div>
           </div>
           <div className="flex justify-center">
-            <Bio user={storeUser} />
+            <Bio user={store?.user} reviews={store?.reviews} />
           </div>
+        </div>
+        <div className="pl-[10px]">
+          <FollowButton
+            followUserId={store?.user?.id}
+            following={following}
+            user={user}
+          />
         </div>
 
         {emptyState || (
@@ -79,10 +76,10 @@ const StorePage = ({
             "
           >
             {/* dynamically map users listings */}
-            {storeUser?.listings?.map((listing: any) => (
+            {store?.user?.listings?.map((listing: any) => (
               <ListingCard
                 user={user}
-                storeUser={storeUser}
+                storeUser={store?.user}
                 key={listing.id}
                 data={listing}
               />

@@ -75,6 +75,7 @@ interface HoursDisplayProps {
 }
 
 export function HoursDisplay({ coOpHours }: HoursDisplayProps) {
+  console.log(coOpHours);
   const data: Days[] = React.useMemo(() => {
     return Object.entries(coOpHours).map(([key, value], index) => ({
       id: key,

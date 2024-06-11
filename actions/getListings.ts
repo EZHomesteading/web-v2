@@ -41,6 +41,7 @@ const GetListingsMarket = async (
           category: true,
           createdAt: true,
           minOrder: true,
+          SODT: true,
           stock: true,
           description: true,
           location: {
@@ -54,6 +55,7 @@ const GetListingsMarket = async (
               id: true,
               role: true,
               name: true,
+              SODT: true,
             },
           },
         },

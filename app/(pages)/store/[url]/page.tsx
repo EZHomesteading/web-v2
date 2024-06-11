@@ -22,21 +22,20 @@ const DynamicStorePage = dynamic(
 
 const StorePage = async ({ params }: StorePageProps) => {
   const { url } = params;
-  const storeUser = await getUserStore({ url: url });
+  const store = await getUserStore({ url: url });
   const user = await getUserwithCart();
   const following = await getFollows();
-
   return (
     <>
       <ClientOnly>
         <SessionStorageManager />
       </ClientOnly>
       <DynamicStorePage
-        storeUser={storeUser}
+        store={store}
         user={user}
         following={following}
         emptyState={
-          !storeUser || storeUser?.listings.length === 0 ? (
+          !store ? (
             <ClientOnly>
               <EmptyState showReset />
             </ClientOnly>

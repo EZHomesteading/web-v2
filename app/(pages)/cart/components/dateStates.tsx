@@ -22,6 +22,7 @@ interface StatusProps {
   onSetTime: any;
   index: number;
   cartGroup: CartGroup | null;
+  sodtarr: any;
 }
 
 const DateState = ({
@@ -30,6 +31,7 @@ const DateState = ({
   onSetTime,
   index,
   role,
+  sodtarr,
 }: StatusProps) => {
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -100,6 +102,7 @@ const DateState = ({
         index={index}
         onSetTime={handleTimer}
         role={role}
+        sodtarr={sodtarr}
       >
         <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
           <SheetTrigger className="h-full w-full">

@@ -322,7 +322,14 @@ body::-webkit-scrollbar {
   border-bottom-left-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
 }
+.arrow-icon .arrow-tail {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
+.group:hover .arrow-icon .arrow-tail {
+  opacity: 1;
+}
 .cardauth,
 .buttonsActive {
   background-color: #e3eac9 !important;

@@ -24,6 +24,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
+    console.log(address);
   };
 
   const handleSelect = (address: string) => {
@@ -71,6 +72,7 @@ const SearchLocation: React.FC<LocationSearchInputProps> = ({
         handleSelect(topSuggestion);
       } else {
         handleSelect(address);
+        console.log(address);
       }
     }
   };
