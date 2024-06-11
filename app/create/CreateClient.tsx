@@ -4,6 +4,14 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
 import { CiCircleInfo } from "react-icons/ci";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -87,6 +95,11 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     setShowLocationInput(!showLocationInput);
   };
   //declare formstate default values
+  let usersodt = null;
+  if (user.SODT) {
+    usersodt = user.SODT;
+  }
+  console.log(usersodt);
   let {
     register,
     setValue,
@@ -95,6 +108,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
+      sodt: usersodt,
       category: "",
       subCategory: "",
       location: "",
@@ -156,6 +170,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
   const minOrder = watch("minOrder");
   const quantity = watch("stock");
   const price = watch("price");
+  const sodt = watch("sodt");
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -251,6 +266,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       //onsubmit formstate to formdata=data to pass to create listing api endpoint
       const formData = {
         title: data.title,
+        SODT: parseInt(data.sodt),
         minOrder: parseInt(data.minOrder),
         description: description,
         category: data.category,
@@ -291,6 +307,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
           setValue("city", "");
           setValue("zip", "");
           setValue("state", "");
+          setValue("sodt", 60);
           setValue("coopRating", 1);
           setValue("minOrder", 1);
           setC(false);
@@ -342,6 +359,13 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
 
     if (step === 2 && !quantityType) {
       toast.error("Please enter a unit for your listing", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+    if (step === 2 && !sodt) {
+      toast.error("Please enter a set out/delivery time for your listing", {
         duration: 2000,
         position: "bottom-center",
       });
@@ -415,6 +439,12 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
         return;
       } else if (!quantityType) {
         toast.error("Please enter a unit for your listing", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (!sodt) {
+        toast.error("Please enter a set out/delivery time for your listing", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -508,7 +538,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
-        <Help step={step} />
+        <Help role={user.role} step={step} />
       </div>
       <div className="flex flex-col md:flex-row text-black w-full">
         <div className="onboard-left md:w-2/5 md:min-h-screen">
@@ -915,6 +945,93 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                           watch={watch}
                           setValue={setValue}
                         />
+                      </div>
+                    </div>
+                    <div className="w-1/2">
+                      <div className="flex flex-row gap-2 mt-2">
+                        {user.role === "COOP" ? (
+                          <div>
+                            Select average time to set out this product,
+                            pre-populates with your accounts Set out time, if
+                            there is none, you must set one.
+                            <Select
+                              onValueChange={(value: any) => {
+                                setValue("sodt", value);
+                              }}
+                            >
+                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
+                                {usersodt ? (
+                                  <SelectValue
+                                    placeholder={`${usersodt} Minutes `}
+                                  />
+                                ) : (
+                                  <SelectValue placeholder={"Select a Time"} />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent
+                                className={`${outfit.className} bg-slate-300`}
+                              >
+                                <SelectGroup>
+                                  <SelectItem value="15">15 Minutes</SelectItem>
+                                  <SelectItem value="30">30 Minutes</SelectItem>
+                                  <SelectItem value="45">45 Minutes</SelectItem>
+                                  <SelectItem value="60">1 Hour</SelectItem>
+                                  <SelectItem value="75">
+                                    1 Hour 15 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="90">
+                                    1 Hour 30 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="105">
+                                    1 Hour 45 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="120">2 Hours</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <div>
+                            Select average time to deliver this product,
+                            pre-populates with your accounts delivery time, if
+                            there is none, you must set one.
+                            <Select
+                              onValueChange={(value: any) => {
+                                setValue("sodt", value);
+                              }}
+                            >
+                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
+                                {usersodt ? (
+                                  <SelectValue
+                                    placeholder={`${usersodt} Minutes `}
+                                  />
+                                ) : (
+                                  <SelectValue placeholder={"Select a Time"} />
+                                )}
+                              </SelectTrigger>
+                              <SelectContent
+                                className={`${outfit.className} bg-slate-300`}
+                              >
+                                <SelectGroup>
+                                  <SelectItem value="15">15 Minutes</SelectItem>
+                                  <SelectItem value="30">30 Minutes</SelectItem>
+                                  <SelectItem value="45">45 Minutes</SelectItem>
+                                  <SelectItem value="60">1 Hour</SelectItem>
+                                  <SelectItem value="75">
+                                    1 Hour 15 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="90">
+                                    1 Hour 30 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="105">
+                                    1 Hour 45 Minutes
+                                  </SelectItem>
+                                  <SelectItem value="120">2 Hours</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

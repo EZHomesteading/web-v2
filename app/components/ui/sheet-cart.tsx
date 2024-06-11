@@ -64,6 +64,7 @@ interface SheetContentCProps
   index: number;
   onSetTime: any;
   role: string;
+  sodtarr: any;
 }
 
 const SheetContentC = React.forwardRef<
@@ -79,6 +80,7 @@ const SheetContentC = React.forwardRef<
       hours,
       onSetTime,
       role,
+      sodtarr,
       ...props
     },
     ref
@@ -97,6 +99,7 @@ const SheetContentC = React.forwardRef<
             index={index}
             onSetTime={onSetTime}
             role={role}
+            sodtarr={sodtarr}
           />
         </SheetPrimitive.Close>
         <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">

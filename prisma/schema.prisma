@@ -86,23 +86,15 @@ model User {
   url                   String?
   conversationIds       String[] @db.ObjectId
   conversations         Conversation[] @relation(fields: [conversationIds], references: [id])
-  
   seenMessageIds        String[] @db.ObjectId
   seenMessages          Message[] @relation("Seen", fields: [seenMessageIds], references: [id])
-  
   favoriteIds           String[] @db.ObjectId
-  
   accounts              Account[]
-
   listings              Listing[]
-
   cart                  Cart[]
-
   following             Following?
-
   buyerOrders           Order[] @relation("buyer")
   sellerOrders          Order[] @relation("seller") 
-
   sentMessages          Message[] @relation("SentMessages")
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
@@ -182,6 +174,7 @@ model TwoFactorConfirmation {
 
 model Listing {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
+   SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
   title         String
   species       String?
   category      String 
@@ -241,8 +234,8 @@ model Order {
   payments              Payment[]
 
   dispute               Dispute?
-  buyer                 User @relation(name:"buyer", fields: [userId], references: [id], onDelete: Cascade)
-  seller                User @relation(name:"seller", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer                 User? @relation(name:"buyer", fields: [userId], references: [id])
+  seller                User? @relation(name:"seller", fields: [sellerId], references: [id])
 }
 
 model Payment {
@@ -290,7 +283,7 @@ model Message {
   conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
   senderId         String @db.ObjectId
-  sender           User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  sender           User @relation("SentMessages", fields: [senderId], references: [id])
 }
 
 model Dispute {

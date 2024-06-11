@@ -15,8 +15,9 @@ interface Props {
   index: number;
   onSetTime: any;
   role: string;
+  sodtarr: any;
 }
-const EarliestPickup = ({ hours, onSetTime, index, role }: Props) => {
+const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
@@ -25,6 +26,8 @@ const EarliestPickup = ({ hours, onSetTime, index, role }: Props) => {
     calculateEarliestPickupTime();
   }, []);
 
+  const sodt = sodtarr.find((item: any) => item.cartIndex === index);
+  console.log(sodt);
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
@@ -63,10 +66,13 @@ const EarliestPickup = ({ hours, onSetTime, index, role }: Props) => {
               foundSlotOnSameDay = true;
               break;
             }
-          } else if (currentMin >= openTime && currentMin + 40 < closeTime) {
+          } else if (
+            currentMin >= openTime &&
+            currentMin + sodt.sodt < closeTime
+          ) {
             // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
             nextAvailableTime = new Date(now);
-            const futureMin = currentMin + 40;
+            const futureMin = currentMin + sodt.sodt;
             const futureHours = Math.floor(futureMin / 60);
             const futureMinutes = futureMin % 60;
             nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)

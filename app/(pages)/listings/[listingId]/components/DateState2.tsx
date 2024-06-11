@@ -12,6 +12,8 @@ import { Button } from "../../../../components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import SoonExpiryModal from "./soonExpiryModal";
+import { addDays, format } from "date-fns";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -27,6 +29,7 @@ interface StatusProps {
   disabled?: boolean;
   listing: any;
   user: any;
+  sodt: any;
 }
 
 const DateState2 = ({
@@ -35,19 +38,45 @@ const DateState2 = ({
   quantity,
   quantityType,
   disabled,
+  sodt,
   user,
 }: StatusProps) => {
   const router = useRouter();
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
+  let body: any = [];
 
-  const handleTimer = (childTime: any) => {
+  const shelfLife = (listing: any) => {
+    const adjustedListing = {
+      ...listing,
+      createdAt: new Date(listing.createdAt),
+      endDate:
+        listing.shelfLife !== -1
+          ? addDays(new Date(listing.createdAt), listing.shelfLife)
+          : null,
+    };
+
+    const shelfLifeDisplay = adjustedListing.endDate
+      ? `Estimated Expiry Date: ${format(
+          adjustedListing.endDate,
+          "MMM dd, yyyy"
+        )}`
+      : "This product is non-perisable";
+    return shelfLifeDisplay;
+  };
+  function convertToDate(dateString: string) {
+    const datePart = dateString.split(": ")[1];
+    const dateObj = new Date(datePart);
+    return dateObj;
+  }
+  const expiry = convertToDate(shelfLife(listing));
+  const handleTimer = async (childTime: any) => {
     sessionStorage.setItem("ORDER", "");
 
     setSelectedTime(childTime);
-    const body: any = [];
 
-    body.push({
+    await body.push({
       userId: listing.user.id,
       listingIds: [listing.id],
       pickupDate: childTime.pickupTime,
@@ -55,7 +84,21 @@ const DateState2 = ({
       totalPrice: quantity * listing.price,
       status: 0,
     });
-
+    const now = new Date();
+    const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const percentExpiry = new Date(
+      now.getTime() + listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
+    );
+    if (expiry < now) {
+      setTimeOpen(true);
+      return;
+    } else if (expiry < threeDaysLater) {
+      setTimeOpen(true);
+      return;
+    } else if (expiry < percentExpiry) {
+      setTimeOpen(true);
+      return;
+    }
     const post = async () => {
       await axios.delete(`/api/cart`);
       try {
@@ -87,6 +130,14 @@ const DateState2 = ({
 
   return (
     <SheetCartC>
+      <SoonExpiryModal
+        isOpen={timeOpen}
+        onClose={() => setTimeOpen(false)}
+        listing={listing}
+        quantity={quantity}
+        expiry={expiry}
+        childTime={selectedTime}
+      />
       <CustomTimeModal2
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -114,6 +165,7 @@ const DateState2 = ({
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         hours={hours}
         onSetTime={handleTimer}
+        sodt={sodt}
       >
         <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
           <SheetTrigger className="h-full w-full">

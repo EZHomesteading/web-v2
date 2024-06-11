@@ -13,10 +13,10 @@ const outfit = Outfit({
 
 interface Props {
   hours: ExtendedHours;
-
+  sodt: any;
   onSetTime: any;
 }
-const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
+const EarliestPickup2 = ({ hours, onSetTime, sodt }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); // datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
@@ -25,6 +25,16 @@ const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
     calculateEarliestPickupTime();
   }, []);
 
+  const gethigher = () => {
+    if (sodt[1] === null && sodt[0] === null) {
+      return 60;
+    } else if (sodt[0] > sodt[1]) {
+      return sodt[0];
+    } else {
+      return sodt[1];
+    }
+  };
+  //console.log(gethigher());
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentMin = now.getHours() * 60 + now.getMinutes();
@@ -63,12 +73,14 @@ const EarliestPickup2 = ({ hours, onSetTime }: Props) => {
             0,
             0
           );
-          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+          nextAvailableTime.setMinutes(
+            nextAvailableTime.getMinutes() + gethigher()
+          );
         } else {
           // if the user is buying today after the co-op has opened but before they close, the pick up is now plus the set out time
           //console.log("entered case 2");
           nextAvailableTime = new Date(now);
-          nextAvailableTime.setMinutes(now.getMinutes() + 30);
+          nextAvailableTime.setMinutes(now.getMinutes() + gethigher());
         }
         break;
       } else if (i > 0) {

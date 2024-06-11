@@ -22,10 +22,11 @@ const zilla = Zilla_Slab({
 });
 interface p {
   step: number;
+  role: string;
 }
-const Help = ({ step }: p) => {
+const Help = ({ step, role }: p) => {
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");
-
+  console.log(role);
   return (
     <Sheet>
       <SheetTrigger className="sheet p-2 rounded-md shadow-md">
@@ -45,18 +46,18 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={titleHelp}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">How do I add a title?</h1>
+                    <h1 className="text-3xl">How do I add a title?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -71,20 +72,20 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={titleNotFound}
                     alt="Can't find title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">
+                    <h1 className="text-3xl">
                       I don't see my item in the seach
                     </h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       2 min read
                     </p>
@@ -103,18 +104,18 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={minOrder}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">What is a Minimum Order?</h1>
+                    <h1 className="text-3xl">What is a Minimum Order?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -129,18 +130,18 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={shelfLife}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">What Does Shelf Life Mean?</h1>
+                    <h1 className="text-3xl">What Does Shelf Life Mean?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -148,6 +149,63 @@ const Help = ({ step }: p) => {
                 </CardContent>
               </Card>
             </Link>
+            {role === "COOP" ? (
+              <Link
+                href="/info/specifics/listing/coop-sodt"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Card className="hover:cursor-pointer border-none mt-2">
+                  <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
+                    {/* <Image
+                      src={minOrder}
+                      alt="Help With set out time"
+                      width={120}
+                      height={120}
+                      className="object-cover rounded-l-lg aspect-sqaure"
+                      style={{ width: "120px", height: "120px" }}
+                    /> */}
+                    <div>
+                      <h1 className="text-3xl">What is Set out Time?</h1>
+                      <p
+                        className={`${zilla.className} text-2xl text-neutral-600`}
+                      >
+                        2 min read
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ) : (
+              <Link
+                href="/info/specifics/listing/producer-sodt"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Card className="hover:cursor-pointer border-none mt-2">
+                  <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
+                    {/* <Image
+                      src={minOrder}
+                      alt="Help With set out time"
+                      width={120}
+                      height={120}
+                      className="object-cover rounded-l-lg aspect-sqaure"
+                      style={{ width: "120px", height: "120px" }}
+                    /> */}
+                    <div>
+                      <h1 className="text-3xl">
+                        What Does Delivery Time Mean?
+                      </h1>
+                      <p
+                        className={`${zilla.className} text-2xl text-neutral-600`}
+                      >
+                        2 min read
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            )}
           </>
         )}
         {step === 3 && (
@@ -160,18 +218,20 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={ezhOrganicRating}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">What is the EZH Organic Rating?</h1>
+                    <h1 className="text-3xl">
+                      What is the EZH Organic Rating?
+                    </h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -194,22 +254,22 @@ const Help = ({ step }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
+                  {/* <Image
                     src={addPhotos}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  />
+                  /> */}
                   <div>
-                    <h1 className="text-sm">
+                    <h1 className="text-3xl">
                       {isMdOrLarger
                         ? "How to add Photos on Desktop"
                         : "How to add Photos on Mobile"}
                     </h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${zilla.className} text-2xl text-neutral-600`}
                     >
                       1 min read
                     </p>

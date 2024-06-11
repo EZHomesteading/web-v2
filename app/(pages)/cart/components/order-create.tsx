@@ -54,21 +54,21 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
     if (expiry < now) {
       expiredArray.push(adjustedListings);
-      console.log(expiredArray);
+      //console.log(expiredArray);
       return;
     } else if (expiry < threeDaysLater) {
       adjustedListings.soonValue = 1;
       expiredArray.push(adjustedListings);
-      console.log(expiredArray);
+      ///console.log(expiredArray);
       return;
     } else if (expiry < percentExpiry) {
       adjustedListings.soonValue = 2;
       expiredArray.push(adjustedListings);
-      console.log(expiredArray);
+      //console.log(expiredArray);
       return;
     }
   });
-  console.log(expiredArray);
+  //console.log(expiredArray);
 
   const createOrder = () => {
     const body: any = [];
