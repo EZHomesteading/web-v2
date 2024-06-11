@@ -45,7 +45,7 @@ export default function Home() {
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          const radius = 20; // Set the default radius to 20 (adjust as needed)
+          const radius = 40;
 
           const query = {
             lat: lat.toString(),
@@ -65,13 +65,12 @@ export default function Home() {
         },
         (error) => {
           console.error("Error getting location: ", error);
-          // If location permission is denied or an error occurs, navigate to "/market" without search params
+          localStorage.setItem("locationPermissionDenied", "true");
           router.push("/market");
         }
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
-      // If geolocation is not supported, navigate to "/market" without search params
       router.push("/market");
     }
   };
