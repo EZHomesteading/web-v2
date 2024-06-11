@@ -34,7 +34,7 @@ const EarliestPickup2 = ({ hours, onSetTime, sodt }: Props) => {
       return sodt[1];
     }
   };
-  console.log(gethigher());
+  //console.log(gethigher());
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentMin = now.getHours() * 60 + now.getMinutes();
