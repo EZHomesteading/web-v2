@@ -45,6 +45,7 @@ const getConversationById = async (conversationId: string) => {
         role: user.role,
         email: user.email,
         hours: user.hours,
+        location: user.location,
       },
       otherUser: otherUser
         ? {
