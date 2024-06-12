@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { Location, UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -14,7 +13,6 @@ export async function POST(request: Request) {
     role,
     image,
     location,
-    hours,
     subscriptions,
     notifications,
     bio,
@@ -25,7 +23,8 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.error();
   }
-  const updatedUser = await prisma.user.update({
+  let updatedUser;
+  updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
       firstName,
@@ -33,14 +32,31 @@ export async function POST(request: Request) {
       email,
       phoneNumber,
       image,
-      role: role as UserRole,
-      location: location as Location,
+      role: role,
       subscriptions,
-      hours,
       notifications,
       bio,
       SODT,
       banner,
+    },
+  });
+  console.log(location);
+  updatedUser = await prisma.user.updateMany({
+    where: { id: user.id },
+    data: {
+      location: location.map(
+        (loc: {
+          type: "Point";
+          coordinates: { lng: number; lat: number };
+          address: String[];
+          hours: any;
+        }) => ({
+          type: loc.type,
+          coordinates: loc.coordinates,
+          address: loc.address,
+          hours: loc.hours,
+        })
+      ),
     },
   });
   return NextResponse.json(updatedUser);

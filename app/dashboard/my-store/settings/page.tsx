@@ -54,23 +54,24 @@ const days = [
 
 const StoreSettings = () => {
   const user = useCurrentUser();
-  let defaultHours;
-  if (!user?.hours || user?.hours === null) {
-    defaultHours = {
-      0: null,
-      1: null,
-      2: null,
-      3: null,
-      4: null,
-      5: null,
-      6: null,
-    };
-  } else {
-    defaultHours = user?.hours;
-  }
 
-  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
-  console.log(coOpHours);
+  const [index, setIndex] = useState(0);
+  const defaultHours: ExtendedHours = {
+    0: null,
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+    6: null,
+  };
+
+  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(
+    user?.location && user.location.length >= index
+      ? user.location[index].hours || defaultHours
+      : defaultHours
+  );
+
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
 
   const handleNextDay = () => {
@@ -104,7 +105,6 @@ const StoreSettings = () => {
     });
   };
   const isOpen = coOpHours[currentDayIndex] !== null;
-  console.log(coOpHours[currentDayIndex]);
 
   const handleHourChange = (open: number, close: number) => {
     setCoOpHours((prevHours) => ({
@@ -155,11 +155,17 @@ const StoreSettings = () => {
   const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    console.log("coOpHours", coOpHours[0]);
     const formData = {
       SODT: SODT,
       bio: bio,
       banner: banner,
-      hours: coOpHours,
+      location: user?.location
+        ? user.location.map((loc, index) => ({
+            ...loc,
+            hours: coOpHours,
+          }))
+        : [],
     };
     axios
       .post("/api/update", formData)
@@ -351,6 +357,7 @@ const StoreSettings = () => {
                     onNextDay={handleNextDay}
                     onPrevDay={handlePrevDay}
                   />
+
                   <CardFooter className="flex flex-col items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
                     <Sheet>
                       {isOpen ? (

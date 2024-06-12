@@ -230,7 +230,7 @@ model Order {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   fee                   Float
-
+location              Location?
   conversationId        String?   @db.ObjectId
   payments              Payment[]
 

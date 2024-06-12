@@ -117,14 +117,21 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       const prevCartItem = cartItems[index - 1];
 
       if (
-        existingOrder &&
-        prevCartItem?.listing.userId === cartItem.listing.userId
+        (existingOrder &&
+          prevCartItem?.listing.userId === cartItem.listing.userId) ||
+        (existingOrder &&
+          prevCartItem?.listing.location?.address[0] !==
+            cartItem.listing.location.address[0])
       ) {
         if (existingOrder.expiry > expiry) {
           existingOrder.expiry = expiry;
         }
       }
-      if (prevCartItem?.listing.userId !== cartItem.listing.userId) {
+      if (
+        prevCartItem?.listing.userId !== cartItem.listing.userId ||
+        prevCartItem?.listing.location?.address[0] !==
+          cartItem.listing.location.address[0]
+      ) {
         acc.push({
           expiry,
           cartIndex: index,
@@ -142,8 +149,11 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       const prevCartItem = cartItems[index - 1];
       //console.log("sodt", sodt, "usersodt", usersodt, "cartitem", cartItem);
       if (
-        existingOrder &&
-        prevCartItem?.listing.userId === cartItem.listing.userId
+        (existingOrder &&
+          prevCartItem?.listing.userId === cartItem.listing.userId) ||
+        (existingOrder &&
+          prevCartItem?.listing.location?.address[0] !==
+            cartItem.listing.location.address[0])
       ) {
         if (
           (sodt === null || sodt === undefined) &&
@@ -156,7 +166,11 @@ const Cart = ({ cartItems = [] }: CartProps) => {
           existingOrder.sodt = usersodt;
         }
       }
-      if (prevCartItem?.listing.userId !== cartItem.listing.userId) {
+      if (
+        prevCartItem?.listing.userId !== cartItem.listing.userId ||
+        prevCartItem?.listing.location?.address[0] !==
+          cartItem.listing.location.address[0]
+      ) {
         if (
           (sodt === null || sodt === undefined) &&
           (usersodt === null || usersodt === undefined)
@@ -278,11 +292,16 @@ const Cart = ({ cartItems = [] }: CartProps) => {
               >
                 {cartItems.map((cartItem: any, index: any) => {
                   const prevCartItem = cartItems[index - 1];
-
+                  console.log(
+                    prevCartItem?.listing.location,
+                    cartItem.listing.location
+                  );
                   return (
                     <div key={index}>
                       {prevCartItem?.listing.userId !==
-                      cartItem.listing.userId ? (
+                        cartItem.listing.userId ||
+                      prevCartItem?.listing.location?.address[0] !==
+                        cartItem.listing.location.address[0] ? (
                         <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p
                             className={`${outfit.className} text-2xl md:text-4xl`}

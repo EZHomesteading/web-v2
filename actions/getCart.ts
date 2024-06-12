@@ -14,6 +14,11 @@ export type CartItem = {
     quantityType: string | null;
     shelfLife: number;
     createdAt: Date;
+    location: {
+      type: string;
+      coordinates: number[];
+      address: string[];
+    } | null;
     imageSrc: string[];
     userId: string;
     subCategory: string;
@@ -44,6 +49,7 @@ const getAllCartItemsByUserId = async () => {
             price: true,
             stock: true,
             SODT: true,
+            location: true,
             minOrder: true,
             quantityType: true,
             shelfLife: true,
