@@ -6,7 +6,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import { Location } from "@/next-auth";
 
 interface MapProps {
-  location: Location | null;
+  location: any | null;
   apiKey: string;
 }
 

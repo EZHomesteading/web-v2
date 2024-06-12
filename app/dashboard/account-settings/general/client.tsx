@@ -31,11 +31,10 @@ const Page = ({ apiKey }: Props) => {
   const user = useCurrentUser();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [fullAddress, setFullAddress] = useState(
+  let fullAddress =
     user?.location && user.location.length > 0
       ? `${user.location[0].address[0]}, ${user.location[0].address[1]}, ${user.location[0].address[2]}, ${user.location[0].address[3]}`
-      : ""
-  );
+      : "";
   type AddressComponents = {
     street: string;
     city: string;
@@ -77,29 +76,38 @@ const Page = ({ apiKey }: Props) => {
       return null;
     }
   };
-  const addressSetter = async (data: any) => {
-    setFullAddress(`${data.street}, ${data.city}, ${data.state}, ${data.zip}`);
-  };
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    console.log(data.street);
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
     ) {
-      await addressSetter(data);
+      fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
     }
     if (fullAddress !== ", , , ") {
       if (user?.location?.length === 0) {
       }
+      console.log(fullAddress);
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
-      console.log(user?.location);
+
       if (geoData) {
+        console.log([
+          {
+            type: "Point",
+            coordinates: [geoData.lng, geoData.lat],
+            address: [data.street, data.city, data.state, data.zip],
+          },
+        ]);
         const formData = {
           image: data.image,
           name: data.name,
           email: data.email,
           phoneNumer: data.phoneNumber,
           location:
-            user?.location?.length === 0
+            user?.location?.length === 0 ||
+            user?.location === undefined ||
+            user?.location === null
               ? [
                   {
                     type: "Point",
@@ -114,6 +122,7 @@ const Page = ({ apiKey }: Props) => {
                   address: [data.street, data.city, data.state, data.zip],
                 })),
         };
+        console.log(formData);
         axios
           .post("/api/update", formData)
           .then(() => {

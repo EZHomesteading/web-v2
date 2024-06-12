@@ -36,7 +36,7 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: CartItem[];
+  cartItems?: any[];
 }
 
 const Cart = ({ cartItems = [] }: CartProps) => {
@@ -292,10 +292,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
               >
                 {cartItems.map((cartItem: any, index: any) => {
                   const prevCartItem = cartItems[index - 1];
-                  console.log(
-                    prevCartItem?.listing.location,
-                    cartItem.listing.location
-                  );
+                  console.log(cartItem);
                   return (
                     <div key={index}>
                       {prevCartItem?.listing.userId !==

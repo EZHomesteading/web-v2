@@ -297,12 +297,6 @@ const getUserStore = async (
             minOrder: true,
             id: true,
             quantityType: true,
-            location: {
-              select: {
-                address: true,
-                hours: true,
-              },
-            },
           },
         },
       },
