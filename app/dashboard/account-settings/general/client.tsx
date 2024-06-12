@@ -32,7 +32,9 @@ const Page = ({ apiKey }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [fullAddress, setFullAddress] = useState(
-    `${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`
+    user?.location && user.location.length > 0
+      ? `${user.location[0].address[0]}, ${user.location[0].address[1]}, ${user.location[0].address[2]}, ${user.location[0].address[3]}`
+      : ""
   );
   type AddressComponents = {
     street: string;
@@ -56,14 +58,8 @@ const Page = ({ apiKey }: Props) => {
       image: user?.image,
     },
   });
-  setValue("street", user?.location?.address[0]);
-  setValue("city", user?.location?.address[1]);
-  setValue("state", user?.location?.address[2]);
-  setValue("zip", user?.location?.address[3]);
 
   const getLatLngFromAddress = async (address: string) => {
-    console.log(address);
-    //const apiKey = apiKey;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
     )}&key=${apiKey}`;
@@ -85,7 +81,6 @@ const Page = ({ apiKey }: Props) => {
     setFullAddress(`${data.street}, ${data.city}, ${data.state}, ${data.zip}`);
   };
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(`${data.street}, ${data.city}, ${data.state}, ${data.zip}`);
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
     ) {
@@ -97,14 +92,16 @@ const Page = ({ apiKey }: Props) => {
 
       if (geoData) {
         const formData = {
-          ...data,
+          image: data.image,
+          name: data.name,
+          email: data.email,
+          phoneNumer: data.phoneNumber,
           location: {
             type: "Point",
             coordinates: [geoData.lng, geoData.lat],
             address: [data.street, data.city, data.state, data.zip],
           },
         };
-        console.log(formData);
         axios
           .post("/api/update", formData)
           .then(() => {
@@ -157,7 +154,6 @@ const Page = ({ apiKey }: Props) => {
     state,
     zip,
   }: AddressComponents) => {
-    console.log(street, city, state, zip);
     setValue("street", street);
     setValue("city", city);
     setValue("state", state);
@@ -324,13 +320,13 @@ const Page = ({ apiKey }: Props) => {
               htmlFor="address"
               className="block text-sm font-medium leading-6"
             >
-              {!user?.location?.address ? (
+              {!user?.location || user.location.length === 0 ? (
                 <>You do not currently have a saved address</>
               ) : (
-                `Your current address is${" "}${user?.location?.address[0]}, ${
-                  user?.location?.address[1]
+                `Your current address is${" "}${user.location[0].address[0]}, ${
+                  user.location[0].address[1]
                 },${" "}
-                  ${user?.location?.address[2]}, ${user?.location?.address[3]}`
+      ${user.location[0].address[2]}, ${user.location[0].address[3]}`
               )}
             </label>
             <label

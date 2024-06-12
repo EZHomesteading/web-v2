@@ -8,8 +8,7 @@ export type UserInfo = DefaultSession["user"] & {
   isOAuth: boolean;
   phoneNumber?: string;
   image?: string;
-  location?: Location;
-  hours?: Hours;
+  location?: Location[];
   url?: string;
   stripeAccountId?: string;
   createdAt?: Date;
@@ -88,6 +87,7 @@ type Location = {
   type: string;
   coordinates: number[];
   address: string[];
+  hours?: { open: number; close: number };
 };
 type CartGroup = {
   expiry?: date;
