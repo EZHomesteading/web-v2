@@ -289,7 +289,6 @@ const getUserStore = async (
         bio: true,
         createdAt: true,
         role: true,
-        hours: true,
         listings: {
           select: {
             imageSrc: true,
@@ -301,6 +300,7 @@ const getUserStore = async (
             location: {
               select: {
                 address: true,
+                hours: true,
               },
             },
           },
