@@ -460,6 +460,26 @@ const getRoleGate = async () => {
     throw new Error(error);
   }
 };
+const getRole = async (params: Params) => {
+  const { userId } = params;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        role: true,
+      },
+    });
+
+    if (user) {
+      return user;
+    }
+    return null;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 
 export {
   getFavCardUser,
@@ -474,6 +494,7 @@ export {
   getUserwithCart,
   getNavUser,
   getRoleGate,
+  getRole,
 };
 
 export type StoreUser = {
