@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getListingById } from "@/actions/getListings";
+import { Location } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   const user = await currentUser();
@@ -16,7 +17,8 @@ export async function POST(request: NextRequest) {
   const createdOrders = [];
 
   for (const order of orders) {
-    const { listingIds, pickupDate, quantity, totalPrice, status } = order;
+    const { listingIds, pickupDate, quantity, totalPrice, status, location } =
+      order;
 
     const requiredFields = [
       "userId",
@@ -48,6 +50,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: user.id,
           listingIds,
+          location: location as Location,
           sellerId: listing.user.id,
           pickupDate,
           quantity,
