@@ -18,6 +18,7 @@ export type CartItem = {
       type: string;
       coordinates: number[];
       address: string[];
+      hours: JsonValue;
     } | null;
     imageSrc: string[];
     userId: string;
@@ -27,7 +28,7 @@ export type CartItem = {
       id: string;
       SODT: number | null;
       name: string;
-      hours: JsonValue;
+      //hours: JsonValue;
     };
   };
 };
@@ -49,9 +50,10 @@ const getAllCartItemsByUserId = async () => {
             price: true,
             stock: true,
             SODT: true,
+            quantityType: true,
             location: true,
             minOrder: true,
-            quantityType: true,
+
             shelfLife: true,
             createdAt: true,
             imageSrc: true,
@@ -61,7 +63,7 @@ const getAllCartItemsByUserId = async () => {
               select: {
                 id: true,
                 name: true,
-                hours: true,
+                // hours: true,
                 SODT: true,
                 role: true,
               },

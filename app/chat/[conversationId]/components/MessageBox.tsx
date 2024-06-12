@@ -357,7 +357,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <Sheet>
           <SheetTrigger>HOURS</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-            <HoursDisplay coOpHours={user.hours} />
+            <HoursDisplay coOpHours={order.location.hours} />
           </SheetContent>
         </Sheet>
       </span>
@@ -372,6 +372,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     5: [{ open: 0, close: 1439 }],
     6: [{ open: 0, close: 1439 }],
   };
+  console.log("messagebox", order.location.hours);
   return (
     <div>
       {/* modal declarations */}
@@ -381,6 +382,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           onClose={() => setCustomTimeOpen(false)}
           hours={anyhours}
           onSetTime={handleTime}
+          isSeller={true}
         />
       ) : (
         <CustomTimeModal2
@@ -388,6 +390,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           onClose={() => setCustomTimeOpen(false)}
           hours={order.location.hours}
           onSetTime={handleTime}
+          isSeller={false}
         />
       )}
       <ConfirmModal

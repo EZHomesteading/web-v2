@@ -311,7 +311,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                           <DateState
                             role={cartItem.listing.user.role}
                             hours={
-                              cartItem?.listing.user.hours as ExtendedHours
+                              cartItem?.listing.location.hours as ExtendedHours
                             }
                             onSetTime={handleTime}
                             sodtarr={sodtarr}

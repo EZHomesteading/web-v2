@@ -87,23 +87,32 @@ const Page = ({ apiKey }: Props) => {
       await addressSetter(data);
     }
     if (fullAddress !== ", , , ") {
+      if (user?.location?.length === 0) {
+      }
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
-
+      console.log(user?.location);
       if (geoData) {
         const formData = {
           image: data.image,
           name: data.name,
           email: data.email,
           phoneNumer: data.phoneNumber,
-          location: user?.location
-            ? user.location.map((loc, index) => ({
-                ...loc,
-                type: "Point",
-                coordinates: [geoData.lng, geoData.lat],
-                address: [data.street, data.city, data.state, data.zip],
-              }))
-            : [],
+          location:
+            user?.location?.length === 0
+              ? [
+                  {
+                    type: "Point",
+                    coordinates: [geoData.lng, geoData.lat],
+                    address: [data.street, data.city, data.state, data.zip],
+                  },
+                ]
+              : user?.location?.map((loc, index) => ({
+                  ...loc,
+                  type: "Point",
+                  coordinates: [geoData.lng, geoData.lat],
+                  address: [data.street, data.city, data.state, data.zip],
+                })),
         };
         axios
           .post("/api/update", formData)
