@@ -82,7 +82,7 @@ const StoreSettings = () => {
       if (nextDayHours === null) {
         setCoOpHours((prevHours) => ({
           ...prevHours,
-          [nextIndex]: [defaultHours],
+          [nextIndex]: [{ open: 480, close: 1020 }],
         }));
       }
 
@@ -152,7 +152,7 @@ const StoreSettings = () => {
   const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
-  const currentDayHours = coOpHours[currentDayIndex]?.[0] || defaultHours;
+  const currentDayHours = coOpHours[currentDayIndex]?.[0];
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     console.log("coOpHours", coOpHours[0]);
@@ -350,13 +350,15 @@ const StoreSettings = () => {
               <div className="flex flex-col">
                 <CardContent className="p-0 w-[90vw] sm:w-[70vw] lg:w-[50vw]">
                   <div className="flex justify-end"></div>
-                  <CoopHoursSlider
-                    day={currentDay}
-                    hours={currentDayHours}
-                    onChange={handleHourChange}
-                    onNextDay={handleNextDay}
-                    onPrevDay={handlePrevDay}
-                  />
+                  {currentDayHours && (
+                    <CoopHoursSlider
+                      day={currentDay}
+                      hours={currentDayHours}
+                      onChange={handleHourChange}
+                      onNextDay={handleNextDay}
+                      onPrevDay={handlePrevDay}
+                    />
+                  )}
 
                   <CardFooter className="flex flex-col items-center justify-between gap-x-6 gap-y-2 mt-12 mb-0 p-0">
                     <Sheet>
@@ -366,12 +368,12 @@ const StoreSettings = () => {
                           0 ? null : (coOpHours[currentDayIndex]?.length ?? 0) <
                             3 ? (
                             <>
-                              <div className="lg:w-[50%] flex flex-row w-[100%] lg:flex">
+                              <div className="w-[100%]">
                                 <Popover>
                                   <PopoverTrigger
                                     className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500 hover:text-white`}
                                   >
-                                    Add Hours
+                                    Add & Remove Hours
                                   </PopoverTrigger>
                                   <PopoverContent
                                     className={`${outfit.className}`}
@@ -382,8 +384,34 @@ const StoreSettings = () => {
                                       </div>
                                       {coOpHours[currentDayIndex]?.map(
                                         (time, index) => (
-                                          <div key={index} className="mb-2">
-                                            {formatTimeDisplay(time)}
+                                          <div
+                                            key={index}
+                                            className="flex items-center justify-between mb-2"
+                                          >
+                                            <span>
+                                              {formatTimeDisplay(time)}
+                                            </span>
+                                            <div
+                                              className="ml-2 text-red-500 hover:text-red-700"
+                                              onClick={() => {
+                                                const updatedHours = [
+                                                  ...(coOpHours[
+                                                    currentDayIndex
+                                                  ] ?? []),
+                                                ];
+                                                updatedHours.splice(index, 1);
+                                                setCoOpHours((prevHours) => ({
+                                                  ...prevHours,
+                                                  [currentDayIndex]:
+                                                    updatedHours,
+                                                }));
+                                              }}
+                                            >
+                                              <span className="sr-only">
+                                                Remove
+                                              </span>
+                                              <PiTrashSimpleThin />
+                                            </div>
                                           </div>
                                         )
                                       )}
@@ -485,56 +513,6 @@ const StoreSettings = () => {
                                           Add
                                         </Button>
                                       </div>
-                                    </div>
-                                  </PopoverContent>
-                                </Popover>
-
-                                <Popover>
-                                  <PopoverTrigger
-                                    className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500 hover:text-white`}
-                                  >
-                                    Remove Hours
-                                  </PopoverTrigger>
-                                  <PopoverContent
-                                    className={`${outfit.className}`}
-                                  >
-                                    <div>
-                                      <h2 className="text-lg font-semibold mb-2">
-                                        Remove Hours
-                                      </h2>
-                                      {coOpHours[currentDayIndex]?.map(
-                                        (time, index) => (
-                                          <div
-                                            key={index}
-                                            className="flex items-center justify-between mb-2"
-                                          >
-                                            <span>
-                                              {formatTimeDisplay(time)}
-                                            </span>
-                                            <div
-                                              className="ml-2 text-red-500 hover:text-red-700"
-                                              onClick={() => {
-                                                const updatedHours = [
-                                                  ...(coOpHours[
-                                                    currentDayIndex
-                                                  ] ?? []),
-                                                ];
-                                                updatedHours.splice(index, 1);
-                                                setCoOpHours((prevHours) => ({
-                                                  ...prevHours,
-                                                  [currentDayIndex]:
-                                                    updatedHours,
-                                                }));
-                                              }}
-                                            >
-                                              <span className="sr-only">
-                                                Remove
-                                              </span>
-                                              <PiTrashSimpleThin />
-                                            </div>
-                                          </div>
-                                        )
-                                      )}
                                     </div>
                                   </PopoverContent>
                                 </Popover>

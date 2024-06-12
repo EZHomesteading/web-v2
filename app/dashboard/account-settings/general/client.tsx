@@ -96,11 +96,14 @@ const Page = ({ apiKey }: Props) => {
           name: data.name,
           email: data.email,
           phoneNumer: data.phoneNumber,
-          location: {
-            type: "Point",
-            coordinates: [geoData.lng, geoData.lat],
-            address: [data.street, data.city, data.state, data.zip],
-          },
+          location: user?.location
+            ? user.location.map((loc, index) => ({
+                ...loc,
+                type: "Point",
+                coordinates: [geoData.lng, geoData.lat],
+                address: [data.street, data.city, data.state, data.zip],
+              }))
+            : [],
         };
         axios
           .post("/api/update", formData)
