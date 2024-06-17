@@ -37,7 +37,6 @@ enum Notification {
   EMAIL_NEW_PRODUCER_LISTINGS
 }
 
-
 type Location {
   type String
   coordinates Float[]
@@ -187,7 +186,7 @@ model Listing {
   minOrder      Int?
   imageSrc      String[]
   shelfLife     Int
-  location      Location?
+  location      Int
   rating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())

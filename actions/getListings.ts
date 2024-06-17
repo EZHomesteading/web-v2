@@ -44,18 +44,14 @@ const GetListingsMarket = async (
           SODT: true,
           stock: true,
           description: true,
-          location: {
-            select: {
-              coordinates: true,
-              address: true,
-            },
-          },
+          location: true,
           user: {
             select: {
               id: true,
               role: true,
               name: true,
               SODT: true,
+              location: true,
             },
           },
         },
@@ -93,17 +89,13 @@ const GetListingsMarket = async (
             category: true,
             stock: true,
             description: true,
-            location: {
-              select: {
-                coordinates: true,
-                address: true,
-              },
-            },
+            location: true,
             user: {
               select: {
                 id: true,
                 role: true,
                 name: true,
+                location: true,
               },
             },
           },
@@ -133,17 +125,13 @@ const GetListingsMarket = async (
             createdAt: true,
             stock: true,
             description: true,
-            location: {
-              select: {
-                coordinates: true,
-                address: true,
-              },
-            },
+            location: true,
             user: {
               select: {
                 id: true,
                 role: true,
                 name: true,
+                location: true,
               },
             },
           },
@@ -176,17 +164,13 @@ const GetListingsMarket = async (
             createdAt: true,
             stock: true,
             description: true,
-            location: {
-              select: {
-                coordinates: true,
-                address: true,
-              },
-            },
+            location: true,
             user: {
               select: {
                 id: true,
                 role: true,
                 name: true,
+                location: true,
               },
             },
           },
@@ -213,25 +197,30 @@ const GetListingsMarket = async (
             createdAt: true,
             stock: true,
             description: true,
-            location: {
-              select: {
-                coordinates: true,
-                address: true,
-              },
-            },
+            location: true,
             user: {
               select: {
                 id: true,
                 role: true,
                 name: true,
+                location: true,
               },
             },
           },
         });
       }
     }
-
+    //console.log(listings);
+    listings.map((listing, index) => {
+      //console.log(listings[index].location);
+      console.log(listing.user);
+      // console.log(index);
+      listings[index].location =
+        listing.user?.location[parseInt(listing.location)];
+    });
+    //console.log(listings[0]);
     // If location parameters are provided, filter listings by distance
+    console.log("afsfasfhere");
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -307,11 +296,20 @@ const GetListingsByIds = async (params: Params) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        user: {
+          select: {
+            location: true,
+          },
+        },
+      },
     });
     const safeListings = listings.map((listing) => ({
       ...listing,
+      location: listing.user.location[listing.location],
       createdAt: listing.createdAt.toISOString(),
     }));
+    console.log(safeListings);
     return safeListings;
   } catch (error: any) {
     throw new Error(error);
@@ -328,7 +326,16 @@ const getListingById = async (params: IParams) => {
         id: listingId,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            location: true,
+            createdAt: true,
+            updatedAt: true,
+            emailVerified: true,
+            role: true,
+          },
+        },
       },
     });
 
@@ -338,6 +345,7 @@ const getListingById = async (params: IParams) => {
 
     return {
       ...listing,
+      location: listing.user.location[listing.location],
       createdAt: listing.createdAt.toString(),
       user: {
         ...listing.user,
@@ -364,9 +372,11 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: { user: { select: { location: true } } },
     });
     const safeListings = listings.map((listing) => ({
       ...listing,
+      location: listing.user.location[listing.location],
       createdAt: listing.createdAt.toISOString(),
     }));
     return safeListings;
@@ -393,10 +403,12 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: { user: { select: { location: true } } },
     });
 
     const safeListings = listings.map((listing) => ({
       ...listing,
+      location: listing.user.location[listing.location],
       createdAt: listing.createdAt.toISOString(),
     }));
 

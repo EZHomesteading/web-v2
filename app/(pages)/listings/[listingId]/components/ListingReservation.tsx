@@ -10,26 +10,7 @@ import NotifyModal from "./NotifyModal";
 interface ListingReservationProps {
   listingId: string;
   user?: any | null;
-  product: {
-    createdAt: Date;
-    endDate: Date | null;
-    id: string;
-    title: string;
-    location: { type: string; coordinates: number[]; address: string[] } | null;
-    species: string | null;
-    category: string;
-    subCategory: string;
-    stock: number;
-    quantityType: string;
-    price: number;
-    description: string;
-    imageSrc: string[];
-    shelfLife: number;
-    minOrder: number | null;
-    coopRating: number | null;
-    userId: string;
-    user: any;
-  };
+  product: any;
   hours: any;
   disabled?: boolean;
   toggleCart: any;
@@ -69,7 +50,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 
   const increaseQuantity = () => {
     if (product.stock && quantity < product.stock) {
-      setQuantity((prevQuantity) => prevQuantity + 1);
+      setQuantity((prevQuantity: any) => prevQuantity + 1);
     }
   };
 
@@ -79,7 +60,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     }
     if (quantity > product.minOrder) {
       console.log(product.minOrder);
-      setQuantity((prevQuantity) => prevQuantity - 1);
+      setQuantity((prevQuantity: any) => prevQuantity - 1);
     }
   };
 

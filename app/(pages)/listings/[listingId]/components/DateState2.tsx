@@ -41,6 +41,7 @@ const DateState2 = ({
   sodt,
   user,
 }: StatusProps) => {
+  console.log("BEANS", listing);
   const router = useRouter();
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -163,6 +164,7 @@ const DateState2 = ({
       <SheetContentC
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
+        sellerRole={listing.user.role}
         hours={hours}
         onSetTime={handleTimer}
         sodt={sodt}
