@@ -111,7 +111,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit1 = () => {
     //coop seller confirms order pickup time
     axios.post("/api/messages", {
-      message: `Yes, That time works, Your order will be ready at that time. at ${user.location?.address}`,
+      message: `Yes, That time works, Your order will be ready at that time. at ${order.location?.address}`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -166,7 +166,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit5 = () => {
     //coop has set out the order
     axios.post("/api/messages", {
-      message: `Your order is ready to be picked up at ${user.location.address}!`,
+      message: `Your order is ready to be picked up at ${order.location.address}!`,
       messageOrder: "6",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -357,22 +357,42 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <Sheet>
           <SheetTrigger>HOURS</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-            <HoursDisplay coOpHours={user.hours} />
+            <HoursDisplay coOpHours={order.location.hours} />
           </SheetContent>
         </Sheet>
       </span>
     );
   };
-
+  const anyhours: any = {
+    0: [{ open: 0, close: 1439 }],
+    1: [{ open: 0, close: 1439 }],
+    2: [{ open: 0, close: 1439 }],
+    3: [{ open: 0, close: 1439 }],
+    4: [{ open: 0, close: 1439 }],
+    5: [{ open: 0, close: 1439 }],
+    6: [{ open: 0, close: 1439 }],
+  };
+  console.log("messagebox", order.location.hours);
   return (
     <div>
       {/* modal declarations */}
-      <CustomTimeModal2
-        isOpen={customTimeOpen}
-        onClose={() => setCustomTimeOpen(false)}
-        hours={user.hours}
-        onSetTime={handleTime}
-      />
+      {user.id === order.sellerId ? (
+        <CustomTimeModal2
+          isOpen={customTimeOpen}
+          onClose={() => setCustomTimeOpen(false)}
+          hours={anyhours}
+          onSetTime={handleTime}
+          isSeller={true}
+        />
+      ) : (
+        <CustomTimeModal2
+          isOpen={customTimeOpen}
+          onClose={() => setCustomTimeOpen(false)}
+          hours={order.location.hours}
+          onSetTime={handleTime}
+          isSeller={false}
+        />
+      )}
       <ConfirmModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
@@ -533,7 +553,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <button type="submit" onClick={onSubmit1} className="m">
               Yes, That time works, Your order will be ready at that time. at{" "}
-              {user.location?.address}
+              {order.location?.address}
             </button>
             <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
             <button type="submit" onClick={onSubmit2} className="m">
@@ -560,7 +580,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="m">
-                Your order is ready to be picked up at {user.location.address}!
+                Your order is ready to be picked up at {order.location.address}!
               </button>
             </div>
           </div>
@@ -612,7 +632,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 className="message hover:bg-sky"
               >
                 Yes, That time works, Your order will be ready at that time. at{" "}
-                {user.location?.address}
+                {order.location?.address}
               </button>
               <button onClick={() => setCustomTimeOpen(true)}>
                 {" "}
@@ -640,7 +660,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="">
-                Your order is ready to be picked up at {user.location.address}!
+                Your order is ready to be picked up at {order.location.address}!
               </button>
             </div>
           </div>

@@ -186,7 +186,7 @@ model Listing {
   minOrder      Int?
   imageSrc      String[]
   shelfLife     Int
-  location      Location?
+  location      Int
   rating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
@@ -229,7 +229,7 @@ model Order {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   fee                   Float
-
+location              Location?
   conversationId        String?   @db.ObjectId
   payments              Payment[]
 

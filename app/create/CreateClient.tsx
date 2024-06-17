@@ -128,6 +128,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       state: "",
       coopRating: 1,
       minOrder: 1,
+      hours: null,
     },
   });
   //checkbox usestates
@@ -246,6 +247,9 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
     setValue("zip", zip);
     setCity(city);
     setState(state);
+    if (user.location) {
+      setValue("hours", user?.location[0]?.hours);
+    }
   };
   const [description, setDescription] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
@@ -284,6 +288,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
           type: "Point",
           coordinates: [geoData.lng, geoData.lat],
           address: [data.street, data.city, data.state, data.zip],
+          hours: data.hours,
         },
       };
       axios
@@ -310,6 +315,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
           setValue("sodt", 60);
           setValue("coopRating", 1);
           setValue("minOrder", 1);
+          setValue("hours", null);
           setC(false);
           setClicked(false);
           setProduct(undefined);
@@ -1273,14 +1279,17 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                           : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
                       }
                       onClick={() => {
-                        setValue("street", user?.location?.address[0]);
-                        setValue("city", user?.location?.address[1]);
-                        setValue("state", user?.location?.address[2]);
-                        setValue("zip", user?.location?.address[3]);
-                        setClicked(true);
-                        setC(false);
-                        setCity(user?.location?.address[1] || "");
-                        setState(user?.location?.address[2] || "");
+                        if (user.location) {
+                          setValue("street", user?.location[0]?.address[0]);
+                          setValue("city", user?.location[0]?.address[1]);
+                          setValue("state", user?.location[0]?.address[2]);
+                          setValue("zip", user?.location[0]?.address[3]);
+                          setClicked(true);
+                          setC(false);
+                          setCity(user?.location[0]?.address[1] || "");
+                          setState(user?.location[0]?.address[2] || "");
+                          setValue("hours", user?.location[0].hours);
+                        }
                       }}
                     >
                       <CardHeader className="pt-2 sm:pt-6">
@@ -1291,8 +1300,9 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                           <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                             <ul>
                               <li className={`${outfit.className}`}></li>{" "}
-                              {user?.location?.address.length === 4 ? (
-                                <li className="text-xs">{`${user?.location?.address[0]}, ${user?.location?.address[1]}, ${user?.location?.address[2]}, ${user?.location?.address[3]}`}</li>
+                              {user.location &&
+                              user?.location[0]?.address.length === 4 ? (
+                                <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
                               ) : (
                                 <li>Full Address not available</li>
                               )}

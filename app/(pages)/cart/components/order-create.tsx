@@ -75,6 +75,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     let currentpickuparr: any = null;
     let prevUserId: any = null;
     let userItems: any = [];
+    let prevLocation: any = null;
     const findObjectWithCartIndex = (arr: any, targetCartIndex: number) => {
       let foundObject = null;
 
@@ -87,36 +88,42 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       return foundObject;
     };
     cartItems.forEach(async (cartItem: any, index: number) => {
-      //if index of pickup time matches index of cartitems map, set pickup time as user set pickup time.
-
-      //complex map of orders and items in cart to produce accurate orders to be passed to the checkout forms.
-      //at one point only God and Maguire knew how this worked. Now only God knows
-      // WORK ON THIS FUNCTION AT RISK OF ANGERING GOD
-      if (cartItem.listing.userId !== prevUserId) {
+      //complex map of items in cart to produce accurate orders to be passed to the checkout forms.
+      if (
+        //if cart item has a different user or a different adress
+        cartItem.listing.userId !== prevUserId ||
+        cartItem.listing.location.address[0] !== prevLocation.address[0]
+      ) {
         if (prevUserId !== null) {
+          //if this is not the first item in the list
+          //build the total price
           const summedTotalPrice = userItems.reduce(
-            (acc: any, curr: any) => acc + curr.price,
+            (acc: any, curr: any) => acc + curr.listing.price * curr.quantity,
             0
           );
+          //map over all items in cart build an array of all listing id's with no repeats. from the user items array which is built after this if statement resolves
           const allListings = userItems.reduce((acc: any, curr: any) => {
-            if (!acc.includes(curr.listingId.toString())) {
-              return [...acc, curr.listingId.toString()];
+            if (!acc.includes(curr.listing.id.toString())) {
+              return [...acc, curr.listing.id.toString()];
             }
             return acc;
           }, []);
 
-          const quantities = allListings.map((listingId: string) => {
+          //build the array of listing id's with their assosiated singular quantities. from the array of all listings
+          const quantities = allListings.map((listingId: any) => {
             const listingQuantity = userItems.reduce(
               (acc: any, curr: any) =>
-                curr.listingId.toString() === listingId
+                curr.listing.id.toString() === listingId
                   ? acc + curr.quantity
                   : acc,
               0
             );
             return { id: listingId, quantity: listingQuantity };
           });
+          //push new object data to the body
           body.push({
             userId: prevUserId,
+            location: prevLocation,
             listingIds: allListings,
             pickupDate: currentpickuparr.pickupTime,
             quantity: JSON.stringify(quantities),
@@ -125,28 +132,32 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             stripePaymentIntentId: "teststring",
           });
         }
-        currentpickuparr = findObjectWithCartIndex(pickupArr, index);
+        currentpickuparr = findObjectWithCartIndex(pickupArr, index); //find pickup time value assosiated with this loop through the array, will not change the value if one is not found?
+        //set previous values for next map. and grab the pickup time values for the object being built.
         prevUserId = cartItem.listing.user.id;
-        userItems = [cartItem];
+        prevLocation = cartItem.listing.location;
+        userItems = [cartItem]; //add the current cart item into the user items array.
       } else {
+        //handle pushing first item into the cartItems array
         userItems.push(cartItem);
       }
     });
 
-    //Handle the last user's items
+    //Handle the last item because previous map only sets data based on previous item.
     if (userItems.length > 0) {
+      //build the total price
       const summedTotalPrice = userItems.reduce(
-        (acc: any, curr: any) => acc + curr.listing.price,
+        (acc: any, curr: any) => acc + curr.listing.price * curr.quantity,
         0
       );
-
+      //map over all items in cart build an array of all listing id's with no repeats. from the user items array which is built after the previous map resolved
       const allListings = userItems.reduce((acc: any, curr: any) => {
         if (!acc.includes(curr.listing.id.toString())) {
           return [...acc, curr.listing.id.toString()];
         }
         return acc;
       }, []);
-
+      //build the array of listing id's with their assosiated singular quantities. from the array of all listings
       const quantities = allListings.map((listingId: string) => {
         const listingQuantity = userItems.reduce(
           (acc: any, curr: any) =>
@@ -157,9 +168,10 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         );
         return { id: listingId, quantity: listingQuantity };
       });
-
+      //push data to the body object
       body.push({
         userId: prevUserId,
+        location: prevLocation,
         listingIds: allListings,
         pickupDate: pickupArr[pickupArr.length - 1].pickupTime,
         quantity: JSON.stringify(quantities),
@@ -167,8 +179,9 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         status: 0,
       });
     }
-
+    console.log(body);
     const post = async () => {
+      //post data to database/set order id's in the session storage for later use.
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
       await datas.forEach((data: any) => {

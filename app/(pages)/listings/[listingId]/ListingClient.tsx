@@ -89,7 +89,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               user={user}
               product={adjustedListing}
               disabled={isLoading}
-              hours={listing.user.hours}
+              hours={listing.location.hours}
               sodt={[listing.SODT, listing.user.SODT]}
             />
             <div className="mt-5">
