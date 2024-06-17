@@ -8,6 +8,28 @@ import { currentUser } from "@/lib/auth";
 // Interface for defining the search parameters
 
 // Main function to fetch listings based on search parameters
+const getUserLocation = async (listing: any) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: listing.user.id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[0];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
@@ -38,7 +60,6 @@ const GetListingsMarket = async (
           id: true,
           role: true,
           name: true,
-          location: true,
         },
       },
     };
@@ -128,44 +149,18 @@ const GetListingsMarket = async (
         });
       }
     }
-    //console.log(listings);
-    const getUserLocation = async (listing: any) => {
-      try {
-        const user = await prisma.user.findUnique({
-          where: {
-            id: listing.user.id,
-          },
-          select: {
-            location: { select: { [listing.location]: true } },
-          },
-        });
 
-        if (!user) {
-          return null;
-        }
-        return user;
-      } catch (error: any) {
-        throw new Error(error);
-      }
-    };
-    const mapListings = async () => {
-      listings.map(async (listing: any, index) => {
-        //console.log(listings[index].location);
-        const userlocation = await getUserLocation(listing);
-        console.log("BEANS", listing.user);
-        // console.log(index);
-        if (!userlocation) {
-          console.log("BEANS");
-          return;
-        }
-        listings[index].location = userlocation.location;
-      });
-    };
-    await mapListings();
-    console.log("BEANS", listings);
-    //console.log(listings[0]);
+    const listerine = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    listings = await Promise.all(listerine);
+
     // If location parameters are provided, filter listings by distance
-    console.log("afsfasfhere");
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -217,11 +212,11 @@ const GetListingsMarket = async (
     const paginatedListings = listings.slice(startIndex, endIndex);
 
     // Convert createdAt dates to ISO strings
-    const safeListings = paginatedListings.map((listing) => ({
-      ...listing,
-      createdAt: listing.createdAt.toISOString(),
-    }));
-
+    const safeListings = paginatedListings.map((listing) => {
+      return {
+        ...listing,
+      };
+    });
     return { listings: safeListings, totalItems };
   } catch (error: any) {
     throw new Error(error);
@@ -241,22 +236,17 @@ const GetListingsByIds = async (params: Params) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        user: {
-          select: {
-            location: true,
-          },
-        },
-      },
     });
-    const safeListings = listings.map((listing) => ({
-      
-      ...listing,
-      location: listing.user.location.[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-    console.log(safeListings);
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -289,9 +279,11 @@ const getListingById = async (params: IParams) => {
       return null;
     }
 
+    const location = await getUserLocation(listing);
+
     return {
       ...listing,
-      location: listing.user.location.[listing.location],
+      location,
       createdAt: listing.createdAt.toString(),
       user: {
         ...listing.user,
@@ -320,12 +312,16 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       },
       include: { user: { select: { location: true } } },
     });
-    const safeListings = listings.map((listing) => ({
-      ...listing,
-      location: listing.user.location.[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -352,13 +348,16 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { location: true } } },
     });
 
-    const safeListings =  listings.map((listing) => ({
-      ...listing,
-      location: listing.user.location.[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }
