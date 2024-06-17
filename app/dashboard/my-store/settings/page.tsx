@@ -63,6 +63,8 @@ const StoreSettings = () => {
         toast.error(error.message);
       });
   };
+
+  console.log(user?.location);
   if (user?.role === UserRole.CONSUMER) {
     return (
       <div className="p-6">
