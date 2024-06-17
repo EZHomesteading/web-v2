@@ -20,7 +20,7 @@ const getConversationById = async (conversationId: string) => {
             name: true,
             role: true,
             image: true,
-            hours: true,
+            //hours: true,
             email: true,
             stripeAccountId: true,
           },
@@ -44,7 +44,7 @@ const getConversationById = async (conversationId: string) => {
         name: user.name,
         role: user.role,
         email: user.email,
-        hours: user.hours,
+        //hours: user.hours,
         location: user.location,
       },
       otherUser: otherUser
@@ -54,7 +54,7 @@ const getConversationById = async (conversationId: string) => {
             role: otherUser.role,
             image: otherUser.image,
             email: otherUser.email,
-            hours: otherUser.hours,
+            //hours: otherUser.hours,
             stripeAccountId: otherUser.stripeAccountId,
           }
         : null,

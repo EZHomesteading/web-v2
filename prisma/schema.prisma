@@ -187,7 +187,7 @@ model Listing {
   minOrder      Int?
   imageSrc      String[]
   shelfLife     Int
-  location      Location?
+  location      Int
   rating    Int?
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())

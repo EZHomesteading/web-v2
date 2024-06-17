@@ -18,6 +18,7 @@ export type CartItem = {
       type: string;
       coordinates: number[];
       address: string[];
+      hours: JsonValue;
     } | null;
     imageSrc: string[];
     userId: string;
@@ -27,7 +28,9 @@ export type CartItem = {
       id: string;
       SODT: number | null;
       name: string;
-      hours: JsonValue;
+      location: any;
+      role: string;
+      //hours: JsonValue;
     };
   };
 };
@@ -49,9 +52,9 @@ const getAllCartItemsByUserId = async () => {
             price: true,
             stock: true,
             SODT: true,
+            quantityType: true,
             location: true,
             minOrder: true,
-            quantityType: true,
             shelfLife: true,
             createdAt: true,
             imageSrc: true,
@@ -61,7 +64,7 @@ const getAllCartItemsByUserId = async () => {
               select: {
                 id: true,
                 name: true,
-                hours: true,
+                location: true,
                 SODT: true,
                 role: true,
               },
@@ -70,6 +73,13 @@ const getAllCartItemsByUserId = async () => {
         },
       },
       orderBy: { listing: { userId: "desc" } },
+    });
+    cartItems.map((listing, index) => {
+      //console.log(listings[index].location);
+      console.log(listing.listing.user);
+      // console.log(index);
+      (cartItems[index].listing.location as any) =
+        listing.listing.user?.location[listing.listing.location];
     });
     return cartItems;
   } catch (error: any) {

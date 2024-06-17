@@ -22,13 +22,14 @@ interface CustomTimeProps {
   onClose: () => void;
   hours: ExtendedHours;
   onSetTime: any;
+  isSeller: boolean;
 }
 
 const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   isOpen,
   onClose,
   hours,
-
+  isSeller,
   onSetTime,
 }) => {
   const now = new Date();
@@ -140,18 +141,32 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div>
         <div className="flex flex-row justify-center items-center   ">
-          <div className="w-fit border-none shadow-none">
-            <div className="grid gap-4">
-              <div className="bg-white">
-                <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                  Co-op Hours Each Day
-                </div>
-                <div className="mt-1">
-                  <HoursDisplay coOpHours={hours} />
+          {isSeller === true ? (
+            <div className="w-[40%] mx-3 border-none shadow-none">
+              <div className="grid gap-4">
+                <div className="bg-white">
+                  <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
+                    These are not your open hours feel free to set whatever time
+                    you are able to set this item out
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="w-fit border-none shadow-none">
+              <div className="grid gap-4">
+                <div className="bg-white">
+                  <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
+                    Co-op Hours Each Day
+                  </div>
+                  <div className="mt-1">
+                    <HoursDisplay coOpHours={hours} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col w-fit">
             <Popover>
               <PopoverTrigger asChild>
