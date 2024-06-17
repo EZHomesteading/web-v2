@@ -12,10 +12,11 @@ const outfit = Outfit({
 });
 type CoopHoursSliderProps = {
   day: string;
-  hours: { open: number; close: number };
+  hours?: { open: number; close: number };
   onChange: (open: number, close: number) => void;
   onNextDay: () => void;
   onPrevDay: () => void;
+  isOpen: boolean;
 };
 
 export default function CoopHoursSlider({
@@ -24,12 +25,15 @@ export default function CoopHoursSlider({
   onChange,
   onNextDay,
   onPrevDay,
+  isOpen,
 }: CoopHoursSliderProps) {
-  const [values, setValues] = useState([hours.open, hours.close]);
-  useEffect(() => {
-    setValues([hours.open, hours.close]);
-  }, [hours]);
+  const [values, setValues] = useState<any>();
 
+  useEffect(() => {
+    if (hours) {
+      setValues([hours.open, hours.close]);
+    }
+  }, [hours]);
   const handleChange = (newValues: number[]) => {
     setValues(newValues);
     onChange(newValues[0], newValues[1]);
@@ -45,7 +49,7 @@ export default function CoopHoursSlider({
         <div
           className={`${outfit.className} flex justify-center text-xl sm:text-2xl`}
         >
-          Primary {day} Hours
+          {isOpen ? <>Primary {day} Hours</> : <>Closed on {day}</>}
         </div>
         <div className="flex justify-end w-12">
           <button onClick={onNextDay} className="ml-2">
@@ -54,26 +58,51 @@ export default function CoopHoursSlider({
         </div>
       </div>
       <div className="relative">
-        {values[0] !== undefined && (
+        {isOpen && values && (
           <>
             <Slider
               value={values}
               min={0}
               max={1439}
               step={15}
-              minStepsBetweenThumbs={2}
+              minStepsBetweenThumbs={4}
               onValueChange={handleChange}
               className="w-full"
             />
-
-            <>
+            <div
+              className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
+            >
               <div
-                className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
+                style={{
+                  position: "absolute",
+                  left: `${(values[0] / 1439) * 100}%`,
+                  transform: "translateX(-50%)",
+                  zIndex: values[0] > values[1] - 60 ? 2 : 1,
+                  backgroundColor: "rgb(20 83 45)",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  color: "white",
+                }}
               >
-                <div>{formatTime(values[0])}</div>
-                <div>{formatTime(values[1])}</div>
+                {formatTime(values[0])}
               </div>
-            </>
+              <div
+                style={{
+                  position: "absolute",
+                  left: `${(values[1] / 1439) * 100}%`,
+                  transform: "translateX(-50%)",
+                  zIndex: values[1] < values[0] + 60 ? 2 : 1,
+                  backgroundColor: "rgb(127 29 29)",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  color: "white",
+                }}
+              >
+                {formatTime(values[1])}
+              </div>
+            </div>
           </>
         )}{" "}
       </div>
