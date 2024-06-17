@@ -6,6 +6,7 @@ import { Zilla_Slab } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+import { Location } from "@/next-auth";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -14,13 +15,7 @@ const zilla = Zilla_Slab({
 });
 
 interface LocationProps {
-  user: {
-    location: {
-      address: string[];
-      hours?: any;
-      coordinates?: any;
-    }[];
-  };
+  location?: Location | undefined;
 }
 
 const locationHeadings = [
@@ -82,7 +77,9 @@ const CardComponent = memo(
                 </div>
               ) : (
                 <div className="text-[1rem] overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {`${address[0]}, ${address[1]}, ${address[2]}, ${address[3]}`}
+                  {address
+                    ? `${address[0]}, ${address[1]}, ${address[2]}, ${address[3]}`
+                    : null}
                 </div>
               )}
             </li>
@@ -141,18 +138,25 @@ const CardComponent = memo(
   }
 );
 
-const HoursLocationContainer = ({ user }: LocationProps) => {
-  const { location } = user || {};
+const HoursLocationContainer = ({ location }: LocationProps) => {
+  // const { location } = user || {};
   const [index, setIndex] = useState<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
-  const [addresses, setAddresses] = useState<{ [key: number]: string[] }>({});
-
+  const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
+  console.log("BEANS 144", location);
   useEffect(() => {
+    console.log("BEANS");
     if (location) {
-      const initialAddresses: { [key: number]: string[] } = {};
-      location.forEach((loc, index) => {
-        initialAddresses[index] = loc.address;
+      console.log("BEANS");
+      let initialAddresses: { [key: number]: string[] } = {};
+      Object.entries(location).forEach(([key, value]) => {
+        if (value === null) {
+          return;
+        }
+        console.log("BEANS 153", value.address);
+        initialAddresses[Number(key)] = value.address;
       });
+      //console.log("BEANS", initialAddresses);
       setAddresses(initialAddresses);
     }
   }, [location]);
@@ -162,11 +166,15 @@ const HoursLocationContainer = ({ user }: LocationProps) => {
   };
 
   const handleCancelAddressChange = (locationIndex: number) => {
-    setAddresses((prevAddresses) => ({
-      ...prevAddresses,
-      [locationIndex]: location?.[locationIndex].address || [],
-    }));
-    setSelectedLocation(null);
+    if (location) {
+      const locationarr = Object.entries(location);
+      const locationObj = locationarr[locationIndex]?.[1];
+      setAddresses((prevAddresses) => ({
+        ...prevAddresses,
+        [locationIndex]: locationObj.address || [],
+      }));
+      setSelectedLocation(null);
+    }
   };
 
   const handleSaveAddress = (locationIndex: number) => {
@@ -176,52 +184,59 @@ const HoursLocationContainer = ({ user }: LocationProps) => {
   };
 
   const renderLocationCards = () => {
-    if (location && location.length > 0) {
+    //console.log(location);
+    if (location) {
+      //console.log(location[0]);
+
       return (
         <div
-          className={`grid grid-rows-${location.length} sm:grid-cols-5 gap-4`}
+          className={`grid grid-rows-${
+            Object.entries(location).length
+          } sm:grid-cols-5 gap-4`}
         >
-          {location.map((locationData: any, locationIndex: number) => {
-            const handleAddressChange = (index: number, value: string) => {
-              setAddresses((prevAddresses) => ({
-                ...prevAddresses,
-                [locationIndex]: prevAddresses[locationIndex]
-                  ? [...prevAddresses[locationIndex]]
-                  : [...locationData.address],
-                [locationIndex]: [
-                  ...prevAddresses[locationIndex].slice(0, index),
-                  value,
-                  ...prevAddresses[locationIndex].slice(index + 1),
-                ],
-              }));
-            };
+          {Object.entries(location).map(
+            (locationData: any, locationIndex: number) => {
+              const handleAddressChange = (index: number, value: string) => {
+                setAddresses((prevAddresses) => ({
+                  ...prevAddresses,
+                  [locationIndex]: prevAddresses[locationIndex]
+                    ? [...prevAddresses[locationIndex]]
+                    : [...locationData.address],
+                  [locationIndex]: [
+                    ...prevAddresses[locationIndex].slice(0, index),
+                    value,
+                    ...prevAddresses[locationIndex].slice(index + 1),
+                  ],
+                }));
+              };
 
-            const handleLocationClick = () => {
-              setIndex(locationIndex);
-            };
+              const handleLocationClick = () => {
+                setIndex(locationIndex);
+              };
 
-            const handleDeleteLocation = () => {};
+              const handleDeleteLocation = () => {};
 
-            return (
-              <CardComponent
-                key={locationIndex}
-                locationIndex={locationIndex}
-                address={addresses[locationIndex] || locationData.address}
-                showAddressChange={selectedLocation === locationIndex}
-                handleAddressChange={handleAddressChange}
-                handleSaveAddress={() => handleSaveAddress(locationIndex)}
-                handleCancelAddressChange={() =>
-                  handleCancelAddressChange(locationIndex)
-                }
-                handleLocationClick={handleLocationClick}
-                handleDeleteLocation={handleDeleteLocation}
-                handleShowAddressChange={() =>
-                  handleShowAddressChange(locationIndex)
-                }
-                hours={locationData?.hours}
-              />
-            );
-          })}
+              return (
+                <CardComponent
+                  key={locationIndex}
+                  locationIndex={locationIndex}
+                  address={addresses[locationIndex] || locationData.address}
+                  showAddressChange={selectedLocation === locationIndex}
+                  handleAddressChange={handleAddressChange}
+                  handleSaveAddress={() => handleSaveAddress(locationIndex)}
+                  handleCancelAddressChange={() =>
+                    handleCancelAddressChange(locationIndex)
+                  }
+                  handleLocationClick={handleLocationClick}
+                  handleDeleteLocation={handleDeleteLocation}
+                  handleShowAddressChange={() =>
+                    handleShowAddressChange(locationIndex)
+                  }
+                  hours={locationData?.hours}
+                />
+              );
+            }
+          )}
         </div>
       );
     }
@@ -231,7 +246,7 @@ const HoursLocationContainer = ({ user }: LocationProps) => {
   const renderSliderSection = () => {
     return (
       <>
-        <SliderSelection user={user} index={index} />
+        <SliderSelection user={location} index={index} />
       </>
     );
   };

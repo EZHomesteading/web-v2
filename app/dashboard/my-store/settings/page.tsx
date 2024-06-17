@@ -40,6 +40,19 @@ const StoreSettings = () => {
   const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
+  // const [hours, setHours]= useState(!user?.hours ?(
+  //    {
+  //     0: null,
+  //     1: null,
+  //     2: null,
+  //     3: null,
+  //     4: null,
+  //     5: null,
+  //     6: null,
+  //   })
+  //  : (
+  //   user?.hours
+  // ))
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const formData = {
@@ -47,12 +60,13 @@ const StoreSettings = () => {
       bio: bio,
       banner: banner,
       location: user?.location
-        ? user.location.map((loc, index) => ({
-            ...loc,
-            // hours: coOpHours,
+        ? Object.entries(user.location).map(([key, value]) => ({
+            ...value,
+            //hours: coOpHours,
           }))
-        : [],
+        : {},
     };
+    console.log("beans", formData);
     axios
       .post("/api/update", formData)
       .then(() => {
@@ -63,7 +77,10 @@ const StoreSettings = () => {
         toast.error(error.message);
       });
   };
-
+  const handleHours = (childTime: Date) => {
+    setHours(childTime);
+  };
+  console.log(user?.location);
   if (user?.role === UserRole.CONSUMER) {
     return (
       <div className="p-6">
@@ -161,7 +178,7 @@ const StoreSettings = () => {
               )}
               <li>Please refresh after clicking update to see changes</li>
             </ul> */}
-            <HoursLocationContainer user={user} />
+            <HoursLocationContainer location={user?.location} />
             <CardFooter className="flex justify-between m-0 p-0 pt-2">
               If you set hours to closed everyday, EZH users will not be able to
               buy from you.

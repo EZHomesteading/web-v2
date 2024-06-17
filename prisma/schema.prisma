@@ -44,9 +44,9 @@ type LocationObj{
 }
 
 type Location {
-  0 LocationObj? 
-  1 LocationObj? 
-  2 LocationObj? 
+  0 LocationObj? @map("0")
+  1 LocationObj? @map("1")
+  2 LocationObj? @map("2")
 }
 
 type notifList {

@@ -22,6 +22,7 @@ import {
 } from "@/app/components/ui/select";
 import { Outfit } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
+import axios from "axios";
 
 const outfit = Outfit({
   display: "swap",
@@ -57,7 +58,7 @@ const SliderSection = ({
   };
 
   const [coOpHours, setCoOpHours] = useState<ExtendedHours>(
-    user.location[0].hours || defaultHours
+    user[0].hours || defaultHours
   );
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [newHours, setNewHours] = useState<{
@@ -208,7 +209,66 @@ const SliderSection = ({
       closeAmPm: "PM",
     }));
   };
+  const onSubmit = async () => {
+    console.log("beans", index);
+    if (index !== null) {
+      console.log("beans", index);
+      const location1 =
+        user[0] === null
+          ? null
+          : {
+              address: user[0].address,
+              type: user[0].type,
+              hours: user[0].hours,
+              coordinates: user[0].coordinates,
+            };
 
+      const location2 =
+        user[1] === null
+          ? null
+          : {
+              address: user[1].address,
+              type: user[1].type,
+              hours: user[1].hours,
+              coordinates: user[1].coordinates,
+            };
+      const location3 =
+        user[2] === null
+          ? null
+          : {
+              address: user[2].address,
+              type: user[2].type,
+              hours: user[2].hours,
+              coordinates: user[2].coordinates,
+            };
+      let formData = {
+        location: {
+          0: location1,
+          1: location2,
+          2: location3,
+        },
+      };
+      if (index === 0 && formData.location[0]) {
+        formData.location[0].hours = coOpHours;
+      }
+      if (index === 1 && formData.location[1]) {
+        formData.location[1].hours = coOpHours;
+      }
+      if (index === 2 && formData.location[2]) {
+        formData.location[2].hours = coOpHours;
+      }
+      console.log("beans", formData);
+      axios
+        .post("/api/update", formData)
+        .then(() => {
+          window.location.replace("/dashboard/");
+          toast.success("Your account details have changed");
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        });
+    }
+  };
   return (
     <div className="relative">
       {" "}
@@ -219,6 +279,7 @@ const SliderSection = ({
         >
           Back to Co-op Locations
         </button>
+        <Button onClick={onSubmit}>Update</Button>
       </div>
       <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
         <div className="grid grid-cols-10"></div>
