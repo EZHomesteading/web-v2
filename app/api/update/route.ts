@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       bio,
       SODT,
       banner,
-      location,
+      location: { 0: location[0] },
     },
   });
   console.log(location);
