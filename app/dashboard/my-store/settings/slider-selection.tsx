@@ -210,9 +210,7 @@ const SliderSection = ({
     }));
   };
   const onSubmit = async () => {
-    console.log("beans", index);
     if (index !== null) {
-      console.log("beans", index);
       const location1 =
         user[0] === null
           ? null
@@ -257,11 +255,10 @@ const SliderSection = ({
       if (index === 2 && formData.location[2]) {
         formData.location[2].hours = coOpHours;
       }
-      console.log("beans", formData);
       axios
         .post("/api/update", formData)
         .then(() => {
-          window.location.replace("/dashboard/");
+          window.location.replace("/dashboard/my-store/settings");
           toast.success("Your account details have changed");
         })
         .catch((error) => {

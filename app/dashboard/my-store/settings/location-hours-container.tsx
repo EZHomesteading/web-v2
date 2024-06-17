@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import SliderSelection from "./slider-selection";
@@ -6,8 +6,29 @@ import { Zilla_Slab } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import { Location } from "@/next-auth";
-
+import { PiTrashSimple } from "react-icons/pi";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/app/components/ui/dialog";
+import { IoIosAdd } from "react-icons/io";
+import axios from "axios";
+import { toast } from "sonner";
+interface LocationData {
+  type: string;
+  coordinates?: number[];
+  address: string[];
+  hours: any;
+}
+interface Location {
+  [key: number]: LocationData | undefined;
+}
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -49,7 +70,7 @@ const CardComponent = memo(
     hours: any;
   }) => {
     return (
-      <Card key={locationIndex} className="col-span-1 h-fit bg">
+      <Card key={locationIndex} className="col-span-1 h-fit bg relative">
         <CardContent>
           <h3 className={locationHeadings[locationIndex]?.style || ""}>
             {locationHeadings[locationIndex]?.text || ""}
@@ -104,7 +125,7 @@ const CardComponent = memo(
             ) : (
               <>
                 <Sheet>
-                  <SheetTrigger className="text-white bg-slate-900 font-extralight">
+                  <SheetTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                     Visualize Hours
                   </SheetTrigger>
                   <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
@@ -123,12 +144,17 @@ const CardComponent = memo(
                 >
                   Change Address
                 </Button>
-                <Button
-                  className="bg-red-950 font-extralight"
-                  onClick={handleDeleteLocation}
-                >
-                  Delete Location & Hours
-                </Button>
+                <Dialog>
+                  <DialogTrigger>
+                    <PiTrashSimple className="text-red-500 font-extralight absolute top-2 right-2" />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <div>
+                      Are you sure you want to delete this location and hours?
+                      This action is irreversible
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </>
             )}
           </div>
@@ -139,27 +165,24 @@ const CardComponent = memo(
 );
 
 const HoursLocationContainer = ({ location }: LocationProps) => {
-  // const { location } = user || {};
   const [index, setIndex] = useState<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
-  console.log("BEANS 144", location);
+  const [locationState, setLocationState] = useState<Location | undefined>(
+    location
+  );
   useEffect(() => {
-    console.log("BEANS");
-    if (location) {
-      console.log("BEANS");
+    if (locationState) {
       let initialAddresses: { [key: number]: string[] } = {};
-      Object.entries(location).forEach(([key, value]) => {
+      Object.entries(locationState).forEach(([key, value]) => {
         if (value === null) {
           return;
         }
-        console.log("BEANS 153", value.address);
         initialAddresses[Number(key)] = value.address;
       });
-      //console.log("BEANS", initialAddresses);
       setAddresses(initialAddresses);
     }
-  }, [location]);
+  }, [locationState]);
 
   const handleShowAddressChange = (locationIndex: number) => {
     setSelectedLocation(locationIndex);
@@ -178,71 +201,190 @@ const HoursLocationContainer = ({ location }: LocationProps) => {
   };
 
   const handleSaveAddress = (locationIndex: number) => {
-    // Update the user's location in the state or make an API call to update it on the server
-    // For example: updateUserLocation(locationIndex, { address: addresses[locationIndex] });
     setSelectedLocation(null);
   };
 
   const renderLocationCards = () => {
-    //console.log(location);
-    if (location) {
-      //console.log(location[0]);
+    const nonNullLocations = Object.entries(locationState || {}).filter(
+      ([_, value]) => value !== null
+    );
+
+    const renderAddLocationCard = () => {
+      const [newAddress, setNewAddress] = useState(["", "", "", ""]);
+      const [showAddLocationCard, setShowAddLocationCard] = useState(false);
+      const handleAddressChange = (index: number, value: string) => {
+        setNewAddress((prevAddress) => [
+          ...prevAddress.slice(0, index),
+          value,
+          ...prevAddress.slice(index + 1),
+        ]);
+      };
+
+      const handleAddLocation = useCallback(() => {
+        const newLocationIndex = Object.values(locationState || {}).findIndex(
+          (location) => location === null || location === undefined
+        );
+
+        if (newLocationIndex !== -1) {
+          const parsedAddress = {
+            type: "Point",
+            coordinates: [],
+            address: newAddress,
+            hours: null,
+          };
+
+          setLocationState((prevLocation) => {
+            const newLocation = { ...prevLocation };
+            newLocation[newLocationIndex] = parsedAddress;
+            return newLocation;
+          });
+
+          console.log("location at submit", locationState);
+          setNewAddress(["", "", "", ""]);
+          setShowAddLocationCard(false);
+
+          postDataToDatabase({
+            ...locationState,
+            [newLocationIndex]: parsedAddress,
+          })
+            .then(() => {
+              // window.location.replace("/dashboard/my-store/settings");
+              toast.success("Your account details have changed");
+            })
+            .catch((error) => {
+              toast.error(error.message);
+            });
+        } else {
+          toast.error("Maximum number of locations reached");
+        }
+      }, [locationState, setLocationState, newAddress]);
+
+      const postDataToDatabase = async (data: Location | undefined) => {
+        console.log("data", data);
+        try {
+          const response = await axios.post("/api/update", { location: data });
+          return response.data;
+        } catch (error) {}
+      };
 
       return (
-        <div
-          className={`grid grid-rows-${
-            Object.entries(location).length
-          } sm:grid-cols-5 gap-4`}
-        >
-          {Object.entries(location).map(
-            (locationData: any, locationIndex: number) => {
-              const handleAddressChange = (index: number, value: string) => {
-                setAddresses((prevAddresses) => ({
-                  ...prevAddresses,
-                  [locationIndex]: prevAddresses[locationIndex]
-                    ? [...prevAddresses[locationIndex]]
-                    : [...locationData.address],
-                  [locationIndex]: [
-                    ...prevAddresses[locationIndex].slice(0, index),
-                    value,
-                    ...prevAddresses[locationIndex].slice(index + 1),
-                  ],
-                }));
-              };
-
-              const handleLocationClick = () => {
-                setIndex(locationIndex);
-              };
-
-              const handleDeleteLocation = () => {};
-
-              return (
-                <CardComponent
-                  key={locationIndex}
-                  locationIndex={locationIndex}
-                  address={addresses[locationIndex] || locationData.address}
-                  showAddressChange={selectedLocation === locationIndex}
-                  handleAddressChange={handleAddressChange}
-                  handleSaveAddress={() => handleSaveAddress(locationIndex)}
-                  handleCancelAddressChange={() =>
-                    handleCancelAddressChange(locationIndex)
-                  }
-                  handleLocationClick={handleLocationClick}
-                  handleDeleteLocation={handleDeleteLocation}
-                  handleShowAddressChange={() =>
-                    handleShowAddressChange(locationIndex)
-                  }
-                  hours={locationData?.hours}
-                />
-              );
-            }
+        <div>
+          {showAddLocationCard ? (
+            <Card className="col-span-1 h-fit bg relative">
+              <CardContent className="pb-3 pt-1">
+                <ul>
+                  <li className={`${zilla.className}`}>
+                    <div className="gap-y-2 flex flex-col">
+                      <Input
+                        onChange={(e) => handleAddressChange(0, e.target.value)}
+                        placeholder="street"
+                      />
+                      <Input
+                        onChange={(e) => handleAddressChange(1, e.target.value)}
+                        placeholder="city"
+                      />
+                      <Input
+                        onChange={(e) => handleAddressChange(2, e.target.value)}
+                        placeholder="state"
+                      />
+                      <Input
+                        onChange={(e) => handleAddressChange(3, e.target.value)}
+                        placeholder="zip"
+                      />
+                    </div>
+                  </li>
+                </ul>
+                <div className="flex justify-center mt-2 gap-x-2">
+                  <Button
+                    className="font-light w-1/2"
+                    onClick={() => {
+                      setShowAddLocationCard(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAddLocation}
+                    className="font-light w-1/2"
+                  >
+                    Add Location
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <Card
+                className="col-span-1 h-full bg relative"
+                onClick={() => {
+                  setShowAddLocationCard(true);
+                }}
+              >
+                <CardContent className="flex flex-col justify-center items-center h-full">
+                  <IoIosAdd className="text-7xl" />
+                  <h2 className="text-lg mt-2 font-bold">
+                    Add New Location & Hours
+                  </h2>
+                </CardContent>
+              </Card>
+            </>
           )}
         </div>
       );
-    }
-    return <div>No locations found.</div>;
-  };
+    };
+    return (
+      <div
+        className={`grid grid-rows-${
+          nonNullLocations.length < 3
+            ? nonNullLocations.length + 1
+            : nonNullLocations.length
+        } sm:grid-cols-5 gap-4`}
+      >
+        {nonNullLocations.map(([key, locationData], locationIndex) => {
+          const handleAddressChange = (index: number, value: any) => {
+            setAddresses((prevAddresses) => ({
+              ...prevAddresses,
+              [Number(key)]: prevAddresses[Number(key)]
+                ? [...prevAddresses[Number(key)]]
+                : [...locationData.address],
+              [Number(key)]: [
+                ...prevAddresses[Number(key)].slice(0, index),
+                value,
+                ...prevAddresses[Number(key)].slice(index + 1),
+              ],
+            }));
+          };
 
+          const handleLocationClick = () => {
+            setIndex(Number(key));
+          };
+
+          const handleDeleteLocation = () => {};
+
+          return (
+            <CardComponent
+              key={key}
+              locationIndex={locationIndex}
+              address={addresses[Number(key)] || locationData.address}
+              showAddressChange={selectedLocation === Number(key)}
+              handleAddressChange={handleAddressChange}
+              handleSaveAddress={() => handleSaveAddress(Number(key))}
+              handleCancelAddressChange={() =>
+                handleCancelAddressChange(Number(key))
+              }
+              handleLocationClick={handleLocationClick}
+              handleDeleteLocation={handleDeleteLocation}
+              handleShowAddressChange={() =>
+                handleShowAddressChange(Number(key))
+              }
+              hours={locationData?.hours}
+            />
+          );
+        })}
+        {nonNullLocations.length < 3 && renderAddLocationCard()}
+      </div>
+    );
+  };
   const renderSliderSection = () => {
     return (
       <>

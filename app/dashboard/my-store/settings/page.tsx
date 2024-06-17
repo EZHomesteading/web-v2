@@ -40,19 +40,6 @@ const StoreSettings = () => {
   const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
-  // const [hours, setHours]= useState(!user?.hours ?(
-  //    {
-  //     0: null,
-  //     1: null,
-  //     2: null,
-  //     3: null,
-  //     4: null,
-  //     5: null,
-  //     6: null,
-  //   })
-  //  : (
-  //   user?.hours
-  // ))
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const formData = {
@@ -62,7 +49,6 @@ const StoreSettings = () => {
       location: user?.location
         ? Object.entries(user.location).map(([key, value]) => ({
             ...value,
-            //hours: coOpHours,
           }))
         : {},
     };
@@ -77,10 +63,6 @@ const StoreSettings = () => {
         toast.error(error.message);
       });
   };
-  const handleHours = (childTime: Date) => {
-    setHours(childTime);
-  };
-  console.log(user?.location);
   if (user?.role === UserRole.CONSUMER) {
     return (
       <div className="p-6">
