@@ -44,12 +44,7 @@ const GetListingsMarket = async (
           SODT: true,
           stock: true,
           description: true,
-          location: {
-            select: {
-              coordinates: true,
-              address: true,
-            },
-          },
+          location: true,
           user: {
             select: {
               id: true,

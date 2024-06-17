@@ -37,7 +37,6 @@ enum Notification {
   EMAIL_NEW_PRODUCER_LISTINGS
 }
 
-
 type Location {
   type String
   coordinates Float[]
