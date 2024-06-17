@@ -77,9 +77,7 @@ const StoreSettings = () => {
         toast.error(error.message);
       });
   };
-  const handleHours = (childTime: Date) => {
-    setHours(childTime);
-  };
+
   console.log(user?.location);
   if (user?.role === UserRole.CONSUMER) {
     return (
