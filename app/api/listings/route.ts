@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       subCategory,
       price,
       minOrder,
-      location: location as Location,
+      location,
       rating,
       userId: user.id!,
     },

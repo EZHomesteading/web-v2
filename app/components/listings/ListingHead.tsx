@@ -5,11 +5,17 @@ import Heading from "../Heading";
 import { Location } from "@prisma/client";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 interface ListingHeadProps {
   title: string;
   imageSrc: string[];
-  location: Location | null;
+  location: {
+    hours: JsonObject;
+    address: string[];
+    coordinates: string[];
+    type: string;
+  };
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({

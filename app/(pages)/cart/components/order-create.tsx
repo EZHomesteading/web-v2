@@ -179,7 +179,6 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         status: 0,
       });
     }
-    console.log(body);
     const post = async () => {
       //post data to database/set order id's in the session storage for later use.
       const response = await axios.post("/api/create-order", body);

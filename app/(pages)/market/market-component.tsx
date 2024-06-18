@@ -75,7 +75,6 @@ const Shop = ({
 
     getLocation();
   }, []);
-  console.log("beans", listings);
   return (
     <ClientOnly>
       <SessionStorageManager />
