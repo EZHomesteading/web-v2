@@ -10,8 +10,10 @@ const PropertiesPage = async () => {
   if (!user) {
     return <EmptyState title="Unauthorized" subtitle="Please login" />;
   }
-
-  const listings = await GetListingsByUserId({ userId: user.id });
+  console.log(user.id);
+  const userId = user.id;
+  const listings = await GetListingsByUserId({ userId });
+  console.log(listings);
   if (listings.length === 0) {
     return (
       <ClientOnly>

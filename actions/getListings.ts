@@ -30,6 +30,12 @@ const getUserLocation = async (listing: any) => {
     throw new Error(error);
   }
 };
+function filterListingsByLocation(listings: any) {
+  return listings.filter((listing: any) => {
+    return listing.location !== undefined;
+  });
+}
+
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
@@ -152,6 +158,7 @@ const GetListingsMarket = async (
 
     const listerine = listings.map(async (listing) => {
       const location = await getUserLocation(listing);
+
       return {
         ...listing,
         location,
@@ -159,7 +166,8 @@ const GetListingsMarket = async (
       };
     });
     listings = await Promise.all(listerine);
-
+    listings = await filterListingsByLocation(listings);
+    console.log(listings);
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
@@ -245,7 +253,8 @@ const GetListingsByIds = async (params: Params) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -302,13 +311,9 @@ const getListingById = async (params: IParams) => {
 const GetListingsByUserId = async (params: IListingsOrderParams) => {
   try {
     const { userId } = params;
-    let query: any = {};
-
-    if (userId) {
-      query.userId = userId;
-    }
+    console.log(typeof userId);
     let listings = await prisma.listing.findMany({
-      where: query,
+      where: { userId: userId },
       orderBy: {
         createdAt: "desc",
       },
@@ -321,7 +326,9 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
+    console.log(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -357,7 +364,8 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
