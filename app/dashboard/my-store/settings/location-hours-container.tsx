@@ -8,11 +8,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { PiTrashSimple } from "react-icons/pi";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
-import {
   Dialog,
   DialogContent,
   DialogTrigger,
@@ -20,29 +15,27 @@ import {
 import { IoIosAdd } from "react-icons/io";
 import axios from "axios";
 import { toast } from "sonner";
-interface LocationData {
-  type: string;
-  coordinates?: number[];
-  address: string[];
-  hours: any;
-}
-interface Location {
-  [key: number]: LocationData | undefined;
-}
+import { LocationObj } from "@prisma/client";
+
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
   weight: ["300"],
 });
 
+interface Location {
+  [key: number]: LocationObj | undefined;
+}
+
 interface LocationProps {
   location?: Location | undefined;
+  apiKey: string;
 }
 
 const locationHeadings = [
   { text: "Default Location", style: "text-2xl mt-2 font-bold" },
   { text: "Secondary Location", style: "text-2xl mt-2 font-semibold" },
-  { text: "Tertiary Location", style: "text-2xl mt-2 font-medium" },
+  { text: "Third Location", style: "text-2xl mt-2 font-medium" },
 ];
 
 const CardComponent = memo(
@@ -57,6 +50,7 @@ const CardComponent = memo(
     handleDeleteLocation,
     handleShowAddressChange,
     hours,
+    locationState,
   }: {
     locationIndex: number;
     address: string[];
@@ -65,13 +59,21 @@ const CardComponent = memo(
     showAddressChange: boolean;
     handleCancelAddressChange: () => void;
     handleLocationClick: () => void;
-    handleDeleteLocation: () => void;
+    handleDeleteLocation: (locationIndex: number) => void;
     handleShowAddressChange: () => void;
     hours: any;
+    locationState: Location | undefined;
   }) => {
+    {
+      locationState && console.log(locationState[locationIndex]);
+    }
+
     return (
-      <Card key={locationIndex} className="col-span-1 h-fit bg relative">
-        <CardContent>
+      <Card
+        key={locationIndex}
+        className="col-span-1 h-fit bg relative w-5/6 sm:w-full"
+      >
+        <CardContent className="">
           <h3 className={locationHeadings[locationIndex]?.style || ""}>
             {locationHeadings[locationIndex]?.text || ""}
           </h3>
@@ -97,7 +99,7 @@ const CardComponent = memo(
                   />
                 </div>
               ) : (
-                <div className="text-[1rem] overflow-hidden whitespace-nowrap overflow-ellipsis">
+                <div className="text-[1rem] truncate w-full">
                   {address
                     ? `${address[0]}, ${address[1]}, ${address[2]}, ${address[3]}`
                     : null}
@@ -132,12 +134,19 @@ const CardComponent = memo(
                     <HoursDisplay coOpHours={hours} />
                   </SheetContent>
                 </Sheet>
-                <Button
-                  className="font-extralight"
-                  onClick={handleLocationClick}
-                >
-                  Change Hours
-                </Button>
+                <Dialog>
+                  <DialogTrigger>
+                    <Button className="font-extralight">Change Hours</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    {locationState && (
+                      <SliderSelection
+                        location={locationState[locationIndex]}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
+
                 <Button
                   className="font-extralight"
                   onClick={handleShowAddressChange}
@@ -152,6 +161,11 @@ const CardComponent = memo(
                     <div>
                       Are you sure you want to delete this location and hours?
                       This action is irreversible
+                      <Button
+                        onClick={() => handleDeleteLocation(locationIndex)}
+                      >
+                        I'm sure
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -163,8 +177,91 @@ const CardComponent = memo(
     );
   }
 );
+const AddLocationCard = ({
+  onAddLocation,
+}: {
+  onAddLocation: (newAddress: string[]) => void;
+}) => {
+  const [newAddress, setNewAddress] = useState(["", "", "", ""]);
+  const [showAddLocationCard, setShowAddLocationCard] = useState(false);
 
-const HoursLocationContainer = ({ location }: LocationProps) => {
+  const handleAddressChange = (index: number, value: string) => {
+    setNewAddress((prevAddress) => [
+      ...prevAddress.slice(0, index),
+      value,
+      ...prevAddress.slice(index + 1),
+    ]);
+  };
+
+  const handleAddLocation = () => {
+    onAddLocation(newAddress);
+    setNewAddress(["", "", "", ""]);
+    setShowAddLocationCard(false);
+  };
+
+  return (
+    <div>
+      {showAddLocationCard ? (
+        <Card className="col-span-1 h-fit bg relative w-5/6 sm:w-full">
+          <CardContent className="pb-3 pt-1">
+            <ul>
+              <li className={`${zilla.className}`}>
+                <div className="gap-y-2 flex flex-col">
+                  <Input
+                    onChange={(e) => handleAddressChange(0, e.target.value)}
+                    placeholder="street"
+                  />
+                  <Input
+                    onChange={(e) => handleAddressChange(1, e.target.value)}
+                    placeholder="city"
+                  />
+                  <Input
+                    onChange={(e) => handleAddressChange(2, e.target.value)}
+                    placeholder="state"
+                  />
+                  <Input
+                    onChange={(e) => handleAddressChange(3, e.target.value)}
+                    placeholder="zip"
+                  />
+                </div>
+              </li>
+            </ul>
+            <div className="flex justify-center mt-2 gap-x-2">
+              <Button
+                className="font-light w-1/2"
+                onClick={() => {
+                  setShowAddLocationCard(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAddLocation} className="font-light w-1/2">
+                Add Location
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <Card
+            className="col-span-1 h-full bg relative w-5/6 sm:w-full"
+            onClick={() => {
+              setShowAddLocationCard(true);
+            }}
+          >
+            <CardContent className="flex flex-col justify-center items-center h-full">
+              <IoIosAdd className="text-7xl" />
+              <h2 className="text-lg mt-2 font-bold">
+                Add New Location & Hours
+              </h2>
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </div>
+  );
+};
+const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
   const [index, setIndex] = useState<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
@@ -187,21 +284,48 @@ const HoursLocationContainer = ({ location }: LocationProps) => {
   const handleShowAddressChange = (locationIndex: number) => {
     setSelectedLocation(locationIndex);
   };
+  const handleDeleteLocation = (locationIndex: number) => {
+    setLocationState((prevLocationState) => {
+      const updatedLocationState = { ...prevLocationState };
+      delete updatedLocationState[locationIndex];
 
-  const handleCancelAddressChange = (locationIndex: number) => {
-    if (location) {
-      const locationarr = Object.entries(location);
-      const locationObj = locationarr[locationIndex]?.[1];
-      setAddresses((prevAddresses) => ({
-        ...prevAddresses,
-        [locationIndex]: locationObj.address || [],
-      }));
-      setSelectedLocation(null);
-    }
+      const shiftedLocationState = Object.entries(updatedLocationState).reduce(
+        (acc, [key, value], index) => {
+          acc[index] = value;
+          return acc;
+        },
+        {} as Location
+      );
+      post(shiftedLocationState);
+      return shiftedLocationState;
+    });
+  };
+  const handleCancelAddressChange = () => {
+    setSelectedLocation(null);
   };
 
-  const handleSaveAddress = (locationIndex: number) => {
-    setSelectedLocation(null);
+  const handleSaveAddress = async (locationIndex: number) => {
+    const updatedAddress = addresses[locationIndex].join(", ");
+    const latLng = await getLatLngFromAddress(updatedAddress);
+
+    if (latLng) {
+      setLocationState((prevLocationState) => {
+        const updatedLocationState = { ...prevLocationState };
+        const updatedLocation: LocationObj = {
+          ...updatedLocationState[locationIndex],
+          address: addresses[locationIndex],
+          type: "Point",
+          coordinates: [latLng.lng, latLng.lat],
+          hours: updatedLocationState[locationIndex]?.hours || null,
+        };
+        updatedLocationState[locationIndex] = updatedLocation;
+        post(updatedLocationState);
+        return updatedLocationState;
+      });
+      setSelectedLocation(null);
+    } else {
+      toast.error("Invalid address. Please enter a valid address.");
+    }
   };
 
   const renderLocationCards = () => {
@@ -209,136 +333,56 @@ const HoursLocationContainer = ({ location }: LocationProps) => {
       ([_, value]) => value !== null
     );
 
-    const renderAddLocationCard = () => {
-      const [newAddress, setNewAddress] = useState(["", "", "", ""]);
-      const [showAddLocationCard, setShowAddLocationCard] = useState(false);
-      const handleAddressChange = (index: number, value: string) => {
-        setNewAddress((prevAddress) => [
-          ...prevAddress.slice(0, index),
-          value,
-          ...prevAddress.slice(index + 1),
-        ]);
-      };
+    const handleAddLocation = useCallback(
+      async (newAddress: string[]) => {
+        const updatedAddress = newAddress.join(", ");
+        console.log(updatedAddress);
+        const latLng = await getLatLngFromAddress(updatedAddress);
 
-      const handleAddLocation = useCallback(() => {
-        const newLocationIndex = Object.values(locationState || {}).findIndex(
-          (location) => location === null || location === undefined
-        );
-
-        if (newLocationIndex !== -1) {
-          const parsedAddress = {
-            type: "Point",
-            coordinates: [],
+        if (latLng) {
+          const parsedAddress: LocationObj = {
             address: newAddress,
+            coordinates: [latLng.lng, latLng.lat],
             hours: null,
+            type: "Point",
           };
 
-          setLocationState((prevLocation) => {
-            const newLocation = { ...prevLocation };
-            newLocation[newLocationIndex] = parsedAddress;
-            return newLocation;
-          });
+          const updatedLocationState = { ...locationState };
+          const firstNullIndex = Object.values(updatedLocationState).findIndex(
+            (location) => location === null
+          );
 
-          console.log("location at submit", locationState);
-          setNewAddress(["", "", "", ""]);
-          setShowAddLocationCard(false);
+          if (firstNullIndex !== -1) {
+            updatedLocationState[firstNullIndex] = parsedAddress;
+          } else {
+            const newLocationIndex = Object.keys(updatedLocationState).length;
+            updatedLocationState[newLocationIndex] = parsedAddress;
+          }
 
-          postDataToDatabase({
-            ...locationState,
-            [newLocationIndex]: parsedAddress,
-          })
-            .then(() => {
-              // window.location.replace("/dashboard/my-store/settings");
-              toast.success("Your account details have changed");
-            })
-            .catch((error) => {
-              toast.error(error.message);
+          setLocationState(updatedLocationState);
+
+          try {
+            await post(updatedLocationState);
+            toast.success("Your account details have changed", {
+              duration: 2000,
             });
+          } catch (error) {
+            toast.error("There was an error adding the new location");
+          }
         } else {
-          toast.error("Maximum number of locations reached");
+          toast.error("Invalid address. Please enter a valid address.");
         }
-      }, [locationState, setLocationState, newAddress]);
+      },
+      [locationState, setLocationState]
+    );
 
-      const postDataToDatabase = async (data: Location | undefined) => {
-        console.log("data", data);
-        try {
-          const response = await axios.post("/api/update", { location: data });
-          return response.data;
-        } catch (error) {}
-      };
-
-      return (
-        <div>
-          {showAddLocationCard ? (
-            <Card className="col-span-1 h-fit bg relative">
-              <CardContent className="pb-3 pt-1">
-                <ul>
-                  <li className={`${zilla.className}`}>
-                    <div className="gap-y-2 flex flex-col">
-                      <Input
-                        onChange={(e) => handleAddressChange(0, e.target.value)}
-                        placeholder="street"
-                      />
-                      <Input
-                        onChange={(e) => handleAddressChange(1, e.target.value)}
-                        placeholder="city"
-                      />
-                      <Input
-                        onChange={(e) => handleAddressChange(2, e.target.value)}
-                        placeholder="state"
-                      />
-                      <Input
-                        onChange={(e) => handleAddressChange(3, e.target.value)}
-                        placeholder="zip"
-                      />
-                    </div>
-                  </li>
-                </ul>
-                <div className="flex justify-center mt-2 gap-x-2">
-                  <Button
-                    className="font-light w-1/2"
-                    onClick={() => {
-                      setShowAddLocationCard(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleAddLocation}
-                    className="font-light w-1/2"
-                  >
-                    Add Location
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              <Card
-                className="col-span-1 h-full bg relative"
-                onClick={() => {
-                  setShowAddLocationCard(true);
-                }}
-              >
-                <CardContent className="flex flex-col justify-center items-center h-full">
-                  <IoIosAdd className="text-7xl" />
-                  <h2 className="text-lg mt-2 font-bold">
-                    Add New Location & Hours
-                  </h2>
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </div>
-      );
-    };
     return (
       <div
         className={`grid grid-rows-${
           nonNullLocations.length < 3
             ? nonNullLocations.length + 1
             : nonNullLocations.length
-        } sm:grid-cols-5 gap-4`}
+        } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
       >
         {nonNullLocations.map(([key, locationData], locationIndex) => {
           const handleAddressChange = (index: number, value: any) => {
@@ -356,10 +400,8 @@ const HoursLocationContainer = ({ location }: LocationProps) => {
           };
 
           const handleLocationClick = () => {
-            setIndex(Number(key));
+            setIndex(locationIndex);
           };
-
-          const handleDeleteLocation = () => {};
 
           return (
             <CardComponent
@@ -369,39 +411,55 @@ const HoursLocationContainer = ({ location }: LocationProps) => {
               showAddressChange={selectedLocation === Number(key)}
               handleAddressChange={handleAddressChange}
               handleSaveAddress={() => handleSaveAddress(Number(key))}
-              handleCancelAddressChange={() =>
-                handleCancelAddressChange(Number(key))
-              }
+              handleCancelAddressChange={() => handleCancelAddressChange()}
               handleLocationClick={handleLocationClick}
-              handleDeleteLocation={handleDeleteLocation}
+              handleDeleteLocation={() => handleDeleteLocation(locationIndex)}
               handleShowAddressChange={() =>
                 handleShowAddressChange(Number(key))
               }
               hours={locationData?.hours}
+              locationState={locationState}
             />
           );
         })}
-        {nonNullLocations.length < 3 && renderAddLocationCard()}
+        {nonNullLocations.length < 3 && (
+          <AddLocationCard onAddLocation={handleAddLocation} />
+        )}
       </div>
     );
   };
-  const renderSliderSection = () => {
-    return (
-      <>
-        <SliderSelection user={location} index={index} />
-      </>
-    );
+  const getLatLngFromAddress = async (address: string) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
   };
 
   return (
     <>
-      {index === null ? (
-        <div className="">{renderLocationCards()}</div>
-      ) : (
-        renderSliderSection()
-      )}
+      <div className="">{renderLocationCards()}</div>
     </>
   );
 };
 
 export default HoursLocationContainer;
+const post = async (data: Location | undefined) => {
+  try {
+    const response = await axios.post("/api/update", { location: data });
+    return response.data;
+  } catch (error) {
+    toast.error("There was an error updating your location or hours");
+  }
+};

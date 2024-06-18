@@ -10,7 +10,7 @@ import {
 } from "@/app/components/ui/popover";
 import { Input } from "@/app/components/ui/input";
 import { PiTrashSimpleThin } from "react-icons/pi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExtendedHours } from "@/next-auth";
 import { toast } from "sonner";
 import {
@@ -23,6 +23,7 @@ import {
 import { Outfit } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import axios from "axios";
+import { LocationObj } from "@prisma/client";
 
 const outfit = Outfit({
   display: "swap",
@@ -39,14 +40,7 @@ const days = [
   "Sunday",
 ];
 
-const SliderSection = ({
-  user,
-  index,
-}: {
-  user: any;
-  index: number | null;
-}) => {
-  const [sliderIndex, setIndex] = useState(index);
+const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
   const defaultHours: ExtendedHours = {
     0: null,
     1: null,
@@ -57,9 +51,14 @@ const SliderSection = ({
     6: null,
   };
 
-  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(
-    user[0].hours || defaultHours
-  );
+  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
+
+  useEffect(() => {
+    if (location?.hours) {
+      setCoOpHours(location.hours);
+    }
+  }, [location?.hours]);
+
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [newHours, setNewHours] = useState<{
     open: number;
@@ -270,12 +269,6 @@ const SliderSection = ({
     <div className="relative">
       {" "}
       <div className="block xl:absolute lg:top-1">
-        <button
-          className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md"
-          onClick={() => setIndex(null)}
-        >
-          Back to Co-op Locations
-        </button>
         <Button onClick={onSubmit}>Update</Button>
       </div>
       <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
