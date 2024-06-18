@@ -261,6 +261,7 @@ const AddLocationCard = ({
     </div>
   );
 };
+
 const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
   const [index, setIndex] = useState<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
