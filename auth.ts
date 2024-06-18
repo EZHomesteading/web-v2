@@ -37,7 +37,7 @@ export const {
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         session.user.location = token.location as Location;
         session.user.image = token.image as string | undefined;
-        session.user.hours = token.hours as ExtendedHours;
+        //session.user.hours = token.hours as ExtendedHours;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
@@ -68,7 +68,7 @@ export const {
       token.phoneNumber = existingUser.phoneNumber;
       token.location = existingUser.location;
       token.image = existingUser.image;
-      token.hours = existingUser.hours;
+      //token.hours = existingUser.hours;
       token.url = existingUser.url;
       token.role = existingUser.role;
       token.password = existingUser.password;

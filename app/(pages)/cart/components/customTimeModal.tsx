@@ -39,7 +39,6 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   onSetTime,
   role,
 }) => {
-  console.log(hours);
   const now = new Date();
   // useState hooks to manage the state of the date and options
   const [date, setDate] = useState<Date | undefined>(now); // current time

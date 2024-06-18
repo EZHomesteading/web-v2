@@ -32,8 +32,8 @@ const Page = ({ apiKey }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   let fullAddress =
-    user?.location && user.location.length > 0
-      ? `${user.location[0].address[0]}, ${user.location[0].address[1]}, ${user.location[0].address[2]}, ${user.location[0].address[3]}`
+    user?.location && Object.entries(user.location).length > 0
+      ? `${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`
       : "";
   type AddressComponents = {
     street: string;
@@ -78,51 +78,47 @@ const Page = ({ apiKey }: Props) => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data.street);
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
     ) {
       fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
     }
     if (fullAddress !== ", , , ") {
-      if (user?.location?.length === 0) {
+      if (user?.location && Object.entries(user.location).length === 0) {
       }
-      console.log(fullAddress);
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
 
       if (geoData) {
-        console.log([
-          {
-            type: "Point",
-            coordinates: [geoData.lng, geoData.lat],
-            address: [data.street, data.city, data.state, data.zip],
-          },
-        ]);
         const formData = {
           image: data.image,
           name: data.name,
           email: data.email,
           phoneNumer: data.phoneNumber,
           location:
-            user?.location?.length === 0 ||
+            (user?.location && Object.entries(user.location).length === 0) ||
             user?.location === undefined ||
             user?.location === null
-              ? [
-                  {
+              ? {
+                  0: {
                     type: "Point",
                     coordinates: [geoData.lng, geoData.lat],
                     address: [data.street, data.city, data.state, data.zip],
+                    hours: null,
                   },
-                ]
-              : user?.location?.map((loc, index) => ({
-                  ...loc,
-                  type: "Point",
-                  coordinates: [geoData.lng, geoData.lat],
-                  address: [data.street, data.city, data.state, data.zip],
-                })),
+                }
+              : {
+                  0: {
+                    type: "Point",
+                    coordinates: [geoData.lng, geoData.lat],
+                    address: [data.street, data.city, data.state, data.zip],
+                    hours: user?.location[0]?.hours
+                      ? user?.location[0]?.hours
+                      : null,
+                  },
+                },
         };
-        console.log(formData);
+        console.log("BEANS", formData);
         axios
           .post("/api/update", formData)
           .then(() => {
@@ -135,7 +131,6 @@ const Page = ({ apiKey }: Props) => {
           .finally(() => {
             window.location.reload();
             setIsLoading(false);
-
             return;
           });
       } else
@@ -324,61 +319,63 @@ const Page = ({ apiKey }: Props) => {
         </CardContent>
       </Card>
       <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h5 className="text-lg lg:text-2xl">Address</h5>
-          <ul>
-            <li>
-              {user?.role == UserRole.COOP ||
-              user?.role == UserRole.PRODUCER ? (
-                <>This is your default selling location.</>
-              ) : (
-                <></>
-              )}
-            </li>
-          </ul>
-          <div>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium leading-6"
-            >
-              {!user?.location || user.location.length === 0 ? (
-                <>You do not currently have a saved address</>
-              ) : (
-                `Your current address is${" "}${user.location[0].address[0]}, ${
-                  user.location[0].address[1]
-                },${" "}
-      ${user.location[0].address[2]}, ${user.location[0].address[3]}`
-              )}
-            </label>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium leading-6"
-            >
-              To change this, enter a new address
-            </label>
-            <div className="flex justify-end">
-              <LocationSearchInput
-                apiKey={apiKey}
-                address={watch("address")}
-                setAddress={(address) => setValue("address", address)}
-                onAddressParsed={handleAddressSelect}
-              />
+        {user?.role === "COOP" ? null : (
+          <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
+            <h5 className="text-lg lg:text-2xl">Address</h5>
+            <ul>
+              <li>
+                {user?.role == UserRole.PRODUCER ? (
+                  <>This is your default selling location.</>
+                ) : (
+                  <></>
+                )}
+              </li>
+            </ul>
+            <div>
+              <label
+                htmlFor="address"
+                className="block text-sm font-medium leading-6"
+              >
+                {!user?.location ||
+                Object.entries(user.location).length === 0 ? (
+                  <>You do not currently have a saved address</>
+                ) : (
+                  `Your current address is${" "}${
+                    user?.location[0]?.address[0]
+                  }, ${user?.location[0]?.address[1]},${" "}
+      ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`
+                )}
+              </label>
+              <label
+                htmlFor="address"
+                className="block text-sm font-medium leading-6"
+              >
+                To change this, enter a new address
+              </label>
+              <div className="flex justify-end">
+                <LocationSearchInput
+                  apiKey={apiKey}
+                  address={watch("address")}
+                  setAddress={(address) => setValue("address", address)}
+                  onAddressParsed={handleAddressSelect}
+                />
+              </div>
             </div>
-          </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            {user?.role == UserRole.COOP || user?.role == UserRole.PRODUCER ? (
-              <>
-                An address is required for your account type to prevent
-                fradulence.
-              </>
-            ) : (
-              <>
-                An address is not required for your account type, but will
-                improve your experience on EZH.
-              </>
-            )}
-          </CardFooter>
-        </CardContent>
+            <CardFooter className="flex justify-between m-0 p-0 pt-2">
+              {user?.role == UserRole.PRODUCER ? (
+                <>
+                  An address is required for your account type to prevent
+                  fradulence.
+                </>
+              ) : (
+                <>
+                  An address is not required for your account type, but will
+                  improve your experience on EZH.
+                </>
+              )}
+            </CardFooter>
+          </CardContent>
+        )}
       </Card>
       <Card>
         <CardContent className="sheet shadow-lg">

@@ -10,7 +10,7 @@ import {
 } from "@/app/components/ui/popover";
 import { Input } from "@/app/components/ui/input";
 import { PiTrashSimpleThin } from "react-icons/pi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExtendedHours } from "@/next-auth";
 import { toast } from "sonner";
 import {
@@ -22,6 +22,8 @@ import {
 } from "@/app/components/ui/select";
 import { Outfit } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
+import axios from "axios";
+import { LocationObj } from "@prisma/client";
 
 const outfit = Outfit({
   display: "swap",
@@ -38,14 +40,7 @@ const days = [
   "Sunday",
 ];
 
-const SliderSection = ({
-  user,
-  index,
-}: {
-  user: any;
-  index: number | null;
-}) => {
-  const [sliderIndex, setIndex] = useState(index);
+const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
   const defaultHours: ExtendedHours = {
     0: null,
     1: null,
@@ -56,9 +51,14 @@ const SliderSection = ({
     6: null,
   };
 
-  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(
-    user.location[0].hours || defaultHours
-  );
+  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
+
+  useEffect(() => {
+    if (location?.hours) {
+      setCoOpHours(location.hours);
+    }
+  }, [location?.hours]);
+
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [newHours, setNewHours] = useState<{
     open: number;
@@ -208,17 +208,68 @@ const SliderSection = ({
       closeAmPm: "PM",
     }));
   };
+  const onSubmit = async () => {
+    if (index !== null) {
+      const location1 =
+        user[0] === null
+          ? null
+          : {
+              address: user[0].address,
+              type: user[0].type,
+              hours: user[0].hours,
+              coordinates: user[0].coordinates,
+            };
 
+      const location2 =
+        user[1] === null
+          ? null
+          : {
+              address: user[1].address,
+              type: user[1].type,
+              hours: user[1].hours,
+              coordinates: user[1].coordinates,
+            };
+      const location3 =
+        user[2] === null
+          ? null
+          : {
+              address: user[2].address,
+              type: user[2].type,
+              hours: user[2].hours,
+              coordinates: user[2].coordinates,
+            };
+      let formData = {
+        location: {
+          0: location1,
+          1: location2,
+          2: location3,
+        },
+      };
+      if (index === 0 && formData.location[0]) {
+        formData.location[0].hours = coOpHours;
+      }
+      if (index === 1 && formData.location[1]) {
+        formData.location[1].hours = coOpHours;
+      }
+      if (index === 2 && formData.location[2]) {
+        formData.location[2].hours = coOpHours;
+      }
+      axios
+        .post("/api/update", formData)
+        .then(() => {
+          window.location.replace("/dashboard/my-store/settings");
+          toast.success("Your account details have changed");
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        });
+    }
+  };
   return (
     <div className="relative">
       {" "}
       <div className="block xl:absolute lg:top-1">
-        <button
-          className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md"
-          onClick={() => setIndex(null)}
-        >
-          Back to Co-op Locations
-        </button>
+        <Button onClick={onSubmit}>Update</Button>
       </div>
       <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
         <div className="grid grid-cols-10"></div>

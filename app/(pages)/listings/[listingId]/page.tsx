@@ -6,10 +6,13 @@ import ListingClient from "./ListingClient";
 import { getUserwithCart } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
+import { SafeListing } from "@/types";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 interface IParams {
   listingId?: string;
 }
+
 const apiKey = process.env.MAPS_KEY as string;
 const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);

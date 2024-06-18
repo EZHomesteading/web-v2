@@ -36,12 +36,17 @@ enum Notification {
   SMS_NEW_PRODUCER_LISTINGS
   EMAIL_NEW_PRODUCER_LISTINGS
 }
-
-type Location {
+type LocationObj{
   type String
   coordinates Float[]
   address String[]
   hours   Json?
+}
+
+type Location {
+  0 LocationObj? @map("0")
+  1 LocationObj? @map("1")
+  2 LocationObj? @map("2")
 }
 
 type notifList {
@@ -70,7 +75,7 @@ model User {
   firstName             String?
   emailVerified         DateTime?
   phoneNumber           String? 
-  location              Location[]
+  location              Location?
   image                 String?
 
   role                  UserRole @default(CONSUMER)
@@ -229,7 +234,7 @@ model Order {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   fee                   Float
-location              Location?
+  location              LocationObj
   conversationId        String?   @db.ObjectId
   payments              Payment[]
 

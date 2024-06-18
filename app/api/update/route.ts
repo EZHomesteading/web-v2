@@ -42,23 +42,6 @@ export async function POST(request: Request) {
     },
   });
   console.log(location);
-  //updatedUser = await prisma.user.updateMany({
-  //where: { id: user.id },
-  //data: {
-  // location, //: //location.map(
-  // (loc: {
-  // type: "Point";
-  // coordinates: { lng: number; lat: number };
-  // address: String[];
-  // hours: any;
-  // }) => ({
-  //   type: loc.type,
-  //   coordinates: loc.coordinates,
-  //   address: loc.address,
-  //   hours: loc.hours,
-  // })
-  //),
-  //},
-  //});
+
   return NextResponse.json(updatedUser);
 }

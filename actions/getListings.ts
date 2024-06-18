@@ -8,6 +8,28 @@ import { currentUser } from "@/lib/auth";
 // Interface for defining the search parameters
 
 // Main function to fetch listings based on search parameters
+const getUserLocation = async (listing: any) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: listing.user.id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[0];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
@@ -20,9 +42,31 @@ const GetListingsMarket = async (
     let query: any = {};
 
     let listings: any[] = [];
+    const listingSelect = {
+      id: true,
+      title: true,
+      quantityType: true,
+      subCategory: true,
+      category: true,
+      price: true,
+      imageSrc: true,
+      minOrder: true,
+      createdAt: true,
+      stock: true,
+      description: true,
+      location: true,
+      user: {
+        select: {
+          id: true,
+          role: true,
+          name: true,
+        },
+      },
+    };
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
+
       listings = await prisma.listing.findMany({
         where: {
           user: {
@@ -31,30 +75,9 @@ const GetListingsMarket = async (
           ...query,
           stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
-        select: {
-          id: true,
-          title: true,
-          quantityType: true,
-          price: true,
-          imageSrc: true,
-          subCategory: true,
-          category: true,
-          createdAt: true,
-          minOrder: true,
-          SODT: true,
-          stock: true,
-          description: true,
-          location: true,
-          user: {
-            select: {
-              id: true,
-              role: true,
-              name: true,
-              SODT: true,
-              location: true,
-            },
-          },
-        },
+        select: listingSelect,
+        //SODT: true,
+
         orderBy: {
           createdAt: "desc",
         },
@@ -77,28 +100,7 @@ const GetListingsMarket = async (
             ...query,
             stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
-          select: {
-            id: true,
-            title: true,
-            quantityType: true,
-            price: true,
-            minOrder: true,
-            imageSrc: true,
-            createdAt: true,
-            subCategory: true,
-            category: true,
-            stock: true,
-            description: true,
-            location: true,
-            user: {
-              select: {
-                id: true,
-                role: true,
-                name: true,
-                location: true,
-              },
-            },
-          },
+          select: listingSelect,
           orderBy: {
             createdAt: "desc",
           },
@@ -113,28 +115,7 @@ const GetListingsMarket = async (
             ...query,
             stock: s === "f" ? { lt: 1 } : { gt: 0 },
           },
-          select: {
-            id: true,
-            title: true,
-            quantityType: true,
-            price: true,
-            category: true,
-            subCategory: true,
-            imageSrc: true,
-            minOrder: true,
-            createdAt: true,
-            stock: true,
-            description: true,
-            location: true,
-            user: {
-              select: {
-                id: true,
-                role: true,
-                name: true,
-                location: true,
-              },
-            },
-          },
+          select: listingSelect,
           orderBy: {
             createdAt: "desc",
           },
@@ -152,28 +133,7 @@ const GetListingsMarket = async (
           orderBy: {
             createdAt: "desc",
           },
-          select: {
-            id: true,
-            title: true,
-            quantityType: true,
-            price: true,
-            subCategory: true,
-            category: true,
-            minOrder: true,
-            imageSrc: true,
-            createdAt: true,
-            stock: true,
-            description: true,
-            location: true,
-            user: {
-              select: {
-                id: true,
-                role: true,
-                name: true,
-                location: true,
-              },
-            },
-          },
+          select: listingSelect,
         });
       } else {
         // Case 5: Fetch all listings
@@ -185,42 +145,22 @@ const GetListingsMarket = async (
           orderBy: {
             createdAt: "desc",
           },
-          select: {
-            id: true,
-            title: true,
-            quantityType: true,
-            subCategory: true,
-            category: true,
-            price: true,
-            imageSrc: true,
-            minOrder: true,
-            createdAt: true,
-            stock: true,
-            description: true,
-            location: true,
-            user: {
-              select: {
-                id: true,
-                role: true,
-                name: true,
-                location: true,
-              },
-            },
-          },
+          select: listingSelect,
         });
       }
     }
-    //console.log(listings);
-    listings.map((listing, index) => {
-      //console.log(listings[index].location);
-      console.log(listing.user);
-      // console.log(index);
-      listings[index].location =
-        listing.user?.location[parseInt(listing.location)];
+
+    const listerine = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
     });
-    //console.log(listings[0]);
+    listings = await Promise.all(listerine);
+
     // If location parameters are provided, filter listings by distance
-    console.log("afsfasfhere");
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -272,11 +212,11 @@ const GetListingsMarket = async (
     const paginatedListings = listings.slice(startIndex, endIndex);
 
     // Convert createdAt dates to ISO strings
-    const safeListings = paginatedListings.map((listing) => ({
-      ...listing,
-      createdAt: listing.createdAt.toISOString(),
-    }));
-
+    const safeListings = paginatedListings.map((listing) => {
+      return {
+        ...listing,
+      };
+    });
     return { listings: safeListings, totalItems };
   } catch (error: any) {
     throw new Error(error);
@@ -296,21 +236,17 @@ const GetListingsByIds = async (params: Params) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        user: {
-          select: {
-            location: true,
-          },
-        },
-      },
     });
-    const safeListings = listings.map((listing) => ({
-      ...listing,
-      location: listing.user.location[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-    console.log(safeListings);
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -329,11 +265,13 @@ const getListingById = async (params: IParams) => {
         user: {
           select: {
             id: true,
-            location: true,
+            name: true,
             createdAt: true,
             updatedAt: true,
             emailVerified: true,
             role: true,
+            url: true,
+            SODT: true,
           },
         },
       },
@@ -343,9 +281,11 @@ const getListingById = async (params: IParams) => {
       return null;
     }
 
+    const location = await getUserLocation(listing);
+
     return {
       ...listing,
-      location: listing.user.location[listing.location],
+      location,
       createdAt: listing.createdAt.toString(),
       user: {
         ...listing.user,
@@ -372,14 +312,17 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { location: true } } },
     });
-    const safeListings = listings.map((listing) => ({
-      ...listing,
-      location: listing.user.location[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -406,13 +349,16 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { location: true } } },
     });
 
-    const safeListings = listings.map((listing) => ({
-      ...listing,
-      location: listing.user.location[listing.location],
-      createdAt: listing.createdAt.toISOString(),
-    }));
-
-    return safeListings;
+    const safeListings = listings.map(async (listing) => {
+      const location = await getUserLocation(listing);
+      return {
+        ...listing,
+        location,
+        createdAt: listing.createdAt.toISOString(),
+      };
+    });
+    const resolvedSafeListings = await Promise.all(safeListings);
+    return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
   }

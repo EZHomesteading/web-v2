@@ -147,7 +147,6 @@ const Cart = ({ cartItems = [] }: CartProps) => {
       const usersodt = cartItem.listing.user.SODT;
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
-      //console.log("sodt", sodt, "usersodt", usersodt, "cartitem", cartItem);
       if (
         (existingOrder &&
           prevCartItem?.listing.userId === cartItem.listing.userId) ||
@@ -292,7 +291,6 @@ const Cart = ({ cartItems = [] }: CartProps) => {
               >
                 {cartItems.map((cartItem: any, index: any) => {
                   const prevCartItem = cartItems[index - 1];
-                  console.log(cartItem);
                   return (
                     <div key={index}>
                       {prevCartItem?.listing.userId !==

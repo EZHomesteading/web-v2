@@ -1,4 +1,10 @@
-import { Cart, Hours, Notification, UserRole } from "@prisma/client";
+import {
+  Cart,
+  Hours,
+  LocationObj,
+  Notification,
+  UserRole,
+} from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
@@ -8,7 +14,7 @@ export type UserInfo = DefaultSession["user"] & {
   isOAuth: boolean;
   phoneNumber?: string;
   image?: string;
-  location?: Location[];
+  location?: Location;
   url?: string;
   stripeAccountId?: string;
   createdAt?: Date;
@@ -83,12 +89,7 @@ type navUser = {
   buyerOrders?: navBuyOrder[];
   cart?: nav;
 };
-type Location = {
-  type: string;
-  coordinates: number[];
-  address: string[];
-  hours?: { open: number; close: number };
-};
+type Location = { 0?: LocationObj; 1?: LocationObj; 2?: LocationObj };
 type CartGroup = {
   expiry?: date;
   cartIndex?: number;

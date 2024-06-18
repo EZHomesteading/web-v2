@@ -11,11 +11,17 @@ import ListingReservation from "@/app/(pages)/listings/[listingId]/components/Li
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { Location } from "@prisma/client";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 interface ListingClientProps {
   listing: SafeListing & {
     user: any;
-    location: Location | null;
+    location: {
+      hours: JsonObject;
+      address: string[];
+      coordinates: string[];
+      type: string;
+    };
   };
   user?: any | null;
   following: any;
@@ -56,7 +62,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
         "MMM dd, yyyy"
       )}`
     : "This product is non-perisable";
-
   return (
     <Container>
       <div
@@ -75,9 +80,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
             />
             <div className="flex flex-col h-full">
               <ListingInfo
-                user={listing.user}
+                user={user}
+                listingUser={listing.user}
                 description={listing.description}
-                followUserId={listing.user.id}
+                followUserId={listing.userId}
                 following={following}
               />
             </div>

@@ -34,6 +34,27 @@ export type CartItem = {
     };
   };
 };
+const getUserLocation = async (listing: any) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: listing.user.id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[0];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
   try {
@@ -64,7 +85,6 @@ const getAllCartItemsByUserId = async () => {
               select: {
                 id: true,
                 name: true,
-                location: true,
                 SODT: true,
                 role: true,
               },
@@ -74,14 +94,15 @@ const getAllCartItemsByUserId = async () => {
       },
       orderBy: { listing: { userId: "desc" } },
     });
-    cartItems.map((listing, index) => {
-      //console.log(listings[index].location);
-      console.log(listing.listing.user);
-      // console.log(index);
-      (cartItems[index].listing.location as any) =
-        listing.listing.user?.location[listing.listing.location];
+    const listerine = cartItems.map(async (cartItem) => {
+      const location = await getUserLocation(cartItem.listing);
+      cartItem.listing.location = location;
+      return {
+        ...cartItem,
+      };
     });
-    return cartItems;
+    const finalCartItems = await Promise.all(listerine);
+    return finalCartItems;
   } catch (error: any) {
     return [];
   }
