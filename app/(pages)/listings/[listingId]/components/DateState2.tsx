@@ -41,7 +41,6 @@ const DateState2 = ({
   sodt,
   user,
 }: StatusProps) => {
-  console.log("BEANS", listing);
   const router = useRouter();
   const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -84,6 +83,7 @@ const DateState2 = ({
       quantity: `[{\"id\":\"${listing.id}\",\"quantity\":${quantity}}]`,
       totalPrice: quantity * listing.price,
       status: 0,
+      location: listing.location,
     });
     const now = new Date();
     const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);

@@ -265,11 +265,13 @@ const getListingById = async (params: IParams) => {
         user: {
           select: {
             id: true,
-            location: true,
+            name: true,
             createdAt: true,
             updatedAt: true,
             emailVerified: true,
             role: true,
+            url: true,
+            SODT: true,
           },
         },
       },
@@ -310,7 +312,6 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { location: true } } },
     });
     const safeListings = listings.map(async (listing) => {
       const location = await getUserLocation(listing);

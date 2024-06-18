@@ -27,7 +27,6 @@ const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
   }, []);
 
   const sodt = sodtarr.find((item: any) => item.cartIndex === index);
-  console.log(sodt);
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday

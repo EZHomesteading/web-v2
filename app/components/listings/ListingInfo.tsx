@@ -10,12 +10,14 @@ interface ListingInfoProps {
   description: string;
   followUserId: string;
   following: any;
+  listingUser: any;
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
   user,
   followUserId,
   following,
+  listingUser,
 }) => {
   const router = useRouter();
 
@@ -36,13 +38,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <span style={{ marginRight: "5px" }}>Sold by</span>
           <span
             className="flex items-center gap-2 hover:cursor-pointer"
-            onClick={() => router.push(`/store/${user.url}`)}
+            onClick={() => router.push(`/store/${listingUser.url}`)}
           >
             <span className="mt-3">
-              <Avatar image={user?.image} />
+              <Avatar image={listingUser?.image} />
             </span>
 
-            <span>{user?.name}</span>
+            <span>{listingUser?.name}</span>
           </span>
           <FollowButton
             followUserId={followUserId}

@@ -3,7 +3,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getListingById } from "@/actions/getListings";
-import { Location } from "@prisma/client";
+//import { Location } from "@prisma/client";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 export async function POST(request: NextRequest) {
   const user = await currentUser();
@@ -44,13 +45,12 @@ export async function POST(request: NextRequest) {
     if (!user.id) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
     try {
       const newOrder = await prisma.order.create({
         data: {
           userId: user.id,
           listingIds,
-          location: location as Location,
+          location,
           sellerId: listing.user.id,
           pickupDate,
           quantity,

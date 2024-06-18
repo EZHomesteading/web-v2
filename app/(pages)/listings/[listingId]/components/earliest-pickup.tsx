@@ -12,12 +12,12 @@ const outfit = Outfit({
 
 interface Props {
   hours: ExtendedHours;
-
   onSetTime: any;
   role: string;
   sodtarr: any;
 }
 const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
+  const [sodt, setSodt] = useState(60);
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
     null
@@ -26,16 +26,13 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
     calculateEarliestPickupTime();
   }, []);
 
-  const sodt = () => {
-    if (sodtarr[1] === null && sodtarr[0] === null) {
-      return 60;
-    } else if (sodtarr[0] > sodtarr[1]) {
-      return sodtarr[0];
-    } else {
-      return sodtarr[1];
-    }
-  };
-  console.log(sodt);
+  if (sodtarr[1] === null && sodtarr[0] === null) {
+  } else if (sodtarr[0] >= sodtarr[1]) {
+    setSodt(sodtarr[0]);
+  } else if (sodtarr[1] >= sodtarr[0]) {
+    setSodt(sodtarr[1]);
+  }
+
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
@@ -74,13 +71,10 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
               foundSlotOnSameDay = true;
               break;
             }
-          } else if (
-            currentMin >= openTime &&
-            currentMin + sodt() < closeTime
-          ) {
+          } else if (currentMin >= openTime && currentMin + sodt < closeTime) {
             // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
             nextAvailableTime = new Date(now);
-            const futureMin = currentMin + sodt();
+            const futureMin = currentMin + sodt;
             const futureHours = Math.floor(futureMin / 60);
             const futureMinutes = futureMin % 60;
             nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
