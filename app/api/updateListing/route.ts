@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     rating,
     SODT,
     minOrder,
+    location,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       quantityType,
       stock,
       shelfLife,
+      location,
       price,
       userId,
       title,

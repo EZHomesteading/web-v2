@@ -14,7 +14,12 @@ import { useRouter } from "next/navigation";
 import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import { BsBucket } from "react-icons/bs";
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/app/components/ui/card";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Outfit } from "next/font/google";
 
@@ -30,6 +35,7 @@ import {
 import UnitSelect, {
   QuantityTypeValue,
 } from "@/app/create/components/UnitSelect";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -47,8 +53,11 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
   const [checkbox2Checked, setCheckbox2Checked] = useState(false);
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
-  const [coopRating, setCoopRating] = useState(1);
+  const [clicked, setClicked] = useState(false);
+  const [clicked1, setClicked1] = useState(false);
+  const [clicked2, setClicked2] = useState(false);
 
+  const [coopRating, setCoopRating] = useState(1);
   const router = useRouter();
   const handleCheckboxChange = (checked: boolean, index: number) => {
     let newRating = checked ? coopRating + 1 : coopRating - 1;
@@ -95,6 +104,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       emailList: listing?.emailList,
       minOrder: listing?.minOrder,
       sodt: listing?.SODT,
+      location: listing?.location,
     },
   });
   const [description, setDescription] = useState(listing.description);
@@ -148,6 +158,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       price: parseFloat(data.price),
       imageSrc: watch("imageSrc"),
       description: description,
+      location: data.location,
       quantityType:
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
@@ -387,7 +398,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
 
             <div className="justify-end flex">
               <label
-                htmlFor="email"
+                htmlFor="images"
                 className="block text-sm font-medium leading-6"
               ></label>{" "}
               {[...Array(3)].map((_, index) => (
@@ -505,6 +516,170 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
+            <h4 className="text-lg lg:text-3xl">Location</h4>
+
+            <div className="flex justify-end">
+              <label
+                htmlFor="Location"
+                className="block text-sm font-medium leading-6"
+              ></label>
+              <div
+                className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
+              >
+                <div className="flex flex-col">
+                  <Heading
+                    title="Set a new Address"
+                    subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
+                  />
+
+                  {listing.user.location === null ||
+                  listing.user.location === undefined ||
+                  ((listing.user.location[0] === null ||
+                    listing.user.location[0] === undefined) &&
+                    (listing.user.location[1] === null ||
+                      listing.user.location[1] === undefined) &&
+                    (listing.user.location[2] === null ||
+                      listing.user.location[2] === undefined)) ? (
+                    <Card
+                      className={
+                        "hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                      }
+                      onClick={() => {
+                        router.replace("/dashboard/my-store/settings");
+                      }}
+                    >
+                      <CardHeader className="pt-2 sm:pt-6">
+                        <div className="text-start">
+                          <div className="text-xl sm:text-2xl font-bold">
+                            You have no addresses set. Please set this up before
+                            creating a listing. Click Here to set up Store
+                            Locations
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ) : (
+                    <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                      {listing.user.location[0] !== null ? (
+                        <Card
+                          className={
+                            clicked
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (listing.user.location) {
+                              setClicked(true);
+                              setClicked1(false);
+                              setClicked2(false);
+                              setValue("location", 0);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Default Address
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {listing.user.location &&
+                                  listing.user?.location[0]?.address.length ===
+                                    4 ? (
+                                    <li className="text-xs">{`${listing.user?.location[0]?.address[0]}, ${listing.user?.location[0]?.address[1]}, ${listing.user?.location[0]?.address[2]}, ${listing.user?.location[0]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                      {listing.user.location[1] !== null ? (
+                        <Card
+                          className={
+                            clicked1
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (listing.user.location) {
+                              setClicked1(true);
+                              setClicked(false);
+                              setClicked2(false);
+                              setValue("location", 1);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Second Location
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {listing.user.location &&
+                                  listing.user?.location[1]?.address.length ===
+                                    4 ? (
+                                    <li className="text-xs">{`${listing.user?.location[1]?.address[0]}, ${listing.user?.location[1]?.address[1]}, ${listing.user?.location[1]?.address[2]}, ${listing.user?.location[1]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                      {listing.user.location[2] !== null ? (
+                        <Card
+                          className={
+                            clicked2
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (listing.user.location) {
+                              setClicked2(true);
+                              setClicked1(false);
+                              setClicked(false);
+                              setValue("location", 2);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Third Location
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {listing.user.location &&
+                                  listing.user?.location[2]?.address.length ===
+                                    4 ? (
+                                    <li className="text-xs">{`${listing.user?.location[2]?.address[0]}, ${listing.user?.location[2]?.address[1]}, ${listing.user?.location[2]?.address[2]}, ${listing.user?.location[2]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
