@@ -18,6 +18,8 @@ export async function POST(request: Request) {
     title,
     emailList,
     rating,
+    SODT,
+    minOrder,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -40,6 +42,8 @@ export async function POST(request: Request) {
       title,
       emailList,
       rating,
+      SODT,
+      minOrder,
     },
   });
 

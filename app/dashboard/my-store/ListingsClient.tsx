@@ -18,7 +18,6 @@ interface ListingsClientProps {
 const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
-
   const onDelete = useCallback(
     (id: string) => {
       setDeletingId(id);

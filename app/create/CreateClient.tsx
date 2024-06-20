@@ -84,7 +84,6 @@ const CreateClient = ({ user, index }: Props) => {
   if (user.SODT) {
     usersodt = user.SODT;
   }
-  console.log(usersodt);
   let {
     register,
     setValue,
@@ -450,7 +449,6 @@ const CreateClient = ({ user, index }: Props) => {
       subCategory: suggestionSubCategory,
       category: suggestionCategory,
     };
-    console.log(body);
     try {
       axios.post("/api/suggestion", body);
       toast.success("Your request has been recieved!");

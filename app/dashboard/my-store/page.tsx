@@ -10,11 +10,9 @@ const PropertiesPage = async () => {
   if (!user) {
     return <EmptyState title="Unauthorized" subtitle="Please login" />;
   }
-  console.log(user.id);
   const userId = user.id;
   const listings = await GetListingsByUserId({ userId });
-  console.log(listings);
-  if (listings.length === 0) {
+  if (listings.listings.length === 0) {
     return (
       <ClientOnly>
         <EmptyState
@@ -27,7 +25,7 @@ const PropertiesPage = async () => {
 
   return (
     <ClientOnly>
-      <ListingsClient listings={listings} user={user} />
+      <ListingsClient listings={listings.listings} user={user} />
     </ClientOnly>
   );
 };

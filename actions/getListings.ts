@@ -167,7 +167,6 @@ const GetListingsMarket = async (
     });
     listings = await Promise.all(listerine);
     listings = await filterListingsByLocation(listings);
-    console.log(listings);
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
@@ -311,12 +310,18 @@ const getListingById = async (params: IParams) => {
 const GetListingsByUserId = async (params: IListingsOrderParams) => {
   try {
     const { userId } = params;
-    console.log(typeof userId);
+
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
+    }
     let listings = await prisma.listing.findMany({
-      where: { userId: userId },
+      where: query,
       orderBy: {
         createdAt: "desc",
       },
+      include: { user: { select: { id: true } } },
     });
     const safeListings = listings.map(async (listing) => {
       const location = await getUserLocation(listing);
@@ -328,7 +333,6 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
     });
     let resolvedSafeListings = await Promise.all(safeListings);
     resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
-    console.log(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -353,7 +357,7 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { location: true } } },
+      include: { user: { select: { id: true } } },
     });
 
     const safeListings = listings.map(async (listing) => {
