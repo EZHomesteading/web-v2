@@ -94,7 +94,7 @@ async function generateUniqueUrl(
       break;
     }
 
-    uniqueUrl = `${location.address[2]}-${url}`;
+    uniqueUrl = `${location[0]?.address[2]}-${url}`;
 
     const existingCityUrl = await prisma.user.findFirst({
       where: {

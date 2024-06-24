@@ -2,13 +2,88 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
+import { Listing } from "./getCart";
 
 // Interface for defining the search parameters
-
+type Listing1 = {
+  user: {
+    id: string;
+    name: string;
+    role: UserRole;
+  };
+  id: string;
+  location: number;
+  createdAt: Date;
+  price: number;
+  title: string;
+  subCategory: string;
+  stock: number;
+  quantityType: string;
+  minOrder: number | null;
+  imageSrc: string[];
+};
+type Listing2 = {
+  user: {
+    id: string;
+  };
+  id: string;
+  location: number;
+  SODT: number | null;
+  createdAt: Date;
+  userId: string;
+  price: number;
+  title: string;
+  subCategory: string;
+  stock: number;
+  quantityType: string;
+  minOrder: number | null;
+  imageSrc: string[];
+  shelfLife: number;
+};
+type FinalListing = {
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  SODT: number | null;
+  quantityType: string | null;
+  shelfLife: number;
+  createdAt: string;
+  location: Location;
+  imageSrc: string[];
+  userId: string;
+  subCategory: string;
+  minOrder: number | null;
+  user: {
+    id: string;
+    SODT: number | null;
+    name: string;
+    location: Location;
+    role: UserRole;
+    //hours: JsonValue;
+  };
+};
+type FinalListing1 = {
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  quantityType: string | null;
+  createdAt: string;
+  location: Location;
+  imageSrc: string[];
+  subCategory: string;
+  minOrder: number | null;
+  user: {
+    id: string;
+    name: string;
+    role: UserRole;
+  };
+};
 // Main function to fetch listings based on search parameters
-const getUserLocation = async (listing: any) => {
+const getUserLocation = async (listing: Listing) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -25,13 +100,62 @@ const getUserLocation = async (listing: any) => {
     if (!user.location) {
       return null;
     }
-    return user.location[0];
+    return user.location[listing.location];
   } catch (error: any) {
     throw new Error(error);
   }
 };
-function filterListingsByLocation(listings: any) {
-  return listings.filter((listing: any) => {
+const getUserLocation1 = async (listing: Listing1) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: listing.user.id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[listing.location];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+const getUserLocation2 = async (listing: Listing2) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: listing.user.id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[listing.location];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+function filterListingsByLocation(listings: FinalListing[]) {
+  return listings.filter((listing: FinalListing) => {
+    return listing.location !== undefined;
+  });
+}
+function filterListingsByLocation1(listings: FinalListing1[]) {
+  return listings.filter((listing: FinalListing1) => {
     return listing.location !== undefined;
   });
 }
@@ -47,7 +171,7 @@ const GetListingsMarket = async (
 
     let query: any = {};
 
-    let listings: any[] = [];
+    let listings: Listing1[] = [];
     const listingSelect = {
       id: true,
       title: true,
@@ -157,7 +281,7 @@ const GetListingsMarket = async (
     }
 
     const listerine = listings.map(async (listing) => {
-      const location = await getUserLocation(listing);
+      const location = (await getUserLocation1(listing)) as unknown as Location;
 
       return {
         ...listing,
@@ -165,8 +289,9 @@ const GetListingsMarket = async (
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    listings = await Promise.all(listerine);
-    listings = await filterListingsByLocation(listings);
+    let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
+    Listings = await Promise.all(listerine);
+    Listings = await filterListingsByLocation1(Listings);
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
@@ -176,7 +301,7 @@ const GetListingsMarket = async (
 
       const radiusInMeters = parseFloat(radius) * 1000;
 
-      const listingsWithDistance = listings.map((listing) => {
+      const listingsWithDistance = Listings.map((listing) => {
         const listingLocation = listing.location as unknown as {
           coordinates: [number, number];
         };
@@ -198,7 +323,7 @@ const GetListingsMarket = async (
       const sortedListings = filteredListings.sort(
         (a, b) => a.distance - b.distance
       );
-      listings = sortedListings.map(({ listing }) => listing);
+      Listings = sortedListings.map(({ listing }) => listing);
     }
 
     // If a search query is provided, filter listings by title, description, etc.
@@ -207,21 +332,21 @@ const GetListingsMarket = async (
         keys: ["user.name", "title", "category", "subCategory", "description"],
         threshold: 0.3,
       };
-      const fuse = new Fuse(listings, fuseOptions);
+      const fuse = new Fuse(Listings, fuseOptions);
       const results = fuse.search(q);
-      listings = results.map((result) => result.item);
+      Listings = results.map((result) => result.item);
     }
 
     // Paginate the listings
-    const totalItems = listings.length;
+    const totalItems = Listings.length;
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
-    const paginatedListings = listings.slice(startIndex, endIndex);
+    const paginatedListings = Listings.slice(startIndex, endIndex);
 
     // Convert createdAt dates to ISO strings
-    const safeListings = paginatedListings.map((listing) => {
+    const safeListings = paginatedListings.map((Listing) => {
       return {
-        ...listing,
+        ...Listing,
       };
     });
     return { listings: safeListings, totalItems };
@@ -240,15 +365,30 @@ const GetListingsByIds = async (params: Params) => {
           in: listingIds,
         },
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+            emailVerified: true,
+            role: true,
+            url: true,
+            SODT: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },
     });
     const safeListings = listings.map(async (listing) => {
-      const location = await getUserLocation(listing);
+      const location = (await getUserLocation(listing)) as unknown as Location;
+      const Listing: FinalListing = listing as unknown as FinalListing;
+      Listing.location = location;
       return {
-        ...listing,
-        location,
+        ...Listing,
         createdAt: listing.createdAt.toISOString(),
       };
     });
@@ -289,10 +429,10 @@ const getListingById = async (params: IParams) => {
       return null;
     }
 
-    const location = await getUserLocation(listing);
-
+    const location = (await getUserLocation(listing)) as unknown as Location;
+    const Listing: FinalListing = listing as unknown as FinalListing;
     return {
-      ...listing,
+      ...Listing,
       location,
       createdAt: listing.createdAt.toString(),
       user: {
@@ -369,15 +509,16 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       include: { user: { select: { id: true } } },
     });
     const safeListings = listings.map(async (listing) => {
-      const location = await getUserLocation(listing);
+      const location = (await getUserLocation2(listing)) as unknown as Location;
+      const Listing = listing as unknown as FinalListing;
       return {
-        ...listing,
+        ...Listing,
         location,
         createdAt: listing.createdAt.toISOString(),
       };
     });
     let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
+    resolvedSafeListings = filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -406,9 +547,10 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
     });
 
     const safeListings = listings.map(async (listing) => {
-      const location = await getUserLocation(listing);
+      const location = (await getUserLocation2(listing)) as unknown as Location;
+      const Listing: FinalListing = listing as unknown as FinalListing;
       return {
-        ...listing,
+        ...Listing,
         location,
         createdAt: listing.createdAt.toISOString(),
       };
