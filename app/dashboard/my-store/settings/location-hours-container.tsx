@@ -4,8 +4,6 @@ import { Input } from "@/app/components/ui/input";
 import SliderSelection from "./slider-selection";
 import { Zilla_Slab } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { PiTrashSimple } from "react-icons/pi";
 import {
   Dialog,
@@ -15,7 +13,7 @@ import {
 import { IoIosAdd } from "react-icons/io";
 import axios from "axios";
 import { toast } from "sonner";
-import { LocationObj } from "@prisma/client";
+import { LocationObj, UserRole } from "@prisma/client";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -30,12 +28,13 @@ interface Location {
 interface LocationProps {
   location?: Location | undefined;
   apiKey: string;
+  role: UserRole;
 }
 
 const locationHeadings = [
-  { text: "Default Location", style: "text-2xl mt-2 font-bold" },
-  { text: "Secondary Location", style: "text-2xl mt-2 font-semibold" },
-  { text: "Third Location", style: "text-2xl mt-2 font-medium" },
+  { text: "Default Location", style: "text-xl mt-2 font-bold" },
+  { text: "Secondary Location", style: "text-xl mt-2 font-semibold" },
+  { text: "Third Location", style: "text-xl mt-2 font-medium" },
 ];
 
 const CardComponent = memo(
@@ -46,23 +45,25 @@ const CardComponent = memo(
     handleSaveAddress,
     showAddressChange,
     handleCancelAddressChange,
-    handleLocationClick,
+    coordinates,
     handleDeleteLocation,
     handleShowAddressChange,
     hours,
     locationState,
+    location,
   }: {
     locationIndex: number;
     address: string[];
     handleAddressChange: (index: number, value: string) => void;
     handleSaveAddress: () => void;
     showAddressChange: boolean;
+    coordinates: number[];
     handleCancelAddressChange: () => void;
-    handleLocationClick: () => void;
     handleDeleteLocation: (locationIndex: number) => void;
     handleShowAddressChange: () => void;
     hours: any;
     locationState: Location | undefined;
+    location: any;
   }) => {
     {
       locationState && console.log(locationState[locationIndex]);
@@ -126,22 +127,18 @@ const CardComponent = memo(
               </div>
             ) : (
               <>
-                <Sheet>
-                  <SheetTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                    Visualize Hours
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                    <HoursDisplay coOpHours={hours} />
-                  </SheetContent>
-                </Sheet>
                 <Dialog>
-                  <DialogTrigger>
-                    <Button className="font-extralight">Change Hours</Button>
+                  <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                    Change Hours
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="bg">
                     {locationState && (
                       <SliderSelection
-                        location={locationState[locationIndex]}
+                        hours={hours}
+                        index={locationIndex}
+                        address={address}
+                        coordinates={coordinates}
+                        location={location}
                       />
                     )}
                   </DialogContent>
@@ -251,9 +248,7 @@ const AddLocationCard = ({
           >
             <CardContent className="flex flex-col justify-center items-center h-full">
               <IoIosAdd className="text-7xl" />
-              <h2 className="text-lg mt-2 font-bold">
-                Add New Location & Hours
-              </h2>
+              <h2 className="text-lg mt-2 font-bold">New Location & Hours</h2>
             </CardContent>
           </Card>
         </>
@@ -262,8 +257,7 @@ const AddLocationCard = ({
   );
 };
 
-const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
-  const [index, setIndex] = useState<number | null>(null);
+const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
   const [locationState, setLocationState] = useState<Location | undefined>(
@@ -333,7 +327,7 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
     const nonNullLocations = Object.entries(locationState || {}).filter(
       ([_, value]) => value !== null
     );
-
+    const max = role === UserRole.COOP ? 3 : 1;
     const handleAddLocation = useCallback(
       async (newAddress: string[]) => {
         const updatedAddress = newAddress.join(", ");
@@ -380,7 +374,7 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
     return (
       <div
         className={`grid grid-rows-${
-          nonNullLocations.length < 3
+          nonNullLocations.length < max
             ? nonNullLocations.length + 1
             : nonNullLocations.length
         } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
@@ -400,30 +394,27 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
             }));
           };
 
-          const handleLocationClick = () => {
-            setIndex(locationIndex);
-          };
-
           return (
             <CardComponent
               key={key}
               locationIndex={locationIndex}
               address={addresses[Number(key)] || locationData.address}
+              coordinates={locationData.coordinates}
               showAddressChange={selectedLocation === Number(key)}
               handleAddressChange={handleAddressChange}
               handleSaveAddress={() => handleSaveAddress(Number(key))}
               handleCancelAddressChange={() => handleCancelAddressChange()}
-              handleLocationClick={handleLocationClick}
               handleDeleteLocation={() => handleDeleteLocation(locationIndex)}
               handleShowAddressChange={() =>
                 handleShowAddressChange(Number(key))
               }
               hours={locationData?.hours}
               locationState={locationState}
+              location={location}
             />
           );
         })}
-        {nonNullLocations.length < 3 && (
+        {nonNullLocations.length < max && (
           <AddLocationCard onAddLocation={handleAddLocation} />
         )}
       </div>

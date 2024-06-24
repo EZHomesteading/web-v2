@@ -15,17 +15,18 @@ const MapPage = async () => {
   const map_api_key = process.env.MAPS_KEY as string;
   const session = await authCache();
   const user = session?.user;
-  let coops = [];
+
   let producers: { id: string; location: { coordinates: number[] } | null }[] =
     [];
 
-  coops = await getVendors({ role: UserRole.COOP });
-
+  let coops = await getVendors({ role: UserRole.COOP });
+  console.log(coops);
   // Fetch producers only if the user has a role of PRODUCER or COOP
   if (user?.role === UserRole.PRODUCER || user?.role === UserRole.COOP) {
     producers = await getVendors({ role: UserRole.PRODUCER });
   }
-  const userLocation = session?.user?.location?.coordinates ?? [];
+
+  const userLocation = session?.user?.location[0]?.coordinates ?? [];
   const defaultLocation = { lat: 44.58, lng: -103.46 };
   const initialLocation =
     userLocation.length > 0

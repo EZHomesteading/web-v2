@@ -2,6 +2,29 @@
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 import { JsonValue } from "@prisma/client/runtime/library";
+import { Location, UserRole } from "@prisma/client";
+export type Listing = {
+  user: {
+    id: string;
+    name: string;
+    role: UserRole;
+    SODT: number | null;
+  };
+  id: string;
+  location: number;
+  SODT: number | null;
+  createdAt: Date;
+  userId: string;
+  price: number;
+  title: string;
+  subCategory: string;
+  stock: number;
+  quantityType: string;
+  minOrder: number | null;
+  imageSrc: string[];
+  shelfLife: number;
+};
+
 export type CartItem = {
   id: string;
   quantity: number;
@@ -14,12 +37,7 @@ export type CartItem = {
     quantityType: string | null;
     shelfLife: number;
     createdAt: Date;
-    location: {
-      type: string;
-      coordinates: number[];
-      address: string[];
-      hours: JsonValue;
-    } | null;
+    location: Location;
     imageSrc: string[];
     userId: string;
     subCategory: string;
@@ -28,13 +46,13 @@ export type CartItem = {
       id: string;
       SODT: number | null;
       name: string;
-      location: any;
+      location: Location;
       role: string;
       //hours: JsonValue;
     };
   };
 };
-const getUserLocation = async (listing: any) => {
+const getUserLocation = async (listing: Listing) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -44,17 +62,18 @@ const getUserLocation = async (listing: any) => {
         location: { select: { [listing.location]: true } },
       },
     });
-    if (!user) {
-      return null;
-    }
-    if (!user.location) {
-      return null;
-    }
-    return user.location[0];
+
+    return user?.location ? user?.location[listing.location] : undefined;
   } catch (error: any) {
     throw new Error(error);
   }
 };
+function filterListingsByLocation(listings: CartItem[]) {
+  return listings.filter((listing: CartItem) => {
+    return listing.listing.location !== undefined;
+  });
+}
+
 const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
   try {
@@ -95,13 +114,18 @@ const getAllCartItemsByUserId = async () => {
       orderBy: { listing: { userId: "desc" } },
     });
     const listerine = cartItems.map(async (cartItem) => {
-      const location = await getUserLocation(cartItem.listing);
-      cartItem.listing.location = location;
+      const location = (await getUserLocation(
+        cartItem.listing
+      )) as unknown as Location;
+
+      const CartItem: CartItem = cartItem as unknown as CartItem;
+      CartItem.listing.location = location;
       return {
-        ...cartItem,
+        ...CartItem,
       };
     });
-    const finalCartItems = await Promise.all(listerine);
+    let finalCartItems = await Promise.all(listerine);
+    finalCartItems = filterListingsByLocation(finalCartItems);
     return finalCartItems;
   } catch (error: any) {
     return [];

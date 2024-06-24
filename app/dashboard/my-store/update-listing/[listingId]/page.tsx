@@ -1,5 +1,5 @@
 //update listing parent lement
-import { getListingById } from "@/actions/getListings";
+import { getListingByIdUpdate } from "@/actions/getListings";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import UpdateClient from "./UpdateClient";
 
@@ -8,7 +8,7 @@ interface IParams {
 }
 
 const UpdatePage = async ({ params }: { params: IParams }) => {
-  const listing = await getListingById(params);
+  const listing = await getListingByIdUpdate(params);
 
   return (
     <ClientOnly>

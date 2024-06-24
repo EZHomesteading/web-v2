@@ -36,7 +36,16 @@ const getVendors = async ({ role }: p) => {
         },
       },
     });
-    return users;
+    const safeListings = users.map(async (user) => {
+      if (user.location) {
+        return {
+          ...user,
+          location: user.location[0],
+        };
+      }
+    });
+    const safeUsers = await Promise.all(safeListings);
+    return safeUsers;
   } catch (error: any) {
     return [];
   }
@@ -138,6 +147,13 @@ interface User {
   firstName: string | null;
   image: string | null;
   url: string | null;
+  createdAt: Date;
+}
+interface User1 {
+  id: string;
+  name: string;
+  firstName: string | null;
+  image: string | null;
   createdAt: Date;
 }
 
@@ -261,13 +277,10 @@ interface Listing {
   minOrder: number | null;
   imageSrc: string[];
   quantityType: string;
-  location: {
-    address: string[];
-  } | null;
 }
 
 interface StoreData {
-  user: any & {
+  user: User1 & {
     listings: Listing[];
   };
   reviews: ReviewWithReviewer[];

@@ -41,7 +41,6 @@ export async function POST(request: Request) {
       location,
     },
   });
-  console.log(location);
 
   return NextResponse.json(updatedUser);
 }
