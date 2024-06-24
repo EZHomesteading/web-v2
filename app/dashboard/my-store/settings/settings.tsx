@@ -253,7 +253,7 @@ const StoreSettings = ({ apiKey }: p) => {
             </CardFooter>
           </CardContent>
         </Card>{" "}
-        <Card>
+        {/* <Card>
           <CardContent className="flex flex-col sheet border-none shadow-lg w-full relative">
             <div className="m-0 p-0 pt-2">
               <div className="flex justify-between">
@@ -313,7 +313,7 @@ const StoreSettings = ({ apiKey }: p) => {
               A store banner is optional but recommended.
             </CardFooter>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     );
 };

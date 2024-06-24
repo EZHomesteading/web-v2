@@ -1,7 +1,6 @@
 //coop hours parent element
 import CoOpHoursPage from "@/app/components/co-op-hours/co-op-hours-page";
 import { UserInfo } from "@/next-auth";
-import HoursLocationContainer from "../dashboard/my-store/settings/location-hours-container";
 
 interface Props {
   user: UserInfo;

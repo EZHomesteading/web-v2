@@ -372,7 +372,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     5: [{ open: 0, close: 1439 }],
     6: [{ open: 0, close: 1439 }],
   };
-  console.log("messagebox", order.location.hours);
   return (
     <div>
       {/* modal declarations */}

@@ -27,7 +27,7 @@ const CoOpHoursPage = ({ user, apiKey }: Props) => {
             {user?.role === UserRole.COOP ? (
               <li className="text-[.6rem] sm:text-[.75rem]">
                 The hours when a producer can drop produce off and buyers can
-                pick up from your listing or co-op location.
+                pick up from your co-op location.
               </li>
             ) : (
               <li className="text-[.5rem] sm:text-[.75rem]">

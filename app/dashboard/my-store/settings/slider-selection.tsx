@@ -241,7 +241,7 @@ const SliderSection = ({
 
       try {
         await axios.post("/api/update", formData);
-        window.location.replace("/dashboard/my-store/settings");
+        window.location.reload();
         toast.success("Your account details have changed");
       } catch (error) {
         console.error(error);

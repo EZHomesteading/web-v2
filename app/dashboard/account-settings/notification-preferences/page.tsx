@@ -185,7 +185,9 @@ const Page = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="disable" id="r5" />
-                  <Label htmlFor="r5">Disable all notifications</Label>
+                  <Label htmlFor="r5">
+                    Disable all Email & SMS notifications
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
