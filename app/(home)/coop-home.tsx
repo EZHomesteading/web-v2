@@ -21,7 +21,9 @@ const CoopHome = ({ user }: Props) => {
       <header className="py-12">
         <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
           <div className={`${outfit.className} `}>
-            {!user?.stripeAccountId || !user?.hours || !user?.image ? (
+            {!user?.stripeAccountId ||
+            user?.location === undefined ||
+            !user?.image ? (
               <>
                 <span className="text-green-200 tracking font-medium text-xl">
                   You&apos;re almost ready to start getting payed
@@ -57,7 +59,9 @@ const CoopHome = ({ user }: Props) => {
               Find producers nearby
             </Button>
           </Link>
-          {!user?.stripeAccountId || !user?.hours || !user?.image ? (
+          {!user?.stripeAccountId ||
+          user?.location === undefined ||
+          !user?.image ? (
             <StripeButton label="Finish Account Setup" user={user} />
           ) : null}
         </div>
