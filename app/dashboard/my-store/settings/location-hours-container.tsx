@@ -13,7 +13,7 @@ import {
 import { IoIosAdd } from "react-icons/io";
 import axios from "axios";
 import { toast } from "sonner";
-import { LocationObj } from "@prisma/client";
+import { LocationObj, UserRole } from "@prisma/client";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -28,6 +28,7 @@ interface Location {
 interface LocationProps {
   location?: Location | undefined;
   apiKey: string;
+  role: UserRole;
 }
 
 const locationHeadings = [
@@ -126,14 +127,6 @@ const CardComponent = memo(
               </div>
             ) : (
               <>
-                {/* <Sheet>
-                  <SheetTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                    Visualize Hours
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                    <HoursDisplay coOpHours={hours} />
-                  </SheetContent>
-                </Sheet> */}
                 <Dialog>
                   <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                     <Button className="font-extralight">Change Hours</Button>
@@ -264,8 +257,7 @@ const AddLocationCard = ({
   );
 };
 
-const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
-  const [index, setIndex] = useState<number | null>(null);
+const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
   const [locationState, setLocationState] = useState<Location | undefined>(
@@ -335,7 +327,7 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
     const nonNullLocations = Object.entries(locationState || {}).filter(
       ([_, value]) => value !== null
     );
-
+    const max = role === UserRole.COOP ? 3 : 1;
     const handleAddLocation = useCallback(
       async (newAddress: string[]) => {
         const updatedAddress = newAddress.join(", ");
@@ -382,7 +374,7 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
     return (
       <div
         className={`grid grid-rows-${
-          nonNullLocations.length < 3
+          nonNullLocations.length < max
             ? nonNullLocations.length + 1
             : nonNullLocations.length
         } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
@@ -422,7 +414,7 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
             />
           );
         })}
-        {nonNullLocations.length < 3 && (
+        {nonNullLocations.length < max && (
           <AddLocationCard onAddLocation={handleAddLocation} />
         )}
       </div>

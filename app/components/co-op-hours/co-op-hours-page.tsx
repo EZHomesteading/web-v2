@@ -45,6 +45,7 @@ const CoOpHoursPage = ({ user, apiKey }: Props) => {
                 <HoursLocationContainer
                   location={user?.location}
                   apiKey={apiKey}
+                  role={user?.role}
                 />
               </CardContent>
             </div>
