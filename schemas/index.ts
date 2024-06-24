@@ -44,7 +44,32 @@ export const SettingsSchema = z
       path: ["password"],
     }
   );
-
+const locationDef = {
+  0: z
+    .object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.string()),
+      address: z.array(z.string()),
+      hours: z.any(),
+    })
+    .nullable(),
+  1: z
+    .object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.string()),
+      address: z.array(z.string()),
+      hours: z.any(),
+    })
+    .nullable(),
+  2: z
+    .object({
+      type: z.literal("Point"),
+      coordinates: z.array(z.string()),
+      address: z.array(z.string()),
+      hours: z.any(),
+    })
+    .nullable(),
+};
 export const NewPasswordSchema = z.object({
   password: z.string().min(4, {
     message: "Minimum of 4 characters required",
@@ -102,11 +127,7 @@ export const RegisterVendorSchema = z
         { message: "Name must contain at least 80% letters" }
       ),
     phoneNumber: z.string().min(10).max(16),
-    location: z.object({
-      type: z.literal("Point"),
-      coordinates: z.tuple([z.number(), z.number()]),
-      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
-    }),
+    location: z.object(locationDef),
     role: z.nativeEnum(UserRole),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -156,11 +177,7 @@ export const RegisterRoleSchema = z
       message: "Name is required",
     }),
     phoneNumber: z.string().min(6, { message: "Phone number is required" }),
-    location: z.object({
-      type: z.literal("Point"),
-      coordinates: z.tuple([z.number(), z.number()]),
-      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
-    }),
+    location: z.object(locationDef),
     role: z.nativeEnum(UserRole),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -176,13 +193,7 @@ export const UpdateSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }).optional(),
   email: z.string().email({ message: "Email is required" }).optional(),
   phoneNumber: z.any().optional(),
-  location: z
-    .object({
-      type: z.literal("Point"),
-      coordinates: z.tuple([z.number(), z.number()]),
-      address: z.tuple([z.string(), z.string(), z.string(), z.string()]),
-    })
-    .optional(),
+  location: z.object(locationDef).optional(),
 
   role: z.nativeEnum(UserRole).optional(),
 });

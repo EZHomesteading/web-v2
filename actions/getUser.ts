@@ -149,6 +149,13 @@ interface User {
   url: string | null;
   createdAt: Date;
 }
+interface User1 {
+  id: string;
+  name: string;
+  firstName: string | null;
+  image: string | null;
+  createdAt: Date;
+}
 
 interface Review {
   id: string;
@@ -270,13 +277,10 @@ interface Listing {
   minOrder: number | null;
   imageSrc: string[];
   quantityType: string;
-  location: {
-    address: string[];
-  } | null;
 }
 
 interface StoreData {
-  user: any & {
+  user: User1 & {
     listings: Listing[];
   };
   reviews: ReviewWithReviewer[];
