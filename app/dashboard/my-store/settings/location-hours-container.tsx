@@ -46,23 +46,25 @@ const CardComponent = memo(
     handleSaveAddress,
     showAddressChange,
     handleCancelAddressChange,
-    handleLocationClick,
+    coordinates,
     handleDeleteLocation,
     handleShowAddressChange,
     hours,
     locationState,
+    location,
   }: {
     locationIndex: number;
     address: string[];
     handleAddressChange: (index: number, value: string) => void;
     handleSaveAddress: () => void;
     showAddressChange: boolean;
+    coordinates: number[];
     handleCancelAddressChange: () => void;
-    handleLocationClick: () => void;
     handleDeleteLocation: (locationIndex: number) => void;
     handleShowAddressChange: () => void;
     hours: any;
     locationState: Location | undefined;
+    location: any;
   }) => {
     {
       locationState && console.log(locationState[locationIndex]);
@@ -126,22 +128,26 @@ const CardComponent = memo(
               </div>
             ) : (
               <>
-                <Sheet>
+                {/* <Sheet>
                   <SheetTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                     Visualize Hours
                   </SheetTrigger>
                   <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
                     <HoursDisplay coOpHours={hours} />
                   </SheetContent>
-                </Sheet>
+                </Sheet> */}
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                     <Button className="font-extralight">Change Hours</Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="bg">
                     {locationState && (
                       <SliderSelection
-                        location={locationState[locationIndex]}
+                        hours={hours}
+                        index={locationIndex}
+                        address={address}
+                        coordinates={coordinates}
+                        location={location}
                       />
                     )}
                   </DialogContent>
@@ -400,26 +406,23 @@ const HoursLocationContainer = ({ location, apiKey }: LocationProps) => {
             }));
           };
 
-          const handleLocationClick = () => {
-            setIndex(locationIndex);
-          };
-
           return (
             <CardComponent
               key={key}
               locationIndex={locationIndex}
               address={addresses[Number(key)] || locationData.address}
+              coordinates={locationData.coordinates}
               showAddressChange={selectedLocation === Number(key)}
               handleAddressChange={handleAddressChange}
               handleSaveAddress={() => handleSaveAddress(Number(key))}
               handleCancelAddressChange={() => handleCancelAddressChange()}
-              handleLocationClick={handleLocationClick}
               handleDeleteLocation={() => handleDeleteLocation(locationIndex)}
               handleShowAddressChange={() =>
                 handleShowAddressChange(Number(key))
               }
               hours={locationData?.hours}
               locationState={locationState}
+              location={location}
             />
           );
         })}
