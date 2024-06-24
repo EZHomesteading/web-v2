@@ -36,7 +36,16 @@ const getVendors = async ({ role }: p) => {
         },
       },
     });
-    return users;
+    const safeListings = users.map(async (user) => {
+      if (user.location) {
+        return {
+          ...user,
+          location: user.location[0],
+        };
+      }
+    });
+    const safeUsers = await Promise.all(safeListings);
+    return safeUsers;
   } catch (error: any) {
     return [];
   }

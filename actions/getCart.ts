@@ -55,6 +55,12 @@ const getUserLocation = async (listing: any) => {
     throw new Error(error);
   }
 };
+function filterListingsByLocation(listings: any) {
+  return listings.filter((listing: any) => {
+    return listing.location !== undefined;
+  });
+}
+
 const getAllCartItemsByUserId = async () => {
   const user = await currentUser();
   try {
@@ -101,7 +107,8 @@ const getAllCartItemsByUserId = async () => {
         ...cartItem,
       };
     });
-    const finalCartItems = await Promise.all(listerine);
+    let finalCartItems = await Promise.all(listerine);
+    finalCartItems = await filterListingsByLocation(finalCartItems);
     return finalCartItems;
   } catch (error: any) {
     return [];

@@ -35,28 +35,23 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { BiSearch } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import Emulator from "./components/emulator";
 import SearchClient, {
   ProductValue,
 } from "@/app/components/client/SearchClient";
-
 import Heading from "@/app/components/Heading";
 import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
-import { PiStorefrontThin } from "react-icons/pi";
 import Counter from "@/app/create/components/Counter";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
 import Image from "next/image";
-
 import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Card, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
 import InputField from "./components/suggestion-input";
@@ -69,37 +64,26 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
-  apiKey: string;
 }
 
-const CreateClient = ({ user, index, apiKey }: Props) => {
-  type AddressComponents = {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
+const CreateClient = ({ user, index }: Props) => {
   //seclare use state variables
   const [coopRating, setCoopRating] = useState(1);
   const [certificationChecked, setCertificationChecked] = useState(false);
-  const [showLocationInput, setShowLocationInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(index);
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
-  const [c, setC] = useState(false);
+  const [clicked1, setClicked1] = useState(false);
+  const [clicked2, setClicked2] = useState(false);
 
-  const toggleLocationInput = () => {
-    setShowLocationInput(!showLocationInput);
-  };
   //declare formstate default values
   let usersodt = null;
   if (user.SODT) {
     usersodt = user.SODT;
   }
-  console.log(usersodt);
   let {
     register,
     setValue,
@@ -111,7 +95,7 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       sodt: usersodt,
       category: "",
       subCategory: "",
-      location: "",
+      location: null,
       stock: 1,
       quantityType: "",
       imageSrc: [],
@@ -122,13 +106,8 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      street: "",
-      city: "",
-      zip: "",
-      state: "",
       coopRating: 1,
       minOrder: 1,
-      hours: null,
     },
   });
   //checkbox usestates
@@ -213,52 +192,10 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
   };
 
   //geocoding from autocompleted adress inputs
-  const getLatLngFromAddress = async (address: string) => {
-    console.log(address);
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
 
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        console.log(lat, lng, "responce", response);
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const handleAddressSelect = ({
-    street,
-    city,
-    state,
-    zip,
-  }: AddressComponents) => {
-    setValue("street", street);
-    setValue("city", city);
-    setValue("state", state);
-    setValue("zip", zip);
-    setCity(city);
-    setState(state);
-    if (user.location) {
-      setValue("hours", user?.location[0]?.hours);
-    }
-  };
   const [description, setDescription] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
     setIsLoading(true);
-
-    const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
-    //console.log(fullAddress);
-    const geoData = await getLatLngFromAddress(fullAddress);
-
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
     const shelfLife =
       parseInt(data.shelfLifeDays, 10) +
@@ -266,84 +203,66 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       parseInt(data.shelfLifeMonths, 10) * 30 +
       parseInt(data.shelfLifeYears, 10) * 365;
 
-    if (geoData) {
-      //onsubmit formstate to formdata=data to pass to create listing api endpoint
-      const formData = {
-        title: data.title,
-        SODT: parseInt(data.sodt),
-        minOrder: parseInt(data.minOrder),
-        description: description,
-        category: data.category,
-        subCategory: data.subCategory,
-        coopRating: coopRating,
-        price: formattedPrice,
-        imageSrc: data.imageSrc,
-        stock: parseInt(data.stock, 10),
-        shelfLife: shelfLife,
-        quantityType:
-          data.quantityType === "none" || data.quantityType === "each"
-            ? ""
-            : data.quantityType,
-        location: {
-          type: "Point",
-          coordinates: [geoData.lng, geoData.lat],
-          address: [data.street, data.city, data.state, data.zip],
-          hours: data.hours,
-        },
-      };
-      axios
-        .post("/api/listings", formData)
-        .then(() => {
-          toast.success("Listing created!");
-          setValue("category", "");
-          setValue("subCategory", "");
-          setValue("location", "");
-          setValue("stock", null);
-          setValue("quantityType", "");
-          setValue("imageSrc", "");
-          setValue("price", null);
-          setValue("title", "");
-          setValue("description", "");
-          setValue("shelfLifeDays", 0);
-          setValue("shelfLifeWeeks", 0);
-          setValue("shelfLifeMonths", 0);
-          setValue("shelfLifeYears", 0);
-          setValue("street", "");
-          setValue("city", "");
-          setValue("zip", "");
-          setValue("state", "");
-          setValue("sodt", 60);
-          setValue("coopRating", 1);
-          setValue("minOrder", 1);
-          setValue("hours", null);
-          setC(false);
-          setClicked(false);
-          setProduct(undefined);
-          setCoopRating(1);
-          setCertificationChecked(false);
-          setShowLocationInput(false);
-          setQuantityType(undefined);
-          router.push("/dashboard/my-store");
-        })
-        .catch(() => {
-          toast.error(
-            "Please make sure you've added information for all of the fields.",
-            {
-              duration: 2000,
-              position: "bottom-center",
-            }
-          );
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
-      toast.error("Please select or enter a valid address.", {
-        duration: 2000,
-        position: "bottom-center",
+    //onsubmit formstate to formdata=data to pass to create listing api endpoint
+    const formData = {
+      title: data.title,
+      SODT: parseInt(data.sodt),
+      minOrder: parseInt(data.minOrder),
+      description: description,
+      category: data.category,
+      subCategory: data.subCategory,
+      coopRating: coopRating,
+      price: formattedPrice,
+      imageSrc: data.imageSrc,
+      stock: parseInt(data.stock, 10),
+      shelfLife: shelfLife,
+      quantityType:
+        data.quantityType === "none" || data.quantityType === "each"
+          ? ""
+          : data.quantityType,
+      location: data.location,
+    };
+    axios
+      .post("/api/listings", formData)
+      .then(() => {
+        toast.success("Listing created!");
+        setValue("category", "");
+        setValue("subCategory", "");
+        setValue("location", "");
+        setValue("stock", null);
+        setValue("quantityType", "");
+        setValue("imageSrc", "");
+        setValue("price", null);
+        setValue("title", "");
+        setValue("description", "");
+        setValue("shelfLifeDays", 0);
+        setValue("shelfLifeWeeks", 0);
+        setValue("shelfLifeMonths", 0);
+        setValue("shelfLifeYears", 0);
+        setValue("sodt", 60);
+        setValue("coopRating", 1);
+        setValue("minOrder", 1);
+        setClicked(false);
+        setClicked1(false);
+        setClicked2(false);
+        setProduct(undefined);
+        setCoopRating(1);
+        setCertificationChecked(false);
+        setQuantityType(undefined);
+        router.push("/dashboard/my-store");
+      })
+      .catch(() => {
+        toast.error(
+          "Please make sure you've added information for all of the fields.",
+          {
+            duration: 2000,
+            position: "bottom-center",
+          }
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    }
   };
   //step handlers so that proper pages render
   const handleNext = async () => {
@@ -530,7 +449,6 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
       subCategory: suggestionSubCategory,
       category: suggestionCategory,
     };
-    console.log(body);
     try {
       axios.post("/api/suggestion", body);
       toast.success("Your request has been recieved!");
@@ -802,8 +720,8 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                   shelfLifeMonths * 30 +
                   shelfLifeYears * 365
                 }
-                city={city}
-                state={state}
+                city={user.location ? user?.location[0]?.address[1] : "Norfolk"}
+                state={user.location ? user?.location[0]?.address[2] : "VA"}
               />
             </div>
           </div>
@@ -1271,94 +1189,145 @@ const CreateClient = ({ user, index, apiKey }: Props) => {
                     title="Add an Address"
                     subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
                   />
-                  <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+
+                  {user.location === null ||
+                  user.location === undefined ||
+                  ((user.location[0] === null ||
+                    user.location[0] === undefined) &&
+                    (user.location[1] === null ||
+                      user.location[1] === undefined) &&
+                    (user.location[2] === null ||
+                      user.location[2] === undefined)) ? (
                     <Card
                       className={
-                        clicked
-                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
-                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                        "hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
                       }
                       onClick={() => {
-                        if (user.location) {
-                          setValue("street", user?.location[0]?.address[0]);
-                          setValue("city", user?.location[0]?.address[1]);
-                          setValue("state", user?.location[0]?.address[2]);
-                          setValue("zip", user?.location[0]?.address[3]);
-                          setClicked(true);
-                          setC(false);
-                          setCity(user?.location[0]?.address[1] || "");
-                          setState(user?.location[0]?.address[2] || "");
-                          setValue("hours", user?.location[0].hours);
-                        }
+                        router.replace("/dashboard/my-store/settings");
                       }}
                     >
                       <CardHeader className="pt-2 sm:pt-6">
                         <div className="text-start">
                           <div className="text-xl sm:text-2xl font-bold">
-                            Use My Default Address
-                          </div>
-                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                            <ul>
-                              <li className={`${outfit.className}`}></li>{" "}
-                              {user.location &&
-                              user?.location[0]?.address.length === 4 ? (
-                                <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
-                              ) : (
-                                <li>Full Address not available</li>
-                              )}
-                            </ul>
+                            You have no addresses set. Please set this up before
+                            creating a listing. Click Here to set up Store
+                            Locations
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex justify-end pb-0 sm:pb-6">
-                        <PiStorefrontThin size="5em" className="text-sm" />
-                      </CardContent>
                     </Card>
-                    <Card
-                      className={
-                        c
-                          ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
-                          : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
-                      }
-                      onClick={() => {
-                        toggleLocationInput();
-                        setClicked(false);
-                        setC(true);
-                      }}
-                    >
-                      <CardHeader className="pt-2 sm:pt-6">
-                        <div className="text-start">
-                          <div className="text-xl sm:text-2xl font-bold">
-                            Use a Different Location
-                          </div>
-                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                            If your selling location differs from you default
-                            address
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex justify-end pb-2 sm:pb-6">
-                        {!c ? (
-                          <BiSearch
-                            size="5em"
-                            style={{ cursor: "pointer" }}
-                            className="text-sm"
-                          />
-                        ) : (
-                          <div className="w-full">
-                            <LocationSearchInput
-                              address={watch("address")}
-                              setAddress={(address) =>
-                                setValue("address", address)
-                              }
-                              onAddressParsed={handleAddressSelect}
-                              apiKey={apiKey}
-                            />
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                      {user.location[0] !== null ? (
+                        <Card
+                          className={
+                            clicked
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (user.location) {
+                              setClicked(true);
+                              setClicked1(false);
+                              setClicked2(false);
+                              setValue("location", 0);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Default Address
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {user.location &&
+                                  user?.location[0]?.address.length === 4 ? (
+                                    <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                      {user.location[1] !== null ? (
+                        <Card
+                          className={
+                            clicked1
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (user.location) {
+                              setClicked1(true);
+                              setClicked(false);
+                              setClicked2(false);
+                              setValue("location", 1);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Second Location
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {user.location &&
+                                  user?.location[1]?.address.length === 4 ? (
+                                    <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                      {user.location[2] !== null ? (
+                        <Card
+                          className={
+                            clicked2
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                          }
+                          onClick={() => {
+                            if (user.location) {
+                              setClicked2(true);
+                              setClicked1(false);
+                              setClicked(false);
+                              setValue("location", 2);
+                            }
+                          }}
+                        >
+                          <CardHeader className="pt-2 sm:pt-6">
+                            <div className="text-start">
+                              <div className="text-xl sm:text-2xl font-bold">
+                                Use My Third Location
+                              </div>
+                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                                <ul>
+                                  <li className={`${outfit.className}`}></li>{" "}
+                                  {user.location &&
+                                  user?.location[2]?.address.length === 4 ? (
+                                    <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
+                                  ) : (
+                                    <li>Full Address not available</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

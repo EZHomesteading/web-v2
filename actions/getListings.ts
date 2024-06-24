@@ -30,6 +30,12 @@ const getUserLocation = async (listing: any) => {
     throw new Error(error);
   }
 };
+function filterListingsByLocation(listings: any) {
+  return listings.filter((listing: any) => {
+    return listing.location !== undefined;
+  });
+}
+
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
@@ -152,6 +158,7 @@ const GetListingsMarket = async (
 
     const listerine = listings.map(async (listing) => {
       const location = await getUserLocation(listing);
+
       return {
         ...listing,
         location,
@@ -159,7 +166,7 @@ const GetListingsMarket = async (
       };
     });
     listings = await Promise.all(listerine);
-
+    listings = await filterListingsByLocation(listings);
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
@@ -245,7 +252,8 @@ const GetListingsByIds = async (params: Params) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -299,9 +307,55 @@ const getListingById = async (params: IParams) => {
     throw new Error(error);
   }
 };
+// get a single listing by id
+const getListingByIdUpdate = async (params: IParams) => {
+  try {
+    const { listingId } = params;
+
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+            emailVerified: true,
+            role: true,
+            url: true,
+            SODT: true,
+            location: true,
+          },
+        },
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    return {
+      ...listing,
+      createdAt: listing.createdAt.toString(),
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toString(),
+        updatedAt: listing.user.updatedAt.toString(),
+        emailVerified: listing.user.emailVerified?.toString() || null,
+      },
+    };
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(error);
+  }
+};
 const GetListingsByUserId = async (params: IListingsOrderParams) => {
   try {
     const { userId } = params;
+
     let query: any = {};
 
     if (userId) {
@@ -312,6 +366,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: { user: { select: { id: true } } },
     });
     const safeListings = listings.map(async (listing) => {
       const location = await getUserLocation(listing);
@@ -321,7 +376,8 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -346,7 +402,7 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { location: true } } },
+      include: { user: { select: { id: true } } },
     });
 
     const safeListings = listings.map(async (listing) => {
@@ -357,7 +413,8 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
         createdAt: listing.createdAt.toISOString(),
       };
     });
-    const resolvedSafeListings = await Promise.all(safeListings);
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -370,6 +427,7 @@ export {
   getListingById,
   GetListingsByOrderId,
   GetListingsByUserId,
+  getListingByIdUpdate,
 };
 export interface IListingsParams {
   lat?: string;
