@@ -4,8 +4,6 @@ import { Input } from "@/app/components/ui/input";
 import SliderSelection from "./slider-selection";
 import { Zilla_Slab } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { PiTrashSimple } from "react-icons/pi";
 import {
   Dialog,
@@ -33,9 +31,9 @@ interface LocationProps {
 }
 
 const locationHeadings = [
-  { text: "Default Location", style: "text-2xl mt-2 font-bold" },
-  { text: "Secondary Location", style: "text-2xl mt-2 font-semibold" },
-  { text: "Third Location", style: "text-2xl mt-2 font-medium" },
+  { text: "Default Location", style: "text-xl mt-2 font-bold" },
+  { text: "Secondary Location", style: "text-xl mt-2 font-semibold" },
+  { text: "Third Location", style: "text-xl mt-2 font-medium" },
 ];
 
 const CardComponent = memo(
@@ -257,9 +255,7 @@ const AddLocationCard = ({
           >
             <CardContent className="flex flex-col justify-center items-center h-full">
               <IoIosAdd className="text-7xl" />
-              <h2 className="text-lg mt-2 font-bold">
-                Add New Location & Hours
-              </h2>
+              <h2 className="text-lg mt-2 font-bold">New Location & Hours</h2>
             </CardContent>
           </Card>
         </>

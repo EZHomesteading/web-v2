@@ -37,8 +37,9 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
+  apiKey?: string;
 }
-const Onboarding = ({ user, index }: Props) => {
+const Onboarding = ({ user, index, apiKey }: Props) => {
   const router = useRouter();
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
@@ -48,22 +49,7 @@ const Onboarding = ({ user, index }: Props) => {
   }>({});
 
   const [isLoading, setIsLoading] = useState(false);
-  let defaultHours;
-  if (user?.hours) {
-    defaultHours = user?.hours;
-  } else {
-    defaultHours = {
-      0: [{ open: 480, close: 1020 }],
-      1: [{ open: 480, close: 1020 }],
-      2: [{ open: 480, close: 1020 }],
-      3: [{ open: 480, close: 1020 }],
-      4: [{ open: 480, close: 1020 }],
-      5: [{ open: 480, close: 1020 }],
-      6: [{ open: 480, close: 1020 }],
-    };
-  }
 
-  const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
   const handleNext = async () => {
     if (step === 3) {
       handleSubmit();
@@ -83,11 +69,10 @@ const Onboarding = ({ user, index }: Props) => {
         stripeAccountId: user?.stripeAccountId,
       });
       if (response.status === 200) {
-        if (formData.image || coOpHours || formData.bio) {
+        if (formData.image || formData.bio) {
           try {
             const updateResponse = await axios.post("/api/update", {
               image: formData.image,
-              hours: coOpHours,
               bio: formData.bio,
             });
             if (updateResponse.status === 200) {
@@ -271,11 +256,7 @@ const Onboarding = ({ user, index }: Props) => {
         <div className="md:w-3/5 onboard-right relative">
           {step === 1 && (
             <div className="md:min-h-screen h-[calc(100vh-132px)] hideOverflow">
-              <StoreStep
-                coOpHours={coOpHours}
-                setCoOpHours={setCoOpHours}
-                user={user}
-              />
+              <StoreStep user={user} apiKey={apiKey} />
             </div>
           )}
           {step === 2 && (
