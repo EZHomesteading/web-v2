@@ -4,15 +4,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "react-datetime-picker/dist/DateTimePicker.css";
+import { CartItem } from "@/actions/getCart";
 
 interface QuantityProps {
-  cartItems?: any;
-  cartItem?: any;
-  onDataChange: any;
+  cartItems: CartItem[];
+  cartItem: CartItem;
+  onDataChange: (childTotal: number) => void;
 }
 
 const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
-  const [total, setTotal] = useState(false);
+  const [total, setTotal] = useState<number>();
   const [hover, setHover] = useState(false);
   const [inputValue, setInputValue] = useState(cartItem.quantity);
   const [quantity, setQuantity] = useState(cartItem.quantity);
@@ -24,7 +25,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
     setHover(false);
     // If the input value is invalid, reset the quantity to the minimum order
     if (
-      inputValue === "" ||
+      (inputValue as unknown) === "" ||
       inputValue === null ||
       inputValue === undefined ||
       isNaN(inputValue)
@@ -42,7 +43,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
     // Update the quantity in the server
     axios.post(`api/cart/`, {
       cartId: cartItem.id,
-      quantity: parseInt(inputValue),
+      quantity: inputValue,
     });
   };
 
@@ -124,7 +125,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
   // Calculate the total value based on the quantities of all cart items
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (acc: any, cartItem: any) =>
+      (acc: number, cartItem: CartItem) =>
         acc + cartItem.listing.price * cartItem.quantity,
       0
     );
@@ -133,7 +134,9 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
 
   // send data to parent element whenever the total value changes
   useEffect(() => {
-    onDataChange(total);
+    if (total !== undefined) {
+      onDataChange(total);
+    }
   }, [total, onDataChange]);
   return (
     <>

@@ -3,11 +3,12 @@
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import { Button } from "@/app/components/ui/button";
 import { addDays, format } from "date-fns";
+import { AdjustedListings } from "./order-create";
 
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
-  expiryArr: any;
+  expiryArr: AdjustedListings[];
   createOrder: () => void;
 }
 
@@ -24,7 +25,7 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
           <div className="w-fit border-none shadow-none">
             <div className="grid gap-4">
               <div className="bg-white">
-                {expiryArr.map((expiryObj: any) => {
+                {expiryArr.map((expiryObj: AdjustedListings) => {
                   const shelfLifeDisplay = expiryObj.expiry
                     ? `${format(expiryObj.expiry, "MMM dd, yyyy")}`
                     : "This product is non-perisable";

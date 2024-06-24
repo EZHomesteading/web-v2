@@ -19,6 +19,7 @@ import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
+import { ValidTime } from "../client";
 
 interface CustomTimeProps {
   isOpen?: boolean;
@@ -26,7 +27,7 @@ interface CustomTimeProps {
   hours: ExtendedHours;
   index: number;
   cartGroup: CartGroup | null;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
 }
 
