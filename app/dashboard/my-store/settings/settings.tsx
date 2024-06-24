@@ -162,7 +162,14 @@ const StoreSettings = ({ apiKey }: p) => {
               )}
               <li>Please refresh after clicking update to see changes</li>
             </ul> */}
-            <HoursLocationContainer location={user?.location} apiKey={apiKey} />
+            {user?.role && (
+              <HoursLocationContainer
+                location={user?.location}
+                apiKey={apiKey}
+                role={user?.role}
+              />
+            )}
+
             <CardFooter className="flex justify-between m-0 p-0 pt-2">
               If you set hours to closed everyday, EZH users will not be able to
               buy from you.
@@ -246,7 +253,7 @@ const StoreSettings = ({ apiKey }: p) => {
             </CardFooter>
           </CardContent>
         </Card>{" "}
-        <Card>
+        {/* <Card>
           <CardContent className="flex flex-col sheet border-none shadow-lg w-full relative">
             <div className="m-0 p-0 pt-2">
               <div className="flex justify-between">
@@ -306,7 +313,7 @@ const StoreSettings = ({ apiKey }: p) => {
               A store banner is optional but recommended.
             </CardFooter>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     );
 };

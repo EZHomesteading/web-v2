@@ -23,7 +23,6 @@ import {
 import { Outfit } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import axios from "axios";
-import { LocationObj } from "@prisma/client";
 
 const outfit = Outfit({
   display: "swap",
@@ -40,7 +39,20 @@ const days = [
   "Sunday",
 ];
 
-const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
+const SliderSection = ({
+  hours,
+  index,
+  coordinates,
+  address,
+  location,
+}: {
+  hours: any;
+  index: number;
+  address: string[];
+  coordinates: number[];
+  location: any;
+}) => {
+  console.log("location", location);
   const defaultHours: ExtendedHours = {
     0: null,
     1: null,
@@ -54,10 +66,10 @@ const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
   const [coOpHours, setCoOpHours] = useState<ExtendedHours>(defaultHours);
 
   useEffect(() => {
-    if (location?.hours) {
-      setCoOpHours(location.hours);
+    if (hours) {
+      setCoOpHours(hours);
     }
-  }, [location?.hours]);
+  }, [hours, index]);
 
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [newHours, setNewHours] = useState<{
@@ -210,59 +222,31 @@ const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
   };
   const onSubmit = async () => {
     if (index !== null) {
-      const location1 =
-        user[0] === null
-          ? null
-          : {
-              address: user[0].address,
-              type: user[0].type,
-              hours: user[0].hours,
-              coordinates: user[0].coordinates,
-            };
-
-      const location2 =
-        user[1] === null
-          ? null
-          : {
-              address: user[1].address,
-              type: user[1].type,
-              hours: user[1].hours,
-              coordinates: user[1].coordinates,
-            };
-      const location3 =
-        user[2] === null
-          ? null
-          : {
-              address: user[2].address,
-              type: user[2].type,
-              hours: user[2].hours,
-              coordinates: user[2].coordinates,
-            };
-      let formData = {
-        location: {
-          0: location1,
-          1: location2,
-          2: location3,
-        },
+      const formData: { location: Record<number, any> } = {
+        location: {},
       };
-      if (index === 0 && formData.location[0]) {
-        formData.location[0].hours = coOpHours;
+
+      Object.keys(location).forEach((key) => {
+        const numKey = Number(key);
+        if (location[numKey] !== null) {
+          formData.location[numKey] = { ...location[numKey] };
+        } else {
+          formData.location[numKey] = null;
+        }
+      });
+
+      if (formData.location[index] && formData.location[index] !== null) {
+        formData.location[index].hours = coOpHours;
       }
-      if (index === 1 && formData.location[1]) {
-        formData.location[1].hours = coOpHours;
+
+      try {
+        await axios.post("/api/update", formData);
+        window.location.reload();
+        toast.success("Your account details have changed");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to update account details");
       }
-      if (index === 2 && formData.location[2]) {
-        formData.location[2].hours = coOpHours;
-      }
-      axios
-        .post("/api/update", formData)
-        .then(() => {
-          window.location.replace("/dashboard/my-store/settings");
-          toast.success("Your account details have changed");
-        })
-        .catch((error) => {
-          toast.error(error.message);
-        });
     }
   };
   return (
@@ -490,7 +474,7 @@ const SliderSection = ({ location }: { location: LocationObj | undefined }) => {
                   </SheetContent>
                   <div
                     onClick={handleClose}
-                    className={`text-[.75rem] mb-1 ${
+                    className={`text-[.75rem] mb-1 ${outfit.className} ${
                       isOpen
                         ? "bg-red-300 p-3 hover:bg-red-500 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg text-center hover:cursor-pointer hover:text-white"
                         : "bg-emerald-300 text-black p-3 hover:bg-emerald-500 hover:text-white lg:w-[50%] w-full rounded-full  shadow-lg text-lg text-center hover:cursor-pointer"

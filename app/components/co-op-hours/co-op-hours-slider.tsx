@@ -70,7 +70,7 @@ export default function CoopHoursSlider({
               className="w-full"
             />
             <div
-              className={`${outfit.className} absolute top-6 left-0 right-0 flex justify-between`}
+              className={`${outfit.className} absolute top-[.9rem] left-0 right-0 flex justify-between`}
             >
               <div
                 style={{
