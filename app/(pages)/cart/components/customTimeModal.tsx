@@ -30,13 +30,15 @@ const zilla = Zilla_Slab({
   display: "swap",
   weight: ["500"],
 });
+import { ValidTime } from "../client";
+
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
   hours: ExtendedHours;
   index: number;
   cartGroup: CartGroup | null;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
 }
 
@@ -51,10 +53,10 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
 }) => {
   const now = new Date();
   // useState hooks to manage the state of the date and options
+
   const [date, setDate] = useState<Date | undefined>(); // current time
   const [options, setOptions] = useState<string[]>([]); // array of times with 15 minute intervals
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
     setIsCalendarOpen(false); // Close the popover

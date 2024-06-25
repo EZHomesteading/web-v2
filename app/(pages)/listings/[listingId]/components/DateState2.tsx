@@ -7,13 +7,16 @@ import { useState } from "react";
 import { ExtendedHours } from "@/next-auth";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import { Outfit } from "next/font/google";
-import CustomTimeModal2 from "./CustomTimeModal2";
+import CustomTimeModal2, { ValidTime } from "./CustomTimeModal2";
 import { Button } from "../../../../components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import SoonExpiryModal from "./soonExpiryModal";
 import { addDays, format } from "date-fns";
+import { FinalListing } from "@/actions/getListings";
+import { Location } from "@/actions/getCart";
+import { Order } from "@prisma/client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -23,15 +26,23 @@ const outfit = Outfit({
 
 interface StatusProps {
   hours: ExtendedHours;
-  onSetTime: any;
+  onSetTime: (childTime: Date) => void;
   quantity: number;
   quantityType: string;
   disabled?: boolean;
-  listing: any;
-  user: any;
-  sodt: any;
+  listing: FinalListing;
+  user: string;
+  sodt: number;
 }
-
+interface Body {
+  userId: string;
+  listingIds: string[];
+  pickupDate: Date;
+  quantity: string;
+  totalPrice: number;
+  status: number;
+  location: Location;
+}
 const DateState2 = ({
   hours,
   listing,
@@ -42,12 +53,11 @@ const DateState2 = ({
   user,
 }: StatusProps) => {
   const router = useRouter();
-  const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
+  const [selectedTime, setSelectedTime] = useState<ValidTime>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
-  let body: any = [];
-
-  const shelfLife = (listing: any) => {
+  let body: Body[] = [];
+  const shelfLife = (listing: FinalListing) => {
     const adjustedListing = {
       ...listing,
       createdAt: new Date(listing.createdAt),
@@ -71,7 +81,7 @@ const DateState2 = ({
     return dateObj;
   }
   const expiry = convertToDate(shelfLife(listing));
-  const handleTimer = async (childTime: any) => {
+  const handleTimer = async (childTime: ValidTime) => {
     sessionStorage.setItem("ORDER", "");
 
     setSelectedTime(childTime);
@@ -113,7 +123,7 @@ const DateState2 = ({
       }
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
-      await datas.forEach((data: any) => {
+      await datas.forEach((data: Order) => {
         let store = sessionStorage.getItem("ORDER");
         if (store === null) {
           store = "";
@@ -144,7 +154,6 @@ const DateState2 = ({
         onClose={() => setConfirmOpen(false)}
         hours={hours}
         onSetTime={handleTimer}
-        user={user}
       />
       <SheetTrigger className="w-full">
         <Button

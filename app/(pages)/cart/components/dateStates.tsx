@@ -9,6 +9,7 @@ import { ExtendedHours } from "@/next-auth";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import CustomTimeModal from "./customTimeModal";
 import { Outfit } from "next/font/google";
+import { CartGroup2, ValidTime } from "../client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -19,10 +20,10 @@ const outfit = Outfit({
 interface StatusProps {
   role: string;
   hours: ExtendedHours;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   index: number;
   cartGroup: CartGroup | null;
-  sodtarr: any;
+  sodtarr: CartGroup2[];
 }
 
 const DateState = ({
@@ -33,9 +34,9 @@ const DateState = ({
   role,
   sodtarr,
 }: StatusProps) => {
-  const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
+  const [selectedTime, setSelectedTime] = useState<ValidTime>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const formatPickupTime = (selectedTime: any) => {
+  const formatPickupTime = (selectedTime: ValidTime) => {
     // formats pickup time from date type to date string readable by our other formatters.
     if (!selectedTime) return "";
 
@@ -66,7 +67,7 @@ const DateState = ({
     }
   };
   //function to pass data to parent element
-  const handleTimer = (childTime: Date) => {
+  const handleTimer = (childTime: ValidTime) => {
     onSetTime(childTime);
     setSelectedTime(childTime);
   };

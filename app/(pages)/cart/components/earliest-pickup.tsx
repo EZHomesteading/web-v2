@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { useEffect, useState } from "react";
+import { CartGroup2, ValidTime } from "../client";
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
@@ -13,9 +14,12 @@ const outfit = Outfit({
 interface Props {
   hours: ExtendedHours;
   index: number;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
-  sodtarr: any;
+  sodtarr: CartGroup2[];
+}
+interface Timer {
+  pickupTime: Date;
 }
 const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
@@ -26,7 +30,10 @@ const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
     calculateEarliestPickupTime();
   }, []);
 
-  const sodt = sodtarr.find((item: any) => item.cartIndex === index);
+  let sodt =
+    sodtarr.find((item: CartGroup2) => item.cartIndex === index) ||
+    sodtarr[index];
+
   const calculateEarliestPickupTime = () => {
     const now = new Date();
     const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
@@ -126,9 +133,9 @@ const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
     }
   };
 
-  const formatPickupTime = (selectedTimer: any) => {
+  const formatPickupTime = (selectedTimer: Timer) => {
     if (!selectedTimer) return "";
-
+    console.log(selectedTimer);
     const { pickupTime } = selectedTimer;
     const now = new Date();
     const pickupDate = new Date(pickupTime);

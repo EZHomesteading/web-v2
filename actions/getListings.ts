@@ -2,7 +2,7 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import { Location, UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 import { Listing } from "./getCart";
 
@@ -42,7 +42,13 @@ type Listing2 = {
   imageSrc: string[];
   shelfLife: number;
 };
-type FinalListing = {
+type Location = {
+  type: string;
+  coordinates: number[];
+  address: string[];
+  hours: Prisma.JsonValue;
+};
+export type FinalListing = {
   id: string;
   title: string;
   price: number;
@@ -60,7 +66,6 @@ type FinalListing = {
     id: string;
     SODT: number | null;
     name: string;
-    location: Location;
     role: UserRole;
     //hours: JsonValue;
   };
