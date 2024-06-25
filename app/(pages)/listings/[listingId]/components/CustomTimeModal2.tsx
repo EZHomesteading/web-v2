@@ -35,7 +35,7 @@ interface CustomTimeProps {
   hours: ExtendedHours;
   onSetTime: (childTime: ValidTime) => void;
 }
-type ValidTime = { pickupTime: Date };
+export type ValidTime = { pickupTime: Date };
 
 const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   isOpen,
