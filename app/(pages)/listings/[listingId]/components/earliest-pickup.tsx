@@ -14,7 +14,7 @@ interface Props {
   hours: ExtendedHours;
   onSetTime: any;
   role: string;
-  sodtarr: any;
+  sodtarr: number[];
 }
 const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   console.log("beans", hours);

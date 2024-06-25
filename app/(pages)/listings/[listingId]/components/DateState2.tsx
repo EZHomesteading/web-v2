@@ -16,6 +16,7 @@ import SoonExpiryModal from "./soonExpiryModal";
 import { addDays, format } from "date-fns";
 import { FinalListing } from "@/actions/getListings";
 import { Location } from "@/actions/getCart";
+import { Order } from "@prisma/client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -52,7 +53,7 @@ const DateState2 = ({
   user,
 }: StatusProps) => {
   const router = useRouter();
-  const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
+  const [selectedTime, setSelectedTime] = useState<ValidTime>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   let body: Body[] = [];
@@ -80,7 +81,7 @@ const DateState2 = ({
     return dateObj;
   }
   const expiry = convertToDate(shelfLife(listing));
-  const handleTimer = async (childTime: any) => {
+  const handleTimer = async (childTime: ValidTime) => {
     sessionStorage.setItem("ORDER", "");
 
     setSelectedTime(childTime);
@@ -122,7 +123,7 @@ const DateState2 = ({
       }
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
-      await datas.forEach((data: any) => {
+      await datas.forEach((data: Order) => {
         let store = sessionStorage.getItem("ORDER");
         if (store === null) {
           store = "";
