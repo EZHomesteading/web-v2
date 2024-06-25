@@ -98,7 +98,7 @@ export function HoursDisplay({ coOpHours }: HoursDisplayProps) {
   });
 
   return (
-    <div className={` flex bg-white rounded-lg px-2 py-2 bg shadow-lg`}>
+    <div className="flex rounded-lg px-2 py-2 ">
       <Table>
         <TableBody>
           {table.getRowModel().rows.map((row) => (

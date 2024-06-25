@@ -29,6 +29,7 @@ const outfit = Outfit({
 });
 
 export default function Home() {
+  const apiKey = process.env.MAPS_KEY;
   return (
     <>
       <div className="bg-black text-white w-full">
@@ -67,7 +68,7 @@ export default function Home() {
               consumers, co-ops, & producers.
             </p>
             <div className="flex">
-              <FindListingsComponent />
+              {apiKey && <FindListingsComponent apiKey={apiKey} />}
             </div>
           </header>
         </div>
