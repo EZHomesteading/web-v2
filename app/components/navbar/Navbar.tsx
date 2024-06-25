@@ -6,6 +6,7 @@ import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import SearchNative from "./search-native";
 import { NavUser } from "@/actions/getUser";
+import { navUser } from "@/next-auth";
 
 interface p {
   user?: NavUser | null;
@@ -23,12 +24,12 @@ const Navbar = ({ user }: p) => {
             </div>
             <div className="flex flex-row items-center gap-x-4">
               <SearchNative />
-              <UserMenu user={user} />
+              <UserMenu user={user as unknown as navUser} />
             </div>
           </div>
         </Container>
       </div>
-      <Categories user={user} />
+      <Categories user={user as unknown as navUser} />
     </div>
   );
 };

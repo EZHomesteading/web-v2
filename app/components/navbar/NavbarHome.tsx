@@ -1,9 +1,10 @@
 //homepage default navbar
+import { navUser } from "@/next-auth";
 import Container from "../Container";
 import Logo from "./Logo";
 import UserMenu from "./UserMenu";
 interface p {
-  user?: any;
+  user?: navUser;
 }
 const NavbarHome = ({ user }: p) => {
   return (

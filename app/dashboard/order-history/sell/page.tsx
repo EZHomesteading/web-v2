@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
 
 import { SafeListing } from "@/types";
-import { GetListingsByIds } from "@/actions/getListings";
+import { FinalListing, GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
@@ -62,10 +62,10 @@ const Page = async () => {
               </Link>
             </CardHeader>
             <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-              {listings.flatMap((listing: SafeListing) => {
+              {listings[0].listings.flatMap((listing: FinalListing) => {
                 const quantities = JSON.parse(order.quantity);
                 const quantityObj = quantities.find(
-                  (q: any) => q.id === listing.id
+                  (q: { id: string }) => q.id === listing.id
                 );
                 const quantity = quantityObj ? quantityObj.quantity : 0;
 

@@ -6,7 +6,7 @@ import ListingClient from "./ListingClient";
 import { getUserwithCart } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
-
+import { FinalListing } from "@/actions/getListings";
 interface IParams {
   listingId?: string;
 }
@@ -28,7 +28,7 @@ const ListingPage = async ({ params }: { params: IParams }) => {
     <ClientOnly>
       <SessionStorageManager />
       <ListingClient
-        listing={listing}
+        listing={listing as unknown as FinalListing & { description: string }}
         following={following}
         user={user}
         apiKey={apiKey}

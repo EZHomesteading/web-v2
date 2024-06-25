@@ -18,9 +18,35 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import FollowButton from "./followButton";
+import { Prisma } from "@prisma/client";
 
 interface ListingCardProps {
-  data: any;
+  data: {
+    name: string;
+    id: string;
+    image: string | null;
+    url: string | null;
+    location: {
+      0: {
+        type: string;
+        coordinates: number[];
+        address: string[];
+        hours: Prisma.JsonValue;
+      } | null;
+      1: {
+        type: string;
+        coordinates: number[];
+        address: string[];
+        hours: Prisma.JsonValue;
+      } | null;
+      2: {
+        type: string;
+        coordinates: number[];
+        address: string[];
+        hours: Prisma.JsonValue;
+      } | null;
+    } | null;
+  } | null;
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
@@ -28,8 +54,15 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  user?: UserInfo | null;
-  followarr: any;
+  user: UserInfo | null;
+  followarr:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
 }
 
 const FollowCard: React.FC<ListingCardProps> = ({
@@ -73,6 +106,9 @@ const FollowCard: React.FC<ListingCardProps> = ({
 
   const [isHovering, setIsHovering] = useState(false);
   console.log(data);
+  if (!data) {
+    return;
+  }
   return (
     <div className="col-span-1 cursor-pointer">
       <div className="flex flex-col w-full">
@@ -107,9 +143,9 @@ const FollowCard: React.FC<ListingCardProps> = ({
               )}
             </div>
           </div>
-          <div className="font-light text-neutral-500">
-            {data?.location?.address[1]}, {data?.location?.address[2]}
-          </div>
+          {/* <div className="font-light text-neutral-500">
+            {data?.location[0]?.address[1]}, {data?.location[0]?.address[2]}
+          </div> */}
         </div>
 
         <div className="w-full flex justify-between">

@@ -1,13 +1,24 @@
 //profile setup parent component
-import { UserInfo } from "@/next-auth";
+import { ExtendedHours, UserInfo } from "@/next-auth";
 import ProfileComponent from "./profile-component";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
   user: UserInfo;
-  formData: any;
-  setFormData: any;
+  formData: FormData;
+  setFormData: Dispatch<
+    SetStateAction<{
+      hours?: ExtendedHours | undefined;
+      image?: string | undefined;
+      bio?: string | undefined;
+    }>
+  >;
 }
-
+type FormData = {
+  hours?: ExtendedHours | undefined;
+  image?: string | undefined;
+  bio?: string | undefined;
+};
 const ProfileStep = ({ setFormData, formData, user }: Props) => {
   return (
     <>

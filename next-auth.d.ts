@@ -53,6 +53,9 @@ type navBuyOrder = {
   buyer: {
     name: string;
   };
+  seller: {
+    name: string;
+  };
 };
 
 type navSellOrder = {
@@ -61,6 +64,9 @@ type navSellOrder = {
   status: number;
   updatedAt: Date;
   seller: {
+    name: string;
+  };
+  buyer: {
     name: string;
   };
 };

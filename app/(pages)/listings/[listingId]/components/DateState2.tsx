@@ -4,7 +4,6 @@ import { SheetCartC, SheetContentC } from "@/app/components/ui/reservePicker";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { SheetTrigger } from "@/app/components/ui/sheet";
 import { useState } from "react";
-import { ExtendedHours } from "@/next-auth";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import { Outfit } from "next/font/google";
 import CustomTimeModal2, { ValidTime } from "./CustomTimeModal2";
@@ -17,6 +16,7 @@ import { addDays, format } from "date-fns";
 import { FinalListing } from "@/actions/getListings";
 import { Location } from "@/actions/getCart";
 import { Order } from "@prisma/client";
+import { ExtendedHours } from "@/next-auth";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -25,14 +25,13 @@ const outfit = Outfit({
 });
 
 interface StatusProps {
-  hours: ExtendedHours;
   onSetTime: (childTime: Date) => void;
   quantity: number;
-  quantityType: string;
+  quantityType: string | null;
   disabled?: boolean;
   listing: FinalListing;
-  user: string;
-  sodt: number;
+  user: string | undefined;
+  sodt: (number | null)[];
 }
 interface Body {
   userId: string;
@@ -44,7 +43,6 @@ interface Body {
   location: Location;
 }
 const DateState2 = ({
-  hours,
   listing,
   quantity,
   quantityType,
@@ -152,7 +150,7 @@ const DateState2 = ({
       <CustomTimeModal2
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        hours={hours}
+        hours={listing.location.hours as unknown as ExtendedHours}
         onSetTime={handleTimer}
       />
       <SheetTrigger className="w-full">
@@ -174,7 +172,7 @@ const DateState2 = ({
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         sellerRole={listing.user.role}
-        hours={hours}
+        hours={listing.location.hours as unknown as ExtendedHours}
         onSetTime={handleTimer}
         sodt={sodt}
       >

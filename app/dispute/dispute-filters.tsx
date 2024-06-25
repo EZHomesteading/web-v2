@@ -1,16 +1,17 @@
 "use client";
 //admin only disputes page filter options
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
+import { Dispute } from "./dispute.client";
 
 interface p {
-  disputes: any;
-  setFilteredDisputes: any;
+  disputes: Dispute[];
+  setFilteredDisputes: Dispatch<SetStateAction<Dispute[]>>;
 }
 
 const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
@@ -73,7 +74,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
             <Checkbox
               id="statusLowToHigh"
               checked={sortOrder.includes("statusLowToHigh")}
-              onCheckedChange={(checked: any) =>
+              onCheckedChange={(checked: string | boolean) =>
                 sortDisputes(checked ? "statusLowToHigh" : "")
               }
             />
@@ -88,7 +89,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
             <Checkbox
               id="statusHighToLow"
               checked={sortOrder.includes("statusHighToLow")}
-              onCheckedChange={(checked: any) =>
+              onCheckedChange={(checked: string | boolean) =>
                 sortDisputes(checked ? "statusHighToLow" : "")
               }
             />
@@ -103,7 +104,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
             <Checkbox
               id="createdAtLowToHigh"
               checked={sortOrder.includes("createdAtLowToHigh")}
-              onCheckedChange={(checked: any) =>
+              onCheckedChange={(checked: string | boolean) =>
                 sortDisputes(checked ? "createdAtLowToHigh" : "")
               }
             />
@@ -118,7 +119,7 @@ const FilterButtons = ({ disputes, setFilteredDisputes }: p) => {
             <Checkbox
               id="createdAtHighToLow"
               checked={sortOrder.includes("createdAtHighToLow")}
-              onCheckedChange={(checked: any) =>
+              onCheckedChange={(checked: string | boolean) =>
                 sortDisputes(checked ? "createdAtHighToLow" : "")
               }
             />

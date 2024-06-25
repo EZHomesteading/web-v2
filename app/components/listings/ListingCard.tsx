@@ -27,6 +27,7 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { Location } from "@prisma/client";
+import { FinalListing } from "@/actions/getListings";
 
 const outfit = Outfit({
   display: "swap",
@@ -41,16 +42,7 @@ const work = Work_Sans({
 });
 
 interface ListingCardProps {
-  data: {
-    id: string;
-    imageSrc: string[];
-    location: Location;
-    price: number;
-    title: string;
-    quantityType: string;
-    stock: number;
-    minOrder: number | null;
-  };
+  data: FinalListing;
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
@@ -58,8 +50,8 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  user?: UserInfo | null;
-  storeUser?: any;
+  user: UserInfo | null;
+  storeUser: UserInfo;
   priority?: boolean;
 }
 

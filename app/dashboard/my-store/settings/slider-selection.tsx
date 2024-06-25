@@ -23,6 +23,7 @@ import {
 import { Outfit } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import axios from "axios";
+import { Location } from "@prisma/client";
 
 const outfit = Outfit({
   display: "swap",
@@ -42,15 +43,11 @@ const days = [
 const SliderSection = ({
   hours,
   index,
-  coordinates,
-  address,
   location,
 }: {
-  hours: any;
+  hours: ExtendedHours;
   index: number;
-  address: string[];
-  coordinates: number[];
-  location: any;
+  location: Location;
 }) => {
   console.log("location", location);
   const defaultHours: ExtendedHours = {
@@ -228,8 +225,16 @@ const SliderSection = ({
 
       Object.keys(location).forEach((key) => {
         const numKey = Number(key);
-        if (location[numKey] !== null) {
-          formData.location[numKey] = { ...location[numKey] };
+        if (
+          location[
+            numKey === 0 ? 0 : numKey === 1 ? 1 : numKey === 2 ? 2 : 0
+          ] !== null
+        ) {
+          formData.location[numKey] = {
+            ...location[
+              numKey === 0 ? 0 : numKey === 1 ? 1 : numKey === 2 ? 2 : 0
+            ],
+          };
         } else {
           formData.location[numKey] = null;
         }

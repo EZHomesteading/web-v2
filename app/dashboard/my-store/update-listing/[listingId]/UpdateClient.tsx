@@ -361,7 +361,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
             </ul>
             <div className="flex justify-end">
               <Select
-                onValueChange={(value: any) => {
+                onValueChange={(value: string) => {
                   setValue("sodt", value);
                 }}
               >
@@ -433,7 +433,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
                       {" "}
                       <UploadButton
                         endpoint="imageUploader"
-                        onClientUploadComplete={(res: any) => {
+                        onClientUploadComplete={(res: { url: string }[]) => {
                           const newImageSrc = [...watch("imageSrc")];
                           const emptyIndex = newImageSrc.findIndex(
                             (src) => !src

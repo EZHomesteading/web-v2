@@ -16,6 +16,7 @@ import { VscHistory } from "react-icons/vsc";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { UserRole } from "@prisma/client";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
+import { navUser } from "@/next-auth";
 //import GetOrderNotificationInfo from "@/actions/user/getUserNav";
 interface NavigationItem {
   name: string;
@@ -31,7 +32,7 @@ interface NavigationItem {
 }
 
 interface p {
-  user?: any;
+  user?: navUser;
 }
 const conNav: NavigationItem[] = [
   {

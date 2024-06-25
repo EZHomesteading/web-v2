@@ -2,8 +2,9 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "../../components/client/ClientOnly";
-import { GetListingsMarket } from "@/actions/getListings";
+import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getUserwithCart } from "@/actions/getUser";
+import { UserInfo } from "@/next-auth";
 
 interface ShopProps {
   userId?: string;
@@ -74,8 +75,8 @@ const ShopPage = async ({
 
   return (
     <MarketComponent
-      listings={listings}
-      user={user}
+      listings={listings as unknown as FinalListing[]}
+      user={user as unknown as UserInfo}
       emptyState={
         listings.length === 0 ? (
           <ClientOnly>

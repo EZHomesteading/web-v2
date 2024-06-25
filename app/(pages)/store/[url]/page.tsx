@@ -3,9 +3,10 @@ import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { getFollows } from "@/actions/getFollow";
-import { getUserStore } from "@/actions/getUser";
+import { StoreData, getUserStore } from "@/actions/getUser";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 import { getUserwithCart } from "@/actions/getUser";
+import { ExtendedHours, UserInfo } from "@/next-auth";
 
 interface StorePageProps {
   params: {
@@ -31,8 +32,12 @@ const StorePage = async ({ params }: StorePageProps) => {
         <SessionStorageManager />
       </ClientOnly>
       <DynamicStorePage
-        store={store}
-        user={user}
+        store={
+          store as unknown as (StoreData | null) & {
+            user: { hours: ExtendedHours };
+          }
+        }
+        user={user as unknown as UserInfo}
         following={following}
         emptyState={
           !store ? (

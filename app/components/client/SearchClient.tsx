@@ -27,7 +27,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as ProductValue)}
-        formatOptionLabel={(option: any) => (
+        formatOptionLabel={(option: { label: string }) => (
           <div className="flex flex-row items-center gap-3">
             {" "}
             <div>{option.label}</div>

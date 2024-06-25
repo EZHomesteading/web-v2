@@ -26,13 +26,13 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
       currentQuery = qs.parse(params.toString());
     }
 
-    const updatedQuery: any = {
+    const updatedQuery = {
       ...currentQuery,
       q: label,
     };
 
     if (params?.get("q") === label) {
-      delete updatedQuery.q;
+      delete (updatedQuery as { q?: string }).q;
     }
 
     const url = qs.stringifyUrl(

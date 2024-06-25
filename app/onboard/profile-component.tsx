@@ -4,10 +4,10 @@ import Avatar from "@/app/components/Avatar";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
-import { UserInfo } from "@/next-auth";
+import { ExtendedHours, UserInfo } from "@/next-auth";
 import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -17,13 +17,24 @@ const outfit = Outfit({
 
 interface Props {
   user: UserInfo;
-  formData: any;
-  setFormData: any;
+  formData: FormData;
+  setFormData: Dispatch<
+    SetStateAction<{
+      hours?: ExtendedHours | undefined;
+      image?: string | undefined;
+      bio?: string | undefined;
+    }>
+  >;
 }
+type FormData = {
+  hours?: ExtendedHours | undefined;
+  image?: string | undefined;
+  bio?: string | undefined;
+};
 
 const ProfileComponent = ({ user, formData, setFormData }: Props) => {
   const handleImageChange = (value: string) => {
-    setFormData((prevData: any) => ({
+    setFormData((prevData: FormData) => ({
       ...prevData,
       image: value,
     }));
@@ -31,7 +42,7 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
 
   const handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.target;
-    setFormData((prevData: any) => ({
+    setFormData((prevData: FormData) => ({
       ...prevData,
       bio: value,
     }));
@@ -49,7 +60,7 @@ const ProfileComponent = ({ user, formData, setFormData }: Props) => {
               </div>
               <UploadButton
                 endpoint="imageUploader"
-                onClientUploadComplete={(res: any) => {
+                onClientUploadComplete={(res: { url: string }[]) => {
                   handleImageChange;
                   setImage(res[0].url);
                 }}

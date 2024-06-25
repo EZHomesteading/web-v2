@@ -13,8 +13,9 @@ import Avatar from "@/app/components/Avatar";
 import { addDays, format } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
+import { FinalListing } from "@/actions/getListings";
 interface EmulatorProps {
-  product?: any;
+  product: FinalListing & { label: string };
   description?: string;
   stock?: number;
   quantityType: QuantityTypeValue | undefined;

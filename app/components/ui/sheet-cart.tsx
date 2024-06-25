@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
 import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
 import { ExtendedHours } from "@/next-auth";
+import { CartGroup2, ValidTime } from "@/app/(pages)/cart/client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -62,9 +63,9 @@ interface SheetContentCProps
     VariantProps<typeof sheetVariants> {
   hours: ExtendedHours;
   index: number;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
-  sodtarr: any;
+  sodtarr: CartGroup2[];
 }
 
 const SheetContentC = React.forwardRef<
