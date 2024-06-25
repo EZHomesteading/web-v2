@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
-          enterFrom="opacity-0"
+          enterFrom="opacity-100"
           enterTo="opacity-100"
           leave="ease-in duration-200"
           leaveFrom="opacity-100"
@@ -27,9 +27,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
             className="
               fixed 
               inset-0 
-              bg-gray-500 
-              bg-opacity-75 
-              transition-opacity
+              bg-black/80
             "
           />
         </Transition.Child>
@@ -43,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
               justify-center 
               p-4 
               text-center 
-              sm:p-0
+              sm:p-0 h-[80%]
             "
           >
             <Transition.Child
@@ -61,17 +59,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
                   transform 
                   overflow-hidden 
                   rounded-lg 
-                  bg-white 
                   px-4 
+                  bg-green-100
                   pb-4
                   pt-5 
                   text-left 
                   shadow-xl 
                   transition-all
-                  w-full
-                  sm:my-8 
-                  sm:w-full 
-                  sm:max-w-lg 
+                  h-[500px]
+                  w-[300px]
+                  flex
+                  flex-col
+                  items-center
                   sm:p-6
                 "
               >
@@ -90,19 +89,17 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
                   <button
                     type="button"
                     className="
-                      rounded-md 
-                      bg-white 
-                      text-gray-400 
-                      hover:text-gray-500 
-                      focus:outline-none 
-                      focus:ring-2 
-                      focus:ring-indigo-500 
-                      focus:ring-offset-2
+                      rounded-md
+                      bg-white
+                      text-gray-400
+                      hover:text-gray-500
+               
+                      absolute top-1 right-1
                     "
                     onClick={onClose}
                   >
                     <span className="sr-only">Close</span>
-                    <IoClose className="h-6 w-6" aria-hidden="true" />
+                    <IoClose className="h-6 w-6 bg-green-100" />
                   </button>
                 </div>
                 {children}

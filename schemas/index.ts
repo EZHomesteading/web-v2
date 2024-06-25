@@ -127,7 +127,6 @@ export const RegisterVendorSchema = z
         { message: "Name must contain at least 80% letters" }
       ),
     phoneNumber: z.string().min(10).max(16),
-    location: z.object(locationDef),
     role: z.nativeEnum(UserRole),
   })
   .refine((data) => data.password === data.confirmPassword, {
