@@ -18,7 +18,17 @@ import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
 import { ExtendedHours } from "@/next-auth";
-
+import { Outfit, Zilla_Slab } from "next/font/google";
+import { IoStorefrontOutline } from "react-icons/io5";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500"],
+});
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
@@ -36,7 +46,12 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   const now = new Date();
   const [date, setDate] = useState<Date | undefined>(now); //current time
   const [options, setOptions] = useState<string[]>([]); // array of times with 15 minute intervals
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    setIsCalendarOpen(false); // Close the popover
+  };
   // Function to format minutes to a readable time string (e.g., 1:30 PM)
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -134,79 +149,105 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
+      <h1 className={`${outfit.className} font-semibold text-xl mb-1`}>
+        Pick a Date & Time
+      </h1>
       <div>
-        <div className="flex flex-row justify-center items-center   ">
-          <div className="w-fit border-none shadow-none">
-            <div className="grid gap-4">
-              <div className="bg-white">
-                <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                  Co-op Hours Each Day
-                </div>
-                <div className="mt-1">
-                  {" "}
-                  {hours === null ? (
-                    <div>This seller has not provided their hours.</div>
-                  ) : (
-                    <HoursDisplay coOpHours={hours} />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col w-fit">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-fit sm:w-fit justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  fromMonth={now}
-                  disabled={{ before: now }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <ScrollArea className="h-[16.1rem] w-full rounded-md border mt-1">
-              <div className="p-4">
-                <h4 className="mb-4 text-sm font-medium leading-none">
-                  Open Hours
-                </h4>
-                {!options.length ? (
-                  <div>No available times on this day</div>
-                ) : null}
-
-                {options.map((option) => (
-                  <div key={option} className="hover:bg-slate">
-                    <div onClick={onClose}>
-                      <div
-                        className="text-sm cursor-pointer hover:bg-slate-400"
-                        onClick={() => {
-                          setTime(option);
-                          onClose;
-                        }}
-                      >
-                        {option}
-                      </div>
-                    </div>
-                    <Separator className="my-2" />
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+        <div className="flex flex-col">
+          <Popover>
+            <PopoverTrigger asChild className="flex justify-start">
+              <Button
+                variant={"outline"}
+                className={`${zilla.className} bg-neutral-100 shadow-md mb-1`}
+              >
+                <IoStorefrontOutline className="mr-2 h-4 w-4" />
+                <span>View Hours</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+            >
+              <HoursDisplay coOpHours={hours} />
+            </PopoverContent>
+          </Popover>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild className="flex justify-start">
+              <Button
+                variant={"outline"}
+                className={`${zilla.className} bg-neutral-100 shadow-md mb-2`}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+            >
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                fromMonth={now}
+                disabled={{ before: now }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
+        {date && (
+          <ScrollArea className="border-neutral-400 border-[1px] rounded-lg shadow-md">
+            <div className="p-4">
+              {(() => {
+                if (!date) {
+                  return null;
+                }
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const selectedDate = new Date(date);
+                selectedDate.setHours(0, 0, 0, 0);
+
+                if (selectedDate < today) {
+                  return (
+                    <div className={`${zilla.className} text-sm`}>
+                      Date has passed
+                    </div>
+                  );
+                } else if (!options.length) {
+                  return (
+                    <div className={`${zilla.className} text-sm`}>
+                      Closed on {format(date, "EEEE")}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <h4
+                      className={`${outfit.className} mb-4 text- font-medium leading-none`}
+                    >
+                      Select a Time
+                    </h4>
+                  );
+                }
+              })()}
+
+              {options.map((option) => (
+                <div key={option} className="hover:bg-slate">
+                  <div onClick={onClose}>
+                    <div
+                      className={`${zilla.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
+                      onClick={() => {
+                        setTime(option);
+                        onClose;
+                      }}
+                    >
+                      {option}
+                    </div>
+                  </div>
+                  <Separator className="my-[3px]" />
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </Modal>
   );
