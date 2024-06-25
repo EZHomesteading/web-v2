@@ -7,7 +7,7 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { SafeListing } from "@/types";
+//import { SafeListing } from "@/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";
@@ -29,6 +29,7 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { CartItem } from "@/actions/getCart";
+import { FinalListing } from "@/actions/getListings";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -36,32 +37,43 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: any[];
+  cartItems?: CartItem[];
 }
-
+interface CartGroup {
+  expiry: Date;
+  cartIndex: number;
+}
+export type CartGroup2 = {
+  cartIndex: number;
+  sodt: number;
+};
+export type ValidTime = { pickupTime: Date; index: number };
+export type checkoutTime = {
+  pickupTime: Date | undefined;
+  cartIndex: number;
+  expiry: Date | undefined;
+};
 const Cart = ({ cartItems = [] }: CartProps) => {
   // State variables
-  const [validTime, setValidTime] = useState<any>(); // Stores the valid pickup time
-  const [checkoutPickup, setCheckoutPickup] = useState<any>(""); // Stores the checkout pickup data
+  const [validTime, setValidTime] = useState<ValidTime>(); // Stores the valid pickup time
+  const [checkoutPickup, setCheckoutPickup] = useState<checkoutTime[]>(); // Stores the checkout pickup data
   const [stillExpiry, setStillExpiry] = useState(true); // Indicates if there are still items with expiry date
   const [total, setTotal] = useState(
     cartItems.reduce(
-      (acc: number, cartItem: any) =>
+      (acc: number, cartItem: CartItem) =>
         acc + cartItem.listing.price * cartItem.quantity,
       0
     )
   ); // Calculates the total price of all items in the cart
-  let sodt = [];
-
   // Function to update the total from a child component
-  const handleDataFromChild = (childTotal: any) => {
+  const handleDataFromChild = (childTotal: number) => {
     setTotal(childTotal);
   };
 
   // Update the total whenever cartItems or total changes
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (acc: number, cartItem: any) =>
+      (acc: number, cartItem: CartItem) =>
         acc + cartItem.listing.price * cartItem.quantity,
       0
     );
@@ -77,7 +89,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   const router = useRouter();
 
   // Function to calculate and display the shelf life or expiry date of a listing
-  const shelfLife = (listing: SafeListing) => {
+  const shelfLife = (listing: FinalListing) => {
     const adjustedListing = {
       ...listing,
       createdAt: new Date(listing.createdAt),
@@ -97,7 +109,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   };
 
   // Function to delete the cart
-  const handleDelete: any = async () => {
+  const handleDelete = async () => {
     await axios.delete(`/api/cart`);
     router.refresh();
   };
@@ -110,8 +122,8 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   }
 
   // Group cart items by user and calculate the earliest expiry date for each group
-  const mappedCartItems: CartGroups = cartItems.reduce(
-    (acc: any, cartItem: any, index: number) => {
+  const mappedCartItems: CartGroup[] = cartItems.reduce(
+    (acc: CartGroup[], cartItem: CartItem, index: number) => {
       const expiry = convertToDate(shelfLife(cartItem.listing));
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
@@ -141,8 +153,8 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     },
     []
   );
-  const handleSodtMap: CartGroups = cartItems.reduce(
-    (acc: any, cartItem: any, index: number) => {
+  const handleSodtMap: CartGroup2[] = cartItems.reduce(
+    (acc: CartGroup2[], cartItem: CartItem, index: number) => {
       const sodt = cartItem.listing.SODT;
       const usersodt = cartItem.listing.user.SODT;
       const existingOrder = acc[acc.length - 1];
@@ -155,14 +167,16 @@ const Cart = ({ cartItems = [] }: CartProps) => {
             cartItem.listing.location.address[0])
       ) {
         if (
-          (sodt === null || sodt === undefined) &&
-          (usersodt === null || usersodt === undefined)
+          (sodt !== null || sodt !== undefined) &&
+          (usersodt !== null || usersodt !== undefined)
         ) {
+          if (usersodt && existingOrder.sodt < usersodt) {
+            existingOrder.sodt = usersodt;
+          } else if (sodt && existingOrder.sodt < sodt) {
+            existingOrder.sodt = sodt;
+          }
+        } else {
           existingOrder.sodt = 60;
-        } else if (sodt && existingOrder.sodt < sodt) {
-          existingOrder.sodt = sodt;
-        } else if (existingOrder.sodt < usersodt) {
-          existingOrder.sodt = usersodt;
         }
       }
       if (
@@ -183,7 +197,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
             sodt,
             cartIndex: index,
           });
-        } else {
+        } else if (usersodt) {
           acc.push({
             sodt: usersodt,
             cartIndex: index,
@@ -197,12 +211,14 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   const sodtarr = handleSodtMap;
 
   // Function to update an object in an array with the pickup time and remove the expiry property
-  function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {
+  function updateObjectWithCartIndex(
+    arr: checkoutTime[],
+    targetCartIndex: number
+  ) {
     let foundObject = null;
-
-    arr.forEach((obj: any, index: number) => {
+    arr.forEach((obj: checkoutTime, index: number) => {
       if (obj.cartIndex === targetCartIndex) {
-        arr[index].pickupTime = validTime.pickupTime;
+        arr[index].pickupTime = validTime?.pickupTime;
         delete arr[index].expiry;
         foundObject = obj;
       }
@@ -213,13 +229,13 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   // Update the checkoutPickup state whenever validTime changes
   useEffect(() => {
     if (validTime) {
-      if (checkoutPickup === "") {
+      if (checkoutPickup === undefined) {
         const initialPickupBuild = updateObjectWithCartIndex(
-          mappedCartItems,
+          mappedCartItems as unknown as checkoutTime[],
           validTime.index
         );
         setStillExpiry(
-          initialPickupBuild.some((item: any) => !item.pickupTime)
+          initialPickupBuild.some((item: checkoutTime) => !item.pickupTime)
         );
         setCheckoutPickup(initialPickupBuild);
       } else {
@@ -227,7 +243,9 @@ const Cart = ({ cartItems = [] }: CartProps) => {
           checkoutPickup,
           validTime.index
         );
-        setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
+        setStillExpiry(
+          updatePickupBuild.some((item: checkoutTime) => !item.pickupTime)
+        );
         setCheckoutPickup(updatePickupBuild);
       }
     }
@@ -235,15 +253,14 @@ const Cart = ({ cartItems = [] }: CartProps) => {
     [validTime];
 
   // Function to update the validTime state from a child component
-  const handleTime = (childTime: Date) => {
+  const handleTime = (childTime: ValidTime) => {
     setValidTime(childTime);
   };
 
   // Function to find an object in an array based on the cartIndex property
-  function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
+  function findObjectWithCartIndex(arr: CartGroup[], targetCartIndex: number) {
     let foundObject = null;
-
-    arr.forEach((obj: any) => {
+    arr.forEach((obj: CartGroup) => {
       if (obj.cartIndex === targetCartIndex) {
         foundObject = obj;
       }
@@ -289,7 +306,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                 role="list"
                 className="divide-y divide-gray-200 border-b border-t border-gray-200"
               >
-                {cartItems.map((cartItem: any, index: any) => {
+                {cartItems.map((cartItem: CartItem, index: number) => {
                   const prevCartItem = cartItems[index - 1];
                   return (
                     <div key={index}>

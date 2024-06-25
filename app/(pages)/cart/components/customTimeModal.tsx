@@ -30,13 +30,15 @@ const zilla = Zilla_Slab({
   display: "swap",
   weight: ["500"],
 });
+import { ValidTime } from "../client";
+
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
   hours: ExtendedHours;
   index: number;
   cartGroup: CartGroup | null;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
 }
 

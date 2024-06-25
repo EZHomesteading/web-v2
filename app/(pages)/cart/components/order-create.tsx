@@ -1,5 +1,5 @@
 "use client";
-//order create component, called when cart and buy now button is succesfulkly clicked
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -10,23 +10,34 @@ import utc from "dayjs/plugin/utc";
 import { addDays } from "date-fns";
 import { useState } from "react";
 import SoonExpiryModal from "./soonExpiryModal";
+import { CartItem, Location } from "@/actions/getCart";
+import { checkoutTime } from "../client";
+import { FinalListing } from "@/actions/getListings";
 dayjs.extend(utc);
 
 interface Create {
-  cartItems: any;
-  pickupArr: any;
+  cartItems: CartItem[];
+  pickupArr: checkoutTime[] | undefined;
   stillExpiry: boolean;
 }
 
+export type AdjustedListings = {
+  listingId: string;
+  title: string;
+  sellerName: string;
+  expiry: Date | null;
+  soonValue: number;
+};
+
 const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
-  let expiredArray: any = [];
+  let expiredArray: AdjustedListings[] = [];
   const [confirmOpen, setConfirmOpen] = useState(false);
   sessionStorage.setItem("ORDER", "");
   const router = useRouter();
   const now = new Date();
   const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
-  const shelfLife = (listing: any) => {
+  const shelfLife = (listing: FinalListing) => {
     const adjustedListing = {
       ...listing,
       createdAt: new Date(listing.createdAt),
@@ -39,7 +50,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     return adjustedListing.endDate;
   };
 
-  cartItems.map(async (cartItem: any) => {
+  cartItems.map(async (cartItem: CartItem) => {
     const percentExpiry = new Date(
       now.getTime() + cartItem.listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
     );
@@ -52,34 +63,43 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
       soonValue: 3,
     };
 
-    if (expiry < now) {
+    if (expiry && expiry < now) {
       expiredArray.push(adjustedListings);
-      //console.log(expiredArray);
       return;
-    } else if (expiry < threeDaysLater) {
+    } else if (expiry && expiry < threeDaysLater) {
       adjustedListings.soonValue = 1;
       expiredArray.push(adjustedListings);
-      ///console.log(expiredArray);
       return;
-    } else if (expiry < percentExpiry) {
+    } else if (expiry && expiry < percentExpiry) {
       adjustedListings.soonValue = 2;
       expiredArray.push(adjustedListings);
-      //console.log(expiredArray);
       return;
     }
   });
-  //console.log(expiredArray);
 
   const createOrder = () => {
-    const body: any = [];
-    let currentpickuparr: any = null;
-    let prevUserId: any = null;
-    let userItems: any = [];
-    let prevLocation: any = null;
-    const findObjectWithCartIndex = (arr: any, targetCartIndex: number) => {
+    const body: {
+      userId: string;
+      location: Location;
+      listingIds: string[];
+      pickupDate: Date;
+      quantity: string;
+      totalPrice: number;
+      status: number;
+      stripePaymentIntentId?: string;
+    }[] = [];
+    let currentpickuparr: checkoutTime | null = null;
+    let prevUserId: string | null = null;
+    let userItems: CartItem[] = [];
+    let prevLocation: Location | null = null;
+
+    const findObjectWithCartIndex = (
+      arr: checkoutTime[],
+      targetCartIndex: number
+    ) => {
       let foundObject = null;
 
-      arr.forEach((obj: any) => {
+      arr.forEach((obj: checkoutTime) => {
         if (obj.cartIndex === targetCartIndex) {
           foundObject = obj;
         }
@@ -87,32 +107,32 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
 
       return foundObject;
     };
-    cartItems.forEach(async (cartItem: any, index: number) => {
-      //complex map of items in cart to produce accurate orders to be passed to the checkout forms.
+
+    cartItems.forEach(async (cartItem: CartItem, index: number) => {
       if (
-        //if cart item has a different user or a different adress
         cartItem.listing.userId !== prevUserId ||
-        cartItem.listing.location.address[0] !== prevLocation.address[0]
+        cartItem.listing.location.address[0] !== prevLocation?.address[0]
       ) {
         if (prevUserId !== null) {
-          //if this is not the first item in the list
-          //build the total price
           const summedTotalPrice = userItems.reduce(
-            (acc: any, curr: any) => acc + curr.listing.price * curr.quantity,
+            (acc: number, curr: CartItem) =>
+              acc + curr.listing.price * curr.quantity,
             0
           );
-          //map over all items in cart build an array of all listing id's with no repeats. from the user items array which is built after this if statement resolves
-          const allListings = userItems.reduce((acc: any, curr: any) => {
-            if (!acc.includes(curr.listing.id.toString())) {
-              return [...acc, curr.listing.id.toString()];
-            }
-            return acc;
-          }, []);
 
-          //build the array of listing id's with their assosiated singular quantities. from the array of all listings
-          const quantities = allListings.map((listingId: any) => {
+          const allListings = userItems.reduce(
+            (acc: string[], curr: CartItem) => {
+              if (!acc.includes(curr.listing.id.toString())) {
+                return [...acc, curr.listing.id.toString()];
+              }
+              return acc;
+            },
+            [] as string[]
+          );
+
+          const quantities = allListings.map((listingId: string) => {
             const listingQuantity = userItems.reduce(
-              (acc: any, curr: any) =>
+              (acc: number, curr: CartItem) =>
                 curr.listing.id.toString() === listingId
                   ? acc + curr.quantity
                   : acc,
@@ -120,47 +140,45 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
             );
             return { id: listingId, quantity: listingQuantity };
           });
-          //push new object data to the body
-          body.push({
-            userId: prevUserId,
-            location: prevLocation,
-            listingIds: allListings,
-            pickupDate: currentpickuparr.pickupTime,
-            quantity: JSON.stringify(quantities),
-            totalPrice: summedTotalPrice,
-            status: 0,
-            stripePaymentIntentId: "teststring",
-          });
+          if (prevLocation && currentpickuparr?.pickupTime) {
+            body.push({
+              userId: prevUserId,
+              location: prevLocation,
+              listingIds: allListings,
+              pickupDate: currentpickuparr!.pickupTime,
+              quantity: JSON.stringify(quantities),
+              totalPrice: summedTotalPrice,
+              status: 0,
+              stripePaymentIntentId: "teststring",
+            });
+          }
         }
-        currentpickuparr = findObjectWithCartIndex(pickupArr, index); //find pickup time value assosiated with this loop through the array, will not change the value if one is not found?
-        //set previous values for next map. and grab the pickup time values for the object being built.
+        currentpickuparr = findObjectWithCartIndex(pickupArr!, index);
         prevUserId = cartItem.listing.user.id;
         prevLocation = cartItem.listing.location;
-        userItems = [cartItem]; //add the current cart item into the user items array.
+        userItems = [cartItem];
       } else {
-        //handle pushing first item into the cartItems array
         userItems.push(cartItem);
       }
     });
 
-    //Handle the last item because previous map only sets data based on previous item.
-    if (userItems.length > 0) {
-      //build the total price
+    if (userItems.length > 0 && pickupArr && pickupArr.length > 0) {
       const summedTotalPrice = userItems.reduce(
-        (acc: any, curr: any) => acc + curr.listing.price * curr.quantity,
+        (acc: number, curr: CartItem) =>
+          acc + curr.listing.price * curr.quantity,
         0
       );
-      //map over all items in cart build an array of all listing id's with no repeats. from the user items array which is built after the previous map resolved
-      const allListings = userItems.reduce((acc: any, curr: any) => {
+
+      const allListings = userItems.reduce((acc: string[], curr: CartItem) => {
         if (!acc.includes(curr.listing.id.toString())) {
           return [...acc, curr.listing.id.toString()];
         }
         return acc;
       }, []);
-      //build the array of listing id's with their assosiated singular quantities. from the array of all listings
+
       const quantities = allListings.map((listingId: string) => {
         const listingQuantity = userItems.reduce(
-          (acc: any, curr: any) =>
+          (acc: number, curr: CartItem) =>
             curr.listing.id.toString() === listingId
               ? acc + curr.quantity
               : acc,
@@ -168,22 +186,51 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         );
         return { id: listingId, quantity: listingQuantity };
       });
-      //push data to the body object
-      body.push({
-        userId: prevUserId,
-        location: prevLocation,
-        listingIds: allListings,
-        pickupDate: pickupArr[pickupArr.length - 1].pickupTime,
-        quantity: JSON.stringify(quantities),
-        totalPrice: summedTotalPrice,
-        status: 0,
-      });
+
+      const pickupTime = pickupArr[pickupArr.length - 1].pickupTime;
+
+      if (pickupTime) {
+        let pickupDate: Date;
+
+        if (pickupTime instanceof Date) {
+          pickupDate = pickupTime;
+        } else if (
+          typeof pickupTime === "string" ||
+          typeof pickupTime === "number"
+        ) {
+          pickupDate = new Date(pickupTime);
+        } else {
+          console.error("Invalid pickup time:", pickupTime);
+          return; // or handle this case as appropriate
+        }
+
+        if (!isNaN(pickupDate.getTime())) {
+          body.push({
+            userId: prevUserId!,
+            location: prevLocation!,
+            listingIds: allListings,
+            pickupDate: pickupDate,
+            quantity: JSON.stringify(quantities),
+            totalPrice: summedTotalPrice,
+            status: 0,
+          });
+        } else {
+          console.error("Invalid pickup date:", pickupDate);
+          // Handle the error case, maybe throw an error or set a default date
+        }
+      } else {
+        console.error("Pickup time is undefined");
+        // Handle the case where pickup time is undefined
+      }
+    } else {
+      console.error("No user items or pickup times available");
+      // Handle the case where there are no user items or pickup times
     }
+
     const post = async () => {
-      //post data to database/set order id's in the session storage for later use.
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
-      await datas.forEach((data: any) => {
+      await datas.forEach((data: { id: string }) => {
         let store = sessionStorage.getItem("ORDER");
         if (store === null) {
           store = "";
@@ -198,6 +245,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     };
     post();
   };
+
   const handleFail = () => {
     toast.error("Some of the items in your cart may not be in stock", {
       duration: 2000,
@@ -206,6 +254,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
     });
   };
+
   const handleFailure = () => {
     toast.error("Some of the items in your cart do not have pickup times set", {
       duration: 2000,
@@ -214,8 +263,9 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
         "flex items-center justify-between p-4 bg-green-500 text-white rounded-lg shadow-md",
     });
   };
+
   sessionStorage.setItem("Order", "");
-  const stock = cartItems.some((item: any) => item.listing.stock <= 0);
+  const stock = cartItems.some((item: CartItem) => item.listing.stock <= 0);
 
   if (stillExpiry === true) {
     return (

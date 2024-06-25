@@ -188,7 +188,7 @@ model Listing {
   quantityType  String
   price         Float
   description   String
-  minOrder      Int?
+  minOrder      Int
   imageSrc      String[]
   shelfLife     Int
   location      Int

@@ -25,12 +25,15 @@ const stripePromise = loadStripe(
 interface CheckoutFormProps {
   cartItems: CartItem[];
 }
+interface OrderTotals {
+  [coopId: string]: number;
+}
 
 export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const user = useCurrentUser();
   const [clientSecret, setClientSecret] = useState("");
   const itemTotals = cartItems.map(
-    (cartItem: any) => cartItem.quantity * cartItem.listing.price
+    (cartItem: CartItem) => cartItem.quantity * cartItem.listing.price
   );
 
   const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
@@ -44,14 +47,17 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
       if (orderIds === "") {
         window.location.reload();
       }
-      const orderTotals = cartItems.reduce((acc: any, cartItem: any) => {
-        const coopId = cartItem.listing.userId;
-        if (!acc[coopId]) {
-          acc[coopId] = 0;
-        }
-        acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
-        return acc;
-      }, {});
+      const orderTotals = cartItems.reduce(
+        (acc: OrderTotals, cartItem: CartItem) => {
+          const coopId = cartItem.listing.userId;
+          if (!acc[coopId]) {
+            acc[coopId] = 0;
+          }
+          acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
+          return acc;
+        },
+        {}
+      );
       let totalSum = 0;
       const acc = orderTotals;
       for (const coopId in acc) {
@@ -116,7 +122,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                   role="list"
                   className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
                 >
-                  {cartItems.map((cartItem: any) => {
+                  {cartItems.map((cartItem: CartItem) => {
                     const itemTotal =
                       cartItem.quantity * cartItem.listing.price;
                     return (

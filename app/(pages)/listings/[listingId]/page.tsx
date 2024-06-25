@@ -6,8 +6,6 @@ import ListingClient from "./ListingClient";
 import { getUserwithCart } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
-import { SafeListing } from "@/types";
-import { JsonObject } from "@prisma/client/runtime/library";
 
 interface IParams {
   listingId?: string;

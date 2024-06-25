@@ -25,14 +25,13 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   );
   useEffect(() => {
     calculateEarliestPickupTime();
+    if (sodtarr[1] === null && sodtarr[0] === null) {
+    } else if (sodtarr[0] >= sodtarr[1]) {
+      setSodt(sodtarr[0]);
+    } else if (sodtarr[1] >= sodtarr[0]) {
+      setSodt(sodtarr[1]);
+    }
   }, []);
-
-  if (sodtarr[1] === null && sodtarr[0] === null) {
-  } else if (sodtarr[0] >= sodtarr[1]) {
-    setSodt(sodtarr[0]);
-  } else if (sodtarr[1] >= sodtarr[0]) {
-    setSodt(sodtarr[1]);
-  }
 
   const calculateEarliestPickupTime = () => {
     const now = new Date();
