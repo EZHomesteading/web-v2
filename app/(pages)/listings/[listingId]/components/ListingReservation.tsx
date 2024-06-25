@@ -211,7 +211,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
                 quantityType={quantityType}
                 disabled={disabled}
                 listing={product}
-                user={user}
+                user={user.name}
               />
             </div>
           </>
