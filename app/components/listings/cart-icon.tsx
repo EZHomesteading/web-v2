@@ -2,12 +2,13 @@
 //cart icon component, handles toggler cart
 import { BiBasket } from "react-icons/bi";
 import useCart from "@/hooks/listing/use-cart";
+import { UserInfo } from "@/next-auth";
 
 interface CartButtonProps {
   listingId: string;
-  user?: any | null;
+  user: UserInfo | null;
   listingRole: string;
-  listingUser: string;
+  listingUser: string | undefined;
   listingMin: number | null;
 }
 

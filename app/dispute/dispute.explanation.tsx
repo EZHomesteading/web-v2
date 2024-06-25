@@ -46,14 +46,10 @@ interface Dispute {
   };
 }
 interface ExplanationDialogProps {
-  dispute: Dispute;
   onConfirm: (explanation: string) => void;
 }
 
-export function ExplanationDialog({
-  dispute,
-  onConfirm,
-}: ExplanationDialogProps) {
+export function ExplanationDialog({ onConfirm }: ExplanationDialogProps) {
   const [explanation, setExplanation] = useState("");
 
   const handleConfirm = () => {

@@ -88,7 +88,22 @@ const getUserWithBuyOrders = async (params: Params) => {
         id: userId,
       },
       include: {
-        buyerOrders: true,
+        buyerOrders: {
+          select: {
+            id: true,
+            userId: true,
+            listingIds: true,
+            sellerId: true,
+            pickupDate: true,
+            quantity: true,
+            totalPrice: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            conversationId: true,
+            fee: true,
+          },
+        },
       },
     });
 
@@ -109,7 +124,22 @@ const getUserWithSellOrders = async (params: Params) => {
         id: userId,
       },
       include: {
-        sellerOrders: true,
+        sellerOrders: {
+          select: {
+            id: true,
+            userId: true,
+            listingIds: true,
+            sellerId: true,
+            pickupDate: true,
+            quantity: true,
+            totalPrice: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            conversationId: true,
+            fee: true,
+          },
+        },
       },
     });
 
@@ -129,8 +159,38 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
         id: userId,
       },
       include: {
-        buyerOrders: true,
-        sellerOrders: true,
+        buyerOrders: {
+          select: {
+            id: true,
+            userId: true,
+            listingIds: true,
+            sellerId: true,
+            pickupDate: true,
+            quantity: true,
+            totalPrice: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            conversationId: true,
+            fee: true,
+          },
+        },
+        sellerOrders: {
+          select: {
+            id: true,
+            userId: true,
+            listingIds: true,
+            sellerId: true,
+            pickupDate: true,
+            quantity: true,
+            totalPrice: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            conversationId: true,
+            fee: true,
+          },
+        },
       },
     });
 
@@ -172,7 +232,7 @@ interface Review {
 
 type ReviewerData = Pick<User, "id" | "name" | "firstName" | "image" | "url">;
 
-type ReviewWithReviewer = Review & {
+export type ReviewWithReviewer = Review & {
   reviewer: ReviewerData | null;
 };
 
@@ -283,12 +343,12 @@ interface Listing {
   quantityType: string;
 }
 
-interface StoreData {
+export type StoreData = {
   user: User1 & {
     listings: Listing[];
   };
   reviews: ReviewWithReviewer[];
-}
+};
 
 const getUserStore = async (
   params: IStoreParams

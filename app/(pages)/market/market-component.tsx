@@ -10,9 +10,12 @@ import { SkeletonCard } from "./skeleton-card";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import qs from "query-string";
+import { FinalListing } from "@/actions/getListings";
+import { UserInfo } from "@/next-auth";
+
 interface ShopProps {
-  listings: any[];
-  user: any;
+  listings: FinalListing[];
+  user: UserInfo;
   emptyState: React.ReactNode;
   totalPages: number;
   prevPage: number;
@@ -91,12 +94,12 @@ const Shop = ({
           <>
             {emptyState || (
               <div className="pt-2 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-                {listings.map((listing: any, index) => (
+                {listings.map((listing: FinalListing, index) => (
                   <ListingCard
                     user={user}
                     key={listing.id}
                     data={listing}
-                    storeUser={listing.user}
+                    storeUser={listing.user as unknown as UserInfo}
                     priority={index === 0}
                   />
                 ))}

@@ -3,10 +3,10 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import { Location } from "@/next-auth";
+import { Location } from "@/actions/getListings";
 
 interface MapProps {
-  location: any | null;
+  location: Location | null;
   apiKey: string;
 }
 

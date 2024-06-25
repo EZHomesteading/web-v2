@@ -1,14 +1,14 @@
 "use client";
 //admin only suggestion page
 import { useCurrentRole } from "@/hooks/user/use-current-role";
-import { UserRole } from "@prisma/client";
+import { Suggestion, UserRole } from "@prisma/client";
 import { Card, CardContent } from "../components/ui/card";
 import useProducts from "@/hooks/listing/use-product";
 
 interface p {
-  suggestions: any;
-  handleApprove: any;
-  handleDeny: any;
+  suggestions: Suggestion[];
+  handleApprove: (suggestion: Suggestion) => Promise<void>;
+  handleDeny: (suggestionId: string) => Promise<void>;
 }
 
 const SuggestionClient = ({ suggestions, handleApprove, handleDeny }: p) => {
@@ -16,10 +16,10 @@ const SuggestionClient = ({ suggestions, handleApprove, handleDeny }: p) => {
   const products = getAll();
   const role = useCurrentRole();
 
-  const handleApproveClick = async (suggestion: any) => {
+  const handleApproveClick = async (suggestion: Suggestion) => {
     const updatedProducts = await handleApprove(suggestion);
     // Update the products state
-    setProducts(updatedProducts);
+    //setProducts(updatedProducts);
   };
 
   const handleDenyClick = async (suggestionId: string) => {

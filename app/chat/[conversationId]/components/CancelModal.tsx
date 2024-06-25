@@ -8,14 +8,15 @@ import { useSession } from "next-auth/react";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
 import { toast } from "react-hot-toast";
+import { Order } from "@prisma/client";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  order: any;
-  otherUser: any;
-  convoId: any;
-  otherUserRole: string;
+  order: Order;
+  otherUser: string | undefined;
+  convoId: string;
+  otherUserRole: string | undefined;
 }
 
 const CancelModal: React.FC<ConfirmModalProps> = ({

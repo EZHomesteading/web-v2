@@ -6,6 +6,7 @@ import UnfollowIcon from "../icons/unfollow-svg";
 import FollowIcon from "../icons/follow-svg";
 import { Outfit } from "next/font/google";
 import { toast } from "sonner";
+import { UserInfo } from "@/next-auth";
 
 const outfit = Outfit({
   display: "swap",
@@ -14,14 +15,21 @@ const outfit = Outfit({
 });
 
 interface FollowButtonProps {
-  followUserId: any;
-  following: any;
-  user: any;
+  followUserId: string;
+  following:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
+  user: UserInfo | null;
 }
 
 const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
   const router = useRouter();
-  function checkStringMatch(str: any, arr: any) {
+  function checkStringMatch(str: string, arr: string[]) {
     if (typeof str !== "string" || !Array.isArray(arr)) {
       throw new Error(
         "Invalid input: str must be a string and arr must be an array"

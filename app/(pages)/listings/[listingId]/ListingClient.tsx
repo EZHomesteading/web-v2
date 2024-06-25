@@ -1,30 +1,28 @@
 "use client";
 //client side layout for listing page
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { addDays, format } from "date-fns";
-import { SafeListing } from "@/types";
+import { addDays } from "date-fns";
 import Container from "@/app/components/Container";
 import ListingHead from "@/app/components/listings/ListingHead";
 import ListingInfo from "@/app/components/listings/ListingInfo";
 import ListingReservation from "@/app/(pages)/listings/[listingId]/components/ListingReservation";
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
-import { Location } from "@prisma/client";
-import { JsonObject } from "@prisma/client/runtime/library";
+import { FinalListing } from "@/actions/getListings";
+import { UserInfo } from "@/next-auth";
+import { User } from "@prisma/client";
 
 interface ListingClientProps {
-  listing: SafeListing & {
-    user: any;
-    location: {
-      hours: JsonObject;
-      address: string[];
-      coordinates: string[];
-      type: string;
-    };
-  };
-  user?: any | null;
-  following: any;
+  listing: FinalListing & { description: string };
+  user?: User | null;
+  following:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
   apiKey?: string;
 }
 
@@ -43,25 +41,17 @@ const ListingClient: React.FC<ListingClientProps> = ({
     listingRole,
     listingUser,
   });
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   //adjusting listings shelflife to be accurate. and be in date format.
   const adjustedListing = {
     ...listing,
-    createdAt: new Date(listing.createdAt),
     endDate:
       listing.shelfLife !== -1
         ? addDays(new Date(listing.createdAt), listing.shelfLife)
         : null,
   };
 
-  const shelfLifeDisplay = adjustedListing.endDate
-    ? `Estimated Expiry Date: ${format(
-        adjustedListing.endDate,
-        "MMM dd, yyyy"
-      )}`
-    : "This product is non-perisable";
   return (
     <Container>
       <div
@@ -80,8 +70,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
             />
             <div className="flex flex-col h-full">
               <ListingInfo
-                user={user}
-                listingUser={listing.user}
+                user={user as unknown as UserInfo}
+                listingUser={listing.user as unknown as UserInfo}
                 description={listing.description}
                 followUserId={listing.userId}
                 following={following}
@@ -95,7 +85,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
               user={user}
               product={adjustedListing}
               disabled={isLoading}
-              hours={listing.location.hours}
               sodt={[listing.SODT, listing.user.SODT]}
             />
             <div className="mt-5">

@@ -28,7 +28,7 @@ const InfoSearchClient: React.FC<InfoPageSelectProps> = ({
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as InfoPageValue)}
-        formatOptionLabel={(option: any) => (
+        formatOptionLabel={(option: { label: string }) => (
           <div className="rounded-lg">{option.label}</div>
         )}
         components={{

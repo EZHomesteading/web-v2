@@ -9,10 +9,12 @@ import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
+import { FinalListing } from "@/actions/getListings";
+import { UserInfo } from "@/next-auth";
 
 interface ListingsClientProps {
-  listings: any;
-  user?: any | null;
+  listings: FinalListing[];
+  user: UserInfo | null;
 }
 
 const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
@@ -74,7 +76,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
           
         "
         >
-          {listings.map((listing: any) => (
+          {listings.map((listing: FinalListing) => (
             <ListingCard
               key={listing.id}
               data={listing}
@@ -86,7 +88,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
               secondActionLabel="Edit"
               onSecondAction={onEdit}
               user={user}
-              storeUser={user}
+              storeUser={user as unknown as UserInfo}
             />
           ))}
         </div>
