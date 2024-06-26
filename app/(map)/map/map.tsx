@@ -41,9 +41,16 @@ interface MapProps {
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
+  userRole: string | undefined;
 }
 const libraries: Libraries = ["drawing", "geometry"];
-const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
+const VendorsMap = ({
+  coops,
+  producers,
+  coordinates,
+  mk,
+  userRole,
+}: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState(coordinates);
   const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
@@ -161,7 +168,9 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const [filteredCoops, setFilteredCoops] = useState(coopInfo);
   const [filteredProducers, setFilteredProducers] = useState(producerInfo);
   const [showCoops, setShowCoops] = useState(true);
-  const [showProducers, setShowProducers] = useState(true);
+  const [showProducers, setShowProducers] = useState(
+    userRole === "COOP" ? true : false
+  );
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
@@ -333,8 +342,11 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const resetMap = () => {
     handleCenterChanged();
     handleZoomChanged();
+    setFilteredCoops(coopInfo);
+    setFilteredProducers(producerInfo);
     setShowCoops(true);
-    setShowProducers(true);
+    setShowProducers(userRole === "COOP" ? true : false);
+    setDrawnShape(null);
   };
 
   return (
@@ -368,7 +380,10 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
             <li>- Click on a marker for more info</li>
             <li className="flex flex-row">
               - Click{" "}
-              <button className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 ">
+              <button
+                onClick={() => resetMap()}
+                className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 "
+              >
                 <CiBookmarkRemove size={15} className="ml-1" />
                 Remove Filters
               </button>
@@ -398,7 +413,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
       {drawnShape && (
         <Button
           className="absolute top-11 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
-          onClick={resetMap}
+          onClick={() => resetMap()}
         >
           <CiBookmarkRemove size={20} className="ml-1" />
           Remove Filters
