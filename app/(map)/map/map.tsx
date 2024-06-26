@@ -41,9 +41,16 @@ interface MapProps {
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
+  userRole: string | undefined;
 }
 const libraries: Libraries = ["drawing", "geometry"];
-const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
+const VendorsMap = ({
+  coops,
+  producers,
+  coordinates,
+  mk,
+  userRole,
+}: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState(coordinates);
   const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
@@ -161,7 +168,9 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const [filteredCoops, setFilteredCoops] = useState(coopInfo);
   const [filteredProducers, setFilteredProducers] = useState(producerInfo);
   const [showCoops, setShowCoops] = useState(true);
-  const [showProducers, setShowProducers] = useState(true);
+  const [showProducers, setShowProducers] = useState(
+    userRole === "COOP" ? true : false
+  );
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
@@ -336,7 +345,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
     setShowCoops(true);
-    setShowProducers(true);
+    setShowProducers(userRole === "COOP" ? true : false);
     setDrawnShape(null);
   };
 
