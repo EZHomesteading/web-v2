@@ -57,6 +57,7 @@ const MapPage = async () => {
           coops={coops}
           producers={producers}
           mk={map_api_key}
+          userRole={session?.user.role}
         />
       </div>
     </div>

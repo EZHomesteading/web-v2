@@ -3,8 +3,7 @@ import { getUserWithBuyOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
-import { SafeListing } from "@/types";
-import { FinalListing, GetListingsByIds } from "@/actions/getListings";
+import { GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
@@ -24,7 +23,6 @@ const formatPrice = (price: number): string => {
 const Page = async () => {
   let user = await currentUser();
   const buyer = await getUserWithBuyOrders({ userId: user?.id });
-
   const renderedCards = await Promise.all(
     buyer?.buyerOrders
       .filter(
@@ -38,7 +36,6 @@ const Page = async () => {
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-
         const seller = await getUserById({ userId: order.sellerId });
         const statusText = getStatusText(
           order.status,
@@ -98,7 +95,6 @@ const Page = async () => {
               <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                 {listings.flatMap((listingGroup: ListingGroup) =>
                   listingGroup.listings.map((listing: ActualListing) => {
-                    console.log("beans", listing);
                     const quantities = JSON.parse(order.quantity);
                     const quantityObj = quantities.find(
                       (q: { id: string }) => q.id === listing.id

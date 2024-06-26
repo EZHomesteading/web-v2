@@ -6,7 +6,6 @@ import UnfollowIcon from "../icons/unfollow-svg";
 import FollowIcon from "../icons/follow-svg";
 import { Outfit } from "next/font/google";
 import { toast } from "sonner";
-import { UserInfo } from "@/next-auth";
 
 const outfit = Outfit({
   display: "swap",
@@ -24,10 +23,9 @@ interface FollowButtonProps {
       }
     | null
     | undefined;
-  user: UserInfo | null;
 }
 
-const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
+const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
   const router = useRouter();
   function checkStringMatch(str: string, arr: string[]) {
     if (typeof str !== "string" || !Array.isArray(arr)) {
@@ -46,11 +44,11 @@ const FollowButton = ({ followUserId, following, user }: FollowButtonProps) => {
     checkStringMatch(followUserId, following.follows) === false
   ) {
     const handleFollow = async () => {
-      if (user?.id === undefined) {
+      if (following?.userId === undefined) {
         const callbackUrl = encodeURIComponent(window.location.href);
         router.push(`/auth/login?callbackUrl=${callbackUrl}`);
         return;
-      } else if (user.id === followUserId) {
+      } else if (following.userId === followUserId) {
         toast.error("Can't follow yourself.");
         return;
       }
