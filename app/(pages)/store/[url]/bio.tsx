@@ -1,10 +1,12 @@
 //server side component for rendering users reviews, total rating and other information set up by the users.
 
 //import getUserById from "@/actions/user/getUserById";
+import { ReviewWithReviewer } from "@/actions/getUser";
 import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { UserInfo } from "@/next-auth";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";
@@ -16,8 +18,8 @@ const outfit = Outfit({
 });
 
 interface Props {
-  reviews?: any;
-  user?: any;
+  reviews?: ReviewWithReviewer[];
+  user?: UserInfo;
 }
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -50,7 +52,7 @@ const Bio = ({ user, reviews }: Props) => {
     return date.toLocaleString("en-US", options);
   };
   const counts = getReviewCounts(reviews || []);
-  const total = reviews.length || 0;
+  const total = reviews ? reviews.length : 0;
   const averageRating = getAverageRating(reviews || []);
   return (
     <Sheet>
@@ -145,7 +147,7 @@ const Bio = ({ user, reviews }: Props) => {
                   <h3 className="sr-only">Review data</h3>
 
                   <dl className="space-y-3">
-                    {counts.map((count: any) => (
+                    {counts.map((count: { rating: number; count: number }) => (
                       <div
                         key={count.rating}
                         className="flex items-center text-sm"
@@ -199,46 +201,52 @@ const Bio = ({ user, reviews }: Props) => {
 
                 <div className="flow-root">
                   <div className="-my-12 divide-y divide-gray-200">
-                    {reviews.map((review: any) => {
-                      return (
-                        <div key={review.id} className="py-12">
-                          <div className="flex items-center">
-                            {review?.reviewer.name && (
-                              <Avatar image={review.reviewer.image} />
-                            )}
-                            <div className="ml-4">
-                              {review.reviewer && (
-                                <h4 className="text-sm font-bold text-gray-900">
-                                  {review?.reviewer.name}
-                                </h4>
-                              )}
-                              <div className="mt-1 flex items-center">
-                                {[...Array(5)].map((_, rating) => (
-                                  <StarIcon
-                                    key={rating}
-                                    className={classNames(
-                                      review.rating > rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-300",
-                                      "h-5 w-5 flex-shrink-0"
-                                    )}
-                                    aria-hidden="true"
-                                  />
-                                ))}
+                    {reviews
+                      ? reviews.map((review: ReviewWithReviewer) => {
+                          return (
+                            <div key={review.id} className="py-12">
+                              <div className="flex items-center">
+                                {review.reviewer
+                                  ? review?.reviewer.name && (
+                                      <Avatar image={review.reviewer.image} />
+                                    )
+                                  : null}
+                                <div className="ml-4">
+                                  {review.reviewer && (
+                                    <h4 className="text-sm font-bold text-gray-900">
+                                      {review?.reviewer.name}
+                                    </h4>
+                                  )}
+                                  <div className="mt-1 flex items-center">
+                                    {[...Array(5)].map((_, rating) => (
+                                      <StarIcon
+                                        key={rating}
+                                        className={classNames(
+                                          review.rating > rating
+                                            ? "text-yellow-400"
+                                            : "text-gray-300",
+                                          "h-5 w-5 flex-shrink-0"
+                                        )}
+                                        aria-hidden="true"
+                                      />
+                                    ))}
+                                  </div>
+                                  <p className="sr-only">
+                                    {review?.rating} out of 5 stars
+                                  </p>
+                                </div>
                               </div>
-                              <p className="sr-only">
-                                {review?.rating} out of 5 stars
-                              </p>
-                            </div>
-                          </div>
 
-                          <div
-                            className="mt-4 space-y-6 text-base italic text-gray-600"
-                            dangerouslySetInnerHTML={{ __html: review?.review }}
-                          />
-                        </div>
-                      );
-                    })}
+                              <div
+                                className="mt-4 space-y-6 text-base italic text-gray-600"
+                                dangerouslySetInnerHTML={{
+                                  __html: review?.review,
+                                }}
+                              />
+                            </div>
+                          );
+                        })
+                      : null}
                   </div>
                 </div>
               </div>

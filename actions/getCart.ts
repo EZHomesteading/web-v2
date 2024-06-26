@@ -1,7 +1,6 @@
 //action to get the current users cart
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
-import { JsonValue } from "@prisma/client/runtime/library";
 import { Prisma, UserRole } from "@prisma/client";
 export type Listing = {
   user: {

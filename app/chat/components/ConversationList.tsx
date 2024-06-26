@@ -13,11 +13,12 @@ import {
   sendPushSubscriptionToServer,
 } from "@/actions/chat/pushService";
 import axios from "axios";
+import { UserInfo } from "@/next-auth";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
   title?: string;
-  user?: any;
+  user?: UserInfo;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({

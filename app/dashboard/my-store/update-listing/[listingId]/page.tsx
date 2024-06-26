@@ -1,7 +1,8 @@
 //update listing parent lement
-import { getListingByIdUpdate } from "@/actions/getListings";
+import { FinalListing, getListingByIdUpdate } from "@/actions/getListings";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import UpdateClient from "./UpdateClient";
+import { SafeListing } from "@/types";
 
 interface IParams {
   listingId?: string;
@@ -12,7 +13,11 @@ const UpdatePage = async ({ params }: { params: IParams }) => {
 
   return (
     <ClientOnly>
-      {listing ? <UpdateClient listing={listing} /> : <></>}
+      {listing ? (
+        <UpdateClient listing={listing as unknown as SafeListing} />
+      ) : (
+        <></>
+      )}
     </ClientOnly>
   );
 };

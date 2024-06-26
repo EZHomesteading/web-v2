@@ -21,6 +21,7 @@ import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import { PiPersonSimpleRunThin } from "react-icons/pi";
 import { Button } from "../ui/button";
+import { navUser } from "@/next-auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -29,7 +30,7 @@ const outfit = Outfit({
   weight: ["100"],
 });
 interface Props {
-  user?: any;
+  user?: navUser;
 }
 const UserMenu = ({ user }: Props) => {
   const pathname = usePathname();

@@ -6,9 +6,13 @@ import { getFavCardUser } from "@/actions/getUser";
 import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {
-  follows: any;
-  user?: UserInfo | null;
-  followarr: any;
+  follows: string[];
+  user: UserInfo | null;
+  followarr: {
+    id: string;
+    userId: string;
+    follows: string[];
+  };
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
@@ -32,7 +36,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           gap-8
         "
       >
-        {follows.map(async (follow: any) => {
+        {follows.map(async (follow: string) => {
           const userId = follow;
           const shop = await getFavCardUser({ userId });
           return (

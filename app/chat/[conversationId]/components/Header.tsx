@@ -5,9 +5,10 @@ import Link from "next/link";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/avatar-group";
+import { FullConversationType } from "@/types";
 
 interface HeaderProps {
-  conversation: any;
+  conversation: FullConversationType;
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {

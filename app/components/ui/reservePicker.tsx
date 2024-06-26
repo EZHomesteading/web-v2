@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
 import { ExtendedHours } from "@/next-auth";
 import EarliestPickup2 from "@/app/(pages)/listings/[listingId]/components/earliest-pickup";
+import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -61,8 +62,8 @@ interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
   hours: ExtendedHours;
-  sodt: any;
-  onSetTime: any;
+  sodt: (number | null)[];
+  onSetTime: (childTime: ValidTime) => Promise<void>;
   sellerRole: string;
 }
 

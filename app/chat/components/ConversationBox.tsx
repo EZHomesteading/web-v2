@@ -9,11 +9,12 @@ import Avatar from "@/app/components/Avatar";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
 import AvatarGroup from "@/app/components/avatar-group";
 import { FullConversationType } from "@/types";
+import { UserInfo } from "@/next-auth";
 
 interface ConversationBoxProps {
   data: FullConversationType;
   selected?: boolean;
-  user?: any;
+  user?: UserInfo;
 }
 
 const ConversationBox: React.FC<ConversationBoxProps> = ({

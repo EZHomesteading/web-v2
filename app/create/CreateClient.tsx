@@ -55,6 +55,7 @@ import { Card, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
 import InputField from "./components/suggestion-input";
+import { FinalListing } from "@/actions/getListings";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -212,7 +213,7 @@ const CreateClient = ({ user, index }: Props) => {
   //geocoding from autocompleted adress inputs
 
   const [description, setDescription] = useState("");
-  const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
     const shelfLife =
@@ -725,7 +726,7 @@ const CreateClient = ({ user, index }: Props) => {
           <div className="hidden emulator-container mt-8">
             <div className="sticky bottom-0 left-0 right-0 px-6">
               <Emulator
-                product={product}
+                product={product as unknown as FinalListing & { label: string }}
                 description={description}
                 stock={quantity}
                 quantityType={quantityType}
@@ -897,7 +898,7 @@ const CreateClient = ({ user, index }: Props) => {
                             pre-populates with your accounts Set out time, if
                             there is none, you must set one.
                             <Select
-                              onValueChange={(value: any) => {
+                              onValueChange={(value: string) => {
                                 setValue("sodt", value);
                               }}
                             >
@@ -938,7 +939,7 @@ const CreateClient = ({ user, index }: Props) => {
                             pre-populates with your accounts delivery time, if
                             there is none, you must set one.
                             <Select
-                              onValueChange={(value: any) => {
+                              onValueChange={(value: string) => {
                                 setValue("sodt", value);
                               }}
                             >
@@ -1165,7 +1166,9 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <UploadButton
                             endpoint="imageUploader"
-                            onClientUploadComplete={(res: any) => {
+                            onClientUploadComplete={(
+                              res: { url: string }[]
+                            ) => {
                               const newImageSrc = [...watch("imageSrc")];
                               const emptyIndex = newImageSrc.findIndex(
                                 (src) => !src

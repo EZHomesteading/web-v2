@@ -14,9 +14,10 @@ import { ClockIcon } from "@radix-ui/react-icons";
 import { BsPersonWalking } from "react-icons/bs";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
 import { Checkbox } from "../ui/checkbox";
+import { navUser } from "@/next-auth";
 
 interface Props {
-  user?: any;
+  user?: navUser;
 }
 
 const outfit = Outfit({
@@ -83,7 +84,7 @@ const Filters = ({ user }: Props) => {
             step={0.5}
             className="px-2"
             value={[radius || rMi]}
-            onValueChange={(value: any) => setRadius(value[0])}
+            onValueChange={(value: number[]) => setRadius(value[0])}
           />
         )}
 

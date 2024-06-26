@@ -1,6 +1,6 @@
 "use client";
 //listing input forms
-import toast from "react-hot-toast";
+
 import {
   FieldErrors,
   FieldValues,
@@ -10,6 +10,7 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
+import { toast } from "sonner";
 
 interface InputProps {
   id: string;

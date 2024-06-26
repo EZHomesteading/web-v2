@@ -48,7 +48,7 @@ const locationDef = {
   0: z
     .object({
       type: z.literal("Point"),
-      coordinates: z.array(z.string()),
+      coordinates: z.array(z.number()),
       address: z.array(z.string()),
       hours: z.any(),
     })
@@ -106,6 +106,7 @@ export const RegisterVendorSchema = z
     confirmPassword: z
       .string()
       .min(4, { message: "Minimum 4 characters required" }),
+    location: z.object(locationDef),
     name: z
       .string()
       .min(4, { message: "Name must be at least 4 characters long" })

@@ -65,7 +65,7 @@ interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
   reviewerId: string;
-  reviewedId: string;
+  reviewedId: string | undefined;
   buyer: boolean;
 }
 

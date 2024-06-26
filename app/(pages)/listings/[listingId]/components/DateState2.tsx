@@ -4,7 +4,6 @@ import { SheetCartC, SheetContentC } from "@/app/components/ui/reservePicker";
 import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { SheetTrigger } from "@/app/components/ui/sheet";
 import { useState } from "react";
-import { ExtendedHours } from "@/next-auth";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import { Outfit } from "next/font/google";
 import CustomTimeModal2, { ValidTime } from "./CustomTimeModal2";
@@ -16,6 +15,8 @@ import SoonExpiryModal from "./soonExpiryModal";
 import { addDays, format } from "date-fns";
 import { FinalListing } from "@/actions/getListings";
 import { Location } from "@/actions/getCart";
+import { Order } from "@prisma/client";
+import { ExtendedHours } from "@/next-auth";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -24,14 +25,13 @@ const outfit = Outfit({
 });
 
 interface StatusProps {
-  hours: ExtendedHours;
   onSetTime: (childTime: Date) => void;
   quantity: number;
-  quantityType: string;
+  quantityType: string | null;
   disabled?: boolean;
   listing: FinalListing;
-  user: string;
-  sodt: number;
+  user: string | undefined;
+  sodt: (number | null)[];
 }
 interface Body {
   userId: string;
@@ -43,7 +43,6 @@ interface Body {
   location: Location;
 }
 const DateState2 = ({
-  hours,
   listing,
   quantity,
   quantityType,
@@ -52,7 +51,7 @@ const DateState2 = ({
   user,
 }: StatusProps) => {
   const router = useRouter();
-  const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
+  const [selectedTime, setSelectedTime] = useState<ValidTime>(); //users selected time
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   let body: Body[] = [];
@@ -80,7 +79,7 @@ const DateState2 = ({
     return dateObj;
   }
   const expiry = convertToDate(shelfLife(listing));
-  const handleTimer = async (childTime: any) => {
+  const handleTimer = async (childTime: ValidTime) => {
     sessionStorage.setItem("ORDER", "");
 
     setSelectedTime(childTime);
@@ -122,7 +121,7 @@ const DateState2 = ({
       }
       const response = await axios.post("/api/create-order", body);
       const datas = response.data;
-      await datas.forEach((data: any) => {
+      await datas.forEach((data: Order) => {
         let store = sessionStorage.getItem("ORDER");
         if (store === null) {
           store = "";
@@ -151,7 +150,7 @@ const DateState2 = ({
       <CustomTimeModal2
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        hours={hours}
+        hours={listing.location.hours as unknown as ExtendedHours}
         onSetTime={handleTimer}
       />
       <SheetTrigger className="w-full">
@@ -173,7 +172,7 @@ const DateState2 = ({
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         sellerRole={listing.user.role}
-        hours={hours}
+        hours={listing.location.hours as unknown as ExtendedHours}
         onSetTime={handleTimer}
         sodt={sodt}
       >

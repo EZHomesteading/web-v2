@@ -3,10 +3,11 @@
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useRef } from "react";
 import Loading from "@/app/components/secondary-loader";
+import { LatLng, LatLngLiteral } from "leaflet";
 
 interface MapProps {
-  center: any;
-  marker: any;
+  center: LatLng | LatLngLiteral;
+  marker: string;
 }
 
 const Map = ({ center, marker }: MapProps) => {

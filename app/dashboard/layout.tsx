@@ -4,6 +4,7 @@ import { Outfit } from "next/font/google";
 import Sidebar from "./sidebar";
 import { getNavUser } from "@/actions/getUser";
 import { Viewport } from "next";
+import { UserInfo, navUser } from "@/next-auth";
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
@@ -20,7 +21,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <div className="flex flex-col bg w-full">
-        <NavbarDashboard user={user} />
+        <NavbarDashboard user={user as unknown as navUser} />
         <div className="sheet w-full border-t-[0px] min-h-screen">
           {children}
         </div>

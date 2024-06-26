@@ -16,12 +16,13 @@ import { Calendar } from "@/app/components/ui/calendar";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
 import { ExtendedHours } from "@/next-auth";
+import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
 
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
   hours: ExtendedHours;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   isSeller: boolean;
 }
 
