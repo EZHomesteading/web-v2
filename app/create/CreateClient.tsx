@@ -259,7 +259,7 @@ const CreateClient = ({ user, index }: Props) => {
         setValue("shelfLifeMonths", 0);
         setValue("shelfLifeYears", 0);
         setValue("sodt", 60);
-        setValue("rating", 1);
+        setValue("rating", []);
         setValue("minOrder", 1);
         setClicked(false);
         setClicked1(false);
