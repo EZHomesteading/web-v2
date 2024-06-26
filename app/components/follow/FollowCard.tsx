@@ -113,7 +113,7 @@ const FollowCard: React.FC<ListingCardProps> = ({
     <div className="col-span-1 cursor-pointer">
       <div className="flex flex-col w-full">
         <div
-          onClick={() => router.push(`/store/${data.url}`)}
+          onClick={() => router.push(`/profile/${data.id}`)}
           className=" aspect-square w-full relative overflow-hidden rounded-xl hover:shadow-xl "
         >
           <Image
