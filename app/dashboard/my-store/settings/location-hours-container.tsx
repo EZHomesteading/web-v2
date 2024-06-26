@@ -390,7 +390,6 @@ const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
       },
       [locationState, setLocationState]
     );
-
     return (
       <div
         className={`grid grid-rows-${

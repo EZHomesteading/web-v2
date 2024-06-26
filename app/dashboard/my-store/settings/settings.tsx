@@ -20,7 +20,6 @@ import {
 } from "@/app/components/ui/select";
 import Image from "next/image";
 import { Outfit } from "next/font/google";
-import { UploadButton } from "@/utils/uploadthing";
 import { Textarea } from "@/app/components/ui/textarea";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
@@ -53,7 +52,6 @@ const StoreSettings = ({ apiKey }: p) => {
           }))
         : {},
     };
-    console.log("beans", formData);
     axios
       .post("/api/update", formData)
       .then(() => {
@@ -145,23 +143,6 @@ const StoreSettings = ({ apiKey }: p) => {
         </div>
         <Card>
           <CardContent className="flex flex-col sheet  border-none shadow-lg w-full pt-2">
-            {/* {user?.role === UserRole.COOP ? (
-              <h2 className="lg:text-3xl text-lg">Open & Close Hours</h2>
-            ) : (
-              <h2 className="lg:text-3xl text-lg">Delivery Hours</h2>
-            )}
-
-            <ul>
-              {user?.role === UserRole.COOP ? (
-                <li>
-                  The hours when a producer can drop produce off and buyers can
-                  pick up from your listing or co-op location.
-                </li>
-              ) : (
-                <li>The hours you can deliver to a co-op.</li>
-              )}
-              <li>Please refresh after clicking update to see changes</li>
-            </ul> */}
             {user?.role && (
               <HoursLocationContainer
                 location={user?.location}
