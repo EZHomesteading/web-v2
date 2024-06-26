@@ -3,6 +3,7 @@ import { Reviews, UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { ExtendedHours } from "@/next-auth";
 import { JsonValue } from "@prisma/client/runtime/library";
+import { Location } from "./getListings";
 
 interface p {
   role: UserRole;
@@ -333,23 +334,74 @@ const getFavCardUser = async (params: Params) => {
   }
 };
 // this gets the coop or producer on /store/[storeId] with their listings
-
-interface Listing {
+// interface Listing {
+//   id: string;
+//   title: string;
+//   price: number;
+//   minOrder: number | null;
+//   imageSrc: string[];
+//   quantityType: string;
+// }
+interface Listing1 {
   id: string;
   title: string;
   price: number;
   minOrder: number | null;
   imageSrc: string[];
   quantityType: string;
+  location: number;
 }
+export type FinalListingShop = {
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  quantityType: string | null;
+  createdAt: string;
+  location: Location;
+  imageSrc: string[];
+  subCategory: string;
+  minOrder: number | null;
+  user: {
+    id: string;
+    name: string;
+    role: UserRole;
+  };
+};
 
 export type StoreData = {
   user: User1 & {
-    listings: Listing[];
+    listings: FinalListingShop[];
   };
   reviews: ReviewWithReviewer[];
 };
+const getUserLocation2 = async (listing: Listing1, id: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        location: { select: { [listing.location]: true } },
+      },
+    });
 
+    if (!user) {
+      return null;
+    }
+    if (!user.location) {
+      return null;
+    }
+    return user.location[listing.location];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+function filterListingsByLocation(listings: FinalListingShop[]) {
+  return listings.filter((listing: FinalListingShop) => {
+    return listing.location !== undefined;
+  });
+}
 const getUserStore = async (
   params: IStoreParams
 ): Promise<StoreData | null> => {
@@ -378,6 +430,7 @@ const getUserStore = async (
             minOrder: true,
             id: true,
             quantityType: true,
+            location: true,
           },
         },
       },
@@ -408,9 +461,21 @@ const getUserStore = async (
     if (!user) {
       return null;
     }
-
+    const safeListings = user.listings.map(async (listing) => {
+      const location = (await getUserLocation2(
+        listing,
+        user.id
+      )) as unknown as Location;
+      const Listing = listing as unknown as FinalListingShop;
+      return {
+        ...Listing,
+        location,
+      };
+    });
+    let resolvedSafeListings = await Promise.all(safeListings);
+    resolvedSafeListings = filterListingsByLocation(resolvedSafeListings);
     return {
-      user: { ...user, listings: user.listings },
+      user: { ...user, listings: resolvedSafeListings },
       reviews: reviewsWithReviewer,
     };
   } catch (error: any) {

@@ -8,7 +8,7 @@ import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
 import FollowButton from "@/app/components/follow/followButton";
-import { StoreData } from "@/actions/getUser";
+import { FinalListingShop, StoreData } from "@/actions/getUser";
 import { ExtendedHours, UserInfo } from "@/next-auth";
 import { FinalListing } from "@/actions/getListings";
 interface Listings {
@@ -93,7 +93,7 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
             "
           >
             {/* dynamically map users listings */}
-            {store?.user?.listings?.map((listing: Listings) => (
+            {store?.user?.listings?.map((listing: FinalListingShop) => (
               <ListingCard
                 user={user as unknown as UserInfo}
                 storeUser={store?.user as unknown as UserInfo}

@@ -333,8 +333,11 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
   const resetMap = () => {
     handleCenterChanged();
     handleZoomChanged();
+    setFilteredCoops(coopInfo);
+    setFilteredProducers(producerInfo);
     setShowCoops(true);
     setShowProducers(true);
+    setDrawnShape(null);
   };
 
   return (
@@ -368,7 +371,10 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
             <li>- Click on a marker for more info</li>
             <li className="flex flex-row">
               - Click{" "}
-              <button className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 ">
+              <button
+                onClick={() => resetMap()}
+                className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 "
+              >
                 <CiBookmarkRemove size={15} className="ml-1" />
                 Remove Filters
               </button>
@@ -398,7 +404,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
       {drawnShape && (
         <Button
           className="absolute top-11 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
-          onClick={resetMap}
+          onClick={() => resetMap()}
         >
           <CiBookmarkRemove size={20} className="ml-1" />
           Remove Filters
