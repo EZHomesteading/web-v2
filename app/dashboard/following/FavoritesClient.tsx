@@ -7,7 +7,6 @@ import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {
   follows: string[];
-  user: UserInfo | null;
   followarr: {
     id: string;
     userId: string;
@@ -18,7 +17,6 @@ interface FavoritesClientProps {
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   follows,
   followarr,
-  user,
 }) => {
   return (
     <Container>
@@ -40,12 +38,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           const userId = follow;
           const shop = await getFavCardUser({ userId });
           return (
-            <FollowCard
-              user={user}
-              key={shop?.id}
-              data={shop}
-              followarr={followarr}
-            />
+            <FollowCard key={shop?.id} data={shop} followarr={followarr} />
           );
         })}
       </div>

@@ -75,11 +75,7 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
           </div>
         </div>
         <div className="pl-[10px]">
-          <FollowButton
-            followUserId={store?.user?.id}
-            following={following}
-            user={user as unknown as UserInfo}
-          />
+          <FollowButton followUserId={store?.user?.id} following={following} />
         </div>
 
         {emptyState || (

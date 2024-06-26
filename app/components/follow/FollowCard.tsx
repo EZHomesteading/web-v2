@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Button } from "../ui/button";
-import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
 import {
@@ -54,7 +53,6 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  user: UserInfo | null;
   followarr:
     | {
         id: string;
@@ -71,7 +69,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
   disabled,
   actionLabel,
   actionId,
-  user,
   secondActionId,
   onSecondAction,
   secondActionLabel,
@@ -103,7 +100,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
     },
     [disabled, onSecondAction, secondActionId]
   );
-
   const [isHovering, setIsHovering] = useState(false);
   console.log(data);
   if (!data) {
@@ -131,11 +127,7 @@ const FollowCard: React.FC<ListingCardProps> = ({
           <div className="font-semibold text-lg flex-1 flex justify-between items-start">
             {data.name}
             <div className="relative">
-              <FollowButton
-                followUserId={data.id}
-                following={followarr}
-                user={user}
-              />
+              <FollowButton followUserId={data.id} following={followarr} />
               {isHovering && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md p-2 transition duration-300">
                   Unfollow?
@@ -143,9 +135,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
               )}
             </div>
           </div>
-          {/* <div className="font-light text-neutral-500">
-            {data?.location[0]?.address[1]}, {data?.location[0]?.address[2]}
-          </div> */}
         </div>
 
         <div className="w-full flex justify-between">

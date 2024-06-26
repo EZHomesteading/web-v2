@@ -53,11 +53,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
 
             <span>{listingUser?.name}</span>
           </span>
-          <FollowButton
-            followUserId={followUserId}
-            following={following}
-            user={user}
-          />
+          <FollowButton followUserId={followUserId} following={following} />
         </div>
       </div>
     </div>
