@@ -14,11 +14,12 @@ import { Button } from "@/app/components/ui/button";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/app/components/ui/calendar";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Separator } from "@/app/components/ui/separator";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { IoStorefrontOutline } from "react-icons/io5";
+import * as ScrollArea from "@radix-ui/react-scroll-area";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -43,7 +44,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   onSetTime,
 }) => {
   const now = new Date();
-  const [date, setDate] = useState<Date | undefined>(now); //current time
+  const [date, setDate] = useState<Date | undefined>(); //current time
   const [options, setOptions] = useState<string[]>([]); // array of times with 15 minute intervals
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -185,7 +186,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={handleDateSelect}
                 fromMonth={now}
                 disabled={{ before: now }}
                 initialFocus
@@ -194,58 +195,67 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
           </Popover>
         </div>
         {date && (
-          <ScrollArea className="border-neutral-400 border-[1px] rounded-lg shadow-md">
-            <div className="p-4">
-              {(() => {
-                if (!date) {
-                  return null;
-                }
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const selectedDate = new Date(date);
-                selectedDate.setHours(0, 0, 0, 0);
+          <ScrollArea.Root className="h-[300px] w-full overflow-hidden border-neutral-400 border-[1px] rounded-lg shadow-md">
+            <ScrollArea.Viewport className="h-full w-full">
+              <div className="p-4">
+                {(() => {
+                  if (!date) {
+                    return null;
+                  }
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const selectedDate = new Date(date);
+                  selectedDate.setHours(0, 0, 0, 0);
 
-                if (selectedDate < today) {
-                  return (
-                    <div className={`${zilla.className} text-sm`}>
-                      Date has passed
-                    </div>
-                  );
-                } else if (!options.length) {
-                  return (
-                    <div className={`${zilla.className} text-sm`}>
-                      Closed on {format(date, "EEEE")}
-                    </div>
-                  );
-                } else {
-                  return (
-                    <h4
-                      className={`${outfit.className} mb-4 text- font-medium leading-none`}
-                    >
-                      Select a Time
-                    </h4>
-                  );
-                }
-              })()}
+                  if (selectedDate < today) {
+                    return (
+                      <div className={`${zilla.className} text-sm`}>
+                        Date has passed
+                      </div>
+                    );
+                  } else if (!options.length) {
+                    return (
+                      <div className={`${zilla.className} text-sm`}>
+                        Closed on {format(date, "EEEE")}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <h4
+                        className={`${outfit.className} mb-4 text- font-medium leading-none`}
+                      >
+                        Select a Time
+                      </h4>
+                    );
+                  }
+                })()}
 
-              {options.map((option) => (
-                <div key={option} className="hover:bg-slate">
-                  <div onClick={onClose}>
-                    <div
-                      className={`${zilla.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
-                      onClick={() => {
-                        setTime(option);
-                        onClose;
-                      }}
-                    >
-                      {option}
+                {options.map((option) => (
+                  <div key={option} className="hover:bg-slate">
+                    <div onClick={onClose}>
+                      <div
+                        className={`${zilla.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
+                        onClick={() => {
+                          setTime(option);
+                          onClose;
+                        }}
+                      >
+                        {option}
+                      </div>
                     </div>
+                    <Separator className="my-[3px]" />
                   </div>
-                  <Separator className="my-[3px]" />
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+                ))}
+              </div>{" "}
+            </ScrollArea.Viewport>
+
+            <ScrollArea.Scrollbar
+              className="flex touch-none select-none transition-colors"
+              orientation="vertical"
+            >
+              <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-400" />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
         )}
       </div>
     </Modal>
