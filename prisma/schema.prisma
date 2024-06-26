@@ -192,7 +192,7 @@ model Listing {
   imageSrc      String[]
   shelfLife     Int
   location      Int
-  rating    Int?
+  rating        Int[]
   userId        String @db.ObjectId
   createdAt     DateTime @default(now())
   emailList     notifList?

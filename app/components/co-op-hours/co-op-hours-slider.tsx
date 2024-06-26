@@ -27,7 +27,7 @@ export default function CoopHoursSlider({
   onPrevDay,
   isOpen,
 }: CoopHoursSliderProps) {
-  const [values, setValues] = useState<any>();
+  const [values, setValues] = useState<number[]>();
 
   useEffect(() => {
     if (hours) {

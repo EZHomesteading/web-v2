@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { useEffect, useState } from "react";
+import { ValidTime } from "./CustomTimeModal2";
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
@@ -12,9 +13,9 @@ const outfit = Outfit({
 
 interface Props {
   hours: ExtendedHours;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
-  sodtarr: number[];
+  sodtarr: (number | null)[];
 }
 const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   console.log("beans", hours);
@@ -26,9 +27,17 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   useEffect(() => {
     calculateEarliestPickupTime();
     if (sodtarr[1] === null && sodtarr[0] === null) {
-    } else if (sodtarr[0] >= sodtarr[1]) {
+    } else if (
+      sodtarr[1] !== null &&
+      sodtarr[0] !== null &&
+      sodtarr[0] >= sodtarr[1]
+    ) {
       setSodt(sodtarr[0]);
-    } else if (sodtarr[1] >= sodtarr[0]) {
+    } else if (
+      sodtarr[1] !== null &&
+      sodtarr[0] !== null &&
+      sodtarr[1] >= sodtarr[0]
+    ) {
       setSodt(sodtarr[1]);
     }
   }, []);
@@ -129,7 +138,7 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
     }
   };
 
-  const formatPickupTime = (selectedTimer: any) => {
+  const formatPickupTime = (selectedTimer: ValidTime) => {
     if (!selectedTimer) return "";
 
     const { pickupTime } = selectedTimer;

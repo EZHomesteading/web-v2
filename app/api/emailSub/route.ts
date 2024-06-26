@@ -1,11 +1,11 @@
 //update listings with list of emails subscribed to send notifications when stock is updated.
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-import { getListingById } from "@/actions/getListings";
+import { FinalListing, getListingById } from "@/actions/getListings";
 
 export async function POST(request: Request) {
-  function containsString(arr: any, str: any) {
-    return arr.some((item: any) => item === str);
+  function containsString(arr: string[], str: string) {
+    return arr.some((item: string) => item === str);
   }
   const body = await request.json();
 
@@ -17,7 +17,13 @@ export async function POST(request: Request) {
     }
   });
   const listingId = id;
-  const oldlisting = await getListingById({ listingId });
+  const oldlisting = (await getListingById({
+    listingId,
+  })) as unknown as FinalListing & {
+    emailList: {
+      list: string[];
+    } | null;
+  };
   if (!oldlisting) {
     return NextResponse.error();
   }

@@ -21,7 +21,6 @@ import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "@/next-auth";
-import AuthLocation from "../auth-location";
 import axios from "axios";
 import { UserRole } from "@prisma/client";
 import "react-phone-number-input/style.css";
@@ -72,9 +71,14 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
 
     if (latLng) {
       form.setValue("location", {
-        type: "Point",
-        coordinates: [latLng.lng, latLng.lat],
-        address: [street, city, state, zip],
+        0: {
+          type: "Point",
+          coordinates: [latLng.lng, latLng.lat],
+          address: [street, city, state, zip],
+          hours: null,
+        },
+        1: null,
+        2: null,
       });
     }
   };
@@ -87,17 +91,23 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",
       location: {
-        type: "Point",
-        coordinates: (user?.location?.coordinates?.slice(0, 2) as [
-          number,
-          number
-        ]) || [0, 0],
-        address: (user?.location?.address as [
-          string,
-          string,
-          string,
-          string
-        ]) || ["", "", "", ""],
+        0: {
+          type: "Point",
+          coordinates:
+            user && user.location
+              ? (user?.location[0]?.coordinates?.slice(0, 2) as [
+                  number,
+                  number
+                ])
+              : [0, 0],
+          address:
+            user && user.location
+              ? (user?.location[0]?.address as [string, string, string, string])
+              : ["", "", "", ""],
+          hours: null,
+        },
+        1: null,
+        2: null,
       },
       role: UserRole.PRODUCER,
     },
@@ -245,11 +255,11 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
                   )}
                 />
 
-                <AuthLocation
+                {/* <AuthLocation
                   address={address}
                   setAddress={setAddress}
                   onAddressParsed={handleAddressParsed}
-                />
+                /> */}
 
                 <div className="flex flex-row justify-evenly space-x-10">
                   <Button

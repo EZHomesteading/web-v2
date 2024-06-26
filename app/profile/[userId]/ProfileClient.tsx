@@ -1,5 +1,6 @@
 //component to display a users reviews
 import Avatar from "@/app/components/Avatar";
+import { getUserById } from "@/data/user";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";
@@ -49,10 +50,12 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
+
 export default function ProfileClient({ user, reviews }: p) {
   const counts = getReviewCounts(reviews || []);
   const total = reviews.length || 0;
   const averageRating = getAverageRating(reviews || []);
+
   return (
     <div className={`${outfit.className} min-h-screen bg`}>
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
@@ -118,7 +121,7 @@ export default function ProfileClient({ user, reviews }: p) {
                   <h3 className="sr-only">Review data</h3>
 
                   <dl className="space-y-3">
-                    {counts.map((count: any) => (
+                    {counts.map((count: { rating: number; count: number }) => (
                       <div
                         key={count.rating}
                         className="flex items-center text-sm"
@@ -169,53 +172,99 @@ export default function ProfileClient({ user, reviews }: p) {
 
                 <div className="flow-root">
                   <div className="-my-12 divide-y divide-gray-200">
-                    {reviews.map((review: any) => {
-                      return (
-                        <div key={review.reviewer.id} className="py-12">
-                          <div className="flex flex-col items-start">
-                            <Link
-                              href={`/profile/${review.reviewer.id}`}
-                              className="flex flex-row items-start"
-                            >
-                              {review.reviewer && (
-                                <Avatar image={review.reviewer.image} />
-                              )}
-                              <div className="ml-4">
-                                {review.reviewer && (
-                                  <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
-                                    <h4 className="text-lg">
-                                      {review.reviewer.name}
-                                    </h4>
-                                    {review.reviewer.firstName}
-                                  </div>
-                                )}
+                    {reviews.map(
+                      async (review: {
+                        id: string;
+                        reviewerId: string;
+                        reviewedId: string;
+                        rating: number;
+                        review: string;
+                        buyer: boolean;
+                      }) => {
+                        const reviewer = await getUserById(review.reviewerId);
+                        if (!reviewer) {
+                          return (
+                            <div key={review.reviewerId} className="py-12">
+                              <div className="flex flex-col items-start">
+                                <div>
+                                  this user has since deleted their account
+                                </div>
+                                <div className="mt-1 flex items-center">
+                                  {[...Array(5)].map((_, rating) => (
+                                    <StarIcon
+                                      key={rating}
+                                      className={classNames(
+                                        review.rating > rating
+                                          ? "text-yellow-400"
+                                          : "text-gray-300",
+                                        "h-5 w-5 flex-shrink-0"
+                                      )}
+                                      aria-hidden="true"
+                                    />
+                                  ))}
+                                </div>
+                                <p className="sr-only">
+                                  {review?.rating} out of 5 stars
+                                </p>
                               </div>
-                            </Link>
-                            <div className="mt-1 flex items-center">
-                              {[...Array(5)].map((_, rating) => (
-                                <StarIcon
-                                  key={rating}
-                                  className={classNames(
-                                    review.rating > rating
-                                      ? "text-yellow-400"
-                                      : "text-gray-300",
-                                    "h-5 w-5 flex-shrink-0"
-                                  )}
-                                  aria-hidden="true"
-                                />
-                              ))}
+                              <div
+                                className="mt-4 space-y-6 text-base italic text-gray-600"
+                                dangerouslySetInnerHTML={{
+                                  __html: review?.review,
+                                }}
+                              />
                             </div>
-                            <p className="sr-only">
-                              {review?.rating} out of 5 stars
-                            </p>
+                          );
+                        }
+                        return (
+                          <div key={review.reviewerId} className="py-12">
+                            <div className="flex flex-col items-start">
+                              <Link
+                                href={`/profile/${review.reviewerId}`}
+                                className="flex flex-row items-start"
+                              >
+                                {review.reviewerId && (
+                                  <Avatar image={reviewer.image} />
+                                )}
+                                <div className="ml-4">
+                                  {reviewer && (
+                                    <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
+                                      <h4 className="text-lg">
+                                        {reviewer.name}
+                                      </h4>
+                                      {reviewer.firstName}
+                                    </div>
+                                  )}
+                                </div>
+                              </Link>
+                              <div className="mt-1 flex items-center">
+                                {[...Array(5)].map((_, rating) => (
+                                  <StarIcon
+                                    key={rating}
+                                    className={classNames(
+                                      review.rating > rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-300",
+                                      "h-5 w-5 flex-shrink-0"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                ))}
+                              </div>
+                              <p className="sr-only">
+                                {review?.rating} out of 5 stars
+                              </p>
+                            </div>
+                            <div
+                              className="mt-4 space-y-6 text-base italic text-gray-600"
+                              dangerouslySetInnerHTML={{
+                                __html: review?.review,
+                              }}
+                            />
                           </div>
-                          <div
-                            className="mt-4 space-y-6 text-base italic text-gray-600"
-                            dangerouslySetInnerHTML={{ __html: review?.review }}
-                          />
-                        </div>
-                      );
-                    })}
+                        );
+                      }
+                    )}
                   </div>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import ClientOnly from "@/app/components/client/ClientOnly";
 import FavoritesClient from "./FavoritesClient";
 import authCache from "@/auth-cache";
 import { getFollows } from "@/actions/getFollow";
+import { UserInfo } from "@/next-auth";
 
 const ListingPage = async () => {
   const session = await authCache();
@@ -24,7 +25,7 @@ const ListingPage = async () => {
     <ClientOnly>
       <FavoritesClient
         follows={follows}
-        user={session?.user}
+        user={session?.user as unknown as UserInfo | null}
         followarr={followarr}
       />
     </ClientOnly>

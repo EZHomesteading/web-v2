@@ -14,19 +14,19 @@ const outfit = Outfit({
 });
 
 interface Props {
-  bOrders: navBuyOrder[];
-  sOrders: navSellOrder[];
+  bOrders: navBuyOrder[] | undefined;
+  sOrders: navSellOrder[] | undefined;
 }
 
 const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   const notifications: {
     text: string;
     conversationId: string;
-    updatedAt: string;
+    updatedAt: Date;
   }[] = [];
 
   if (bOrders) {
-    bOrders.forEach((order: any) => {
+    bOrders.forEach((order: navBuyOrder) => {
       const statusText = getStatusText(
         order.status,
         false,
@@ -44,7 +44,7 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   }
 
   if (sOrders) {
-    sOrders.forEach((order: any) => {
+    sOrders.forEach((order: navSellOrder) => {
       const statusText = getStatusText(
         order.status,
         true,

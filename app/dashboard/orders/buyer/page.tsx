@@ -4,9 +4,13 @@ import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
-import { GetListingsByIds } from "@/actions/getListings";
+import {
+  FinalListing,
+  GetListingsByIds,
+  Location,
+} from "@/actions/getListings";
 import { getStatusText } from "@/app/dashboard/order-status";
-import { UserRole } from "@prisma/client";
+import { $Enums, UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -19,7 +23,31 @@ const formatPrice = (price: number): string => {
     maximumFractionDigits: 2,
   });
 };
+export type ActualListing = {
+  createdAt: string;
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  SODT: number | null;
+  quantityType: string | null;
+  shelfLife: number;
+  location: Location;
+  imageSrc: string[];
+  userId: string;
+  subCategory: string;
+  minOrder: number | null;
+  user: {
+    id: string;
+    SODT: number | null;
+    name: string;
+    role: UserRole;
+  };
+};
 
+export type ListingGroup = {
+  listings: ActualListing[];
+};
 const Page = async () => {
   let user = await currentUser();
   const buyer = await getUserWithBuyOrders({ userId: user?.id });
@@ -37,7 +65,7 @@ const Page = async () => {
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-
+        console.log("BEANS", listings);
         const seller = await getUserById({ userId: order.sellerId });
         const statusText = getStatusText(
           order.status,
@@ -95,31 +123,35 @@ const Page = async () => {
                 </Link>
               </CardHeader>
               <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-                {listings.flatMap((listing: SafeListing) => {
-                  const quantities = JSON.parse(order.quantity);
-                  const quantityObj = quantities.find(
-                    (q: any) => q.id === listing.id
-                  );
-                  const quantity = quantityObj ? quantityObj.quantity : 0;
+                {listings.flatMap((listingGroup: ListingGroup) =>
+                  listingGroup.listings.map((listing: ActualListing) => {
+                    console.log("beans", listing);
+                    const quantities = JSON.parse(order.quantity);
+                    const quantityObj = quantities.find(
+                      (q: { id: string }) => q.id === listing.id
+                    );
+                    const quantity = quantityObj ? quantityObj.quantity : 0;
 
-                  return (
-                    <div
-                      key={listing.id}
-                      className="flex flex-row items-center gap-2"
-                    >
-                      <Image
-                        src={listing.imageSrc[0]}
-                        alt={listing.title}
-                        width={50}
-                        height={50}
-                        className="rounded-lg object-cover aspect-square"
-                      />
-                      <p>
-                        {quantity} {listing.quantityType} of {listing.title}{" "}
-                      </p>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={listing.id}
+                        className="flex flex-row items-center gap-2"
+                      >
+                        <Image
+                          src={listing.imageSrc[0]}
+                          alt={listing.title}
+                          width={50}
+                          height={50}
+                          className="rounded-lg object-cover aspect-square"
+                        />
+                        <p>
+                          {quantity} {listing.quantityType || "units"} of{" "}
+                          {listing.title}{" "}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
                 <div>Order Total: {formatPrice(order.totalPrice)}</div>
                 <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
               </CardContent>

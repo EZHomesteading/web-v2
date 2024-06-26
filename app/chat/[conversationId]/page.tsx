@@ -5,6 +5,9 @@ import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
 import { GetOrderByConvoId } from "@/actions/getOrder";
+import { FullConversationType } from "@/types";
+import { Order } from "@prisma/client";
+import { UserInfo } from "@/next-auth";
 
 interface IParams {
   conversationId: string;
@@ -31,11 +34,13 @@ const ChatId = async ({ params }: { params: IParams }) => {
       <div className="h-full flex flex-col">
         {conversationData && (
           <>
-            <Header conversation={conversation} />
+            <Header
+              conversation={conversation as unknown as FullConversationType}
+            />
             <Body
               initialMessages={messages}
-              user={currentUser}
-              order={order}
+              user={currentUser as unknown as UserInfo}
+              order={order as unknown as Order}
               otherUser={otherUser}
               conversationId={conversationData.id}
             />

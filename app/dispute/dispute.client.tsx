@@ -9,7 +9,7 @@ import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
 import FilterButtons from "@/app/dispute/dispute-filters";
-import { UserRole } from "@prisma/client";
+import { $Enums, UserRole } from "@prisma/client";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { ExplanationDialog } from "./dispute.explanation";
 const sesClient = new SESClient({
@@ -31,37 +31,38 @@ const outfit = Outfit({
   display: "swap",
 });
 
-interface Dispute {
-  id: string;
-  userId: string;
-  images: string[];
-  status: number;
-  reason: string;
-  explanation: string;
-  email: string;
-  phone: string;
-  createdAt: Date;
-  updatedAt: Date;
+export type Dispute = {
   order: {
     conversationId: string | null;
     buyer: {
       id: string;
-      email: string;
-      phoneNumber: string | null;
-      firstName: string | null;
       createdAt: Date;
-      role: UserRole;
-    };
+      email: string;
+      firstName: string | null;
+      phoneNumber: string | null;
+      role: $Enums.UserRole;
+    } | null;
     seller: {
       id: string;
-      email: string;
-      phoneNumber: string | null;
-      firstName: string | null;
       createdAt: Date;
-      role: UserRole;
-    };
+      email: string;
+      firstName: string | null;
+      phoneNumber: string | null;
+      role: $Enums.UserRole;
+    } | null;
   };
-}
+  id: string;
+  userId: string;
+  createdAt: Date;
+  email: string;
+  updatedAt: Date;
+  status: number;
+  explanation: string;
+  phone: string;
+  images: string[];
+  reason: $Enums.DisputeReason;
+};
+
 interface p {
   disputes: Dispute[];
 }
@@ -78,32 +79,38 @@ const DisputeComponent = ({ disputes }: p) => {
   const [filteredDisputes, setFilteredDisputes] = useState(disputes);
   const [isConfirmVisible, setIsConfirmVisible] =
     useState<ConfirmVisibilityState>({});
-  const handleDenyAndConfirm = async (dispute: any, explanation: string) => {
+  const handleDenyAndConfirm = async (
+    dispute: Dispute,
+    explanation: string
+  ) => {
     setIsLoading(true);
 
     const emailParams = {
       Destination: {
-        ToAddresses: [dispute.order.buyer.email, dispute.order.seller.email],
+        ToAddresses: [
+          dispute?.order?.buyer?.email,
+          dispute?.order?.seller?.email,
+        ].filter((email): email is string => email !== undefined),
       },
       Message: {
         Body: {
           Html: {
             Data: `
-                <p>Dear ${dispute.order.buyer.firstName} and ${
-              dispute.order.seller.firstName
+              <p>Dear ${dispute?.order?.buyer?.firstName} and ${
+              dispute?.order?.seller?.firstName
             },</p>
-                <p>This email is regarding the dispute for order #${
-                  dispute.order.conversationId
-                }.</p>
-                <p>After reviewing the details of the dispute, the resolution is as follows:</p>
-                <p>${explanation}</p>
-                <p>The dispute has been marked as ${
-                  statusTexts[dispute.status]
-                }.</p>
-                <p>If you have any further questions or concerns, please feel free to reach out to our support team.</p>
-                <p>Best regards,</p>
-                <p>EzHomesteading Dispute Resolution Team</p>
-              `,
+              <p>This email is regarding the dispute for order #${
+                dispute.order.conversationId
+              }.</p>
+              <p>After reviewing the details of the dispute, the resolution is as follows:</p>
+              <p>${explanation}</p>
+              <p>The dispute has been marked as ${
+                statusTexts[dispute.status]
+              }.</p>
+              <p>If you have any further questions or concerns, please feel free to reach out to our support team.</p>
+              <p>Best regards,</p>
+              <p>EzHomesteading Dispute Resolution Team</p>
+            `,
           },
         },
         Subject: {
@@ -166,10 +173,10 @@ const DisputeComponent = ({ disputes }: p) => {
         </div>
       </div>
       <div className="pt-12">
-        {filteredDisputes.map((dispute: any) => (
+        {filteredDisputes.map((dispute: Dispute) => (
           <div key={dispute.id} className="grid grid-cols-10 items-start ">
             <div>
-              {dispute.userId === dispute.order.buyer.id ? (
+              {dispute.userId === dispute?.order?.buyer?.id ? (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
                     <p>{dispute.order.buyer.role}</p>
@@ -193,17 +200,17 @@ const DisputeComponent = ({ disputes }: p) => {
               ) : (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.seller.role}</p>
+                    <p>{dispute?.order?.seller?.role}</p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
                   >
-                    <p>Email: {dispute.order.seller.email}</p>
-                    <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                    <p>Email: {dispute?.order?.seller?.email}</p>
+                    <p>Phone: {dispute?.order?.seller?.phoneNumber}</p>
                     <p>
                       Joined:{" "}
                       {formatDistanceToNow(
-                        new Date(dispute.order.seller.createdAt),
+                        new Date(dispute.order.seller?.createdAt as Date),
                         {
                           addSuffix: true,
                         }
@@ -214,20 +221,20 @@ const DisputeComponent = ({ disputes }: p) => {
               )}
             </div>
             <div>
-              {dispute.userId === dispute.order.buyer.id ? (
+              {dispute.userId === dispute.order.buyer?.id ? (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.seller.role}</p>
+                    <p>{dispute.order.seller?.role}</p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
                   >
-                    <p>Email: {dispute.order.seller.email}</p>
-                    <p>Phone: {dispute.order.seller.phoneNumber}</p>
+                    <p>Email: {dispute.order.seller?.email}</p>
+                    <p>Phone: {dispute.order.seller?.phoneNumber}</p>
                     <p>
                       Joined:{" "}
                       {formatDistanceToNow(
-                        new Date(dispute.order.seller.createdAt),
+                        new Date(dispute.order.seller?.createdAt as Date),
                         {
                           addSuffix: true,
                         }
@@ -238,17 +245,17 @@ const DisputeComponent = ({ disputes }: p) => {
               ) : (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.buyer.role}</p>
+                    <p>{dispute.order.buyer?.role}</p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
                   >
-                    <p>Email: {dispute.order.buyer.email}</p>
-                    <p>Phone: {dispute.order.buyer.phoneNumber}</p>
+                    <p>Email: {dispute.order.buyer?.email}</p>
+                    <p>Phone: {dispute.order.buyer?.phoneNumber}</p>
                     <p>
                       Joined:{" "}
                       {formatDistanceToNow(
-                        new Date(dispute.order.buyer.createdAt),
+                        new Date(dispute.order.buyer?.createdAt as Date),
                         {
                           addSuffix: true,
                         }
@@ -268,7 +275,7 @@ const DisputeComponent = ({ disputes }: p) => {
               <PopoverContent
                 className={`${outfit.className} rounded-lg text-black p-2 sheet`}
               >
-                {dispute.images.map((image: any, index: number) => (
+                {dispute.images.map((image: string, index: number) => (
                   <Image
                     key={index}
                     src={image}
@@ -308,7 +315,6 @@ const DisputeComponent = ({ disputes }: p) => {
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.approve ? (
                 <ExplanationDialog
-                  dispute={dispute}
                   onConfirm={(explanation) =>
                     handleDenyAndConfirm(dispute, explanation)
                   }
@@ -324,7 +330,6 @@ const DisputeComponent = ({ disputes }: p) => {
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.deny ? (
                 <ExplanationDialog
-                  dispute={dispute}
                   onConfirm={(explanation) =>
                     handleDenyAndConfirm(dispute, explanation)
                   }

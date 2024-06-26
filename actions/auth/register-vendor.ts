@@ -4,7 +4,7 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { RegisterVendorSchema } from "@/schemas";
-import { getUserByEmail, getUserByName } from "@/data/user";
+import { getUserByEmail } from "@/data/user";
 import { Location, UserRole } from "@prisma/client";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
@@ -19,11 +19,11 @@ export const register = async (
     return { error: "Invalid fields!" };
   }
 
-  const { firstName, email, password, name, location, role, phoneNumber } =
+  const { firstName, email, password, name, role, phoneNumber } =
     validatedFields.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const url = await generateUniqueUrl(name, location as Location);
+  const url = await generateUniqueUrl(name);
   const existingUser = await getUserByEmail(email);
 
   if (existingUser) {
@@ -36,7 +36,6 @@ export const register = async (
       name,
       email,
       phoneNumber,
-      location: location as Location,
       password: hashedPassword,
       role: role as UserRole,
       url,
@@ -73,10 +72,7 @@ export const register = async (
   return { user: updatedUser };
 };
 
-async function generateUniqueUrl(
-  displayName: string,
-  location: Location
-): Promise<string> {
+async function generateUniqueUrl(displayName: string): Promise<string> {
   let url = convertToUrl(displayName);
   let uniqueUrl = url;
 
@@ -94,7 +90,7 @@ async function generateUniqueUrl(
       break;
     }
 
-    uniqueUrl = `${location[0]?.address[2]}-${url}`;
+    uniqueUrl = `${url}`;
 
     const existingCityUrl = await prisma.user.findFirst({
       where: {

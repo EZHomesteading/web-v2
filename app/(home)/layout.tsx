@@ -2,6 +2,7 @@
 import { getNavUser } from "@/actions/getUser";
 import NavbarHome from "../components/navbar/NavbarHome";
 import type { Viewport } from "next";
+import { navUser } from "@/next-auth";
 
 export const viewport: Viewport = {
   themeColor: "black",
@@ -14,7 +15,7 @@ export default async function RootLayout({
   const user = await getNavUser();
   return (
     <>
-      <NavbarHome user={user} />
+      <NavbarHome user={user as unknown as navUser} />
       {children}
     </>
   );

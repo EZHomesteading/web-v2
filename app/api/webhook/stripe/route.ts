@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case "payment_intent.succeeded":
       // Extract relevant data from the Stripe event
-      const pi = event.data.object.metadata as any;
+      const pi = event.data.object.metadata;
       const buyerId = pi.userId;
       const a = pi.orderIds;
       const b = a.replace(/,(?=[^,]*$)/, "");
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
           const titles = t.filter(Boolean).join(", ");
           // Create a new conversation between buyer and seller
-          const newConversation: any = await prisma.conversation.create({
+          const newConversation = await prisma.conversation.create({
             data: {
               users: {
                 connect: [{ id: pi.userId }, { id: order?.sellerId }],
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
             },
           });
           // Update the order with the new conversation ID and status
-          const orderUpdate: any = await prisma.order.update({
+          const orderUpdate = await prisma.order.update({
             where: { id: order.id },
             data: { conversationId: newConversation.id, status: 1 },
           });
@@ -113,7 +113,17 @@ export async function POST(request: NextRequest) {
           const coopBody = `Hi ${
             seller.name
           }! I just ordered ${titles} from you and would like to pick them up at ${order.pickupDate.toLocaleTimeString()} on ${order.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
-          const producerBody = `Hi ${seller.name}! I just ordered ${titles} from you, please drop them off at ${buyer.location?.address} during my open `;
+          const producerBody = `Hi ${
+            seller.name
+          }! I just ordered ${titles} from you, please drop them off at ${
+            buyer.location && buyer.location[0]
+              ? buyer.location[0]?.address
+              : buyer.location && buyer.location[1]
+              ? buyer.location[1]?.address
+              : buyer.location && buyer.location[2]
+              ? buyer.location[2]?.address
+              : "this user has no locations set"
+          } during my open `;
           // Send email notification to the seller if enabled
           if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
             // Prepare email parameters
@@ -192,7 +202,7 @@ export async function POST(request: NextRequest) {
           }
           // Create a new message in the conversation based on the seller's role
           if (seller.role === UserRole.COOP) {
-            const newMessage: any = await prisma.message.create({
+            const newMessage = await prisma.message.create({
               include: {
                 seen: true,
                 sender: true,

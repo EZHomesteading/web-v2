@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const listingId: any = listingIds[0];
+    const listingId: string = listingIds[0];
     const listing = await getListingById({ listingId });
 
     if (!listing) {

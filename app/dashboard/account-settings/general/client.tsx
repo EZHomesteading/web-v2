@@ -210,7 +210,7 @@ const Page = ({ apiKey }: Props) => {
             A profile picture is optional but we recommend it.
             <UploadButton
               endpoint="imageUploader"
-              onClientUploadComplete={(res: any) => {
+              onClientUploadComplete={(res: { url: string }[]) => {
                 setImage(res[0].url);
               }}
               onUploadError={(error: Error) => {

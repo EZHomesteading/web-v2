@@ -1,21 +1,31 @@
 "use client";
 
+import { FinalListing } from "@/actions/getListings";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import { Button } from "@/app/components/ui/button";
 import axios from "axios";
 import { addDays, format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ValidTime } from "./CustomTimeModal2";
+import { Order } from "@prisma/client";
 
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
-  listing: any;
+  listing: FinalListing;
   quantity: number;
-  expiry: any;
-  childTime: any;
+  expiry: Date;
+  childTime: ValidTime | undefined;
 }
-
+interface Body {
+  userId: string;
+  listingIds: string[];
+  pickupDate: Date | undefined;
+  quantity: string;
+  totalPrice: number;
+  status: number;
+}
 const SoonExpiryModal: React.FC<CustomTimeProps> = ({
   isOpen,
   onClose,
@@ -26,11 +36,11 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
 }) => {
   const router = useRouter();
   const post = async () => {
-    let body: any = [];
+    let body: Body[] = [];
     await body.push({
       userId: listing.user.id,
       listingIds: [listing.id],
-      pickupDate: childTime.pickupTime,
+      pickupDate: childTime?.pickupTime,
       quantity: `[{\"id\":\"${listing.id}\",\"quantity\":${quantity}}]`,
       totalPrice: quantity * listing.price,
       status: 0,
@@ -47,7 +57,7 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
     }
     const response = await axios.post("/api/create-order", body);
     const datas = response.data;
-    await datas.forEach((data: any) => {
+    await datas.forEach((data: Order) => {
       let store = sessionStorage.getItem("ORDER");
       if (store === null) {
         store = "";
@@ -66,7 +76,7 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
   const percentExpiry = new Date(
     now.getTime() + listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
   );
-  const shelfLife = (listing: any) => {
+  const shelfLife = (listing: FinalListing) => {
     const adjustedListing = {
       ...listing,
       createdAt: new Date(listing.createdAt),

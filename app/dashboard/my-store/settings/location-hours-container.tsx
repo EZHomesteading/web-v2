@@ -13,7 +13,8 @@ import {
 import { IoIosAdd } from "react-icons/io";
 import axios from "axios";
 import { toast } from "sonner";
-import { LocationObj, UserRole } from "@prisma/client";
+import { LocationObj, Prisma, UserRole } from "@prisma/client";
+import { ExtendedHours } from "@/next-auth";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -26,7 +27,7 @@ interface Location {
 }
 
 interface LocationProps {
-  location?: Location | undefined;
+  location?: Location;
   apiKey: string;
   role: UserRole;
 }
@@ -61,9 +62,9 @@ const CardComponent = memo(
     handleCancelAddressChange: () => void;
     handleDeleteLocation: (locationIndex: number) => void;
     handleShowAddressChange: () => void;
-    hours: any;
+    hours: ExtendedHours;
     locationState: Location | undefined;
-    location: any;
+    location: Location | undefined;
   }) => {
     {
       locationState && console.log(locationState[locationIndex]);
@@ -136,9 +137,28 @@ const CardComponent = memo(
                       <SliderSelection
                         hours={hours}
                         index={locationIndex}
-                        address={address}
-                        coordinates={coordinates}
-                        location={location}
+                        location={
+                          location as unknown as {
+                            0: {
+                              type: string;
+                              coordinates: number[];
+                              address: string[];
+                              hours: Prisma.JsonValue;
+                            } | null;
+                            1: {
+                              type: string;
+                              coordinates: number[];
+                              address: string[];
+                              hours: Prisma.JsonValue;
+                            } | null;
+                            2: {
+                              type: string;
+                              coordinates: number[];
+                              address: string[];
+                              hours: Prisma.JsonValue;
+                            } | null;
+                          }
+                        }
                       />
                     )}
                   </DialogContent>
@@ -259,7 +279,7 @@ const AddLocationCard = ({
 
 const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
-  const [addresses, setAddresses] = useState<{ [key: number]: any }>({});
+  const [addresses, setAddresses] = useState<{ [key: number]: string[] }>({});
   const [locationState, setLocationState] = useState<Location | undefined>(
     location
   );
@@ -380,7 +400,7 @@ const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
         } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
       >
         {nonNullLocations.map(([key, locationData], locationIndex) => {
-          const handleAddressChange = (index: number, value: any) => {
+          const handleAddressChange = (index: number, value: string) => {
             setAddresses((prevAddresses) => ({
               ...prevAddresses,
               [Number(key)]: prevAddresses[Number(key)]

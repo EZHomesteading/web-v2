@@ -55,6 +55,7 @@ import { Card, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
 import InputField from "./components/suggestion-input";
+import { FinalListing } from "@/actions/getListings";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -68,8 +69,13 @@ interface Props {
 
 const CreateClient = ({ user, index }: Props) => {
   //seclare use state variables
-  const [coopRating, setCoopRating] = useState(1);
+  const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
+  //checkbox usestates
+  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
+  const [checkbox2Checked, setCheckbox2Checked] = useState(false);
+  const [checkbox3Checked, setCheckbox3Checked] = useState(false);
+  const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(index);
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
@@ -106,20 +112,23 @@ const CreateClient = ({ user, index }: Props) => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      coopRating: 1,
+      rating: [0],
       minOrder: 1,
     },
   });
-  //checkbox usestates
-  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
-  const [checkbox2Checked, setCheckbox2Checked] = useState(false);
-  const [checkbox3Checked, setCheckbox3Checked] = useState(false);
-  const [checkbox4Checked, setCheckbox4Checked] = useState(false);
 
   const handleCheckboxChange = (checked: boolean, index: number) => {
-    let newRating = checked ? coopRating + 1 : coopRating - 1;
-    newRating = Math.max(1, Math.min(newRating, 5));
-    setCoopRating(newRating);
+    setRating((prevRating) => {
+      let newRating = [...prevRating];
+      if (checked) {
+        if (!newRating.includes(index + 1)) {
+          newRating.push(index + 1);
+        }
+      } else {
+        newRating = newRating.filter((value) => value !== index + 1);
+      }
+      return newRating.sort((a, b) => a - b);
+    });
 
     switch (index) {
       case 0:
@@ -141,6 +150,16 @@ const CreateClient = ({ user, index }: Props) => {
 
   const handleCertificationCheckboxChange = (checked: boolean) => {
     setCertificationChecked(checked);
+    setRating((prevRating) => {
+      if (checked) {
+        if (!prevRating.includes(0)) {
+          return [0, ...prevRating];
+        }
+      } else {
+        return prevRating.filter((value) => value !== 0);
+      }
+      return prevRating;
+    });
   };
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
@@ -194,7 +213,7 @@ const CreateClient = ({ user, index }: Props) => {
   //geocoding from autocompleted adress inputs
 
   const [description, setDescription] = useState("");
-  const onSubmit: SubmitHandler<FieldValues> = async (data: any) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
     const shelfLife =
@@ -211,7 +230,7 @@ const CreateClient = ({ user, index }: Props) => {
       description: description,
       category: data.category,
       subCategory: data.subCategory,
-      coopRating: coopRating,
+      rating: rating,
       price: formattedPrice,
       imageSrc: data.imageSrc,
       stock: parseInt(data.stock, 10),
@@ -240,13 +259,13 @@ const CreateClient = ({ user, index }: Props) => {
         setValue("shelfLifeMonths", 0);
         setValue("shelfLifeYears", 0);
         setValue("sodt", 60);
-        setValue("coopRating", 1);
+        setValue("rating", []);
         setValue("minOrder", 1);
         setClicked(false);
         setClicked1(false);
         setClicked2(false);
         setProduct(undefined);
-        setCoopRating(1);
+        setRating([]);
         setCertificationChecked(false);
         setQuantityType(undefined);
         router.push("/dashboard/my-store");
@@ -707,7 +726,7 @@ const CreateClient = ({ user, index }: Props) => {
           <div className="hidden emulator-container mt-8">
             <div className="sticky bottom-0 left-0 right-0 px-6">
               <Emulator
-                product={product}
+                product={product as unknown as FinalListing & { label: string }}
                 description={description}
                 stock={quantity}
                 quantityType={quantityType}
@@ -879,7 +898,7 @@ const CreateClient = ({ user, index }: Props) => {
                             pre-populates with your accounts Set out time, if
                             there is none, you must set one.
                             <Select
-                              onValueChange={(value: any) => {
+                              onValueChange={(value: string) => {
                                 setValue("sodt", value);
                               }}
                             >
@@ -920,7 +939,7 @@ const CreateClient = ({ user, index }: Props) => {
                             pre-populates with your accounts delivery time, if
                             there is none, you must set one.
                             <Select
-                              onValueChange={(value: any) => {
+                              onValueChange={(value: string) => {
                                 setValue("sodt", value);
                               }}
                             >
@@ -1147,7 +1166,9 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <UploadButton
                             endpoint="imageUploader"
-                            onClientUploadComplete={(res: any) => {
+                            onClientUploadComplete={(
+                              res: { url: string }[]
+                            ) => {
                               const newImageSrc = [...watch("imageSrc")];
                               const emptyIndex = newImageSrc.findIndex(
                                 (src) => !src

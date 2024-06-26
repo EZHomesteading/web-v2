@@ -7,6 +7,7 @@ import Container from "@/app/components/Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";
 import type { Viewport } from "next";
+import { navUser } from "@/next-auth";
 
 export const viewport: Viewport = {
   themeColor: "white",
@@ -45,7 +46,7 @@ const MapPage = async () => {
           <Container>
             <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
               <Logo />
-              <UserMenu user={user} />
+              <UserMenu user={user as unknown as navUser} />
             </div>
           </Container>
         </div>

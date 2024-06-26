@@ -7,7 +7,7 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 
 interface StatusProps {
   reviewerId: string;
-  reviewedId: string;
+  reviewedId: string | undefined;
   buyer: boolean;
 }
 
