@@ -38,7 +38,6 @@ const Page = async () => {
         const listingsss = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-        console.log("BEANS", listingsss);
         const seller = await getUserById({ userId: order.sellerId });
         const statusText = getStatusText(
           order.status,

@@ -100,7 +100,6 @@ const Page = async () => {
               <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
                 {listings.flatMap((listingGroup: ListingGroup) =>
                   listingGroup.listings.map((listing: ActualListing) => {
-                    console.log("beans", listing);
                     const quantities = JSON.parse(order.quantity);
                     const quantityObj = quantities.find(
                       (q: { id: string }) => q.id === listing.id
