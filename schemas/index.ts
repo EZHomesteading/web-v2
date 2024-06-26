@@ -106,7 +106,6 @@ export const RegisterVendorSchema = z
     confirmPassword: z
       .string()
       .min(4, { message: "Minimum 4 characters required" }),
-    location: z.object(locationDef),
     name: z
       .string()
       .min(4, { message: "Name must be at least 4 characters long" })
