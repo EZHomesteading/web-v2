@@ -5,8 +5,19 @@ import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
 import { getFavCardUser } from "@/actions/getUser";
 interface FavoritesClientProps {
-  followarr: any;
-  myFollow: any;
+  followarr: {
+    id: string;
+    userId: string;
+    follows: string[];
+  }[];
+  myFollow:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
 }
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({

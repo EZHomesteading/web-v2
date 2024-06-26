@@ -6,13 +6,22 @@ import { pusherClient } from "@/lib/pusher";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
+import { $Enums, Order } from "@prisma/client";
+import { UserInfo } from "@/next-auth";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
-  otherUser: any;
-  order: any;
-  user: any;
-  conversationId: any;
+  otherUser: {
+    id: string;
+    name: string;
+    role: $Enums.UserRole;
+    image: string | null;
+    email: string;
+    stripeAccountId: string | null;
+  } | null;
+  order: Order;
+  user: UserInfo;
+  conversationId: string;
 }
 
 const Body: React.FC<BodyProps> = ({
@@ -52,27 +61,6 @@ const Body: React.FC<BodyProps> = ({
       );
     };
 
-    // this is all still a mess because of pusher creating infinite connections (in contact with pusher team to try to resolve)
-
-    // const clearConnection = async () => {
-    //   pusherClient.disconnect();
-    //   pusherClient.unsubscribe(conversationId);
-    //   pusherClient.unbind("messages:new", messageHandler);
-    //   pusherClient.unbind("message:update", updateMessageHandler);
-    // };
-    // const Connect = async () => {
-    //pusherClient.connect();
-    // };
-    // const reConnect = async () => {
-    //   // await clearConnection();
-    //   await Connect();
-    // };
-
-    // if (pusherClient.connection.state == "disconnected") {
-    //   reConnect();
-    // }
-
-    // Subscribe to the channel and bind event handlers
     pusherClient.subscribe(conversationId);
     pusherClient.bind("messages:new", messageHandler);
     pusherClient.bind("message:update", updateMessageHandler);
@@ -95,10 +83,10 @@ const Body: React.FC<BodyProps> = ({
           data={message}
           user={user}
           convoId={conversationId}
-          otherUsersId={otherUser.id}
+          otherUsersId={otherUser?.id}
           order={order}
-          otherUserRole={otherUser.role}
-          stripeAccountId={otherUser.stripeAccountId}
+          otherUserRole={otherUser?.role}
+          stripeAccountId={otherUser?.stripeAccountId}
         />
       ))}
       <div className="pt-24" ref={bottomRef} />

@@ -42,7 +42,7 @@ type Listing2 = {
   imageSrc: string[];
   shelfLife: number;
 };
-type Location = {
+export type Location = {
   type: string;
   coordinates: number[];
   address: string[];

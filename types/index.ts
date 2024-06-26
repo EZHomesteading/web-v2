@@ -9,6 +9,7 @@ import {
 
 export type SafeListing = Omit<Listing, "createdAt"> & {
   createdAt: string;
+  user: User;
 };
 
 export type SafeUser = Omit<

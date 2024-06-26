@@ -2,14 +2,14 @@
 import Heading from "@/app/components/Heading";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import Image from "next/image";
+//import Image from "next/image";
 import { useEffect, useState } from "react";
-import titleHelp from "@/public/images/website-images/apple.jpg";
-import shelfLife from "@/public/images/info/shelfLife.jpg";
-import ezhOrganicRating from "@/public/images/info/ezhOrganicRating.jpg";
-import titleNotFound from "@/public/images/website-images/stepOneTitle404.jpg";
-import minOrder from "@/public/images/info/minOrder.jpg";
-import addPhotos from "@/public/images/how-to/takePhotos.jpg";
+// import titleHelp from "@/public/images/website-images/apple.jpg";
+// import shelfLife from "@/public/images/info/shelfLife.jpg";
+// import ezhOrganicRating from "@/public/images/info/ezhOrganicRating.jpg";
+// import titleNotFound from "@/public/images/website-images/stepOneTitle404.jpg";
+// import minOrder from "@/public/images/info/minOrder.jpg";
+// import addPhotos from "@/public/images/how-to/takePhotos.jpg";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import Link from "next/link";
 const outfit = Outfit({

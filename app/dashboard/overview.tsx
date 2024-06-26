@@ -1,7 +1,7 @@
 "use client";
 //overview of recent transactions graph
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { Order } from "@prisma/client";
+import { Order } from "./page";
 
 interface OverviewProps {
   sellerOrders: Order[];

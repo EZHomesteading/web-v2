@@ -2,7 +2,7 @@
 import { Outfit } from "next/font/google";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { currentUser } from "@/lib/auth";
-import { Order, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { getUserWithOrders } from "@/actions/getUser";
 import Link from "next/link";
 import { Button } from "../components/ui/button";
@@ -38,7 +38,20 @@ const sumTotalPrice = (sellerOrders: Order[]): number => {
 
   return totalSales;
 };
-
+export type Order = {
+  id: string;
+  userId: string;
+  listingIds: string[];
+  sellerId: string;
+  pickupDate: Date;
+  quantity: string;
+  totalPrice: number;
+  status: number;
+  createdAt: Date;
+  updatedAt: Date;
+  fee: number;
+  conversationId: string | null;
+};
 const Dashboard = async () => {
   const followers = await getFollowers();
   const currentUserr = await currentUser();
@@ -62,7 +75,7 @@ const Dashboard = async () => {
     });
 
     totalTransferred = transfers.data.reduce(
-      (total: number, transfer: any) => total + transfer.amount,
+      (total: number, transfer: { amount: number }) => total + transfer.amount,
       0
     );
   }

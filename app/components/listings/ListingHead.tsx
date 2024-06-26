@@ -2,24 +2,21 @@
 //listing image and image carousel component
 import Image from "next/image";
 import Heading from "../Heading";
-import { Location } from "@prisma/client";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
+import { Location } from "@/actions/getListings";
 import { JsonObject } from "@prisma/client/runtime/library";
 import { Outfit } from "next/font/google";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface ListingHeadProps {
   title: string;
   imageSrc: string[];
-  location: {
-    hours: JsonObject;
-    address: string[];
-    coordinates: string[];
-    type: string;
-  };
+  location: Location;
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({

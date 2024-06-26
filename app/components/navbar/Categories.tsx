@@ -18,6 +18,7 @@ import CategoryBox from "../CategoryBox";
 import Container from "../Container";
 import Filters from "./filter.client";
 import { usePathname } from "next/navigation";
+import { navUser } from "@/next-auth";
 
 export const categories = [
   {
@@ -82,7 +83,7 @@ export const categories = [
   },
 ];
 interface Props {
-  user?: any;
+  user?: navUser;
 }
 
 const Categories = ({ user }: Props) => {

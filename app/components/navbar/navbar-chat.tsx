@@ -3,6 +3,7 @@ import Link from "next/link";
 import Container from "../Container";
 import UserMenu from "./UserMenu";
 import { Outfit } from "next/font/google";
+import { navUser } from "@/next-auth";
 
 const outfit = Outfit({
   weight: ["100"],
@@ -12,7 +13,7 @@ const outfit = Outfit({
 });
 
 interface p {
-  user?: any;
+  user?: navUser;
 }
 const Navbar = ({ user }: p) => {
   return (

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   } else if (
     order.status !== status ||
-    order.seller.stripeAccountId !== stripeAccountId
+    (order.seller && order.seller.stripeAccountId !== stripeAccountId)
   ) {
     return NextResponse.json(
       { error: "Invalid order status or Stripe account" },

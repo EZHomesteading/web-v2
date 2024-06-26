@@ -13,8 +13,15 @@ interface ListingInfoProps {
   user: UserInfo;
   description: string;
   followUserId: string;
-  following: any;
-  listingUser: any;
+  following:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
+  listingUser: UserInfo;
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({

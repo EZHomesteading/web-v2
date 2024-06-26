@@ -18,7 +18,6 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "@/app/(pages)/cart/components/counter";
 import DateState from "@/app/(pages)/cart/components/dateStates";
 import { ExtendedHours } from "@/next-auth";
-import { CartGroups } from "@/next-auth";
 import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";

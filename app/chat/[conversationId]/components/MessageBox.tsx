@@ -17,7 +17,7 @@ import { Outfit } from "next/font/google";
 import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
-import { UserRole } from "@prisma/client";
+import { Order, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
 
 import {
@@ -27,6 +27,9 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
+import { User } from "next-auth";
+import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
+import { ExtendedHours, UserInfo } from "@/next-auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -37,11 +40,11 @@ interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
   convoId: string;
-  otherUsersId: any;
-  order: any;
-  otherUserRole: string;
-  user: any;
-  stripeAccountId?: string;
+  otherUsersId: string | undefined;
+  order: Order;
+  otherUserRole: string | undefined;
+  user: UserInfo;
+  stripeAccountId?: string | null;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -60,8 +63,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [customTimeOpen, setCustomTimeOpen] = useState(false);
-  const [validTime, setValidTime] = useState<any>("(select your time)");
-  const [dateTime, setDateTime] = useState<any>("");
+  const [validTime, setValidTime] = useState<string>("(select your time)");
+  const [dateTime, setDateTime] = useState<Date | string>("");
   const [cancel, setCancel] = useState(true);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
@@ -344,7 +347,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   //receive data from child and set date time based on user inputs in modal
-  const handleTime = (childTime: any) => {
+  const handleTime = (childTime: ValidTime) => {
     setDateTime(childTime.pickupTime);
     const date = formatTime(childTime.pickupTime);
     setValidTime(date);
@@ -357,13 +360,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <Sheet>
           <SheetTrigger>HOURS</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-            <HoursDisplay coOpHours={order.location.hours} />
+            <HoursDisplay
+              coOpHours={order.location.hours as unknown as ExtendedHours}
+            />
           </SheetContent>
         </Sheet>
       </span>
     );
   };
-  const anyhours: any = {
+  const anyhours: ExtendedHours = {
     0: [{ open: 0, close: 1439 }],
     1: [{ open: 0, close: 1439 }],
     2: [{ open: 0, close: 1439 }],
@@ -387,7 +392,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <CustomTimeModal2
           isOpen={customTimeOpen}
           onClose={() => setCustomTimeOpen(false)}
-          hours={order.location.hours}
+          hours={order.location.hours as unknown as ExtendedHours}
           onSetTime={handleTime}
           isSeller={false}
         />
@@ -794,7 +799,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   {!image && (
                     <UploadButton
                       endpoint="imageUploader"
-                      onClientUploadComplete={(res: any) => {
+                      onClientUploadComplete={(res: { url: string }[]) => {
                         setImage(res[0].url);
                         onSubmit12(res[0].url);
                       }}
@@ -906,7 +911,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   {!image && (
                     <UploadButton
                       endpoint="imageUploader"
-                      onClientUploadComplete={(res: any) => {
+                      onClientUploadComplete={(res: { url: string }[]) => {
                         setImage(res[0].url);
                         onSubmit12(res[0].url);
                       }}

@@ -6,6 +6,8 @@ import useCartListing from "@/hooks/listing/use-cart";
 import { useState } from "react";
 import DateState2 from "./DateState2";
 import NotifyModal from "./NotifyModal";
+import { User } from "@prisma/client";
+import { FinalListing } from "@/actions/getListings";
 import { Outfit, Zilla_Slab } from "next/font/google";
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,19 +18,18 @@ const zilla = Zilla_Slab({
   display: "swap",
   weight: ["300"],
 });
+
 interface ListingReservationProps {
   listingId: string;
-  user?: any | null;
-  product: any;
-  hours: any;
+  user?: User | null;
+  product: FinalListing & { description: string };
   disabled?: boolean;
-  toggleCart: any;
-  sodt: any;
+  toggleCart: (e: any, quantity: number) => Promise<void>;
+  sodt: (number | null)[];
 }
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
   product,
-  hours,
   disabled,
   listingId,
   user,
@@ -37,7 +38,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
+  const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
   const [quantity, setQuantity] = useState(product.minOrder || 1);
   const { hasCart } = useCartListing({
     listingId,
@@ -59,7 +60,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
 
   const increaseQuantity = () => {
     if (product.stock && quantity < product.stock) {
-      setQuantity((prevQuantity: any) => prevQuantity + 1);
+      setQuantity((prevQuantity: number) => prevQuantity + 1);
     }
   };
 
@@ -69,7 +70,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     }
     if (quantity > product.minOrder) {
       console.log(product.minOrder);
-      setQuantity((prevQuantity: any) => prevQuantity - 1);
+      setQuantity((prevQuantity: number) => prevQuantity - 1);
     }
   };
 
@@ -211,7 +212,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
             <div>
               <DateState2
                 sodt={sodt}
-                hours={hours}
                 onSetTime={handleTimer}
                 quantity={quantity}
                 quantityType={quantityType}

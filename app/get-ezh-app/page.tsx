@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import NavbarHome from "../components/navbar/NavbarHome";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
+import { navUser } from "@/next-auth";
 
 enum DEVICE {
   ANDROID = "Android",
@@ -127,7 +128,7 @@ const Page = () => {
   const user = useCurrentUser();
   return (
     <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen relative">
-      <NavbarHome user={user} />
+      <NavbarHome user={user as navUser} />
       <div className="lg:col-span-1 hidden lg:block"></div>
       <div className="col-span-3 lg:col-span-2 xl:col-span-2">
         <h2 className={`${outfit.className} pt-10 lg:text-5xl text-2xl`}>

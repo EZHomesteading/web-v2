@@ -1,9 +1,10 @@
 "use server";
+import { Suggestion } from "@prisma/client";
 //admin only suggestion page approve handler
 import fs from "fs";
 import path from "path";
 
-export const handleApprove = (suggestion: any) => {
+export const handleApprove = (suggestion: Suggestion) => {
   const newProduct = {
     name: suggestion.name,
     category: suggestion.category,

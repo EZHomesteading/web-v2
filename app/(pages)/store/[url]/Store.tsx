@@ -8,6 +8,17 @@ import Avatar from "@/app/components/Avatar";
 import { Outfit } from "next/font/google";
 import Bio from "./bio";
 import FollowButton from "@/app/components/follow/followButton";
+import { StoreData } from "@/actions/getUser";
+import { ExtendedHours, UserInfo } from "@/next-auth";
+import { FinalListing } from "@/actions/getListings";
+interface Listings {
+  imageSrc: string[];
+  title: string;
+  price: number;
+  id: string;
+  minOrder: number | null;
+  quantityType: string;
+}
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,10 +27,17 @@ const outfit = Outfit({
 });
 
 interface StorePageProps {
-  store: any;
-  user?: any;
+  store: (StoreData | null) & { user: { hours: ExtendedHours } };
+  user?: UserInfo;
   emptyState: React.ReactNode;
-  following: any;
+  following:
+    | {
+        id: string;
+        userId: string;
+        follows: string[];
+      }
+    | null
+    | undefined;
 }
 
 const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
@@ -50,14 +68,17 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
             </div>
           </div>
           <div className="flex justify-center">
-            <Bio user={store?.user} reviews={store?.reviews} />
+            <Bio
+              user={store?.user as unknown as UserInfo}
+              reviews={store?.reviews}
+            />
           </div>
         </div>
         <div className="pl-[10px]">
           <FollowButton
             followUserId={store?.user?.id}
             following={following}
-            user={user}
+            user={user as unknown as UserInfo}
           />
         </div>
 
@@ -76,12 +97,12 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
             "
           >
             {/* dynamically map users listings */}
-            {store?.user?.listings?.map((listing: any) => (
+            {store?.user?.listings?.map((listing: Listings) => (
               <ListingCard
-                user={user}
-                storeUser={store?.user}
+                user={user as unknown as UserInfo}
+                storeUser={store?.user as unknown as UserInfo}
                 key={listing.id}
-                data={listing}
+                data={listing as unknown as FinalListing}
               />
             ))}
           </div>

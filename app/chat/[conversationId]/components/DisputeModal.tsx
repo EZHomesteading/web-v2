@@ -35,14 +35,15 @@ import {
 } from "@/app/components/ui/select";
 
 import axios from "axios";
+import { UserInfo } from "@/next-auth";
 
 interface p {
-  user?: any;
+  user?: UserInfo;
   isOpen?: boolean;
   onClose: () => void;
   orderId: string;
   conversationId: string;
-  otherUserId: string;
+  otherUserId: string | undefined;
 }
 
 const DisputeModal = ({
@@ -60,7 +61,7 @@ const DisputeModal = ({
   const [email, setEmail] = useState(user?.email || "");
   const handleSubmit = async () => {
     const data = {
-      userId: user.id,
+      userId: user?.id,
       orderId: orderId,
       email: email,
       phone: phone,
@@ -150,7 +151,7 @@ const DisputeModal = ({
                 {!image && (
                   <UploadButton
                     endpoint="imageUploader"
-                    onClientUploadComplete={(res: any) => {
+                    onClientUploadComplete={(res: { url: string }[]) => {
                       setImage(res[0].url);
                     }}
                     onUploadError={(error: Error) => {
