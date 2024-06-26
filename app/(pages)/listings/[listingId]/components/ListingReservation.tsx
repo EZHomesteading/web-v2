@@ -6,7 +6,16 @@ import useCartListing from "@/hooks/listing/use-cart";
 import { useState } from "react";
 import DateState2 from "./DateState2";
 import NotifyModal from "./NotifyModal";
-
+import { Outfit, Zilla_Slab } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 interface ListingReservationProps {
   listingId: string;
   user?: any | null;
@@ -82,30 +91,27 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         userEmail={user?.email}
       />
       <div
-        className="
-        bg-white 
+        className={` bg-white 
         rounded-xl 
         border-[1px]
         border-neutral-200 
         overflow-hidden
         gap-1 
-        p-2
-      "
+        p-2 ${outfit.className}`}
       >
         <div
-          className="
-      text-lg font-light text-neutral-500 p-2"
+          className={`${zilla.className}
+      text-lg font-light text-neutral-500 p-2`}
         >
           {description}
         </div>
         <hr />
-        <div className="flex flex-row items-center p-2">
-          {stock}
-          {""} {quantityType} remaining at ${price}
-          {quantityType && (
-            <div className="font-light pl-[5px]">per {quantityType}</div>
-          )}
-        </div>
+        <ul className="p-2">
+          {stock} remaining{" "}
+          <li>
+            ${price} per {quantityType}
+          </li>
+        </ul>
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
         <hr />
@@ -211,7 +217,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
                 quantityType={quantityType}
                 disabled={disabled}
                 listing={product}
-                user={user.name}
+                user={user?.name}
               />
             </div>
           </>

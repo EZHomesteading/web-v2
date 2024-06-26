@@ -6,7 +6,11 @@ import { Location } from "@prisma/client";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
 import { JsonObject } from "@prisma/client/runtime/library";
-
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface ListingHeadProps {
   title: string;
   imageSrc: string[];
@@ -75,10 +79,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
       </div>
       <div className="mt-2">
-        <Heading
-          title={title}
-          subtitle={`${location?.address[1]}, ${location?.address[2]}`}
-        />
+        <div className={"text-start"}>
+          <div className={`${outfit.className} text-xl sm:text-2xl font-bold`}>
+            {title}
+          </div>
+          <div className="font-light text-neutral-500 mt-0 md:text-xs text-[.7rem]">
+            {`${location?.address[1]}, ${location?.address[2]}`}
+          </div>
+        </div>
       </div>
     </>
   );
