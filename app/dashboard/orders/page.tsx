@@ -24,7 +24,7 @@ const formatPrice = (price: number): string => {
 const Page = async () => {
   let user = await currentUser();
   const buyer = await getUserWithBuyOrders({ userId: user?.id });
-
+  console.log(user);
   const renderedCards = await Promise.all(
     buyer?.buyerOrders
       .filter(
@@ -38,7 +38,7 @@ const Page = async () => {
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-
+        console.log("BEANS", listings);
         const seller = await getUserById({ userId: order.sellerId });
         const statusText = getStatusText(
           order.status,
