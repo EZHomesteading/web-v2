@@ -69,7 +69,6 @@ interface Props {
 const CreateClient = ({ user, index }: Props) => {
   //seclare use state variables
   const [rating, setRating] = useState<number[]>([]);
-  console.log("rating", rating);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
