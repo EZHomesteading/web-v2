@@ -17,6 +17,7 @@ interface ShopProps {
     c?: string;
     p?: string;
     s?: string;
+    ra?: string;
   };
 }
 
@@ -39,6 +40,7 @@ const ShopPage = async ({
     radius = "",
     p = "",
     c = "",
+    ra = "",
     s = "",
   } = searchParams || {};
   let page = parseInt(searchParams?.page as string, 10);
@@ -52,6 +54,7 @@ const ShopPage = async ({
       lng,
       radius,
       p,
+      ra,
       c,
       s,
     },

@@ -4,17 +4,26 @@ import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import { Slider } from "./radius-slider";
 import { Switch } from "../ui/switch";
 import FiltersIcon from "../icons/filters-icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Outfit } from "next/font/google";
 import { UserRole } from "@prisma/client";
-import { GiFruitTree } from "react-icons/gi";
+import { GiFruitTree, GiFruiting } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { BsPersonWalking } from "react-icons/bs";
 import { LiaMapMarkedAltSolid } from "react-icons/lia";
 import { Checkbox } from "../ui/checkbox";
 import { navUser } from "@/next-auth";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface Props {
   user?: navUser;
@@ -25,16 +34,30 @@ const outfit = Outfit({
   display: "block",
 });
 const Filters = ({ user }: Props) => {
-  const [radius, setRadius] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const r = searchParams?.get("radius");
+  let r = searchParams?.get("radius");
+
+  const [radius, setRadius] = useState(0);
   const lat = searchParams?.get("lat");
+
   const rMi = r ? Math.round(parseFloat(r) * 0.621371 * 10) / 10 : 0;
   const [p, setP] = useState(searchParams?.get("p") === "true");
   const [c, setC] = useState(searchParams?.get("c") === "true");
   const [s, setS] = useState(searchParams?.get("s") === "f");
+  const [ra, setRa] = useState(searchParams?.get("ra"));
   const [l, setL] = useState(false);
+  useEffect(() => {
+    const r = searchParams?.get("radius");
+    if (r) {
+      const newR = parseInt(r);
+      setRadius(Math.round(newR * 0.621371 * 10) / 10);
+    }
+    setP(searchParams?.get("p") === "true");
+    setC(searchParams?.get("c") === "true");
+    setS(searchParams?.get("s") === "f");
+    setRa(searchParams?.get("ra") || "");
+  }, [searchParams]);
   const handleSeeListings = () => {
     const params = new URLSearchParams(searchParams?.toString());
     const rKm = (radius / 0.621371).toFixed(1);
@@ -47,11 +70,15 @@ const Filters = ({ user }: Props) => {
     } else {
       params.delete("p");
     }
+    if (ra) {
+      params.set("ra", ra);
+    }
     if (l) {
       params.delete("lat");
       params.delete("lng");
       params.delete("radius");
     }
+
     if (c) {
       params.set("c", "t");
     } else {
@@ -109,10 +136,20 @@ const Filters = ({ user }: Props) => {
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
             <Switch />
             <BsPersonWalking /> Pick Produce Myself
-          </div>
+          </div>{" "}
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Checkbox />
-            <LiaMapMarkedAltSolid /> Remove location input
+            <Select onValueChange={(value) => setRa(value)}>
+              <SelectTrigger className="w-[75px]">
+                <SelectValue placeholder="" defaultValue={ra || "htl"} />
+              </SelectTrigger>
+              <SelectContent className={`${outfit.className}`}>
+                <SelectGroup>
+                  <SelectItem value="htl">High to Low</SelectItem>
+                  <SelectItem value="lth">Low to High</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <GiFruiting /> Sort EZH Organic Rating
           </div>
         </>
 
