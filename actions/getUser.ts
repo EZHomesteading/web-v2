@@ -37,20 +37,21 @@ const getVendors = async ({ role }: p) => {
         },
       },
     });
-    const safeListings = users.map(async (user) => {
-      if (!user.location) {
-        throw new Error("user has no default location");
-      }
-      if (!user.location[0]?.coordinates) {
-        throw new Error("user has no default location");
-      }
-      return {
-        ...user,
-        location: user?.location[0]?.coordinates,
-      };
-    });
-    const safeUsers = await Promise.all(safeListings);
-    return safeUsers;
+    const filteredUsers = users
+      .filter(
+        (
+          user
+        ): user is { id: string; location: { 0: { coordinates: number[] } } } =>
+          user.location !== null &&
+          user.location[0] !== null &&
+          user.location[0].coordinates !== null &&
+          Array.isArray(user.location[0].coordinates)
+      )
+      .map((user) => ({
+        id: user.id,
+        location: user.location[0].coordinates,
+      }));
+    return filteredUsers;
   } catch (error: any) {
     return [];
   }

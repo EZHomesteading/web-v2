@@ -2,14 +2,14 @@
 import Heading from "@/app/components/Heading";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-//import Image from "next/image";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-// import titleHelp from "@/public/images/website-images/apple.jpg";
-// import shelfLife from "@/public/images/info/shelfLife.jpg";
-// import ezhOrganicRating from "@/public/images/info/ezhOrganicRating.jpg";
-// import titleNotFound from "@/public/images/website-images/stepOneTitle404.jpg";
-// import minOrder from "@/public/images/info/minOrder.jpg";
-// import addPhotos from "@/public/images/how-to/takePhotos.jpg";
+import titleHelp from "@/public/images/website-images/apple.jpg";
+import shelfLife from "@/public/images/info/shelfLife.jpg";
+import ezhOrganicRating from "@/public/images/info/ezhOrganicRating.jpg";
+import titleNotFound from "@/public/images/website-images/stepOneTitle404.jpg";
+import minOrder from "@/public/images/info/minOrder.jpg";
+import addPhotos from "@/public/images/how-to/takePhotos.jpg";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import Link from "next/link";
 const outfit = Outfit({
@@ -46,18 +46,18 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={titleHelp}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">How do I add a title?</h1>
+                    <h1 className="text-xl">How do I add a title?</h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -72,20 +72,20 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={titleNotFound}
                     alt="Can't find title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">
+                    <h1 className="text-xl">
                       I don't see my item in the seach
                     </h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       2 min read
                     </p>
@@ -104,18 +104,18 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={minOrder}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">What is a Minimum Order?</h1>
+                    <h1 className="text-xl">What is a Minimum Order?</h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -130,18 +130,18 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={shelfLife}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">What Does Shelf Life Mean?</h1>
+                    <h1 className="text-xl">What Does Shelf Life Mean?</h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -157,18 +157,18 @@ const Help = ({ step, role }: p) => {
               >
                 <Card className="hover:cursor-pointer border-none mt-2">
                   <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                    {/* <Image
+                    <Image
                       src={minOrder}
                       alt="Help With set out time"
                       width={120}
                       height={120}
                       className="object-cover rounded-l-lg aspect-sqaure"
                       style={{ width: "120px", height: "120px" }}
-                    /> */}
+                    />
                     <div>
-                      <h1 className="text-3xl">What is Set out Time?</h1>
+                      <h1 className="text-xl">What is Set out Time?</h1>
                       <p
-                        className={`${zilla.className} text-2xl text-neutral-600`}
+                        className={`${zilla.className} text-md text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -184,20 +184,18 @@ const Help = ({ step, role }: p) => {
               >
                 <Card className="hover:cursor-pointer border-none mt-2">
                   <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                    {/* <Image
+                    <Image
                       src={minOrder}
                       alt="Help With set out time"
                       width={120}
                       height={120}
                       className="object-cover rounded-l-lg aspect-sqaure"
                       style={{ width: "120px", height: "120px" }}
-                    /> */}
+                    />
                     <div>
-                      <h1 className="text-3xl">
-                        What Does Delivery Time Mean?
-                      </h1>
+                      <h1 className="text-xl">What Does Delivery Time Mean?</h1>
                       <p
-                        className={`${zilla.className} text-2xl text-neutral-600`}
+                        className={`${zilla.className} text-md text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -218,20 +216,18 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={ezhOrganicRating}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">
-                      What is the EZH Organic Rating?
-                    </h1>
+                    <h1 className="text-xl">What is the EZH Organic Rating?</h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -254,22 +250,22 @@ const Help = ({ step, role }: p) => {
             >
               <Card className="hover:cursor-pointer border-none mt-2">
                 <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  {/* <Image
+                  <Image
                     src={addPhotos}
                     alt="Help With Title"
                     width={120}
                     height={120}
                     className="object-cover rounded-l-lg aspect-sqaure"
                     style={{ width: "120px", height: "120px" }}
-                  /> */}
+                  />
                   <div>
-                    <h1 className="text-3xl">
+                    <h1 className="text-xl">
                       {isMdOrLarger
                         ? "How to add Photos on Desktop"
                         : "How to add Photos on Mobile"}
                     </h1>
                     <p
-                      className={`${zilla.className} text-2xl text-neutral-600`}
+                      className={`${zilla.className} text-md text-neutral-600`}
                     >
                       1 min read
                     </p>

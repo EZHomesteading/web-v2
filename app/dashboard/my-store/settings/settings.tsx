@@ -134,15 +134,22 @@ const StoreSettings = ({ apiKey }: p) => {
               Producer Store Settings
             </h2>
           )}
-          <Button onClick={onSubmit}>Update</Button>
+          <Button
+            type="submit"
+            onClick={onSubmit}
+            className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+          >
+            Save Changes
+          </Button>
         </div>
         <Card>
           <CardContent className="flex flex-col sheet  border-none shadow-lg w-full pt-2">
-            {user?.role && (
+            {user?.role && user?.id && (
               <HoursLocationContainer
                 location={user?.location}
                 apiKey={apiKey}
                 role={user?.role}
+                id={user.id}
               />
             )}
 

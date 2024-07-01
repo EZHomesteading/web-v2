@@ -15,6 +15,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { LocationObj, Prisma, UserRole } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
+import prisma from "@/lib/prisma";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ interface LocationProps {
   location?: Location;
   apiKey: string;
   role: UserRole;
+  id: string;
 }
 
 const locationHeadings = [
@@ -52,6 +54,7 @@ const CardComponent = memo(
     hours,
     locationState,
     location,
+    id,
   }: {
     locationIndex: number;
     address: string[];
@@ -65,6 +68,7 @@ const CardComponent = memo(
     hours: ExtendedHours;
     locationState: Location | undefined;
     location: Location | undefined;
+    id: string;
   }) => {
     {
       locationState && console.log(locationState[locationIndex]);
@@ -177,7 +181,8 @@ const CardComponent = memo(
                   <DialogContent>
                     <div>
                       Are you sure you want to delete this location and hours?
-                      This action is irreversible
+                      All of the listings associated with this location will be
+                      deleted as well. This action is irreversible
                       <Button
                         onClick={() => handleDeleteLocation(locationIndex)}
                       >
@@ -277,7 +282,12 @@ const AddLocationCard = ({
   );
 };
 
-const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
+const HoursLocationContainer = ({
+  location,
+  apiKey,
+  role,
+  id,
+}: LocationProps) => {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   const [addresses, setAddresses] = useState<{ [key: number]: string[] }>({});
   const [locationState, setLocationState] = useState<Location | undefined>(
@@ -313,6 +323,12 @@ const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
       );
       post(shiftedLocationState);
       return shiftedLocationState;
+    });
+    prisma.listing.deleteMany({
+      where: {
+        userId: id,
+        location: locationIndex,
+      },
     });
   };
   const handleCancelAddressChange = () => {
@@ -430,6 +446,7 @@ const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
               hours={locationData?.hours}
               locationState={locationState}
               location={location}
+              id={id}
             />
           );
         })}
@@ -460,7 +477,7 @@ const HoursLocationContainer = ({ location, apiKey, role }: LocationProps) => {
 
   return (
     <>
-      <div className="">{renderLocationCards()}</div>
+      <div>{renderLocationCards()}</div>
     </>
   );
 };
