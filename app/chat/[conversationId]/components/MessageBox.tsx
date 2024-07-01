@@ -482,20 +482,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               </div>
             </>
           ) : (
-            <div className={message}>
-              <div>
-                {/* display hours button dependent on message */}
-                {data.messageOrder === "10" ||
-                data.messageOrder === "13" ||
-                data.messageOrder === "3" ? (
-                  <div>
-                    {data.body}
-                    <span className="text-black">{hoursButton()}</span>
-                  </div>
-                ) : (
-                  <div>{data.body}</div>
-                )}
-              </div>
+            <div>
+              {/* display hours button dependent on message */}
+              {data.messageOrder === "10" ||
+              data.messageOrder === "13" ||
+              data.messageOrder === "3" ? (
+                <div className={message}>
+                  {data.body}
+                  <span className="text-black">{hoursButton()}</span>
+                </div>
+              ) : (
+                <div className={message}>{data.body}</div>
+              )}
             </div>
           )}
           {/* if order is complete and is your message, display review button with buyer id passed  */}
@@ -578,28 +576,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       {/* COOP sets out item, if immediatley accept pick up time */}
       {isOwn && isLast && data.messageOrder === "2" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <button type="submit" onClick={onSubmit5} className="m">
-                Your order is ready to be picked up at{" "}
-                {order.location.address[0]}, {order.location.address[1]},{" "}
-                {order.location.address[2]}. {order.location.address[3]}!
-              </button>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+            <button type="submit" onClick={onSubmit5} className="m">
+              Your order is ready to be picked up at {order.location.address[0]}
+              , {order.location.address[1]}, {order.location.address[2]}.{" "}
+              {order.location.address[3]}!
+            </button>
           </div>
         </div>
       )}
       {/* COOP chose new time and buyer gets these options */}
       {notOwn && isLast && data.messageOrder === "3" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
@@ -627,11 +619,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       {/* BUYER chose new time and COOP receives these options */}
       {notOwn && isLast && data.messageOrder === "4" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button
                 type="submit"
@@ -660,11 +650,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       {/* coop accepted new pickup time and sets out the item */}
       {notOwn && isLast && data.messageOrder === "5" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="">
                 Your order is ready to be picked up at{" "}
@@ -677,11 +665,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       {/* buyer receives their item or can choose to dispute */}
       {notOwn && isLast && data.messageOrder === "6" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
               <button
                 type="submit"
@@ -705,55 +691,44 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       {/* buyer has picked up the item and COOP or PRODUCER marks order as complete and asks for reviews, will be able to place their own review on the buyer */}
       {notOwn && isLast && data.messageOrder === "7" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit7}
-                className="m hover:bg-sky-500"
-              >
-                Fantastic, this order has been marked as completed, feel free to
-                delete this chat. If you do not delete this chat it will be
-                automatically deleted after 72 hours
-              </button>
-            </div>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+            <button
+              type="submit"
+              onClick={onSubmit7}
+              className="m hover:bg-sky-500"
+            >
+              Fantastic, this order has been marked as completed, feel free to
+              delete this chat. If you do not delete this chat it will be
+              automatically deleted after 72 hours
+            </button>
           </div>
         </div>
       )}
       {/* producer receives order from COOP, gets these options */}
       {notOwn && isLast && data.messageOrder === "10" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button onClick={() => setCustomTimeOpen(true)}>
-                {" "}
-                SET TIME{" "}
-              </button>
+        <div className="flex flex-col px-2 justify-end items-end">
+          <div className="text-sm text-gray-500">Your response options</div>
+          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
 
-              <button type="submit" onClick={onSubmit9} className="">
-                I can deliver these items to you at{" "}
-                <span className="text-black">{validTime}</span>, does that work?
-              </button>
+            <button type="submit" onClick={onSubmit9} className="">
+              I can deliver these items to you at{" "}
+              <span className="text-black">{validTime}</span>, does that work?
+            </button>
 
-              <button
-                type="submit"
-                onClick={onSubmit3}
-                className="m hover:bg-sky"
-              >
-                My apologies, but one or more of these items is no longer
-                available, and this order has been canceled. Sorry for the
-                inconvenience. Feel free to delete this chat whenever you have
-                seen this message. If you do not delete this chat it will be
-                automatically deleted after 72 hours
-              </button>
-            </div>
+            <button
+              type="submit"
+              onClick={onSubmit3}
+              className="m hover:bg-sky"
+            >
+              My apologies, but one or more of these items is no longer
+              available, and this order has been canceled. Sorry for the
+              inconvenience. Feel free to delete this chat whenever you have
+              seen this message. If you do not delete this chat it will be
+              automatically deleted after 72 hours
+            </button>
           </div>
         </div>
       )}
@@ -764,29 +739,25 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit10}
-                className="m hover:bg-sky-500"
-              >
-                Yes, That time works, See you then!
-              </button>
-              <button onClick={() => setCustomTimeOpen(true)}>
-                {" "}
-                SET TIME{" "}
-              </button>
 
-              <button
-                type="submit"
-                onClick={onSubmit11}
-                className="m hover:bg-sky-500"
-              >
-                No, that time does not work. Does{" "}
-                <span className="text-black">{validTime}</span> work instead? if
-                not, my hours of operation are
-              </button>
-            </div>
+            <button
+              type="submit"
+              onClick={onSubmit10}
+              className="m hover:bg-sky-500"
+            >
+              Yes, That time works, See you then!
+            </button>
+            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+
+            <button
+              type="submit"
+              onClick={onSubmit11}
+              className="m hover:bg-sky-500"
+            >
+              No, that time does not work. Does{" "}
+              <span className="text-black">{validTime}</span> work instead? if
+              not, my hours of operation are
+            </button>
           </div>
         </div>
       )}{" "}
@@ -798,73 +769,72 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <div className="">
-                <div className=" p-2 rounded-lg">
-                  {!image && (
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        setImage(res[0].url);
-                        onSubmit12(res[0].url);
-                      }}
-                      onUploadError={(error: Error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                      appearance={{
-                        container: "h-full w-max",
-                      }}
-                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
-                      content={{
-                        button({ ready }) {
-                          if (ready)
-                            return (
-                              <div>Sent a photo of the delivered produce</div>
-                            );
-                          return "Getting ready...";
-                        },
-                      }}
-                    />
-                  )}
-                  {image && (
-                    <>
-                      <div>
-                        <div className="m-5 relative">
-                          <AlertDialog>
-                            <AlertDialogTrigger>
-                              <Image
-                                src={image}
-                                height={180}
-                                width={180}
-                                alt="a"
-                                className="aspect-square rounded-lg object-cover"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                                Click to Enlarge
+
+            <div className="">
+              <div className=" p-2 rounded-lg">
+                {!image && (
+                  <UploadButton
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res: { url: string }[]) => {
+                      setImage(res[0].url);
+                      onSubmit12(res[0].url);
+                    }}
+                    onUploadError={(error: Error) => {
+                      alert(`ERROR! ${error.message}`);
+                    }}
+                    appearance={{
+                      container: "h-full w-max",
+                    }}
+                    className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                    content={{
+                      button({ ready }) {
+                        if (ready)
+                          return (
+                            <div>Sent a photo of the delivered produce</div>
+                          );
+                        return "Getting ready...";
+                      },
+                    }}
+                  />
+                )}
+                {image && (
+                  <>
+                    <div>
+                      <div className="m-5 relative">
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <Image
+                              src={image}
+                              height={180}
+                              width={180}
+                              alt="a"
+                              className="aspect-square rounded-lg object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                              Click to Enlarge
+                            </div>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="xl:flex xl:justify-center">
+                            <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                              {" "}
+                              <div>
+                                <Image
+                                  src={image}
+                                  fill
+                                  className="object-cover w-full"
+                                  alt="a"
+                                />
                               </div>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="xl:flex xl:justify-center">
-                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                                {" "}
-                                <div>
-                                  <Image
-                                    src={image}
-                                    fill
-                                    className="object-cover w-full"
-                                    alt="a"
-                                  />
-                                </div>
-                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                                  Close
-                                </AlertDialogCancel>
-                              </div>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
+                              <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                                Close
+                              </AlertDialogCancel>
+                            </div>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -878,28 +848,23 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <div className="flex items-center gap-1">
               <div className="text-sm text-gray-500">Your response options</div>
             </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit14}
-                className="m hover:bg-sky-600"
-              >
-                Yes, That time works. Your item will be delivered at that time.
-              </button>
-              <button onClick={() => setCustomTimeOpen(true)}>
-                {" "}
-                SET TIME{" "}
-              </button>
+            <button
+              type="submit"
+              onClick={onSubmit14}
+              className="m hover:bg-sky-600"
+            >
+              Yes, That time works. Your item will be delivered at that time.
+            </button>
+            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
 
-              <button
-                type="submit"
-                onClick={onSubmit13}
-                className="m hover:bg-sky-600"
-              >
-                No, that time does not work. Does{" "}
-                <span className="text-black">{validTime}</span> work instead?
-              </button>
-            </div>
+            <button
+              type="submit"
+              onClick={onSubmit13}
+              className="m hover:bg-sky-600"
+            >
+              No, that time does not work. Does{" "}
+              <span className="text-black">{validTime}</span> work instead?
+            </button>
           </div>
         </div>
       )}
