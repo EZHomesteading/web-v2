@@ -367,7 +367,10 @@ const CreateClient = ({ user, index }: Props) => {
       });
       return;
     }
-    if (step === 5) {
+    if (
+      step === 5 ||
+      (step === 4 && user?.location && user?.location[1] === null)
+    ) {
       if (!product) {
         toast.error("Let us know what produce you have!", {
           duration: 2000,
@@ -410,6 +413,12 @@ const CreateClient = ({ user, index }: Props) => {
           position: "bottom-center",
         });
         return;
+      } else if (Array.isArray(rating) && rating.length === 0) {
+        toast.error("Please certify your EZH Organic Rating", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
       } else if (
         shelfLifeDays <= 0 &&
         shelfLifeWeeks <= 0 &&
@@ -430,6 +439,8 @@ const CreateClient = ({ user, index }: Props) => {
       }
     }
     if (step === 5) {
+      handleSubmit(onSubmit)();
+    } else if (step === 4 && user?.location && user?.location[1] === null) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -502,7 +513,11 @@ const CreateClient = ({ user, index }: Props) => {
       postNewSODT(checked);
     }
   };
-  console.log(location);
+  {
+    if (user?.location && user.location[1] === null) {
+      setValue("location", 0);
+    }
+  }
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
@@ -588,7 +603,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && (
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tight">
@@ -668,83 +683,87 @@ const CreateClient = ({ user, index }: Props) => {
                 >
                   Photos
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 5
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => {
-                    if (!product) {
-                      toast.error("Let us know what produce you have!", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (!description) {
-                      toast.error("Please write a brief description", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (!quantityType) {
-                      toast.error("Please enter a unit for your listing", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (quantity <= 0 || !quantity) {
-                      toast.error("Quantity must be greater than 0", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (minOrder <= 0 || !quantity) {
-                      toast.error(
-                        "Please enter a minimum order greater than 0.",
-                        {
-                          duration: 2000,
-                          position: "bottom-center",
+                {user?.location && user?.location[1] !== null && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem
+                      className={
+                        step === 5
+                          ? "font-bold cursor-none "
+                          : "font-normal cursor-pointer"
+                      }
+                      onMouseDown={() => {
+                        if (!product) {
+                          toast.error("Let us know what produce you have!", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (!description) {
+                          toast.error("Please write a brief description", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (!quantityType) {
+                          toast.error("Please enter a unit for your listing", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (quantity <= 0 || !quantity) {
+                          toast.error("Quantity must be greater than 0", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (minOrder <= 0 || !quantity) {
+                          toast.error(
+                            "Please enter a minimum order greater than 0.",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
+                          return;
+                        } else if (
+                          Array.isArray(imageSrc) &&
+                          imageSrc.length === 0
+                        ) {
+                          toast.error(
+                            "Please use the stock photo or upload at least one photo",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
+                          return;
+                        } else if (
+                          shelfLifeDays <= 0 &&
+                          shelfLifeWeeks <= 0 &&
+                          shelfLifeMonths <= 0 &&
+                          shelfLifeYears <= 0
+                        ) {
+                          toast.error("Shelf life must be at least 1 day", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (price <= 0 || !quantity) {
+                          toast.error("Please enter a price greater than 0.", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else {
+                          setStep(5);
                         }
-                      );
-                      return;
-                    } else if (
-                      Array.isArray(imageSrc) &&
-                      imageSrc.length === 0
-                    ) {
-                      toast.error(
-                        "Please use the stock photo or upload at least one photo",
-                        {
-                          duration: 2000,
-                          position: "bottom-center",
-                        }
-                      );
-                      return;
-                    } else if (
-                      shelfLifeDays <= 0 &&
-                      shelfLifeWeeks <= 0 &&
-                      shelfLifeMonths <= 0 &&
-                      shelfLifeYears <= 0
-                    ) {
-                      toast.error("Shelf life must be at least 1 day", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (price <= 0 || !quantity) {
-                      toast.error("Please enter a price greater than 0.", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else {
-                      setStep(5);
-                    }
-                  }}
-                >
-                  Location
-                </BreadcrumbItem>
+                      }}
+                    >
+                      Location
+                    </BreadcrumbItem>
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -1099,7 +1118,28 @@ const CreateClient = ({ user, index }: Props) => {
                 Back
               </Button>
             )}
-            {step === 5 && (
+            {step === 4 && user?.location && user?.location[1] === null ? (
+              <>
+                {" "}
+                <Button
+                  onClick={handleNext}
+                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+                >
+                  Finish
+                </Button>
+              </>
+            ) : (
+              <>
+                {" "}
+                <Button
+                  onClick={handleNext}
+                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+                >
+                  Next
+                </Button>
+              </>
+            )}
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1107,7 +1147,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Finish
               </Button>
             )}
-            {step < 5 && (
+            {step < 4 && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1196,7 +1236,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && (
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <div
                 className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
               >
