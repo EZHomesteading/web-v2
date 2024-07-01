@@ -334,7 +334,6 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
     handleCenterChanged();
     handleZoomChanged();
     setShowCoops(true);
-    setShowProducers(true);
   };
 
   return (
@@ -430,7 +429,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk }: MapProps) => {
             options={{
               imagePath: "https://i.ibb.co/r42S9tm/circle-2-2.png",
               gridSize: 100,
-              maxZoom: 12, // Start clustering at zoom level 12
+              maxZoom: 12,
               minimumClusterSize: 5,
             }}
           >

@@ -53,7 +53,7 @@ const UserMenu = ({ user }: Props) => {
           user?.role === UserRole.CONSUMER ? (
             <UpdateRoleAlert
               heading="Would you like to become an EZH producer or co-op?"
-              description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
+              description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
               backButtonLabel="No thanks"
               actionButtonLabel="More Info"
               actionButtonHref="/info/ezh-roles"
@@ -80,7 +80,7 @@ const UserMenu = ({ user }: Props) => {
           <>
             <UpdateRoleAlert
               heading="Would you like to become an EZH producer or co-op?"
-              description="You have to be a producer or co-op to add a product. There's no registration fee and and can be done in a few seconds."
+              description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
               backButtonLabel="No thanks"
               actionButtonLabel="More Info"
               actionButtonHref="/info/ezh-roles"
