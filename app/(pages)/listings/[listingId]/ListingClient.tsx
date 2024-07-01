@@ -69,12 +69,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
             />
             <div className="flex flex-col h-full">
               <ListingInfo
-                user={user as unknown as UserInfo}
                 listingUser={listing.user as unknown as UserInfo}
                 description={listing.description}
                 followUserId={listing.userId}
                 following={following}
-                oRating={listing.rating}
               />
             </div>
           </div>
