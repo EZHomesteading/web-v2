@@ -18,10 +18,12 @@ import { GiFruitTree } from "react-icons/gi";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Outfit } from "next/font/google";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface UpdateRoleAlertProps {
   heading: string;
   description: string;
@@ -46,6 +48,7 @@ export function UpdateRoleAlert({
 }: UpdateRoleAlertProps) {
   const pathname = usePathname();
   const white = pathname === "/" || pathname?.startsWith("/chat");
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -56,16 +59,14 @@ export function UpdateRoleAlert({
         />
       </AlertDialogTrigger>
       <AlertDialogContent className="xl:w-2/3 2xl:w-1/2 w-5/6  h-1/2 sm:aspect-square md:aspect-video overflow-hidden authlayoutbg rounded-xl">
-        <div className="flex">
-          <div className="relative hidden lg:block lg:w-1/3 h-full">
-            <Image
-              src={homebg}
-              alt="Farmer Holding Basket of Vegetables"
-              placeholder="blur"
-              className="rounded-l-lg object-cover"
-              fill
-            />
-          </div>
+        <div className="relative hidden lg:block lg:w-1/3 h-full">
+          <Image
+            src={homebg}
+            alt="Farmer Holding Basket of Vegetables"
+            placeholder="blur"
+            className="rounded-l-lg object-cover"
+            fill
+          />
           <div className={`${outfit.className} p-2 mt-10 lg:w-2/3`}>
             <AlertDialogHeader>
               <AlertDialogTitle className="text-black">
