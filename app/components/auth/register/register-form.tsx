@@ -34,7 +34,6 @@ export const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      firstName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -46,7 +45,6 @@ export const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
-
     startTransition(() => {
       register(values).then((data) => {
         setError(data?.error);

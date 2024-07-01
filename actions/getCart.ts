@@ -78,7 +78,10 @@ const getUserLocation = async (listing: Listing) => {
 };
 function filterListingsByLocation(listings: CartItem[]) {
   return listings.filter((listing: CartItem) => {
-    return listing.listing.location !== undefined;
+    return (
+      listing.listing.location !== undefined ||
+      listing.listing.location !== null
+    );
   });
 }
 
@@ -133,7 +136,9 @@ const getAllCartItemsByUserId = async () => {
       };
     });
     let finalCartItems = await Promise.all(listerine);
-    finalCartItems = filterListingsByLocation(finalCartItems);
+    finalCartItems = await Promise.all(
+      filterListingsByLocation(finalCartItems)
+    );
     finalCartItems.sort((a, b) => {
       // First, sort by descending user ID
       if (b.listing.userId !== a.listing.userId) {
