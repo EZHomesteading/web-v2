@@ -16,7 +16,12 @@ import { CiCircleInfo, CiSquarePlus } from "react-icons/ci";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import Image from "next/image";
-
+import { usePathname } from "next/navigation";
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface UpdateRoleAlertProps {
   heading: string;
   description: string;
@@ -39,61 +44,69 @@ export function UpdateRoleAlert({
   actionButtonHrefThree,
   actionButtonLabelThree,
 }: UpdateRoleAlertProps) {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <CiSquarePlus className="text-sm sm:text-lg md:text-2xl text-gray-500 shadow-none bg-inherit hover:bg-green-100 rounded-full mr-1" />
+        <CiSquarePlus
+          className={`${
+            white ? "text-white" : "text-black"
+          } text-sm sm:text-lg md:text-2xl shadow-none bg-inherit hover:cursor-pointer rounded-full mr-1 h-8 w-8`}
+        />
       </AlertDialogTrigger>
-      <AlertDialogContent className="grid grid-cols-1 lg:grid-cols-2 w-[90vw] h-[40vh] sm:w-[90vw] md:w-[50vw] xl:w-[vw] xl:h-[60vh] overflow-hidden authlayoutbg rounded-xl">
-        <div className="relative hidden xl:block">
-          <Image
-            src={homebg}
-            alt="Farmer Holding Basket of Vegetables"
-            placeholder="blur"
-            className="rounded-l-lg object-cover"
-            fill
-          />
-        </div>
-        <div className="mt-12 px-2">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-black">
-              {heading}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-black">
-              {description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogCancel className="absolute top-1 right-1 border-none bg-transparent">
-            <Cancel />
-          </AlertDialogCancel>
-          <div className="mt-10 flex flex-col sm:flex-row gap-5">
-            <AlertDialogAction className="bg shadow-xl">
-              <Link
-                href={actionButtonHref}
-                className="flex flex-row items-center text-black gap-x-2"
-              >
-                <CiCircleInfo className="" />
-                {actionButtonLabel}
-              </Link>
-            </AlertDialogAction>
-            <AlertDialogAction className="bg shadow-xl">
-              <Link
-                href={actionButtonHrefTwo}
-                className="flex flex-row items-center text-black gap-x-2"
-              >
-                <IoStorefrontOutline className="mr-2" />
-                {actionButtonLabelTwo}
-              </Link>
-            </AlertDialogAction>
-            <AlertDialogAction className="bg shadow-xl">
-              <Link
-                href={actionButtonHrefThree}
-                className="flex flex-row items-center text-black gap-x-2"
-              >
-                <GiFruitTree className="" />
-                {actionButtonLabelThree}
-              </Link>
-            </AlertDialogAction>
+      <AlertDialogContent className="xl:w-2/3 2xl:w-1/2 w-5/6  h-1/2 sm:aspect-square md:aspect-video overflow-hidden authlayoutbg rounded-xl">
+        <div className="flex">
+          <div className="relative hidden lg:block lg:w-1/3 h-full">
+            <Image
+              src={homebg}
+              alt="Farmer Holding Basket of Vegetables"
+              placeholder="blur"
+              className="rounded-l-lg object-cover"
+              fill
+            />
+          </div>
+          <div className={`${outfit.className} p-2 mt-10 lg:w-2/3`}>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-black">
+                {heading}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-black">
+                {description}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogCancel className="absolute top-2 right-2 border-none bg-transparent">
+              <Cancel />
+            </AlertDialogCancel>
+            <div className="flex gap-1 mt-3 flex-col items-center w-full sm:flex-row">
+              <AlertDialogAction className="bg shadow-xl w-[180px]">
+                <Link
+                  href={actionButtonHref}
+                  className="flex flex-row items-center text-black gap-x-1"
+                >
+                  <CiCircleInfo className="" />
+                  {actionButtonLabel}
+                </Link>
+              </AlertDialogAction>
+              <AlertDialogAction className="bg shadow-xl w-[180px]">
+                <Link
+                  href={actionButtonHrefTwo}
+                  className="flex flex-row items-center text-black gap-x-1"
+                >
+                  <IoStorefrontOutline className="" />
+                  {actionButtonLabelTwo}
+                </Link>
+              </AlertDialogAction>
+              <AlertDialogAction className="bg shadow-xl w-[180px]">
+                <Link
+                  href={actionButtonHrefThree}
+                  className="flex flex-row items-center text-black gap-x-1"
+                >
+                  <GiFruitTree className="" />
+                  {actionButtonLabelThree}
+                </Link>
+              </AlertDialogAction>
+            </div>
           </div>
         </div>
       </AlertDialogContent>

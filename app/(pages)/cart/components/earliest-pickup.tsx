@@ -18,9 +18,11 @@ interface Props {
   role: string;
   sodtarr: CartGroup2[];
 }
+
 interface Timer {
   pickupTime: Date;
 }
+
 const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime

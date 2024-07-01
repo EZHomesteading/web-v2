@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Outfit, Zilla_Slab } from "next/font/google";
 const outfit = Outfit({
   subsets: ["latin"],
@@ -93,6 +93,8 @@ const getQuantityWording = (
 };
 
 const CartIcon = ({ cart }: c) => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   if (!cart || cart.length === 0) {
     return null;
   }
@@ -117,7 +119,9 @@ const CartIcon = ({ cart }: c) => {
       <Sheet>
         <SheetTrigger>
           <div className="relative">
-            <BsBasket className="w-8 h-8" />
+            <BsBasket
+              className={`w-8 h-8 ${white ? "text-white" : "text-black"}`}
+            />
             <div className="absolute top-[0px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
               {cart.length}
             </div>
