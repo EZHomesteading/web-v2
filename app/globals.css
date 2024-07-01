@@ -134,6 +134,15 @@
 .messagebg {
   background-color: #007aff !important;
 }
+.RespOpt {
+  position: absolute !important;
+  bottom: 0;
+  right: 0;
+  background-color: gray;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin: 20px;
+}
 .message {
   background-color: #007aff !important;
   align-self: flex-end !important;

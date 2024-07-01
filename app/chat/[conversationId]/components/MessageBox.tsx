@@ -377,6 +377,320 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     5: [{ open: 0, close: 1439 }],
     6: [{ open: 0, close: 1439 }],
   };
+  //Seller receives Order
+  const resp1 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button type="submit" onClick={onSubmit1} className="m">
+        Yes, That time works, Your order will be ready at that time. at{" "}
+        {order.location.address[0]}, {order.location.address[1]},{" "}
+        {order.location.address[2]}. {order.location.address[3]}!
+      </button>
+      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+      <button type="submit" onClick={onSubmit2} className="m">
+        No, that time does not work. Does{" "}
+        <span className="text-black">{validTime}</span> work instead? if not, my
+        hours of operation are
+      </button>
+      <button type="submit" onClick={onSubmit3} className="m">
+        My apologies, but one or more of these items is no longer available, and
+        this order has been canceled. Sorry for the inconvenience. Feel free to
+        delete this chat whenever you have seen this message. If you do not
+        delete this chat it will be automatically deleted after 72 hours
+      </button>
+    </div>
+  );
+  //  COOP sets out item, if immediatley accept pick up time
+  const resp2 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button type="submit" onClick={onSubmit5} className="m">
+        Your order is ready to be picked up at {order.location.address[0]},{" "}
+        {order.location.address[1]}, {order.location.address[2]}.{" "}
+        {order.location.address[3]}!
+      </button>
+    </div>
+  );
+  //COOP chose new time and buyer gets these options
+  const resp3 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+        <button
+          type="submit"
+          onClick={onSubmit4}
+          className="message hover:bg-sky"
+        >
+          Fantastic, I will be there to pick up the item at the specified time.
+        </button>
+        <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+        <button
+          type="submit"
+          onClick={onSubmit8}
+          className="message hover:bg-sky"
+        >
+          No, that time does not work. Can it instead be ready at{" "}
+          <span className="text-black">{validTime}</span>
+        </button>
+      </div>
+    </div>
+  );
+  // BUYER chose new time and COOP receives these options
+  const resp4 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+        <button
+          type="submit"
+          onClick={onSubmit1}
+          className="message hover:bg-sky"
+        >
+          Yes, That time works, Your order will be ready at that time. at{" "}
+          {order.location?.address}
+        </button>
+        <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+        <button
+          type="submit"
+          onClick={onSubmit2}
+          className="message hover:bg-sky"
+        >
+          No, that time does not work. Does{" "}
+          <span className="text-black">{validTime}</span> work instead? if not,
+          my hours of operation are
+        </button>
+      </div>
+    </div>
+  );
+  // coop accepted new pickup time and sets out the item
+  const resp5 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+        <button type="submit" onClick={onSubmit5} className="">
+          Your order is ready to be picked up at {order.location.address[0]},{" "}
+          {order.location.address[1]}, {order.location.address[2]}.{" "}
+          {order.location.address[3]}!
+        </button>
+      </div>
+    </div>
+  );
+  // buyer receives their item or can choose to dispute
+  const resp6 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
+        <button
+          type="submit"
+          onClick={onSubmit6}
+          className={`m text-xs md:text-sm`}
+        >
+          I have Received my order. Thank you!
+        </button>
+      </div>
+      <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
+        <button
+          type="submit"
+          onClick={() => setDisputeOpen(true)}
+          className={`m text-xs md:text-sm`}
+        >
+          Dispute Transaction
+        </button>
+      </div>
+    </div>
+  );
+  //buyer has picked up the item and COOP or PRODUCER marks order as complete and asks for reviews, will be able to place their own review on the buyer
+  const resp7 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button type="submit" onClick={onSubmit7} className="m hover:bg-sky-500">
+        Fantastic, this order has been marked as completed, feel free to delete
+        this chat. If you do not delete this chat it will be automatically
+        deleted after 72 hours
+      </button>
+    </div>
+  );
+  // producer receives order from COOP, gets these options
+  const resp8 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+
+      <button type="submit" onClick={onSubmit9} className="">
+        I can deliver these items to you at{" "}
+        <span className="text-black">{validTime}</span>, does that work?
+      </button>
+
+      <button type="submit" onClick={onSubmit3} className="m hover:bg-sky">
+        My apologies, but one or more of these items is no longer available, and
+        this order has been canceled. Sorry for the inconvenience. Feel free to
+        delete this chat whenever you have seen this message. If you do not
+        delete this chat it will be automatically deleted after 72 hours
+      </button>
+    </div>
+  );
+  // coop either agrees to drop off time or does not agree to drop off itme
+  const resp9 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button type="submit" onClick={onSubmit10} className="m hover:bg-sky-500">
+        Yes, That time works, See you then!
+      </button>
+      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+
+      <button type="submit" onClick={onSubmit11} className="m hover:bg-sky-500">
+        No, that time does not work. Does{" "}
+        <span className="text-black">{validTime}</span> work instead? if not, my
+        hours of operation are
+      </button>
+    </div>
+  );
+  // producer delivers the item, and is required to upload a photo
+  const resp10 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="">
+        <div className=" p-2 rounded-lg">
+          {!image && (
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: { url: string }[]) => {
+                setImage(res[0].url);
+                onSubmit12(res[0].url);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                container: "h-full w-max",
+              }}
+              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              content={{
+                button({ ready }) {
+                  if (ready)
+                    return <div>Sent a photo of the delivered produce</div>;
+                  return "Getting ready...";
+                },
+              }}
+            />
+          )}
+          {image && (
+            <>
+              <div>
+                <div className="m-5 relative">
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Image
+                        src={image}
+                        height={180}
+                        width={180}
+                        alt="a"
+                        className="aspect-square rounded-lg object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                        Click to Enlarge
+                      </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="xl:flex xl:justify-center">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                        {" "}
+                        <div>
+                          <Image
+                            src={image}
+                            fill
+                            className="object-cover w-full"
+                            alt="a"
+                          />
+                        </div>
+                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                          Close
+                        </AlertDialogCancel>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+  // producer either agrees to drop off time or suggests a new one
+  const resp11 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <button type="submit" onClick={onSubmit14} className="m hover:bg-sky-600">
+        Yes, That time works. Your item will be delivered at that time.
+      </button>
+      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+
+      <button type="submit" onClick={onSubmit13} className="m hover:bg-sky-600">
+        No, that time does not work. Does{" "}
+        <span className="text-black">{validTime}</span> work instead?
+      </button>
+    </div>
+  );
+  // producer delivers the item, and is required to upload a photo
+  const resp12 = (
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+        <div className="">
+          <div className=" p-2 rounded-lg">
+            {!image && (
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: { url: string }[]) => {
+                  setImage(res[0].url);
+                  onSubmit12(res[0].url);
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                content={{
+                  button({ ready }) {
+                    if (ready)
+                      return <div>Sent a photo of the delivered produce</div>;
+                    return "Getting ready...";
+                  },
+                }}
+              />
+            )}
+            {image && (
+              <>
+                <div>
+                  <div className="m-5 relative">
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Image
+                          src={image}
+                          height={180}
+                          width={180}
+                          alt="a"
+                          className="aspect-square rounded-lg object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                          Click to Enlarge
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="xl:flex xl:justify-center">
+                        <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                          {" "}
+                          <div>
+                            <Image
+                              src={image}
+                              fill
+                              className="object-cover w-full"
+                              alt="a"
+                            />
+                          </div>
+                          <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                            Close
+                          </AlertDialogCancel>
+                        </div>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   return (
     <div>
       {/* modal declarations */}
@@ -549,404 +863,40 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {/* MESSAGE OPTIONS START HERE */}
       {/* MESSAGE OPTIONS START HERE */}
       {/* COOP receives order responce options */}
-      {notOwn && isLast && data.messageOrder === "1" && (
+      <div className="RespOpt">
+        <div className="flex flex-col text-sm text-black-500 justify-end items-end">
+          Your response options
+        </div>
         <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <button type="submit" onClick={onSubmit1} className="m">
-              Yes, That time works, Your order will be ready at that time. at{" "}
-              {order.location.address[0]}, {order.location.address[1]},{" "}
-              {order.location.address[2]}. {order.location.address[3]}!
-            </button>
-            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-            <button type="submit" onClick={onSubmit2} className="m">
-              No, that time does not work. Does{" "}
-              <span className="text-black">{validTime}</span> work instead? if
-              not, my hours of operation are
-            </button>
-            <button type="submit" onClick={onSubmit3} className="m">
-              My apologies, but one or more of these items is no longer
-              available, and this order has been canceled. Sorry for the
-              inconvenience. Feel free to delete this chat whenever you have
-              seen this message. If you do not delete this chat it will be
-              automatically deleted after 72 hours
-            </button>
-          </div>
+          {notOwn && isLast && data.messageOrder === "1" ? (
+            resp1
+          ) : isOwn && isLast && data.messageOrder === "2" ? (
+            resp2
+          ) : notOwn && isLast && data.messageOrder === "3" ? (
+            resp3
+          ) : notOwn && isLast && data.messageOrder === "4" ? (
+            resp4
+          ) : notOwn && isLast && data.messageOrder === "5" ? (
+            resp5
+          ) : notOwn && isLast && data.messageOrder === "6" ? (
+            resp6
+          ) : notOwn && isLast && data.messageOrder === "7" ? (
+            resp7
+          ) : notOwn && isLast && data.messageOrder === "10" ? (
+            resp8
+          ) : notOwn && isLast && data.messageOrder === "11" ? (
+            resp9
+          ) : notOwn && isLast && data.messageOrder === "12" ? (
+            resp10
+          ) : notOwn && isLast && data.messageOrder === "13" ? (
+            resp11
+          ) : isOwn && isLast && data.messageOrder === "14" ? (
+            resp12
+          ) : (
+            <div>No responce options available</div>
+          )}
         </div>
-      )}
-      {/* COOP sets out item, if immediatley accept pick up time */}
-      {isOwn && isLast && data.messageOrder === "2" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <button type="submit" onClick={onSubmit5} className="m">
-              Your order is ready to be picked up at {order.location.address[0]}
-              , {order.location.address[1]}, {order.location.address[2]}.{" "}
-              {order.location.address[3]}!
-            </button>
-          </div>
-        </div>
-      )}
-      {/* COOP chose new time and buyer gets these options */}
-      {notOwn && isLast && data.messageOrder === "3" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit4}
-                className="message hover:bg-sky"
-              >
-                Fantastic, I will be there to pick up the item at the specified
-                time.
-              </button>
-              <button onClick={() => setCustomTimeOpen(true)}>
-                {" "}
-                SET TIME{" "}
-              </button>
-              <button
-                type="submit"
-                onClick={onSubmit8}
-                className="message hover:bg-sky"
-              >
-                No, that time does not work. Can it instead be ready at{" "}
-                <span className="text-black">{validTime}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* BUYER chose new time and COOP receives these options */}
-      {notOwn && isLast && data.messageOrder === "4" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit1}
-                className="message hover:bg-sky"
-              >
-                Yes, That time works, Your order will be ready at that time. at{" "}
-                {order.location?.address}
-              </button>
-              <button onClick={() => setCustomTimeOpen(true)}>
-                {" "}
-                SET TIME{" "}
-              </button>
-              <button
-                type="submit"
-                onClick={onSubmit2}
-                className="message hover:bg-sky"
-              >
-                No, that time does not work. Does{" "}
-                <span className="text-black">{validTime}</span> work instead? if{" "}
-                not, my hours of operation are
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* coop accepted new pickup time and sets out the item */}
-      {notOwn && isLast && data.messageOrder === "5" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <button type="submit" onClick={onSubmit5} className="">
-                Your order is ready to be picked up at{" "}
-                {order.location.address[0]}, {order.location.address[1]},{" "}
-                {order.location.address[2]}. {order.location.address[3]}!
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* buyer receives their item or can choose to dispute */}
-      {notOwn && isLast && data.messageOrder === "6" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={onSubmit6}
-                className={`m text-xs md:text-sm`}
-              >
-                I have Received my order. Thank you!
-              </button>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
-              <button
-                type="submit"
-                onClick={() => setDisputeOpen(true)}
-                className={`m text-xs md:text-sm`}
-              >
-                Dispute Transaction
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* buyer has picked up the item and COOP or PRODUCER marks order as complete and asks for reviews, will be able to place their own review on the buyer */}
-      {notOwn && isLast && data.messageOrder === "7" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <button
-              type="submit"
-              onClick={onSubmit7}
-              className="m hover:bg-sky-500"
-            >
-              Fantastic, this order has been marked as completed, feel free to
-              delete this chat. If you do not delete this chat it will be
-              automatically deleted after 72 hours
-            </button>
-          </div>
-        </div>
-      )}
-      {/* producer receives order from COOP, gets these options */}
-      {notOwn && isLast && data.messageOrder === "10" && (
-        <div className="flex flex-col px-2 justify-end items-end">
-          <div className="text-sm text-gray-500">Your response options</div>
-          <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-            <button type="submit" onClick={onSubmit9} className="">
-              I can deliver these items to you at{" "}
-              <span className="text-black">{validTime}</span>, does that work?
-            </button>
-
-            <button
-              type="submit"
-              onClick={onSubmit3}
-              className="m hover:bg-sky"
-            >
-              My apologies, but one or more of these items is no longer
-              available, and this order has been canceled. Sorry for the
-              inconvenience. Feel free to delete this chat whenever you have
-              seen this message. If you do not delete this chat it will be
-              automatically deleted after 72 hours
-            </button>
-          </div>
-        </div>
-      )}
-      {/* coop either agrees to drop off time or does not agree to drop off itme */}
-      {notOwn && isLast && data.messageOrder === "11" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-
-            <button
-              type="submit"
-              onClick={onSubmit10}
-              className="m hover:bg-sky-500"
-            >
-              Yes, That time works, See you then!
-            </button>
-            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-            <button
-              type="submit"
-              onClick={onSubmit11}
-              className="m hover:bg-sky-500"
-            >
-              No, that time does not work. Does{" "}
-              <span className="text-black">{validTime}</span> work instead? if
-              not, my hours of operation are
-            </button>
-          </div>
-        </div>
-      )}{" "}
-      {/* producer delivers the item, and is required to upload a photo */}
-      {notOwn && isLast && data.messageOrder === "12" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="order-2"></div>
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-
-            <div className="">
-              <div className=" p-2 rounded-lg">
-                {!image && (
-                  <UploadButton
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      setImage(res[0].url);
-                      onSubmit12(res[0].url);
-                    }}
-                    onUploadError={(error: Error) => {
-                      alert(`ERROR! ${error.message}`);
-                    }}
-                    appearance={{
-                      container: "h-full w-max",
-                    }}
-                    className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
-                    content={{
-                      button({ ready }) {
-                        if (ready)
-                          return (
-                            <div>Sent a photo of the delivered produce</div>
-                          );
-                        return "Getting ready...";
-                      },
-                    }}
-                  />
-                )}
-                {image && (
-                  <>
-                    <div>
-                      <div className="m-5 relative">
-                        <AlertDialog>
-                          <AlertDialogTrigger>
-                            <Image
-                              src={image}
-                              height={180}
-                              width={180}
-                              alt="a"
-                              className="aspect-square rounded-lg object-cover"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                              Click to Enlarge
-                            </div>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="xl:flex xl:justify-center">
-                            <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                              {" "}
-                              <div>
-                                <Image
-                                  src={image}
-                                  fill
-                                  className="object-cover w-full"
-                                  alt="a"
-                                />
-                              </div>
-                              <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                                Close
-                              </AlertDialogCancel>
-                            </div>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* producer either agrees to drop off time or suggests a new one */}
-      {notOwn && isLast && data.messageOrder === "13" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="order-2"></div>
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <button
-              type="submit"
-              onClick={onSubmit14}
-              className="m hover:bg-sky-600"
-            >
-              Yes, That time works. Your item will be delivered at that time.
-            </button>
-            <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-            <button
-              type="submit"
-              onClick={onSubmit13}
-              className="m hover:bg-sky-600"
-            >
-              No, that time does not work. Does{" "}
-              <span className="text-black">{validTime}</span> work instead?
-            </button>
-          </div>
-        </div>
-      )}
-      {/* producer delivers the item, and is required to upload a photo */}
-      {isOwn && isLast && data.messageOrder === "14" && (
-        <div className="flex gap-3 p-2 justify-end ">
-          <div className="flex flex-col ga items-end">
-            <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-500">Your response options</div>
-            </div>
-            <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-              <div className="">
-                <div className=" p-2 rounded-lg">
-                  {!image && (
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        setImage(res[0].url);
-                        onSubmit12(res[0].url);
-                      }}
-                      onUploadError={(error: Error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                      appearance={{
-                        container: "h-full w-max",
-                      }}
-                      className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
-                      content={{
-                        button({ ready }) {
-                          if (ready)
-                            return (
-                              <div>Sent a photo of the delivered produce</div>
-                            );
-                          return "Getting ready...";
-                        },
-                      }}
-                    />
-                  )}
-                  {image && (
-                    <>
-                      <div>
-                        <div className="m-5 relative">
-                          <AlertDialog>
-                            <AlertDialogTrigger>
-                              <Image
-                                src={image}
-                                height={180}
-                                width={180}
-                                alt="a"
-                                className="aspect-square rounded-lg object-cover"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                                Click to Enlarge
-                              </div>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="xl:flex xl:justify-center">
-                              <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                                {" "}
-                                <div>
-                                  <Image
-                                    src={image}
-                                    fill
-                                    className="object-cover w-full"
-                                    alt="a"
-                                  />
-                                </div>
-                                <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                                  Close
-                                </AlertDialogCancel>
-                              </div>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
