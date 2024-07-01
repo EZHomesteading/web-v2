@@ -34,7 +34,6 @@ export const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      firstName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -44,9 +43,9 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    setError("");
-    setSuccess("");
-
+    // setError("");
+    // setSuccess("");
+    console.log("nbeans");
     startTransition(() => {
       register(values).then((data) => {
         setError(data?.error);
@@ -148,7 +147,15 @@ export const RegisterForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button disabled={isPending} type="submit" className="w-full">
+          <Button
+            disabled={isPending}
+            type="submit"
+            // onClick={() => {
+            //   const FormValues = form.getValues();
+            //   form.handleSubmit(onSubmit(FormValues));
+            // }}
+            className="w-full"
+          >
             Create an account
           </Button>
         </form>
