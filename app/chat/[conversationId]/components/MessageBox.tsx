@@ -114,7 +114,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit1 = () => {
     //coop seller confirms order pickup time
     axios.post("/api/messages", {
-      message: `Yes, That time works, Your order will be ready at that time. at ${order.location?.address}`,
+      message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -169,7 +169,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit5 = () => {
     //coop has set out the order
     axios.post("/api/messages", {
-      message: `Your order is ready to be picked up at ${order.location.address}!`,
+      message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
       messageOrder: "6",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -557,7 +557,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
             <button type="submit" onClick={onSubmit1} className="m">
               Yes, That time works, Your order will be ready at that time. at{" "}
-              {order.location?.address}
+              {order.location.address[0]}, {order.location.address[1]},{" "}
+              {order.location.address[2]}. {order.location.address[3]}!
             </button>
             <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
             <button type="submit" onClick={onSubmit2} className="m">
@@ -584,7 +585,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="m">
-                Your order is ready to be picked up at {order.location.address}!
+                Your order is ready to be picked up at{" "}
+                {order.location.address[0]}, {order.location.address[1]},{" "}
+                {order.location.address[2]}. {order.location.address[3]}!
               </button>
             </div>
           </div>
@@ -664,7 +667,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
             <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
               <button type="submit" onClick={onSubmit5} className="">
-                Your order is ready to be picked up at {order.location.address}!
+                Your order is ready to be picked up at{" "}
+                {order.location.address[0]}, {order.location.address[1]},{" "}
+                {order.location.address[2]}. {order.location.address[3]}!
               </button>
             </div>
           </div>

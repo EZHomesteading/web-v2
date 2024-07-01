@@ -167,7 +167,7 @@ const UserMenu = ({ user }: Props) => {
                   <MenuItem
                     label="Following"
                     icon={<GoPeople className="mr-2" />}
-                    onClick={() => router.push("/favorites")}
+                    onClick={() => router.push("/dashboard/following")}
                   />
                   <MenuItem
                     label="Profile Settings"

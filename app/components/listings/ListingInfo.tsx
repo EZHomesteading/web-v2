@@ -54,14 +54,9 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <span className="mt-3">
             <Avatar image={listingUser?.image} />
           </span>
-
           <span>{listingUser?.name}</span>
         </span>
-        <FollowButton
-          followUserId={followUserId}
-          following={following}
-          user={user}
-        />
+        <FollowButton followUserId={followUserId} following={following}/>
       </div>
     </div>
   );

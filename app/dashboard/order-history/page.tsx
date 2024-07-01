@@ -11,6 +11,7 @@ import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { ActualListing, ListingGroup } from "../orders/buyer/page";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -38,7 +39,6 @@ const Page = async () => {
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-
         const seller = await getUserById({ userId: order.sellerId });
         const statusText = getStatusText(
           order.status,
@@ -96,31 +96,34 @@ const Page = async () => {
                 </Link>
               </CardHeader>
               <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-                {listings[0].listings.flatMap((listing: FinalListing) => {
-                  const quantities = JSON.parse(order.quantity);
-                  const quantityObj = quantities.find(
-                    (q: { id: string }) => q.id === listing.id
-                  );
-                  const quantity = quantityObj ? quantityObj.quantity : 0;
+                {listings.flatMap((listingGroup: ListingGroup) =>
+                  listingGroup.listings.map((listing: ActualListing) => {
+                    const quantities = JSON.parse(order.quantity);
+                    const quantityObj = quantities.find(
+                      (q: { id: string }) => q.id === listing.id
+                    );
+                    const quantity = quantityObj ? quantityObj.quantity : 0;
 
-                  return (
-                    <div
-                      key={listing.id}
-                      className="flex flex-row items-center gap-2"
-                    >
-                      <Image
-                        src={listing.imageSrc[0]}
-                        alt={listing.title}
-                        width={50}
-                        height={50}
-                        className="rounded-lg object-cover aspect-square"
-                      />
-                      <p>
-                        {quantity} {listing.quantityType} of {listing.title}{" "}
-                      </p>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={listing.id}
+                        className="flex flex-row items-center gap-2"
+                      >
+                        <Image
+                          src={listing.imageSrc[0]}
+                          alt={listing.title}
+                          width={50}
+                          height={50}
+                          className="rounded-lg object-cover aspect-square"
+                        />
+                        <p>
+                          {quantity} {listing.quantityType || "units"} of{" "}
+                          {listing.title}{" "}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
                 <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
                 <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
               </CardContent>
