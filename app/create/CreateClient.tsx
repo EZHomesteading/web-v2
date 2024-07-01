@@ -56,7 +56,7 @@ import { addDays, format } from "date-fns";
 import Help from "./components/help";
 import InputField from "./components/suggestion-input";
 import { FinalListing } from "@/actions/getListings";
-
+import { CheckedState } from "@radix-ui/react-checkbox";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -87,7 +87,7 @@ const CreateClient = ({ user, index }: Props) => {
 
   //declare formstate default values
   let usersodt = null;
-  if (user.SODT) {
+  if (user.SODT && user.SODT !== null) {
     usersodt = user.SODT;
   }
   let {
@@ -112,11 +112,10 @@ const CreateClient = ({ user, index }: Props) => {
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
-      rating: [0],
+      rating: [],
       minOrder: 1,
     },
   });
-
   const handleCheckboxChange = (checked: boolean, index: number) => {
     setRating((prevRating) => {
       let newRating = [...prevRating];
@@ -368,7 +367,10 @@ const CreateClient = ({ user, index }: Props) => {
       });
       return;
     }
-    if (step === 5) {
+    if (
+      step === 5 ||
+      (step === 4 && user?.location && user?.location[1] === null)
+    ) {
       if (!product) {
         toast.error("Let us know what produce you have!", {
           duration: 2000,
@@ -411,6 +413,12 @@ const CreateClient = ({ user, index }: Props) => {
           position: "bottom-center",
         });
         return;
+      } else if (Array.isArray(rating) && rating.length === 0) {
+        toast.error("Please certify your EZH Organic Rating", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
       } else if (
         shelfLifeDays <= 0 &&
         shelfLifeWeeks <= 0 &&
@@ -431,6 +439,8 @@ const CreateClient = ({ user, index }: Props) => {
       }
     }
     if (step === 5) {
+      handleSubmit(onSubmit)();
+    } else if (step === 4 && user?.location && user?.location[1] === null) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -478,6 +488,36 @@ const CreateClient = ({ user, index }: Props) => {
       toast.error("an error occured");
     }
   };
+
+  const [postSODT, setPostSODT] = useState(false);
+  useEffect(() => {
+    setPostSODT(false);
+  }, [sodt]);
+  const postNewSODT = async (checked: boolean) => {
+    try {
+      if (checked) {
+        await axios.post("api/update", {
+          SODT: sodt !== null ? parseInt(sodt) : null,
+        });
+      } else {
+        await axios.post("api/update", { SODT: null });
+      }
+    } catch (error) {
+      console.error("Error posting SODT:", error);
+    }
+  };
+
+  const handleSODTCheckboxChange = (checked: boolean, index: number) => {
+    if (index === 0) {
+      setPostSODT(checked);
+      postNewSODT(checked);
+    }
+  };
+  {
+    if (user?.location && user.location[1] === null) {
+      setValue("location", 0);
+    }
+  }
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
@@ -563,7 +603,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && (
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tight">
@@ -643,83 +683,87 @@ const CreateClient = ({ user, index }: Props) => {
                 >
                   Photos
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 5
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => {
-                    if (!product) {
-                      toast.error("Let us know what produce you have!", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (!description) {
-                      toast.error("Please write a brief description", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (!quantityType) {
-                      toast.error("Please enter a unit for your listing", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (quantity <= 0 || !quantity) {
-                      toast.error("Quantity must be greater than 0", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (minOrder <= 0 || !quantity) {
-                      toast.error(
-                        "Please enter a minimum order greater than 0.",
-                        {
-                          duration: 2000,
-                          position: "bottom-center",
+                {user?.location && user?.location[1] !== null && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem
+                      className={
+                        step === 5
+                          ? "font-bold cursor-none "
+                          : "font-normal cursor-pointer"
+                      }
+                      onMouseDown={() => {
+                        if (!product) {
+                          toast.error("Let us know what produce you have!", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (!description) {
+                          toast.error("Please write a brief description", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (!quantityType) {
+                          toast.error("Please enter a unit for your listing", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (quantity <= 0 || !quantity) {
+                          toast.error("Quantity must be greater than 0", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (minOrder <= 0 || !quantity) {
+                          toast.error(
+                            "Please enter a minimum order greater than 0.",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
+                          return;
+                        } else if (
+                          Array.isArray(imageSrc) &&
+                          imageSrc.length === 0
+                        ) {
+                          toast.error(
+                            "Please use the stock photo or upload at least one photo",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
+                          return;
+                        } else if (
+                          shelfLifeDays <= 0 &&
+                          shelfLifeWeeks <= 0 &&
+                          shelfLifeMonths <= 0 &&
+                          shelfLifeYears <= 0
+                        ) {
+                          toast.error("Shelf life must be at least 1 day", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else if (price <= 0 || !quantity) {
+                          toast.error("Please enter a price greater than 0.", {
+                            duration: 2000,
+                            position: "bottom-center",
+                          });
+                          return;
+                        } else {
+                          setStep(5);
                         }
-                      );
-                      return;
-                    } else if (
-                      Array.isArray(imageSrc) &&
-                      imageSrc.length === 0
-                    ) {
-                      toast.error(
-                        "Please use the stock photo or upload at least one photo",
-                        {
-                          duration: 2000,
-                          position: "bottom-center",
-                        }
-                      );
-                      return;
-                    } else if (
-                      shelfLifeDays <= 0 &&
-                      shelfLifeWeeks <= 0 &&
-                      shelfLifeMonths <= 0 &&
-                      shelfLifeYears <= 0
-                    ) {
-                      toast.error("Shelf life must be at least 1 day", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else if (price <= 0 || !quantity) {
-                      toast.error("Please enter a price greater than 0.", {
-                        duration: 2000,
-                        position: "bottom-center",
-                      });
-                      return;
-                    } else {
-                      setStep(5);
-                    }
-                  }}
-                >
-                  Location
-                </BreadcrumbItem>
+                      }}
+                    >
+                      Location
+                    </BreadcrumbItem>
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -890,95 +934,65 @@ const CreateClient = ({ user, index }: Props) => {
                         />
                       </div>
                     </div>
-                    <div className="w-1/2">
-                      <div className="flex flex-row gap-2 mt-2">
-                        {user.role === "COOP" ? (
-                          <div>
-                            Select average time to set out this product,
-                            pre-populates with your accounts Set out time, if
-                            there is none, you must set one.
-                            <Select
-                              onValueChange={(value: string) => {
-                                setValue("sodt", value);
-                              }}
-                            >
-                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
-                                {usersodt ? (
-                                  <SelectValue
-                                    placeholder={`${usersodt} Minutes `}
-                                  />
-                                ) : (
-                                  <SelectValue placeholder={"Select a Time"} />
-                                )}
-                              </SelectTrigger>
-                              <SelectContent
-                                className={`${outfit.className} bg-slate-300`}
-                              >
-                                <SelectGroup>
-                                  <SelectItem value="15">15 Minutes</SelectItem>
-                                  <SelectItem value="30">30 Minutes</SelectItem>
-                                  <SelectItem value="45">45 Minutes</SelectItem>
-                                  <SelectItem value="60">1 Hour</SelectItem>
-                                  <SelectItem value="75">
-                                    1 Hour 15 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="90">
-                                    1 Hour 30 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="105">
-                                    1 Hour 45 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="120">2 Hours</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
+                    <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full"></div>
+
+                    <div className="w-full">
+                      <div className="flex flex-col gap-2 mt-2">
+                        <Label className="text-xl w-full">
+                          Time to Prepare an Order
+                        </Label>
+
+                        <Select
+                          onValueChange={(value: string) => {
+                            setValue("sodt", value);
+                          }}
+                        >
+                          <div className="flex flex-col items-start gap-y-3">
+                            <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
+                              {usersodt ? (
+                                <SelectValue
+                                  placeholder={`${usersodt} Minutes `}
+                                />
+                              ) : (
+                                <SelectValue placeholder={"Select a Time"} />
+                              )}
+                            </SelectTrigger>
+                            {!user?.SODT && sodt !== null && (
+                              <Checkbox
+                                id="saveAsDefault"
+                                checked={postSODT}
+                                onCheckedChange={(checked: boolean) =>
+                                  handleSODTCheckboxChange(checked, 0)
+                                }
+                                label="Save as Account Default"
+                              />
+                            )}
                           </div>
-                        ) : (
-                          <div>
-                            Select average time to deliver this product,
-                            pre-populates with your accounts delivery time, if
-                            there is none, you must set one.
-                            <Select
-                              onValueChange={(value: string) => {
-                                setValue("sodt", value);
-                              }}
-                            >
-                              <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
-                                {usersodt ? (
-                                  <SelectValue
-                                    placeholder={`${usersodt} Minutes `}
-                                  />
-                                ) : (
-                                  <SelectValue placeholder={"Select a Time"} />
-                                )}
-                              </SelectTrigger>
-                              <SelectContent
-                                className={`${outfit.className} bg-slate-300`}
-                              >
-                                <SelectGroup>
-                                  <SelectItem value="15">15 Minutes</SelectItem>
-                                  <SelectItem value="30">30 Minutes</SelectItem>
-                                  <SelectItem value="45">45 Minutes</SelectItem>
-                                  <SelectItem value="60">1 Hour</SelectItem>
-                                  <SelectItem value="75">
-                                    1 Hour 15 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="90">
-                                    1 Hour 30 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="105">
-                                    1 Hour 45 Minutes
-                                  </SelectItem>
-                                  <SelectItem value="120">2 Hours</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        )}
+                          <SelectContent
+                            className={`${outfit.className} bg-slate-300`}
+                          >
+                            <SelectGroup>
+                              <SelectItem value="15">15 Minutes</SelectItem>
+                              <SelectItem value="30">30 Minutes</SelectItem>
+                              <SelectItem value="45">45 Minutes</SelectItem>
+                              <SelectItem value="60">1 Hour</SelectItem>
+                              <SelectItem value="75">
+                                1 Hour 15 Minutes
+                              </SelectItem>
+                              <SelectItem value="90">
+                                1 Hour 30 Minutes
+                              </SelectItem>
+                              <SelectItem value="105">
+                                1 Hour 45 Minutes
+                              </SelectItem>
+                              <SelectItem value="120">2 Hours</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                   </div>
-                  <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full"></div>
+                  <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full xl:w-2/3"></div>
                   <div className="w-full lg:w-1/2">
                     <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
                       <Label className="text-xl">Estimated Shelf Life </Label>
@@ -1104,7 +1118,28 @@ const CreateClient = ({ user, index }: Props) => {
                 Back
               </Button>
             )}
-            {step === 5 && (
+            {step === 4 && user?.location && user?.location[1] === null ? (
+              <>
+                {" "}
+                <Button
+                  onClick={handleNext}
+                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+                >
+                  Finish
+                </Button>
+              </>
+            ) : (
+              <>
+                {" "}
+                <Button
+                  onClick={handleNext}
+                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+                >
+                  Next
+                </Button>
+              </>
+            )}
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1112,7 +1147,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Finish
               </Button>
             )}
-            {step < 5 && (
+            {step < 4 && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1201,7 +1236,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && (
+            {step === 5 && user?.location && user?.location[1] !== null && (
               <div
                 className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
               >

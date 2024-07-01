@@ -11,6 +11,7 @@ export const publicRoutes = [
   "/map",
   "/get-ezh-app",
   "/api/user/marker-info",
+  "/api/uploadthing",
 ];
 /**
  * An array of routes that are used for authentication

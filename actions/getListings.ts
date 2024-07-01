@@ -7,6 +7,7 @@ import { currentUser } from "@/lib/auth";
 import { Listing } from "./getCart";
 
 // Interface for defining the search parameters
+type sort = "htl" | "lth";
 type Listing1 = {
   user: {
     id: string;
@@ -14,6 +15,7 @@ type Listing1 = {
     role: UserRole;
   };
   id: string;
+  rating: number[];
   location: number;
   createdAt: Date;
   price: number;
@@ -30,6 +32,7 @@ type Listing2 = {
   };
   id: string;
   location: number;
+  rating: number[];
   SODT: number | null;
   createdAt: Date;
   userId: string;
@@ -53,6 +56,7 @@ export type FinalListing = {
   title: string;
   price: number;
   stock: number;
+  rating: number[];
   SODT: number | null;
   quantityType: string | null;
   shelfLife: number;
@@ -75,6 +79,7 @@ type FinalListing1 = {
   title: string;
   price: number;
   stock: number;
+  rating: number[];
   quantityType: string | null;
   createdAt: string;
   location: Location;
@@ -156,12 +161,12 @@ const getUserLocation2 = async (listing: Listing2) => {
 };
 function filterListingsByLocation(listings: FinalListing[]) {
   return listings.filter((listing: FinalListing) => {
-    return listing.location !== undefined;
+    return listing.location !== undefined || listing.location !== null;
   });
 }
 function filterListingsByLocation1(listings: FinalListing1[]) {
   return listings.filter((listing: FinalListing1) => {
-    return listing.location !== undefined;
+    return listing.location !== undefined || listing.location !== null;
   });
 }
 
@@ -172,7 +177,7 @@ const GetListingsMarket = async (
 ) => {
   const user = await currentUser();
   try {
-    const { lat, lng, radius, q, pm, c, p, s } = params;
+    const { lat, lng, radius, q, pm, c, p, s, ra } = params;
 
     let query: any = {};
 
@@ -187,6 +192,7 @@ const GetListingsMarket = async (
       imageSrc: true,
       minOrder: true,
       createdAt: true,
+      rating: true,
       stock: true,
       description: true,
       location: true,
@@ -296,14 +302,13 @@ const GetListingsMarket = async (
     });
     let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
     Listings = await Promise.all(listerine);
-    Listings = await filterListingsByLocation1(Listings);
+    Listings = await Promise.all(filterListingsByLocation1(Listings));
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
         longitude: parseFloat(lng),
       };
-
       const radiusInMeters = parseFloat(radius) * 1000;
 
       const listingsWithDistance = Listings.map((listing) => {
@@ -341,7 +346,26 @@ const GetListingsMarket = async (
       const results = fuse.search(q);
       Listings = results.map((result) => result.item);
     }
+    if (ra) {
+      const sort = ra as sort;
+      Listings = Listings.filter(
+        (listing) => listing.rating && listing.rating.length
+      );
 
+      Listings.sort((a, b) => {
+        const avgA = a.rating
+          ? a.rating.reduce((sum, r) => sum + r, 0) / a.rating.length
+          : 0;
+        const avgB = b.rating
+          ? b.rating.reduce((sum, r) => sum + r, 0) / b.rating.length
+          : 0;
+        if (sort === "htl") {
+          return avgB - avgA;
+        } else {
+          return avgA - avgB;
+        }
+      });
+    }
     // Paginate the listings
     const totalItems = Listings.length;
     const startIndex = (page - 1) * perPage;
@@ -398,7 +422,9 @@ const GetListingsByIds = async (params: Params) => {
       };
     });
     let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
+    resolvedSafeListings = await Promise.all(
+      filterListingsByLocation(resolvedSafeListings)
+    );
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -523,7 +549,9 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       };
     });
     let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = filterListingsByLocation(resolvedSafeListings);
+    resolvedSafeListings = await Promise.all(
+      filterListingsByLocation(resolvedSafeListings)
+    );
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -561,7 +589,9 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       };
     });
     let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await filterListingsByLocation(resolvedSafeListings);
+    resolvedSafeListings = await Promise.all(
+      filterListingsByLocation(resolvedSafeListings)
+    );
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -580,6 +610,7 @@ export interface IListingsParams {
   lat?: string;
   lng?: string;
   q?: string;
+  ra?: string;
   radius?: string;
   pm?: string;
   c?: string;

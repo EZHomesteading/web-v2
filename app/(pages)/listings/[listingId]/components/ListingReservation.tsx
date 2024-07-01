@@ -9,6 +9,8 @@ import NotifyModal from "./NotifyModal";
 import { User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import { Outfit, Zilla_Slab } from "next/font/google";
+import { SiAdafruit } from "react-icons/si";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -26,6 +28,7 @@ interface ListingReservationProps {
   disabled?: boolean;
   toggleCart: (e: any, quantity: number) => Promise<void>;
   sodt: (number | null)[];
+  rating: number[];
 }
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
@@ -35,7 +38,38 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   user,
   toggleCart,
   sodt,
+  rating,
 }) => {
+  const ratingMeanings: { [key: number]: string } = {
+    1: "Not Genetically Modified",
+    2: "No Inorganic Fertilizers",
+    3: "No Inorganic Pesticides",
+    4: "Not Modified After Harvest",
+  };
+
+  const renderRating = () => {
+    const applicableRatings = rating.filter(
+      (index) => index !== 0 && index in ratingMeanings
+    );
+
+    if (applicableRatings.length === 0) {
+      return null;
+    }
+
+    return (
+      <ul className="mb-2 list-none list-inside">
+        {applicableRatings.map((ratingIndex) => (
+          <li
+            key={ratingIndex}
+            className="text-sm text-gray-600 flex items-center gap-x-1"
+          >
+            {ratingMeanings[ratingIndex]}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
@@ -104,6 +138,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
           className={`${zilla.className}
       text-lg font-light text-neutral-500 p-2`}
         >
+          {renderRating()}
           {description}
         </div>
         <hr />

@@ -1,3 +1,4 @@
+"use client";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { getStatusText } from "@/app/components/icons/notification-order-status";
@@ -6,6 +7,7 @@ import { Outfit } from "next/font/google";
 import { navBuyOrder, navSellOrder } from "@/next-auth";
 import { formatDistanceToNow } from "date-fns";
 import { FaComment } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -19,6 +21,8 @@ interface Props {
 }
 
 const NotificationIcon = ({ bOrders, sOrders }: Props) => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   const notifications: {
     text: string;
     conversationId: string;
@@ -70,7 +74,9 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
       <Sheet>
         <SheetTrigger className="cursor-pointer">
           <div className="relative">
-            <IoMdNotificationsOutline className="h-10 w-9 text-neutral-300" />
+            <IoMdNotificationsOutline
+              className={`h-10 w-9 ${white ? "text-white" : "text-black"}`}
+            />
             <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
               {notifications.length}
             </div>
