@@ -22,10 +22,12 @@ interface ListingInfoProps {
     | null
     | undefined;
   listingUser: UserInfo;
+  oRating: number[];
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
   user,
+  oRating,
   followUserId,
   following,
   listingUser,
@@ -56,7 +58,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           </span>
           <span>{listingUser?.name}</span>
         </span>
-        <FollowButton followUserId={followUserId} following={following}/>
+        <FollowButton followUserId={followUserId} following={following} />
       </div>
     </div>
   );
