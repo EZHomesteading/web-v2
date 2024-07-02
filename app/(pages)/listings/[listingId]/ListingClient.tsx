@@ -42,7 +42,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
     listingUser,
   });
   const [isLoading, setIsLoading] = useState(false);
-
   //adjusting listings shelflife to be accurate. and be in date format.
   const adjustedListing = {
     ...listing,
@@ -70,7 +69,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
             />
             <div className="flex flex-col h-full">
               <ListingInfo
-                user={user as unknown as UserInfo}
                 listingUser={listing.user as unknown as UserInfo}
                 description={listing.description}
                 followUserId={listing.userId}

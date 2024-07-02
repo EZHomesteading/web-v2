@@ -134,6 +134,7 @@ const SheetContentF = React.forwardRef<
                 value={rating}
                 onChange={handleRatingChange}
                 half={false}
+                edit={false}
               />
             </div>
             <Textarea

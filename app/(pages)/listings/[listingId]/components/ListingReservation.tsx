@@ -10,6 +10,7 @@ import { User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { SiAdafruit } from "react-icons/si";
+import ReactStars from "react-stars";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -57,16 +58,29 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     }
 
     return (
-      <ul className="mb-2 list-none list-inside">
-        {applicableRatings.map((ratingIndex) => (
-          <li
-            key={ratingIndex}
-            className="text-sm text-gray-600 flex items-center gap-x-1"
-          >
-            {ratingMeanings[ratingIndex]}
-          </li>
-        ))}
-      </ul>
+      <div className="text-sm text-gray-600  items-center gap-x-1">
+        <div className="text-sm text-gray-600 flex items-center gap-x-1">
+          Organic Rating:
+          <ReactStars
+            count={5}
+            size={20}
+            color2={"#ffd700"}
+            value={rating.length}
+            half={false}
+            edit={false}
+          />
+        </div>
+        <ul className="mb-2 list-none list-inside">
+          {applicableRatings.map((ratingIndex) => (
+            <li
+              key={ratingIndex}
+              className="text-sm text-gray-600 flex items-center gap-x-1"
+            >
+              {ratingMeanings[ratingIndex]}
+            </li>
+          ))}
+        </ul>
+      </div>
     );
   };
 
@@ -139,7 +153,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       text-lg font-light text-neutral-500 p-2`}
         >
           {renderRating()}
-          {description}
+          Item Description: {description}
         </div>
         <hr />
         <ul className="p-2">
