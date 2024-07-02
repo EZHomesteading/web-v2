@@ -99,7 +99,6 @@ const Page = ({ apiKey }: Props) => {
         });
 
         const data = await response.data;
-        console.log(data);
         if (data.isValid === false) {
           toast.error("Old Password is incorrect");
           return;
@@ -110,7 +109,6 @@ const Page = ({ apiKey }: Props) => {
             email,
           });
           const datas = await response2.data;
-          console.log(datas);
           if (datas.success === "Password updated!") {
             toast.error("Password updated!");
           }

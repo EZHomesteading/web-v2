@@ -15,7 +15,6 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   const resetLink = `${domain}/auth/new-password?token=${token}`;
-  console.log(resetLink);
   await resend.emails.send({
     from: "support@ezhomesteading.com",
     to: email,
