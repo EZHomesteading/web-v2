@@ -510,14 +510,13 @@ const VendorsMap = ({
           className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/4 bg-white rounded-lg shadow-md transition-opacity duration-500 ease-in-out p-0 m-0"
           style={{ opacity: selectedMarker ? 1 : 0 }}
         >
-          <div className="flex items-start flex-col bg-slate-200 rounded-b-lg">
+          <div className="flex items-start flex-col bg-slate-200 rounded-lg">
             <InfoWindowCarousel
               handleInfoWindowClose={handleInfoWindowClose}
               images={selectedMarker.images}
             />
             <header className="flex flex-row p-1 relative w-full">
               <Avatar image={selectedMarker.image} />
-
               <ul className="flex flex-col ml-1 pl-1">
                 <h1 className={`${outfit.className} text-sm `}>
                   {selectedMarker.name}
