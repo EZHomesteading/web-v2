@@ -11,14 +11,7 @@ import FollowButton from "@/app/components/follow/followButton";
 import { FinalListingShop, StoreData } from "@/actions/getUser";
 import { ExtendedHours, UserInfo } from "@/next-auth";
 import { FinalListing } from "@/actions/getListings";
-interface Listings {
-  imageSrc: string[];
-  title: string;
-  price: number;
-  id: string;
-  minOrder: number | null;
-  quantityType: string;
-}
+import ReactStars from "react-stars";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -41,6 +34,17 @@ interface StorePageProps {
 }
 
 const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
+  function averageArrayLength(arrayOfArrays: FinalListingShop[]) {
+    if (arrayOfArrays.length === 0) return 0;
+
+    const totalLength = arrayOfArrays.reduce((sum, shop) => {
+      return sum + (shop.rating?.length || 0);
+    }, 0);
+
+    return totalLength / arrayOfArrays.length;
+  }
+  const bean = averageArrayLength(store.user.listings);
+  console.log(bean);
   return (
     <ClientOnly>
       <Container>
@@ -77,7 +81,17 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
         <div className="pl-[10px]">
           <FollowButton followUserId={store?.user?.id} following={following} />
         </div>
-
+        <div className="text-sm text-gray-600 flex items-center gap-x-1">
+          Average Organic Rating:
+          <ReactStars
+            count={5}
+            size={20}
+            color2={"#ffd700"}
+            value={bean}
+            half={true}
+            edit={false}
+          />
+        </div>
         {emptyState || (
           <div
             className="
