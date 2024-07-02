@@ -10,6 +10,7 @@ import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,7 @@ import { useRouter } from "next/navigation";
 import Avatar from "@/app/components/Avatar";
 import { UploadButton } from "@/utils/uploadthing";
 import PhoneInput from "react-phone-number-input";
+
 interface Props {
   apiKey: string;
 }
@@ -50,6 +52,9 @@ const Page = ({ apiKey }: Props) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
+      oldPass: null,
+      newPass: null,
+      verifNewPass: null,
       phoneNumber: user?.phoneNumber,
       email: user?.email,
       role: user?.role,
@@ -78,6 +83,44 @@ const Page = ({ apiKey }: Props) => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if ((data.newPass, data.oldPass, data.verifNewPass)) {
+      const password: string = data.oldPass;
+      const password2: string = data.newPass;
+      if (data.newPass === data.verifNewPass) {
+        if (!user || !user.email) {
+          return;
+        }
+
+        const email: string = user.email;
+
+        const response = await axios.post("/api/verifypass", {
+          password,
+          email,
+        });
+
+        const data = await response.data;
+        console.log(data);
+        if (data.isValid === false) {
+          toast.error("Old Password is incorrect");
+          return;
+        }
+        if (data.isValid === true) {
+          const response2 = await axios.post("/api/verifypass/updatepass", {
+            password2,
+            email,
+          });
+          const datas = await response2.data;
+          console.log(datas);
+          if (datas.success === "Password updated!") {
+            toast.error("Password updated!");
+          }
+          // return;
+        }
+      } else {
+        toast.error("passwords do not match");
+        return;
+      }
+    }
     if (
       fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
     ) {
@@ -118,7 +161,6 @@ const Page = ({ apiKey }: Props) => {
                   },
                 },
         };
-        console.log("BEANS", formData);
         axios
           .post("/api/update", formData)
           .then(() => {
@@ -129,7 +171,7 @@ const Page = ({ apiKey }: Props) => {
             toast.error(error);
           })
           .finally(() => {
-            window.location.reload();
+            // window.location.reload();
             setIsLoading(false);
             return;
           });
@@ -144,7 +186,7 @@ const Page = ({ apiKey }: Props) => {
             toast.error(error);
           })
           .finally(() => {
-            window.location.reload();
+            // window.location.reload();
             setIsLoading(false);
           });
     }
@@ -181,6 +223,7 @@ const Page = ({ apiKey }: Props) => {
       <h1 className="sr-only">Account Settings</h1>
       <header className="flex flex-row justify-between items-center mt-1">
         <h2 className="text-base font-semibold leading-7">Account Settings</h2>
+
         <Button
           type="submit"
           onClick={handleSubmit(onSubmit)}
@@ -251,6 +294,7 @@ const Page = ({ apiKey }: Props) => {
           </CardFooter>
         </CardContent>
       </Card>
+
       <Card>
         <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
           <h3 className="text-lg lg:text-3xl">Email Address</h3>
@@ -376,6 +420,50 @@ const Page = ({ apiKey }: Props) => {
             </CardFooter>
           </CardContent>
         )}
+      </Card>
+      <Card>
+        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
+          <h2 className="lg:text-3xl text-lg">Change Password</h2>
+          <ul>
+            <li>Think your account is compromised?</li>
+            <li>Change your password.</li>
+          </ul>
+          <div className="flex justify-end">
+            <div className="flex flex-col w-1/4 justify-end">
+              <Input
+                id="oldPass"
+                label="Current Password"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+              />
+              <Input
+                id="newPass"
+                label="New Password"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+              />
+              <Input
+                id="verifNewPass"
+                label="Verify Password"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+              />
+              <Button
+                type="submit"
+                onClick={handleSubmit(onSubmit)}
+                className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+              >
+                Change Password
+              </Button>
+            </div>
+          </div>
+          <CardFooter className="flex justify-between m-0 p-0 pt-2">
+            This is not required to update other information.
+          </CardFooter>
+        </CardContent>
       </Card>
       <Card>
         <CardContent className="sheet shadow-lg">
