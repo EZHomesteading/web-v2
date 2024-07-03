@@ -152,6 +152,11 @@ const Filters = ({ user }: Props) => {
                 <SelectGroup>
                   <SelectItem value="htl">High to Low</SelectItem>
                   <SelectItem value="lth">Low to High</SelectItem>
+                  <SelectItem value="5">Rating of 5</SelectItem>
+                  <SelectItem value="4">Rating of 4</SelectItem>
+                  <SelectItem value="3">Rating of 3</SelectItem>
+                  <SelectItem value="2">Rating of 2</SelectItem>
+                  <SelectItem value="1">Rating of 1</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -178,6 +183,12 @@ const Filters = ({ user }: Props) => {
           className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
         >
           See Listings
+        </SheetTrigger>
+        <SheetTrigger
+          onClick={() => router.push("/market")}
+          className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
+        >
+          Clear Filters
         </SheetTrigger>
       </SheetContent>
     </Sheet>

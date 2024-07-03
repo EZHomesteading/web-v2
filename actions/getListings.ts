@@ -7,7 +7,7 @@ import { currentUser } from "@/lib/auth";
 import { Listing } from "./getCart";
 
 // Interface for defining the search parameters
-type sort = "htl" | "lth";
+type sort = "htl" | "lth" | "1" | "2" | "3" | "4" | "5";
 type Listing1 = {
   user: {
     id: string;
@@ -355,10 +355,34 @@ const GetListingsMarket = async (
           return ascending ? lengthA - lengthB : lengthB - lengthA;
         });
       }
+      function showOnlyNumber(arr: FinalListing1[], targetLength: number) {
+        // First, filter the array to include only items with matching length
+        const filteredArr = arr.filter(
+          (item) => item.rating.length === targetLength
+        );
+        return filteredArr;
+      }
+
       if (sort === "htl") {
         Listings = sortByArrayLength(Listings, false);
-      } else {
+      }
+      if (sort === "lth") {
         Listings = sortByArrayLength(Listings);
+      }
+      if (sort === "1") {
+        Listings = showOnlyNumber(Listings, 1);
+      }
+      if (sort === "2") {
+        Listings = showOnlyNumber(Listings, 2);
+      }
+      if (sort === "3") {
+        Listings = showOnlyNumber(Listings, 3);
+      }
+      if (sort === "4") {
+        Listings = showOnlyNumber(Listings, 4);
+      }
+      if (sort === "5") {
+        Listings = showOnlyNumber(Listings, 5);
       }
     }
     if (pr) {

@@ -43,8 +43,8 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
 
     return totalLength / arrayOfArrays.length;
   }
-  const bean = averageArrayLength(store.user.listings);
-  console.log(bean);
+  const avgRating = averageArrayLength(store.user.listings);
+
   return (
     <ClientOnly>
       <Container>
@@ -87,7 +87,7 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
             count={5}
             size={20}
             color2={"#ffd700"}
-            value={bean}
+            value={avgRating}
             half={true}
             edit={false}
           />
