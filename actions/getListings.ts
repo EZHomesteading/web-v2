@@ -177,7 +177,7 @@ const GetListingsMarket = async (
 ) => {
   const user = await currentUser();
   try {
-    const { lat, lng, radius, q, pm, c, p, s, ra } = params;
+    const { lat, lng, radius, q, pm, c, p, s, ra, pr } = params;
 
     let query: any = {};
 
@@ -348,23 +348,33 @@ const GetListingsMarket = async (
     }
     if (ra) {
       const sort = ra as sort;
-      Listings = Listings.filter(
-        (listing) => listing.rating && listing.rating.length
-      );
-
-      Listings.sort((a, b) => {
-        const avgA = a.rating
-          ? a.rating.reduce((sum, r) => sum + r, 0) / a.rating.length
-          : 0;
-        const avgB = b.rating
-          ? b.rating.reduce((sum, r) => sum + r, 0) / b.rating.length
-          : 0;
-        if (sort === "htl") {
-          return avgB - avgA;
-        } else {
-          return avgA - avgB;
-        }
-      });
+      function sortByArrayLength(arr: FinalListing1[], ascending = true) {
+        return arr.sort((a, b) => {
+          let lengthA = a.rating.length;
+          let lengthB = b.rating.length;
+          return ascending ? lengthA - lengthB : lengthB - lengthA;
+        });
+      }
+      if (sort === "htl") {
+        Listings = sortByArrayLength(Listings, false);
+      } else {
+        Listings = sortByArrayLength(Listings);
+      }
+    }
+    if (pr) {
+      const sort = pr as sort;
+      function sortByArrayPrice(arr: FinalListing1[], ascending = true) {
+        return arr.sort((a, b) => {
+          let lengthA = a.price;
+          let lengthB = b.price;
+          return ascending ? lengthA - lengthB : lengthB - lengthA;
+        });
+      }
+      if (sort === "htl") {
+        Listings = sortByArrayPrice(Listings, false);
+      } else {
+        Listings = sortByArrayPrice(Listings);
+      }
     }
     // Paginate the listings
     const totalItems = Listings.length;
@@ -616,6 +626,7 @@ export interface IListingsParams {
   c?: string;
   p?: string;
   s?: string;
+  pr?: string;
 }
 export interface Params {
   listingIds: string[];

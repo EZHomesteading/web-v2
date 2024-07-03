@@ -46,6 +46,7 @@ const Filters = ({ user }: Props) => {
   const [c, setC] = useState(searchParams?.get("c") === "true");
   const [s, setS] = useState(searchParams?.get("s") === "f");
   const [ra, setRa] = useState(searchParams?.get("ra"));
+  const [pr, setPr] = useState(searchParams?.get("pr"));
   const [l, setL] = useState(false);
   useEffect(() => {
     const r = searchParams?.get("radius");
@@ -57,9 +58,11 @@ const Filters = ({ user }: Props) => {
     setC(searchParams?.get("c") === "true");
     setS(searchParams?.get("s") === "f");
     setRa(searchParams?.get("ra") || "");
+    setPr(searchParams?.get("pr") || "");
   }, [searchParams]);
   const handleSeeListings = () => {
     const params = new URLSearchParams(searchParams?.toString());
+    console.log(pr);
     const rKm = (radius / 0.621371).toFixed(1);
     params.set("radius", rKm);
     if (rMi === 0) {
@@ -72,6 +75,9 @@ const Filters = ({ user }: Props) => {
     }
     if (ra) {
       params.set("ra", ra);
+    }
+    if (pr) {
+      params.set("pr", pr);
     }
     if (l) {
       params.delete("lat");
@@ -150,6 +156,20 @@ const Filters = ({ user }: Props) => {
               </SelectContent>
             </Select>
             <GiFruiting /> Sort EZH Organic Rating
+          </div>
+          <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
+            <Select onValueChange={(value) => setPr(value)}>
+              <SelectTrigger className="w-[75px]">
+                <SelectValue placeholder="" defaultValue={pr || "htl"} />
+              </SelectTrigger>
+              <SelectContent className={`${outfit.className}`}>
+                <SelectGroup>
+                  <SelectItem value="htl">High to Low</SelectItem>
+                  <SelectItem value="lth">Low to High</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <GiFruiting /> Sort by Price
           </div>
         </>
 
