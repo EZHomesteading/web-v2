@@ -28,6 +28,7 @@ import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { Location } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
+import ReactStars from "react-stars";
 
 const outfit = Outfit({
   display: "swap",
@@ -157,6 +158,17 @@ const ListingCard: React.FC<ListingCardProps> = ({
             {data?.location?.address[1]}, {data?.location?.address[2]}
           </div>
         </div>
+        <div className="text-sm text-gray-600 ">
+          Organic Rating:
+          <ReactStars
+            count={5}
+            size={20}
+            color2={"#ffd700"}
+            value={data.rating.length}
+            half={true}
+            edit={false}
+          />
+        </div>
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
             <div
@@ -167,6 +179,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <div className="font-light">per {data.quantityType}</div>
             </div>
           </div>
+
           <div className="flex justify-end">
             <AlertDialog>
               <AlertDialogTrigger>
