@@ -44,12 +44,13 @@ const SliderSection = ({
   hours,
   index,
   location,
+  showUpdate,
 }: {
   hours: ExtendedHours;
   index: number;
   location: Location;
+  showUpdate: boolean;
 }) => {
-  console.log("location", location);
   const defaultHours: ExtendedHours = {
     0: null,
     1: null,
@@ -257,9 +258,11 @@ const SliderSection = ({
   return (
     <div className="relative">
       {" "}
-      <div className="block xl:absolute lg:top-1">
-        <Button onClick={onSubmit}>Update</Button>
-      </div>
+      {showUpdate && (
+        <div className="block xl:absolute lg:top-1">
+          <Button onClick={onSubmit}>Update</Button>
+        </div>
+      )}
       <Card className="flex flex-col lg:flex-row  items-center bg-inherit border-none h-fit w-full justify-center">
         <div className="grid grid-cols-10"></div>
         <div className="flex flex-col">
