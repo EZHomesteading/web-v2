@@ -201,7 +201,6 @@ model Listing {
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
   cart          Cart[]
 }
-
 model Cart {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   userId        String @db.ObjectId

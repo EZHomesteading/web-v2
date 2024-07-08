@@ -516,9 +516,8 @@ const getNavUser = async () => {
   if (!User) {
     return null;
   }
-
   try {
-    const user = await prisma.user.findUnique({
+    let user = (await prisma.user.findUnique({
       where: {
         id: User?.id,
       },
@@ -533,19 +532,7 @@ const getNavUser = async () => {
           select: {
             id: true,
             quantity: true,
-            listing: {
-              select: {
-                imageSrc: true,
-                quantityType: true,
-                title: true,
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
+            listingId: true,
           },
         },
         buyerOrders: {
@@ -575,12 +562,45 @@ const getNavUser = async () => {
           },
         },
       },
-    });
+    })) as unknown as NavUser;
 
     if (!user) {
       return null;
     }
-    return user;
+
+    if (user.cart) {
+      const cartItems = user.cart.map(async (cartItem) => {
+        try {
+          const listing = await prisma.listing.findUnique({
+            where: { id: cartItem.listingId },
+            select: {
+              imageSrc: true,
+              quantityType: true,
+              title: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          });
+          if (!listing) {
+            await prisma.cart.delete({
+              where: { id: cartItem.id },
+            });
+            return { ...cartItem };
+          }
+          return { ...cartItem, listing };
+        } catch (error: any) {
+          throw new Error(error);
+        }
+      });
+
+      user.cart = await Promise.all(cartItems);
+    }
+    console.log(user.cart);
+    return user as unknown as NavUser;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -676,6 +696,21 @@ export type StoreUser = {
     };
   }[];
 };
+interface Cart {
+  id: string;
+  quantity: number;
+  listingId: string;
+  listing: {
+    imageSrc: string[];
+    quantityType: string;
+    title: string;
+    user: {
+      id: string;
+      name: string;
+    };
+  };
+}
+
 export interface NavUser {
   id: string;
   firstName: string | null;
@@ -683,19 +718,7 @@ export interface NavUser {
   name: string;
   email: string;
   image: string | null;
-  cart: {
-    id: string;
-    quantity: number;
-    listing: {
-      imageSrc: string[];
-      quantityType: string;
-      title: string;
-      user: {
-        id: string;
-        name: string;
-      };
-    };
-  }[];
+  cart: Cart[];
   buyerOrders: {
     id: string;
     conversationId: string | null;
