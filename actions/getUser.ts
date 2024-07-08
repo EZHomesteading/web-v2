@@ -529,25 +529,32 @@ const getNavUser = async () => {
         name: true,
         email: true,
         image: true,
-        cart: {
-          select: {
-            id: true,
-            quantity: true,
-            listing: {
-              select: {
-                imageSrc: true,
-                quantityType: true,
-                title: true,
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+        // cart: {
+        //   where: {
+        //     listing: {
+        //       id: {
+        //         startsWith: "6",
+        //       },
+        //     },
+        //   },
+        //   select: {
+        //     id: true,
+        //     quantity: true,
+        //     listing: {
+        //       select: {
+        //         imageSrc: true,
+        //         quantityType: true,
+        //         title: true,
+        //         user: {
+        //           select: {
+        //             id: true,
+        //             name: true,
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
         buyerOrders: {
           select: {
             id: true,
@@ -577,9 +584,6 @@ const getNavUser = async () => {
       },
     });
 
-    if (!user) {
-      return null;
-    }
     return user;
   } catch (error: any) {
     throw new Error(error);
