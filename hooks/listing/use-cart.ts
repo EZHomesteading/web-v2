@@ -40,12 +40,12 @@ const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
             (item: any) => item.listingId === listingId
           );
           const cartId = matchingObject.id;
-          await axios.delete(`/api/cart/${cartId}`);
+          await axios.delete(`/api/useractions/checkout/cart/${cartId}`);
         } else {
           if (!listingId) {
             throw new Error("Listing ID is required");
           }
-          await axios.post(`/api/cart/${listingId}`, {
+          await axios.post(`/api/useractions/checkout/cart/${listingId}`, {
             quantity: quantity,
             pickup: null,
           });

@@ -246,7 +246,7 @@ const SliderSection = ({
       }
 
       try {
-        await axios.post("/api/update", formData);
+        await axios.post("/api/useractions/update", formData);
         window.location.reload();
         toast.success("Your account details have changed");
       } catch (error) {

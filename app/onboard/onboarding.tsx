@@ -53,7 +53,7 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
       if (response.status === 200) {
         if (formData.image || formData.bio) {
           try {
-            const updateResponse = await axios.post("/api/update", {
+            const updateResponse = await axios.post("/api/useractions/update", {
               image: formData.image,
               bio: formData.bio,
             });

@@ -402,8 +402,16 @@ const getUserLocation2 = async (listing: Listing1, id: string) => {
 };
 function filterListingsByLocation(listings: FinalListingShop[]) {
   return listings.filter((listing: FinalListingShop) => {
-    return listing.location !== undefined || listing.location !== null;
+    return listing.location !== undefined && listing.location !== null;
   });
+}
+function filternullhours(listings: FinalListingShop[]) {
+  return listings.filter(
+    (listing: FinalListingShop) =>
+      listing.location.hours !== undefined &&
+      listing.location.hours !== null &&
+      listing.location.hours !== "null"
+  );
 }
 const getUserStore = async (
   params: IStoreParams
@@ -480,6 +488,9 @@ const getUserStore = async (
     resolvedSafeListings = await Promise.all(
       filterListingsByLocation(resolvedSafeListings)
     );
+    resolvedSafeListings = await Promise.all(
+      filternullhours(resolvedSafeListings)
+    );
     return {
       user: { ...user, listings: resolvedSafeListings },
       reviews: reviewsWithReviewer,
@@ -535,7 +546,6 @@ const getNavUser = async () => {
             listingId: true,
           },
         },
-
         buyerOrders: {
           select: {
             id: true,
@@ -597,7 +607,6 @@ const getNavUser = async () => {
           throw new Error(error);
         }
       });
-
       user.cart = await Promise.all(cartItems);
     }
     return user as unknown as NavUser;

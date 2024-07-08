@@ -18,7 +18,6 @@ interface Props {
   sodtarr: (number | null)[];
 }
 const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
-  console.log("beans", hours);
   const [sodt, setSodt] = useState(60);
   const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
   const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime

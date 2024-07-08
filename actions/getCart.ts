@@ -40,6 +40,7 @@ export type CartItem = {
     SODT: number | null;
     quantityType: string | null;
     shelfLife: number;
+    rating: number[];
     createdAt: string;
     location: {
       type: string;
@@ -83,6 +84,13 @@ function filterListingsByLocation(listings: CartItem[]) {
       listing.listing.location !== null
     );
   });
+}
+function filternullhours(listings: CartItem[]) {
+  return listings.filter(
+    (listing: CartItem) =>
+      listing.listing.location.hours !== undefined &&
+      listing.listing.location.hours !== null
+  );
 }
 
 const getAllCartItemsByUserId = async () => {
@@ -139,6 +147,7 @@ const getAllCartItemsByUserId = async () => {
     finalCartItems = await Promise.all(
       filterListingsByLocation(finalCartItems)
     );
+    finalCartItems = await Promise.all(filternullhours(finalCartItems));
     finalCartItems.sort((a, b) => {
       // First, sort by descending user ID
       if (b.listing.userId !== a.listing.userId) {

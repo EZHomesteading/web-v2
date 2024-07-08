@@ -74,7 +74,7 @@ export type FinalListing = {
     //hours: JsonValue;
   };
 };
-type FinalListing1 = {
+export type FinalListing1 = {
   id: string;
   title: string;
   price: number;
@@ -160,14 +160,28 @@ const getUserLocation2 = async (listing: Listing2) => {
   }
 };
 function filterListingsByLocation(listings: FinalListing[]) {
-  return listings.filter((listing: FinalListing) => {
-    return listing.location !== undefined || listing.location !== null;
-  });
+  return listings.filter(
+    (listing: FinalListing) =>
+      listing.location !== undefined && listing.location !== null
+  );
+}
+function filternullhours(listings: FinalListing[]) {
+  return listings.filter(
+    (listing: FinalListing) =>
+      listing.location.hours !== undefined && listing.location.hours !== null
+  );
+}
+function filternullhours1(listings: FinalListing1[]) {
+  return listings.filter(
+    (listing: FinalListing1) =>
+      listing.location.hours !== undefined && listing.location.hours !== null
+  );
 }
 function filterListingsByLocation1(listings: FinalListing1[]) {
-  return listings.filter((listing: FinalListing1) => {
-    return listing.location !== undefined || listing.location !== null;
-  });
+  return listings.filter(
+    (listing: FinalListing1) =>
+      listing.location !== undefined && listing.location !== null
+  );
 }
 
 const GetListingsMarket = async (
@@ -303,6 +317,7 @@ const GetListingsMarket = async (
     let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
     Listings = await Promise.all(listerine);
     Listings = await Promise.all(filterListingsByLocation1(Listings));
+    Listings = await Promise.all(filternullhours1(Listings));
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
@@ -459,6 +474,9 @@ const GetListingsByIds = async (params: Params) => {
     resolvedSafeListings = await Promise.all(
       filterListingsByLocation(resolvedSafeListings)
     );
+    resolvedSafeListings = await Promise.all(
+      filternullhours(resolvedSafeListings)
+    );
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -583,9 +601,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       };
     });
     let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await Promise.all(
-      filterListingsByLocation(resolvedSafeListings)
-    );
+
     return { listings: resolvedSafeListings };
   } catch (error: any) {
     throw new Error(error);
@@ -625,6 +641,9 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
     let resolvedSafeListings = await Promise.all(safeListings);
     resolvedSafeListings = await Promise.all(
       filterListingsByLocation(resolvedSafeListings)
+    );
+    resolvedSafeListings = await Promise.all(
+      filternullhours(resolvedSafeListings)
     );
     return { listings: resolvedSafeListings };
   } catch (error: any) {
