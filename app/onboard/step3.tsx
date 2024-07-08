@@ -7,13 +7,13 @@ interface Props {
   apiKey?: string;
 }
 
-const StoreStep = ({ user, apiKey }: Props) => {
+const StepThree = ({ user, apiKey }: Props) => {
   return (
-    <div>
+    <div className="flex justify-center items-center h-full">
       {user ? (
         <div>{apiKey && <CoOpHoursPage user={user} apiKey={apiKey} />}</div>
       ) : (
-        <div className="flex h-screen items-center justify-center">
+        <div className="flex items-center justify-center">
           You must be logged in as a co-op to access this page
         </div>
       )}
@@ -21,4 +21,4 @@ const StoreStep = ({ user, apiKey }: Props) => {
   );
 };
 
-export default StoreStep;
+export default StepThree;

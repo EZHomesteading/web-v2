@@ -1,20 +1,19 @@
 "use client";
 //onboarding page
 import { useState } from "react";
-import ProfileStep from "./profile-step";
 import StripeStep from "./stripe-step";
 import axios from "axios";
 import { toast } from "sonner";
 import { UserInfo } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
-
 import { Button } from "@/app/components/ui/button";
-
 import { Progress } from "@/app/components/ui/progress";
-
 import { useRouter } from "next/navigation";
 import { Outfit } from "next/font/google";
 import StepOne from "./step1";
+import StepTwo from "./step2";
+import StepThree from "./step3";
+import StepFour from "./step4";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -37,16 +36,13 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNext = async () => {
-    if (step === 3) {
-      handleSubmit();
-      router.push("/dashboard/my-store");
-    } else {
-      setStep(step + 1);
-    }
+    setStep(step + 1);
+    setProgress(step * 10);
   };
 
   const handlePrevious = () => {
     setStep(step - 1);
+    setProgress(step * 10);
   };
 
   const handleSubmit = async () => {
@@ -77,46 +73,26 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
     }
     setIsLoading(false);
   };
-  const [progress, setProgress] = useState();
+  const [progress, setProgress] = useState(step * 10);
   return (
-    <div className="">
-      {step === 1 && (
-        <div>
-          <StepOne />
+    <div className="flex flex-col h-screen">
+      <div className="flex-grow overflow-auto">
+        {step === 1 && <StepOne />}
+        {step === 2 && <StepTwo />}
+        {step === 3 && <StepThree user={user} apiKey={apiKey} />}
+        {step === 4 && <StepFour user={user} />}
+      </div>
+      <div className="mt-auto">
+        <Progress value={progress} className="w-full mb-4" />
+        <div className="flex justify-between px-4 pb-4">
+          {step > 1 && (
+            <Button onClick={handlePrevious} variant="outline">
+              Back
+            </Button>
+          )}
+          {step < 21 && <Button onClick={handleNext}>Next</Button>}
         </div>
-      )}
-      {step === 2 && (
-        <div>
-          <ProfileStep
-            formData={formData}
-            setFormData={setFormData}
-            user={user}
-          />
-        </div>
-      )}
-      {step === 3 && (
-        <div>
-          <StripeStep user={user} />
-        </div>
-      )}
-      <Progress value={progress} className="w-[100%] absolute bottom-20" />
-      {step > 1 && (
-        <Button
-          onClick={handlePrevious}
-          className="absolute bottom-0 left-5 text-6xl hover:cursor-pointer"
-        >
-          Back
-        </Button>
-      )}
-
-      {step < 4 && (
-        <Button
-          onClick={handleNext}
-          className="absolute bottom-5 right-5 hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
+      </div>
     </div>
   );
 };
