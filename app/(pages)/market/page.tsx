@@ -64,6 +64,7 @@ const ShopPage = async ({
     page,
     perPage
   );
+  //console.log(listings);
   let user = await getUserwithCart();
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
