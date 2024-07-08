@@ -163,6 +163,7 @@ const CardComponent = memo(
                             } | null;
                           }
                         }
+                        showUpdate={true}
                       />
                     )}
                   </DialogContent>
