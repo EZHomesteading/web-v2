@@ -22,6 +22,7 @@ import { BsPersonPlus } from "react-icons/bs";
 import { PiPersonSimpleRunThin } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
+import { useEffect, useState } from "react";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -36,6 +37,25 @@ const UserMenu = ({ user }: Props) => {
   const pathname = usePathname();
   const white = pathname === "/" || pathname?.startsWith("/chat");
   const router = useRouter();
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
   return (
     <Sheet>
       <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
@@ -209,9 +229,16 @@ const UserMenu = ({ user }: Props) => {
                     label="Logout"
                     onClick={() => signOut()}
                   />
-                  <Button onClick={() => router.push("/get-ezh-app")}>
-                    Install the EZH App
-                  </Button>
+                  {showInstallBtn &&
+                  !window.matchMedia("(display-mode: standalone)").matches ? (
+                    <>
+                      <Button onClick={() => router.push("/get-ezh-app")}>
+                        Install EZH App
+                      </Button>
+                    </>
+                  ) : (
+                    <div></div>
+                  )}
                 </SheetTrigger>
               </>
             ) : (

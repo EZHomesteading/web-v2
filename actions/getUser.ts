@@ -350,6 +350,7 @@ interface Listing1 {
   minOrder: number | null;
   imageSrc: string[];
   quantityType: string;
+  rating: number[];
   location: number;
 }
 export type FinalListingShop = {
@@ -357,6 +358,7 @@ export type FinalListingShop = {
   title: string;
   price: number;
   stock: number;
+  rating: number[];
   quantityType: string | null;
   createdAt: string;
   location: Location;
@@ -429,6 +431,7 @@ const getUserStore = async (
             title: true,
             price: true,
             minOrder: true,
+            rating: true,
             id: true,
             quantityType: true,
             location: true,
@@ -526,25 +529,25 @@ const getNavUser = async () => {
         name: true,
         email: true,
         image: true,
-        cart: {
-          select: {
-            id: true,
-            quantity: true,
-            listing: {
-              select: {
-                imageSrc: true,
-                quantityType: true,
-                title: true,
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+        // cart: {
+        //   select: {
+        //     id: true,
+        //     quantity: true,
+        //     listing: {
+        //       select: {
+        //         imageSrc: true,
+        //         quantityType: true,
+        //         title: true,
+        //         user: {
+        //           select: {
+        //             id: true,
+        //             name: true,
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
         buyerOrders: {
           select: {
             id: true,
@@ -655,6 +658,7 @@ export type StoreUser = {
     price: number;
     id: string;
     minOrder: number | null;
+    rating: number[];
     quantityType: string;
     location: {
       address: string;

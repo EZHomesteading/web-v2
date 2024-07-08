@@ -13,12 +13,18 @@ import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import ReviewButton from "@/app/components/ui/reviewButton";
-import { Outfit } from "next/font/google";
+import { Outfit, Zilla_Slab } from "next/font/google";
 import { IoTrash } from "react-icons/io5";
 import ConfirmModal from "./ConfirmModal";
 import CancelModal from "./CancelModal";
 import { Order, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
+import {
+  PiCalendarBlankLight,
+  PiCalendarCheckLight,
+  PiCalendarPlusLight,
+  PiCalendarXLight,
+} from "react-icons/pi";
 
 import {
   AlertDialog,
@@ -30,7 +36,20 @@ import DisputeModal from "./DisputeModal";
 import { User } from "next-auth";
 import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
 import { ExtendedHours, UserInfo } from "@/next-auth";
+import { Button } from "@/app/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover-msg";
 
+import { IoIosArrowDown } from "react-icons/io";
+
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -57,7 +76,37 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
   stripeAccountId,
 }) => {
-  //declare all use states for the component
+  function createMapsLinks() {
+    const address = [
+      order?.location?.address[0],
+      order?.location?.address[1],
+      order?.location?.address[2],
+      order?.location?.address[3],
+    ];
+
+    const encodedAddress = encodeURIComponent(address.join(", "));
+
+    const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+
+    const appleMapsLink = `http://maps.apple.com/?daddr=${encodedAddress}`;
+
+    return { googleMapsLink, appleMapsLink };
+  }
+
+  function isIOS(): boolean {
+    if (typeof window === "undefined" || !window.navigator) {
+      return false;
+    }
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+  }
+
+  const { googleMapsLink, appleMapsLink } = createMapsLinks();
+
+  const link = isIOS() ? appleMapsLink : googleMapsLink;
+
+  createMapsLinks();
   const [image, setImage] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -98,7 +147,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   //declare clsx styling
   const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");
-  const body = clsx("flex flex-grow flex-col ga", isOwn && "items-end");
+  const body = clsx("flex flex-grow flex-col", isOwn && "items-end");
   const message = clsx(
     `text-xs md:text-sm w-fit ${outfit.className}`,
     isOwn ? `m text-white` : `mnot`,
@@ -132,7 +181,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are `,
+      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -278,7 +327,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
     //coop declares new drop off time for producer deliveries
     axios.post("/api/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? if not, my hours of operation are`,
+      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -358,7 +407,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     return (
       <span>
         <Sheet>
-          <SheetTrigger>HOURS</SheetTrigger>
+          <SheetTrigger>here are my hours.</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
             <HoursDisplay
               coOpHours={order.location.hours as unknown as ExtendedHours}
@@ -379,160 +428,253 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   //Seller receives Order
   const resp1 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <button type="submit" onClick={onSubmit1} className="m">
-        Yes, That time works, Your order will be ready at that time. at{" "}
-        {order.location.address[0]}, {order.location.address[1]},{" "}
-        {order.location.address[2]}. {order.location.address[3]}!
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      <button
+        type="submit"
+        onClick={onSubmit1}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarCheckLight />
+        Agree to Time
       </button>
-      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-      <button type="submit" onClick={onSubmit2} className="m">
-        No, that time does not work. Does{" "}
-        <span className="text-black">{validTime}</span> work instead? if not, my
-        hours of operation are
-      </button>
-      <button type="submit" onClick={onSubmit3} className="m">
-        My apologies, but one or more of these items is no longer available, and
-        this order has been canceled. Sorry for the inconvenience. Feel free to
-        delete this chat whenever you have seen this message. If you do not
-        delete this chat it will be automatically deleted after 72 hours
+      {dateTime ? (
+        <>
+          <button
+            type="submit"
+            onClick={onSubmit2}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          >
+            <PiCalendarBlankLight />
+            Send Reschedule Offer
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          >
+            <PiCalendarPlusLight />
+            Set New Reschedule Time{" "}
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Reschedule Time
+        </button>
+      )}
+
+      <button
+        type="submit"
+        onClick={onSubmit3}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarXLight /> Cancel Order
       </button>
     </div>
   );
   //  COOP sets out item, if immediatley accept pick up time
   const resp2 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <button type="submit" onClick={onSubmit5} className="m">
-        Your order is ready to be picked up at {order.location.address[0]},{" "}
-        {order.location.address[1]}, {order.location.address[2]}.{" "}
-        {order.location.address[3]}!
+      <button type="submit" onClick={onSubmit5}>
+        Order is Ready
       </button>
     </div>
   );
   //COOP chose new time and buyer gets these options
   const resp3 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-        <button
-          type="submit"
-          onClick={onSubmit4}
-          className="message hover:bg-sky"
-        >
-          Fantastic, I will be there to pick up the item at the specified time.
-        </button>
-        <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      <button
+        type="submit"
+        onClick={onSubmit4}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 text-white"
+      >
+        <PiCalendarCheckLight />
+        Agree to Time
+      </button>
+      {dateTime ? (
         <button
           type="submit"
           onClick={onSubmit8}
-          className="message hover:bg-sky"
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
         >
-          No, that time does not work. Can it instead be ready at{" "}
-          <span className="text-black">{validTime}</span>
+          <PiCalendarBlankLight />
+          Send Reschedule Offer
         </button>
-      </div>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Reschedule Time
+        </button>
+      )}
+      <button
+        onClick={() => setCustomTimeOpen(true)}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+      >
+        <PiCalendarPlusLight />
+        Set New Reschedule Time{" "}
+      </button>
     </div>
   );
   // BUYER chose new time and COOP receives these options
   const resp4 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-        <button
-          type="submit"
-          onClick={onSubmit1}
-          className="message hover:bg-sky"
-        >
-          Yes, That time works, Your order will be ready at that time. at{" "}
-          {order.location?.address}
-        </button>
-        <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
+      <button
+        type="submit"
+        onClick={onSubmit1}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarCheckLight />
+        Agree to Time
+      </button>
+      {dateTime ? (
         <button
           type="submit"
           onClick={onSubmit2}
-          className="message hover:bg-sky"
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
         >
-          No, that time does not work. Does{" "}
-          <span className="text-black">{validTime}</span> work instead? if not,
-          my hours of operation are
+          <PiCalendarBlankLight />
+          Send Reschedule Offer
         </button>
-      </div>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Reschedule Time
+        </button>
+      )}
+      <button
+        onClick={() => setCustomTimeOpen(true)}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+      >
+        <PiCalendarPlusLight />
+        Set New Reschedule Time{" "}
+      </button>
     </div>
   );
   // coop accepted new pickup time and sets out the item
   const resp5 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
-        <button type="submit" onClick={onSubmit5} className="">
-          Your order is ready to be picked up at {order.location.address[0]},{" "}
-          {order.location.address[1]}, {order.location.address[2]}.{" "}
-          {order.location.address[3]}!
-        </button>
-      </div>
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
+      <button
+        type="submit"
+        onClick={onSubmit5}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarCheckLight />
+        Order is Ready
+      </button>
     </div>
   );
   // buyer receives their item or can choose to dispute
   const resp6 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
-        <button
-          type="submit"
-          onClick={onSubmit6}
-          className={`m text-xs md:text-sm`}
-        >
-          I have Received my order. Thank you!
-        </button>
-      </div>
-      <div className="flex flex-col text-sm w-fit overflow-hidden  text-white  py-2 px-3">
-        <button
-          type="submit"
-          onClick={() => setDisputeOpen(true)}
-          className={`m text-xs md:text-sm`}
-        >
-          Dispute Transaction
-        </button>
-      </div>
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
+      <button
+        type="submit"
+        onClick={onSubmit6}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarCheckLight />
+        Confirm Order
+      </button>
+      <button
+        onClick={() => setDisputeOpen(true)}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+      >
+        <PiCalendarPlusLight />
+        Dispute Transaction
+      </button>
     </div>
   );
   //buyer has picked up the item and COOP or PRODUCER marks order as complete and asks for reviews, will be able to place their own review on the buyer
   const resp7 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <button type="submit" onClick={onSubmit7} className="m hover:bg-sky-500">
-        Fantastic, this order has been marked as completed, feel free to delete
-        this chat. If you do not delete this chat it will be automatically
-        deleted after 72 hours
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
+      <button
+        type="submit"
+        onClick={onSubmit7}
+        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+      >
+        <PiCalendarCheckLight />
+        Thank Buyer
       </button>
     </div>
   );
   // producer receives order from COOP, gets these options
   const resp8 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-      <button type="submit" onClick={onSubmit9} className="">
-        I can deliver these items to you at{" "}
-        <span className="text-black">{validTime}</span>, does that work?
-      </button>
-
-      <button type="submit" onClick={onSubmit3} className="m hover:bg-sky">
-        My apologies, but one or more of these items is no longer available, and
-        this order has been canceled. Sorry for the inconvenience. Feel free to
-        delete this chat whenever you have seen this message. If you do not
-        delete this chat it will be automatically deleted after 72 hours
-      </button>
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
+      {dateTime ? (
+        <>
+          <button
+            type="submit"
+            onClick={onSubmit9}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          >
+            <PiCalendarBlankLight />
+            Send Delivery Time Offer
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          >
+            <PiCalendarPlusLight />
+            Set Different Time
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Set Delivery Time
+        </button>
+      )}
     </div>
   );
   // coop either agrees to drop off time or does not agree to drop off itme
   const resp9 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+      {" "}
       <button type="submit" onClick={onSubmit10} className="m hover:bg-sky-500">
-        Yes, That time works, See you then!
+        Accept Delivery Time
       </button>
-      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-      <button type="submit" onClick={onSubmit11} className="m hover:bg-sky-500">
-        No, that time does not work. Does{" "}
-        <span className="text-black">{validTime}</span> work instead? if not, my
-        hours of operation are
-      </button>
+      {dateTime ? (
+        <>
+          <button
+            type="submit"
+            onClick={onSubmit11}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          >
+            <PiCalendarBlankLight />
+            Send Delivery Time Offer
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          >
+            <PiCalendarPlusLight />
+            Set Different Time
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Set Delivery Time
+        </button>
+      )}
     </div>
   );
   // producer delivers the item, and is required to upload a photo
@@ -607,16 +749,37 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   // producer either agrees to drop off time or suggests a new one
   const resp11 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       <button type="submit" onClick={onSubmit14} className="m hover:bg-sky-600">
-        Yes, That time works. Your item will be delivered at that time.
+        Accept Delivery Time
       </button>
-      <button onClick={() => setCustomTimeOpen(true)}> SET TIME </button>
-
-      <button type="submit" onClick={onSubmit13} className="m hover:bg-sky-600">
-        No, that time does not work. Does{" "}
-        <span className="text-black">{validTime}</span> work instead?
-      </button>
+      {dateTime ? (
+        <>
+          <button
+            type="submit"
+            onClick={onSubmit9}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          >
+            <PiCalendarBlankLight />
+            Send Delivery Time Offer
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          >
+            <PiCalendarPlusLight />
+            Set Different Time
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={() => setCustomTimeOpen(true)}
+          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        >
+          <PiCalendarPlusLight />
+          Set Delivery Time
+        </button>
+      )}
     </div>
   );
   // producer delivers the item, and is required to upload a photo
@@ -692,8 +855,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   return (
-    <div>
-      {/* modal declarations */}
+    <div className="">
       {user.id === order.sellerId ? (
         <CustomTimeModal2
           isOpen={customTimeOpen}
@@ -850,6 +1012,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               </div>
             </div>
           ) : null}
+
           {/* display seen messages */}
           {isLast && isOwn && seenList.length > 0 && (
             <div className="text-xs font-light text-gray-500">
@@ -863,40 +1026,56 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {/* MESSAGE OPTIONS START HERE */}
       {/* MESSAGE OPTIONS START HERE */}
       {/* COOP receives order responce options */}
-      <div className="RespOpt">
-        <div className="flex flex-col text-sm text-black-500 justify-end items-end">
-          Your response options
-        </div>
-        <div className="flex flex-col px-2 justify-end items-end">
-          {notOwn && isLast && data.messageOrder === "1" ? (
-            resp1
-          ) : isOwn && isLast && data.messageOrder === "2" ? (
-            resp2
-          ) : notOwn && isLast && data.messageOrder === "3" ? (
-            resp3
-          ) : notOwn && isLast && data.messageOrder === "4" ? (
-            resp4
-          ) : notOwn && isLast && data.messageOrder === "5" ? (
-            resp5
-          ) : notOwn && isLast && data.messageOrder === "6" ? (
-            resp6
-          ) : notOwn && isLast && data.messageOrder === "7" ? (
-            resp7
-          ) : notOwn && isLast && data.messageOrder === "10" ? (
-            resp8
-          ) : notOwn && isLast && data.messageOrder === "11" ? (
-            resp9
-          ) : notOwn && isLast && data.messageOrder === "12" ? (
-            resp10
-          ) : notOwn && isLast && data.messageOrder === "13" ? (
-            resp11
-          ) : isOwn && isLast && data.messageOrder === "14" ? (
-            resp12
-          ) : (
-            <div>No responce options available</div>
-          )}
-        </div>
-      </div>
+
+      {isLast && (
+        <Popover>
+          <PopoverTrigger className="absolute bottom-5 right-5">
+            <IoIosArrowDown className="text-white" />
+          </PopoverTrigger>
+          <PopoverContent
+            className={`${outfit.className} absolute bottom-10 right-0 rounded-t-md w-[300px]`}
+          >
+            <div>
+              <div
+                className={`${zilla.className} text-md lg:text-md text-white font-extralight pt-2 px-2`}
+              >
+                Your Response Options
+              </div>
+              <div className="flex flex-col">
+                {notOwn && data.messageOrder === "1" ? (
+                  resp1
+                ) : isOwn && data.messageOrder === "2" ? (
+                  resp2
+                ) : notOwn && data.messageOrder === "3" ? (
+                  resp3
+                ) : notOwn && data.messageOrder === "4" ? (
+                  resp4
+                ) : notOwn && data.messageOrder === "5" ? (
+                  resp5
+                ) : notOwn && data.messageOrder === "6" ? (
+                  resp6
+                ) : notOwn && data.messageOrder === "7" ? (
+                  resp7
+                ) : notOwn && data.messageOrder === "10" ? (
+                  resp8
+                ) : notOwn && data.messageOrder === "11" ? (
+                  resp9
+                ) : notOwn && data.messageOrder === "12" ? (
+                  resp10
+                ) : notOwn && data.messageOrder === "13" ? (
+                  resp11
+                ) : isOwn && data.messageOrder === "14" ? (
+                  resp12
+                ) : (
+                  <div className="px-2 text-slate-800 font-extralight text-xl">
+                    No response options available
+                  </div>
+                )}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
 };
