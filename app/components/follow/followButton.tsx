@@ -44,11 +44,11 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     checkStringMatch(followUserId, following.follows) === false
   ) {
     const handleFollow = async () => {
-      if (following?.userId === undefined) {
+      if (following?.userId === null) {
         const callbackUrl = encodeURIComponent(window.location.href);
         router.push(`/auth/login?callbackUrl=${callbackUrl}`);
         return;
-      } else if (following.userId === followUserId) {
+      } else if (following?.userId === followUserId) {
         toast.error("Can't follow yourself.");
         return;
       }
