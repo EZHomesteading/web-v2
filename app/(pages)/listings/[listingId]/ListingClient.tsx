@@ -32,7 +32,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
   following,
   apiKey,
 }) => {
-  console.log(listing);
   const listingRole = listing.user.role;
   const listingUser = listing.user.id;
   const listingId = listing.id;

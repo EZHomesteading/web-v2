@@ -43,6 +43,7 @@ const CoOpHoursPage = ({ user, apiKey }: Props) => {
             <div className="flex flex-col">
               <CardContent className="p-0 sm:w-fit lg:w-[50vw]">
                 <HoursLocationContainer
+                  id={user.id as string}
                   location={user?.location}
                   apiKey={apiKey}
                   role={user?.role}

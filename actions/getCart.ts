@@ -40,6 +40,7 @@ export type CartItem = {
     SODT: number | null;
     quantityType: string | null;
     shelfLife: number;
+    rating: number[];
     createdAt: string;
     location: {
       type: string;

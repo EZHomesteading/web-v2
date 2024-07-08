@@ -241,7 +241,7 @@ const CreateClient = ({ user, index }: Props) => {
       location: data.location,
     };
     axios
-      .post("/api/listings", formData)
+      .post("/api/listing/listings", formData)
       .then(() => {
         toast.success("Listing created!");
         setValue("category", "");
@@ -479,7 +479,7 @@ const CreateClient = ({ user, index }: Props) => {
       category: suggestionCategory,
     };
     try {
-      axios.post("/api/suggestion", body);
+      axios.post("/api/useractions/suggestion", body);
       toast.success("Your request has been recieved!");
       setSuggestionCategory("");
       setSuggestionName("");
@@ -496,11 +496,11 @@ const CreateClient = ({ user, index }: Props) => {
   const postNewSODT = async (checked: boolean) => {
     try {
       if (checked) {
-        await axios.post("api/update", {
+        await axios.post("api/useractions/update", {
           SODT: sodt !== null ? parseInt(sodt) : null,
         });
       } else {
-        await axios.post("api/update", { SODT: null });
+        await axios.post("api/useractions/update", { SODT: null });
       }
     } catch (error) {
       console.error("Error posting SODT:", error);

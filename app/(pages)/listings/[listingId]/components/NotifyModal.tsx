@@ -41,11 +41,10 @@ const NotifyModal: React.FC<ConfirmModalProps> = ({
       toast.error("invalid email");
       return;
     }
-    console.log(listingId);
     setIsLoading(true);
     try {
       //email subscription API route
-      await axios.post("/api/emailSub", {
+      await axios.post("/api/listing/emailSub", {
         id: listingId,
         email: text,
       });

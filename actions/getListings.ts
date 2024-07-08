@@ -74,7 +74,7 @@ export type FinalListing = {
     //hours: JsonValue;
   };
 };
-type FinalListing1 = {
+export type FinalListing1 = {
   id: string;
   title: string;
   price: number;

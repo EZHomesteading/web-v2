@@ -228,7 +228,10 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     }
 
     const post = async () => {
-      const response = await axios.post("/api/create-order", body);
+      const response = await axios.post(
+        "/api/useractions/checkout/create-order",
+        body
+      );
       const datas = response.data;
       await datas.forEach((data: { id: string }) => {
         let store = sessionStorage.getItem("ORDER");

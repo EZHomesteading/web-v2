@@ -52,7 +52,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
         toast.error("Can't follow yourself.");
         return;
       }
-      await axios.post(`/api/follow/`, {
+      await axios.post(`/api/useractions/follow/`, {
         follows: followUserId,
       });
       router.refresh();
@@ -68,7 +68,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     );
   } else {
     const handleUnfollow = async () => {
-      await axios.post(`/api/follow/unfollow`, {
+      await axios.post(`/api/useractions/follow/unfollow`, {
         follows: followUserId,
       });
       router.refresh();
