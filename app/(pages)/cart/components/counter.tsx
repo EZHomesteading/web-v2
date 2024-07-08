@@ -33,7 +33,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
       setQuantity(cartItem.listing.minOrder);
       cartItem.quantity = cartItem.listing.minOrder;
       setInputValue(cartItem.listing.minOrder);
-      axios.post(`api/cart/`, {
+      axios.post(`api/useractions/checkout/cart/`, {
         cartId: cartItem.id,
         quantity: cartItem.listing.minOrder,
       });
@@ -41,7 +41,7 @@ const SpCounter = ({ cartItems, cartItem, onDataChange }: QuantityProps) => {
     }
 
     // Update the quantity in the server
-    axios.post(`api/cart/`, {
+    axios.post(`api/useractions/checkout/cart/`, {
       cartId: cartItem.id,
       quantity: inputValue,
     });

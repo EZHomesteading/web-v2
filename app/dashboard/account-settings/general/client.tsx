@@ -93,7 +93,7 @@ const Page = ({ apiKey }: Props) => {
 
         const email: string = user.email;
 
-        const response = await axios.post("/api/verifypass", {
+        const response = await axios.post("/api/auth/verifypass", {
           password,
           email,
         });
@@ -104,10 +104,13 @@ const Page = ({ apiKey }: Props) => {
           return;
         }
         if (data.isValid === true) {
-          const response2 = await axios.post("/api/verifypass/updatepass", {
-            password2,
-            email,
-          });
+          const response2 = await axios.post(
+            "/api/auth/verifypass/updatepass",
+            {
+              password2,
+              email,
+            }
+          );
           const datas = await response2.data;
           if (datas.success === "Password updated!") {
             toast.error("Password updated!");
@@ -129,10 +132,10 @@ const Page = ({ apiKey }: Props) => {
       }
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
-
+      console.log(image);
       if (geoData) {
         const formData = {
-          image: data.image,
+          image: image,
           name: data.name,
           email: data.email,
           phoneNumer: data.phoneNumber,
@@ -160,7 +163,7 @@ const Page = ({ apiKey }: Props) => {
                 },
         };
         axios
-          .post("/api/update", formData)
+          .post("/api/useractions/update", formData)
           .then(() => {
             router.refresh();
             toast.success("Your account details have changed");
@@ -173,9 +176,15 @@ const Page = ({ apiKey }: Props) => {
             setIsLoading(false);
             return;
           });
-      } else
+      } else {
+        const formData = {
+          image: image,
+          name: data.name,
+          email: data.email,
+          phoneNumer: data.phoneNumber,
+        };
         axios
-          .post("/api/update", data)
+          .post("/api/useractions/update", formData)
           .then(() => {
             router.refresh();
             toast.success("Your account details have changed");
@@ -187,12 +196,13 @@ const Page = ({ apiKey }: Props) => {
             // window.location.reload();
             setIsLoading(false);
           });
+      }
     }
   };
 
   const onDelete = () => {
     axios
-      .delete(`/api/register/${user?.id}`)
+      .delete(`/api/auth/register/${user?.id}`)
       .then(() => {
         toast.success("Your account has been deleted");
       })

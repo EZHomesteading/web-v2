@@ -109,7 +109,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
 
   // Function to delete the cart
   const handleDelete = async () => {
-    await axios.delete(`/api/cart`);
+    await axios.delete(`/api/useractions/checkout/cart`);
     router.refresh();
   };
 
@@ -421,7 +421,9 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                                   className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                                   onClick={async () => {
                                     const cartId = cartItem.id;
-                                    await axios.delete(`/api/cart/${cartId}`);
+                                    await axios.delete(
+                                      `/api/useractions/checkout/cart/${cartId}`
+                                    );
                                     router.refresh();
                                   }}
                                 >

@@ -24,10 +24,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     axios
-      .delete(`/api/conversations/${conversationId}`)
+      .delete(`/api/chat/conversations/${conversationId}`)
       .then(() => {
         onClose();
-        router.push("/autochat");
+        router.push("/chat");
         router.refresh();
       })
       .catch(() => toast.error("Something went wrong!"))

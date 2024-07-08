@@ -137,7 +137,6 @@ const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
 
   const formatPickupTime = (selectedTimer: Timer) => {
     if (!selectedTimer) return "";
-    console.log(selectedTimer);
     const { pickupTime } = selectedTimer;
     const now = new Date();
     const pickupDate = new Date(pickupTime);

@@ -117,7 +117,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       product.minOrder = 1;
     }
     if (quantity > product.minOrder) {
-      console.log(product.minOrder);
       setQuantity((prevQuantity: number) => prevQuantity - 1);
     }
   };

@@ -18,6 +18,7 @@ import {
 } from "../ui/alert-dialog";
 import FollowButton from "./followButton";
 import { Prisma } from "@prisma/client";
+import Avatar from "../Avatar";
 
 interface ListingCardProps {
   data: {
@@ -110,30 +111,28 @@ const FollowCard: React.FC<ListingCardProps> = ({
       <div className="flex flex-col w-full">
         <div
           onClick={() => router.push(`/profile/${data.id}`)}
-          className=" aspect-square w-full relative overflow-hidden rounded-xl hover:shadow-xl "
+          className="  w-full relative flex-row flex  items-start overflow-hidden rounded-xl hover:shadow-xl "
         >
-          <Image
-            fill
-            className=" object-cover h-full w-full group-hover:scale-105 transition "
-            src={
+          <Avatar
+            image={
               data.image
                 ? data?.image
                 : "/images/website-images/placeholder.jpg"
             }
-            alt={`${data.name} profile picture`}
           />
+          <div className=" pl-1  items-start ">
+            <div className="font-semibold text-lg ">{data.name}</div>
+            <div className="text-md ">View Profile</div>
+          </div>
         </div>
         <div className="font-semibold text-lg flex flex-col h-full ">
-          <div className="font-semibold text-lg flex-1 flex justify-between items-start">
-            {data.name}
-            <div className="relative">
-              <FollowButton followUserId={data.id} following={followarr} />
-              {isHovering && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md p-2 transition duration-300">
-                  Unfollow?
-                </div>
-              )}
-            </div>
+          <div className="relative">
+            <FollowButton followUserId={data.id} following={followarr} />
+            {isHovering && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md p-2 transition duration-300">
+                Unfollow?
+              </div>
+            )}
           </div>
         </div>
 

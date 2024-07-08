@@ -162,16 +162,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   // all onsubmit options dependent on messages in chat.
   const onSubmit1 = () => {
     //coop seller confirms order pickup time
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
     if (user.role === UserRole.COOP) {
-      axios.post("/api/update-order", { orderId: order.id, status: 2 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 2,
+      });
     } else {
-      axios.post("/api/update-order", { orderId: order.id, status: 10 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 10,
+      });
     }
   };
   const onSubmit2 = () => {
@@ -180,13 +186,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       toast.error("You must select a time before choosing this option");
       return;
     }
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: `No, that time does not work. Does ${validTime} work instead? If not, `,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", {
+    axios.post("/api/useractions/checkout/update-order", {
       orderId: order.id,
       status: 3,
       pickupDate: dateTime,
@@ -194,40 +200,49 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit3 = () => {
     //coop or producer cancels order because the item is no longer available.
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message:
         "My apologies, but one or more of these items is no longer available, and this order has been canceled. Sorry for the inconvenience. Feel free to delete this chat whenever you have seen this message. If you do not delete this chat it will be automatically deleted after 72 hours",
       messageOrder: "1.1",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 4 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 4,
+    });
     axios.post("/api/updateListingOnCancel", { order: order });
   };
   const onSubmit4 = () => {
     //buyer confirms new pickup time set by seller
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message:
         "Fantastic, I will be there to pick up the item at the specified time.",
       messageOrder: "5",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 5 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 5,
+    });
   };
   const onSubmit5 = () => {
     //coop has set out the order
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
       messageOrder: "6",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 8 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 8,
+    });
   };
   const onSubmit6 = () => {
     //buyer picks up/ receives delivery of the order, stripe transfer initiated
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: "I have Received my order. Thank you!",
       messageOrder: "7",
       conversationId: convoId,
@@ -235,10 +250,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
     if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
       //if buyer is coop buying from producer set status 17
-      axios.post("/api/update-order", { orderId: order.id, status: 17 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 17,
+      });
     } else {
       //if buyer is not coop buying from producer set status to 9
-      axios.post("/api/update-order", { orderId: order.id, status: 9 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 9,
+      });
     }
     axios.post("/api/stripe/transfer", {
       //finalise stripe transaction
@@ -249,7 +270,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
   };
   const onSubmit7 = () => {
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       //seller marks order as complete.
       message:
         "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
@@ -257,7 +278,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 18 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 18,
+    });
   };
   const onSubmit8 = () => {
     //early return if no time selected.
@@ -265,7 +289,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       toast.error("You must select a time before choosing this option");
       return;
     }
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       //handle producer reschedule or consumer reschedule
       message: `No, that time does not work. Can it instead be at ${validTime}`,
       messageOrder: "4",
@@ -274,13 +298,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
     if (user.role === UserRole.PRODUCER) {
       //pretty sure this is not needed, will keep just in case
-      axios.post("/api/update-order", {
+      axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 11,
         pickupDate: dateTime,
       });
     } else {
-      axios.post("/api/update-order", {
+      axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 6,
         pickupDate: dateTime,
@@ -293,13 +317,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       toast.error("You must select a time before choosing this option");
       return;
     }
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: `I can deliver these items to you at ${validTime}, does that work?`,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", {
+    axios.post("/api/useractions/checkout/update-order", {
       orderId: order.id,
       status: 11,
       pickupDate: dateTime,
@@ -307,16 +331,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit10 = () => {
     //handle producer accepts drop off time or producer accepts drop off time.
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: "Yes, That time works, See you then!",
       messageOrder: "12",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
     if (user.role === UserRole.COOP) {
-      axios.post("/api/update-order", { orderId: order.id, status: 13 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 13,
+      });
     } else {
-      axios.post("/api/update-order", { orderId: order.id, status: 10 });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 10,
+      });
     }
   };
   const onSubmit11 = () => {
@@ -326,13 +356,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       return;
     }
     //coop declares new drop off time for producer deliveries
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message: `No, that time does not work. Does ${validTime} work instead? If not, `,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", {
+    axios.post("/api/useractions/checkout/update-order", {
       orderId: order.id,
       status: 14,
       pickupDate: dateTime,
@@ -341,19 +371,22 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit12 = async (img: string) => {
     //producer delivers item and attaches an image.
     //early returns are handles in image upload function, cannot click submit without uploading an image.
-    await axios.post("/api/messages", {
+    await axios.post("/api/chat/messages", {
       message: img,
       messageOrder: "img",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    await axios.post("/api/messages", {
+    await axios.post("/api/chat/messages", {
       message: "Your item has been delivered.",
       messageOrder: "6",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 16 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 16,
+    });
   };
   const onSubmit13 = () => {
     //early return if no time selected
@@ -361,7 +394,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       toast.error("You must select a time before choosing this option");
       return;
     }
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       //producer or consumer declare new pickup/dropoff time
       //pretty sure this is only producer declaring new time, but put in consumer logic just in case things get mixed up.
       message: `No, that time does not work. Does ${validTime} work instead?`,
@@ -370,13 +403,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     if (user.role === UserRole.PRODUCER) {
-      axios.post("/api/update-order", {
+      axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 11,
         pickupDate: dateTime,
       });
     } else {
-      axios.post("/api/update-order", {
+      axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 6,
         pickupDate: dateTime,
@@ -385,14 +418,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   const onSubmit14 = () => {
     //producer confirms delivery time
-    axios.post("/api/messages", {
+    axios.post("/api/chat/messages", {
       message:
         "Yes, That time works. Your item will be delivered at that time.",
       messageOrder: "14",
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    axios.post("/api/update-order", { orderId: order.id, status: 10 });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 10,
+    });
   };
 
   //receive data from child and set date time based on user inputs in modal
