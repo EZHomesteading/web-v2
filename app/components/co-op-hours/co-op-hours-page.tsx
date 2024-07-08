@@ -11,7 +11,6 @@ const CoOpHoursPage = ({ user, apiKey }: Props) => {
     <div className="flex items-center justify-center h-full">
       <Map mk={apiKey} user={user} />
     </div>
-
   );
 };
 
