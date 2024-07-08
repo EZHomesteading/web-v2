@@ -596,10 +596,8 @@ const getNavUser = async () => {
           throw new Error(error);
         }
       });
-
       user.cart = await Promise.all(cartItems);
     }
-    console.log(user.cart);
     return user as unknown as NavUser;
   } catch (error: any) {
     throw new Error(error);
