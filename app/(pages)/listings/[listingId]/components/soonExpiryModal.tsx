@@ -45,9 +45,9 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
       totalPrice: quantity * listing.price,
       status: 0,
     });
-    await axios.delete(`/api/cart`);
+    await axios.delete(`/api/useractions/checkout/cart`);
     try {
-      await axios.post(`/api/cart/${listing.id}`, {
+      await axios.post(`/api/useractions/checkout/cart/${listing.id}`, {
         quantity: quantity,
         pickup: null,
       });
@@ -55,7 +55,10 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
       toast.error(err.response.data.error);
       return;
     }
-    const response = await axios.post("/api/create-order", body);
+    const response = await axios.post(
+      "/api/useractions/checkout/create-order",
+      body
+    );
     const datas = response.data;
     await datas.forEach((data: Order) => {
       let store = sessionStorage.getItem("ORDER");

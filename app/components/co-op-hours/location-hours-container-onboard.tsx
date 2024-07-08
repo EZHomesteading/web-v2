@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
-import SliderSelection from "./slider-selection";
+import SliderSelection from "@/app/dashboard/my-store/settings/slider-selection";
 import { Zilla_Slab } from "next/font/google";
 import { Button } from "@/app/components/ui/button";
 import { PiTrashSimple } from "react-icons/pi";
@@ -485,9 +485,7 @@ const HoursLocationContainer = ({
 export default HoursLocationContainer;
 const post = async (data: Location | undefined) => {
   try {
-    const response = await axios.post("/api/useractions/update", {
-      location: data,
-    });
+    const response = await axios.post("/api/update", { location: data });
     return response.data;
   } catch (error) {
     toast.error("There was an error updating your location or hours");

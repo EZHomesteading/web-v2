@@ -39,7 +39,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       try {
         await registerServiceWorker();
         if (!user?.subscriptions)
-          await axios.post("/api/update", {
+          await axios.post("/api/useractions/update", {
             subscriptions: "[]",
           });
       } catch (error) {

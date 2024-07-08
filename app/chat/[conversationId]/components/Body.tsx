@@ -35,12 +35,12 @@ const Body: React.FC<BodyProps> = ({
   const [messages, setMessages] = useState(initialMessages);
 
   useEffect(() => {
-    axios.post(`/api/conversations/${conversationId}/seen`);
+    axios.post(`/api/chat/conversations/${conversationId}/seen`);
   }, [conversationId]);
 
   useEffect(() => {
     const messageHandler = (message: FullMessageType) => {
-      axios.post(`/api/conversations/${conversationId}/seen`);
+      axios.post(`/api/chat/conversations/${conversationId}/seen`);
       setMessages((current) => {
         if (find(current, { id: message.id })) {
           return current;

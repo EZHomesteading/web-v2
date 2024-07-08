@@ -402,8 +402,16 @@ const getUserLocation2 = async (listing: Listing1, id: string) => {
 };
 function filterListingsByLocation(listings: FinalListingShop[]) {
   return listings.filter((listing: FinalListingShop) => {
-    return listing.location !== undefined || listing.location !== null;
+    return listing.location !== undefined && listing.location !== null;
   });
+}
+function filternullhours(listings: FinalListingShop[]) {
+  return listings.filter(
+    (listing: FinalListingShop) =>
+      listing.location.hours !== undefined &&
+      listing.location.hours !== null &&
+      listing.location.hours !== "null"
+  );
 }
 const getUserStore = async (
   params: IStoreParams
@@ -480,6 +488,9 @@ const getUserStore = async (
     resolvedSafeListings = await Promise.all(
       filterListingsByLocation(resolvedSafeListings)
     );
+    resolvedSafeListings = await Promise.all(
+      filternullhours(resolvedSafeListings)
+    );
     return {
       user: { ...user, listings: resolvedSafeListings },
       reviews: reviewsWithReviewer,
@@ -516,9 +527,8 @@ const getNavUser = async () => {
   if (!User) {
     return null;
   }
-
   try {
-    const user = await prisma.user.findUnique({
+    let user = (await prisma.user.findUnique({
       where: {
         id: User?.id,
       },
@@ -529,25 +539,13 @@ const getNavUser = async () => {
         name: true,
         email: true,
         image: true,
-        // cart: {
-        //   select: {
-        //     id: true,
-        //     quantity: true,
-        //     listing: {
-        //       select: {
-        //         imageSrc: true,
-        //         quantityType: true,
-        //         title: true,
-        //         user: {
-        //           select: {
-        //             id: true,
-        //             name: true,
-        //           },
-        //         },
-        //       },
-        //     },
-        //   },
-        // },
+        cart: {
+          select: {
+            id: true,
+            quantity: true,
+            listingId: true,
+          },
+        },
         buyerOrders: {
           select: {
             id: true,
@@ -575,12 +573,43 @@ const getNavUser = async () => {
           },
         },
       },
-    });
+    })) as unknown as NavUser;
 
     if (!user) {
       return null;
     }
-    return user;
+
+    if (user.cart) {
+      const cartItems = user.cart.map(async (cartItem) => {
+        try {
+          const listing = await prisma.listing.findUnique({
+            where: { id: cartItem.listingId },
+            select: {
+              imageSrc: true,
+              quantityType: true,
+              title: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          });
+          if (!listing) {
+            await prisma.cart.delete({
+              where: { id: cartItem.id },
+            });
+            return { ...cartItem };
+          }
+          return { ...cartItem, listing };
+        } catch (error: any) {
+          throw new Error(error);
+        }
+      });
+      user.cart = await Promise.all(cartItems);
+    }
+    return user as unknown as NavUser;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -676,6 +705,21 @@ export type StoreUser = {
     };
   }[];
 };
+interface Cart {
+  id: string;
+  quantity: number;
+  listingId: string;
+  listing: {
+    imageSrc: string[];
+    quantityType: string;
+    title: string;
+    user: {
+      id: string;
+      name: string;
+    };
+  };
+}
+
 export interface NavUser {
   id: string;
   firstName: string | null;
@@ -683,19 +727,7 @@ export interface NavUser {
   name: string;
   email: string;
   image: string | null;
-  cart: {
-    id: string;
-    quantity: number;
-    listing: {
-      imageSrc: string[];
-      quantityType: string;
-      title: string;
-      user: {
-        id: string;
-        name: string;
-      };
-    };
-  }[];
+  cart: Cart[];
   buyerOrders: {
     id: string;
     conversationId: string | null;

@@ -124,6 +124,31 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </CarouselItem>
               ))}
             </CarouselContent>
+            {!data.location ? (
+              <div className=" overflow-hidden rounded-xl hover:shadow-xl absolute bottom-2 flex flex-col justify-center items-center bg-red-500 p-2 m-2">
+                <div>
+                  {" "}
+                  This item has no location set and is not visible to buyers.{" "}
+                </div>
+                <div>
+                  {" "}
+                  Go to store settings to set up this location, or change its
+                  location
+                </div>
+              </div>
+            ) : !data.location.hours ? (
+              <div className=" overflow-hidden rounded-xl hover:shadow-xl absolute bottom-2 flex-col flex justify-center items-center bg-red-500 p-2 m-2">
+                <div>
+                  {" "}
+                  This item has no hours set and is not visible to buyers.
+                </div>
+                <div>
+                  Go to store settings to set up hours for this location, or
+                  change its location
+                </div>
+              </div>
+            ) : null}
+
             {data.imageSrc.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
                 {data.imageSrc.map((_, index) => (
