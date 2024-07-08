@@ -46,6 +46,7 @@ const Filters = ({ user }: Props) => {
   const [c, setC] = useState(searchParams?.get("c") === "true");
   const [s, setS] = useState(searchParams?.get("s") === "f");
   const [ra, setRa] = useState(searchParams?.get("ra"));
+  const [pr, setPr] = useState(searchParams?.get("pr"));
   const [l, setL] = useState(false);
   useEffect(() => {
     const r = searchParams?.get("radius");
@@ -57,9 +58,11 @@ const Filters = ({ user }: Props) => {
     setC(searchParams?.get("c") === "true");
     setS(searchParams?.get("s") === "f");
     setRa(searchParams?.get("ra") || "");
+    setPr(searchParams?.get("pr") || "");
   }, [searchParams]);
   const handleSeeListings = () => {
     const params = new URLSearchParams(searchParams?.toString());
+    console.log(pr);
     const rKm = (radius / 0.621371).toFixed(1);
     params.set("radius", rKm);
     if (rMi === 0) {
@@ -72,6 +75,9 @@ const Filters = ({ user }: Props) => {
     }
     if (ra) {
       params.set("ra", ra);
+    }
+    if (pr) {
+      params.set("pr", pr);
     }
     if (l) {
       params.delete("lat");
@@ -146,10 +152,29 @@ const Filters = ({ user }: Props) => {
                 <SelectGroup>
                   <SelectItem value="htl">High to Low</SelectItem>
                   <SelectItem value="lth">Low to High</SelectItem>
+                  <SelectItem value="5">Rating of 5</SelectItem>
+                  <SelectItem value="4">Rating of 4</SelectItem>
+                  <SelectItem value="3">Rating of 3</SelectItem>
+                  <SelectItem value="2">Rating of 2</SelectItem>
+                  <SelectItem value="1">Rating of 1</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
             <GiFruiting /> Sort EZH Organic Rating
+          </div>
+          <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
+            <Select onValueChange={(value) => setPr(value)}>
+              <SelectTrigger className="w-[75px]">
+                <SelectValue placeholder="" defaultValue={pr || "htl"} />
+              </SelectTrigger>
+              <SelectContent className={`${outfit.className}`}>
+                <SelectGroup>
+                  <SelectItem value="htl">High to Low</SelectItem>
+                  <SelectItem value="lth">Low to High</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <GiFruiting /> Sort by Price
           </div>
         </>
 
@@ -158,6 +183,12 @@ const Filters = ({ user }: Props) => {
           className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
         >
           See Listings
+        </SheetTrigger>
+        <SheetTrigger
+          onClick={() => router.push("/market")}
+          className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
+        >
+          Clear Filters
         </SheetTrigger>
       </SheetContent>
     </Sheet>

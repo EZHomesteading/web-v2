@@ -350,6 +350,7 @@ interface Listing1 {
   minOrder: number | null;
   imageSrc: string[];
   quantityType: string;
+  rating: number[];
   location: number;
 }
 export type FinalListingShop = {
@@ -357,6 +358,7 @@ export type FinalListingShop = {
   title: string;
   price: number;
   stock: number;
+  rating: number[];
   quantityType: string | null;
   createdAt: string;
   location: Location;
@@ -429,6 +431,7 @@ const getUserStore = async (
             title: true,
             price: true,
             minOrder: true,
+            rating: true,
             id: true,
             quantityType: true,
             location: true,
@@ -655,6 +658,7 @@ export type StoreUser = {
     price: number;
     id: string;
     minOrder: number | null;
+    rating: number[];
     quantityType: string;
     location: {
       address: string;

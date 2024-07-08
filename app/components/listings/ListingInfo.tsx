@@ -10,7 +10,6 @@ const outfit = Outfit({
   display: "swap",
 });
 interface ListingInfoProps {
-  user: UserInfo;
   description: string;
   followUserId: string;
   following:
@@ -25,7 +24,6 @@ interface ListingInfoProps {
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
-  user,
   followUserId,
   following,
   listingUser,
@@ -56,7 +54,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           </span>
           <span>{listingUser?.name}</span>
         </span>
-        <FollowButton followUserId={followUserId} following={following}/>
+        <FollowButton followUserId={followUserId} following={following} />
       </div>
     </div>
   );
