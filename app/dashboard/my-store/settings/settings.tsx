@@ -48,7 +48,7 @@ const StoreSettings = ({ apiKey }: p) => {
       // banner: banner,
     };
     axios
-      .post("/api/update", formData)
+      .post("/api/useractions/update", formData)
       .then(() => {
         window.location.replace("/dashboard/my-store");
         toast.success("Your account details have changed");

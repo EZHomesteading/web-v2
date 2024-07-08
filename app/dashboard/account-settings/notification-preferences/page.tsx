@@ -90,7 +90,7 @@ const Page = () => {
     setIsLoading(true);
 
     try {
-      await axios.post("/api/update", {
+      await axios.post("/api/useractions/update", {
         notifications: notificationPreferences,
       });
       toast.success("Your notification preferences have been updated");

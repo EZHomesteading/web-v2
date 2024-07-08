@@ -485,7 +485,9 @@ const HoursLocationContainer = ({
 export default HoursLocationContainer;
 const post = async (data: Location | undefined) => {
   try {
-    const response = await axios.post("/api/update", { location: data });
+    const response = await axios.post("/api/useractions/update", {
+      location: data,
+    });
     return response.data;
   } catch (error) {
     toast.error("There was an error updating your location or hours");

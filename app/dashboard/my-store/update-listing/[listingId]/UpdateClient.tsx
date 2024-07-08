@@ -123,7 +123,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       setDeletingId(id);
 
       axios
-        .delete(`/api/listings/${id}`)
+        .delete(`/api/listing/listings/${id}`)
         .then(() => {
           toast.success("Listing deleted");
           router.refresh();
@@ -165,7 +165,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
           : data.quantityType,
     };
     axios
-      .post("/api/updateListing", formData)
+      .post("/api/listing/updateListing", formData)
       .then(() => {
         toast.success("Your Listing was Updated!");
       })

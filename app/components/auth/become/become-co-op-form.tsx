@@ -121,7 +121,7 @@ export const BecomeCoop = ({ user }: BecomeCoopProps) => {
         }
       );
       if (stripeResponse.status === 200) {
-        await fetch("/api/update", {
+        await fetch("/api/useractions/update", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
