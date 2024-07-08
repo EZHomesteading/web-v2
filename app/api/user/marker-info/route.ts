@@ -17,11 +17,25 @@ export async function GET(request: Request) {
           select: {
             imageSrc: true,
           },
+          take: 5,
         },
       },
     });
 
-    return NextResponse.json(user);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const allImageSrcs = user.listings.flatMap((listing) => listing.imageSrc);
+
+    const uniqueImageSrcs = [...new Set(allImageSrcs)].slice(0, 3);
+
+    const modifiedUser = {
+      ...user,
+      listings: uniqueImageSrcs.map((imageSrc) => ({ imageSrc })),
+    };
+
+    return NextResponse.json(modifiedUser);
   } catch (error) {
     console.error("Error fetching marker info:", error);
     return NextResponse.json(
