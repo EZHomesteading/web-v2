@@ -317,7 +317,6 @@ const GetListingsMarket = async (
     let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
     Listings = await Promise.all(listerine);
     Listings = await Promise.all(filterListingsByLocation1(Listings));
-    console.log(Listings);
     Listings = await Promise.all(filternullhours1(Listings));
     // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {

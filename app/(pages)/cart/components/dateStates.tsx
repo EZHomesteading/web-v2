@@ -69,6 +69,7 @@ const DateState = ({
   //function to pass data to parent element
   const handleTimer = (childTime: ValidTime) => {
     onSetTime(childTime);
+    console.log(childTime);
     setSelectedTime(childTime);
   };
 

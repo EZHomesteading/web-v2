@@ -129,15 +129,13 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   // Function to insert a time string into a datetime object
   function insertTimeIntoDatetime(datetime: Date, timeString: string) {
     const inputDatetime = new Date(datetime);
-    const matchResult = timeString.match(/(\\d+):(\\d+)\\s*(\\w*)/i);
 
     // If the time string is invalid, log an error and return the input datetime
+    const matchResult = timeString.match(/(\d+):(\d+)\s*(\w*)/i);
     if (!matchResult) {
       console.error("Invalid time string format:", timeString);
       return inputDatetime;
     }
-
-    //destructuring match result object, time is unused, but is necessary to pass to function properly.
     const [time, hours, minutes, meridiem] = matchResult;
     let parsedHours = parseInt(hours, 10);
 
@@ -152,7 +150,6 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
     } else {
       parsedHours = parsedHours % 24; // Handle 24-hour format
     }
-
     const parsedMinutes = parseInt(minutes, 10);
     inputDatetime.setHours(parsedHours, parsedMinutes, 0, 0);
     return inputDatetime;
@@ -161,6 +158,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
   // Function to set the selected time option, and send it to the parent element
   const setTime = (option: string) => {
     if (date && option) {
+      console.log("BEANS", option);
       onSetTime({
         pickupTime: insertTimeIntoDatetime(date, option),
         index: index,

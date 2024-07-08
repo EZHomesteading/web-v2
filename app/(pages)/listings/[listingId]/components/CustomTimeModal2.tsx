@@ -141,6 +141,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   // Function to set the selected time option, and send it to the parent element
   const setTime = (option: string) => {
     if (date && option) {
+      console.log("BEANS", option);
       onSetTime({
         pickupTime: insertTimeIntoDatetime(date, option),
       });
