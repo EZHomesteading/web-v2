@@ -18,13 +18,13 @@ interface Props {
 const InfoWindowCarousel = ({ images, handleInfoWindowClose }: Props) => {
   return (
     <Carousel className="relative w-80">
-      <CarouselContent>
+      <CarouselContent className="rounded-t-md">
         {images.map((image, index) => (
           <CarouselItem key={index}>
             <Card>
-              <CardContent className="flex items-center justify-center relative aspect-video">
+              <CardContent className="flex items-center justify-center relative aspect-video rounded-t-md">
                 <Image
-                  src={image[0]}
+                  src={image}
                   alt={`Carousel Image ${index + 1}`}
                   fill
                   className="object-cover rounded-t-md"
