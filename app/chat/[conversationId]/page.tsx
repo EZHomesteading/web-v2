@@ -30,7 +30,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
   return (
-    <div className="lg:pl-80 h-full">
+    <div className="lg:pl-80 min-h-[110vh]">
       <div className="h-full flex flex-col">
         {conversationData && (
           <>

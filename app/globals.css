@@ -72,6 +72,9 @@
 .phone {
   aspect-ratio: 9/16;
 }
+.phone2 {
+  aspect-ratio: 9/10;
+}
 .PhoneInputCountryIcon,
 .PhoneInputCountrySelect,
 .PhoneInputCountrySelectArrow {
@@ -135,13 +138,7 @@
   background-color: #007aff !important;
 }
 .RespOpt {
-  position: absolute !important;
-  bottom: 0;
-  right: 0;
-  background-color: gray;
-  border-radius: 20px;
-  padding: 10px 20px;
-  margin: 20px;
+  background: linear-gradient(to bottom, #549ce8, #0f172a) !important;
 }
 .message {
   background-color: #007aff !important;
@@ -211,6 +208,7 @@
   height: 15px;
   background-color: inherit;
 }
+
 .mnot {
   position: relative;
   background-color: #d3d3d3;
