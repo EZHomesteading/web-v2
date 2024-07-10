@@ -117,7 +117,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [cancel, setCancel] = useState(true);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
-
   //dependent on message order allow or dont allow the cancel button to be visible
   useEffect(() => {
     if (
@@ -1014,7 +1013,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <ReviewButton
                 reviewedId={otherUsersId}
                 reviewerId={user?.id}
-                buyer={false}
+                buyer={user.id === order.sellerId ? false : true}
               />{" "}
               <div>
                 <div
@@ -1034,7 +1033,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <ReviewButton
                 reviewerId={user?.id}
                 reviewedId={otherUsersId}
-                buyer={true}
+                buyer={user.id === order.sellerId ? false : true}
               />
               <div>
                 <div

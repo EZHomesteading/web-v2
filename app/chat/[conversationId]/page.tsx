@@ -36,6 +36,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
           <>
             <Header
               conversation={conversation as unknown as FullConversationType}
+              order={order as unknown as Order}
             />
             <Body
               initialMessages={messages}

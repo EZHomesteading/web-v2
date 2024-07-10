@@ -6,14 +6,18 @@ import useOtherUser from "@/hooks/messenger/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/avatar-group";
 import { FullConversationType } from "@/types";
+import { useRouter } from "next/navigation";
+import { Order } from "@prisma/client";
+import Button from "@/app/components/modals/chatmodals/Button";
 
 interface HeaderProps {
   conversation: FullConversationType;
+  order: Order;
 }
 
-const Header: React.FC<HeaderProps> = ({ conversation }) => {
+const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
   const otherUser = useOtherUser(conversation);
-
+  const router = useRouter();
   return (
     <>
       <div
@@ -47,16 +51,27 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
             <HiChevronLeft size={32} />
           </Link>
           <div className="flex flex-row items-start gap-x-2">
-            {conversation.isGroup ? (
+            {/* {conversation.isGroup ? (
               <AvatarGroup users={conversation.users} />
-            ) : (
-              <Avatar image={otherUser.image} />
-            )}
-            <div className="flex flex-col text-3xl items-center justify-center">
+            ) : ( */}
+            <Avatar image={otherUser.image} />
+            {/* )} */}
+            <div
+              className="flex flex-col text-3xl items-center justify-center"
+              onClick={() => router.push(`/profile/${otherUser.id}`)}
+            >
               <div>{conversation.name || otherUser.name}</div>
-              <div className="text-sm font-light text-neutral-500">
-                {otherUser.firstName}
-              </div>
+              {otherUser.id === order.sellerId ? (
+                <Button onClick={() => router.push(`/store/${otherUser.url}`)}>
+                  Go to Store
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => router.push(`/profile/${otherUser.url}`)}
+                >
+                  View buyers rating
+                </Button>
+              )}
             </div>
           </div>
         </div>

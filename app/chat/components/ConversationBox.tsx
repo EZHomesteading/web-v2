@@ -24,7 +24,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 }) => {
   const otherUser = useOtherUser(data);
   const router = useRouter();
-  const mess: string = "this is an automated message";
 
   const handleClick = useCallback(() => {
     router.push(`/chat/${data.id}`);
@@ -63,7 +62,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 
   //   return "Started a conversation";
   // }, [lastMessage]);
-
+  console.log(data);
   return (
     <div
       onClick={handleClick}
@@ -72,18 +71,16 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
         selected ? "bg-slate-800" : "bg-slate-900 shadow-xl"
       )}
     >
-      {data.isGroup ? (
+      {/* {data.isGroup ? (
         <AvatarGroup users={data.users} />
-      ) : (
-        <Avatar image={otherUser.image} />
-      )}
+      ) : ( */}
+      <Avatar image={otherUser.image} />
+      {/* )} */}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
           <span className="absolute inset-0" aria-hidden="true" />
           <div className="flex justify-between items-center mb-1">
-            <p className="text-md font-medium ">
-              {data.name || otherUser.name}
-            </p>
+            <p className="text-md font-medium ">{otherUser.name}</p>
             {lastMessage?.createdAt && (
               <p
                 className="
@@ -102,7 +99,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
               hasSeen ? "text-gray-500" : "text-black font-medium"
             )}
           >
-            {mess}
+            {data.messages[data.messages.length - 1].body}
           </p>
         </div>
       </div>
