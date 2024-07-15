@@ -6,7 +6,7 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "../../components/Input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
-import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import LocationSearchInput from "@/app/components/map/LocationSearchInputSettings";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
@@ -408,7 +408,7 @@ const Page = ({ apiKey }: Props) => {
                 <LocationSearchInput
                   apiKey={apiKey}
                   address={watch("address")}
-                  setAddress={(address) => setValue("address", address)}
+                  setAddress={(address: any) => setValue("address", address)}
                   onAddressParsed={handleAddressSelect}
                 />
               </div>

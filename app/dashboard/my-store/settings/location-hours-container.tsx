@@ -328,7 +328,10 @@ const CardComponent = memo(
                       All of the listings associated with this location will be
                       deleted as well. This action is irreversible
                       <Button
-                        onClick={() => handleDeleteLocation(locationIndex)}
+                        onClick={() => {
+                          handleDeleteLocation(locationIndex);
+                          close();
+                        }}
                       >
                         I'm sure
                       </Button>
