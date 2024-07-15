@@ -101,7 +101,7 @@ const SheetContentF = React.forwardRef<
       if (rating === 0 || text.trim() === "") {
         return;
       }
-      axios.post("/api/review", {
+      axios.post("/api/useractions/review", {
         rating: rating,
         review: text,
         reviewedId: reviewedId,
@@ -134,7 +134,7 @@ const SheetContentF = React.forwardRef<
                 value={rating}
                 onChange={handleRatingChange}
                 half={false}
-                edit={false}
+                edit={true}
               />
             </div>
             <Textarea

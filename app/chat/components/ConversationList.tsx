@@ -14,6 +14,7 @@ import {
 } from "@/actions/chat/pushService";
 import axios from "axios";
 import { UserInfo } from "@/next-auth";
+import useOtherUser from "@/hooks/messenger/useOtherUser";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];

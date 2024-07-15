@@ -20,6 +20,7 @@ const getConversationById = async (conversationId: string) => {
             name: true,
             role: true,
             image: true,
+            url: true,
             //hours: true,
             email: true,
             stripeAccountId: true,

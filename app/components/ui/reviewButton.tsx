@@ -12,6 +12,7 @@ interface StatusProps {
 }
 
 const ReviewButton = ({ reviewedId, reviewerId, buyer }: StatusProps) => {
+  console.log(buyer);
   return (
     <SheetCartC>
       <SheetTrigger className="border-[1px] bg-neutral-100 text-black px-2 py-2 rounded-lg shadow-lg">
