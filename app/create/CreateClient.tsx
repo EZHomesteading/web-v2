@@ -307,6 +307,13 @@ const CreateClient = ({ user, index }: Props) => {
       });
       return;
     }
+    if (step === 2 && minOrder > quantity) {
+      toast.error("Minimum order cannot be more than your quantity", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
     if (step === 2 && !sodt) {
       toast.error("Please enter a set out/delivery time for your listing", {
         duration: 2000,
@@ -323,7 +330,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
+    if (step === 4 && Array.isArray(imageSrc) && imageSrc.length === 0) {
       toast.error("Please use the stock photo or upload atleast one photo", {
         duration: 2000,
         position: "bottom-center",
@@ -369,7 +376,7 @@ const CreateClient = ({ user, index }: Props) => {
     }
     if (
       step === 5 ||
-      (step === 4 && user?.location && user?.location[1] === null)
+      (step === 4 && user?.location && user?.location[0] === null)
     ) {
       if (!product) {
         toast.error("Let us know what produce you have!", {
@@ -397,6 +404,12 @@ const CreateClient = ({ user, index }: Props) => {
         return;
       } else if (quantity <= 0 || !quantity) {
         toast.error("Quantity must be greater than 0", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      } else if (minOrder > quantity) {
+        toast.error("Minimum order cannot be more than your quantity", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -436,11 +449,17 @@ const CreateClient = ({ user, index }: Props) => {
           position: "bottom-center",
         });
         return;
+      } else if (user?.location && user?.location[0] === null) {
+        toast.error("Please Set a default location in your store settings", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
       }
     }
     if (step === 5) {
       handleSubmit(onSubmit)();
-    } else if (step === 4 && user?.location && user?.location[1] === null) {
+    } else if (step === 4 && user?.location && user?.location[0] === null) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -493,6 +512,10 @@ const CreateClient = ({ user, index }: Props) => {
   useEffect(() => {
     setPostSODT(false);
   }, [sodt]);
+  const [nonPerishable, setnonPerishable] = useState(false);
+  useEffect(() => {
+    setnonPerishable(false);
+  }, [sodt]);
   const postNewSODT = async (checked: boolean) => {
     try {
       if (checked) {
@@ -513,8 +536,21 @@ const CreateClient = ({ user, index }: Props) => {
       postNewSODT(checked);
     }
   };
+  const handlenonPerishableCheckboxChange = (
+    checked: boolean,
+    index: number
+  ) => {
+    if (index === 0) {
+      setnonPerishable(checked);
+      if (checked === true) {
+        setCustomValue("shelfLifeYears", 1000);
+      } else {
+        setCustomValue("shelfLifeYears", 0);
+      }
+    }
+  };
   {
-    if (user?.location && user.location[1] === null) {
+    if (user?.location && user.location[0] === null) {
       setValue("location", 0);
     }
   }
@@ -603,7 +639,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && user?.location && user?.location[1] !== null && (
+            {step === 5 && user?.location && user?.location[0] !== null && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tight">
@@ -683,7 +719,7 @@ const CreateClient = ({ user, index }: Props) => {
                 >
                   Photos
                 </BreadcrumbItem>
-                {user?.location && user?.location[1] !== null && (
+                {user?.location && user?.location[0] !== null && (
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem
@@ -754,6 +790,27 @@ const CreateClient = ({ user, index }: Props) => {
                             duration: 2000,
                             position: "bottom-center",
                           });
+                          return;
+                        } else if (minOrder > quantity) {
+                          toast.error(
+                            "Minimum order cannot be higher than stock.",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
+                          return;
+                        } else if (
+                          Array.isArray(rating) &&
+                          rating.length === 0
+                        ) {
+                          toast.error(
+                            "Please certify your EZH Organic Rating",
+                            {
+                              duration: 2000,
+                              position: "bottom-center",
+                            }
+                          );
                           return;
                         } else {
                           setStep(5);
@@ -894,6 +951,7 @@ const CreateClient = ({ user, index }: Props) => {
                           errors={errors}
                           watch={watch}
                           setValue={setValue}
+                          maxlength={6}
                         />{" "}
                       </div>
                       <div className="w-1/2">
@@ -919,6 +977,7 @@ const CreateClient = ({ user, index }: Props) => {
                           formatPrice
                           watch={watch}
                           setValue={setValue}
+                          maxlength={6}
                         />
                       </div>
                       <div className="w-1/2">
@@ -931,6 +990,7 @@ const CreateClient = ({ user, index }: Props) => {
                           errors={errors}
                           watch={watch}
                           setValue={setValue}
+                          maxlength={4}
                         />
                       </div>
                     </div>
@@ -996,48 +1056,64 @@ const CreateClient = ({ user, index }: Props) => {
                   <div className="w-full lg:w-1/2">
                     <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
                       <Label className="text-xl">Estimated Shelf Life </Label>
-                      <div className="text-xs">
-                        {shelfLife ? (
-                          <>Estimated Expiry Date: {expiryDate}</>
-                        ) : (
-                          <></>
-                        )}
+                      <Checkbox
+                        id="nonPerishable"
+                        checked={nonPerishable}
+                        onCheckedChange={(checked: boolean) =>
+                          handlenonPerishableCheckboxChange(checked, 0)
+                        }
+                        label="Is this item non-perishble?"
+                      />
+                    </div>
+                    {nonPerishable === false ? (
+                      <div>
+                        <div className="text-xs">
+                          {shelfLife ? (
+                            <>Estimated Expiry Date: {expiryDate}</>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                        <div className="mt-1 space-y-2">
+                          <Counter
+                            onChange={(value: number) =>
+                              setCustomValue("shelfLifeDays", value)
+                            }
+                            value={shelfLifeDays}
+                            title="Days"
+                            subtitle=""
+                            maximum={31}
+                          />
+                          <Counter
+                            onChange={(value: number) =>
+                              setCustomValue("shelfLifeWeeks", value)
+                            }
+                            value={shelfLifeWeeks}
+                            title="Weeks"
+                            subtitle=""
+                            maximum={4}
+                          />
+                          <Counter
+                            onChange={(value: number) =>
+                              setCustomValue("shelfLifeMonths", value)
+                            }
+                            value={shelfLifeMonths}
+                            title="Months"
+                            subtitle=""
+                            maximum={12}
+                          />
+                          <Counter
+                            onChange={(value: number) =>
+                              setCustomValue("shelfLifeYears", value)
+                            }
+                            value={shelfLifeYears}
+                            title="Years"
+                            subtitle=""
+                            maximum={50}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-1 space-y-2">
-                      <Counter
-                        onChange={(value: number) =>
-                          setCustomValue("shelfLifeDays", value)
-                        }
-                        value={shelfLifeDays}
-                        title="Days"
-                        subtitle=""
-                      />
-                      <Counter
-                        onChange={(value: number) =>
-                          setCustomValue("shelfLifeWeeks", value)
-                        }
-                        value={shelfLifeWeeks}
-                        title="Weeks"
-                        subtitle=""
-                      />
-                      <Counter
-                        onChange={(value: number) =>
-                          setCustomValue("shelfLifeMonths", value)
-                        }
-                        value={shelfLifeMonths}
-                        title="Months"
-                        subtitle=""
-                      />
-                      <Counter
-                        onChange={(value: number) =>
-                          setCustomValue("shelfLifeYears", value)
-                        }
-                        value={shelfLifeYears}
-                        title="Years"
-                        subtitle=""
-                      />
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -1118,7 +1194,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Back
               </Button>
             )}
-            {step === 4 && user?.location && user?.location[1] === null ? (
+            {step === 5 && user?.location && user?.location[0] === null ? (
               <>
                 {" "}
                 <Button
@@ -1139,7 +1215,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </Button>
               </>
             )}
-            {step === 5 && user?.location && user?.location[1] !== null && (
+            {step === 5 && user?.location && user?.location[0] !== null && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1147,7 +1223,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Finish
               </Button>
             )}
-            {step < 4 && (
+            {step < 5 && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1236,7 +1312,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && user?.location && user?.location[1] !== null && (
+            {step === 5 && user?.location && user?.location[0] !== null && (
               <div
                 className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
               >

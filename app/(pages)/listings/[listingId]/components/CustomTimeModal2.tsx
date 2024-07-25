@@ -161,7 +161,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                 className={`${zilla.className} bg-neutral-100 shadow-md mb-1`}
               >
                 <IoStorefrontOutline className="mr-2 h-4 w-4" />
-                <span>View Hours</span>
+                <span>View Farm Hours</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -177,7 +177,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                 className={`${zilla.className} bg-neutral-100 shadow-md mb-2`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                {date ? format(date, "PPP") : <span>Set Pickup Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent

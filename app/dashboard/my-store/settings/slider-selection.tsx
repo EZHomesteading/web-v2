@@ -287,7 +287,7 @@ const SliderSection = ({
                           <PopoverTrigger
                             className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500 hover:text-white`}
                           >
-                            Add & Remove Hours
+                            Add or Remove sets of hours for {currentDay}
                           </PopoverTrigger>
                           <PopoverContent className={`${outfit.className}`}>
                             <div>

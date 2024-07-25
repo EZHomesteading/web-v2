@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     return NextResponse.error();
   }
   let updatedUser;
-  console.log(image);
+  //console.log(image);
   updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {

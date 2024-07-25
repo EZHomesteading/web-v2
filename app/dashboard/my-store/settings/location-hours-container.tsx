@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import SliderSelection from "./slider-selection";
@@ -16,6 +23,7 @@ import { toast } from "sonner";
 import { LocationObj, Prisma, UserRole } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
 import prisma from "@/lib/prisma";
+import { error } from "console";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -53,6 +61,7 @@ const CardComponent = memo(
     handleShowAddressChange,
     hours,
     locationState,
+    setLocationState,
     location,
     id,
   }: {
@@ -68,12 +77,78 @@ const CardComponent = memo(
     hours: ExtendedHours;
     locationState: Location | undefined;
     location: Location | undefined;
+    setLocationState: Dispatch<SetStateAction<Location | undefined>>;
     id: string;
   }) => {
     {
       locationState && console.log(locationState[locationIndex]);
     }
-
+    const handleSetDefault = (locationIndex: number) => {
+      if (locationState) {
+        if (locationIndex === 1) {
+          location = {
+            0: locationState[1],
+            1: locationState[0],
+            2: locationState[2],
+          };
+        } else {
+          location = {
+            0: locationState[2],
+            1: locationState[1],
+            2: locationState[0],
+          };
+        }
+        const data = { location: location };
+        axios.post("/api/useractions/update", data).catch((error) => {
+          toast.error(error.message);
+        });
+        setLocationState(location);
+      }
+    };
+    const handleSetSecond = (locationIndex: number) => {
+      if (locationState) {
+        if (locationIndex === 0) {
+          location = {
+            0: locationState[1],
+            1: locationState[0],
+            2: locationState[2],
+          };
+        } else {
+          location = {
+            0: locationState[0],
+            1: locationState[2],
+            2: locationState[1],
+          };
+        }
+        const data = { location: location };
+        axios.post("/api/useractions/update", data).catch((error) => {
+          toast.error(error.message);
+        });
+        setLocationState(location);
+      }
+    };
+    const handleSetThird = (locationIndex: number) => {
+      if (locationState) {
+        if (locationIndex === 0) {
+          location = {
+            0: locationState[2],
+            1: locationState[1],
+            2: locationState[0],
+          };
+        } else {
+          location = {
+            0: locationState[0],
+            1: locationState[2],
+            2: locationState[1],
+          };
+        }
+        const data = { location: location };
+        axios.post("/api/useractions/update", data).catch((error) => {
+          toast.error(error.message);
+        });
+        setLocationState(location);
+      }
+    };
     return (
       <Card
         key={locationIndex}
@@ -133,9 +208,15 @@ const CardComponent = memo(
             ) : (
               <>
                 <Dialog>
-                  <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                    Change Hours
-                  </DialogTrigger>
+                  {hours === null ? (
+                    <DialogTrigger className="text-white bg-red-600 font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                      Set Hours
+                    </DialogTrigger>
+                  ) : (
+                    <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                      Change Hours
+                    </DialogTrigger>
+                  )}
                   <DialogContent className="bg">
                     {locationState && (
                       <SliderSelection
@@ -175,6 +256,68 @@ const CardComponent = memo(
                 >
                   Change Address
                 </Button>
+
+                {locationIndex === 0 ? (
+                  <div className="flex flex-col w-full gap-2">
+                    {location && location[1] !== null ? (
+                      <Button
+                        className="font-extralight "
+                        onClick={() => handleSetSecond(locationIndex)}
+                      >
+                        Set as secondary location
+                      </Button>
+                    ) : null}
+                    {location && location[2] !== null ? (
+                      <Button
+                        className="font-extralight"
+                        onClick={() => handleSetThird(locationIndex)}
+                      >
+                        Set as third location
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+                {locationIndex === 1 ? (
+                  <div className="flex flex-col w-full gap-2">
+                    {location && location[0] !== null ? (
+                      <Button
+                        className="font-extralight "
+                        onClick={() => handleSetDefault(locationIndex)}
+                      >
+                        Set as Default location
+                      </Button>
+                    ) : null}
+                    {location && location[2] !== null ? (
+                      <Button
+                        className="font-extralight"
+                        onClick={() => handleSetThird(locationIndex)}
+                      >
+                        Set as third location
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+                {locationIndex === 2 ? (
+                  <div className="flex flex-col w-full gap-2">
+                    {location && location[0] !== null ? (
+                      <Button
+                        className="font-extralight "
+                        onClick={() => handleSetDefault(locationIndex)}
+                      >
+                        Set as default location
+                      </Button>
+                    ) : null}
+                    {location && location[1] !== null ? (
+                      <Button
+                        className="font-extralight"
+                        onClick={() => handleSetSecond(locationIndex)}
+                      >
+                        Set as secondary location
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+
                 <Dialog>
                   <DialogTrigger>
                     <PiTrashSimple className="text-red-500 font-extralight absolute top-2 right-2" />
@@ -185,7 +328,10 @@ const CardComponent = memo(
                       All of the listings associated with this location will be
                       deleted as well. This action is irreversible
                       <Button
-                        onClick={() => handleDeleteLocation(locationIndex)}
+                        onClick={() => {
+                          handleDeleteLocation(locationIndex);
+                          close();
+                        }}
                       >
                         I'm sure
                       </Button>
@@ -325,12 +471,6 @@ const HoursLocationContainer = ({
       post(shiftedLocationState);
       return shiftedLocationState;
     });
-    prisma.listing.deleteMany({
-      where: {
-        userId: id,
-        location: locationIndex,
-      },
-    });
   };
   const handleCancelAddressChange = () => {
     setSelectedLocation(null);
@@ -415,6 +555,16 @@ const HoursLocationContainer = ({
             : nonNullLocations.length
         } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
       >
+        {nonNullLocations.length === 0 ? (
+          <Card className="col-span-1 h-full bg-red-600 relative w-5/6 sm:w-full justify-center items-center">
+            <CardContent className="flex flex-col justify-center items-center h-full pt-3">
+              <div>
+                You have no default location set, if you would like to create a
+                product this needs to be set up.
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
         {nonNullLocations.map(([key, locationData], locationIndex) => {
           const handleAddressChange = (index: number, value: string) => {
             setAddresses((prevAddresses) => ({
@@ -446,6 +596,7 @@ const HoursLocationContainer = ({
               }
               hours={locationData?.hours}
               locationState={locationState}
+              setLocationState={setLocationState}
               location={location}
               id={id}
             />

@@ -546,6 +546,7 @@ const getNavUser = async () => {
             listingId: true,
           },
         },
+        location: true,
         buyerOrders: {
           select: {
             id: true,

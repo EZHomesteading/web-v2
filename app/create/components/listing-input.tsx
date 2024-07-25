@@ -25,6 +25,7 @@ interface InputProps {
   validationRules?: RegisterOptions<FieldValues>;
   watch: UseFormWatch<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
+  maxlength: number;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -39,6 +40,7 @@ const Input: React.FC<InputProps> = ({
   watch,
   setValue,
   type,
+  maxlength,
 }) => {
   let registerOptions: RegisterOptions<FieldValues> = {
     required: required ? "This field is required" : false,
@@ -51,7 +53,6 @@ const Input: React.FC<InputProps> = ({
     }
     return true;
   };
-
   return (
     <>
       <div className="w-inherit relative">
@@ -95,7 +96,11 @@ const Input: React.FC<InputProps> = ({
         `}
           value={isNaN(watch(id)) || watch(id) === undefined ? "" : watch(id)}
           onChange={(e) => {
-            const value = e.target.value;
+            let value = e.target.value;
+            if (maxlength && value.length > maxlength) {
+              value = value.slice(0, maxlength);
+              e.target.value = value;
+            }
             if (value === "" || validateInput(value)) {
               setValue(id, value === "" ? undefined : value, {
                 shouldValidate: true,

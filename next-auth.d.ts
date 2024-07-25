@@ -94,6 +94,7 @@ type navUser = {
   sellerOrders?: navSellOrder[];
   buyerOrders?: navBuyOrder[];
   cart?: nav;
+  location: Location;
 };
 type Location = { 0?: LocationObj; 1?: LocationObj; 2?: LocationObj };
 type CartGroup = {
