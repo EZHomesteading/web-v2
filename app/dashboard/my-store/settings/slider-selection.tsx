@@ -45,11 +45,14 @@ const SliderSection = ({
   index,
   location,
   showUpdate,
+  onHoursChange
 }: {
   hours: ExtendedHours;
   index: number;
   location: Location;
-  showUpdate: boolean;
+  showUpdate: boolean;  
+  onHoursChange?: (newHours: ExtendedHours) => void;
+
 }) => {
   const defaultHours: ExtendedHours = {
     0: null,
@@ -121,10 +124,16 @@ const SliderSection = ({
   const isOpen = coOpHours[currentDayIndex] !== null;
 
   const handleHourChange = (open: number, close: number) => {
-    setCoOpHours((prevHours) => ({
-      ...prevHours,
-      [currentDayIndex]: [{ open, close }],
-    }));
+    setCoOpHours((prevHours) => {
+      const newHours = {
+        ...prevHours,
+        [currentDayIndex]: [{ open, close }],
+      };
+      if (onHoursChange) {
+        onHoursChange(newHours);
+      }
+      return newHours;
+    });
   };
 
   const handleApplyToAll = () => {
