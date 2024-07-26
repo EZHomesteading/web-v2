@@ -1,8 +1,6 @@
 import { useState } from "react";
-import CoopHoursSlider from "../components/co-op-hours/co-op-hours-slider";
 import SliderSelection from "@/app/dashboard/my-store/settings/slider-selection";
 import { Prisma } from "@prisma/client";
-import { ExtendedHours } from "@/next-auth";
 
 interface p {
   user: any;

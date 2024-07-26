@@ -43,6 +43,7 @@ interface UserLocation {
 }
 
 const Onboarding = ({ user, index, apiKey }: Props) => {
+  const router = useRouter()
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
@@ -91,6 +92,13 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
           await axios.post("/api/useractions/update", { image: formData.image });
           
         }
+        
+      } else if (step === 7) {
+          if (formData.bio) {
+            await axios.post("/api/useractions/update", {bio: formData.bio})
+          }
+        }else if (step === 9) {
+          router.push("/dashboard")
       }
   
     } catch (error) {
@@ -131,12 +139,12 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
     <div className="flex flex-col h-screen">
       <Link
         href="/"
-        className={`${outfit.className} absolute top-5 left-5 bg-slate-300 px-2 rounded-sm shadow-sm font-light hover:cursor-pointer`}
+        className={`${outfit.className} z absolute top-5 left-5 bg-slate-300 px-2 rounded-sm shadow-sm font-light hover:cursor-pointer`}
       >
         Home
       </Link>
 
-      <div className="flex-grow overflow-y-auto !overflow-x-hidden">
+      <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
         {step === 1 && <StepOne />}
         {step === 2 && <StepTwo />}
         {step === 3 && apiKey && (
@@ -158,7 +166,7 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
         {step === 8 && <StepEight />}
         {step === 9 && <StepNine user={user} />}
       </div>
-      <div className="">
+      <div>
         <Progress value={progress} className="w-full mb-4" />
 
         {step === 1 ? (

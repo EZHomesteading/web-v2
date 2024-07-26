@@ -8,6 +8,7 @@ import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "@/app/components/navbar/UserMenu";
 import type { Viewport } from "next";
 import { navUser } from "@/next-auth";
+import MapPopup from "@/app/(home)/info-modals/map-info-modal";
 
 export const viewport: Viewport = {
   themeColor: "white",
@@ -58,6 +59,7 @@ const MapPage = async () => {
           userRole={session?.user.role}
         />
       </div>
+      <MapPopup />
     </div>
   );
 };

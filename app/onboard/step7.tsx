@@ -1,5 +1,6 @@
 import { Outfit } from 'next/font/google';
 import { useState } from 'react';
+import { Textarea } from '../components/ui/textarea';
 const outfit = Outfit({
     subsets: ["latin"],
     display: "swap",
@@ -19,10 +20,11 @@ const StepSeven: React.FC<Props> = ({ userBio, updateFormData }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
+
       <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
-        Add a Store Bio
+              {userBio ? <>Change your Bio</> : <>Add a Store Bio</>}
       </h1>
-      <textarea
+      <Textarea
         value={bio}
         onChange={handleBioChange}
         placeholder="Tell us about yourself..."

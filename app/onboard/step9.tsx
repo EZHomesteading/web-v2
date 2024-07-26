@@ -5,7 +5,7 @@ interface p {
 }
 const StepNine= ({user}:p) => {
     return (
-        <div className="mt-10">           
+        <div className="my-10 h-fit">           
             <AccountOnboardingUI user={user} />
         </div>
         )

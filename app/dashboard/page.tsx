@@ -11,6 +11,7 @@ import prisma from "@/lib/prisma";
 import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
 import { getFollowers } from "@/actions/getFollow";
+import DashboardPopup from "../(home)/info-modals/dashboard-info-modal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -395,7 +396,7 @@ const Dashboard = async () => {
             </Card>
           )}
         </div>
-      </main>
+      </main>{(user?.role === UserRole.COOP || user?.role === UserRole.PRODUCER) && <DashboardPopup />}
     </>
   );
 };
