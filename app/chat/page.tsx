@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import useConversation from "@/hooks/messenger/useConversation";
 import EmptyState from "@/app/components/EmptyState";
+import MessagesPopup from "@/app/(home)/info-modals/messages-info-modal";
 
 const Home = () => {
   const { isOpen } = useConversation();
@@ -12,6 +13,7 @@ const Home = () => {
       className={clsx(" lg:pl-80 h-full lg:block", isOpen ? "block" : "hidden")}
     >
       <EmptyState />
+      <MessagesPopup />
     </div>
   );
 };
