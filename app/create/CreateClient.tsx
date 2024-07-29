@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
-import { Button } from "@/app/components/ui/button";
+import { Button, buttonVariants } from "@/app/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -59,6 +59,7 @@ import { FinalListing } from "@/actions/getListings";
 import { GiAppleCore, GiMeat, GiShinyApple } from "react-icons/gi";
 import { FaStoreAlt } from "react-icons/fa";
 import { TbCandle } from "react-icons/tb";
+import { Tag } from "lucide-react";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -89,6 +90,10 @@ const CreateClient = ({ user, index }: Props) => {
   const [clicked2, setClicked2] = useState(false);
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [tag, setTag] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   //declare formstate default values
   let usersodt = null;
   if (user.SODT && user.SODT !== null) {
@@ -215,8 +220,6 @@ const CreateClient = ({ user, index }: Props) => {
 
   //geocoding from autocompleted adress inputs
 
-  const [description, setDescription] = useState("");
-  const [title, setTitle] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -521,25 +524,25 @@ const CreateClient = ({ user, index }: Props) => {
     const endDate = addDays(new Date(), shelfLife);
     expiryDate = format(endDate, "MMM d, yyyy");
   }
-  const [suggestionName, setSuggestionName] = useState("");
-  const [suggestionCategory, setSuggestionCategory] = useState("");
-  const [suggestionSubCategory, setSuggestionSubCategory] = useState("");
-  const handleSuggestionSubmit = () => {
-    const body = {
-      name: suggestionName,
-      subCategory: suggestionSubCategory,
-      category: suggestionCategory,
-    };
-    try {
-      axios.post("/api/useractions/suggestion", body);
-      toast.success("Your request has been recieved!");
-      setSuggestionCategory("");
-      setSuggestionName("");
-      setSuggestionSubCategory("");
-    } catch (error) {
-      toast.error("an error occured");
-    }
-  };
+  // const [suggestionName, setSuggestionName] = useState("");
+  // const [suggestionCategory, setSuggestionCategory] = useState("");
+  // const [suggestionSubCategory, setSuggestionSubCategory] = useState("");
+  // const handleSuggestionSubmit = () => {
+  //   const body = {
+  //     name: suggestionName,
+  //     subCategory: suggestionSubCategory,
+  //     category: suggestionCategory,
+  //   };
+  //   try {
+  //     axios.post("/api/useractions/suggestion", body);
+  //     toast.success("Your request has been recieved!");
+  //     setSuggestionCategory("");
+  //     setSuggestionName("");
+  //     setSuggestionSubCategory("");
+  //   } catch (error) {
+  //     toast.error("an error occured");
+  //   }
+  // };
 
   const [postSODT, setPostSODT] = useState(false);
   useEffect(() => {
@@ -587,6 +590,13 @@ const CreateClient = ({ user, index }: Props) => {
       setValue("location", 0);
     }
   }
+  const addTag = () => {
+    const tagArr: string[] = tags;
+    console.log(tag);
+    tagArr.push(tag);
+    setTags(tagArr);
+    setTag("");
+  };
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
@@ -967,6 +977,42 @@ const CreateClient = ({ user, index }: Props) => {
                   onChange={(e) => setDescription(e.target.value)}
                   value={description}
                 />
+                <div className="w-full">
+                  <Textarea
+                    id="keywords"
+                    placeholder="Enter Tags so users can easily search for your product, more tags means its easier to find!"
+                    disabled={isLoading}
+                    maxLength={64}
+                    onChange={(e) => setTag(e.target.value)}
+                    value={tag}
+                  />
+                  <Button
+                    onClick={() => {
+                      const tagArr = [...tags];
+                      tagArr.push(tag);
+                      setTags(tagArr);
+                      setTag("");
+                    }}
+                  >
+                    add tag!
+                  </Button>
+                </div>
+                <div>
+                  click to remove a tag
+                  <div>
+                    {tags.map((tag, index) => (
+                      <Button
+                        onClick={() => {
+                          let tagArr = [...tags];
+                          tagArr.splice(index, 1);
+                          setTags(tagArr);
+                        }}
+                      >
+                        {tag}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
             {step === 3 && (
