@@ -13,9 +13,8 @@ import Avatar from "@/app/components/Avatar";
 import { addDays, format } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { FinalListing } from "@/actions/getListings";
 interface EmulatorProps {
-  product: FinalListing & { label: string };
+  title: string;
   description?: string;
   stock?: number;
   quantityType: QuantityTypeValue | undefined;
@@ -28,7 +27,7 @@ interface EmulatorProps {
 }
 
 const Emulator = ({
-  product,
+  title,
   description,
   stock,
   quantityType,
@@ -92,7 +91,7 @@ const Emulator = ({
                                   src={imageSrc[index]}
                                   fill
                                   className="object-cover w-full rounded-lg"
-                                  alt={product?.label}
+                                  alt={title}
                                 />
                               </CardContent>
                             </Card>
@@ -114,7 +113,7 @@ const Emulator = ({
                 </div>
                 <div className="mt-2 px-4">
                   <Heading
-                    title={product?.label}
+                    title={title}
                     subtitle={
                       city && state ? `${city}, ${state}` : city || state || ""
                     }

@@ -39,9 +39,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Emulator from "./components/emulator";
-import SearchClient, {
-  ProductValue,
-} from "@/app/components/client/SearchClient";
+
 import Heading from "@/app/components/Heading";
 import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
@@ -82,14 +80,15 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(6);
+  const [step, setStep] = useState(1);
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
-  const [product, setProduct] = useState<ProductValue>();
+
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
   const [clicked1, setClicked1] = useState(false);
   const [clicked2, setClicked2] = useState(false);
-
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
   //declare formstate default values
   let usersodt = null;
   if (user.SODT && user.SODT !== null) {
@@ -217,6 +216,7 @@ const CreateClient = ({ user, index }: Props) => {
   //geocoding from autocompleted adress inputs
 
   const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -228,12 +228,12 @@ const CreateClient = ({ user, index }: Props) => {
 
     //onsubmit formstate to formdata=data to pass to create listing api endpoint
     const formData = {
-      title: data.title,
+      title: title,
       SODT: parseInt(data.sodt),
       minOrder: parseInt(data.minOrder),
       description: description,
-      category: data.category,
-      subCategory: data.subCategory,
+      category: category,
+      subCategory: subCategory,
       rating: rating,
       price: formattedPrice,
       imageSrc: data.imageSrc,
@@ -268,7 +268,6 @@ const CreateClient = ({ user, index }: Props) => {
         setClicked(false);
         setClicked1(false);
         setClicked2(false);
-        setProduct(undefined);
         setRating([]);
         setCertificationChecked(false);
         setQuantityType(undefined);
@@ -289,7 +288,21 @@ const CreateClient = ({ user, index }: Props) => {
   };
   //step handlers so that proper pages render
   const handleNext = async () => {
-    if (step === 1 && !product) {
+    if (step === 1 && category === "") {
+      toast.error("Set a category!", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+    if (step === 1 && subCategory === "") {
+      toast.error("Set a Subcategory!", {
+        duration: 2000,
+        position: "bottom-center",
+      });
+      return;
+    }
+    if (step === 2 && title === "") {
       toast.error("Let us know what produce you have!", {
         duration: 2000,
         position: "bottom-center",
@@ -297,7 +310,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 1 && !description) {
+    if (step === 2 && !description) {
       toast.error("Please write a brief description", {
         duration: 2000,
         position: "bottom-center",
@@ -305,21 +318,21 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 2 && !quantityType) {
+    if (step === 3 && !quantityType) {
       toast.error("Please enter a unit for your listing", {
         duration: 2000,
         position: "bottom-center",
       });
       return;
     }
-    if (step === 2 && minOrder > quantity) {
+    if (step === 3 && minOrder > quantity) {
       toast.error("Minimum order cannot be more than your quantity", {
         duration: 2000,
         position: "bottom-center",
       });
       return;
     }
-    if (step === 2 && !sodt) {
+    if (step === 3 && !sodt) {
       toast.error("Please enter a set out/delivery time for your listing", {
         duration: 2000,
         position: "bottom-center",
@@ -327,7 +340,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 2 && (quantity <= 0 || !quantity)) {
+    if (step === 3 && (quantity <= 0 || !quantity)) {
       toast.error("Quantity must be greater than 0", {
         duration: 2000,
         position: "bottom-center",
@@ -335,7 +348,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 4 && Array.isArray(imageSrc) && imageSrc.length === 0) {
+    if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
       toast.error("Please use the stock photo or upload atleast one photo", {
         duration: 2000,
         position: "bottom-center",
@@ -343,7 +356,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 3 && !certificationChecked) {
+    if (step === 4 && !certificationChecked) {
       toast.error("You must certify that the above information is accurate.", {
         duration: 2000,
         position: "bottom-center",
@@ -352,7 +365,7 @@ const CreateClient = ({ user, index }: Props) => {
     }
 
     if (
-      step === 2 &&
+      step === 3 &&
       shelfLifeDays <= 0 &&
       shelfLifeWeeks <= 0 &&
       shelfLifeMonths <= 0 &&
@@ -365,14 +378,14 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 2 && (price <= 0 || !price)) {
+    if (step === 3 && (price <= 0 || !price)) {
       toast.error("Please enter a price greater than 0.", {
         duration: 2000,
         position: "bottom-center",
       });
       return;
     }
-    if (step === 2 && (minOrder <= 0 || !quantity)) {
+    if (step === 3 && (minOrder <= 0 || !quantity)) {
       toast.error("Please enter a minimum order greater than 0.", {
         duration: 2000,
         position: "bottom-center",
@@ -380,10 +393,24 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
     if (
-      step === 5 ||
-      (step === 4 && user?.location && user?.location[0] === null)
+      step === 6 ||
+      (step === 5 && user?.location && user?.location[0] === null)
     ) {
-      if (!product) {
+      if (category === "") {
+        toast.error("Set a category!", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      }
+      if (subCategory === "") {
+        toast.error("Set a Subcategory!", {
+          duration: 2000,
+          position: "bottom-center",
+        });
+        return;
+      }
+      if (!title) {
         toast.error("Let us know what produce you have!", {
           duration: 2000,
           position: "bottom-right",
@@ -462,10 +489,10 @@ const CreateClient = ({ user, index }: Props) => {
         return;
       }
     }
-    if (step === 5) {
-      // handleSubmit(onSubmit)();
-      setStep(step + 1);
-    } else if (step === 4 && user?.location && user?.location[0] === null) {
+    if (step === 6) {
+      handleSubmit(onSubmit)();
+      //setStep(step + 1);
+    } else if (step === 6 && user?.location && user?.location[0] === null) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -571,14 +598,14 @@ const CreateClient = ({ user, index }: Props) => {
             <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
               List Your Excess Produce
             </h2>
-            {step === 1 && (
+            {step === 2 && (
               <div className="flex flex-row fade-in">
                 <div className="2xl:text-4xl text-lg font-bold tracking-tight">
                   First, let&apos;s go over the basics
                 </div>
               </div>
             )}
-            {step === 2 && (
+            {step === 3 && (
               <div className="flex flex-row items-center fade-in">
                 {" "}
                 <div className="2xl:text-4xl text-lg font-bold tracking-tight">
@@ -586,7 +613,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 3 && (
+            {step === 4 && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
@@ -616,7 +643,7 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 5 && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
@@ -645,7 +672,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && user?.location && user?.location[0] !== null && (
+            {step === 6 && user?.location && user?.location[0] !== null && (
               <div className="flex flex-col items-start fade-in">
                 <div className="flex flex-row">
                   <div className="2xl:text-4xl text-lg font-bold tracking-tight">
@@ -683,38 +710,26 @@ const CreateClient = ({ user, index }: Props) => {
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
-                    step === 1
-                      ? "font-bold cursor-none"
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => setStep(1)}
-                >
-                  General
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
                     step === 2
                       ? "font-bold cursor-none"
                       : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(2)}
                 >
-                  Specifics
+                  General
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem
                   className={
                     step === 3
-                      ? "font-bold cursor-none "
+                      ? "font-bold cursor-none"
                       : "font-normal cursor-pointer"
                   }
                   onMouseDown={() => setStep(3)}
                 >
-                  Rating
+                  Specifics
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
-
                 <BreadcrumbItem
                   className={
                     step === 4
@@ -723,6 +738,18 @@ const CreateClient = ({ user, index }: Props) => {
                   }
                   onMouseDown={() => setStep(4)}
                 >
+                  Rating
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+
+                <BreadcrumbItem
+                  className={
+                    step === 5
+                      ? "font-bold cursor-none "
+                      : "font-normal cursor-pointer"
+                  }
+                  onMouseDown={() => setStep(5)}
+                >
                   Photos
                 </BreadcrumbItem>
                 {user?.location && user?.location[0] !== null && (
@@ -730,12 +757,12 @@ const CreateClient = ({ user, index }: Props) => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem
                       className={
-                        step === 5
+                        step === 6
                           ? "font-bold cursor-none "
                           : "font-normal cursor-pointer"
                       }
                       onMouseDown={() => {
-                        if (!product) {
+                        if (!title) {
                           toast.error("Let us know what produce you have!", {
                             duration: 2000,
                             position: "bottom-center",
@@ -819,7 +846,7 @@ const CreateClient = ({ user, index }: Props) => {
                           );
                           return;
                         } else {
-                          setStep(5);
+                          setStep(6);
                         }
                       }}
                     >
@@ -833,7 +860,7 @@ const CreateClient = ({ user, index }: Props) => {
           <div className="hidden emulator-container mt-8">
             <div className="sticky bottom-0 left-0 right-0 px-6">
               <Emulator
-                product={product as unknown as FinalListing & { label: string }}
+                title={title}
                 description={description}
                 stock={quantity}
                 quantityType={quantityType}
@@ -855,14 +882,14 @@ const CreateClient = ({ user, index }: Props) => {
 
         <div className="md:w-3/5 onboard-right relative">
           <div className=" mx-[5%] md:py-20">
-            {step === 1 && (
+            {step === 2 && (
               <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full fade-in">
                 <div className="flex md:flex-row md:items-center md:justify-between w-full flex-col items-start">
                   <Heading
                     title="Provide a name and description"
                     subtitle="Max length of 300 characters for description"
                   />
-                  <Dialog>
+                  {/* <Dialog>
                     <DialogTrigger asChild>
                       <button className="bg-slate-500 shadow-sm p-2 rounded-full text-white text-xs">
                         Suggest a new Listing
@@ -906,10 +933,20 @@ const CreateClient = ({ user, index }: Props) => {
                         <div className="px-3">Submit</div>
                       </DialogTrigger>
                     </DialogContent>
-                  </Dialog>
+                  </Dialog> */}
                 </div>
                 <div>
-                  <SearchClient
+                  <div className="w-full">
+                    <Textarea
+                      id="title"
+                      placeholder="Title"
+                      disabled={isLoading}
+                      maxLength={64}
+                      onChange={(e) => setTitle(e.target.value)}
+                      value={title}
+                    />
+                  </div>
+                  {/* <SearchClient
                     value={product}
                     onChange={(value) => {
                       setProduct(value as ProductValue);
@@ -918,7 +955,7 @@ const CreateClient = ({ user, index }: Props) => {
                       setValue("imageSrc[0]", value?.photo);
                       setValue("subCategory", value?.cat);
                     }}
-                  />
+                  /> */}
                 </div>
                 <hr />
                 <Textarea
@@ -932,7 +969,7 @@ const CreateClient = ({ user, index }: Props) => {
                 />
               </div>
             )}
-            {step === 2 && (
+            {step === 3 && (
               <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full fade-in">
                 <div className={`text-start`}>
                   <div className="text-xl sm:text-2xl font-bold">
@@ -1124,7 +1161,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 3 && (
+            {step === 4 && (
               <div
                 className={`flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full fade-in`}
               >
@@ -1200,7 +1237,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Back
               </Button>
             )}
-            {step === 5 && user?.location && user?.location[0] === null ? (
+            {step === 6 && user?.location && user?.location[0] === null ? (
               <>
                 {" "}
                 <Button
@@ -1220,7 +1257,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </Button>
               </>
             )}
-            {step === 5 && user?.location && user?.location[0] !== null && (
+            {step === 6 && user?.location && user?.location[0] !== null && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1228,7 +1265,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Finish
               </Button>
             )}
-            {step < 5 && (
+            {step < 6 && (
               <Button
                 onClick={handleNext}
                 className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1236,7 +1273,7 @@ const CreateClient = ({ user, index }: Props) => {
                 Next
               </Button>
             )}
-            {step === 4 && (
+            {step === 5 && (
               <div
                 className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full fade-in`}
               >
@@ -1317,7 +1354,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 5 && user?.location && user?.location[0] !== null && (
+            {step === 6 && user?.location && user?.location[0] !== null && (
               <div
                 className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
               >
@@ -1468,7 +1505,7 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
               </div>
             )}
-            {step === 6 && (
+            {step === 1 && (
               <>
                 {" "}
                 <div className="flex flex-col gap-4 h-[calc(100vh-86.4px)] md:h-full fade-in">
@@ -1477,44 +1514,360 @@ const CreateClient = ({ user, index }: Props) => {
                     subtitle="Which best describes your productt?"
                   />
                   <div className="flex justify-center items-center">
-                    <div className="grid grid-cols-4 sm:grid-cols-2 gap-3 ">
-                      <Card className="h-[120px] w-[180px]">
-                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                          <GiShinyApple size={40} />
-                          <div className="text-xs">Unprocessed Produce</div>
-                          <div className="text-[8px]">
-                            Ex: Apples & Tomatoes
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card className="h-[120px] w-[180px]">
-                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                          <TbCandle size={40} />
-                          <div className="text-xs">Homemade</div>
-                          <div className="text-[8px]">
-                            Ex: Applie Pie & Beeswax Candles
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card className="h-[120px] w-[180px]">
-                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                          <LuShovel size={40} />
-                          <div className="text-xs">Durables</div>
-                          <div className="text-[8px]">
-                            Ex: Canned Food & Solar Panels
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card className="h-[120px] w-[180px]">
-                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                          <GiMeat size={40} />
-                          <div className="text-xs">Dairy & Meat</div>
-                          <div className="text-[8px]">
-                            Ex: Milk Shares & Chicken
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
+                    {category === "" ? (
+                      <div className="grid grid-cols-4 sm:grid-cols-2 gap-3 ">
+                        <Card
+                          className="h-[120px] w-[180px]"
+                          onClick={() => setCategory("Unprocessed Produce")}
+                        >
+                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <GiShinyApple size={40} />
+                            <div className="text-xs">Unprocessed Produce</div>
+                            <div className="text-[8px]">
+                              Ex: Apples & Tomatoes
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card
+                          className="h-[120px] w-[180px]"
+                          onClick={() => setCategory("Homemade")}
+                        >
+                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <TbCandle size={40} />
+                            <div className="text-xs">Homemade</div>
+                            <div className="text-[8px]">
+                              Ex: Applie Pie & Beeswax Candles
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card
+                          className="h-[120px] w-[180px]"
+                          onClick={() => setCategory("Durables")}
+                        >
+                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <LuShovel size={40} />
+                            <div className="text-xs">Durables</div>
+                            <div className="text-[8px]">
+                              Ex: Canned Food & Solar Panels
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card
+                          className="h-[120px] w-[180px]"
+                          onClick={() => setCategory("Dairy & Meat")}
+                        >
+                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <GiMeat size={40} />
+                            <div className="text-xs">Dairy & Meat</div>
+                            <div className="text-[8px]">
+                              Ex: Milk Shares & Chicken
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ) : category === "Unprocessed Produce" ? (
+                      <div>
+                        <button
+                          className="h-[30px] w-[100px] mb-3"
+                          onClick={() => {
+                            setCategory("");
+                            setSubCategory("");
+                          }}
+                        >
+                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <div className="text-xs">go back</div>
+                          </CardContent>
+                        </button>
+                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
+                          {" "}
+                          <Card
+                            className={
+                              subCategory === "Fruit"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Fruit")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">Fruit</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Vegetables"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Vegetables")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">
+                                Vegetables
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Nuts"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Nuts")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Nuts</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Herbs"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Herbs")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Herbs</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Legumes"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Legumes")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">Legumes</div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+                    ) : category === "Homemade" ? (
+                      <div>
+                        <button
+                          className="h-[30px] w-[100px] mb-3"
+                          onClick={() => {
+                            setCategory("");
+                            setSubCategory("");
+                          }}
+                        >
+                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <div className="text-xs">go back</div>
+                          </CardContent>
+                        </button>
+                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
+                          {" "}
+                          <Card
+                            className={
+                              subCategory === "Crafts"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Crafts")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">Crafts</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Jams"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Jams")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Jams</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Pastries"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Pastries")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">
+                                Pastries
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Breads"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Breads")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Breads</div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+                    ) : category === "Durables" ? (
+                      <div>
+                        <button
+                          className="h-[30px] w-[100px] mb-3"
+                          onClick={() => {
+                            setCategory("");
+                            setSubCategory("");
+                          }}
+                        >
+                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <div className="text-xs">go back</div>
+                          </CardContent>
+                        </button>
+                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
+                          {" "}
+                          <Card
+                            className={
+                              subCategory === "Canned Goods"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Canned Goods")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">
+                                Canned Goods
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Tools"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Tools")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Tools</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Survival"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Survival")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">
+                                Survival
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Kitchen Wares"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Kitchen Wares")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">
+                                Kitchen Wares
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+                    ) : category === "Dairy & Meat" ? (
+                      <div>
+                        <button
+                          className="h-[30px] w-[100px] mb-3"
+                          onClick={() => {
+                            setCategory("");
+                            setSubCategory("");
+                          }}
+                        >
+                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
+                            <div className="text-xs">go back</div>
+                          </CardContent>
+                        </button>
+                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
+                          {" "}
+                          <Card
+                            className={
+                              subCategory === "Milks"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Milks")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">Milks</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Eggs"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Eggs")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Eggs</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Butter"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Butter")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Butter</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Cheese"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Cheese")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Cheese</div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </>
