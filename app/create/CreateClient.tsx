@@ -231,6 +231,7 @@ const CreateClient = ({ user, index }: Props) => {
 
     //onsubmit formstate to formdata=data to pass to create listing api endpoint
     const formData = {
+      keyWords: tags,
       title: title,
       SODT: parseInt(data.sodt),
       minOrder: parseInt(data.minOrder),
@@ -272,6 +273,7 @@ const CreateClient = ({ user, index }: Props) => {
         setClicked1(false);
         setClicked2(false);
         setRating([]);
+        setTags([]);
         setCertificationChecked(false);
         setQuantityType(undefined);
         router.push("/dashboard/my-store");
