@@ -9,6 +9,8 @@ import {
   GiBread,
   GiTomato,
   GiMilkCarton,
+  GiCakeSlice,
+  GiCannedFish,
 } from "react-icons/gi";
 import { LuNut, LuBeef } from "react-icons/lu";
 import { CiApple } from "react-icons/ci";
@@ -19,68 +21,27 @@ import Container from "../Container";
 import Filters from "./filter.client";
 import { usePathname } from "next/navigation";
 import { navUser } from "@/next-auth";
+import { FaAppleAlt } from "react-icons/fa";
 
 export const categories = [
   {
-    label: "Fruits",
-    icon: CiApple,
-    description: "",
+    label: "Unprocessed Produce",
+    icon: FaAppleAlt,
   },
   {
-    label: "Vegetables",
-    icon: GiTomato,
-    description: "",
+    label: "Homemade",
+    icon: GiCakeSlice,
   },
   {
-    label: "Dairy",
+    label: "Durable Products",
+    icon: GiCannedFish,
+  },
+  {
+    label: "Dairy & Meats",
     icon: GiMilkCarton,
-    description: "",
   },
-  {
-    label: "Bread",
-    icon: GiBread,
-    description: "",
-  },
-  {
-    label: "Meats",
-    icon: LuBeef,
-    description: "",
-  },
-  {
-    label: "Grains",
-    icon: GiGrainBundle,
-    description: "",
-  },
-  {
-    label: "Herbs",
-    icon: GiCoolSpices,
-    description: "",
-  },
-  {
-    label: "Nuts",
-    icon: LuNut,
-    description: "",
-  },
-  {
-    label: "Seeds",
-    icon: FaSeedling,
-    description: "",
-  },
-  {
-    label: "Sweets",
-    icon: GiWrappedSweet,
-    description: "",
-  },
-  {
-    label: "Oils",
-    icon: GiPorcelainVase,
-    description: "",
-  },
-  {
-    label: "Legumes",
-    icon: GiJellyBeans,
-    description: "",
-  },
+
+
 ];
 interface Props {
   user?: navUser;
@@ -101,7 +62,7 @@ const Categories = ({ user }: Props) => {
             <Filters user={user} />
           </div>
           <div className="w-full p-0 sm:pt-4">
-            <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
+            <div className="flex flex-row items-center justify-evenly overflow-x-auto overflow-y-auto h-fit relative">
               {categories.map((item) => (
                 <CategoryBox
                   key={item.label}

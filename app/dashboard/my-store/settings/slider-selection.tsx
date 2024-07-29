@@ -45,11 +45,14 @@ const SliderSection = ({
   index,
   location,
   showUpdate,
+  onHoursChange
 }: {
   hours: ExtendedHours;
   index: number;
   location: Location;
-  showUpdate: boolean;
+  showUpdate: boolean;  
+  onHoursChange?: (newHours: ExtendedHours) => void;
+
 }) => {
   const defaultHours: ExtendedHours = {
     0: null,
@@ -121,10 +124,16 @@ const SliderSection = ({
   const isOpen = coOpHours[currentDayIndex] !== null;
 
   const handleHourChange = (open: number, close: number) => {
-    setCoOpHours((prevHours) => ({
-      ...prevHours,
-      [currentDayIndex]: [{ open, close }],
-    }));
+    setCoOpHours((prevHours) => {
+      const newHours = {
+        ...prevHours,
+        [currentDayIndex]: [{ open, close }],
+      };
+      if (onHoursChange) {
+        onHoursChange(newHours);
+      }
+      return newHours;
+    });
   };
 
   const handleApplyToAll = () => {
@@ -287,7 +296,7 @@ const SliderSection = ({
                           <PopoverTrigger
                             className={`${outfit.className} bg-slate-300 p-3 lg:w-[50%] w-full rounded-full text-black shadow-lg text-lg hover:bg-slate-500 hover:text-white`}
                           >
-                            Add & Remove Hours
+                            Add or Remove sets of hours for {currentDay}
                           </PopoverTrigger>
                           <PopoverContent className={`${outfit.className}`}>
                             <div>

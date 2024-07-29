@@ -85,7 +85,12 @@ const UserMenu = ({ user }: Props) => {
           ) : (
             <div
               onClick={() => {
-                router.push("/create");
+                console.log(user);
+                if (user?.location[0] === null) {
+                  router.push("/dashboard/my-store/settings");
+                } else {
+                  router.push("/create");
+                }
               }}
               className="hover:cursor-pointer"
             >
