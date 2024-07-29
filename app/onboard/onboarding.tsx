@@ -2,7 +2,6 @@
 //onboarding page
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "sonner";
 import { UserInfo } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";

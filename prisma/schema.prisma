@@ -179,7 +179,7 @@ model TwoFactorConfirmation {
 
 model Listing {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
-   SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
+  SODT          Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
   title         String
   species       String?
   category      String 
@@ -188,6 +188,7 @@ model Listing {
   quantityType  String
   price         Float
   description   String
+  keywords      String[]
   minOrder      Int
   imageSrc      String[]
   shelfLife     Int
@@ -201,6 +202,7 @@ model Listing {
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
   cart          Cart[]
 }
+
 model Cart {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   userId        String @db.ObjectId
