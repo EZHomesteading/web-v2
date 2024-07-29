@@ -4,7 +4,13 @@ import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets:["latin"],
+  display:"swap",
+  weight:["200"]
+})
 interface CategoryBoxProps {
   icon: IconType;
   label: string;
@@ -60,9 +66,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
       } ${selected ? "text-neutral-800" : "text-neutral-500"}
       `}
     >
-      <Icon size={20} />
+      <Icon size={25} />
 
-      <div className="font-medium text-sm">{label}</div>
+      <div className={`${outfit.className} font-medium text-[8px] sm:text-sm`}>{label}</div>
     </div>
   );
 };

@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { LuShovel } from "react-icons/lu";
+
 import {
   Popover,
   PopoverContent,
@@ -51,12 +53,15 @@ import Image from "next/image";
 import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Card, CardHeader } from "../components/ui/card";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
 import InputField from "./components/suggestion-input";
 import { FinalListing } from "@/actions/getListings";
-import { CheckedState } from "@radix-ui/react-checkbox";
+import { GiAppleCore, GiMeat, GiShinyApple } from "react-icons/gi";
+import { FaStoreAlt } from "react-icons/fa";
+import { TbCandle } from "react-icons/tb";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -77,7 +82,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(index);
+  const [step, setStep] = useState(6);
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
   const [product, setProduct] = useState<ProductValue>();
   const router = useRouter();
@@ -458,7 +463,8 @@ const CreateClient = ({ user, index }: Props) => {
       }
     }
     if (step === 5) {
-      handleSubmit(onSubmit)();
+      // handleSubmit(onSubmit)();
+      setStep(step + 1);
     } else if (step === 4 && user?.location && user?.location[0] === null) {
       handleSubmit(onSubmit)();
     } else {
@@ -1206,7 +1212,6 @@ const CreateClient = ({ user, index }: Props) => {
               </>
             ) : (
               <>
-                {" "}
                 <Button
                   onClick={handleNext}
                   className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -1462,6 +1467,57 @@ const CreateClient = ({ user, index }: Props) => {
                   )}
                 </div>
               </div>
+            )}
+            {step === 6 && (
+              <>
+                {" "}
+                <div className="flex flex-col gap-4 h-[calc(100vh-86.4px)] md:h-full fade-in">
+                  <Heading
+                    title="Select a Category"
+                    subtitle="Which best describes your productt?"
+                  />
+                  <div className="flex justify-center items-center">
+                    <div className="grid grid-cols-4 sm:grid-cols-2 gap-3 ">
+                      <Card className="h-[120px] w-[180px]">
+                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                          <GiShinyApple size={40} />
+                          <div className="text-xs">Unprocessed Produce</div>
+                          <div className="text-[8px]">
+                            Ex: Apples & Tomatoes
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="h-[120px] w-[180px]">
+                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                          <TbCandle size={40} />
+                          <div className="text-xs">Homemade</div>
+                          <div className="text-[8px]">
+                            Ex: Applie Pie & Beeswax Candles
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="h-[120px] w-[180px]">
+                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                          <LuShovel size={40} />
+                          <div className="text-xs">Durables</div>
+                          <div className="text-[8px]">
+                            Ex: Canned Food & Solar Panels
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="h-[120px] w-[180px]">
+                        <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                          <GiMeat size={40} />
+                          <div className="text-xs">Dairy & Meat</div>
+                          <div className="text-[8px]">
+                            Ex: Milk Shares & Chicken
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
