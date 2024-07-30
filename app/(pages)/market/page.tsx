@@ -5,6 +5,7 @@ import ClientOnly from "../../components/client/ClientOnly";
 import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getUserwithCart } from "@/actions/getUser";
 import { UserInfo } from "@/next-auth";
+import { ZodStringDef } from "zod";
 
 interface ShopProps {
   userId?: string;
@@ -19,6 +20,8 @@ interface ShopProps {
     s?: string;
     ra?: string;
     pr?: string;
+    cat?: string;
+    subcat?: string;
   };
 }
 
@@ -44,6 +47,8 @@ const ShopPage = async ({
     ra = "",
     pr = "",
     s = "",
+    cat = "",
+    subcat = "",
   } = searchParams || {};
   let page = parseInt(searchParams?.page as string, 10);
   page = !page || page < 1 ? 1 : page;
@@ -60,6 +65,8 @@ const ShopPage = async ({
       pr,
       c,
       s,
+      cat,
+      subcat,
     },
     page,
     perPage

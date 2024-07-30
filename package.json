@@ -61,6 +61,7 @@
     "embla-carousel-react": "^8.0.0",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "framer-motion": "^11.3.19",
     "fs": "0.0.1-security",
     "fuse.js": "^7.0.0",
     "haversine-distance": "^1.2.1",
