@@ -26,7 +26,6 @@ import {
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
-import { Location } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 
@@ -184,12 +183,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </div>
         <div className="text-sm text-gray-600 ">
-          Organic Rating:
           <ReactStars
-            count={5}
+            count={4}
             size={20}
-            color2={"#ffd700"}
-            value={data.rating.length}
+            color2={"#000"}
+            value={data.rating.length - 1}
             half={true}
             edit={false}
           />

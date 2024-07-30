@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   const {
+    keyWords,
     title,
     SODT,
     description,
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
 
   const listing = await prisma.listing.create({
     data: {
+      keyWords,
       title,
       description,
       SODT,

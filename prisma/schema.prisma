@@ -181,14 +181,13 @@ model Listing {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   SODT          Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
   title         String
-  species       String?
-  category      String 
+  category      String  // "homemade", "unprocessed-produce", "dairy-meats", "durables" 
   subCategory   String
   stock         Int
   quantityType  String
   price         Float
   description   String
-  keywords      String[]
+  keyWords      String[]
   minOrder      Int
   imageSrc      String[]
   shelfLife     Int

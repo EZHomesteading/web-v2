@@ -191,7 +191,7 @@ const GetListingsMarket = async (
 ) => {
   const user = await currentUser();
   try {
-    const { lat, lng, radius, q, pm, c, p, s, ra, pr } = params;
+    const { lat, lng, radius, q, pm, c, p, s, ra, pr,cat, subcat } = params;
 
     let query: any = {};
 
@@ -227,7 +227,9 @@ const GetListingsMarket = async (
           user: {
             role: UserRole.COOP,
           },
+      
           ...query,
+          
           stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
@@ -670,6 +672,8 @@ export interface IListingsParams {
   p?: string;
   s?: string;
   pr?: string;
+  cat?:string;
+  subcat?:string;
 }
 export interface Params {
   listingIds: string[];

@@ -5,7 +5,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 import MenuItem from "./MenuItem";
 import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { CiShop, CiSquarePlus } from "react-icons/ci";
+import { CiShop, CiSquarePlus, CiUser } from "react-icons/ci";
 import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
@@ -23,6 +23,8 @@ import { PiPersonSimpleRunThin } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { IoStorefrontOutline } from "react-icons/io5";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -57,236 +59,285 @@ const UserMenu = ({ user }: Props) => {
     };
   }, []);
   return (
-    <Sheet>
-      <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
-        <GiBarn
-          className="h-9 w-9 block sm:hidden"
-          onClick={() => router.push("/")}
-        />
-        <CartIcon cart={user?.cart} />
-
-        <NotificationIcon
-          sOrders={user?.sellerOrders}
-          bOrders={user?.buyerOrders}
-        />
-        {user ? (
-          user?.role === UserRole.CONSUMER ? (
-            <UpdateRoleAlert
-              heading="Would you like to become an EZH producer or co-op?"
-              description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
-              backButtonLabel="No thanks"
-              actionButtonLabel="More Info"
-              actionButtonHref="/info/ezh-roles"
-              actionButtonLabelTwo="Co-op Registration"
-              actionButtonHrefTwo="/auth/become-a-co-op"
-              actionButtonLabelThree="Producer Registration"
-              actionButtonHrefThree="/auth/become-a-producer"
-            />
-          ) : (
-            <div
-              onClick={() => {
-                console.log(user);
-                if (user?.location[0] === null) {
-                  router.push("/dashboard/my-store/settings");
-                } else {
-                  router.push("/create");
-                }
-              }}
-              className="hover:cursor-pointer"
-            >
-              <CiSquarePlus
-                className={`w-8 h-8 lg:w-8 lg:h-8 ${
-                  white ? "text-white" : "text-black"
-                }`}
-              />
-            </div>
-          )
-        ) : (
-          <>
-            <UpdateRoleAlert
-              heading="Would you like to become an EZH producer or co-op?"
-              description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
-              backButtonLabel="No thanks"
-              actionButtonLabel="More Info"
-              actionButtonHref="/info/ezh-roles"
-              actionButtonLabelTwo="Co-op Registration"
-              actionButtonHrefTwo="/auth/register-co-op"
-              actionButtonLabelThree="Producer Registration"
-              actionButtonHrefThree="/auth/register-producer"
-            />
-          </>
-        )}
-
-        <SheetTrigger className="border-none p-[2px] rounded-md">
-          <AiOutlineMenu
-            className={`w-8 h-8 lg:w-8 lg:h-8 ${
+    <>
+      <Sheet>
+        <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
+          <GiBarn
+            className={`h-8 w-8 block sm:hidden text-white ${
               white ? "text-white" : "text-black"
             }`}
+            onClick={() => router.push("/")}
           />
-        </SheetTrigger>
-      </div>
-      <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
-        <div>
-          {user && (
-            <div className="flex flex-row px-4">
-              <Avatar image={user?.image} />
-              <div className="flex flex-col ml-2">
-                <div className="font-bold">{user?.name}</div>
-                <div>{user?.firstName}</div>
+          <CartIcon cart={user?.cart} />
+
+          <NotificationIcon
+            sOrders={user?.sellerOrders}
+            bOrders={user?.buyerOrders}
+          />
+          {user ? (
+            user?.role === UserRole.CONSUMER ? (
+              <UpdateRoleAlert
+                heading="Would you like to become an EZH producer or co-op?"
+                description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
+                backButtonLabel="No thanks"
+                actionButtonLabel="More Info"
+                actionButtonHref="/info/ezh-roles"
+                actionButtonLabelTwo="Co-op Registration"
+                actionButtonHrefTwo="/auth/become-a-co-op"
+                actionButtonLabelThree="Producer Registration"
+                actionButtonHrefThree="/auth/become-a-producer"
+              />
+            ) : (
+              <div
+                onClick={() => {
+                  console.log(user);
+                  if (user?.location[0] === null) {
+                    router.push("/dashboard/my-store/settings");
+                  } else {
+                    router.push("/create");
+                  }
+                }}
+                className="hover:cursor-pointer"
+              >
+                <CiSquarePlus
+                  className={`w-8 h-8 lg:w-8 lg:h-8 ${
+                    white ? "text-white" : "text-black"
+                  }`}
+                />
               </div>
-            </div>
+            )
+          ) : (
+            <>
+              <UpdateRoleAlert
+                heading="Would you like to become an EZH producer or co-op?"
+                description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
+                backButtonLabel="No thanks"
+                actionButtonLabel="More Info"
+                actionButtonHref="/info/ezh-roles"
+                actionButtonLabelTwo="Co-op Registration"
+                actionButtonHrefTwo="/auth/register-co-op"
+                actionButtonLabelThree="Producer Registration"
+                actionButtonHrefThree="/auth/register-producer"
+              />
+            </>
           )}
 
+          <SheetTrigger className="border-none p-[2px] rounded-md">
+            <AiOutlineMenu
+              className={`w-8 h-8 lg:w-8 lg:h-8 ${
+                white ? "text-white" : "text-black"
+              }`}
+            />
+          </SheetTrigger>
+        </div>
+        <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
           <div>
-            {user?.role === "COOP" ? (
-              <div>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Sell Orders"
-                    icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/orders/seller")}
-                  />
-                </SheetTrigger>
+            {user && (
+              <div className="flex flex-row px-4">
+                <Avatar image={user?.image} />
+                <div className="flex flex-col ml-2">
+                  <div className="font-bold">{user?.name}</div>
+                  <div>{user?.firstName}</div>
+                </div>
               </div>
-            ) : user?.role === "PRODUCER" ? (
-              <div>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Sell Orders"
-                    icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/orders/seller")}
-                  />
-                </SheetTrigger>
-              </div>
-            ) : (
-              <div></div>
             )}
-            {user ? (
-              <>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Dashboard"
-                    icon={<MdDashboard className="mr-2" />}
-                    onClick={() => router.push("/dashboard")}
-                  />{" "}
-                  <MenuItem
-                    label="Chat"
-                    icon={<FaComment className="mr-2" />}
-                    onClick={() => router.push("/chat")}
-                  />{" "}
-                  <MenuItem
-                    label="Market"
-                    icon={<CiShop className="mr-2" />}
-                    onClick={() => router.push("/market")}
-                  />
-                  <MenuItem
-                    label="Map"
-                    icon={<LiaMapMarkedSolid className="mr-2" />}
-                    onClick={() => router.push("/map")}
-                  />
-                  <MenuItem
-                    label="Cart"
-                    icon={<BsBasket className="mr-2" />}
-                    onClick={() => router.push("/cart")}
-                  />
-                  <MenuItem
-                    label="Following"
-                    icon={<GoPeople className="mr-2" />}
-                    onClick={() => router.push("/dashboard/following")}
-                  />
-                  <MenuItem
-                    label="Profile Settings"
-                    icon={<MdSettings className="mr-2" />}
-                    onClick={() =>
-                      router.push("/dashboard/account-settings/general")
-                    }
-                  />
-                  <div className=" block sm:hidden">
+
+            <div>
+              {user?.role === "COOP" ? (
+                <div>
+                  <SheetTrigger className="w-full">
                     <MenuItem
-                      label="Home"
-                      icon={<GiBarn className="mr-2" />}
-                      onClick={() => router.push("/")}
+                      label="Sell Orders"
+                      icon={<FaStore className="mr-2" />}
+                      onClick={() => router.push("/dashboard/orders/seller")}
                     />
-                  </div>
-                </SheetTrigger>
-                {user?.role === "CONSUMER" ? (
-                  <div>
+                  </SheetTrigger>
+                </div>
+              ) : user?.role === "PRODUCER" ? (
+                <div>
+                  <SheetTrigger className="w-full">
+                    <MenuItem
+                      label="Sell Orders"
+                      icon={<FaStore className="mr-2" />}
+                      onClick={() => router.push("/dashboard/orders/seller")}
+                    />
+                  </SheetTrigger>
+                </div>
+              ) : (
+                <div></div>
+              )}
+              {user ? (
+                <>
+                  <SheetTrigger className="w-full">
+                    <MenuItem
+                      label="Dashboard"
+                      icon={<MdDashboard className="mr-2" />}
+                      onClick={() => router.push("/dashboard")}
+                    />{" "}
+                    <MenuItem
+                      label="Chat"
+                      icon={<FaComment className="mr-2" />}
+                      onClick={() => router.push("/chat")}
+                    />{" "}
+                    <MenuItem
+                      label="Market"
+                      icon={<CiShop className="mr-2" />}
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem
+                      label="Map"
+                      icon={<LiaMapMarkedSolid className="mr-2" />}
+                      onClick={() => router.push("/map")}
+                    />
+                    <MenuItem
+                      label="Cart"
+                      icon={<BsBasket className="mr-2" />}
+                      onClick={() => router.push("/cart")}
+                    />
+                    <MenuItem
+                      label="Following"
+                      icon={<GoPeople className="mr-2" />}
+                      onClick={() => router.push("/dashboard/following")}
+                    />
+                    <MenuItem
+                      label="Profile Settings"
+                      icon={<MdSettings className="mr-2" />}
+                      onClick={() =>
+                        router.push("/dashboard/account-settings/general")
+                      }
+                    />
+                    <div className=" block sm:hidden">
+                      <MenuItem
+                        label="Home"
+                        icon={<GiBarn className="mr-2" />}
+                        onClick={() => router.push("/")}
+                      />
+                    </div>
+                  </SheetTrigger>
+                  {user?.role === "CONSUMER" ? (
+                    <div>
+                      <SheetTrigger className="w-full">
+                        <MenuItem
+                          icon={<FaStore className="mr-2" />}
+                          label="Become a Co-Op"
+                          onClick={() => router.push("/auth/become-a-co-op")}
+                        />
+                        <MenuItem
+                          icon={<GiFruitTree className="mr-2" />}
+                          label="Become a Producer"
+                          onClick={() => router.push("/auth/become-a-producer")}
+                        />
+                      </SheetTrigger>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                  <hr />
+                  <SheetTrigger className="w-full">
+                    <MenuItem
+                      icon={<FaSignOutAlt className="mr-2" />}
+                      label="Logout"
+                      onClick={() => signOut()}
+                    />
+                    {showInstallBtn &&
+                    !window.matchMedia("(display-mode: standalone)").matches ? (
+                      <>
+                        <Button onClick={() => router.push("/get-ezh-app")}>
+                          Install EZH App
+                        </Button>{" "}
+                      </>
+                    ) : (
+                      <div></div>
+                    )}
+                  </SheetTrigger>
+                </>
+              ) : (
+                <>
+                  <Sheet>
                     <SheetTrigger className="w-full">
                       <MenuItem
-                        icon={<FaStore className="mr-2" />}
-                        label="Become a Co-Op"
-                        onClick={() => router.push("/auth/become-a-co-op")}
-                      />
-                      <MenuItem
-                        icon={<GiFruitTree className="mr-2" />}
-                        label="Become a Producer"
-                        onClick={() => router.push("/auth/become-a-producer")}
-                      />
+                        onClick={() => {}}
+                        label="Sign Up"
+                        icon={<BsPersonPlus className="mr-2" />}
+                      ></MenuItem>
                     </SheetTrigger>
-                  </div>
-                ) : (
-                  <></>
-                )}
-                <hr />
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    icon={<FaSignOutAlt className="mr-2" />}
-                    label="Logout"
-                    onClick={() => signOut()}
-                  />
-                  {showInstallBtn &&
-                  !window.matchMedia("(display-mode: standalone)").matches ? (
-                    <>
-                      <Button onClick={() => router.push("/get-ezh-app")}>
-                        Install EZH App
-                      </Button>
-                    </>
-                  ) : (
-                    <div></div>
-                  )}
-                </SheetTrigger>
-              </>
-            ) : (
-              <>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Sign In"
-                    icon={<PiPersonSimpleRunThin className="mr-2" />}
-                    onClick={() => {
-                      let callbackUrl = window.location.href;
-                      const encodedCallbackUrl =
-                        encodeURIComponent(callbackUrl);
+                    <SheetContent
+                      side="top"
+                      className={`${outfit.className} h-screen w-screen bg text-black text-2xl sm:text-4xl md:text-7xl `}
+                    >
+                      <ul className="h-full flex flex-col items-start justify-center sm:items-center px-10 ">
+                        <li className="w-full ">
+                          <Link
+                            href="/auth/register"
+                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
+                          >
+                            <div className="flex flex-col mr-8">
+                              Sign up as a buyer
+                            </div>
+                            <CiUser className="text-4xl sm:text-7xl" />
+                          </Link>
+                        </li>
 
-                      router.push(
-                        `/auth/login?callbackUrl=${encodedCallbackUrl}`
-                      );
-                    }}
-                  />
-                  <MenuItem
-                    label="Sign Up"
-                    icon={<BsPersonPlus className="mr-2" />}
-                    onClick={() => router.push("/auth/register")}
-                  />
-                  <MenuItem
-                    label="Market"
-                    icon={<CiShop className="mr-2" />}
-                    onClick={() => router.push("/market")}
-                  />
-                  <MenuItem
-                    label="Map"
-                    icon={<LiaMapMarkedSolid className="mr-2" />}
-                    onClick={() => router.push("/map")}
-                  />{" "}
-                  <Button onClick={() => router.push("/get-ezh-app")}>
-                    Install the EZH App
-                  </Button>
-                </SheetTrigger>
-              </>
-            )}
+                        <li className="border-t-[1px] border-b-[1px] my-10 py-10 border-black w-full">
+                          <Link
+                            href="/auth/register-producer"
+                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
+                          >
+                            <div className="flex flex-col">
+                              Become a grower & <div>sell to anyone</div>
+                            </div>
+                            <GiFruitTree className="text-4xl sm:text-7xl" />
+                          </Link>
+                        </li>
+                        <li className="w-full">
+                          <Link
+                            href="/auth/register-co-op"
+                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
+                          >
+                            <div className="flex flex-col">
+                              Become a vendor & <div>sell to buyers</div>
+                            </div>
+                            <IoStorefrontOutline className="text-4xl sm:text-7xl" />
+                          </Link>
+                        </li>
+                      </ul>
+                    </SheetContent>
+                  </Sheet>
+                  <SheetTrigger className="w-full">
+                    <MenuItem
+                      label="Sign In"
+                      icon={<PiPersonSimpleRunThin className="mr-2" />}
+                      onClick={() => {
+                        let callbackUrl = window.location.href;
+                        const encodedCallbackUrl =
+                          encodeURIComponent(callbackUrl);
+
+                        router.push(
+                          `/auth/login?callbackUrl=${encodedCallbackUrl}`
+                        );
+                      }}
+                    />
+                    <MenuItem
+                      label="Market"
+                      icon={<CiShop className="mr-2" />}
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem
+                      label="Map"
+                      icon={<LiaMapMarkedSolid className="mr-2" />}
+                      onClick={() => router.push("/map")}
+                    />{" "}
+                    <Button onClick={() => router.push("/get-ezh-app")}>
+                      Install the EZH App
+                    </Button>
+                  </SheetTrigger>{" "}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 
