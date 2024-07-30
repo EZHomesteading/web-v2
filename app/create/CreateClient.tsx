@@ -1727,6 +1727,24 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
+                              subCategory === "Baked Goods"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Baked Goods")}
+                          >
+                            <CardContent
+                              className={
+                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
+                              }
+                            >
+                              <div className="flex justify-center">
+                                Baked Goods
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
                               subCategory === "Jams"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
@@ -1881,6 +1899,68 @@ const CreateClient = ({ user, index }: Props) => {
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Eggs</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Poultry"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Poultry")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Poultry</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Beef"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Beef")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Beef</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Pork"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Pork")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Pork</div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Alternative Meats"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Alternative Meats")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">
+                                Alternative Meats
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card
+                            className={
+                              subCategory === "Seafood"
+                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
+                                : "h-[60px] w-[140px]"
+                            }
+                            onClick={() => setSubCategory("Seafood")}
+                          >
+                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
+                              <div className="flex justify-center">Seafood</div>
                             </CardContent>
                           </Card>
                           <Card
