@@ -7,10 +7,11 @@ import { IconType } from "react-icons";
 import { Outfit } from "next/font/google";
 
 const outfit = Outfit({
-  subsets:["latin"],
-  display:"swap",
-  weight:["200"]
-})
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["200"],
+});
+
 interface CategoryBoxProps {
   icon: IconType;
   label: string;
@@ -68,7 +69,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     >
       <Icon size={25} />
 
-      <div className={`${outfit.className} font-medium text-[8px] sm:text-sm`}>{label}</div>
+      <div className={`${outfit.className} font-medium text-[8px] sm:text-sm`}>
+        {label}
+      </div>
     </div>
   );
 };

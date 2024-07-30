@@ -60,12 +60,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     return (
       <div className="text-sm text-gray-600  items-center gap-x-1">
         <div className="text-sm text-gray-600 flex items-center gap-x-1">
-          Organic Rating:
           <ReactStars
-            count={5}
+            count={4}
             size={20}
-            color2={"#ffd700"}
-            value={rating.length}
+            color2={"#000"}
+            value={rating.length - 1}
             half={false}
             edit={false}
           />
