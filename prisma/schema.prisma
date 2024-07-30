@@ -188,7 +188,7 @@ model Listing {
   quantityType  String
   price         Float
   description   String
-  keywords      String[]
+  keyWords      String[]
   minOrder      Int
   imageSrc      String[]
   shelfLife     Int
