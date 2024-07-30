@@ -194,7 +194,15 @@ const GetListingsMarket = async (
     const { lat, lng, radius, q, pm, c, p, s, ra, pr,cat, subcat } = params;
 
     let query: any = {};
+    // query.category = "Legumes"
+    // if (cat) {
+    //   query.category = cat
+    // }
 
+    // if (subcat) {
+    //   query.subCategory = subcat
+    // }
+    // console.log(query)
     let listings: Listing1[] = [];
     const listingSelect = {
       id: true,
@@ -224,13 +232,13 @@ const GetListingsMarket = async (
 
       listings = await prisma.listing.findMany({
         where: {
-          user: {
-            role: UserRole.COOP,
-          },
+          // user: {
+          //   role: UserRole.COOP,
+          // },
       
-          ...query,
+          category:"Legumes",
           
-          stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
+          // stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
         //SODT: true,
