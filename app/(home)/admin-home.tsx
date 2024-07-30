@@ -37,6 +37,11 @@ const AdminHome = ({ user }: Props) => {
               Disputes
             </Button>
           </Link>
+          <Link href="/reports">
+            <Button className="hover:bg-green-100 hover:text-black">
+              Reports
+            </Button>
+          </Link>
         </div>
       </header>
     </main>

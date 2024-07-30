@@ -592,13 +592,7 @@ const CreateClient = ({ user, index }: Props) => {
       setValue("location", 0);
     }
   }
-  const addTag = () => {
-    const tagArr: string[] = tags;
-    console.log(tag);
-    tagArr.push(tag);
-    setTags(tagArr);
-    setTag("");
-  };
+
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 right-2 md:left-2">
