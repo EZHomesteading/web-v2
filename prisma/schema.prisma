@@ -190,6 +190,7 @@ model Listing {
   keyWords      String[]
   minOrder      Int
   imageSrc      String[]
+  reports       Int?
   shelfLife     Int
   location      Int
   rating        Int[]

@@ -51,3 +51,19 @@ export default async function getDisputes() {
     throw new Error(error);
   }
 }
+export async function getDisputesLite() {
+  try {
+    const disputes = await prisma.dispute.findMany({
+      select: {
+        id: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return disputes || [];
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}

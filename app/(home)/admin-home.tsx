@@ -3,6 +3,8 @@ import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
 import { Button } from "../components/ui/button";
+import getReports from "@/actions/getReports";
+import getDisputesLite from "@/actions/getDisputes";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -14,7 +16,9 @@ interface Props {
   user: UserInfo;
 }
 
-const AdminHome = ({ user }: Props) => {
+const AdminHome = async ({ user }: Props) => {
+  const reports = await getReports();
+  const disputes = await getDisputesLite();
   return (
     <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
       <header className="py-12">
@@ -32,9 +36,24 @@ const AdminHome = ({ user }: Props) => {
           </div>
         </h1>
         <div className="flex flex-row justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
-          <Link href="/dispute">
+          <Link href="/dispute" className="relative">
+            {disputes.length === 0 ? null : (
+              <div className="absolute text-center top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
+                {disputes.length}
+              </div>
+            )}
             <Button className="hover:bg-green-100 hover:text-black">
               Disputes
+            </Button>
+          </Link>
+          <Link href="/reports" className="relative">
+            {reports.length === 0 ? null : (
+              <div className="absolute text-center top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
+                {reports.length}
+              </div>
+            )}
+            <Button className="hover:bg-green-100 hover:text-black">
+              Reports
             </Button>
           </Link>
         </div>
