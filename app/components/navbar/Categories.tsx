@@ -33,44 +33,49 @@ const outfit = Outfit({
 });
 
 // Main categories
+// Main categories
 export const categories = [
   {
     label: "Unprocessed Produce",
     icon: FaAppleAlt,
+    url: "unprocessed-produce",
   },
   {
     label: "Homemade",
     icon: GiCakeSlice,
+    url: "homemade",
   },
   {
     label: "Durable Products",
     icon: GiCannedFish,
+    url: "durable-products",
   },
   {
     label: "Dairy & Meats",
     icon: GiMilkCarton,
+    url: "dairy-meats",
   },
 ];
 
 // Subcategories
 export const unprocessedProduce = [
-  { label: "Fruits", icon: CiApple },
-  { label: "Vegetables", icon: GiTomato },
+  { label: "Fruits", icon: CiApple, url: "fruit" },
+  { label: "Vegetables", icon: GiTomato, url: "vegetables" },
 ];
 
 export const homemade = [
-  { label: "Baked Goods", icon: GiBread },
-  { label: "Preserves", icon: GiJellyBeans },
+  { label: "Baked Goods", icon: GiBread, url: "baked-goods" },
+  { label: "Preserves", icon: GiJellyBeans, url: "preserves" },
 ];
 
 export const durableProducts = [
-  { label: "Canned Goods", icon: GiCannedFish },
-  { label: "Dry Goods", icon: GiGrainBundle },
+  { label: "Canned Goods", icon: GiCannedFish, url: "canned-goods" },
+  { label: "Dry Goods", icon: GiGrainBundle, url: "dry-goods" },
 ];
 
 export const dairyAndMeats = [
-  { label: "Dairy", icon: GiMilkCarton },
-  { label: "Meats", icon: LuBeef },
+  { label: "Dairy", icon: GiMilkCarton, url: "dairy" },
+  { label: "Meats", icon: LuBeef, url: "meats" },
 ];
 
 type CategoryKey =
@@ -79,17 +84,19 @@ type CategoryKey =
   | "Durable Products"
   | "Dairy & Meats";
 
-const subcategories: Record<CategoryKey, { label: string; icon: IconType }[]> =
-  {
-    "Unprocessed Produce": unprocessedProduce,
-    Homemade: homemade,
-    "Durable Products": durableProducts,
-    "Dairy & Meats": dairyAndMeats,
-  };
+type SubcategoryItem = { label: string; icon: IconType; url: string };
+
+const subcategories: Record<CategoryKey, SubcategoryItem[]> = {
+  "Unprocessed Produce": unprocessedProduce,
+  Homemade: homemade,
+  "Durable Products": durableProducts,
+  "Dairy & Meats": dairyAndMeats,
+};
 
 interface CategoryBoxProps {
   icon: IconType;
   label: string;
+  url: string;
   selected?: boolean;
   onClick: () => void;
 }
@@ -138,27 +145,28 @@ const Categories = ({ user }: Props) => {
   }, [searchParams]);
 
   const handleCategoryClick = useCallback(
-    (clickedCategory: string) => {
-      if (!showSubcategories) {
+    (clickedUrl: string) => {
+      const clickedCategory = categories.find((cat) => cat.url === clickedUrl);
+      if (clickedCategory) {
         // Clicking a main category
-        setCategory(clickedCategory);
+        setCategory(clickedUrl);
         setSubcategory(null);
         setShowSubcategories(true);
-        router.push(`/market?cat=${encodeURIComponent(clickedCategory)}`, {
+        router.push(`/market?cat=${encodeURIComponent(clickedUrl)}`, {
           scroll: false,
         });
       } else {
         // Clicking a subcategory
-        setSubcategory(clickedCategory);
+        setSubcategory(clickedUrl);
         router.push(
           `/market?cat=${encodeURIComponent(
             category!
-          )}&subcat=${encodeURIComponent(clickedCategory)}`,
+          )}&subcat=${encodeURIComponent(clickedUrl)}`,
           { scroll: false }
         );
       }
     },
-    [router, showSubcategories, category]
+    [router, category]
   );
 
   const handleBackToMain = useCallback(() => {
@@ -169,30 +177,56 @@ const Categories = ({ user }: Props) => {
   }, [router]);
 
   const renderCategories = () => {
-    if (!showSubcategories) {
-      return categories.map((item) => (
-        <CategoryBox
-          key={item.label}
-          label={item.label}
-          icon={item.icon}
-          onClick={() => handleCategoryClick(item.label)}
-          selected={item.label === category}
-        />
-      ));
-    } else if (category) {
-      return (
-        subcategories[category as CategoryKey]?.map((item) => (
+    const mainCategories = (
+      <motion.div
+        key="main"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-row items-center justify-evenly w-full"
+      >
+        {categories.map((item) => (
           <CategoryBox
             key={item.label}
             label={item.label}
             icon={item.icon}
-            onClick={() => handleCategoryClick(item.label)}
-            selected={subcategory === item.label}
+            url={item.url}
+            onClick={() => handleCategoryClick(item.url)}
+            selected={item.url === category}
           />
-        )) || null
+        ))}
+      </motion.div>
+    );
+
+    let subcategoryElements = null;
+    if (category && showSubcategories) {
+      const currentSubcategories =
+        subcategories[
+          categories.find((cat) => cat.url === category)?.label as CategoryKey
+        ];
+      subcategoryElements = (
+        <motion.div
+          key="sub"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-row items-center justify-evenly w-full"
+        >
+          {currentSubcategories?.map((item) => (
+            <CategoryBox
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              url={item.url}
+              onClick={() => handleCategoryClick(item.url)}
+              selected={item.url === subcategory}
+            />
+          ))}
+        </motion.div>
       );
     }
-    return null;
+
+    return { mainCategories, subcategoryElements };
   };
 
   const marketPathName = "/market";
@@ -206,32 +240,16 @@ const Categories = ({ user }: Props) => {
   return (
     <Container>
       {isMarket ? (
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex items-center justify-center">
           <div>
             <Filters user={user} />
           </div>
           <div className="w-full p-0 sm:pt-4">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={showSubcategories ? "sub" : "main"}
-                variants={fadeVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                transition={{ duration: 0.3 }}
-                className="flex flex-row items-center justify-evenly overflow-x-auto overflow-y-auto h-fit relative"
-              >
-                {renderCategories()}
-              </motion.div>
+              {showSubcategories
+                ? renderCategories().subcategoryElements
+                : renderCategories().mainCategories}
             </AnimatePresence>
-            {/* {showSubcategories && (
-              <button
-                onClick={handleBackToMain}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Back to Main Categories
-              </button>
-            )} */}
           </div>
         </div>
       ) : null}

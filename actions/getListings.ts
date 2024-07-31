@@ -194,15 +194,12 @@ const GetListingsMarket = async (
     const { lat, lng, radius, q, pm, c, p, s, ra, pr,cat, subcat } = params;
 
     let query: any = {};
-    // query.category = "Legumes"
-    // if (cat) {
-    //   query.category = cat
-    // }
-
-    // if (subcat) {
-    //   query.subCategory = subcat
-    // }
-    // console.log(query)
+    if (subcat) {
+      query.subCategory = subcat
+    }
+    if (cat) {
+      query.category = cat
+    }
     let listings: Listing1[] = [];
     const listingSelect = {
       id: true,
@@ -229,16 +226,16 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
+      
+      console.log("cat", cat,"sub", subcat,"query", query)
 
       listings = await prisma.listing.findMany({
         where: {
-          // user: {
-          //   role: UserRole.COOP,
-          // },
-      
-          category:"Legumes",
-          
-          // stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
+          user: {
+            role: UserRole.COOP,
+          },
+          ...query,
+          stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
         //SODT: true,
