@@ -147,34 +147,49 @@ const Categories = ({ user }: Props) => {
   const handleCategoryClick = useCallback(
     (clickedUrl: string) => {
       const clickedCategory = categories.find((cat) => cat.url === clickedUrl);
+      const currentParams = searchParams
+        ? qs.parse(searchParams.toString())
+        : {};
+      delete currentParams.q;
       if (clickedCategory) {
-        // Clicking a main category
+        const updatedParams = {
+          ...currentParams,
+          cat: clickedUrl,
+          subcat: undefined,
+        };
         setCategory(clickedUrl);
         setSubcategory(null);
         setShowSubcategories(true);
-        router.push(`/market?cat=${encodeURIComponent(clickedUrl)}`, {
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
           scroll: false,
         });
       } else {
-        // Clicking a subcategory
+        const updatedParams = {
+          ...currentParams,
+          cat: category,
+          subcat: clickedUrl,
+        };
         setSubcategory(clickedUrl);
-        router.push(
-          `/market?cat=${encodeURIComponent(
-            category!
-          )}&subcat=${encodeURIComponent(clickedUrl)}`,
-          { scroll: false }
-        );
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
+          scroll: false,
+        });
       }
     },
-    [router, category]
+    [router, category, searchParams]
   );
 
   const handleBackToMain = useCallback(() => {
+    const currentParams = searchParams ? qs.parse(searchParams.toString()) : {};
+    const updatedParams = {
+      ...currentParams,
+      cat: undefined,
+      subcat: undefined,
+    };
     setCategory(null);
     setSubcategory(null);
     setShowSubcategories(false);
-    router.push("/market", { scroll: false });
-  }, [router]);
+    router.push(`/market?${qs.stringify(updatedParams)}`, { scroll: false });
+  }, [router, searchParams]);
 
   const renderCategories = () => {
     const mainCategories = (
