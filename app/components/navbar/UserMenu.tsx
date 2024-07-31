@@ -90,7 +90,6 @@ const UserMenu = ({ user }: Props) => {
             ) : (
               <div
                 onClick={() => {
-                  console.log(user);
                   if (user?.location[0] === null) {
                     router.push("/dashboard/my-store/settings");
                   } else {
@@ -280,24 +279,24 @@ const UserMenu = ({ user }: Props) => {
 
                         <li className="border-t-[1px] border-b-[1px] my-10 py-10 border-black w-full">
                           <Link
-                            href="/auth/register-producer"
-                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
-                          >
-                            <div className="flex flex-col">
-                              Become a grower & <div>sell to anyone</div>
-                            </div>
-                            <GiFruitTree className="text-4xl sm:text-7xl" />
-                          </Link>
-                        </li>
-                        <li className="w-full">
-                          <Link
                             href="/auth/register-co-op"
                             className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
                           >
                             <div className="flex flex-col">
-                              Become a vendor & <div>sell to buyers</div>
+                              Become a vendor & <div>sell to anyone</div>
                             </div>
                             <IoStorefrontOutline className="text-4xl sm:text-7xl" />
+                          </Link>
+                        </li>
+                        <li className="w-full">
+                          <Link
+                            href="/auth/register-producer"
+                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
+                          >
+                            <div className="flex flex-col">
+                              Become a grower & <div>sell only to vendors</div>
+                            </div>
+                            <GiFruitTree className="text-4xl sm:text-7xl" />
                           </Link>
                         </li>
                       </ul>

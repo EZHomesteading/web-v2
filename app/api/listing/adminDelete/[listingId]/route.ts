@@ -11,7 +11,6 @@ export async function DELETE(
 ) {
   try {
     const { listingId } = params;
-    console.log(listingId);
     if (!listingId || typeof listingId !== "string") {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }

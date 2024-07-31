@@ -345,7 +345,7 @@ const CreateClient = ({ user, index }: Props) => {
     }
 
     if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
-      toast.error("Please use the stock photo or upload atleast one photo", {
+      toast.error("Please upload at least one photo", {
         duration: 2000,
         position: "bottom-center",
       });
@@ -375,14 +375,14 @@ const CreateClient = ({ user, index }: Props) => {
     }
 
     if (step === 3 && (price <= 0 || !price)) {
-      toast.error("Please enter a price greater than 0.", {
+      toast.error("Please enter a price greater than 0", {
         duration: 2000,
         position: "bottom-center",
       });
       return;
     }
     if (step === 3 && (parseInt(minOrder) <= 0 || !quantity)) {
-      toast.error("Please enter a minimum order greater than 0.", {
+      toast.error("Please enter a minimum order greater than 0", {
         duration: 2000,
         position: "bottom-center",
       });
@@ -443,13 +443,13 @@ const CreateClient = ({ user, index }: Props) => {
         });
         return;
       } else if (parseInt(minOrder) <= 0 || !quantity) {
-        toast.error("Please enter a minimum order greater than 0.", {
+        toast.error("Please enter a minimum order greater than 0", {
           duration: 2000,
           position: "bottom-center",
         });
         return;
       } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
-        toast.error("Please use the stock photo or upload at least one photo", {
+        toast.error("Please upload at least one photo", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -472,7 +472,7 @@ const CreateClient = ({ user, index }: Props) => {
         });
         return;
       } else if (price <= 0 || !quantity) {
-        toast.error("Please enter a price greater than 0.", {
+        toast.error("Please enter a price greater than 0", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -741,7 +741,7 @@ const CreateClient = ({ user, index }: Props) => {
                       }
                       onMouseDown={() => {
                         if (!title) {
-                          toast.error("Let us know what produce you have!", {
+                          toast.error("Let us know what produce you have", {
                             duration: 2000,
                             position: "bottom-center",
                           });
@@ -766,7 +766,7 @@ const CreateClient = ({ user, index }: Props) => {
                           return;
                         } else if (parseInt(minOrder) <= 0 || !quantity) {
                           toast.error(
-                            "Please enter a minimum order greater than 0.",
+                            "Please enter a minimum order greater than 0",
                             {
                               duration: 2000,
                               position: "bottom-center",
@@ -797,14 +797,14 @@ const CreateClient = ({ user, index }: Props) => {
                           });
                           return;
                         } else if (price <= 0 || !quantity) {
-                          toast.error("Please enter a price greater than 0.", {
+                          toast.error("Please enter a price greater than 0", {
                             duration: 2000,
                             position: "bottom-center",
                           });
                           return;
                         } else if (parseInt(minOrder) > parseInt(quantity)) {
                           toast.error(
-                            "Minimum order cannot be higher than stock.",
+                            "Minimum order cannot be higher than stock",
                             {
                               duration: 2000,
                               position: "bottom-center",

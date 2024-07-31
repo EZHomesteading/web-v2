@@ -66,11 +66,11 @@ const getConversationById = async (conversationId: string) => {
       error instanceof PrismaClientKnownRequestError &&
       error.code === "P2023"
     ) {
-      console.log("Invalid conversationId:", conversationId);
+      console.error("Invalid conversationId:", conversationId);
       return null;
     }
     // Log any other error and return null
-    console.log(error, "SERVER_ERROR");
+    console.error(error, "SERVER_ERROR");
     return null;
   }
 };

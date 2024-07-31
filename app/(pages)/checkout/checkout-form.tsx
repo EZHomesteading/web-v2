@@ -74,7 +74,6 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
           email: user?.email,
           orderIds,
         });
-        console.log("totalsum", totalSum);
         const clientSecret = response.data.clientSecret;
         setClientSecret(clientSecret);
       } catch (error) {

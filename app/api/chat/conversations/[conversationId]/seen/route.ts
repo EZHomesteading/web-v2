@@ -125,7 +125,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
     return new NextResponse("Success");
   } catch (error) {
-    console.log(error, "ERROR_MESSAGES_SEEN");
+    console.error(error, "ERROR_MESSAGES_SEEN");
     return new NextResponse("Error", { status: 500 });
   }
 }

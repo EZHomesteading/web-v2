@@ -259,7 +259,6 @@ const VendorsMap = ({
   };
 
   const handleMouseDown = (event: any) => {
-    console.log(event);
     if (isDrawingEnabled && event.latLng) {
       setIsDrawing(true);
       const path = polylineRef.current?.getPath();

@@ -62,7 +62,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 
   //   return "Started a conversation";
   // }, [lastMessage]);
-  console.log(data);
+
   return (
     <div
       onClick={handleClick}

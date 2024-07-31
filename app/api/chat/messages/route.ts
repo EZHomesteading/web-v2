@@ -79,9 +79,7 @@ export async function POST(request: Request) {
       try {
         const recipientSubs = recipients.subscriptions;
         const formatrecipients = JSON.parse(recipientSubs);
-        console.log(formatrecipients);
         const send = formatrecipients.map((subscription: PushSubscription) => {
-          console.log(subscription);
           webPush.sendNotification(
             subscription,
             JSON.stringify({
@@ -101,12 +99,12 @@ export async function POST(request: Request) {
         });
         await Promise.all(send);
       } catch (error) {
-        console.log("A users Push subscription has expired.");
+        console.error("A users Push subscription has expired.");
       }
     }
     return NextResponse.json(newMessage);
   } catch (error) {
-    console.log(error, "ERROR_MESSAGES");
+    console.error(error, "ERROR_MESSAGES");
     return new NextResponse("Error", { status: 500 });
   }
 }

@@ -53,7 +53,6 @@ const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
         router.refresh();
         toast.success("Your cart was updated!");
       } catch (error) {
-        console.log(user.id, listingUser);
         if (listingUser === user.id) {
           toast.error("Can't add your own listings to cart");
         } else if (

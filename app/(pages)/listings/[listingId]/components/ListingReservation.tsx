@@ -63,8 +63,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     const inverseRatings = possibleRatings.filter(
       (index) => index !== 0 && !applicableRatings.includes(index)
     );
-
-    console.log(product.reports);
     return (
       <div className="text-sm text-gray-600  items-center gap-x-1">
         <div className="text-sm text-gray-600 flex items-center gap-x-1">

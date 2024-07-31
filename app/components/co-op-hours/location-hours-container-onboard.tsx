@@ -71,7 +71,7 @@ const CardComponent = memo(
     id: string;
   }) => {
     {
-      locationState && console.log(locationState[locationIndex]);
+      locationState; // && console.log(locationState[locationIndex]);
     }
 
     return (
@@ -140,6 +140,7 @@ const CardComponent = memo(
                     {locationState && (
                       <SliderSelection
                         hours={hours}
+                        showUpdate={true}
                         index={locationIndex}
                         location={
                           location as unknown as {
@@ -367,7 +368,6 @@ const HoursLocationContainer = ({
     const handleAddLocation = useCallback(
       async (newAddress: string[]) => {
         const updatedAddress = newAddress.join(", ");
-        console.log(updatedAddress);
         const latLng = await getLatLngFromAddress(updatedAddress);
 
         if (latLng) {

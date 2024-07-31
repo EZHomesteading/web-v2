@@ -24,7 +24,6 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   }
   const newFollows = following.follows.filter((id) => id !== follows);
   // Delete a single cart item
-  console.log(newFollows);
   await prisma.following.update({
     where: { userId: user.id },
     data: { follows: newFollows },

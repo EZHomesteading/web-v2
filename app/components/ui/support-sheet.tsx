@@ -103,7 +103,6 @@ const SheetContentS = React.forwardRef<
       toast.error("Invalid email");
       return;
     }
-    console.log("Typed text:", text);
     closeSheet();
   };
 

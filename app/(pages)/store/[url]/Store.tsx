@@ -44,7 +44,6 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
     return totalLength / arrayOfArrays.length;
   }
   const avgRating = averageArrayLength(store.user.listings);
-  console.log(store);
   return (
     <ClientOnly>
       <Container>
