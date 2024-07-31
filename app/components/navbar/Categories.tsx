@@ -6,25 +6,32 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IconType } from "react-icons";
 import qs from "query-string";
 import {
-  GiCoolSpices,
   GiGrainBundle,
-  GiWrappedSweet,
-  GiPorcelainVase,
-  GiJellyBeans,
   GiBread,
   GiTomato,
   GiMilkCarton,
   GiCakeSlice,
   GiCannedFish,
+  GiButter,
+  GiPeanut,
+  GiHerbsBundle,
+  GiClothes,
+  GiHorseshoe,
+  GiRaspberry,
+  GiStrawberry,
+  GiChicken,
 } from "react-icons/gi";
-import { LuNut, LuBeef } from "react-icons/lu";
-import { CiApple } from "react-icons/ci";
-import { FaSeedling, FaAppleAlt } from "react-icons/fa";
+import { LuBeef, LuBean, LuMilk } from "react-icons/lu";
+import { CiApple, CiForkAndKnife } from "react-icons/ci";
+import { FaAppleAlt } from "react-icons/fa";
 
 import Container from "../Container";
 import Filters from "./filter.client";
 import { navUser } from "@/next-auth";
 import { Outfit } from "next/font/google";
+import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
+import { IoFishOutline } from "react-icons/io5";
+import { MdOutlineSolarPower } from "react-icons/md";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -32,8 +39,6 @@ const outfit = Outfit({
   weight: ["200"],
 });
 
-// Main categories
-// Main categories
 export const categories = [
   {
     label: "Unprocessed Produce",
@@ -61,21 +66,37 @@ export const categories = [
 export const unprocessedProduce = [
   { label: "Fruits", icon: CiApple, url: "fruit" },
   { label: "Vegetables", icon: GiTomato, url: "vegetables" },
+  { label: "Nuts", icon: GiPeanut, url: "nuts" },
+  { label: "Herbs", icon: GiHerbsBundle, url: "herbs" },
+  { label: "Legumes", icon: LuBean, url: "legumes" },
 ];
 
 export const homemade = [
-  { label: "Baked Goods", icon: GiBread, url: "baked-goods" },
-  { label: "Preserves", icon: GiJellyBeans, url: "preserves" },
+  { label: "Baked Goods", icon: GiCakeSlice, url: "baked-goods" },
+  { label: "Crafts", icon: GiClothes, url: "crafts" },
+  { label: "Jams", icon: GiRaspberry, url: "jams" },
+  { label: "Preserves", icon: GiStrawberry, url: "preserves" },
+  { label: "Breads", icon: GiBread, url: "breads" },
 ];
 
 export const durableProducts = [
   { label: "Canned Goods", icon: GiCannedFish, url: "canned-goods" },
   { label: "Dry Goods", icon: GiGrainBundle, url: "dry-goods" },
+  { label: "Survival", icon: MdOutlineSolarPower, url: "survival" },
+  { label: "Tools", icon: GiHorseshoe, url: "tools" },
+  { label: "Kitchen Ware", icon: CiForkAndKnife, url: "kitchen-wares" },
 ];
 
 export const dairyAndMeats = [
-  { label: "Dairy", icon: GiMilkCarton, url: "dairy" },
-  { label: "Meats", icon: LuBeef, url: "meats" },
+  { label: "Milk", icon: LuMilk, url: "milks" },
+  { label: "Eggs", icon: TbEggs, url: "eggs" },
+  { label: "Poultry", icon: GiChicken, url: "poultry" },
+  { label: "Beef", icon: LuBeef, url: "beef" },
+  { label: "Pork", icon: TbPig, url: "pork" },
+  { label: "Exotic Meat", icon: TbMeat, url: "alternative-meats" },
+  { label: "Seafood", icon: IoFishOutline, url: "seafood" },
+  { label: "Butter", icon: GiButter, url: "butter" },
+  { label: "Cheese", icon: TbCheese, url: "cheese" },
 ];
 
 type CategoryKey =
