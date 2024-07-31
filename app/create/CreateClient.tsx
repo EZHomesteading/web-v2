@@ -1560,7 +1560,7 @@ const CreateClient = ({ user, index }: Props) => {
                       <div className="grid grid-cols-4 sm:grid-cols-2 gap-3 ">
                         <Card
                           className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("Unprocessed Produce")}
+                          onClick={() => setCategory("unprocessed-produce")}
                         >
                           <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                             <GiShinyApple size={40} />
@@ -1572,7 +1572,7 @@ const CreateClient = ({ user, index }: Props) => {
                         </Card>
                         <Card
                           className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("Homemade")}
+                          onClick={() => setCategory("homemade")}
                         >
                           <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                             <TbCandle size={40} />
@@ -1584,7 +1584,7 @@ const CreateClient = ({ user, index }: Props) => {
                         </Card>
                         <Card
                           className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("Durables")}
+                          onClick={() => setCategory("durables")}
                         >
                           <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                             <LuShovel size={40} />
@@ -1596,7 +1596,7 @@ const CreateClient = ({ user, index }: Props) => {
                         </Card>
                         <Card
                           className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("Dairy & Meat")}
+                          onClick={() => setCategory("dairy-meat")}
                         >
                           <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                             <GiMeat size={40} />
@@ -1607,7 +1607,7 @@ const CreateClient = ({ user, index }: Props) => {
                           </CardContent>
                         </Card>
                       </div>
-                    ) : category === "Unprocessed Produce" ? (
+                    ) : category === "unprocessed-produce" ? (
                       <div>
                         <button
                           className="h-[30px] w-[100px] mb-3"
@@ -1624,11 +1624,11 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <Card
                             className={
-                              subCategory === "Fruit"
+                              subCategory === "fruit"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Fruit")}
+                            onClick={() => setSubCategory("fruit")}
                           >
                             <CardContent
                               className={
@@ -1640,11 +1640,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Vegetables"
+                              subCategory === "vegetables"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Vegetables")}
+                            onClick={() => setSubCategory("vegetables")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">
@@ -1654,11 +1654,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Nuts"
+                              subCategory === "nuts"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Nuts")}
+                            onClick={() => setSubCategory("nuts")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Nuts</div>
@@ -1666,11 +1666,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Herbs"
+                              subCategory === "herbs"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Herbs")}
+                            onClick={() => setSubCategory("herbs")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Herbs</div>
@@ -1678,11 +1678,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Legumes"
+                              subCategory === "legumes"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Legumes")}
+                            onClick={() => setSubCategory("legumes")}
                           >
                             <CardContent
                               className={
@@ -1694,7 +1694,7 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                         </div>
                       </div>
-                    ) : category === "Homemade" ? (
+                    ) : category === "homemade" ? (
                       <div>
                         <button
                           className="h-[30px] w-[100px] mb-3"
@@ -1711,11 +1711,11 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <Card
                             className={
-                              subCategory === "Crafts"
+                              subCategory === "crafts"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Crafts")}
+                            onClick={() => setSubCategory("crafts")}
                           >
                             <CardContent
                               className={
@@ -1727,11 +1727,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Baked Goods"
+                              subCategory === "baked-goods"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Baked Goods")}
+                            onClick={() => setSubCategory("baked-goods")}
                           >
                             <CardContent
                               className={
@@ -1745,11 +1745,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Jams"
+                              subCategory === "jams"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Jams")}
+                            onClick={() => setSubCategory("jams")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Jams</div>
@@ -1757,11 +1757,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Pastries"
+                              subCategory === "pastries"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Pastries")}
+                            onClick={() => setSubCategory("pastries")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">
@@ -1771,11 +1771,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Breads"
+                              subCategory === "breads"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Breads")}
+                            onClick={() => setSubCategory("breads")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Breads</div>
@@ -1783,7 +1783,7 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                         </div>
                       </div>
-                    ) : category === "Durables" ? (
+                    ) : category === "durables" ? (
                       <div>
                         <button
                           className="h-[30px] w-[100px] mb-3"
@@ -1800,11 +1800,11 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <Card
                             className={
-                              subCategory === "Canned Goods"
+                              subCategory === "canned-goods"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Canned Goods")}
+                            onClick={() => setSubCategory("canned-goods")}
                           >
                             <CardContent
                               className={
@@ -1818,11 +1818,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Tools"
+                              subCategory === "tools"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Tools")}
+                            onClick={() => setSubCategory("tools")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Tools</div>
@@ -1830,11 +1830,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Survival"
+                              subCategory === "survival"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Survival")}
+                            onClick={() => setSubCategory("survival")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">
@@ -1844,11 +1844,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Kitchen Wares"
+                              subCategory === "kitchen-wares"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Kitchen Wares")}
+                            onClick={() => setSubCategory("kitchen-wares")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">
@@ -1858,7 +1858,7 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                         </div>
                       </div>
-                    ) : category === "Dairy & Meat" ? (
+                    ) : category === "dairy-meats" ? (
                       <div>
                         <button
                           className="h-[30px] w-[100px] mb-3"
@@ -1875,11 +1875,11 @@ const CreateClient = ({ user, index }: Props) => {
                           {" "}
                           <Card
                             className={
-                              subCategory === "Milks"
+                              subCategory === "milks"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Milks")}
+                            onClick={() => setSubCategory("milks")}
                           >
                             <CardContent
                               className={
@@ -1891,11 +1891,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Eggs"
+                              subCategory === "eggs"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Eggs")}
+                            onClick={() => setSubCategory("eggs")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Eggs</div>
@@ -1903,11 +1903,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Poultry"
+                              subCategory === "poultry"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Poultry")}
+                            onClick={() => setSubCategory("poultry")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Poultry</div>
@@ -1915,11 +1915,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Beef"
+                              subCategory === "beef"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Beef")}
+                            onClick={() => setSubCategory("beef")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Beef</div>
@@ -1927,11 +1927,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Pork"
+                              subCategory === "pork"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Pork")}
+                            onClick={() => setSubCategory("pork")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Pork</div>
@@ -1939,11 +1939,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Alternative Meats"
+                              subCategory === "alternative-meats"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Alternative Meats")}
+                            onClick={() => setSubCategory("alternative-meats")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">
@@ -1953,11 +1953,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Seafood"
+                              subCategory === "seafood"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Seafood")}
+                            onClick={() => setSubCategory("seafood")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Seafood</div>
@@ -1965,11 +1965,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Butter"
+                              subCategory === "butter"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Butter")}
+                            onClick={() => setSubCategory("butter")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Butter</div>
@@ -1977,11 +1977,11 @@ const CreateClient = ({ user, index }: Props) => {
                           </Card>
                           <Card
                             className={
-                              subCategory === "Cheese"
+                              subCategory === "cheese"
                                 ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
                                 : "h-[60px] w-[140px]"
                             }
-                            onClick={() => setSubCategory("Cheese")}
+                            onClick={() => setSubCategory("cheese")}
                           >
                             <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
                               <div className="flex justify-center">Cheese</div>
