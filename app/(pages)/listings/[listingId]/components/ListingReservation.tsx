@@ -11,6 +11,7 @@ import { FinalListing } from "@/actions/getListings";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { SiAdafruit } from "react-icons/si";
 import ReactStars from "react-stars";
+import ConfirmModal from "./ConfirmModal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -47,16 +48,23 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     3: "No Inorganic Pesticides",
     4: "Not Modified After Harvest",
   };
+  const inverseRatingMeanings: { [key: number]: string } = {
+    1: "May be Genetically Modified",
+    2: "May use Inorganic Fertilizers",
+    3: "May use Inorganic Pesticides",
+    4: "May be Modified After Harvest",
+  };
 
   const renderRating = () => {
     const applicableRatings = rating.filter(
       (index) => index !== 0 && index in ratingMeanings
     );
+    const possibleRatings = [1, 2, 3, 4];
+    const inverseRatings = possibleRatings.filter(
+      (index) => index !== 0 && !applicableRatings.includes(index)
+    );
 
-    if (applicableRatings.length === 0) {
-      return null;
-    }
-
+    console.log(product.reports);
     return (
       <div className="text-sm text-gray-600  items-center gap-x-1">
         <div className="text-sm text-gray-600 flex items-center gap-x-1">
@@ -78,13 +86,21 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
               {ratingMeanings[ratingIndex]}
             </li>
           ))}
+          {inverseRatings.map((ratingIndex) => (
+            <li
+              key={ratingIndex}
+              className="text-sm text-gray-600 flex items-center gap-x-1"
+            >
+              {inverseRatingMeanings[ratingIndex]}
+            </li>
+          ))}
         </ul>
       </div>
     );
   };
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-
+  const [confirmmOpen, setConfirmmOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
   const [quantity, setQuantity] = useState(product.minOrder || 1);
   const { hasCart } = useCartListing({
@@ -137,6 +153,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         onClose={() => setConfirmOpen(false)}
         userEmail={user?.email}
       />
+      <ConfirmModal
+        isOpen={confirmmOpen}
+        listingId={listingId}
+        onClose={() => setConfirmmOpen(false)}
+        reports={product.reports}
+      />
       <div
         className={` bg-white 
         rounded-xl 
@@ -146,6 +168,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         gap-1 
         p-2 ${outfit.className}`}
       >
+        <Button onClick={() => setConfirmmOpen(true)}>Report Listing</Button>
         <div
           className={`${zilla.className}
       text-lg font-light text-neutral-500 p-2`}
