@@ -61,9 +61,16 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleFollow}
-        className={`${outfit.className} bg-slate-300  rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
+        className={`${outfit.className} bg-slate-300  text-xl 
+            font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <FollowIcon /> <div className="pl-1">Follow</div>
+        <FollowIcon />{" "}
+        <div
+          className="pl-1 text-xl 
+            font-semibold"
+        >
+          Follow
+        </div>
       </div>
     );
   } else {
@@ -77,9 +84,17 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleUnfollow}
-        className={`${outfit.className} bg-slate-300  rounded-full flex py-1 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
+        className={`${outfit.className} bg-slate-300   text-xl 
+            font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <UnfollowIcon /> <div className="pl-1"> Following</div>
+        <UnfollowIcon />{" "}
+        <div
+          className="pl-1 text-xl 
+            font-semibold"
+        >
+          {" "}
+          Following
+        </div>
       </div>
     );
   }
