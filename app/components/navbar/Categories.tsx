@@ -6,25 +6,32 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IconType } from "react-icons";
 import qs from "query-string";
 import {
-  GiCoolSpices,
   GiGrainBundle,
-  GiWrappedSweet,
-  GiPorcelainVase,
-  GiJellyBeans,
   GiBread,
   GiTomato,
   GiMilkCarton,
   GiCakeSlice,
   GiCannedFish,
+  GiButter,
+  GiPeanut,
+  GiHerbsBundle,
+  GiClothes,
+  GiHorseshoe,
+  GiRaspberry,
+  GiStrawberry,
+  GiChicken,
 } from "react-icons/gi";
-import { LuNut, LuBeef } from "react-icons/lu";
-import { CiApple } from "react-icons/ci";
-import { FaSeedling, FaAppleAlt } from "react-icons/fa";
+import { LuBeef, LuBean, LuMilk } from "react-icons/lu";
+import { CiApple, CiForkAndKnife } from "react-icons/ci";
+import { FaAppleAlt } from "react-icons/fa";
 
 import Container from "../Container";
 import Filters from "./filter.client";
 import { navUser } from "@/next-auth";
 import { Outfit } from "next/font/google";
+import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
+import { IoFishOutline } from "react-icons/io5";
+import { MdOutlineSolarPower } from "react-icons/md";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -32,45 +39,64 @@ const outfit = Outfit({
   weight: ["200"],
 });
 
-// Main categories
 export const categories = [
   {
     label: "Unprocessed Produce",
     icon: FaAppleAlt,
+    url: "unprocessed-produce",
   },
   {
     label: "Homemade",
     icon: GiCakeSlice,
+    url: "homemade",
   },
   {
     label: "Durable Products",
     icon: GiCannedFish,
+    url: "durable-products",
   },
   {
     label: "Dairy & Meats",
     icon: GiMilkCarton,
+    url: "dairy-meats",
   },
 ];
 
 // Subcategories
 export const unprocessedProduce = [
-  { label: "Fruits", icon: CiApple },
-  { label: "Vegetables", icon: GiTomato },
+  { label: "Fruits", icon: CiApple, url: "fruit" },
+  { label: "Vegetables", icon: GiTomato, url: "vegetables" },
+  { label: "Nuts", icon: GiPeanut, url: "nuts" },
+  { label: "Herbs", icon: GiHerbsBundle, url: "herbs" },
+  { label: "Legumes", icon: LuBean, url: "legumes" },
 ];
 
 export const homemade = [
-  { label: "Baked Goods", icon: GiBread },
-  { label: "Preserves", icon: GiJellyBeans },
+  { label: "Baked Goods", icon: GiCakeSlice, url: "baked-goods" },
+  { label: "Crafts", icon: GiClothes, url: "crafts" },
+  { label: "Jams", icon: GiRaspberry, url: "jams" },
+  { label: "Preserves", icon: GiStrawberry, url: "preserves" },
+  { label: "Breads", icon: GiBread, url: "breads" },
 ];
 
 export const durableProducts = [
-  { label: "Canned Goods", icon: GiCannedFish },
-  { label: "Dry Goods", icon: GiGrainBundle },
+  { label: "Canned Goods", icon: GiCannedFish, url: "canned-goods" },
+  { label: "Dry Goods", icon: GiGrainBundle, url: "dry-goods" },
+  { label: "Survival", icon: MdOutlineSolarPower, url: "survival" },
+  { label: "Tools", icon: GiHorseshoe, url: "tools" },
+  { label: "Kitchen Ware", icon: CiForkAndKnife, url: "kitchen-wares" },
 ];
 
 export const dairyAndMeats = [
-  { label: "Dairy", icon: GiMilkCarton },
-  { label: "Meats", icon: LuBeef },
+  { label: "Milk", icon: LuMilk, url: "milks" },
+  { label: "Eggs", icon: TbEggs, url: "eggs" },
+  { label: "Poultry", icon: GiChicken, url: "poultry" },
+  { label: "Beef", icon: LuBeef, url: "beef" },
+  { label: "Pork", icon: TbPig, url: "pork" },
+  { label: "Exotic Meat", icon: TbMeat, url: "alternative-meats" },
+  { label: "Seafood", icon: IoFishOutline, url: "seafood" },
+  { label: "Butter", icon: GiButter, url: "butter" },
+  { label: "Cheese", icon: TbCheese, url: "cheese" },
 ];
 
 type CategoryKey =
@@ -79,17 +105,19 @@ type CategoryKey =
   | "Durable Products"
   | "Dairy & Meats";
 
-const subcategories: Record<CategoryKey, { label: string; icon: IconType }[]> =
-  {
-    "Unprocessed Produce": unprocessedProduce,
-    Homemade: homemade,
-    "Durable Products": durableProducts,
-    "Dairy & Meats": dairyAndMeats,
-  };
+type SubcategoryItem = { label: string; icon: IconType; url: string };
+
+const subcategories: Record<CategoryKey, SubcategoryItem[]> = {
+  "Unprocessed Produce": unprocessedProduce,
+  Homemade: homemade,
+  "Durable Products": durableProducts,
+  "Dairy & Meats": dairyAndMeats,
+};
 
 interface CategoryBoxProps {
   icon: IconType;
   label: string;
+  url: string;
   selected?: boolean;
   onClick: () => void;
 }
@@ -138,61 +166,103 @@ const Categories = ({ user }: Props) => {
   }, [searchParams]);
 
   const handleCategoryClick = useCallback(
-    (clickedCategory: string) => {
-      if (!showSubcategories) {
-        // Clicking a main category
-        setCategory(clickedCategory);
+    (clickedUrl: string) => {
+      const clickedCategory = categories.find((cat) => cat.url === clickedUrl);
+      const currentParams = searchParams
+        ? qs.parse(searchParams.toString())
+        : {};
+      delete currentParams.q;
+      if (clickedCategory) {
+        const updatedParams = {
+          ...currentParams,
+          cat: clickedUrl,
+          subcat: undefined,
+        };
+        setCategory(clickedUrl);
         setSubcategory(null);
         setShowSubcategories(true);
-        router.push(`/market?cat=${encodeURIComponent(clickedCategory)}`, {
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
           scroll: false,
         });
       } else {
-        // Clicking a subcategory
-        setSubcategory(clickedCategory);
-        router.push(
-          `/market?cat=${encodeURIComponent(
-            category!
-          )}&subcat=${encodeURIComponent(clickedCategory)}`,
-          { scroll: false }
-        );
+        const updatedParams = {
+          ...currentParams,
+          cat: category,
+          subcat: clickedUrl,
+        };
+        setSubcategory(clickedUrl);
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
+          scroll: false,
+        });
       }
     },
-    [router, showSubcategories, category]
+    [router, category, searchParams]
   );
 
   const handleBackToMain = useCallback(() => {
+    const currentParams = searchParams ? qs.parse(searchParams.toString()) : {};
+    const updatedParams = {
+      ...currentParams,
+      cat: undefined,
+      subcat: undefined,
+    };
     setCategory(null);
     setSubcategory(null);
     setShowSubcategories(false);
-    router.push("/market", { scroll: false });
-  }, [router]);
+    router.push(`/market?${qs.stringify(updatedParams)}`, { scroll: false });
+  }, [router, searchParams]);
 
   const renderCategories = () => {
-    if (!showSubcategories) {
-      return categories.map((item) => (
-        <CategoryBox
-          key={item.label}
-          label={item.label}
-          icon={item.icon}
-          onClick={() => handleCategoryClick(item.label)}
-          selected={item.label === category}
-        />
-      ));
-    } else if (category) {
-      return (
-        subcategories[category as CategoryKey]?.map((item) => (
+    const mainCategories = (
+      <motion.div
+        key="main"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-row items-center justify-evenly w-full"
+      >
+        {categories.map((item) => (
           <CategoryBox
             key={item.label}
             label={item.label}
             icon={item.icon}
-            onClick={() => handleCategoryClick(item.label)}
-            selected={subcategory === item.label}
+            url={item.url}
+            onClick={() => handleCategoryClick(item.url)}
+            selected={item.url === category}
           />
-        )) || null
+        ))}
+      </motion.div>
+    );
+
+    let subcategoryElements = null;
+    if (category && showSubcategories) {
+      const currentSubcategories =
+        subcategories[
+          categories.find((cat) => cat.url === category)?.label as CategoryKey
+        ];
+      subcategoryElements = (
+        <motion.div
+          key="sub"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-row items-center justify-evenly w-full"
+        >
+          {currentSubcategories?.map((item) => (
+            <CategoryBox
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              url={item.url}
+              onClick={() => handleCategoryClick(item.url)}
+              selected={item.url === subcategory}
+            />
+          ))}
+        </motion.div>
       );
     }
-    return null;
+
+    return { mainCategories, subcategoryElements };
   };
 
   const marketPathName = "/market";
@@ -206,32 +276,16 @@ const Categories = ({ user }: Props) => {
   return (
     <Container>
       {isMarket ? (
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex items-center justify-center">
           <div>
             <Filters user={user} />
           </div>
           <div className="w-full p-0 sm:pt-4">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={showSubcategories ? "sub" : "main"}
-                variants={fadeVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                transition={{ duration: 0.3 }}
-                className="flex flex-row items-center justify-evenly overflow-x-auto overflow-y-auto h-fit relative"
-              >
-                {renderCategories()}
-              </motion.div>
+              {showSubcategories
+                ? renderCategories().subcategoryElements
+                : renderCategories().mainCategories}
             </AnimatePresence>
-            {/* {showSubcategories && (
-              <button
-                onClick={handleBackToMain}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Back to Main Categories
-              </button>
-            )} */}
           </div>
         </div>
       ) : null}
