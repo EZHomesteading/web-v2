@@ -46,7 +46,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.location = token.location as Location;
+        (session.user.location as unknown) = token.location as Location;
         session.user.image = token.image as string | undefined;
         //session.user.hours = token.hours as ExtendedHours;
         session.user.stripeAccountId = token.stripeAccountId as

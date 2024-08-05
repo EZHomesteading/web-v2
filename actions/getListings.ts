@@ -490,7 +490,9 @@ const GetListingsByIds = async (params: Params) => {
 const getListingById = async (params: IParams) => {
   try {
     const { listingId } = params;
-
+    if (listingId?.length !== 24) {
+      return null;
+    }
     const listing = await prisma.listing.findUnique({
       where: {
         id: listingId,
