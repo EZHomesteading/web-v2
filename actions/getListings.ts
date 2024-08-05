@@ -196,10 +196,10 @@ const GetListingsMarket = async (
 
     let query: any = {};
     if (subcat) {
-      query.subCategory = subcat
+      query.subCategory = subcat;
     }
     if (cat) {
-      query.category = cat
+      query.category = cat;
     }
     let listings: Listing1[] = [];
     const listingSelect = {
@@ -227,17 +227,17 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-      
-      console.log("cat", cat,"sub", subcat,"query", query)
+
+      console.log("cat", cat, "sub", subcat, "query", query);
 
       listings = await prisma.listing.findMany({
         where: {
           user: {
             role: UserRole.COOP,
           },
-      
+
           ...query,
-          
+
           stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
@@ -328,7 +328,25 @@ const GetListingsMarket = async (
     Listings = await Promise.all(listerine);
     Listings = await Promise.all(filterListingsByLocation1(Listings));
     Listings = await Promise.all(filternullhours1(Listings));
+    function shuffle(array: any) {
+      let currentIndex = array.length;
+
+      // While there remain elements to shuffle...
+      while (currentIndex != 0) {
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
+      }
+    }
+    shuffle(Listings);
     // If location parameters are provided, filter listings by distance
+
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
