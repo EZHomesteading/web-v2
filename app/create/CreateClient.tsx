@@ -50,6 +50,7 @@ import Help from "./components/help";
 import { GiMeat, GiShinyApple } from "react-icons/gi";
 import {} from "react-icons/fa";
 import { TbCandle } from "react-icons/tb";
+import Link from "next/link";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -567,9 +568,18 @@ const CreateClient = ({ user, index }: Props) => {
 
   return (
     <div className={`${outfit.className} relative w-full`}>
-      <div className="absolute top-2 right-2 md:left-2">
-        <Help role={user.role} step={step} />
+      <div className="absolute top-2 left-2">
+        <div className="flex flex-col space-y-2">
+          <Help role={user.role} step={step} />
+          <Link
+            href="/"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
+          >
+            Go Home
+          </Link>
+        </div>
       </div>
+
       <div className="flex flex-col md:flex-row text-black w-full">
         <div className="onboard-left md:w-2/5 md:min-h-screen">
           <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
