@@ -16,6 +16,8 @@ import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
+import { Switch } from "@/app/components/ui/switch";
+import { useCurrentUser } from "@/hooks/user/use-current-user";
 
 interface MapUser {
   location: number[];
@@ -177,6 +179,7 @@ const VendorsMap = ({
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
+  const user = useCurrentUser();
   useEffect(() => {
     const disableDefaultTouchBehavior = (event: TouchEvent) => {
       event.preventDefault();
@@ -393,6 +396,30 @@ const VendorsMap = ({
           </ul>
         </PopoverContent>
       </Popover>
+      <div>
+        {user && user.role !== "CONSUMER" && (
+          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 z-10 bg-white bg-opacity-75 rounded-lg pr-5">
+            <div className="flex flex-col items-center justify-start">
+              <div className="flex items-center gap-x-2 text-sm xl:text-base font-medium mb-2 whitespace-nowrap">
+                <Switch
+                  checked={showCoops}
+                  onCheckedChange={setShowCoops}
+                  className="w-8 h-4"
+                />
+                <span>Co-ops</span>
+              </div>
+              <div className="flex items-center gap-x-2 text-sm xl:text-base font-medium whitespace-nowrap">
+                <Switch
+                  checked={showProducers}
+                  onCheckedChange={setShowProducers}
+                  className="w-8 h-4"
+                />
+                <span>Producers</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       {!isDrawingEnabled && (
         <Button
           className="absolute top-1 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
