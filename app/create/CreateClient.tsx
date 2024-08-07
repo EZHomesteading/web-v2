@@ -565,7 +565,58 @@ const CreateClient = ({ user, index }: Props) => {
       setValue("location", 0);
     }
   }
+  function filterAndAppendWords(inputString: string) {
+    // List of common words to filter out
+    const commonWords = new Set([
+      "a",
+      "an",
+      "and",
+      "are",
+      "as",
+      "at",
+      "be",
+      "by",
+      "for",
+      "from",
+      "has",
+      "he",
+      "in",
+      "is",
+      "it",
+      "its",
+      "of",
+      "on",
+      "that",
+      "the",
+      "to",
+      "was",
+      "were",
+      "will",
+      "with",
+      "this",
+      "these",
+      "those",
+      "they",
+      "my",
+      "i",
+      "have",
+      "then",
+      "there",
+    ]);
+    //"earthy",       "woody",       "herbal",       "grassy",       "leafy",       "floral",       "botanical",       "vegetal",       "meaty",       "beefy",       "gamey",       "fishy",       "oceanic",       "briny",       "marine",       "mineral",       "metallic",       "chalky",       "silty",       "dusty",       "ashy",       "sooty",       "burnt",       "charred",       "toasty",       "roasted",       "toasted",       "caramelized",       "candied",       "sugary",       "syrupy",       "honeyed",       "nectarous",       "ambrosial",       "malty",       "yeasty",       "doughy",       "bready",       "pastry-like",       "flaky",       "crumbly",       "powdery",       "floury",       "starchy",       "glutinous",       "fibrous",       "pulpy",       "seedy",       "grainy",       "nutty",       "buttery",       "oily",       "fatty",       "greasy",       "lardaceous",       "unctuous",       "suety",       "waxy",       "creamy",       "milky",       "lacteal",       "cheesy",       "dairy-like",       "eggy",       "custardy",       "lemony",       "limey",       "orangey",       "citrusy",       "vinegary",       "acidic",       "tangy",       "tart",       "astringent",       "puckering",       "sharp",       "piquant",       "zesty",       "spicy",       "peppery",       "hot",       "fiery",       "burning",       "searing",       "scorching",       "cooling",       "mentholated",       "minty",       "refreshing",       "invigorating",       "stimulating",       "numbing",       "tingling",       "effervescent",       "fizzy",       "sparkling",       "bubbly",       "carbonated",
+    // Convert the input string to lowercase and split it into words
+    const words = inputString.toLowerCase().match(/\b\w+\b/g) || [];
 
+    // Filter out common words and append remaining words to the result array
+    const result = words.filter((word) => !commonWords.has(word));
+
+    return result;
+  }
+  const buildKeyWords = (desc: string) => {
+    const keywordarr = filterAndAppendWords(desc);
+
+    setTags(keywordarr);
+  };
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 left-2">
@@ -897,7 +948,10 @@ const CreateClient = ({ user, index }: Props) => {
                   disabled={isLoading}
                   className="h-[30vh] shadow-md text-[14px] bg"
                   maxLength={500}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    buildKeyWords(e.target.value);
+                  }}
                   value={description}
                 />
                 <div className="w-full">
