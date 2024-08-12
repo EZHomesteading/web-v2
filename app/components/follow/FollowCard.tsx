@@ -102,7 +102,6 @@ const FollowCard: React.FC<ListingCardProps> = ({
     [disabled, onSecondAction, secondActionId]
   );
   const [isHovering, setIsHovering] = useState(false);
-  console.log(data);
   if (!data) {
     return;
   }

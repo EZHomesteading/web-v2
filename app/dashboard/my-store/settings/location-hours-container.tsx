@@ -22,8 +22,6 @@ import axios from "axios";
 import { toast } from "sonner";
 import { LocationObj, Prisma, UserRole } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
-import prisma from "@/lib/prisma";
-import { error } from "console";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -81,7 +79,7 @@ const CardComponent = memo(
     id: string;
   }) => {
     {
-      locationState && console.log(locationState[locationIndex]);
+      locationState; //&& console.log(locationState[locationIndex]);
     }
     const handleSetDefault = (locationIndex: number) => {
       if (locationState) {
@@ -508,7 +506,6 @@ const HoursLocationContainer = ({
     const handleAddLocation = useCallback(
       async (newAddress: string[]) => {
         const updatedAddress = newAddress.join(", ");
-        console.log(updatedAddress);
         const latLng = await getLatLngFromAddress(updatedAddress);
 
         if (latLng) {

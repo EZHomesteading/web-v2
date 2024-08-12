@@ -179,7 +179,8 @@ const DisputeComponent = ({ disputes }: p) => {
               {dispute.userId === dispute?.order?.buyer?.id ? (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.buyer.role}</p>
+                    {dispute?.order?.buyer?.firstName}: Role:
+                    <p>{dispute.order.buyer?.role}</p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
@@ -200,7 +201,10 @@ const DisputeComponent = ({ disputes }: p) => {
               ) : (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute?.order?.seller?.role}</p>
+                    <p>
+                      {dispute?.order?.seller?.firstName}: Role:
+                      {dispute?.order?.seller?.role}
+                    </p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
@@ -224,7 +228,10 @@ const DisputeComponent = ({ disputes }: p) => {
               {dispute.userId === dispute.order.buyer?.id ? (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.seller?.role}</p>
+                    <p>
+                      {dispute?.order?.seller?.firstName}: Role:
+                      {dispute.order.seller?.role}
+                    </p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}
@@ -245,7 +252,10 @@ const DisputeComponent = ({ disputes }: p) => {
               ) : (
                 <Popover>
                   <PopoverTrigger className="col-span-1 border p-1 w-full">
-                    <p>{dispute.order.buyer?.role}</p>
+                    <p>
+                      {dispute?.order?.buyer?.firstName}: Role:
+                      {dispute.order.buyer?.role}
+                    </p>
                   </PopoverTrigger>
                   <PopoverContent
                     className={`${outfit.className} rounded-lg text-black p-2 sheet`}

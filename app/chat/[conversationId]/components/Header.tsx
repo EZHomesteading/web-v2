@@ -18,6 +18,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
   const otherUser = useOtherUser(conversation);
   const router = useRouter();
+
   return (
     <>
       <div
@@ -56,26 +57,42 @@ const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
             ) : ( */}
             <Avatar image={otherUser.image} />
             {/* )} */}
-            <div
+            {/* <div
               className="flex flex-col text-3xl items-center justify-center"
               onClick={() => router.push(`/profile/${otherUser.id}`)}
-            >
-              <div>{conversation.name || otherUser.name}</div>
-              {otherUser.id === order.sellerId ? (
-                <Button onClick={() => router.push(`/store/${otherUser.url}`)}>
-                  Go to Store
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => router.push(`/profile/${otherUser.url}`)}
-                >
-                  View buyers rating
-                </Button>
-              )}
-            </div>
+            > */}
+            <div>{conversation.name || otherUser.name}</div>
+            {otherUser.id === order.sellerId ? (
+              <div className="flex flex-row mt-1 justify-between">
+                <div className="mr-1">
+                  <Button
+                    onClick={() => router.push(`/store/${otherUser.url}`)}
+                  >
+                    Go to Store
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() =>
+                      window.open(
+                        `http://maps.apple.com/?q=${order.location.coordinates[1]},${order.location.coordinates[0]}`,
+                        "_ blank"
+                      )
+                    }
+                  >
+                    Get Directions
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button onClick={() => router.push(`/profile/${otherUser.url}`)}>
+                View buyers rating
+              </Button>
+            )}
           </div>
         </div>
       </div>
+      {/* </div> */}
     </>
   );
 };

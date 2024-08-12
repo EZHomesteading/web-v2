@@ -19,9 +19,13 @@ const ListingPage = async ({ params }: { params: IParams }) => {
 
   if (!listing) {
     return (
-      <ClientOnly>
-        <EmptyState />
-      </ClientOnly>
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-6xl font-bold">404</h1>
+          <div className="my-4 h-1 w-16 bg-gray-300 mx-auto"></div>
+          <h2 className="text-xl">This page could not be found.</h2>
+        </div>
+      </div>
     );
   }
   return (

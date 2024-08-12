@@ -18,6 +18,7 @@ type Listing1 = {
   rating: number[];
   location: number;
   createdAt: Date;
+  keyWords: string[];
   price: number;
   title: string;
   subCategory: string;
@@ -35,6 +36,7 @@ type Listing2 = {
   rating: number[];
   SODT: number | null;
   createdAt: Date;
+  keyWords: string[];
   userId: string;
   price: number;
   title: string;
@@ -63,6 +65,7 @@ export type FinalListing = {
   shelfLife: number;
   createdAt: string;
   location: Location;
+  keyWords: string[];
   imageSrc: string[];
   userId: string;
   subCategory: string;
@@ -84,6 +87,7 @@ export type FinalListing1 = {
   quantityType: string | null;
   createdAt: string;
   location: Location;
+  keyWords: string[];
   imageSrc: string[];
   subCategory: string;
   minOrder: number | null;
@@ -196,10 +200,10 @@ const GetListingsMarket = async (
 
     let query: any = {};
     if (subcat) {
-      query.subCategory = subcat
+      query.subCategory = subcat;
     }
     if (cat) {
-      query.category = cat
+      query.category = cat;
     }
     let listings: Listing1[] = [];
     const listingSelect = {
@@ -209,6 +213,7 @@ const GetListingsMarket = async (
       subCategory: true,
       category: true,
       price: true,
+      keyWords: true,
       imageSrc: true,
       minOrder: true,
       createdAt: true,
@@ -228,14 +233,15 @@ const GetListingsMarket = async (
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
       
+
       listings = await prisma.listing.findMany({
         where: {
           user: {
             role: UserRole.COOP,
           },
-      
+
           ...query,
-          
+
           stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
@@ -326,7 +332,25 @@ const GetListingsMarket = async (
     Listings = await Promise.all(listerine);
     Listings = await Promise.all(filterListingsByLocation1(Listings));
     Listings = await Promise.all(filternullhours1(Listings));
+    function shuffle(array: any) {
+      let currentIndex = array.length;
+
+      // While there remain elements to shuffle...
+      while (currentIndex != 0) {
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
+      }
+    }
+    shuffle(Listings);
     // If location parameters are provided, filter listings by distance
+
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -362,7 +386,15 @@ const GetListingsMarket = async (
     // If a search query is provided, filter listings by title, description, etc.
     if (q) {
       const fuseOptions = {
-        keys: ["user.name", "title", "category", "subCategory", "description"],
+        includeScore: true,
+        keys: [
+          "user.name",
+          "title",
+          "category",
+          "subCategory",
+          "description",
+          "keyWords",
+        ],
         threshold: 0.3,
       };
       const fuse = new Fuse(Listings, fuseOptions);
@@ -495,7 +527,9 @@ const GetListingsByIds = async (params: Params) => {
 const getListingById = async (params: IParams) => {
   try {
     const { listingId } = params;
-
+    if (listingId?.length !== 24) {
+      return null;
+    }
     const listing = await prisma.listing.findUnique({
       where: {
         id: listingId,
@@ -599,7 +633,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       },
       include: { user: { select: { id: true } } },
     });
-    const safeListings = listings.map(async (listing) => {
+    const safeListings = listings.map(async (listing:any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing = listing as unknown as FinalListing;
       return {
@@ -637,7 +671,7 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { id: true } } },
     });
 
-    const safeListings = listings.map(async (listing) => {
+    const safeListings = listings.map(async (listing:any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing: FinalListing = listing as unknown as FinalListing;
       return {

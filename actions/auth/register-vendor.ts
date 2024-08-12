@@ -15,7 +15,7 @@ export const register = async (
   const validatedFields = RegisterVendorSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    console.log("Validation errors:", validatedFields.error.issues);
+    console.error("Validation errors:", validatedFields.error.issues);
     return { error: "Invalid fields!" };
   }
 

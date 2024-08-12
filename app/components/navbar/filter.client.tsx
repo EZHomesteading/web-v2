@@ -12,15 +12,12 @@ import { GiFruitTree, GiFruiting } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { BsPersonWalking } from "react-icons/bs";
-import { LiaMapMarkedAltSolid } from "react-icons/lia";
-import { Checkbox } from "../ui/checkbox";
 import { navUser } from "@/next-auth";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
@@ -62,7 +59,6 @@ const Filters = ({ user }: Props) => {
   }, [searchParams]);
   const handleSeeListings = () => {
     const params = new URLSearchParams(searchParams?.toString());
-    console.log(pr);
     const rKm = (radius / 0.621371).toFixed(1);
     params.set("radius", rKm);
     if (rMi === 0) {

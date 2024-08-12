@@ -48,7 +48,7 @@ const Input: React.FC<InputProps> = ({
   };
   const validateInput = (value: string) => {
     if (type === "number") {
-      const regex = formatPrice ? /^\d*(\.\d{0,2})?$/ : /^\d*$/;
+      const regex = formatPrice ? /^(\d*\.?\d{0,2}|\.\d{0,2})$/ : /^\d*$/;
       return regex.test(value);
     }
     return true;
@@ -100,6 +100,9 @@ const Input: React.FC<InputProps> = ({
             if (maxlength && value.length > maxlength) {
               value = value.slice(0, maxlength);
               e.target.value = value;
+            }
+            if (formatPrice && value === ".") {
+              value = "0.";
             }
             if (value === "" || validateInput(value)) {
               setValue(id, value === "" ? undefined : value, {

@@ -10,7 +10,6 @@ import LocationSearchInput from "@/app/components/map/LocationSearchInputSetting
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
-import prisma from "@/lib/prisma";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -132,7 +131,6 @@ const Page = ({ apiKey }: Props) => {
       }
       const geoData = await getLatLngFromAddress(fullAddress);
       setIsLoading(true);
-      console.log(image);
       if (geoData) {
         const formData = {
           image: image,

@@ -4,8 +4,6 @@ import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-
-  console.log(body);
   const { password, email } = body;
   try {
     const user = await prisma.user.findUnique({
@@ -18,7 +16,6 @@ export async function POST(request: NextRequest) {
     }
 
     const isValid = await compare(password, user.password);
-    console.log(isValid);
     return NextResponse.json({ isValid });
   } catch (error) {
     console.error("Error verifying password:", error);
