@@ -14,6 +14,8 @@ import qs from "query-string";
 import { useRouter } from "next/navigation";
 import { BsBasket } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
+import debounce from "debounce";
+import { BiLoaderCircle } from "react-icons/bi";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.MAPS_KEY as string;
@@ -191,7 +193,35 @@ const SearchLocation = ({ apiKey }: p) => {
       nextElement.focus();
     }
   };
-
+  const [items, setItems] = useState<any>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const handleSearchName = debounce(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const query = event.target.value;
+      if (query === "") {
+        setItems([]);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/listing/listingSuggestions?query=${encodeURIComponent(query)}`
+        );
+        const data = await response.json();
+        if (data.listings) {
+          setItems(data.listings);
+        } else {
+          setItems([]);
+        }
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setItems([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    1000
+  );
   return (
     <div
       className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
@@ -244,13 +274,30 @@ const SearchLocation = ({ apiKey }: p) => {
             type="text"
             placeholder="Everything"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              handleSearchName(e);
+            }}
             onKeyDown={handleEnterDown}
             className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
             onFocus={() => setFocus({ ...focus, right: true })}
             onBlur={() => setFocus({ ...focus, right: false })}
             tabIndex={0}
           />
+          {isSearching ? (
+            <BiLoaderCircle className="mr-2 animate-spin" size={22} />
+          ) : null}
+          {items.length > 0 ? (
+            <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
+              {items.map((item: any) => (
+                <div className="p-1">
+                  <div className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2">
+                    {item.title}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
           <button
             onClick={handleSearch}
             className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
