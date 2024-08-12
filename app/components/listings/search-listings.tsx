@@ -56,10 +56,10 @@ const SearchLocation = ({ apiKey }: p) => {
   const router = useRouter();
   const handleEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch();
+      handleSearch(searchQuery);
     }
   };
-  const handleSearch = async () => {
+  const handleSearch = async (searchQuery: string) => {
     try {
       let lat: string | null = null;
       let lng: string | null = null;
@@ -291,7 +291,15 @@ const SearchLocation = ({ apiKey }: p) => {
             <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
               {items.map((item: any) => (
                 <div className="p-1">
-                  <div className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2">
+                  <div
+                    onClick={async () => {
+                      setSearchQuery(item.title);
+                      setItems([]);
+
+                      handleSearch(item.title);
+                    }}
+                    className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
+                  >
                     {item.title}
                   </div>
                 </div>
@@ -299,7 +307,7 @@ const SearchLocation = ({ apiKey }: p) => {
             </div>
           ) : null}
           <button
-            onClick={handleSearch}
+            onClick={() => handleSearch(searchQuery)}
             className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
           >
             <IoIosSearch className="text-2xl text-black" />
