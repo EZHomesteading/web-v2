@@ -228,8 +228,6 @@ const GetListingsMarket = async (
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
       
-      console.log("cat", cat,"sub", subcat,"query", query)
-
       listings = await prisma.listing.findMany({
         where: {
           user: {
