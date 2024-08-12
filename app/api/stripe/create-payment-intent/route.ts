@@ -10,8 +10,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: NextRequest) {
   const { totalSum, userId, orderTotals, body, email, orderIds } =
     await request.json();
-  console.log("totalSum: ", totalSum);
-  console.log(orderIds);
 
   try {
     if (orderIds === null) {
@@ -25,7 +23,6 @@ export async function POST(request: NextRequest) {
     const orderIdsArray = JSON.parse(b);
     orderIdsArray.map(async (orderId: string) => {
       const order = await getOrderById({ orderId });
-      console.log(order?.pickupDate);
     });
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,

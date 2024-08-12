@@ -44,7 +44,6 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
     return totalLength / arrayOfArrays.length;
   }
   const avgRating = averageArrayLength(store.user.listings);
-  console.log(store);
   return (
     <ClientOnly>
       <Container>
@@ -84,10 +83,10 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
         <div className="text-sm text-gray-600 flex items-center gap-x-1">
           Average Organic Rating:
           <ReactStars
-            count={5}
+            count={4}
             size={20}
-            color2={"#ffd700"}
-            value={avgRating}
+            color2={"#000"}
+            value={avgRating - 1}
             half={true}
             edit={false}
           />

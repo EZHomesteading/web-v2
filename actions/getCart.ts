@@ -36,6 +36,7 @@ export type CartItem = {
     id: string;
     title: string;
     price: number;
+    reports: number;
     stock: number;
     SODT: number | null;
     quantityType: string | null;

@@ -226,11 +226,10 @@ export async function POST(request: NextRequest) {
 
             try {
               if (!seller.subscriptions) {
-                console.log("A users Push subscription has expired.");
+                console.error("A users Push subscription has expired.");
                 return;
               }
               const formatrecipients = JSON.parse(seller.subscriptions);
-              console.log(formatrecipients);
               const send = formatrecipients.map(
                 (subscription: PushSubscription) =>
                   webPush.sendNotification(
@@ -252,7 +251,7 @@ export async function POST(request: NextRequest) {
               );
               await Promise.all(send);
             } catch (error) {
-              console.log("A users Push subscription has expired.");
+              console.error("A users Push subscription has expired.");
             }
 
             // if (seller.phoneNumber) {
@@ -290,11 +289,10 @@ export async function POST(request: NextRequest) {
             });
             try {
               if (!seller.subscriptions) {
-                console.log("A users Push subscription has expired.");
+                console.error("A users Push subscription has expired.");
                 return;
               }
               const formatrecipients = JSON.parse(seller.subscriptions);
-              console.log(formatrecipients);
               const send = formatrecipients.map(
                 (subscription: PushSubscription) =>
                   webPush.sendNotification(
@@ -316,7 +314,7 @@ export async function POST(request: NextRequest) {
               );
               await Promise.all(send);
             } catch (error) {
-              console.log("A users Push subscription has expired.");
+              console.error("A users Push subscription has expired.");
             }
             // if (seller.phoneNumber) {
             //   const params = {
@@ -338,7 +336,7 @@ export async function POST(request: NextRequest) {
       break;
 
     default:
-      console.log(`Unhandled event type: ${event.type}`);
+      console.error(`Unhandled event type: ${event.type}`);
   }
 
   return NextResponse.json({ received: true }, { status: 200 });

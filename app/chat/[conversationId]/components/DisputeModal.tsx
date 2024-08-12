@@ -70,7 +70,9 @@ const DisputeModal = ({
       explanation: comments,
     };
     try {
+      console.log(data);
       await axios.post("/api/chat/dispute", data);
+      console.log(data);
       await axios.post("/api/chat/messages", {
         message: `I am disputing this order.`,
         messageOrder: "1.6",

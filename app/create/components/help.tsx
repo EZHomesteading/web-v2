@@ -26,7 +26,6 @@ interface p {
 }
 const Help = ({ step, role }: p) => {
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");
-  console.log(role);
   return (
     <Sheet>
       <SheetTrigger className="sheet p-2 rounded-md shadow-md">

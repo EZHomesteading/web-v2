@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import FollowButton from "../follow/followButton";
 import Avatar from "../Avatar";
 import { Outfit } from "next/font/google";
+import Link from "next/link";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -55,6 +56,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <span>{listingUser?.name}</span>
         </span>
         <FollowButton followUserId={followUserId} following={following} />
+
+        <Link
+          href={`/store/${listingUser.url}`}
+          className="bg-slate-300 text-xl font-semibold rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit"
+        >
+          Go to Store
+        </Link>
       </div>
     </div>
   );

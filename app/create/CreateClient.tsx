@@ -26,14 +26,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/app/components/ui/breadcrumb";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog";
+
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -54,12 +47,10 @@ import { Textarea } from "@/app/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import Help from "./components/help";
-import InputField from "./components/suggestion-input";
-import { FinalListing } from "@/actions/getListings";
-import { GiAppleCore, GiMeat, GiShinyApple } from "react-icons/gi";
-import { FaStoreAlt } from "react-icons/fa";
+import { GiMeat, GiShinyApple } from "react-icons/gi";
+import {} from "react-icons/fa";
 import { TbCandle } from "react-icons/tb";
-import { Tag } from "lucide-react";
+import Link from "next/link";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -330,11 +321,12 @@ const CreateClient = ({ user, index }: Props) => {
       });
       return;
     }
-    if (step === 3 && minOrder > quantity) {
+    if (step === 3 && parseInt(minOrder) > parseInt(quantity)) {
       toast.error("Minimum order cannot be more than your quantity", {
         duration: 2000,
         position: "bottom-center",
       });
+
       return;
     }
     if (step === 3 && !sodt) {
@@ -345,7 +337,7 @@ const CreateClient = ({ user, index }: Props) => {
       return;
     }
 
-    if (step === 3 && (quantity <= 0 || !quantity)) {
+    if (step === 3 && (parseInt(quantity) <= 0 || !quantity)) {
       toast.error("Quantity must be greater than 0", {
         duration: 2000,
         position: "bottom-center",
@@ -354,7 +346,7 @@ const CreateClient = ({ user, index }: Props) => {
     }
 
     if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
-      toast.error("Please use the stock photo or upload atleast one photo", {
+      toast.error("Please upload at least one photo", {
         duration: 2000,
         position: "bottom-center",
       });
@@ -384,14 +376,14 @@ const CreateClient = ({ user, index }: Props) => {
     }
 
     if (step === 3 && (price <= 0 || !price)) {
-      toast.error("Please enter a price greater than 0.", {
+      toast.error("Please enter a price greater than 0", {
         duration: 2000,
         position: "bottom-center",
       });
       return;
     }
-    if (step === 3 && (minOrder <= 0 || !quantity)) {
-      toast.error("Please enter a minimum order greater than 0.", {
+    if (step === 3 && (parseInt(minOrder) <= 0 || !quantity)) {
+      toast.error("Please enter a minimum order greater than 0", {
         duration: 2000,
         position: "bottom-center",
       });
@@ -439,26 +431,26 @@ const CreateClient = ({ user, index }: Props) => {
           position: "bottom-center",
         });
         return;
-      } else if (quantity <= 0 || !quantity) {
+      } else if (parseInt(minOrder) <= 0 || !quantity) {
         toast.error("Quantity must be greater than 0", {
           duration: 2000,
           position: "bottom-center",
         });
         return;
-      } else if (minOrder > quantity) {
+      } else if (parseInt(minOrder) > parseInt(quantity)) {
         toast.error("Minimum order cannot be more than your quantity", {
           duration: 2000,
           position: "bottom-center",
         });
         return;
-      } else if (minOrder <= 0 || !quantity) {
-        toast.error("Please enter a minimum order greater than 0.", {
+      } else if (parseInt(minOrder) <= 0 || !quantity) {
+        toast.error("Please enter a minimum order greater than 0", {
           duration: 2000,
           position: "bottom-center",
         });
         return;
       } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
-        toast.error("Please use the stock photo or upload at least one photo", {
+        toast.error("Please upload at least one photo", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -481,7 +473,7 @@ const CreateClient = ({ user, index }: Props) => {
         });
         return;
       } else if (price <= 0 || !quantity) {
-        toast.error("Please enter a price greater than 0.", {
+        toast.error("Please enter a price greater than 0", {
           duration: 2000,
           position: "bottom-center",
         });
@@ -508,10 +500,10 @@ const CreateClient = ({ user, index }: Props) => {
   };
 
   useEffect(() => {
-    if (quantity <= 0) {
+    if (parseInt(quantity) <= 0) {
       setValue("stock", 1);
     }
-    if (minOrder <= 0) {
+    if (parseInt(minOrder) <= 0) {
       setValue("minOrder", 1);
     }
   }),
@@ -526,25 +518,6 @@ const CreateClient = ({ user, index }: Props) => {
     const endDate = addDays(new Date(), shelfLife);
     expiryDate = format(endDate, "MMM d, yyyy");
   }
-  // const [suggestionName, setSuggestionName] = useState("");
-  // const [suggestionCategory, setSuggestionCategory] = useState("");
-  // const [suggestionSubCategory, setSuggestionSubCategory] = useState("");
-  // const handleSuggestionSubmit = () => {
-  //   const body = {
-  //     name: suggestionName,
-  //     subCategory: suggestionSubCategory,
-  //     category: suggestionCategory,
-  //   };
-  //   try {
-  //     axios.post("/api/useractions/suggestion", body);
-  //     toast.success("Your request has been recieved!");
-  //     setSuggestionCategory("");
-  //     setSuggestionName("");
-  //     setSuggestionSubCategory("");
-  //   } catch (error) {
-  //     toast.error("an error occured");
-  //   }
-  // };
 
   const [postSODT, setPostSODT] = useState(false);
   useEffect(() => {
@@ -592,12 +565,71 @@ const CreateClient = ({ user, index }: Props) => {
       setValue("location", 0);
     }
   }
+  function filterAndAppendWords(inputString: string) {
+    // List of common words to filter out
+    const commonWords = new Set([
+      "a",
+      "an",
+      "and",
+      "are",
+      "as",
+      "at",
+      "be",
+      "by",
+      "for",
+      "from",
+      "has",
+      "he",
+      "in",
+      "is",
+      "it",
+      "its",
+      "of",
+      "on",
+      "that",
+      "the",
+      "to",
+      "was",
+      "were",
+      "will",
+      "with",
+      "this",
+      "these",
+      "those",
+      "they",
+      "my",
+      "i",
+      "have",
+      "then",
+      "there",
+    ]);
+    // Convert the input string to lowercase and split it into words
+    const words = inputString.toLowerCase().match(/\b\w+\b/g) || [];
 
+    // Filter out common words and append remaining words to the result array
+    const result = words.filter((word) => !commonWords.has(word));
+
+    return result;
+  }
+  const buildKeyWords = (desc: string) => {
+    const keywordarr = filterAndAppendWords(desc);
+
+    setTags(keywordarr);
+  };
   return (
     <div className={`${outfit.className} relative w-full`}>
-      <div className="absolute top-2 right-2 md:left-2">
-        <Help role={user.role} step={step} />
+      <div className="absolute top-2 left-2">
+        <div className="flex flex-col space-y-2">
+          <Help role={user.role} step={step} />
+          <Link
+            href="/"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
+          >
+            Go Home
+          </Link>
+        </div>
       </div>
+
       <div className="flex flex-col md:flex-row text-black w-full">
         <div className="onboard-left md:w-2/5 md:min-h-screen">
           <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
@@ -769,7 +801,7 @@ const CreateClient = ({ user, index }: Props) => {
                       }
                       onMouseDown={() => {
                         if (!title) {
-                          toast.error("Let us know what produce you have!", {
+                          toast.error("Let us know what produce you have", {
                             duration: 2000,
                             position: "bottom-center",
                           });
@@ -786,15 +818,15 @@ const CreateClient = ({ user, index }: Props) => {
                             position: "bottom-center",
                           });
                           return;
-                        } else if (quantity <= 0 || !quantity) {
+                        } else if (parseInt(quantity) <= 0 || !quantity) {
                           toast.error("Quantity must be greater than 0", {
                             duration: 2000,
                             position: "bottom-center",
                           });
                           return;
-                        } else if (minOrder <= 0 || !quantity) {
+                        } else if (parseInt(minOrder) <= 0 || !quantity) {
                           toast.error(
-                            "Please enter a minimum order greater than 0.",
+                            "Please enter a minimum order greater than 0",
                             {
                               duration: 2000,
                               position: "bottom-center",
@@ -825,14 +857,14 @@ const CreateClient = ({ user, index }: Props) => {
                           });
                           return;
                         } else if (price <= 0 || !quantity) {
-                          toast.error("Please enter a price greater than 0.", {
+                          toast.error("Please enter a price greater than 0", {
                             duration: 2000,
                             position: "bottom-center",
                           });
                           return;
-                        } else if (minOrder > quantity) {
+                        } else if (parseInt(minOrder) > parseInt(quantity)) {
                           toast.error(
-                            "Minimum order cannot be higher than stock.",
+                            "Minimum order cannot be higher than stock",
                             {
                               duration: 2000,
                               position: "bottom-center",
@@ -895,51 +927,6 @@ const CreateClient = ({ user, index }: Props) => {
                     title="Provide a name and description"
                     subtitle="Max length of 300 characters for description"
                   />
-                  {/* <Dialog>
-                    <DialogTrigger asChild>
-                      <button className="bg-slate-500 shadow-sm p-2 rounded-full text-white text-xs">
-                        Suggest a new Listing
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Propose a new Listing</DialogTitle>
-                        <DialogDescription>
-                          Please enter a title, category and brief keyword
-                          description
-                        </DialogDescription>
-                      </DialogHeader>
-                      <ul className="">
-                        <li>
-                          <InputField
-                            id="suggestionName"
-                            placeholder="Name"
-                            value={suggestionName}
-                            onChange={setSuggestionName}
-                          />
-                        </li>
-                        <li>
-                          <InputField
-                            id="suggestionCategory"
-                            placeholder="Category"
-                            value={suggestionCategory}
-                            onChange={setSuggestionCategory}
-                          />
-                        </li>
-                        <li>
-                          <InputField
-                            id="suggestionSubCategory"
-                            placeholder="Sub Category"
-                            value={suggestionSubCategory}
-                            onChange={setSuggestionSubCategory}
-                          />
-                        </li>
-                      </ul>
-                      <DialogTrigger onClick={handleSuggestionSubmit}>
-                        <div className="px-3">Submit</div>
-                      </DialogTrigger>
-                    </DialogContent>
-                  </Dialog> */}
                 </div>
                 <div>
                   <div className="w-full">
@@ -952,16 +939,6 @@ const CreateClient = ({ user, index }: Props) => {
                       value={title}
                     />
                   </div>
-                  {/* <SearchClient
-                    value={product}
-                    onChange={(value) => {
-                      setProduct(value as ProductValue);
-                      setValue("title", value?.label);
-                      setValue("category", value?.category);
-                      setValue("imageSrc[0]", value?.photo);
-                      setValue("subCategory", value?.cat);
-                    }}
-                  /> */}
                 </div>
                 <hr />
                 <Textarea
@@ -970,7 +947,10 @@ const CreateClient = ({ user, index }: Props) => {
                   disabled={isLoading}
                   className="h-[30vh] shadow-md text-[14px] bg"
                   maxLength={500}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    buildKeyWords(e.target.value);
+                  }}
                   value={description}
                 />
                 <div className="w-full">
@@ -979,7 +959,21 @@ const CreateClient = ({ user, index }: Props) => {
                     placeholder="Enter Tags so users can easily search for your product, more tags means its easier to find!"
                     disabled={isLoading}
                     maxLength={64}
-                    onChange={(e) => setTag(e.target.value)}
+                    onChange={(e) => {
+                      const lowercaseAlphabeticValue = e.target.value
+                        .toLowerCase()
+                        .replace(/[^a-z]/g, "");
+                      setTag(lowercaseAlphabeticValue);
+                    }}
+                    onKeyDown={(e) => {
+                      if (
+                        !/^[a-z]$/.test(e.key.toLowerCase()) &&
+                        e.key !== "Backspace" &&
+                        e.key !== "Delete"
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
                     value={tag}
                   />
                   <Button

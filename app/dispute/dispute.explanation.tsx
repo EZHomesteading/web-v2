@@ -11,40 +11,8 @@ import {
 } from "@/app/components/ui/dialog";
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
-import { UserRole } from "@prisma/client";
 import { useState } from "react";
 
-interface Dispute {
-  id: string;
-  userId: string;
-  images: string[];
-  status: number;
-  reason: string;
-  explanation: string;
-  email: string;
-  phone: string;
-  createdAt: Date;
-  updatedAt: Date;
-  order: {
-    conversationId: string | null;
-    buyer: {
-      id: string;
-      email: string;
-      phoneNumber: string | null;
-      firstName: string | null;
-      createdAt: Date;
-      role: UserRole;
-    };
-    seller: {
-      id: string;
-      email: string;
-      phoneNumber: string | null;
-      firstName: string | null;
-      createdAt: Date;
-      role: UserRole;
-    };
-  };
-}
 interface ExplanationDialogProps {
   onConfirm: (explanation: string) => void;
 }
