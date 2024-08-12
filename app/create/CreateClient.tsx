@@ -611,10 +611,13 @@ const CreateClient = ({ user, index }: Props) => {
 
     return result;
   }
+  function removeDuplicates(arr: string[]) {
+    return [...new Set(arr)];
+  }
   const buildKeyWords = (desc: string) => {
     const keywordarr = filterAndAppendWords(desc);
-
-    setTags(keywordarr);
+    const noDupeKeywordArr = removeDuplicates(keywordarr);
+    setTags(noDupeKeywordArr);
   };
   return (
     <div className={`${outfit.className} relative w-full`}>
@@ -980,7 +983,8 @@ const CreateClient = ({ user, index }: Props) => {
                     onClick={() => {
                       const tagArr = [...tags];
                       tagArr.push(tag);
-                      setTags(tagArr);
+                      const noDupe = removeDuplicates(tagArr);
+                      setTags(noDupe);
                       setTag("");
                     }}
                   >
