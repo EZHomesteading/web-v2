@@ -51,6 +51,8 @@ import { GiMeat, GiShinyApple } from "react-icons/gi";
 import {} from "react-icons/fa";
 import { TbCandle } from "react-icons/tb";
 import Link from "next/link";
+import { BiLoaderCircle } from "react-icons/bi";
+import debounce from "debounce";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -619,6 +621,35 @@ const CreateClient = ({ user, index }: Props) => {
     const noDupeKeywordArr = removeDuplicates(keywordarr);
     setTags(noDupeKeywordArr);
   };
+  const [items, setItems] = useState<any>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const handleSearchName = debounce(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const query = event.target.value;
+      if (query === "") {
+        setItems([]);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/listing/listingSuggestions?query=${encodeURIComponent(query)}`
+        );
+        const data = await response.json();
+        if (data.listings) {
+          setItems(data.listings);
+        } else {
+          setItems([]);
+        }
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setItems([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    1000
+  );
   return (
     <div className={`${outfit.className} relative w-full`}>
       <div className="absolute top-2 left-2">
@@ -933,14 +964,43 @@ const CreateClient = ({ user, index }: Props) => {
                 </div>
                 <div>
                   <div className="w-full">
-                    <Textarea
+                    <input
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                       id="title"
                       placeholder="Title"
                       disabled={isLoading}
                       maxLength={64}
-                      onChange={(e) => setTitle(e.target.value)}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        handleSearchName(e);
+                      }}
                       value={title}
                     />
+                    {isSearching ? (
+                      <BiLoaderCircle
+                        className="absolute items-center justify-center right-[60px] top-[165px] animate-spin"
+                        size={40}
+                      />
+                    ) : null}
+                    <div className="relative">
+                      {items.length > 0 ? (
+                        <div className="absolute justify-center bg-white max-w-[200px] h-auto w-full z-20 left-0 border p-1">
+                          {items.map((item: any) => (
+                            <div className="p-1" key={item.title}>
+                              <div
+                                onClick={async () => {
+                                  setItems([]);
+                                  setTitle(item.title);
+                                }}
+                                className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
+                              >
+                                {item.title}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
                 <hr />

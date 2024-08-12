@@ -285,17 +285,19 @@ const SearchLocation = ({ apiKey }: p) => {
             tabIndex={0}
           />
           {isSearching ? (
-            <BiLoaderCircle className="mr-2 animate-spin" size={22} />
+            <BiLoaderCircle
+              className="absolute items-center justify-center right-[50px] animate-spin"
+              size={22}
+            />
           ) : null}
           {items.length > 0 ? (
             <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
               {items.map((item: any) => (
-                <div className="p-1">
+                <div className="p-1" key={item.title}>
                   <div
                     onClick={async () => {
                       setSearchQuery(item.title);
                       setItems([]);
-
                       handleSearch(item.title);
                     }}
                     className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
