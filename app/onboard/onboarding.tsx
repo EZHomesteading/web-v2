@@ -51,6 +51,7 @@ const Onboarding = ({
   canReceivePayouts,
   session,
 }: Props) => {
+
   const router = useRouter();
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
@@ -87,6 +88,7 @@ const Onboarding = ({
                 .map(([key, value]) => [Number(key), value])
             ),
           };
+
         } else if (step === 4) {
           if (formData.location) {
             console.log(formData.location);
@@ -95,6 +97,7 @@ const Onboarding = ({
             });
           }
         }
+
       } else if (step === 6) {
         if (formData.image) {
           await axios.post("/api/useractions/update", {
@@ -144,13 +147,6 @@ const Onboarding = ({
 
   return (
     <div className="flex flex-col h-screen">
-      <Link
-        href="/"
-        className={`${outfit.className} z absolute top-5 left-5 bg-slate-300 px-2 rounded-sm shadow-sm font-light hover:cursor-pointer`}
-      >
-        Home
-      </Link>
-
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
         {step === 1 && (
           <StepOne
