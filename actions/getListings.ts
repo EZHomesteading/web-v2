@@ -232,8 +232,7 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-
-      console.log("cat", cat, "sub", subcat, "query", query);
+      
 
       listings = await prisma.listing.findMany({
         where: {
@@ -634,7 +633,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       },
       include: { user: { select: { id: true } } },
     });
-    const safeListings = listings.map(async (listing) => {
+    const safeListings = listings.map(async (listing:any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing = listing as unknown as FinalListing;
       return {
@@ -672,7 +671,7 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { id: true } } },
     });
 
-    const safeListings = listings.map(async (listing) => {
+    const safeListings = listings.map(async (listing:any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing: FinalListing = listing as unknown as FinalListing;
       return {

@@ -274,7 +274,10 @@ body::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
-
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .mi:hover {
   background-color: #ced9bb !important;
 }
