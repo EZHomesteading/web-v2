@@ -16,16 +16,17 @@ interface UserLocation {
   } | null;
 }
 const StepFour = ({ user, updateFormData }: p) => {
-  const [location, setLocation] = useState(user?.location);
+  const [location, setLocation] = useState(user?.location[0]);
 
-  const handleHoursChange = (newHours: Prisma.JsonValue, index: number) => {
-    const updatedLocation = { ...location };
-    if (!updatedLocation[index]) {
-      updatedLocation[index] = { hours: newHours };
+  const handleHoursChange = (newHours: Prisma.JsonValue) => {
+    let updatedLocation = { ...location };
+    if (!updatedLocation) {
+      updatedLocation = { hours: newHours };
     } else {
-      updatedLocation[index].hours = newHours;
+      updatedLocation.hours = newHours;
     }
     setLocation(updatedLocation);
+    console.log(updatedLocation);
     updateFormData({ location: updatedLocation });
   };
   return (
@@ -35,7 +36,9 @@ const StepFour = ({ user, updateFormData }: p) => {
         index={0}
         location={location as any}
         showUpdate={false}
-        onHoursChange={(newHours:any) => handleHoursChange(newHours, 0)}
+        onHoursChange={(newHours: any) => {
+          handleHoursChange(newHours);
+        }}
       />
     </div>
   );

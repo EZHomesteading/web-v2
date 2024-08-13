@@ -18,6 +18,7 @@ import StepSeven from "./step7";
 import StepEight from "./step8";
 import StepNine from "./step9";
 import Link from "next/link";
+import { Session } from "next-auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -28,6 +29,8 @@ interface Props {
   user: UserInfo;
   index: number;
   apiKey?: string;
+  canReceivePayouts: boolean | null;
+  session: Session;
 }
 
 interface LocationObj {
@@ -41,7 +44,14 @@ interface UserLocation {
   [key: number]: LocationObj | null;
 }
 
-const Onboarding = ({ user, index, apiKey }: Props) => {
+const Onboarding = ({
+  user,
+  index,
+  apiKey,
+  canReceivePayouts,
+  session,
+}: Props) => {
+
   const router = useRouter();
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
@@ -52,6 +62,9 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   }>({});
 
   const [progress, setProgress] = useState(0);
+  const stepHandler = (step: number) => {
+    setStep(step);
+  };
 
   const handleNext = async () => {
     try {
@@ -75,20 +88,16 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
                 .map(([key, value]) => [Number(key), value])
             ),
           };
-        } else {
-          // step === 4
-          updatedLocations = {
-            ...existingLocations,
-            0: {
-              ...(existingLocations[0] || {}),
-              hours: formData.location?.[0]?.hours || null,
-            } as LocationObj,
-          };
+
+        } else if (step === 4) {
+          if (formData.location) {
+            console.log(formData.location);
+            await axios.post("/api/useractions/update", {
+              location: { 0: formData.location },
+            });
+          }
         }
 
-        await axios.post("/api/useractions/update", {
-          location: updatedLocations,
-        });
       } else if (step === 6) {
         if (formData.image) {
           await axios.post("/api/useractions/update", {
@@ -139,7 +148,13 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
-        {step === 1 && <StepOne />}
+        {step === 1 && (
+          <StepOne
+            session={session}
+            canReceivePayouts={canReceivePayouts}
+            stepHandler={stepHandler}
+          />
+        )}
         {step === 2 && <StepTwo />}
         {step === 3 && apiKey && (
           <StepThree

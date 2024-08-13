@@ -45,14 +45,13 @@ const SliderSection = ({
   index,
   location,
   showUpdate,
-  onHoursChange
+  onHoursChange,
 }: {
   hours: ExtendedHours;
   index: number;
   location: Location;
-  showUpdate: boolean;  
+  showUpdate: boolean;
   onHoursChange?: (newHours: ExtendedHours) => void;
-
 }) => {
   const defaultHours: ExtendedHours = {
     0: null,
@@ -143,8 +142,12 @@ const SliderSection = ({
       Object.keys(updatedHours).forEach((day) => {
         updatedHours[Number(day)] = currentTimes;
       });
+      if (onHoursChange) {
+        onHoursChange(updatedHours);
+      }
       return updatedHours;
     });
+    handleHourChange;
   };
 
   const handleSpecificDays = (selectedDays: number[]) => {
@@ -153,6 +156,9 @@ const SliderSection = ({
       selectedDays.forEach((dayId) => {
         updatedHours[dayId] = coOpHours[currentDayIndex];
       });
+      if (onHoursChange) {
+        onHoursChange(updatedHours);
+      }
       return updatedHours;
     });
   };
