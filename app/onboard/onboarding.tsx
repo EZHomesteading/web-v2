@@ -42,7 +42,7 @@ interface UserLocation {
 }
 
 const Onboarding = ({ user, index, apiKey }: Props) => {
-  const router = useRouter()
+  const router = useRouter();
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
@@ -56,14 +56,18 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   const handleNext = async () => {
     try {
       if (step === 3 || step === 4) {
-        const existingLocations: UserLocation = user.location as UserLocation || {};
+        const existingLocations: UserLocation =
+          (user.location as UserLocation) || {};
         let updatedLocations: UserLocation;
-  
+
         if (step === 3) {
           updatedLocations = {
             0: {
               ...formData.location?.[0],
-              hours: formData.location?.[0]?.hours || existingLocations[0]?.hours || null
+              hours:
+                formData.location?.[0]?.hours ||
+                existingLocations[0]?.hours ||
+                null,
             } as LocationObj,
             ...Object.fromEntries(
               Object.entries(existingLocations)
@@ -71,7 +75,8 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
                 .map(([key, value]) => [Number(key), value])
             ),
           };
-        } else { // step === 4
+        } else {
+          // step === 4
           updatedLocations = {
             ...existingLocations,
             0: {
@@ -80,30 +85,27 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
             } as LocationObj,
           };
         }
-  
+
         await axios.post("/api/useractions/update", {
           location: updatedLocations,
         });
-  
-   
       } else if (step === 6) {
         if (formData.image) {
-          await axios.post("/api/useractions/update", { image: formData.image });
-          
+          await axios.post("/api/useractions/update", {
+            image: formData.image,
+          });
         }
-        
       } else if (step === 7) {
-          if (formData.bio) {
-            await axios.post("/api/useractions/update", {bio: formData.bio})
-          }
-        }else if (step === 9) {
-          router.push("/dashboard")
+        if (formData.bio) {
+          await axios.post("/api/useractions/update", { bio: formData.bio });
+        }
+      } else if (step === 9) {
+        router.push("/dashboard");
       }
-  
     } catch (error) {
       console.error(`Error updating data for step ${step}:`, error);
     }
-  
+
     setStep(step + 1);
     setProgress((step + 1) * 11);
   };
@@ -122,12 +124,12 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   }, [step]);
 
   const updateFormData = useCallback((newData: Partial<typeof formData>) => {
-    setFormData(prevData => {
+    setFormData((prevData) => {
       const updatedData = { ...prevData, ...newData };
       if (newData.location) {
         updatedData.location = {
           ...prevData.location,
-          ...newData.location
+          ...newData.location,
         };
       }
       return updatedData;
@@ -136,13 +138,6 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Link
-        href="/"
-        className={`${outfit.className} z absolute top-5 left-5 bg-slate-300 px-2 rounded-sm shadow-sm font-light hover:cursor-pointer`}
-      >
-        Home
-      </Link>
-
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
         {step === 1 && <StepOne />}
         {step === 2 && <StepTwo />}
@@ -161,7 +156,9 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
             updateFormData={updateFormData}
           />
         )}
-        {step === 7 && <StepSeven userBio={user?.bio} updateFormData={updateFormData} />}
+        {step === 7 && (
+          <StepSeven userBio={user?.bio} updateFormData={updateFormData} />
+        )}
         {step === 8 && <StepEight />}
         {step === 9 && <StepNine user={user} />}
       </div>

@@ -10,7 +10,7 @@ const StepOne = () => {
     <div className="flex flex-col lg:grid lg:grid-cols-2 h-full p-4 lg:p-0">
       <div className="flex items-center justify-center mb-8 lg:mb-0">
         <div
-          className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-center lg:text-left ${outfit.className} font-normal lg:w-[80%] xl:w-[70%] 2xl:w-[60%]`}
+          className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-center lg:text-left ${outfit.className} mt-2 font-normal lg:w-[80%] xl:w-[70%] 2xl:w-[60%]`}
         >
           Effortlessly Sell Your Excess Produce with EZHomesteading
         </div>
