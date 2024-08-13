@@ -36,6 +36,7 @@ import {
 
 import axios from "axios";
 import { UserInfo } from "@/next-auth";
+import { BsBucket } from "react-icons/bs";
 
 interface p {
   user?: UserInfo;
@@ -186,6 +187,17 @@ const DisputeModal = ({
                           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
                             Click to Enlarge
                           </div>
+                          <button
+                            className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md"
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              setImage("");
+                            }}
+                          >
+                            {" "}
+                            <BsBucket />
+                          </button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="z flex justify-center items-center w-screen h-screen">
                           <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">

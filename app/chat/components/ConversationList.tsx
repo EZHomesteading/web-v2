@@ -116,7 +116,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
         )}
       >
         <div className="px-5">
-          <div className="flex justify-between mb-4 pt-4 items-center">
+          <div className="flex  mb-4 pt-4 items-center">
             <div className="text-2xl font-bold text-white">Messages</div>
 
             <div

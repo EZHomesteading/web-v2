@@ -13,7 +13,11 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-10 overflow-y-auto"
+        onClose={onClose}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -55,24 +59,25 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
             >
               <Dialog.Panel
                 className="
-                  relative 
-                  transform 
-                  overflow-hidden 
-                  rounded-lg 
-                  px-4 
-                  bg-green-100
-                  pb-4
-                  pt-5 
-                  text-left 
-                  shadow-xl 
-                  transition-all
-                  h-[500px]
-                  w-[300px]
-                  flex
-                  flex-col
-                  items-center
-                  sm:p-6
-                "
+    relative 
+    transform 
+    overflow-y-auto 
+    rounded-lg 
+    px-4 
+    bg-green-100
+    pb-4
+    pt-5 
+    text-left 
+    shadow-xl 
+    transition-all
+    max-h-[90vh]
+    w-full
+    max-w-md
+    flex
+    flex-col
+    items-center
+    sm:p-6
+  "
               >
                 <div
                   className="
