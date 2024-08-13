@@ -25,7 +25,10 @@ const CoopHub = async () => {
                 session.user.location[0] &&
                 session.user.location[0].address &&
                 session.user.location[0].address[2] !== undefined && (
-                  <>session.user.location[0].address[2]</>
+                  <>
+                    <div className="bg-black w-[6px] h-[6px] rounded-full "></div>{" "}
+                    {session.user.location[0].address[1]}
+                  </>
                 )}
               <div></div>
             </div>
