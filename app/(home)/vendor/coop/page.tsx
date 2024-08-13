@@ -1,12 +1,35 @@
 import authCache from "@/auth-cache";
 import { Outfit } from "next/font/google";
 import Tab from "../tabs";
+import FinTab from "../fintab";
+import Stripe from "stripe";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
 const CoopHub = async () => {
   const session = await authCache();
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2023-10-16",
+  });
+  async function checkPayoutCapability(stripeAccountId: string) {
+    try {
+      const account = await stripe.accounts.retrieve(stripeAccountId);
+
+      const canReceivePayouts = account.capabilities?.transfers === "active";
+      return canReceivePayouts;
+    } catch (error) {
+      console.error("Error checking payout capability:", error);
+      return null;
+    }
+  }
+
+  // Usage
+  if (!session?.user?.stripeAccountId) {
+    return;
+  }
+  const stripeAccountId = session?.user?.stripeAccountId;
+  const canReceivePayouts = await checkPayoutCapability(stripeAccountId);
 
   return (
     <div className={`${outfit.className} grid grid-cols-12 min-h-screen`}>
@@ -39,21 +62,42 @@ const CoopHub = async () => {
             <div className="mx-5">
               <h1 className="text-2xl mb-5">Required</h1>
               <ul>
-                <Tab href="/onboard" label="Add a Primary Selling Location" />
-
-                <Tab
-                  href="/onboard"
-                  label="Add Open & Close Hours to Primary Selling Location"
-                />
+                {session?.user?.location &&
+                session?.user?.location[0]?.address ? (
+                  <FinTab label="You already set a Primary Selling Location" />
+                ) : (
+                  <Tab href="/onboard" label="Add a Primary Selling Location" />
+                )}
+                {session?.user?.location &&
+                session?.user?.location[0]?.hours ? (
+                  <FinTab label="You already set a Hours for your Primary Selling Location" />
+                ) : (
+                  <Tab
+                    href="/onboard"
+                    label="Add Open & Close Hours to Primary Selling Location"
+                  />
+                )}
               </ul>
               <h1 className="text-2xl mb-5">Required Later</h1>
               <ul>
-                <Tab href="/onboard" label={`Set Up Payouts`} />
+                {canReceivePayouts === true ? (
+                  <FinTab label={`Payouts are set up!`} />
+                ) : (
+                  <Tab href="/onboard" label={`Set Up Payouts`} />
+                )}
               </ul>
               <h1 className="text-2xl mb-5">Recommended</h1>
               <ul>
-                <Tab href="/onboard" label="Add a Store Bio" />{" "}
-                <Tab href="/onboard" label="Add a Profile Photo" />
+                {session?.user && session?.user?.bio ? (
+                  <FinTab label="You already set a Store Bio" />
+                ) : (
+                  <Tab href="/onboard" label="Add a Store Bio" />
+                )}
+                {session?.user && session?.user?.image ? (
+                  <FinTab label="You already set a Profile Photo" />
+                ) : (
+                  <Tab href="/onboard" label="Add a Profile Photo" />
+                )}
               </ul>
             </div>
           </div>

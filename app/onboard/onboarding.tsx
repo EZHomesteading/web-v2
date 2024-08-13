@@ -18,6 +18,7 @@ import StepSeven from "./step7";
 import StepEight from "./step8";
 import StepNine from "./step9";
 import Link from "next/link";
+import { Session } from "next-auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -28,6 +29,8 @@ interface Props {
   user: UserInfo;
   index: number;
   apiKey?: string;
+  canReceivePayouts: boolean | null;
+  session: Session;
 }
 
 interface LocationObj {
@@ -41,8 +44,14 @@ interface UserLocation {
   [key: number]: LocationObj | null;
 }
 
-const Onboarding = ({ user, index, apiKey }: Props) => {
-  const router = useRouter()
+const Onboarding = ({
+  user,
+  index,
+  apiKey,
+  canReceivePayouts,
+  session,
+}: Props) => {
+  const router = useRouter();
   const [step, setStep] = useState(index);
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
@@ -52,18 +61,25 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   }>({});
 
   const [progress, setProgress] = useState(0);
+  const stepHandler = (step: number) => {
+    setStep(step);
+  };
 
   const handleNext = async () => {
     try {
       if (step === 3 || step === 4) {
-        const existingLocations: UserLocation = user.location as UserLocation || {};
+        const existingLocations: UserLocation =
+          (user.location as UserLocation) || {};
         let updatedLocations: UserLocation;
-  
+
         if (step === 3) {
           updatedLocations = {
             0: {
               ...formData.location?.[0],
-              hours: formData.location?.[0]?.hours || existingLocations[0]?.hours || null
+              hours:
+                formData.location?.[0]?.hours ||
+                existingLocations[0]?.hours ||
+                null,
             } as LocationObj,
             ...Object.fromEntries(
               Object.entries(existingLocations)
@@ -71,39 +87,31 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
                 .map(([key, value]) => [Number(key), value])
             ),
           };
-        } else { // step === 4
-          updatedLocations = {
-            ...existingLocations,
-            0: {
-              ...(existingLocations[0] || {}),
-              hours: formData.location?.[0]?.hours || null,
-            } as LocationObj,
-          };
+        } else if (step === 4) {
+          if (formData.location) {
+            console.log(formData.location);
+            await axios.post("/api/useractions/update", {
+              location: { 0: formData.location },
+            });
+          }
         }
-  
-        await axios.post("/api/useractions/update", {
-          location: updatedLocations,
-        });
-  
-   
       } else if (step === 6) {
         if (formData.image) {
-          await axios.post("/api/useractions/update", { image: formData.image });
-          
+          await axios.post("/api/useractions/update", {
+            image: formData.image,
+          });
         }
-        
       } else if (step === 7) {
-          if (formData.bio) {
-            await axios.post("/api/useractions/update", {bio: formData.bio})
-          }
-        }else if (step === 9) {
-          router.push("/dashboard")
+        if (formData.bio) {
+          await axios.post("/api/useractions/update", { bio: formData.bio });
+        }
+      } else if (step === 9) {
+        router.push("/dashboard");
       }
-  
     } catch (error) {
       console.error(`Error updating data for step ${step}:`, error);
     }
-  
+
     setStep(step + 1);
     setProgress((step + 1) * 11);
   };
@@ -122,12 +130,12 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
   }, [step]);
 
   const updateFormData = useCallback((newData: Partial<typeof formData>) => {
-    setFormData(prevData => {
+    setFormData((prevData) => {
       const updatedData = { ...prevData, ...newData };
       if (newData.location) {
         updatedData.location = {
           ...prevData.location,
-          ...newData.location
+          ...newData.location,
         };
       }
       return updatedData;
@@ -144,7 +152,13 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
       </Link>
 
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
-        {step === 1 && <StepOne />}
+        {step === 1 && (
+          <StepOne
+            session={session}
+            canReceivePayouts={canReceivePayouts}
+            stepHandler={stepHandler}
+          />
+        )}
         {step === 2 && <StepTwo />}
         {step === 3 && apiKey && (
           <StepThree
@@ -161,7 +175,9 @@ const Onboarding = ({ user, index, apiKey }: Props) => {
             updateFormData={updateFormData}
           />
         )}
-        {step === 7 && <StepSeven userBio={user?.bio} updateFormData={updateFormData} />}
+        {step === 7 && (
+          <StepSeven userBio={user?.bio} updateFormData={updateFormData} />
+        )}
         {step === 8 && <StepEight />}
         {step === 9 && <StepNine user={user} />}
       </div>
