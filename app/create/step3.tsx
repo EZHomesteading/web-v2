@@ -13,8 +13,14 @@ import Counter from "@/app/create/components/Counter";
 import Input from "@/app/create/components/listing-input";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { CommonInputProps, InputProps } from "./create.types";
-import Heading from "@/app/components/Heading";
+import { Outfit } from "next/font/google";
+import { PiBasketLight, PiRulerThin } from "react-icons/pi";
+import { HiOutlineExclamationTriangle } from "react-icons/hi2";
 
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+});
 interface StepThreeProps {
   quantityType: QuantityTypeValue | undefined;
   setQuantityType: (value: QuantityTypeValue | undefined) => void;
@@ -50,16 +56,28 @@ const StepThree: React.FC<StepThreeProps> = ({
   commonInputProps,
   inputProps,
 }) => {
+  let label = "Price";
+
+  if (quantityType) {
+    if (quantityType.value === "each" || quantityType.value === "none") {
+      label = "Price per";
+    } else {
+      label = `Price per ${quantityType.value}`;
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-114.39px)] md:h-full fade-in">
-      <Heading
-        title="Add Quantity, Shelf Life, and Units"
-        subtitle="Not worth your time for someone to order less than a certain amount of this item? Set a minimum order requirement, or leave it at 1"
-      />
-      <div className="flex flex-col justify-center items-start gap-2">
-        <div className="w-full xl:w-2/3">
-          <div className="flex flex-row gap-2">
-            <div className="w-1/2">
+    <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
+      <div className="flex flex-row justify-center items-start gap-2">
+        <div className="w-full sm:max-w-[500px]">
+          <div className="flex flex-col ">
+            <Label className="text-xl w-full font-light m-0 !leading-0">
+              Qualities of your Product{" "}
+            </Label>
+            <div className="text-xs font-extralight text-neutral-500 mb-2">
+              Click the icons or help for more info
+            </div>
+            <div className="relative my-2">
               <Input
                 {...commonInputProps}
                 id="stock"
@@ -67,8 +85,12 @@ const StepThree: React.FC<StepThreeProps> = ({
                 type="number"
                 maxlength={6}
               />
+              <PiBasketLight
+                size={25}
+                className="text-neutral-700 absolute top-5 right-2"
+              />
             </div>
-            <div className="w-1/2">
+            <div className="relative">
               <UnitSelect
                 value={quantityType}
                 onChange={(value) => {
@@ -77,22 +99,26 @@ const StepThree: React.FC<StepThreeProps> = ({
                     inputProps.setValue("quantityType", value.value);
                   }
                 }}
-              />
+              />{" "}
+              <PiRulerThin
+                className="text-neutral-700 absolute top-5 right-2"
+                size={25}
+              />{" "}
             </div>
           </div>
-          <div className="flex flex-row gap-2 mt-2">
-            <div className="w-1/2">
-              <Input
-                {...commonInputProps}
-                id="price"
-                label="Price per unit"
-                type="number"
-                step="0.01"
-                formatPrice
-                maxlength={6}
-              />
-            </div>
-            <div className="w-1/2">
+          <div className="flex flex-col gap-2 mt-2">
+            <Input
+              {...commonInputProps}
+              id="price"
+              label={label}
+              type="number"
+              step="0.01"
+              formatPrice
+              maxlength={6}
+            />
+
+            <div className="relative ">
+              {" "}
               <Input
                 {...commonInputProps}
                 id="minOrder"
@@ -100,55 +126,64 @@ const StepThree: React.FC<StepThreeProps> = ({
                 type="number"
                 maxlength={4}
               />
+              <HiOutlineExclamationTriangle
+                className="text-neutral-700 absolute top-5 right-2"
+                size={25}
+              />
             </div>
           </div>
           <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full"></div>
 
           <div className="w-full">
             <div className="flex flex-col gap-2 mt-2">
-              <Label className="text-xl w-full">Time to Prepare an Order</Label>
-
-              <Select
-                onValueChange={(value: string) => {
-                  inputProps.setValue("sodt", value);
-                }}
-              >
-                <div className="flex flex-col items-start gap-y-3">
-                  <SelectTrigger className="w-fit h-1/6 bg-slate-300 text-black text-xl">
-                    {usersodt ? (
-                      <SelectValue placeholder={`${usersodt} Minutes `} />
-                    ) : (
-                      <SelectValue placeholder={"Select a Time"} />
+              <Label className="text-xl w-full font-light">
+                Time to Prepare an Order
+              </Label>
+              <div className="relative">
+                <Select
+                  onValueChange={(value: string) => {
+                    inputProps.setValue("sodt", value);
+                  }}
+                >
+                  <div className="flex flex-col items-start gap-y-3">
+                    <SelectTrigger className="w-full h-1/6 text-black text-sm font-light p-5">
+                      {usersodt ? (
+                        <SelectValue placeholder={`${usersodt} Minutes `} />
+                      ) : (
+                        <SelectValue placeholder={"Select a Time"} />
+                      )}
+                    </SelectTrigger>
+                    {!usersodt && inputProps.watch("sodt") !== null && (
+                      <Checkbox
+                        id="saveAsDefault"
+                        checked={postSODT}
+                        onCheckedChange={(checked: boolean) =>
+                          handleSODTCheckboxChange(checked, 0)
+                        }
+                        label="Save as Account Default"
+                      />
                     )}
-                  </SelectTrigger>
-                  {!usersodt && inputProps.watch("sodt") !== null && (
-                    <Checkbox
-                      id="saveAsDefault"
-                      checked={postSODT}
-                      onCheckedChange={(checked: boolean) =>
-                        handleSODTCheckboxChange(checked, 0)
-                      }
-                      label="Save as Account Default"
-                    />
-                  )}
-                </div>
-                <SelectContent className="bg-slate-300">
-                  <SelectGroup>
-                    <SelectItem value="15">15 Minutes</SelectItem>
-                    <SelectItem value="30">30 Minutes</SelectItem>
-                    <SelectItem value="45">45 Minutes</SelectItem>
-                    <SelectItem value="60">1 Hour</SelectItem>
-                    <SelectItem value="75">1 Hour 15 Minutes</SelectItem>
-                    <SelectItem value="90">1 Hour 30 Minutes</SelectItem>
-                    <SelectItem value="105">1 Hour 45 Minutes</SelectItem>
-                    <SelectItem value="120">2 Hours</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                  </div>
+                  <SelectContent className="">
+                    <SelectGroup
+                      className={`${outfit.className} text-xs font-light`}
+                    >
+                      <SelectItem value="15">15 Minutes</SelectItem>
+                      <SelectItem value="30">30 Minutes</SelectItem>
+                      <SelectItem value="45">45 Minutes</SelectItem>
+                      <SelectItem value="60">1 Hour</SelectItem>
+                      <SelectItem value="75">1 Hour 15 Minutes</SelectItem>
+                      <SelectItem value="90">1 Hour 30 Minutes</SelectItem>
+                      <SelectItem value="105">1 Hour 45 Minutes</SelectItem>
+                      <SelectItem value="120">2 Hours</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
-        <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full xl:w-2/3"></div>
+        {/* <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full xl:w-2/3"></div>
         <div className="w-full lg:w-1/2">
           <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
             <Label className="text-xl">Estimated Shelf Life </Label>
@@ -206,7 +241,7 @@ const StepThree: React.FC<StepThreeProps> = ({
               </div>
             </div>
           ) : null}
-        </div>
+        </div> */}
       </div>
     </div>
   );

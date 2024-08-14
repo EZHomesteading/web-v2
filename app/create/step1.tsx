@@ -24,6 +24,7 @@ interface CategoryCardProps {
 interface SubCategoryCardProps {
   title: string;
   isSelected: boolean;
+  icon: React.ReactNode;
   onClick: () => void;
 }
 
@@ -68,7 +69,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   description,
   onClick,
 }) => (
-  <Card className="w-full h-full" onClick={onClick}>
+  <Card
+    className="w-full h-full hover:cursor-pointer hover:shadow-md shadow-sm"
+    onClick={onClick}
+  >
     <CardContent className="rounded-lg h-full py-4 flex flex-row items-center justify-between space-x-4">
       <div className="flex flex-col">
         <div className="text-lg font-light">{title}</div>
@@ -85,32 +89,34 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
   title,
   isSelected,
   onClick,
+  icon,
 }) => (
   <Card
-    className={`w-[150px] aspect-video ${
-      isSelected ? "text-emerald-700 border-emerald-300 shadow-xl" : ""
+    className={`w-[180px] h-[75px] ${
+      isSelected ? "text-bold border-black shadow-md border-[1px]" : ""
     }`}
     onClick={onClick}
   >
-    <CardContent className="rounded-lg h-full py-2 flex flex-col justify-evenly">
-      <div className="flex justify-center">{title}</div>
+    <CardContent className="rounded-lg h-full py-4 flex flex-row items-center justify-between space-x-4 hover:cursor-pointer hover:shadow-md shadow-sm">
+      <div className="flex justify-center font-light">{title}</div>
+      <div className="flex-shrink-0">{icon}</div>
     </CardContent>
   </Card>
 );
 
-const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <button className="h-[30px] w-[100px] mb-3" onClick={onClick}>
-    <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-      <div className="text-xs">go back</div>
-    </CardContent>
-  </button>
-);
+// const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+//   <button className="h-[30px] w-[100px] mb-3" onClick={onClick}>
+//     <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
+//       <div className="text-xs">go back</div>
+//     </CardContent>
+//   </button>
+// );
 
 const CategorySelection: React.FC<CategorySelectionProps> = ({
   category,
   setCategory,
 }) => (
-  <div className="flex flex-col space-y-4 w-full md:w-[40%] max-w-[600px] min-w-[280px]">
+  <div className="flex flex-col space-y-4 w-full md:w-[70%] max-w-[600px] min-w-[280px]">
     <CategoryCard
       icon={<CiApple size={40} />}
       title="Unprocessed Produce"
@@ -150,14 +156,15 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
 
   return (
     <div>
-      <GoBackButton onClick={onGoBack} />
-      <div className="grid grid-cols-4 sm:grid-cols-3 gap-3">
+      {/* <GoBackButton onClick={onGoBack} /> */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full">
         {subCategories[category].map((sub) => (
           <SubCategoryCard
             key={sub}
             title={sub.replace("-", " ")}
             isSelected={subCategory === sub}
             onClick={() => setSubCategory(sub)}
+            icon
           />
         ))}
       </div>
@@ -183,9 +190,9 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   if (step !== 1) return null;
 
   return (
-    <div className="w-full flex flex-col mt-[18%]">
-      <h1 className="font-normal text-[28px] mb-[5%]">
-        Select a Category for your Product
+    <div className="w-full flex flex-col pt-[10%] items-center">
+      <h1 className="font-normal text-[28px] mb-[2%]">
+        Select a {category ? <>Subcategory</> : <>Category</>} for your Product
       </h1>
       <div className="flex justify-center items-center w-full">
         {category === "" ? (

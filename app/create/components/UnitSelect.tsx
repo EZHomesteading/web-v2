@@ -31,18 +31,19 @@ const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-3 bg shadow-xl peer",
-          input: () => "text-lg",
-          option: () => "text-xs",
+          control: () => "py-3 pl-2 shadow-sm peer font-extralight",
+          input: () => "text-lg font-extralight",
+          option: () => "text-xs font-extralight",
           dropdownIndicator: () => "hidden",
+          placeholder: () => "text-black",
         }}
         theme={(theme) => ({
           ...theme,
-          borderRadius: 20,
+          borderRadius: 10,
           colors: {
             ...theme.colors,
-            primary: "#ced9bb",
-            primary25: "#ced9bb",
+            primary: "#fff",
+            primary25: "#fff",
           },
         })}
       />

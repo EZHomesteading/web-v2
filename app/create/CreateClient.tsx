@@ -45,7 +45,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
   const [quantityType, setQuantityType] = useState<
     QuantityTypeValue | undefined
   >(undefined);
@@ -77,10 +77,10 @@ const CreateClient = ({ user, index }: Props) => {
       category: "",
       subCategory: "",
       location: null,
-      stock: 1,
+      stock: null,
       quantityType: "",
       imageSrc: [],
-      price: 1,
+      price: null,
       title: "",
       description: "",
       shelfLifeDays: 0,
@@ -88,7 +88,7 @@ const CreateClient = ({ user, index }: Props) => {
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
       rating: [],
-      minOrder: 1,
+      minOrder: null,
     },
   });
   const handleCheckboxChange = (checked: boolean, index: number) => {
@@ -475,6 +475,16 @@ const CreateClient = ({ user, index }: Props) => {
       "have",
       "then",
       "there",
+      "desc",
+      "description",
+      "product",
+      "ass",
+      "bitch",
+      "cunt",
+      "whore",
+      "fuck",
+      "fuckin",
+      "fucking",
     ]);
     // Convert the input string to lowercase and split it into words
     const words = inputString.toLowerCase().match(/\b\w+\b/g) || [];
