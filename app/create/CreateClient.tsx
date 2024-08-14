@@ -2,7 +2,6 @@
 //create listing parent client element
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
-import { CiCircleInfo } from "react-icons/ci";
 import {
   Select,
   SelectContent,
@@ -11,28 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { LuShovel } from "react-icons/lu";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { Button, buttonVariants } from "@/app/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/app/components/ui/breadcrumb";
+import StepOne from "./step1";
+import { Button } from "@/app/components/ui/button";
+import { CreateListingProps, Category, SubCategory } from "./create.types";
 
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Emulator from "./components/emulator";
-
 import Heading from "@/app/components/Heading";
 import Input from "@/app/create/components/listing-input";
 import { Label } from "@/app/components/ui/label";
@@ -44,13 +29,8 @@ import Image from "next/image";
 import { BsBucket } from "react-icons/bs";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Card, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
-import Help from "./components/help";
-import { GiMeat, GiShinyApple } from "react-icons/gi";
-import {} from "react-icons/fa";
-import { TbCandle } from "react-icons/tb";
-import Link from "next/link";
 import { BiLoaderCircle } from "react-icons/bi";
 import debounce from "debounce";
 
@@ -81,8 +61,8 @@ const CreateClient = ({ user, index }: Props) => {
   const [clicked, setClicked] = useState(false);
   const [clicked1, setClicked1] = useState(false);
   const [clicked2, setClicked2] = useState(false);
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
+  const [category, setCategory] = useState<Category>("");
+  const [subCategory, setSubCategory] = useState<SubCategory>("");
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
@@ -652,307 +632,8 @@ const CreateClient = ({ user, index }: Props) => {
   );
   return (
     <div className={`${outfit.className} relative w-full`}>
-      <div className="absolute top-2 left-2">
-        <div className="flex flex-col space-y-2">
-          <Help role={user.role} step={step} />
-          <Link
-            href="/"
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
-          >
-            Go Home
-          </Link>
-        </div>
-      </div>
-
       <div className="flex flex-col md:flex-row text-black w-full">
-        <div className="onboard-left md:w-2/5 md:min-h-screen">
-          <div className="flex flex-col items-start pl-6 py-5 md:pt-20 md:pb-2">
-            <h2 className="tracking font-medium 2xl:text-2xl text-lg tracking-tight md:pt-[20%]">
-              List Your Excess Produce
-            </h2>
-            {step === 2 && (
-              <div className="flex flex-row fade-in">
-                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
-                  First, let&apos;s go over the basics
-                </div>
-              </div>
-            )}
-            {step === 3 && (
-              <div className="flex flex-row items-center fade-in">
-                {" "}
-                <div className="2xl:text-4xl text-lg font-bold tracking-tight">
-                  Next, Provide Some General Info
-                </div>
-              </div>
-            )}
-            {step === 4 && (
-              <div className="flex flex-col items-start fade-in">
-                <div className="flex flex-row">
-                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
-                    Tell us how you grow your produce
-                  </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                        <CiCircleInfo className="lg:text-4xl" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className={`${outfit.className} popover xl:absolute xl:bottom-10`}
-                    >
-                      <div className="grid gap-4">
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            EZHomesteading will randomly & anonymously purchase
-                            goods from sellers to test the validity of
-                            certifications & promote consumer confidence
-                          </p>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-            )}
-
-            {step === 5 && (
-              <div className="flex flex-col items-start fade-in">
-                <div className="flex flex-row">
-                  <div className="2xl:text-4xl text-lg font-bold tracking-tightt">
-                    You're Almost Done, We Just Need Some Pictures
-                  </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                        <CiCircleInfo className="lg:text-4xl" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="popover xl:absolute xl:bottom-10">
-                      <div className="grid gap-4">
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            EZHomesteading reccomends that Producers upload at
-                            least one photo of their actual product.
-                          </p>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
-                  Feel free to include, only use, or get rid of the stock photo
-                </div>
-              </div>
-            )}
-            {step === 6 && user?.location && user?.location[0] !== null && (
-              <div className="flex flex-col items-start fade-in">
-                <div className="flex flex-row">
-                  <div className="2xl:text-4xl text-lg font-bold tracking-tight">
-                    Where is your farm or garden located?
-                  </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button className="shadow-none bg-transparent hover:bg-transparent text-black">
-                        <CiCircleInfo className="lg:text-4xl" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="popover xl:absolute xl:bottom-10">
-                      <div className="grid gap-4">
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            EZHomesteading uses data provided by you to generate
-                            the default location. We do not track your location
-                            unless you have given us permission.
-                          </p>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="shadow-none bg-transparent hover:bg-transparent text-black m-0 p-0 text-xs">
-                  Help local consumers find you!
-                </div>
-              </div>
-            )}
-            <Breadcrumb className={`${outfit.className} text-black pt-1 z-10 `}>
-              <BreadcrumbList className="text-[.6rem]">
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 2
-                      ? "font-bold cursor-none"
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => setStep(2)}
-                >
-                  General
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 3
-                      ? "font-bold cursor-none"
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => setStep(3)}
-                >
-                  Specifics
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem
-                  className={
-                    step === 4
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => setStep(4)}
-                >
-                  Rating
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-
-                <BreadcrumbItem
-                  className={
-                    step === 5
-                      ? "font-bold cursor-none "
-                      : "font-normal cursor-pointer"
-                  }
-                  onMouseDown={() => setStep(5)}
-                >
-                  Photos
-                </BreadcrumbItem>
-                {user?.location && user?.location[0] !== null && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem
-                      className={
-                        step === 6
-                          ? "font-bold cursor-none "
-                          : "font-normal cursor-pointer"
-                      }
-                      onMouseDown={() => {
-                        if (!title) {
-                          toast.error("Let us know what produce you have", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (!description) {
-                          toast.error("Please write a brief description", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (!quantityType) {
-                          toast.error("Please enter a unit for your listing", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (parseInt(quantity) <= 0 || !quantity) {
-                          toast.error("Quantity must be greater than 0", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (parseInt(minOrder) <= 0 || !quantity) {
-                          toast.error(
-                            "Please enter a minimum order greater than 0",
-                            {
-                              duration: 2000,
-                              position: "bottom-center",
-                            }
-                          );
-                          return;
-                        } else if (
-                          Array.isArray(imageSrc) &&
-                          imageSrc.length === 0
-                        ) {
-                          toast.error(
-                            "Please use the stock photo or upload at least one photo",
-                            {
-                              duration: 2000,
-                              position: "bottom-center",
-                            }
-                          );
-                          return;
-                        } else if (
-                          shelfLifeDays <= 0 &&
-                          shelfLifeWeeks <= 0 &&
-                          shelfLifeMonths <= 0 &&
-                          shelfLifeYears <= 0
-                        ) {
-                          toast.error("Shelf life must be at least 1 day", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (price <= 0 || !quantity) {
-                          toast.error("Please enter a price greater than 0", {
-                            duration: 2000,
-                            position: "bottom-center",
-                          });
-                          return;
-                        } else if (parseInt(minOrder) > parseInt(quantity)) {
-                          toast.error(
-                            "Minimum order cannot be higher than stock",
-                            {
-                              duration: 2000,
-                              position: "bottom-center",
-                            }
-                          );
-                          return;
-                        } else if (
-                          Array.isArray(rating) &&
-                          rating.length === 0
-                        ) {
-                          toast.error(
-                            "Please certify your EZH Organic Rating",
-                            {
-                              duration: 2000,
-                              position: "bottom-center",
-                            }
-                          );
-                          return;
-                        } else {
-                          setStep(6);
-                        }
-                      }}
-                    >
-                      Location
-                    </BreadcrumbItem>
-                  </>
-                )}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <div className="hidden emulator-container mt-8">
-            <div className="sticky bottom-0 left-0 right-0 px-6">
-              <Emulator
-                title={title}
-                description={description}
-                stock={quantity}
-                quantityType={quantityType}
-                price={price}
-                imageSrc={imageSrc}
-                user={user}
-                shelfLife={
-                  shelfLifeDays +
-                  shelfLifeWeeks * 7 +
-                  shelfLifeMonths * 30 +
-                  shelfLifeYears * 365
-                }
-                city={user.location ? user?.location[0]?.address[1] : "Norfolk"}
-                state={user.location ? user?.location[0]?.address[2] : "VA"}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="md:w-3/5 onboard-right relative">
+        <div className=" relative">
           <div className=" mx-[5%] md:py-20">
             {step === 2 && (
               <div className="flex flex-col gap-5 p-[1px] h-[calc(100vh-114.39px)] md:h-full fade-in">
@@ -1474,7 +1155,7 @@ const CreateClient = ({ user, index }: Props) => {
                       user.location[2] === undefined)) ? (
                     <Card
                       className={
-                        "hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                        "hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
                       }
                       onClick={() => {
                         router.replace("/dashboard/my-store/settings");
@@ -1496,8 +1177,8 @@ const CreateClient = ({ user, index }: Props) => {
                         <Card
                           className={
                             clicked
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
                           }
                           onClick={() => {
                             if (user.location) {
@@ -1532,8 +1213,8 @@ const CreateClient = ({ user, index }: Props) => {
                         <Card
                           className={
                             clicked1
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
                           }
                           onClick={() => {
                             if (user.location) {
@@ -1568,8 +1249,8 @@ const CreateClient = ({ user, index }: Props) => {
                         <Card
                           className={
                             clicked2
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 bg shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer bg shadow-sm w/1/2 h-1/2"
+                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
                           }
                           onClick={() => {
                             if (user.location) {
@@ -1606,451 +1287,13 @@ const CreateClient = ({ user, index }: Props) => {
               </div>
             )}
             {step === 1 && (
-              <>
-                {" "}
-                <div className="flex flex-col gap-4 h-[calc(100vh-86.4px)] md:h-full fade-in">
-                  <Heading
-                    title="Select a Category"
-                    subtitle="Which best describes your productt?"
-                  />
-                  <div className="flex justify-center items-center">
-                    {category === "" ? (
-                      <div className="grid grid-cols-4 sm:grid-cols-2 gap-3 ">
-                        <Card
-                          className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("unprocessed-produce")}
-                        >
-                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <GiShinyApple size={40} />
-                            <div className="text-xs">Unprocessed Produce</div>
-                            <div className="text-[8px]">
-                              Ex: Apples & Tomatoes
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card
-                          className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("homemade")}
-                        >
-                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <TbCandle size={40} />
-                            <div className="text-xs">Homemade</div>
-                            <div className="text-[8px]">
-                              Ex: Applie Pie & Beeswax Candles
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card
-                          className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("durables")}
-                        >
-                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <LuShovel size={40} />
-                            <div className="text-xs">Durables</div>
-                            <div className="text-[8px]">
-                              Ex: Canned Food & Solar Panels
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card
-                          className="h-[120px] w-[180px]"
-                          onClick={() => setCategory("dairy-meat")}
-                        >
-                          <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <GiMeat size={40} />
-                            <div className="text-xs">Dairy & Meat</div>
-                            <div className="text-[8px]">
-                              Ex: Milk Shares & Chicken
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    ) : category === "unprocessed-produce" ? (
-                      <div>
-                        <button
-                          className="h-[30px] w-[100px] mb-3"
-                          onClick={() => {
-                            setCategory("");
-                            setSubCategory("");
-                          }}
-                        >
-                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <div className="text-xs">go back</div>
-                          </CardContent>
-                        </button>
-                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
-                          {" "}
-                          <Card
-                            className={
-                              subCategory === "fruit"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("fruit")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">Fruit</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "vegetables"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("vegetables")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">
-                                Vegetables
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "nuts"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("nuts")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Nuts</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "herbs"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("herbs")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Herbs</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "legumes"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("legumes")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">Legumes</div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </div>
-                    ) : category === "homemade" ? (
-                      <div>
-                        <button
-                          className="h-[30px] w-[100px] mb-3"
-                          onClick={() => {
-                            setCategory("");
-                            setSubCategory("");
-                          }}
-                        >
-                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <div className="text-xs">go back</div>
-                          </CardContent>
-                        </button>
-                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
-                          {" "}
-                          <Card
-                            className={
-                              subCategory === "crafts"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("crafts")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">Crafts</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "baked-goods"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("baked-goods")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">
-                                Baked Goods
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "jams"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("jams")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Jams</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "pastries"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("pastries")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">
-                                Pastries
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "breads"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("breads")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Breads</div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </div>
-                    ) : category === "durables" ? (
-                      <div>
-                        <button
-                          className="h-[30px] w-[100px] mb-3"
-                          onClick={() => {
-                            setCategory("");
-                            setSubCategory("");
-                          }}
-                        >
-                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <div className="text-xs">go back</div>
-                          </CardContent>
-                        </button>
-                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
-                          {" "}
-                          <Card
-                            className={
-                              subCategory === "canned-goods"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("canned-goods")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">
-                                Canned Goods
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "tools"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("tools")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Tools</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "survival"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("survival")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">
-                                Survival
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "kitchen-wares"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("kitchen-wares")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">
-                                Kitchen Wares
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </div>
-                    ) : category === "dairy-meats" ? (
-                      <div>
-                        <button
-                          className="h-[30px] w-[100px] mb-3"
-                          onClick={() => {
-                            setCategory("");
-                            setSubCategory("");
-                          }}
-                        >
-                          <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-                            <div className="text-xs">go back</div>
-                          </CardContent>
-                        </button>
-                        <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 ">
-                          {" "}
-                          <Card
-                            className={
-                              subCategory === "milks"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("milks")}
-                          >
-                            <CardContent
-                              className={
-                                "bg rounded-lg h-full py-2 flex flex-col justify-evenly"
-                              }
-                            >
-                              <div className="flex justify-center">Milks</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "eggs"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("eggs")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Eggs</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "poultry"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("poultry")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Poultry</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "beef"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("beef")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Beef</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "pork"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("pork")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Pork</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "alternative-meats"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("alternative-meats")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">
-                                Alternative Meats
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "seafood"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("seafood")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Seafood</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "butter"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("butter")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Butter</div>
-                            </CardContent>
-                          </Card>
-                          <Card
-                            className={
-                              subCategory === "cheese"
-                                ? "text-emerald-700  border-emerald-300 bg rounded-lg  py-2 flex flex-col justify-evenly h-[60px] w-[140px] shadow-xl"
-                                : "h-[60px] w-[140px]"
-                            }
-                            onClick={() => setSubCategory("cheese")}
-                          >
-                            <CardContent className="bg rounded-lg h-full py-2 flex flex-col justify-evenly">
-                              <div className="flex justify-center">Cheese</div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </>
+              <StepOne
+                step={step}
+                subCategory={subCategory}
+                setSubCategory={setSubCategory}
+                category={category}
+                setCategory={setCategory}
+              />
             )}
           </div>
         </div>
