@@ -1,5 +1,5 @@
 import { UserInfo } from "@/next-auth";
-import { FieldValues, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { FieldErrors, FieldValues, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 
 export type Category = 'unprocessed-produce' | 'homemade' | 'durables' | 'dairy-meat' | '';
 export type SubCategory = string;
@@ -18,17 +18,24 @@ export interface StepProps {
   setSubCategory: (subCategory: SubCategory) => void;
 }
 
+export interface CommonInputProps {
+  register: UseFormRegister<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  watch: UseFormWatch<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
+  disabled: boolean;
+}
 export interface InputProps {
   id: string;
   label: string;
   type: string;
-  disabled?: boolean;
-  formatPrice?: boolean;
-  required?: boolean;
   register: UseFormRegister<FieldValues>;
-  errors: FieldValues;
+  errors: FieldErrors<FieldValues>;
   watch: UseFormWatch<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
+  disabled: boolean;
+  formatPrice?: boolean;
+  required?: boolean;
   maxlength?: number;
   step?: string;
 }

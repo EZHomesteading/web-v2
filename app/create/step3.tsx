@@ -12,12 +12,12 @@ import { Checkbox } from "@/app/components/ui/checkbox";
 import Counter from "@/app/create/components/Counter";
 import Input from "@/app/create/components/listing-input";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
-import { InputProps } from "./create.types";
+import { CommonInputProps, InputProps } from "./create.types";
 import Heading from "@/app/components/Heading";
 
 interface StepThreeProps {
-  quantityType: QuantityTypeValue;
-  setQuantityType: (value: QuantityTypeValue) => void;
+  quantityType: QuantityTypeValue | undefined;
+  setQuantityType: (value: QuantityTypeValue | undefined) => void;
   postSODT: boolean;
   handleSODTCheckboxChange: (checked: boolean, index: number) => void;
   nonPerishable: boolean;
@@ -29,6 +29,7 @@ interface StepThreeProps {
   setCustomValue: (id: string, value: any) => void;
   expiryDate: string;
   usersodt: number | null;
+  commonInputProps: CommonInputProps;
   inputProps: InputProps;
 }
 
@@ -46,6 +47,7 @@ const StepThree: React.FC<StepThreeProps> = ({
   setCustomValue,
   expiryDate,
   usersodt,
+  commonInputProps,
   inputProps,
 }) => {
   return (
@@ -59,7 +61,7 @@ const StepThree: React.FC<StepThreeProps> = ({
           <div className="flex flex-row gap-2">
             <div className="w-1/2">
               <Input
-                {...inputProps}
+                {...commonInputProps}
                 id="stock"
                 label="Quantity"
                 type="number"
@@ -70,8 +72,10 @@ const StepThree: React.FC<StepThreeProps> = ({
               <UnitSelect
                 value={quantityType}
                 onChange={(value) => {
-                  setQuantityType(value as QuantityTypeValue);
-                  inputProps.setValue("quantityType", value?.value);
+                  setQuantityType(value);
+                  if (value) {
+                    inputProps.setValue("quantityType", value.value);
+                  }
                 }}
               />
             </div>
@@ -79,7 +83,7 @@ const StepThree: React.FC<StepThreeProps> = ({
           <div className="flex flex-row gap-2 mt-2">
             <div className="w-1/2">
               <Input
-                {...inputProps}
+                {...commonInputProps}
                 id="price"
                 label="Price per unit"
                 type="number"
@@ -90,7 +94,7 @@ const StepThree: React.FC<StepThreeProps> = ({
             </div>
             <div className="w-1/2">
               <Input
-                {...inputProps}
+                {...commonInputProps}
                 id="minOrder"
                 label="Minimum order"
                 type="number"
