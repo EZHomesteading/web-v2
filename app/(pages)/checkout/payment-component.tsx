@@ -32,7 +32,7 @@ export default function PaymentComponent() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "https://ezhomesteading.com/dashboar/dorders/buyer",
+        return_url: "https://ezhomesteading.com/dashboard/orders/buyer",
         shipping: null,
       },
     });
