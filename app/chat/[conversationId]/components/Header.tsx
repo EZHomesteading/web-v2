@@ -4,21 +4,32 @@ import { HiChevronLeft } from "react-icons/hi";
 import Link from "next/link";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
 import Avatar from "@/app/components/Avatar";
-import AvatarGroup from "@/app/components/avatar-group";
 import { FullConversationType } from "@/types";
 import { useRouter } from "next/navigation";
-import { Order } from "@prisma/client";
+import { Order, Reviews } from "@prisma/client";
 import Button from "@/app/components/modals/chatmodals/Button";
+import ReactStars from "react-stars";
 
 interface HeaderProps {
   conversation: FullConversationType;
   order: Order;
+  reviews: Reviews[];
 }
 
-const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
+const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
   const otherUser = useOtherUser(conversation);
   const router = useRouter();
+  function getAverageRating(reviews: Reviews[]) {
+    if (reviews.length === 0) return 0;
 
+    const totalRatings = reviews.reduce(
+      (sum, review) => sum + review.rating,
+      0
+    );
+    const averageRating = totalRatings / reviews.length;
+    return Math.round(averageRating * 2) / 2;
+  }
+  const avgRate = getAverageRating(reviews);
   return (
     <>
       <div
@@ -51,27 +62,22 @@ const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
           >
             <HiChevronLeft size={32} />
           </Link>
-          <div className="flex flex-row items-start gap-x-2">
-            {/* {conversation.isGroup ? (
-              <AvatarGroup users={conversation.users} />
-            ) : ( */}
-            <Avatar image={otherUser.image} />
-            {/* )} */}
-            {/* <div
-              className="flex flex-col text-3xl items-center justify-center"
-              onClick={() => router.push(`/profile/${otherUser.id}`)}
-            > */}
-            <div>{conversation.name || otherUser.name}</div>
-            {otherUser.id === order.sellerId ? (
-              <div className="flex flex-row mt-1 justify-between">
-                <div className="mr-1">
-                  <Button
+          <div className="flex flex-row items-start gap-x-4">
+            <div className="flex-shrink-0">
+              <Avatar image={otherUser.image} />
+            </div>
+            <div className="flex flex-col flex-grow">
+              <div className="text-xl font-semibold mb-2">
+                {conversation.name || otherUser.name}
+              </div>
+              {otherUser.id === order.sellerId ? (
+                <div className="flex flex-row justify-between w-full">
+                  <button
                     onClick={() => router.push(`/store/${otherUser.url}`)}
+                    className=" flex justify-center rounded-md px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600 mr-2"
                   >
                     Go to Store
-                  </Button>
-                </div>
-                <div>
+                  </button>
                   <Button
                     onClick={() =>
                       window.open(
@@ -83,12 +89,25 @@ const Header: React.FC<HeaderProps> = ({ conversation, order }) => {
                     Get Directions
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <Button onClick={() => router.push(`/profile/${otherUser.url}`)}>
-                View buyers rating
-              </Button>
-            )}
+              ) : (
+                <button
+                  className="
+        flex justify-center rounded-md px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600"
+                  onClick={() => router.push(`/profile/${otherUser.id}`)}
+                  title="View reviews of this buyer"
+                >
+                  <ReactStars
+                    count={1}
+                    size={20}
+                    color2={"#000"}
+                    value={1}
+                    half={false}
+                    edit={false}
+                  />
+                  {avgRate === 0 ? "New" : avgRate}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

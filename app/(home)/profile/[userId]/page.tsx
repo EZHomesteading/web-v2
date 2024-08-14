@@ -3,6 +3,7 @@ import ProfileClient from "./ProfileClient";
 import { getUserWithBuyReviews } from "@/actions/getUser";
 import { User, Reviews } from "@prisma/client";
 import { getUserById } from "@/data/user";
+import NotFound from "@/app/(pages)/[...not_found]/page";
 
 interface ReviewWithReviewer extends Reviews {
   reviewer: User | null;
@@ -16,8 +17,8 @@ export default async function ProfilePage({ params }: Props) {
   const { userId } = params;
   const data = await getUserWithBuyReviews({ userId: userId });
 
-  if (!data) {
-    return <div>No user found</div>;
+  if (!data || !userId) {
+    return <NotFound />;
   }
 
   const { user, reviews } = data;
