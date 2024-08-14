@@ -1,8 +1,10 @@
 import React from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { GiShinyApple, GiMeat } from "react-icons/gi";
+import { GiShinyApple, GiMeat, GiRopeCoil } from "react-icons/gi";
 import { TbCandle } from "react-icons/tb";
-import { LuShovel } from "react-icons/lu";
+import { LuBeef, LuShovel } from "react-icons/lu";
+import { CiApple, CiHome } from "react-icons/ci";
+import { LiaCheeseSolid } from "react-icons/lia";
 
 export type Category =
   | "unprocessed-produce"
@@ -66,11 +68,15 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   description,
   onClick,
 }) => (
-  <Card className="h-[120px] w-[180px]" onClick={onClick}>
-    <CardContent className="rounded-lg h-full py-2 flex flex-col justify-evenly">
-      {icon}
-      <div className="text-xs">{title}</div>
-      <div className="text-[8px]">{description}</div>
+  <Card className="w-full h-full" onClick={onClick}>
+    <CardContent className="rounded-lg h-full py-4 flex flex-row items-center justify-between space-x-4">
+      <div className="flex flex-col">
+        <div className="text-lg font-light">{title}</div>
+        <div className="text-sm text-gray-600 font-extralight">
+          {description}
+        </div>
+      </div>
+      <div className="flex-shrink-0">{icon}</div>
     </CardContent>
   </Card>
 );
@@ -81,7 +87,7 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
   onClick,
 }) => (
   <Card
-    className={`h-[60px] w-[140px] ${
+    className={`w-[150px] aspect-video ${
       isSelected ? "text-emerald-700 border-emerald-300 shadow-xl" : ""
     }`}
     onClick={onClick}
@@ -104,29 +110,29 @@ const CategorySelection: React.FC<CategorySelectionProps> = ({
   category,
   setCategory,
 }) => (
-  <div className="grid grid-cols-4 sm:grid-cols-2 gap-3">
+  <div className="flex flex-col space-y-4 w-full md:w-[40%] max-w-[600px] min-w-[280px]">
     <CategoryCard
-      icon={<GiShinyApple size={40} />}
+      icon={<CiApple size={40} />}
       title="Unprocessed Produce"
-      description="Ex: Apples & Tomatoes"
+      description="Apples, Peaches & Tomatoes"
       onClick={() => setCategory("unprocessed-produce")}
     />
     <CategoryCard
-      icon={<TbCandle size={40} />}
+      icon={<CiHome size={40} />}
       title="Homemade"
-      description="Ex: Apple Pie & Beeswax Candles"
+      description="Apple Pie & Beeswax Candles"
       onClick={() => setCategory("homemade")}
     />
     <CategoryCard
-      icon={<LuShovel size={40} />}
+      icon={<GiRopeCoil size={40} />}
       title="Durables"
-      description="Ex: Canned Food & Solar Panels"
+      description="Canned Food & Solar Panels"
       onClick={() => setCategory("durables")}
     />
     <CategoryCard
-      icon={<GiMeat size={40} />}
+      icon={<LuBeef size={40} />}
       title="Dairy & Meat"
-      description="Ex: Milk Shares & Chicken"
+      description="Milk Shares & Free-Range Chicken"
       onClick={() => setCategory("dairy-meat")}
     />
   </div>
@@ -177,10 +183,11 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   if (step !== 1) return null;
 
   return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-86.4px)] md:h-full fade-in">
-      <h1>Select a Category</h1>
-      <h2>Which best describes your product?</h2>
-      <div className="flex justify-center items-center">
+    <div className="w-full flex flex-col mt-[18%]">
+      <h1 className="font-normal text-[28px] mb-[5%]">
+        Select a Category for your Product
+      </h1>
+      <div className="flex justify-center items-center w-full">
         {category === "" ? (
           <CategorySelection category={category} setCategory={setCategory} />
         ) : (

@@ -2,14 +2,6 @@
 //create listing parent client element
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
 import StepOne from "./step1";
 import { Button } from "@/app/components/ui/button";
 import { Category, InputProps, SubCategory } from "./create.types";
@@ -19,8 +11,6 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Heading from "@/app/components/Heading";
-import { Label } from "@/app/components/ui/label";
-import { Checkbox } from "@/app/components/ui/checkbox";
 import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
 import Image from "next/image";
@@ -32,6 +22,8 @@ import debounce from "debounce";
 import StepTwo from "./step2";
 import StepThree from "./step3";
 import { CommonInputProps } from "./create.types";
+import StepFour from "./step4";
+import StepFive from "./step5";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -147,7 +139,6 @@ const CreateClient = ({ user, index }: Props) => {
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
   const shelfLifeYears = watch("shelfLifeYears");
-  const imageSrc = watch("imageSrc");
   const minOrder = watch("minOrder");
   const quantity = watch("stock");
   const price = watch("price");
@@ -173,6 +164,7 @@ const CreateClient = ({ user, index }: Props) => {
     });
   };
 
+  const [imageSrc, setImageSrc] = useState<string[]>([]);
   const [imageStates, setImageStates] = useState(
     [...Array(3)].map(() => ({
       isHovered: false,
@@ -277,214 +269,100 @@ const CreateClient = ({ user, index }: Props) => {
         setIsLoading(false);
       });
   };
-  //step handlers so that proper pages render
+  const showError = (message: string) => {
+    toast.error(message, {
+      duration: 2000,
+      position: "bottom-center",
+    });
+  };
+
+  const checkField = (condition: boolean, errorMessage: string): boolean => {
+    if (condition) {
+      showError(errorMessage);
+      return true;
+    }
+    return false;
+  };
   const handleNext = async () => {
-    if (step === 1 && category === "") {
-      toast.error("Set a category!", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-    if (step === 1 && subCategory === "") {
-      toast.error("Set a Subcategory!", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-    if (step === 2 && title === "") {
-      toast.error("Let us know what produce you have!", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
+    const errors = {
+      1: [
+        { condition: () => category === "", message: "Set a category!" },
+        { condition: () => subCategory === "", message: "Set a Subcategory!" },
+      ],
+      2: [
+        {
+          condition: () => title === "",
+          message: "Let us know what produce you have!",
+        },
+        {
+          condition: () => !description,
+          message: "Please write a brief description",
+        },
+      ],
+      3: [
+        {
+          condition: () => !quantityType,
+          message: "Please enter a unit for your listing",
+        },
+        {
+          condition: () => parseInt(minOrder) > parseInt(quantity),
+          message: "Minimum order cannot be more than your quantity",
+        },
+        {
+          condition: () => !sodt,
+          message: "Please enter a set out/delivery time for your listing",
+        },
+        {
+          condition: () => parseInt(quantity) <= 0 || !quantity,
+          message: "Quantity must be greater than 0",
+        },
+        {
+          condition: () =>
+            shelfLifeDays <= 0 &&
+            shelfLifeWeeks <= 0 &&
+            shelfLifeMonths <= 0 &&
+            shelfLifeYears <= 0,
+          message: "Shelf life must be at least 1 day",
+        },
+        {
+          condition: () => price <= 0 || !price,
+          message: "Please enter a price greater than 0",
+        },
+        {
+          condition: () => parseInt(minOrder) <= 0 || !quantity,
+          message: "Please enter a minimum order greater than 0",
+        },
+      ],
+      4: [
+        {
+          condition: () => !certificationChecked,
+          message: "You must certify that the above information is accurate.",
+        },
+      ],
+      5: [
+        {
+          condition: () => Array.isArray(imageSrc) && imageSrc.length === 0,
+          message: "Please upload at least one photo",
+        },
+      ],
+      6: [
+        {
+          condition: () => Array.isArray(rating) && rating.length === 0,
+          message: "Please certify your EZH Organic Rating",
+        },
+        {
+          condition: () => user?.location?.[0] === null,
+          message: "Please Set a default location in your store settings",
+        },
+      ],
+    };
+
+    const currentErrors = errors[step as keyof typeof errors] || [];
+    for (const error of currentErrors) {
+      if (checkField(error.condition(), error.message)) return;
     }
 
-    if (step === 2 && !description) {
-      toast.error("Please write a brief description", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (step === 3 && !quantityType) {
-      toast.error("Please enter a unit for your listing", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-    if (step === 3 && parseInt(minOrder) > parseInt(quantity)) {
-      toast.error("Minimum order cannot be more than your quantity", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-
-      return;
-    }
-    if (step === 3 && !sodt) {
-      toast.error("Please enter a set out/delivery time for your listing", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (step === 3 && (parseInt(quantity) <= 0 || !quantity)) {
-      toast.error("Quantity must be greater than 0", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (step === 5 && Array.isArray(imageSrc) && imageSrc.length === 0) {
-      toast.error("Please upload at least one photo", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (step === 4 && !certificationChecked) {
-      toast.error("You must certify that the above information is accurate.", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (
-      step === 3 &&
-      shelfLifeDays <= 0 &&
-      shelfLifeWeeks <= 0 &&
-      shelfLifeMonths <= 0 &&
-      shelfLifeYears <= 0
-    ) {
-      toast.error("Shelf life must be at least 1 day", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-
-    if (step === 3 && (price <= 0 || !price)) {
-      toast.error("Please enter a price greater than 0", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-    if (step === 3 && (parseInt(minOrder) <= 0 || !quantity)) {
-      toast.error("Please enter a minimum order greater than 0", {
-        duration: 2000,
-        position: "bottom-center",
-      });
-      return;
-    }
-    if (
-      step === 6 ||
-      (step === 5 && user?.location && user?.location[0] === null)
-    ) {
-      if (category === "") {
-        toast.error("Set a category!", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      }
-      if (subCategory === "") {
-        toast.error("Set a Subcategory!", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      }
-      if (!title) {
-        toast.error("Let us know what produce you have!", {
-          duration: 2000,
-          position: "bottom-right",
-        });
-        return;
-      } else if (!description) {
-        toast.error("Please write a brief description", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (!quantityType) {
-        toast.error("Please enter a unit for your listing", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (!sodt) {
-        toast.error("Please enter a set out/delivery time for your listing", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (parseInt(minOrder) <= 0 || !quantity) {
-        toast.error("Quantity must be greater than 0", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (parseInt(minOrder) > parseInt(quantity)) {
-        toast.error("Minimum order cannot be more than your quantity", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (parseInt(minOrder) <= 0 || !quantity) {
-        toast.error("Please enter a minimum order greater than 0", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (Array.isArray(imageSrc) && imageSrc.length === 0) {
-        toast.error("Please upload at least one photo", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (Array.isArray(rating) && rating.length === 0) {
-        toast.error("Please certify your EZH Organic Rating", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (
-        shelfLifeDays <= 0 &&
-        shelfLifeWeeks <= 0 &&
-        shelfLifeMonths <= 0 &&
-        shelfLifeYears <= 0
-      ) {
-        toast.error("Shelf life must be at least 1 day", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (price <= 0 || !quantity) {
-        toast.error("Please enter a price greater than 0", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      } else if (user?.location && user?.location[0] === null) {
-        toast.error("Please Set a default location in your store settings", {
-          duration: 2000,
-          position: "bottom-center",
-        });
-        return;
-      }
-    }
     if (step === 6) {
-      handleSubmit(onSubmit)();
-      //setStep(step + 1);
-    } else if (step === 6 && user?.location && user?.location[0] === null) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -644,404 +522,262 @@ const CreateClient = ({ user, index }: Props) => {
     1000
   );
   return (
-    <div className={`${outfit.className} relative w-full`}>
-      <div className="flex flex-col md:flex-row text-black w-full">
-        <div className=" relative">
-          <div className=" mx-[5%] md:py-20">
-            {step === 3 && (
-              <StepThree
-                quantityType={quantityType}
-                setQuantityType={setQuantityType}
-                postSODT={postSODT}
-                handleSODTCheckboxChange={handleSODTCheckboxChange}
-                nonPerishable={nonPerishable}
-                handleNonPerishableCheckboxChange={
-                  handleNonPerishableCheckboxChange
-                }
-                shelfLifeDays={shelfLifeDays}
-                shelfLifeWeeks={shelfLifeWeeks}
-                shelfLifeMonths={shelfLifeMonths}
-                shelfLifeYears={shelfLifeYears}
-                setCustomValue={setCustomValue}
-                expiryDate={expiryDate}
-                usersodt={user.SODT ?? null}
-                commonInputProps={commonInputProps}
-                inputProps={inputProps}
-              />
-            )}
-            {step === 4 && (
-              <div
-                className={`flex flex-col gap-4 h-[calc(100vh-122.39px)] md:h-full fade-in`}
-              >
-                <div className={`text-start`}>
-                  <div className="text-xl sm:text-2xl font-bold">
-                    Help Us Keep EZHomesteading Honestly Organic
-                  </div>
-                  <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                    Your base score is one, only check the boxes if they are
-                    accurate
-                  </div>
-                </div>
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                      checked={checkbox1Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked, 0)
-                      }
-                    />
-                    <Label>This produce is not genetically modified</Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                      checked={checkbox2Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked, 1)
-                      }
-                    />
-                    <Label>
-                      This produce was not grown with inorganic fertilizers
-                    </Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                      checked={checkbox3Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked, 2)
-                      }
-                    />
-                    <Label>
-                      This produce was not grown with inorganic pestacides
-                    </Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 items-center">
-                    <Checkbox
-                      checked={checkbox4Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked, 3)
-                      }
-                    />
-                    <Label>This produce was not modified after harvest</Label>
-                  </div>
-                  <div className="flex flex-row gap-x-2 font-extrabold items-center">
-                    <Checkbox
-                      checked={certificationChecked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCertificationCheckboxChange(checked)
-                      }
-                    />
-                    <Label className="font-bold">
-                      I certify that all of the above information is accurate
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            )}
-            {step > 1 && (
-              <Button
-                onClick={handlePrevious}
-                className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
-              >
-                Back
-              </Button>
-            )}
-            {step === 6 && user?.location && user?.location[0] === null ? (
-              <>
-                {" "}
-                <Button
-                  onClick={handleNext}
-                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-                >
-                  Finish
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  onClick={handleNext}
-                  className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-                >
-                  Next
-                </Button>
-              </>
-            )}
-            {step === 6 && user?.location && user?.location[0] !== null && (
-              <Button
-                onClick={handleNext}
-                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-              >
-                Finish
-              </Button>
-            )}
-            {step < 6 && (
-              <Button
-                onClick={handleNext}
-                className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-              >
-                Next
-              </Button>
-            )}
-            {step === 5 && (
-              <div
-                className={`${outfit.className} flex flex-col gap-8 items-stretch h-screen md:h-full fade-in`}
-              >
-                <Heading
-                  title="Take or Add Photos of your Product"
-                  subtitle="Actual photos are preferred over images from the web, click upload image to capture or add a photo"
-                />
-                <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center  ">
-                  {[...Array(3)].map((_, index) => (
-                    <div
-                      key={index}
-                      className={`relative h-40 sm:h-60 w-48 transition-transform duration-300 rounded-xl ${
-                        imageStates[index].isHovered
-                          ? "transform shadow-xl"
-                          : ""
-                      } ${imageStates[index].isFocused ? "z-10" : "z-0"}`}
-                      onMouseEnter={() => handleMouseEnter(index)}
-                      onMouseLeave={() => handleMouseLeave(index)}
-                      onClick={() => handleClick(index)}
-                    >
-                      {watch(`imageSrc[${index}]`) ? (
-                        <>
-                          <Image
-                            src={watch(`imageSrc[${index}]`)}
-                            fill
-                            alt={`Listing Image ${index + 1}`}
-                            className="object-cover rounded-xl"
-                          />
-                          <button
-                            className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const newImageSrc = [...watch("imageSrc")];
-                              newImageSrc.splice(index, 1);
-                              setValue("imageSrc", newImageSrc);
-                            }}
-                          >
-                            <BsBucket />
-                          </button>
-                        </>
-                      ) : (
-                        <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full bg">
-                          {" "}
-                          <UploadButton
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(
-                              res: { url: string }[]
-                            ) => {
-                              const newImageSrc = [...watch("imageSrc")];
-                              const emptyIndex = newImageSrc.findIndex(
-                                (src) => !src
-                              );
-                              if (emptyIndex !== -1) {
-                                newImageSrc[emptyIndex] = res[0].url;
-                              } else {
-                                newImageSrc.push(res[0].url);
-                              }
-                              setValue("imageSrc", newImageSrc);
-                            }}
-                            onUploadError={(error: Error) => {
-                              alert(`ERROR! ${error.message}`);
-                            }}
-                            appearance={{
-                              container: "h-full w-max",
-                            }}
-                            className="ut-allowed-content:hidden ut-button:bg-transparent ut-button:text-black ut-button:w-[160px] ut-button:sm:w-[240px] ut-button:px-2 ut-button:h-full"
-                            content={{
-                              button({ ready }) {
-                                if (ready) return <div>Upload Image</div>;
-                                return "Getting ready...";
-                              },
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {step === 6 && user?.location && user?.location[0] !== null && (
-              <div
-                className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}
-              >
-                <div className="flex flex-col">
-                  <Heading
-                    title="Add an Address"
-                    subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
-                  />
+    <div className={`px-8 min-h-screen ${outfit.className}`}>
+      {step === 1 && (
+        <StepOne
+          step={step}
+          subCategory={subCategory}
+          setSubCategory={setSubCategory}
+          category={category}
+          setCategory={setCategory}
+        />
+      )}
+      {step === 2 && (
+        <StepTwo
+          title={title}
+          setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
+          tag={tag}
+          setTag={setTag}
+          tags={tags}
+          setTags={setTags}
+          handleSearchName={handleSearchName}
+          isSearching={isSearching}
+          items={items}
+          buildKeyWords={buildKeyWords}
+          isLoading={isLoading}
+        />
+      )}
+      {step === 3 && (
+        <StepThree
+          quantityType={quantityType}
+          setQuantityType={setQuantityType}
+          postSODT={postSODT}
+          handleSODTCheckboxChange={handleSODTCheckboxChange}
+          nonPerishable={nonPerishable}
+          handleNonPerishableCheckboxChange={handleNonPerishableCheckboxChange}
+          shelfLifeDays={shelfLifeDays}
+          shelfLifeWeeks={shelfLifeWeeks}
+          shelfLifeMonths={shelfLifeMonths}
+          shelfLifeYears={shelfLifeYears}
+          setCustomValue={setCustomValue}
+          expiryDate={expiryDate}
+          usersodt={user.SODT ?? null}
+          commonInputProps={commonInputProps}
+          inputProps={inputProps}
+        />
+      )}
+      {step === 4 && (
+        <StepFour
+          checkbox1Checked={checkbox1Checked}
+          checkbox2Checked={checkbox2Checked}
+          checkbox3Checked={checkbox3Checked}
+          checkbox4Checked={checkbox4Checked}
+          certificationChecked={certificationChecked}
+          handleCheckboxChange={handleCheckboxChange}
+          handleCertificationCheckboxChange={handleCertificationCheckboxChange}
+        />
+      )}
+      {step > 1 && (
+        <Button
+          onClick={handlePrevious}
+          className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+        >
+          Back
+        </Button>
+      )}
+      {step === 6 && user?.location && user?.location[0] === null ? (
+        <>
+          {" "}
+          <Button
+            onClick={handleNext}
+            className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+          >
+            Finish
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            onClick={handleNext}
+            className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+          >
+            Next
+          </Button>
+        </>
+      )}
+      {step === 6 && user?.location && user?.location[0] !== null && (
+        <Button
+          onClick={handleNext}
+          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+        >
+          Finish
+        </Button>
+      )}
+      {step < 6 && (
+        <Button
+          onClick={handleNext}
+          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+        >
+          Next
+        </Button>
+      )}
+      {step === 5 && (
+        <StepFive
+          imageSrc={imageSrc}
+          setImageSrc={setImageSrc}
+          imageStates={imageStates}
+          handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={handleMouseLeave}
+          handleClick={handleClick}
+        />
+      )}
+      {step === 6 && user?.location && user?.location[0] !== null && (
+        <div className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}>
+          <div className="flex flex-col">
+            <Heading
+              title="Add an Address"
+              subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
+            />
 
-                  {user.location === null ||
-                  user.location === undefined ||
-                  ((user.location[0] === null ||
-                    user.location[0] === undefined) &&
-                    (user.location[1] === null ||
-                      user.location[1] === undefined) &&
-                    (user.location[2] === null ||
-                      user.location[2] === undefined)) ? (
-                    <Card
-                      className={
-                        "hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                      }
-                      onClick={() => {
-                        router.replace("/dashboard/my-store/settings");
-                      }}
-                    >
-                      <CardHeader className="pt-2 sm:pt-6">
-                        <div className="text-start">
-                          <div className="text-xl sm:text-2xl font-bold">
-                            You have no addresses set. Please set this up before
-                            creating a listing. Click Here to set up Store
-                            Locations
-                          </div>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  ) : (
-                    <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
-                      {user.location[0] !== null ? (
-                        <Card
-                          className={
-                            clicked
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                          }
-                          onClick={() => {
-                            if (user.location) {
-                              setClicked(true);
-                              setClicked1(false);
-                              setClicked2(false);
-                              setValue("location", 0);
-                            }
-                          }}
-                        >
-                          <CardHeader className="pt-2 sm:pt-6">
-                            <div className="text-start">
-                              <div className="text-xl sm:text-2xl font-bold">
-                                Use My Default Address
-                              </div>
-                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                                <ul>
-                                  <li className={`${outfit.className}`}></li>{" "}
-                                  {user.location &&
-                                  user?.location[0]?.address.length === 4 ? (
-                                    <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
-                                  ) : (
-                                    <li>Full Address not available</li>
-                                  )}
-                                </ul>
-                              </div>
-                            </div>
-                          </CardHeader>
-                        </Card>
-                      ) : null}
-                      {user.location[1] !== null ? (
-                        <Card
-                          className={
-                            clicked1
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                          }
-                          onClick={() => {
-                            if (user.location) {
-                              setClicked1(true);
-                              setClicked(false);
-                              setClicked2(false);
-                              setValue("location", 1);
-                            }
-                          }}
-                        >
-                          <CardHeader className="pt-2 sm:pt-6">
-                            <div className="text-start">
-                              <div className="text-xl sm:text-2xl font-bold">
-                                Use My Second Location
-                              </div>
-                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                                <ul>
-                                  <li className={`${outfit.className}`}></li>{" "}
-                                  {user.location &&
-                                  user?.location[1]?.address.length === 4 ? (
-                                    <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
-                                  ) : (
-                                    <li>Full Address not available</li>
-                                  )}
-                                </ul>
-                              </div>
-                            </div>
-                          </CardHeader>
-                        </Card>
-                      ) : null}
-                      {user.location[2] !== null ? (
-                        <Card
-                          className={
-                            clicked2
-                              ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                              : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                          }
-                          onClick={() => {
-                            if (user.location) {
-                              setClicked2(true);
-                              setClicked1(false);
-                              setClicked(false);
-                              setValue("location", 2);
-                            }
-                          }}
-                        >
-                          <CardHeader className="pt-2 sm:pt-6">
-                            <div className="text-start">
-                              <div className="text-xl sm:text-2xl font-bold">
-                                Use My Third Location
-                              </div>
-                              <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                                <ul>
-                                  <li className={`${outfit.className}`}></li>{" "}
-                                  {user.location &&
-                                  user?.location[2]?.address.length === 4 ? (
-                                    <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
-                                  ) : (
-                                    <li>Full Address not available</li>
-                                  )}
-                                </ul>
-                              </div>
-                            </div>
-                          </CardHeader>
-                        </Card>
-                      ) : null}
+            {user.location === null ||
+            user.location === undefined ||
+            ((user.location[0] === null || user.location[0] === undefined) &&
+              (user.location[1] === null || user.location[1] === undefined) &&
+              (user.location[2] === null || user.location[2] === undefined)) ? (
+              <Card
+                className={
+                  "hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
+                }
+                onClick={() => {
+                  router.replace("/dashboard/my-store/settings");
+                }}
+              >
+                <CardHeader className="pt-2 sm:pt-6">
+                  <div className="text-start">
+                    <div className="text-xl sm:text-2xl font-bold">
+                      You have no addresses set. Please set this up before
+                      creating a listing. Click Here to set up Store Locations
                     </div>
-                  )}
-                </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ) : (
+              <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                {user.location[0] !== null ? (
+                  <Card
+                    className={
+                      clicked
+                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked(true);
+                        setClicked1(false);
+                        setClicked2(false);
+                        setValue("location", 0);
+                      }
+                    }}
+                  >
+                    <CardHeader className="pt-2 sm:pt-6">
+                      <div className="text-start">
+                        <div className="text-xl sm:text-2xl font-bold">
+                          Use My Default Address
+                        </div>
+                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                          <ul>
+                            <li className={`${outfit.className}`}></li>{" "}
+                            {user.location &&
+                            user?.location[0]?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
+                            ) : (
+                              <li>Full Address not available</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ) : null}
+                {user.location[1] !== null ? (
+                  <Card
+                    className={
+                      clicked1
+                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked1(true);
+                        setClicked(false);
+                        setClicked2(false);
+                        setValue("location", 1);
+                      }
+                    }}
+                  >
+                    <CardHeader className="pt-2 sm:pt-6">
+                      <div className="text-start">
+                        <div className="text-xl sm:text-2xl font-bold">
+                          Use My Second Location
+                        </div>
+                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                          <ul>
+                            <li className={`${outfit.className}`}></li>{" "}
+                            {user.location &&
+                            user?.location[1]?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
+                            ) : (
+                              <li>Full Address not available</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ) : null}
+                {user.location[2] !== null ? (
+                  <Card
+                    className={
+                      clicked2
+                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
+                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked2(true);
+                        setClicked1(false);
+                        setClicked(false);
+                        setValue("location", 2);
+                      }
+                    }}
+                  >
+                    <CardHeader className="pt-2 sm:pt-6">
+                      <div className="text-start">
+                        <div className="text-xl sm:text-2xl font-bold">
+                          Use My Third Location
+                        </div>
+                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                          <ul>
+                            <li className={`${outfit.className}`}></li>{" "}
+                            {user.location &&
+                            user?.location[2]?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
+                            ) : (
+                              <li>Full Address not available</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ) : null}
               </div>
-            )}
-            {step === 1 && (
-              <StepOne
-                step={step}
-                subCategory={subCategory}
-                setSubCategory={setSubCategory}
-                category={category}
-                setCategory={setCategory}
-              />
-            )}
-            {step === 2 && (
-              <StepTwo
-                title={title}
-                setTitle={setTitle}
-                description={description}
-                setDescription={setDescription}
-                tag={tag}
-                setTag={setTag}
-                tags={tags}
-                setTags={setTags}
-                handleSearchName={handleSearchName}
-                isSearching={isSearching}
-                items={items}
-                buildKeyWords={buildKeyWords}
-                isLoading={isLoading}
-              />
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
