@@ -1,6 +1,8 @@
 //server layout for producer conversion
 import { BecomeProducer } from "@/app/components/auth/become/become-producer-form";
 import { currentUser } from "@/lib/auth";
+import { createStripeConnectedAccount } from "@/actions/auth/createconnectedaccount";
+
 export const metadata = {
   title: "Become an EZH Co-op",
   description:
@@ -28,7 +30,10 @@ const BecomeProducerPage = async () => {
   return (
     <>
       <main>
-        <BecomeProducer user={user} />
+        <BecomeProducer
+          user={user}
+          createStripeConnectedAccount={createStripeConnectedAccount}
+        />
       </main>
     </>
   );

@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     bio,
     SODT,
     banner,
+    stripeAccountId,
   } = body;
   const user = await currentUser();
   if (!user) {
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
       SODT,
       banner,
       location,
+      stripeAccountId,
     },
   });
 
