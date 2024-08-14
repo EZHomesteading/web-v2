@@ -27,8 +27,12 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 interface BecomeProducerProps {
   user?: UserInfo;
+  createStripeConnectedAccount: () => Promise<any>;
 }
-export const BecomeProducer = ({ user }: BecomeProducerProps) => {
+export const BecomeProducer = ({
+  user,
+  createStripeConnectedAccount,
+}: BecomeProducerProps) => {
   const [address, setAddress] = useState<string>("");
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
@@ -90,25 +94,25 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",
-      location: {
-        0: {
-          type: "Point",
-          coordinates:
-            user && user.location
-              ? (user?.location[0]?.coordinates?.slice(0, 2) as [
-                  number,
-                  number
-                ])
-              : [0, 0],
-          address:
-            user && user.location
-              ? (user?.location[0]?.address as [string, string, string, string])
-              : ["", "", "", ""],
-          hours: null,
-        },
-        1: null,
-        2: null,
-      },
+      // location: {
+      //   0: {
+      //     type: "Point",
+      //     coordinates:
+      //       user && user.location
+      //         ? (user?.location[0]?.coordinates?.slice(0, 2) as [
+      //             number,
+      //             number
+      //           ])
+      //         : [0, 0],
+      //     address:
+      //       user && user.location
+      //         ? (user?.location[0]?.address as [string, string, string, string])
+      //         : ["", "", "", ""],
+      //     hours: null,
+      //   },
+      //   1: null,
+      //   2: null,
+      // },
       role: UserRole.PRODUCER,
     },
   });
@@ -117,32 +121,26 @@ export const BecomeProducer = ({ user }: BecomeProducerProps) => {
       const updatedValues = {
         ...values,
       };
-      const stripeResponse = await axios.post(
-        "/api/stripe/create-connected-account",
-        {
-          userId: user?.id,
-        }
-      );
-      if (stripeResponse.status === 200) {
-        await fetch("/api/useractions/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedValues),
-        });
-      } else {
-        setError(
-          "An error occurred while creating the Stripe connected account. This occurs most often when you enter an invalid information, especially phone number."
-        );
-      }
+      await createStripeConnectedAccount();
+
+      console.log("Updating user information");
+      await fetch("/api/useractions/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedValues),
+      });
+
+      setSuccess("Your account has been updated.");
     } catch (error) {
+      console.error("Error in onSubmit:", error);
       setError("An error occurred. Please try again.");
     } finally {
       startTransition(() => {
         setError("");
         setSuccess("Your account has been updated.");
-        router.push("/");
+        router.push("/onboard");
       });
     }
   };

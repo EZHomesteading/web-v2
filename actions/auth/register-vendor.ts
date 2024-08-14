@@ -66,7 +66,7 @@ export const register = async (
   await signIn("credentials", {
     email,
     password,
-    redirectTo: DEFAULT_LOGIN_REDIRECT,
+    redirectTo: "/onboard",
   });
 
   return { user: updatedUser };

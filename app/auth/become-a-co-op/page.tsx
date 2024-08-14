@@ -1,6 +1,8 @@
 //server layout for coop conversion
 import { BecomeCoop } from "@/app/components/auth/become/become-co-op-form";
 import { currentUser } from "@/lib/auth";
+import { createStripeConnectedAccount } from "@/actions/auth/createconnectedaccount";
+import axios from "axios";
 export const metadata = {
   title: "Become an EZH Co-op",
   description:
@@ -26,10 +28,14 @@ export const metadata = {
 };
 const BecomeCoopPage = async () => {
   const user = await currentUser();
+
   return (
     <>
       <main>
-        <BecomeCoop user={user} />
+        <BecomeCoop
+          user={user}
+          createStripeConnectedAccount={createStripeConnectedAccount}
+        />
       </main>
     </>
   );
