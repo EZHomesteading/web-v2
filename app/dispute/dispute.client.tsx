@@ -20,9 +20,9 @@ const sesClient = new SESClient({
   },
 });
 const statusTexts: { [key: number]: string } = {
-  0: "UNRESOLVED",
-  1: "RESOLVED",
-  2: "ESCALATED",
+  0: "ESCALATED",
+  1: "UNRESOLVED",
+  2: "RESOLVED",
   3: "CLOSED",
 };
 

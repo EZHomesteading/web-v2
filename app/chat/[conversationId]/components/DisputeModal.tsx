@@ -69,6 +69,7 @@ const DisputeModal = ({
       images: image ? [image] : [],
       reason,
       explanation: comments,
+      status: 1,
     };
     try {
       console.log(data);
