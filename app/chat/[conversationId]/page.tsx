@@ -9,6 +9,7 @@ import { FullConversationType } from "@/types";
 import { Order, Reviews, User } from "@prisma/client";
 import { UserInfo } from "@/next-auth";
 import { getUserWithBuyReviews } from "@/actions/getUser";
+import { redirect } from "next/navigation";
 
 interface IParams {
   conversationId: string;
@@ -36,6 +37,16 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const order = await GetOrderByConvoId(params.conversationId);
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
+  console.log(currentUser.id, conversationData.userIds);
+  if (
+    currentUser.id === conversationData.userIds[1] ||
+    currentUser.id === conversationData.userIds[0]
+  ) {
+  } else {
+    if (currentUser.role !== "ADMIN") {
+      redirect("/chat");
+    }
+  }
   if (!data) {
     const reviewsFinal: Reviews[] = [
       {
