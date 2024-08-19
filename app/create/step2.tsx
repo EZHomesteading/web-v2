@@ -36,8 +36,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="flex justify-center items-start min-h-screen w-full">
-      <div className="flex flex-col gap-5 fade-in pt-[7%] w-full max-w-[500px]">
+    <div className="flex justify-center items-start min-h-screen w-full ">
+      <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
           <input
             className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"

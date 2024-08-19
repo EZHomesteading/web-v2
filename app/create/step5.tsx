@@ -1,90 +1,96 @@
-import React from "react";
-import Image from "next/image";
-import { UploadButton } from "@/utils/uploadthing";
-import { BsBucket } from "react-icons/bs";
+import { Checkbox } from "@/app/components/ui/checkbox";
+import { Label } from "@/app/components/ui/label";
 import Heading from "@/app/components/Heading";
 
-interface StepFiveProps {
-  imageSrc: string[];
-  setImageSrc: (imageSrc: string[]) => void;
-  imageStates: { isHovered: boolean; isFocused: boolean }[];
-  handleMouseEnter: (index: number) => void;
-  handleMouseLeave: (index: number) => void;
-  handleClick: (index: number) => void;
+interface StepFourProps {
+  checkbox1Checked: boolean;
+  checkbox2Checked: boolean;
+  checkbox3Checked: boolean;
+  checkbox4Checked: boolean;
+  certificationChecked: boolean;
+  handleCheckboxChange: (checked: boolean, index: number) => void;
+  handleCertificationCheckboxChange: (checked: boolean) => void;
 }
 
-const StepFive: React.FC<StepFiveProps> = ({
-  imageSrc,
-  setImageSrc,
-  imageStates,
-  handleMouseEnter,
-  handleMouseLeave,
-  handleClick,
+const StepFive: React.FC<StepFourProps> = ({
+  checkbox1Checked,
+  checkbox2Checked,
+  checkbox3Checked,
+  checkbox4Checked,
+  certificationChecked,
+  handleCheckboxChange,
+  handleCertificationCheckboxChange,
 }) => {
   return (
-    <div className="flex flex-col gap-8 items-stretch h-screen md:h-full fade-in">
-      <Heading
-        title="Take or Add Photos of your Product"
-        subtitle="Actual photos are preferred over images from the web, click upload image to capture or add a photo"
-      />
-      <div className="flex flex-col sm:flex-row gap-x-2 gap-y-2 items-center justify-center">
-        {[...Array(3)].map((_, index) => (
-          <div
-            key={index}
-            className={`relative h-40 sm:h-60 w-48 transition-transform duration-300 rounded-xl ${
-              imageStates[index].isHovered ? "transform shadow-xl" : ""
-            } ${imageStates[index].isFocused ? "z-10" : "z-0"}`}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={() => handleMouseLeave(index)}
-            onClick={() => handleClick(index)}
-          >
-            {imageSrc[index] ? (
-              <>
-                <Image
-                  src={imageSrc[index]}
-                  fill
-                  alt={`Listing Image ${index + 1}`}
-                  className="object-cover rounded-xl"
+    <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
+      <div className="flex flex-row justify-center items-start gap-2">
+        <div className="w-full sm:max-w-[500px] px-4">
+          <div className="flex flex-col ">
+            <Label className="text-xl w-full font-light m-0 !leading-0">
+              Help us Keep EZ Homesteading Organic
+            </Label>
+            <div className="text-xs font-extralight text-neutral-500 mb-2">
+              Check all that apply
+            </div>
+            <div className="flex flex-col gap-y-2">
+              <div className="flex flex-row gap-x-2 items-center">
+                <Checkbox
+                  checked={checkbox1Checked}
+                  onCheckedChange={(checked: boolean) =>
+                    handleCheckboxChange(checked, 0)
+                  }
                 />
-                <button
-                  className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const newImageSrc = [...imageSrc];
-                    newImageSrc.splice(index, 1);
-                    setImageSrc(newImageSrc);
-                  }}
-                >
-                  <BsBucket />
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center justify-center rounded-xl border-dashed border-2 border-black h-full bg">
-                <UploadButton
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res: { url: string }[]) => {
-                    const newImageSrc = [...imageSrc];
-                    newImageSrc[index] = res[0].url;
-                    setImageSrc(newImageSrc);
-                  }}
-                  onUploadError={(error: Error) => {
-                    alert(`ERROR! ${error.message}`);
-                  }}
-                  appearance={{
-                    container: "h-full w-max",
-                  }}
-                  className="ut-allowed-content:hidden ut-button:bg-transparent ut-button:text-black ut-button:w-[160px] ut-button:sm:w-[240px] ut-button:px-2 ut-button:h-full"
-                  content={{
-                    button({ ready }) {
-                      if (ready) return <div>Upload Image</div>;
-                      return "Getting ready...";
-                    },
-                  }}
-                />
+                <Label className="font-extralight">
+                  This produce is not genetically modified
+                </Label>
               </div>
-            )}
+              <div className="flex flex-row gap-x-2 items-center">
+                <Checkbox
+                  checked={checkbox2Checked}
+                  onCheckedChange={(checked: boolean) =>
+                    handleCheckboxChange(checked, 1)
+                  }
+                />
+                <Label className="font-extralight">
+                  This produce was not grown with inorganic fertilizers
+                </Label>
+              </div>
+              <div className="flex flex-row gap-x-2 items-center">
+                <Checkbox
+                  checked={checkbox3Checked}
+                  onCheckedChange={(checked: boolean) =>
+                    handleCheckboxChange(checked, 2)
+                  }
+                />
+                <Label className="font-extralight">
+                  This produce was not grown with inorganic pesticides
+                </Label>
+              </div>
+              <div className="flex flex-row gap-x-2 items-center">
+                <Checkbox
+                  checked={checkbox4Checked}
+                  onCheckedChange={(checked: boolean) =>
+                    handleCheckboxChange(checked, 3)
+                  }
+                />
+                <Label className="font-extralight">
+                  This produce was not modified after harvest
+                </Label>
+              </div>
+              <div className="flex flex-row gap-x-2 font-extrabold items-center">
+                <Checkbox
+                  checked={certificationChecked}
+                  onCheckedChange={(checked: boolean) =>
+                    handleCertificationCheckboxChange(checked)
+                  }
+                />
+                <Label className="font-normal">
+                  I certify that all of the above information is accurate
+                </Label>
+              </div>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

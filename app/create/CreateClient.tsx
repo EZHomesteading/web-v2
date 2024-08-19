@@ -5,18 +5,14 @@ import { UserInfo } from "@/next-auth";
 import StepOne from "./step1";
 import { Button } from "@/app/components/ui/button";
 import { Category, InputProps, SubCategory } from "./create.types";
-
+import { Progress } from "../components/ui/progress";
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Heading from "@/app/components/Heading";
-import { UploadButton } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
-import Image from "next/image";
-import { BsBucket } from "react-icons/bs";
 import { QuantityTypeValue } from "./components/UnitSelect";
-import { Card, CardHeader } from "../components/ui/card";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { addDays, format } from "date-fns";
 import debounce from "debounce";
 import StepTwo from "./step2";
@@ -24,6 +20,9 @@ import StepThree from "./step3";
 import { CommonInputProps } from "./create.types";
 import StepFour from "./step4";
 import StepFive from "./step5";
+import StepSix from "./step6";
+import { Label } from "../components/ui/label";
+import Help from "./components/help";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -45,7 +44,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(7);
   const [quantityType, setQuantityType] = useState<
     QuantityTypeValue | undefined
   >(undefined);
@@ -60,7 +59,6 @@ const CreateClient = ({ user, index }: Props) => {
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  //declare formstate default values
   let usersodt = null;
   if (user.SODT && user.SODT !== null) {
     usersodt = user.SODT;
@@ -316,14 +314,7 @@ const CreateClient = ({ user, index }: Props) => {
           condition: () => parseInt(quantity) <= 0 || !quantity,
           message: "Quantity must be greater than 0",
         },
-        {
-          condition: () =>
-            shelfLifeDays <= 0 &&
-            shelfLifeWeeks <= 0 &&
-            shelfLifeMonths <= 0 &&
-            shelfLifeYears <= 0,
-          message: "Shelf life must be at least 1 day",
-        },
+
         {
           condition: () => price <= 0 || !price,
           message: "Please enter a price greater than 0",
@@ -335,21 +326,27 @@ const CreateClient = ({ user, index }: Props) => {
       ],
       4: [
         {
+          condition: () =>
+            shelfLifeDays <= 0 &&
+            shelfLifeWeeks <= 0 &&
+            shelfLifeMonths <= 0 &&
+            shelfLifeYears <= 0,
+          message: "Shelf life must be at least 1 day",
+        },
+      ],
+      5: [
+        {
           condition: () => !certificationChecked,
           message: "You must certify that the above information is accurate.",
         },
       ],
-      5: [
+      6: [
         {
           condition: () => Array.isArray(imageSrc) && imageSrc.length === 0,
           message: "Please upload at least one photo",
         },
       ],
-      6: [
-        {
-          condition: () => Array.isArray(rating) && rating.length === 0,
-          message: "Please certify your EZH Organic Rating",
-        },
+      7: [
         {
           condition: () => user?.location?.[0] === null,
           message: "Please Set a default location in your store settings",
@@ -362,7 +359,7 @@ const CreateClient = ({ user, index }: Props) => {
       if (checkField(error.condition(), error.message)) return;
     }
 
-    if (step === 6) {
+    if (step === 7) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -531,8 +528,10 @@ const CreateClient = ({ user, index }: Props) => {
     },
     1000
   );
+  const progress = ((step - 1) / 7) * 100;
+
   return (
-    <div className={`px-8 min-h-screen ${outfit.className}`}>
+    <div className={`min-h-screen ${outfit.className}`}>
       {step === 1 && (
         <StepOne
           step={step}
@@ -565,6 +564,13 @@ const CreateClient = ({ user, index }: Props) => {
           setQuantityType={setQuantityType}
           postSODT={postSODT}
           handleSODTCheckboxChange={handleSODTCheckboxChange}
+          usersodt={user.SODT ?? null}
+          commonInputProps={commonInputProps}
+          inputProps={inputProps}
+        />
+      )}
+      {step === 4 && (
+        <StepFour
           nonPerishable={nonPerishable}
           handleNonPerishableCheckboxChange={handleNonPerishableCheckboxChange}
           shelfLifeDays={shelfLifeDays}
@@ -573,13 +579,10 @@ const CreateClient = ({ user, index }: Props) => {
           shelfLifeYears={shelfLifeYears}
           setCustomValue={setCustomValue}
           expiryDate={expiryDate}
-          usersodt={user.SODT ?? null}
-          commonInputProps={commonInputProps}
-          inputProps={inputProps}
         />
       )}
-      {step === 4 && (
-        <StepFour
+      {step === 5 && (
+        <StepFive
           checkbox1Checked={checkbox1Checked}
           checkbox2Checked={checkbox2Checked}
           checkbox3Checked={checkbox3Checked}
@@ -597,9 +600,8 @@ const CreateClient = ({ user, index }: Props) => {
           Back
         </Button>
       )}
-      {step === 6 && user?.location && user?.location[0] === null ? (
+      {step === 7 && user?.location && user?.location[0] === null && (
         <>
-          {" "}
           <Button
             onClick={handleNext}
             className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -607,25 +609,9 @@ const CreateClient = ({ user, index }: Props) => {
             Finish
           </Button>
         </>
-      ) : (
-        <>
-          <Button
-            onClick={handleNext}
-            className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-          >
-            Next
-          </Button>
-        </>
       )}
-      {step === 6 && user?.location && user?.location[0] !== null && (
-        <Button
-          onClick={handleNext}
-          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
-        >
-          Finish
-        </Button>
-      )}
-      {step < 6 && (
+
+      {step < 7 && step !== 1 && (
         <Button
           onClick={handleNext}
           className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
@@ -633,8 +619,19 @@ const CreateClient = ({ user, index }: Props) => {
           Next
         </Button>
       )}
-      {step === 5 && (
-        <StepFive
+      {step === 1 && category && (
+        <Button
+          onClick={handleNext}
+          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+        >
+          Next
+        </Button>
+      )}
+      <div className="w-full absolute top-0 left-0 z-50">
+        <Progress value={progress} className="h-[6px] bg-gray-200" />
+      </div>
+      {step === 6 && (
+        <StepSix
           imageSrc={imageSrc}
           setImageSrc={setImageSrc}
           imageStates={imageStates}
@@ -643,58 +640,62 @@ const CreateClient = ({ user, index }: Props) => {
           handleClick={handleClick}
         />
       )}
-      {step === 6 && user?.location && user?.location[0] !== null && (
-        <div className={`h-[calc(100vh-138.39px)] md:h-full md:py-20 fade-in`}>
-          <div className="flex flex-col">
-            <Heading
-              title="Add an Address"
-              subtitle="You're listing location is approximate on the site and only revealed to indivdual buyers once they've made a purchase"
-            />
+      <Help step={step} role={user?.role} />
+      {step === 7 && user?.location && user?.location[0] !== null && (
+        <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
+          <div className="flex flex-row justify-center items-center gap-2">
+            <div className="w-full max-w-[300px] px-4 flex flex-col items-center">
+              <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
+                Select a Selling Location
+              </Label>
 
-            {user.location === null ||
-            user.location === undefined ||
-            ((user.location[0] === null || user.location[0] === undefined) &&
-              (user.location[1] === null || user.location[1] === undefined) &&
-              (user.location[2] === null || user.location[2] === undefined)) ? (
-              <Card
-                className={
-                  "hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                }
-                onClick={() => {
-                  router.replace("/dashboard/my-store/settings");
-                }}
-              >
-                <CardHeader className="pt-2 sm:pt-6">
-                  <div className="text-start">
-                    <div className="text-xl sm:text-2xl font-bold">
-                      You have no addresses set. Please set this up before
-                      creating a listing. Click Here to set up Store Locations
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
-            ) : (
-              <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
-                {user.location[0] !== null ? (
-                  <Card
-                    className={
-                      clicked
-                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                    }
-                    onClick={() => {
-                      if (user.location) {
-                        setClicked(true);
-                        setClicked1(false);
-                        setClicked2(false);
-                        setValue("location", 0);
-                      }
-                    }}
-                  >
+              {user.location === null ||
+              user.location === undefined ||
+              ((user.location[0] === null || user.location[0] === undefined) &&
+                (user.location[1] === null || user.location[1] === undefined) &&
+                (user.location[2] === null ||
+                  user.location[2] === undefined)) ? (
+                <Card
+                  className={""}
+                  onClick={() => {
+                    router.replace("/dashboard/my-store/settings");
+                  }}
+                >
+                  <CardContent>
                     <CardHeader className="pt-2 sm:pt-6">
                       <div className="text-start">
                         <div className="text-xl sm:text-2xl font-bold">
-                          Use My Default Address
+                          You have no addresses set. Please set this up before
+                          creating a listing. Click Here to set up Store
+                          Locations
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
+                  {user.location[0] !== null ? (
+                    <Card
+                      className={
+                        clicked
+                          ? "bg-black text-white shadow-sm"
+                          : "shadow-sm hover:cursor-pointer"
+                      }
+                      onClick={() => {
+                        if (user.location) {
+                          setClicked(true);
+                          setClicked1(false);
+                          setClicked2(false);
+                          setValue("location", 0);
+                        }
+                      }}
+                    >
+                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
+                        <div className="text-start">
+                          <div className="text-xl font-normal">
+                            Use My Default Address
+                          </div>
                         </div>
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
@@ -707,84 +708,80 @@ const CreateClient = ({ user, index }: Props) => {
                             )}
                           </ul>
                         </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ) : null}
-                {user.location[1] !== null ? (
-                  <Card
-                    className={
-                      clicked1
-                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                    }
-                    onClick={() => {
-                      if (user.location) {
-                        setClicked1(true);
-                        setClicked(false);
-                        setClicked2(false);
-                        setValue("location", 1);
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                  {user.location[1] !== null ? (
+                    <Card
+                      className={
+                        clicked1
+                          ? "bg-black text-white shadow-sm"
+                          : "shadow-sm hover:cursor-pointer"
                       }
-                    }}
-                  >
-                    <CardHeader className="pt-2 sm:pt-6">
-                      <div className="text-start">
-                        <div className="text-xl sm:text-2xl font-bold">
-                          Use My Second Location
+                      onClick={() => {
+                        if (user.location) {
+                          setClicked1(true);
+                          setClicked(false);
+                          setClicked2(false);
+                          setValue("location", 1);
+                        }
+                      }}
+                    >
+                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
+                        <div className="text-start">
+                          <div className="text-xl ">Use My Second Location</div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            <ul>
+                              <li className={`${outfit.className}`}></li>{" "}
+                              {user.location &&
+                              user?.location[1]?.address.length === 4 ? (
+                                <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
+                              ) : (
+                                <li>Full Address not available</li>
+                              )}
+                            </ul>
+                          </div>
                         </div>
-                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                          <ul>
-                            <li className={`${outfit.className}`}></li>{" "}
-                            {user.location &&
-                            user?.location[1]?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
-                            ) : (
-                              <li>Full Address not available</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ) : null}
-                {user.location[2] !== null ? (
-                  <Card
-                    className={
-                      clicked2
-                        ? "text-emerald-700 hover:cursor-pointer border-[1px] border-emerald-300 shadow-xl"
-                        : " hover:text-emerald-950 hover:cursor-pointer shadow-sm w/1/2 h-1/2"
-                    }
-                    onClick={() => {
-                      if (user.location) {
-                        setClicked2(true);
-                        setClicked1(false);
-                        setClicked(false);
-                        setValue("location", 2);
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                  {user.location[2] !== null ? (
+                    <Card
+                      className={
+                        clicked2
+                          ? "bg-black text-white shadow-sm"
+                          : "shadow-sm hover:cursor-pointer"
                       }
-                    }}
-                  >
-                    <CardHeader className="pt-2 sm:pt-6">
-                      <div className="text-start">
-                        <div className="text-xl sm:text-2xl font-bold">
-                          Use My Third Location
+                      onClick={() => {
+                        if (user.location) {
+                          setClicked2(true);
+                          setClicked1(false);
+                          setClicked(false);
+                          setValue("location", 2);
+                        }
+                      }}
+                    >
+                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
+                        <div className="text-start">
+                          <div className="text-xl ">Use My Third Location</div>
+                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                            <ul>
+                              <li className={`${outfit.className}`}></li>{" "}
+                              {user.location &&
+                              user?.location[2]?.address.length === 4 ? (
+                                <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
+                              ) : (
+                                <li>Full Address not available</li>
+                              )}
+                            </ul>
+                          </div>
                         </div>
-                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                          <ul>
-                            <li className={`${outfit.className}`}></li>{" "}
-                            {user.location &&
-                            user?.location[2]?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
-                            ) : (
-                              <li>Full Address not available</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ) : null}
-              </div>
-            )}
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

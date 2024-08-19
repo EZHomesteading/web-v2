@@ -19,7 +19,6 @@ const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
     <div className="relative peer">
       <Select
         placeholder="Unit"
-        isClearable
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as QuantityTypeValue)}

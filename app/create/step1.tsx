@@ -1,11 +1,34 @@
 import React from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { GiShinyApple, GiMeat, GiRopeCoil } from "react-icons/gi";
-import { TbCandle } from "react-icons/tb";
-import { LuBeef, LuShovel } from "react-icons/lu";
+import { GiAppleCore, GiRopeCoil } from "react-icons/gi";
+import { LuBeef } from "react-icons/lu";
 import { CiApple, CiHome } from "react-icons/ci";
-import { LiaCheeseSolid } from "react-icons/lia";
-
+import { Button } from "../components/ui/button";
+import { Label } from "../components/ui/label";
+import {
+  GiCarrot,
+  GiCoconuts,
+  GiHerbsBundle,
+  GiBeanstalk,
+  GiWoodCabin,
+  GiCupcake,
+  GiHoneypot,
+  GiSlicedBread,
+  GiWaterBottle,
+  GiAxeSword,
+  GiCampfire,
+  GiCookingPot,
+  GiMilkCarton,
+  GiLeg,
+  GiChickenOven,
+  GiCow,
+  GiPig,
+  GiFishCorpse,
+  GiButterToast,
+  GiCheeseWedge,
+} from "react-icons/gi";
+import { FaTools } from "react-icons/fa";
+import { IoFastFoodOutline } from "react-icons/io5";
 export type Category =
   | "unprocessed-produce"
   | "homemade"
@@ -39,6 +62,31 @@ interface SubCategorySelectionProps {
   setSubCategory: (subCategory: SubCategory) => void;
   onGoBack: () => void;
 }
+const subCategoryIcons: Record<string, React.ReactNode> = {
+  fruit: <GiAppleCore size={30} />,
+  vegetables: <GiCarrot size={30} />,
+  nuts: <GiCoconuts size={30} />,
+  herbs: <GiHerbsBundle size={30} />,
+  legumes: <GiBeanstalk size={30} />,
+  crafts: <GiWoodCabin size={30} />,
+  "baked-goods": <GiCupcake size={30} />,
+  jams: <GiHoneypot size={30} />,
+  pastries: <GiCupcake size={30} />,
+  breads: <GiSlicedBread size={30} />,
+  "canned-goods": <GiWaterBottle size={30} />,
+  tools: <FaTools size={30} />,
+  survival: <GiCampfire size={30} />,
+  "kitchen-wares": <GiCookingPot size={30} />,
+  milks: <GiMilkCarton size={30} />,
+  eggs: <GiLeg size={30} />,
+  poultry: <GiChickenOven size={30} />,
+  beef: <GiCow size={30} />,
+  pork: <GiPig size={30} />,
+  "alternative-meats": <IoFastFoodOutline size={30} />,
+  seafood: <GiFishCorpse size={30} />,
+  butter: <GiButterToast size={30} />,
+  cheese: <GiCheeseWedge size={30} />,
+};
 
 const subCategories: Record<Exclude<Category, "">, string[]> = {
   "unprocessed-produce": ["fruit", "vegetables", "nuts", "herbs", "legumes"],
@@ -62,7 +110,17 @@ function isValidCategory(
 ): category is Exclude<Category, ""> {
   return category !== "" && category in subCategories;
 }
-
+const capitalizeWords = (str: string) => {
+  return str
+    .split("-")
+    .map((word) =>
+      word
+        .split(" ")
+        .map((subWord) => subWord.charAt(0).toUpperCase() + subWord.slice(1))
+        .join(" ")
+    )
+    .join(" ");
+};
 const CategoryCard: React.FC<CategoryCardProps> = ({
   icon,
   title,
@@ -70,10 +128,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onClick,
 }) => (
   <Card
-    className="w-full h-full hover:cursor-pointer hover:shadow-md shadow-sm"
+    className="w-[100%] h-full hover:cursor-pointer hover:shadow-md shadow-sm"
     onClick={onClick}
   >
-    <CardContent className="rounded-lg h-full py-4 flex flex-row items-center justify-between space-x-4">
+    <CardContent className="rounded-lg h-full py-4  flex flex-row items-center justify-between space-x-4">
       <div className="flex flex-col">
         <div className="text-lg font-light">{title}</div>
         <div className="text-sm text-gray-600 font-extralight">
@@ -92,31 +150,35 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
   icon,
 }) => (
   <Card
-    className={`w-[180px] h-[75px] ${
-      isSelected ? "text-bold border-black shadow-md border-[1px]" : ""
+    className={`w-full ${
+      isSelected ? "bg-black text-white shadow-md" : "shadow-sm"
     }`}
     onClick={onClick}
   >
-    <CardContent className="rounded-lg h-full py-4 flex flex-row items-center justify-between space-x-4 hover:cursor-pointer hover:shadow-md shadow-sm">
-      <div className="flex justify-center font-light">{title}</div>
-      <div className="flex-shrink-0">{icon}</div>
+    <CardContent
+      className={`rounded-md p-4 flex justify-between items-center
+    ${isSelected ? "" : ""}`}
+    >
+      <div className="text-lg font-extralight">{capitalizeWords(title)}</div>
+      <div className="mb-1">{subCategoryIcons[title]}</div>
     </CardContent>
   </Card>
 );
 
-// const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-//   <button className="h-[30px] w-[100px] mb-3" onClick={onClick}>
-//     <CardContent className="bg-red-600 rounded-lg h-full py-2 flex flex-col justify-evenly">
-//       <div className="text-xs">go back</div>
-//     </CardContent>
-//   </button>
-// );
+const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  <Button
+    onClick={onClick}
+    className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+  >
+    Back
+  </Button>
+);
 
 const CategorySelection: React.FC<CategorySelectionProps> = ({
   category,
   setCategory,
 }) => (
-  <div className="flex flex-col space-y-4 w-full md:w-[70%] max-w-[600px] min-w-[280px]">
+  <div className="flex flex-col space-y-4 w-full  max-w-[1000px] min-w-[280px]">
     <CategoryCard
       icon={<CiApple size={40} />}
       title="Unprocessed Produce"
@@ -155,9 +217,9 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
   }
 
   return (
-    <div>
-      {/* <GoBackButton onClick={onGoBack} /> */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full">
+    <div className="w-full max-w-[1000px] mx-auto">
+      <GoBackButton onClick={onGoBack} />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full">
         {subCategories[category].map((sub) => (
           <SubCategoryCard
             key={sub}
@@ -190,24 +252,27 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   if (step !== 1) return null;
 
   return (
-    <div className="w-full flex flex-col pt-[10%] items-center">
-      <h1 className="font-normal text-[28px] mb-[2%]">
-        Select a {category ? <>Subcategory</> : <>Category</>} for your Product
-      </h1>
-      <div className="flex justify-center items-center w-full">
-        {category === "" ? (
-          <CategorySelection category={category} setCategory={setCategory} />
-        ) : (
-          <SubCategorySelection
-            category={category}
-            subCategory={subCategory}
-            setSubCategory={setSubCategory}
-            onGoBack={() => {
-              setCategory("");
-              setSubCategory("");
-            }}
-          />
-        )}
+    <div className="flex justify-center items-start min-h-screen w-full">
+      <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[700px] px-4">
+        <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
+          Select a {category ? <>Subcategory</> : <>Category</>} for your
+          Product
+        </Label>
+        <div className="w-full px-2">
+          {category === "" ? (
+            <CategorySelection category={category} setCategory={setCategory} />
+          ) : (
+            <SubCategorySelection
+              category={category}
+              subCategory={subCategory}
+              setSubCategory={setSubCategory}
+              onGoBack={() => {
+                setCategory("");
+                setSubCategory("");
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

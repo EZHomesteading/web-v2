@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { Checkbox } from "@/app/components/ui/checkbox";
-import Counter from "@/app/create/components/Counter";
 import Input from "@/app/create/components/listing-input";
 import UnitSelect, { QuantityTypeValue } from "./components/UnitSelect";
 import { CommonInputProps, InputProps } from "./create.types";
@@ -26,14 +25,7 @@ interface StepThreeProps {
   setQuantityType: (value: QuantityTypeValue | undefined) => void;
   postSODT: boolean;
   handleSODTCheckboxChange: (checked: boolean, index: number) => void;
-  nonPerishable: boolean;
-  handleNonPerishableCheckboxChange: (checked: boolean, index: number) => void;
-  shelfLifeDays: number;
-  shelfLifeWeeks: number;
-  shelfLifeMonths: number;
-  shelfLifeYears: number;
-  setCustomValue: (id: string, value: any) => void;
-  expiryDate: string;
+
   usersodt: number | null;
   commonInputProps: CommonInputProps;
   inputProps: InputProps;
@@ -44,14 +36,7 @@ const StepThree: React.FC<StepThreeProps> = ({
   setQuantityType,
   postSODT,
   handleSODTCheckboxChange,
-  nonPerishable,
-  handleNonPerishableCheckboxChange,
-  shelfLifeDays,
-  shelfLifeWeeks,
-  shelfLifeMonths,
-  shelfLifeYears,
-  setCustomValue,
-  expiryDate,
+
   usersodt,
   commonInputProps,
   inputProps,
@@ -69,7 +54,7 @@ const StepThree: React.FC<StepThreeProps> = ({
   return (
     <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
       <div className="flex flex-row justify-center items-start gap-2">
-        <div className="w-full sm:max-w-[500px]">
+        <div className="w-full sm:max-w-[500px] px-4">
           <div className="flex flex-col ">
             <Label className="text-xl w-full font-light m-0 !leading-0">
               Qualities of your Product{" "}
@@ -183,65 +168,6 @@ const StepThree: React.FC<StepThreeProps> = ({
             </div>
           </div>
         </div>
-        {/* <div className="m-0 p-0 md:mb-3 mt-5 border-black border-[1px] w-full xl:w-2/3"></div>
-        <div className="w-full lg:w-1/2">
-          <div className="flex flex-col lg:flex-row items-start justify-between w-[50vw] lg:items-center ">
-            <Label className="text-xl">Estimated Shelf Life </Label>
-            <Checkbox
-              id="nonPerishable"
-              checked={nonPerishable}
-              onCheckedChange={(checked: boolean) =>
-                handleNonPerishableCheckboxChange(checked, 0)
-              }
-              label="Is this item non-perishable?"
-            />
-          </div>
-          {nonPerishable === false ? (
-            <div>
-              <div className="text-xs">
-                {expiryDate ? <>Estimated Expiry Date: {expiryDate}</> : <></>}
-              </div>
-              <div className="mt-1 space-y-2">
-                <Counter
-                  onChange={(value: number) =>
-                    setCustomValue("shelfLifeDays", value)
-                  }
-                  value={shelfLifeDays}
-                  title="Days"
-                  subtitle=""
-                  maximum={31}
-                />
-                <Counter
-                  onChange={(value: number) =>
-                    setCustomValue("shelfLifeWeeks", value)
-                  }
-                  value={shelfLifeWeeks}
-                  title="Weeks"
-                  subtitle=""
-                  maximum={4}
-                />
-                <Counter
-                  onChange={(value: number) =>
-                    setCustomValue("shelfLifeMonths", value)
-                  }
-                  value={shelfLifeMonths}
-                  title="Months"
-                  subtitle=""
-                  maximum={12}
-                />
-                <Counter
-                  onChange={(value: number) =>
-                    setCustomValue("shelfLifeYears", value)
-                  }
-                  value={shelfLifeYears}
-                  title="Years"
-                  subtitle=""
-                  maximum={50}
-                />
-              </div>
-            </div>
-          ) : null}
-        </div> */}
       </div>
     </div>
   );
