@@ -75,7 +75,13 @@ const DisputeModal = ({
       await axios.post("/api/chat/dispute", data);
       console.log(data);
       await axios.post("/api/chat/messages", {
-        message: `I am disputing this order.`,
+        message: `${data.images[0]}`,
+        messageOrder: "img",
+        conversationId: conversationId,
+        otherUserId: otherUserId,
+      });
+      await axios.post("/api/chat/messages", {
+        message: `I am disputing this order because: ${data.explanation}`,
         messageOrder: "1.6",
         conversationId: conversationId,
         otherUserId: otherUserId,

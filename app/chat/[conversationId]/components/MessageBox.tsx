@@ -44,6 +44,10 @@ import {
 } from "@/app/components/ui/popover-msg";
 
 import { IoIosArrowDown } from "react-icons/io";
+import MessageInput from "./MessageInput";
+import { currentUser } from "@/lib/auth";
+import Form from "./Form";
+import Avatar from "@/app/components/Avatar";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -145,11 +149,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   }
 
   //declare clsx styling
-  const container = clsx("flex flex-grow gap-3 p-2", isOwn && "justify-end");
-  const body = clsx("flex flex-grow flex-col", isOwn && "items-end");
+  const container = clsx("flex flex-grow gap-3 p-2");
+  const body = clsx("flex flex-grow flex-col text-white");
   const message = clsx(
     `text-xs md:text-sm w-fit ${outfit.className}`,
-    isOwn ? `m text-white` : `mnot`,
     data.image ? "rounded-md p-0" : " py-2 px-3"
   );
   const notMessage = clsx(
@@ -226,9 +229,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: 5,
     });
   };
-  const onSubmit5 = () => {
+  const onSubmit5 = async (img: string) => {
     //coop has set out the order
-    axios.post("/api/chat/messages", {
+    await axios.post("/api/chat/messages", {
+      message: img,
+      messageOrder: "img",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/chat/messages", {
       message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
       messageOrder: "6",
       conversationId: convoId,
@@ -440,7 +449,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   //extra view hours component
   const hoursButton = () => {
     return (
-      <span>
+      <span className="bg-slate-500 rounded-md px-1">
         <Sheet>
           <SheetTrigger>here are my hours.</SheetTrigger>
           <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
@@ -512,9 +521,70 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   //  COOP sets out item, if immediatley accept pick up time
   const resp2 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <button type="submit" onClick={onSubmit5}>
-        Order is Ready
-      </button>
+      <div className="">
+        <div className=" p-2 rounded-lg">
+          {!image && (
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: { url: string }[]) => {
+                setImage(res[0].url);
+                onSubmit5(res[0].url);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                container: "h-full w-max",
+              }}
+              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              content={{
+                button({ ready }) {
+                  if (ready) return <div>Send a photo of the produce</div>;
+                  return "Getting ready...";
+                },
+              }}
+            />
+          )}
+          {image && (
+            <>
+              <div>
+                <div className="m-5 relative">
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Image
+                        src={image}
+                        height={180}
+                        width={180}
+                        alt="a"
+                        className="aspect-square rounded-lg object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                        Click to Enlarge
+                      </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="xl:flex xl:justify-center">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                        {" "}
+                        <div>
+                          <Image
+                            src={image}
+                            fill
+                            className="object-cover w-full"
+                            alt="a"
+                          />
+                        </div>
+                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                          Close
+                        </AlertDialogCancel>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
   //COOP chose new time and buyer gets these options
@@ -596,16 +666,71 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   // coop accepted new pickup time and sets out the item
   const resp5 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
-      {" "}
-      <button
-        type="submit"
-        onClick={onSubmit5}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
-      >
-        <PiCalendarCheckLight />
-        Order is Ready
-      </button>
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+      <div className="">
+        <div className=" p-2 rounded-lg">
+          {!image && (
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: { url: string }[]) => {
+                setImage(res[0].url);
+                onSubmit5(res[0].url);
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                container: "h-full w-max",
+              }}
+              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              content={{
+                button({ ready }) {
+                  if (ready) return <div>Send a photo of the produce</div>;
+                  return "Getting ready...";
+                },
+              }}
+            />
+          )}
+          {image && (
+            <>
+              <div>
+                <div className="m-5 relative">
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Image
+                        src={image}
+                        height={180}
+                        width={180}
+                        alt="a"
+                        className="aspect-square rounded-lg object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                        Click to Enlarge
+                      </div>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="xl:flex xl:justify-center">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                        {" "}
+                        <div>
+                          <Image
+                            src={image}
+                            fill
+                            className="object-cover w-full"
+                            alt="a"
+                          />
+                        </div>
+                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
+                          Close
+                        </AlertDialogCancel>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
   // buyer receives their item or can choose to dispute
@@ -734,7 +859,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               content={{
                 button({ ready }) {
                   if (ready)
-                    return <div>Sent a photo of the delivered produce</div>;
+                    return <div>Send a photo of the delivered produce</div>;
                   return "Getting ready...";
                 },
               }}
@@ -952,6 +1077,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       <div className={container}>
         <div className={body}>
           <div className="text-xs text-gray-400 mx-1 mb-1">
+            <Avatar image={data.sender.image}></Avatar> {data.sender.name}:{" "}
             {format(new Date(data.createdAt), "p")}
           </div>
           {/* handle displaying images V.S. regular messages */}
@@ -968,7 +1094,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                         alt="a"
                         className="aspect-square rounded-lg object-cover"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-20 rounded-lg hover:cursor-pointer">
                         Click to Enlarge
                       </div>
                     </AlertDialogTrigger>
@@ -1000,7 +1126,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               data.messageOrder === "3" ? (
                 <div className={message}>
                   {data.body}
-                  <span className="text-black">{hoursButton()}</span>
+                  <span>{hoursButton()}</span>
                 </div>
               ) : (
                 <div className={message}>{data.body}</div>
@@ -1062,54 +1188,58 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {/* MESSAGE OPTIONS START HERE */}
       {/* COOP receives order responce options */}
 
-      {isLast && (
-        <Popover>
-          <PopoverTrigger className="absolute bottom-5 right-5">
-            <IoIosArrowDown className="text-white" />
-          </PopoverTrigger>
-          <PopoverContent
-            className={`${outfit.className} absolute bottom-10 right-0 rounded-t-md w-[300px]`}
-          >
-            <div>
-              <div
-                className={`${zilla.className} text-md lg:text-md text-white font-extralight pt-2 px-2`}
-              >
-                Your Response Options
+      {isLast && data.messageOrder === "1.6" ? (
+        <Form otherUsersId={otherUsersId} />
+      ) : (
+        isLast && (
+          <Popover>
+            <PopoverTrigger className="absolute bottom-5 right-5">
+              <IoIosArrowDown className="text-white" />
+            </PopoverTrigger>
+            <PopoverContent
+              className={`${outfit.className} absolute bottom-10 right-0 rounded-t-md w-[300px]`}
+            >
+              <div>
+                <div
+                  className={`${zilla.className} text-md lg:text-md text-white font-extralight pt-2 px-2`}
+                >
+                  Your Response Options
+                </div>
+                <div className="flex flex-col">
+                  {notOwn && data.messageOrder === "1" ? (
+                    resp1
+                  ) : isOwn && data.messageOrder === "2" ? (
+                    resp2
+                  ) : notOwn && data.messageOrder === "3" ? (
+                    resp3
+                  ) : notOwn && data.messageOrder === "4" ? (
+                    resp4
+                  ) : notOwn && data.messageOrder === "5" ? (
+                    resp5
+                  ) : notOwn && data.messageOrder === "6" ? (
+                    resp6
+                  ) : notOwn && data.messageOrder === "7" ? (
+                    resp7
+                  ) : notOwn && data.messageOrder === "10" ? (
+                    resp8
+                  ) : notOwn && data.messageOrder === "11" ? (
+                    resp9
+                  ) : notOwn && data.messageOrder === "12" ? (
+                    resp10
+                  ) : notOwn && data.messageOrder === "13" ? (
+                    resp11
+                  ) : isOwn && data.messageOrder === "14" ? (
+                    resp12
+                  ) : (
+                    <div className="px-2 text-slate-800 font-extralight text-xl">
+                      No response options available
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col">
-                {notOwn && data.messageOrder === "1" ? (
-                  resp1
-                ) : isOwn && data.messageOrder === "2" ? (
-                  resp2
-                ) : notOwn && data.messageOrder === "3" ? (
-                  resp3
-                ) : notOwn && data.messageOrder === "4" ? (
-                  resp4
-                ) : notOwn && data.messageOrder === "5" ? (
-                  resp5
-                ) : notOwn && data.messageOrder === "6" ? (
-                  resp6
-                ) : notOwn && data.messageOrder === "7" ? (
-                  resp7
-                ) : notOwn && data.messageOrder === "10" ? (
-                  resp8
-                ) : notOwn && data.messageOrder === "11" ? (
-                  resp9
-                ) : notOwn && data.messageOrder === "12" ? (
-                  resp10
-                ) : notOwn && data.messageOrder === "13" ? (
-                  resp11
-                ) : isOwn && data.messageOrder === "14" ? (
-                  resp12
-                ) : (
-                  <div className="px-2 text-slate-800 font-extralight text-xl">
-                    No response options available
-                  </div>
-                )}
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        )
       )}
     </div>
   );
