@@ -56,13 +56,6 @@ const Input: React.FC<InputProps> = ({
   return (
     <>
       <div className="w-inherit relative">
-        {formatPrice && (
-          <BiDollar
-            size={24}
-            className="text-neutral-700 absolute top-5 left-2"
-          />
-        )}
-
         <input
           id={id}
           disabled={disabled}
@@ -76,16 +69,15 @@ const Input: React.FC<InputProps> = ({
           w-full
           p-4
           pt-6 
-          font-light 
           border-[1px]
-          shadow-md
-          rounded-[20px]
+          shadow-sm
+          rounded-[10px]
           outline-none
-          bg
+          font-extralight
           transition
           disabled:opacity-70
           disabled:cursor-not-allowed
-          ${formatPrice ? "pl-9" : "pl-4"} 
+          pl-4
           ${errors[id] ? "border-rose-500" : "border-neutral-300"} 
           ${errors[id] ? "focus:border-rose-500" : "focus:border-black"} 
           ${
@@ -123,8 +115,8 @@ const Input: React.FC<InputProps> = ({
           top-5 
           z-5 
           origin-[0] 
-          ${formatPrice ? "left-9" : "left-4"}
           peer-placeholder-shown:scale-100 
+          left-4
           peer-placeholder-shown:translate-y-0 
           peer-focus:scale-75
           peer-focus:-translate-y-4
@@ -132,7 +124,13 @@ const Input: React.FC<InputProps> = ({
         `}
         >
           {label}
-        </label>
+        </label>{" "}
+        {formatPrice && (
+          <BiDollar
+            size={24}
+            className="text-neutral-700 absolute top-5 right-2"
+          />
+        )}
       </div>
     </>
   );

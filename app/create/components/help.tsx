@@ -28,15 +28,15 @@ const Help = ({ step, role }: p) => {
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");
   return (
     <Sheet>
-      <SheetTrigger className="sheet p-2 rounded-md shadow-md">
+      <SheetTrigger className="bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 absolute sm:top-5 sm:right-5 bottom-5 right-1/2 translate-x-1/2 sm:translate-x-0 h-9 px-4 py-2 text-sm">
         Help
       </SheetTrigger>
       <SheetContent
-        side={isMdOrLarger ? "left" : "bottom"}
+        side={isMdOrLarger ? "right" : "bottom"}
         className={`${outfit.className} h-[70vh] md:h-full pt-4 px-3 sheet w-screen md:w-1/3 2xl:w-1/5`}
       >
         <Heading title="Help In This Section" />
-        {step === 1 && (
+        {step === 2 && (
           <>
             <Link
               href="/info/how-to/listing/add-title"
@@ -54,9 +54,9 @@ const Help = ({ step, role }: p) => {
                     style={{ width: "120px", height: "120px" }}
                   />
                   <div>
-                    <h1 className="text-xl">How do I add a title?</h1>
+                    <h1 className="text-sm">How do I add a title?</h1>
                     <p
-                      className={`${zilla.className} text-md text-neutral-600`}
+                      className={`${zilla.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -80,11 +80,11 @@ const Help = ({ step, role }: p) => {
                     style={{ width: "120px", height: "120px" }}
                   />
                   <div>
-                    <h1 className="text-xl">
+                    <h1 className="text-sm">
                       I don't see my item in the seach
                     </h1>
                     <p
-                      className={`${zilla.className} text-md text-neutral-600`}
+                      className={`${zilla.className} text-xs text-neutral-600`}
                     >
                       2 min read
                     </p>
@@ -94,7 +94,7 @@ const Help = ({ step, role }: p) => {
             </Link>
           </>
         )}
-        {step === 2 && (
+        {step === 3 && (
           <>
             <Link
               href="/info/specifics/listing/min-order"
@@ -112,35 +112,9 @@ const Help = ({ step, role }: p) => {
                     style={{ width: "120px", height: "120px" }}
                   />
                   <div>
-                    <h1 className="text-xl">What is a Minimum Order?</h1>
+                    <h1 className="text-sm">What is a Minimum Order?</h1>
                     <p
-                      className={`${zilla.className} text-md text-neutral-600`}
-                    >
-                      1 min read
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-            <Link
-              href="/info/specifics/listing/shelf-life"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <Card className="hover:cursor-pointer border-none mt-2">
-                <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
-                  <Image
-                    src={shelfLife}
-                    alt="Help With Title"
-                    width={120}
-                    height={120}
-                    className="object-cover rounded-l-lg aspect-sqaure"
-                    style={{ width: "120px", height: "120px" }}
-                  />
-                  <div>
-                    <h1 className="text-xl">What Does Shelf Life Mean?</h1>
-                    <p
-                      className={`${zilla.className} text-md text-neutral-600`}
+                      className={`${zilla.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -165,9 +139,9 @@ const Help = ({ step, role }: p) => {
                       style={{ width: "120px", height: "120px" }}
                     />
                     <div>
-                      <h1 className="text-xl">What is Set out Time?</h1>
+                      <h1 className="text-sm">What is Set out Time?</h1>
                       <p
-                        className={`${zilla.className} text-md text-neutral-600`}
+                        className={`${zilla.className} text-xs text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -192,9 +166,9 @@ const Help = ({ step, role }: p) => {
                       style={{ width: "120px", height: "120px" }}
                     />
                     <div>
-                      <h1 className="text-xl">What Does Delivery Time Mean?</h1>
+                      <h1 className="text-sm">What Does Delivery Time Mean?</h1>
                       <p
-                        className={`${zilla.className} text-md text-neutral-600`}
+                        className={`${zilla.className} text-xs text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -205,7 +179,37 @@ const Help = ({ step, role }: p) => {
             )}
           </>
         )}
-        {step === 3 && (
+        {step === 4 && (
+          <>
+            <Link
+              href="/info/specifics/listing/shelf-life"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <Card className="hover:cursor-pointer border-none mt-2">
+                <CardContent className="p-0 rounded-lg relative flex items-center gap-x-2 border-[1px] shadow-sm sheet">
+                  <Image
+                    src={shelfLife}
+                    alt="Help With Title"
+                    width={120}
+                    height={120}
+                    className="object-cover rounded-l-lg aspect-sqaure"
+                    style={{ width: "120px", height: "120px" }}
+                  />
+                  <div>
+                    <h1 className="text-sm">What Does Shelf Life Mean?</h1>
+                    <p
+                      className={`${zilla.className} text-xs text-neutral-600`}
+                    >
+                      1 min read
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </>
+        )}
+        {step === 5 && (
           <>
             {" "}
             <Link
@@ -224,9 +228,9 @@ const Help = ({ step, role }: p) => {
                     style={{ width: "120px", height: "120px" }}
                   />
                   <div>
-                    <h1 className="text-xl">What is the EZH Organic Rating?</h1>
+                    <h1 className="text-sm">What is the EZH Organic Rating?</h1>
                     <p
-                      className={`${zilla.className} text-md text-neutral-600`}
+                      className={`${zilla.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -236,7 +240,7 @@ const Help = ({ step, role }: p) => {
             </Link>
           </>
         )}
-        {step === 4 && (
+        {step === 6 && (
           <>
             <Link
               href={
@@ -258,13 +262,13 @@ const Help = ({ step, role }: p) => {
                     style={{ width: "120px", height: "120px" }}
                   />
                   <div>
-                    <h1 className="text-xl">
+                    <h1 className="text-sm">
                       {isMdOrLarger
                         ? "How to add Photos on Desktop"
                         : "How to add Photos on Mobile"}
                     </h1>
                     <p
-                      className={`${zilla.className} text-md text-neutral-600`}
+                      className={`${zilla.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -274,7 +278,6 @@ const Help = ({ step, role }: p) => {
             </Link>
           </>
         )}
-        {step === 5 && <>5</>}
       </SheetContent>
     </Sheet>
   );
