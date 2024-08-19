@@ -1,6 +1,12 @@
 "use client";
 import { useUploadThing } from "@/utils/uploadthing";
+import { Outfit } from "next/font/google";
 import { toast } from "sonner";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 type Input = Parameters<typeof useUploadThing>;
 const useUploadThingInputProps = (...args: Input) => {
   const $ut = useUploadThing(...args);
@@ -45,7 +51,7 @@ function LoadingSpinnerSVG() {
       height="24"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      fill="white"
+      fill="black"
     >
       <path
         d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
@@ -70,8 +76,11 @@ export function SimpleUploadButton({
     {
       onUploadBegin() {
         toast(
-          <div className="flex items-center gap-2 text-white">
-            <LoadingSpinnerSVG /> <span className="text-lg">Uploading...</span>
+          <div className="flex items-center gap-2 text-black">
+            <LoadingSpinnerSVG />{" "}
+            <span className={`${outfit.className} text-sm  `}>
+              Uploading...
+            </span>
           </div>,
           {
             duration: 100000,
@@ -94,10 +103,10 @@ export function SimpleUploadButton({
   );
 
   return (
-    <div className="relative inline-block">
+    <div className={`${outfit.className} relative inline-block`}>
       <label
         htmlFor="upload-button"
-        className="cursor-pointer inline-flex items-center justify-center w-24 h-24 rounded-md hover:bg-gray-100 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 transition-colors"
+        className="cursor-pointer inline-flex items-center justify-center w-24 h-24 rounded-md  focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 transition-colors"
       >
         {isUploading ? <LoadingSpinnerSVG /> : <UploadSVG />}
       </label>
