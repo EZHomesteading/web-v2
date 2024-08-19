@@ -40,7 +40,11 @@ export async function DELETE(
         },
       },
     });
-
+    await prisma.message.deleteMany({
+      where: {
+        conversationId: conversationId,
+      },
+    });
     existingConversation.users.forEach((user) => {
       if (user.email) {
         pusherServer.trigger(

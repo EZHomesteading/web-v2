@@ -19,6 +19,10 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
   const otherUser = useOtherUser(conversation);
   const router = useRouter();
+  if (!otherUser) {
+    router.refresh();
+    return <div>Loading...</div>; // Or any loading indicator
+  }
   function getAverageRating(reviews: Reviews[]) {
     if (reviews.length === 0) return 0;
 
