@@ -9,6 +9,7 @@ import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
 import useConversation from "@/hooks/messenger/useConversation";
 import { toast } from "react-hot-toast";
+import { useStripe } from "@stripe/react-stripe-js";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
@@ -17,6 +18,7 @@ interface ConfirmModalProps {
   orderAmount: number;
   conversationId: string;
   otherUserId: string | undefined;
+  paymentId: string | null;
 }
 
 const RefundModal: React.FC<ConfirmModalProps> = ({
@@ -26,14 +28,17 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
   orderAmount,
   conversationId,
   otherUserId,
+  paymentId,
 }) => {
   const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
 
-  const onDelete = useCallback(() => {
+  const onDelete = useCallback(async () => {
     setIsLoading(true);
     const data = { orderId, status: 2 };
+    axios.post("/api/stripe/refund-payment", {
+      paymentId: paymentId,
+    });
     axios.post(`/api/chat/dispute/updateDispute/`, data);
     axios
       .post("/api/chat/messages", {

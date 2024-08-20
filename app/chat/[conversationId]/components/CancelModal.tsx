@@ -35,13 +35,17 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     setText(e.target.value);
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
     //early return if the user ahs not entered a message, tell the user why
     if (text === "") {
-      toast.error("no message enteredd");
+      toast.error("no message entered");
       return;
     }
     setIsLoading(true);
+    console.log(order.paymentIntentId);
+    axios.post("/api/stripe/refund-payment", {
+      paymentId: order.paymentIntentId,
+    });
     //axios post is always the same. post a message with the users input text
     axios.post("/api/chat/messages", {
       message: `I have canceled this item, because: ${text}`,

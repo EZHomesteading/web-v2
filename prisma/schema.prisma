@@ -229,6 +229,7 @@ model Order {
   listingIds            String[]  
   sellerId              String   @db.ObjectId
   pickupDate            DateTime
+  paymentIntentId       String?
   quantity              String
   totalPrice            Float
   status                Int @default(0)

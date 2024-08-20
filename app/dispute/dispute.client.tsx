@@ -9,9 +9,12 @@ import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
 import FilterButtons from "@/app/dispute/dispute-filters";
-import { $Enums, UserRole } from "@prisma/client";
+import { $Enums, Order, UserRole } from "@prisma/client";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { ExplanationDialog } from "./dispute.explanation";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 const sesClient = new SESClient({
   region: process.env.AWS_REGION as string,
   credentials: {
@@ -24,6 +27,7 @@ const statusTexts: { [key: number]: string } = {
   1: "UNRESOLVED",
   2: "RESOLVED",
   3: "CLOSED",
+  4: "REFUNDED",
 };
 
 const outfit = Outfit({
@@ -33,7 +37,10 @@ const outfit = Outfit({
 
 export type Dispute = {
   order: {
+    id: string;
     conversationId: string | null;
+    paymentIntentId: string | null;
+    totalPrice: number;
     buyer: {
       id: string;
       createdAt: Date;
@@ -75,6 +82,7 @@ interface ConfirmVisibilityState {
 
 type ConfirmAction = "approve" | "deny";
 const DisputeComponent = ({ disputes }: p) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [filteredDisputes, setFilteredDisputes] = useState(disputes);
   const [isConfirmVisible, setIsConfirmVisible] =
@@ -84,7 +92,7 @@ const DisputeComponent = ({ disputes }: p) => {
     explanation: string
   ) => {
     setIsLoading(true);
-
+    console.log(dispute);
     const emailParams = {
       Destination: {
         ToAddresses: [
@@ -139,7 +147,44 @@ const DisputeComponent = ({ disputes }: p) => {
       },
     }));
   };
-
+  const handleRefund = async (dispute: Dispute, explanation: string) => {
+    setIsLoading(true);
+    console.log(dispute);
+    const data = { orderId: dispute.order.id, status: 4 };
+    axios.post(`/api/chat/dispute/updateDispute/`, data);
+    axios.post("/api/stripe/refund-payment", {
+      paymentId: dispute.order.paymentIntentId,
+    });
+    axios
+      .post("/api/chat/messages", {
+        message: `The administrator has refunded the full amount of $${dispute.order.totalPrice}, Explanation:${explanation}. This order is marked as cancelled. Feel free to Delete this chat.`,
+        messageOrder: "1.1",
+        conversationId: dispute.order.conversationId,
+        otherUserId: dispute.order.buyer?.id,
+      })
+      .then(() => {
+        router.refresh();
+      })
+      .catch(() => toast.error("Something went wrong!"))
+      .finally(() => setIsLoading(false));
+  };
+  const handleClose = async (dispute: Dispute, explanation: string) => {
+    setIsLoading(true);
+    const data = { orderId: dispute.order.id, status: 3 };
+    axios.post(`/api/chat/dispute/updateDispute/`, data);
+    axios
+      .post("/api/chat/messages", {
+        message: `The administrator has marked this order as complete, Explanation:${explanation}. Feel free to Delete this chat.`,
+        messageOrder: "1.1",
+        conversationId: dispute.order.conversationId,
+        otherUserId: dispute.order.seller?.id,
+      })
+      .then(() => {
+        router.refresh();
+      })
+      .catch(() => toast.error("Something went wrong!"))
+      .finally(() => setIsLoading(false));
+  };
   useEffect(() => {
     if (disputes) {
       setIsLoading(false);
@@ -325,30 +370,32 @@ const DisputeComponent = ({ disputes }: p) => {
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.approve ? (
                 <ExplanationDialog
-                  onConfirm={(explanation) =>
-                    handleDenyAndConfirm(dispute, explanation)
-                  }
+                  onConfirm={(explanation) => {
+                    handleDenyAndConfirm(dispute, explanation);
+                    handleRefund(dispute, explanation);
+                  }}
                 />
               ) : (
                 <Button
                   onClick={() => toggleConfirmVisibility("approve", dispute.id)}
                 >
-                  Approve
+                  Refund
                 </Button>
               )}
             </div>
             <div className="col-span-1 flex justify-center">
               {isConfirmVisible[dispute.id]?.deny ? (
                 <ExplanationDialog
-                  onConfirm={(explanation) =>
-                    handleDenyAndConfirm(dispute, explanation)
-                  }
+                  onConfirm={(explanation) => {
+                    handleDenyAndConfirm(dispute, explanation);
+                    handleClose(dispute, explanation);
+                  }}
                 />
               ) : (
                 <Button
                   onClick={() => toggleConfirmVisibility("deny", dispute.id)}
                 >
-                  Deny
+                  Close
                 </Button>
               )}
             </div>

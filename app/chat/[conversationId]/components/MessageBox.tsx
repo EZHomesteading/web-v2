@@ -1093,6 +1093,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         orderAmount={order.totalPrice}
         conversationId={convoId}
         otherUserId={otherUsersId}
+        paymentId={order.paymentIntentId}
       />
       <CancelModal
         isOpen={cancelOpen}
