@@ -72,9 +72,11 @@ const DisputeModal = ({
       status: 1,
     };
     try {
-      console.log(data);
       await axios.post("/api/chat/dispute", data);
-      console.log(data);
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: orderId,
+        status: 23,
+      });
       await axios.post("/api/chat/messages", {
         message: `${data.images[0]}`,
         messageOrder: "img",

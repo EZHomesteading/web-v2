@@ -155,6 +155,10 @@ const DisputeComponent = ({ disputes }: p) => {
     axios.post("/api/stripe/refund-payment", {
       paymentId: dispute.order.paymentIntentId,
     });
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: dispute.order.id,
+      status: 20,
+    });
     axios
       .post("/api/chat/messages", {
         message: `The administrator has refunded the full amount of $${dispute.order.totalPrice}, Explanation:${explanation}. This order is marked as cancelled. Feel free to Delete this chat.`,
@@ -172,6 +176,10 @@ const DisputeComponent = ({ disputes }: p) => {
     setIsLoading(true);
     const data = { orderId: dispute.order.id, status: 3 };
     axios.post(`/api/chat/dispute/updateDispute/`, data);
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: dispute.order.id,
+      status: 21,
+    });
     axios
       .post("/api/chat/messages", {
         message: `The administrator has marked this order as complete, Explanation:${explanation}. Feel free to Delete this chat.`,

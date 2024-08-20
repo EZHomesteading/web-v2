@@ -52,7 +52,7 @@ const statusTextMap: Record<
       : `Waiting for ${buyerName} to respond to your new drop off time.`,
   12: ({ buyerName, sellerName, isSeller }) =>
     isSeller
-      ? `${sellerName} has canceled the order. You can see their reason why in the conversation.`
+      ? `${buyerName} has canceled the order. You can see their reason why in the conversation.`
       : `You canceled this order`,
   13: ({ buyerName, sellerName, isSeller }) =>
     isSeller
@@ -77,6 +77,15 @@ const statusTextMap: Record<
       ? `Please leave a review.`
       : `Please leave a review for ${sellerName}.`,
   19: () => `Complete`,
+  20: () => `An administrator has cancelled this order and refunded it.`,
+  21: () => `An administrator has marked this order as complete.`,
+  22: ({ sellerName, isSeller }) =>
+    isSeller
+      ? `You refunded this order`
+      : `${sellerName} has refunded the order. You can see their reason why in the conversation.`,
+  23: () => `This order has an active dispute.`,
+  24: () =>
+    `This order has an active dispute. An admin has been notified and is reviewing your case`,
 };
 
 export const getStatusText = (

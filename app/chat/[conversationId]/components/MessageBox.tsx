@@ -1095,14 +1095,27 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId={otherUsersId}
         paymentId={order.paymentIntentId}
       />
-      <CancelModal
-        isOpen={cancelOpen}
-        onClose={() => setCancelOpen(false)}
-        order={order}
-        otherUser={otherUsersId}
-        convoId={convoId}
-        otherUserRole={otherUserRole}
-      />
+      {user.id === order.sellerId ? (
+        <CancelModal
+          isOpen={cancelOpen}
+          onClose={() => setCancelOpen(false)}
+          order={order}
+          otherUser={otherUsersId}
+          convoId={convoId}
+          otherUserRole={otherUserRole}
+          isSeller={true}
+        />
+      ) : (
+        <CancelModal
+          isOpen={cancelOpen}
+          onClose={() => setCancelOpen(false)}
+          order={order}
+          otherUser={otherUsersId}
+          convoId={convoId}
+          otherUserRole={otherUserRole}
+          isSeller={false}
+        />
+      )}
       {/* allow cancel button to appear */}
       <div className="flex flex-row">
         {cancel === true && isLast ? (

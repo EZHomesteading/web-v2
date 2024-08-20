@@ -28,6 +28,10 @@ const EscalateModal: React.FC<ConfirmModalProps> = ({
   const onDelete = useCallback(() => {
     setIsLoading(true);
     const data = { orderId, status: 0 };
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: orderId,
+      status: 24,
+    });
     axios
       .post(`/api/chat/dispute/updateDispute/`, data)
       .then(() => {
