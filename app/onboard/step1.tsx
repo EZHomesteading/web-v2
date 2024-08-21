@@ -23,7 +23,7 @@ const StepOne: React.FC<Props> = async ({
       <div className="col-span-1 2xl:col-span-4"></div>
       <div className="col-span-11 2xl:col-span-7">
         <div className="grid grid-rows-10 h-full">
-          <div className="row-span-1"></div>
+          <div className="row-span-1 hidden sm:block"></div>
           <div className="row-span-9">
             <div className="flex items-center gap-2 text-xs mb-10">
               Account Set Up

@@ -85,18 +85,15 @@ const Onboarding = ({
           ),
         };
 
-        // Post the updated location data and wait for the response
         const response = await axios.post("/api/useractions/update", {
           location: updatedLocations,
         });
 
-        // Update the user state with the new location data
         setUser((prevUser) => ({
           ...prevUser,
           location: response.data.location || updatedLocations,
         }));
 
-        // Update the formData state
         setFormData((prevData) => ({
           ...prevData,
           location: response.data.location || updatedLocations,
@@ -133,20 +130,23 @@ const Onboarding = ({
         }
       } else if (step === 9) {
         router.push("/dashboard");
-        return; // Exit the function early to prevent unnecessary state updates
+        return;
       }
 
-      // Move to the next step only after all async operations are complete
       setStep((prevStep) => prevStep + 1);
       setProgress((prevProgress) => prevProgress + 11);
     } catch (error) {
       console.error(`Error updating data for step ${step}:`, error);
-      // Handle the error appropriately (e.g., show an error message to the user)
     }
   };
   const handlePrevious = () => {
-    setStep(step - 1);
-    setProgress((step - 1) * 11);
+    if (step === 5 && user?.location === null) {
+      setStep(3);
+      setProgress(22);
+    } else {
+      setStep(step - 1);
+      setProgress((step - 1) * 11);
+    }
   };
 
   useEffect(() => {
@@ -203,8 +203,9 @@ const Onboarding = ({
         {step === 9 && <StepNine user={user} />}
       </div>
       <div>
-        <Progress value={progress} className="w-full mb-4" />
-
+        <div className="w-full absolute top-0 left-0 z-50">
+          <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
+        </div>
         {step === 1 ? (
           <div className="flex justify-end px-4 pb-4">
             <Button onClick={handleNext}>Next</Button>
