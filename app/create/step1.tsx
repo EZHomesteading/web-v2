@@ -73,6 +73,7 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
   jams: <GiHoneypot size={30} />,
   pastries: <GiCupcake size={30} />,
   breads: <GiSlicedBread size={30} />,
+  pasta: <GiCookingPot size={30} />,
   "canned-goods": <GiWaterBottle size={30} />,
   tools: <FaTools size={30} />,
   survival: <GiCampfire size={30} />,
@@ -90,7 +91,7 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
 
 const subCategories: Record<Exclude<Category, "">, string[]> = {
   "unprocessed-produce": ["fruit", "vegetables", "nuts", "herbs", "legumes"],
-  homemade: ["crafts", "baked-goods", "jams", "pastries", "breads"],
+  homemade: ["crafts", "baked-goods", "jams", "pastries", "breads", "pasta"],
   durables: ["canned-goods", "tools", "survival", "kitchen-wares"],
   "dairy-meat": [
     "milks",

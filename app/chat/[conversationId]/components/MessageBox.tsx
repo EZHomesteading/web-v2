@@ -198,281 +198,396 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   // all onsubmit options dependent on messages in chat.
-  const onSubmit1 = () => {
-    //coop seller confirms order pickup time
-    axios.post("/api/chat/messages", {
-      message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
-      messageOrder: "2",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP) {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 2,
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit1 = async () => {
+    setIsLoading(true);
+    try {
+      //coop seller confirms order pickup time
+      await axios.post("/api/chat/messages", {
+        message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
+        messageOrder: "2",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
       });
-    } else {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 10,
-      });
+      if (user.role === UserRole.COOP) {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 2,
+        });
+      } else {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 10,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const onSubmit2 = () => {
-    // coop chooses new delivery/pickup time
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
+
+  const onSubmit2 = async () => {
+    setIsLoading(true);
+    try {
+      // coop chooses new delivery/pickup time
+      if (validTime === "(select your time)") {
+        toast.error("You must select a time before choosing this option");
+        return;
+      }
+      await axios.post("/api/chat/messages", {
+        message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+        messageOrder: "3",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 3,
+        pickupDate: dateTime,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    axios.post("/api/chat/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
-      messageOrder: "3",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 3,
-      pickupDate: dateTime,
-    });
   };
-  const onSubmit3 = () => {
-    //coop or producer cancels order because the item is no longer available.
-    axios.post("/api/chat/messages", {
-      message:
-        "My apologies, but one or more of these items is no longer available, and this order has been canceled. Sorry for the inconvenience. Feel free to delete this chat whenever you have seen this message. If you do not delete this chat it will be automatically deleted after 72 hours",
-      messageOrder: "1.1",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 4,
-    });
-    axios.post("/api/updateListingOnCancel", { order: order });
+
+  const onSubmit3 = async () => {
+    setIsLoading(true);
+    try {
+      //coop or producer cancels order because the item is no longer available.
+      await axios.post("/api/chat/messages", {
+        message:
+          "My apologies, but one or more of these items is no longer available, and this order has been canceled. Sorry for the inconvenience. Feel free to delete this chat whenever you have seen this message. If you do not delete this chat it will be automatically deleted after 72 hours",
+        messageOrder: "1.1",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 4,
+      });
+      await axios.post("/api/updateListingOnCancel", { order: order });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const onSubmit4 = () => {
-    //buyer confirms new pickup time set by seller
-    axios.post("/api/chat/messages", {
-      message:
-        "Fantastic, I will be there to pick up the item at the specified time.",
-      messageOrder: "5",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 5,
-    });
+
+  const onSubmit4 = async () => {
+    setIsLoading(true);
+    try {
+      //buyer confirms new pickup time set by seller
+      await axios.post("/api/chat/messages", {
+        message:
+          "Fantastic, I will be there to pick up the item at the specified time.",
+        messageOrder: "5",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 5,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   const onSubmit5 = async (img: string) => {
-    //coop has set out the order
-    await axios.post("/api/chat/messages", {
-      message: img,
-      messageOrder: "img",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/chat/messages", {
-      message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
-      messageOrder: "6",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 8,
-    });
-  };
-  const onSubmit6 = () => {
-    //buyer picks up/ receives delivery of the order, stripe transfer initiated
-    axios.post("/api/chat/messages", {
-      message: "I have Received my order. Thank you!",
-      messageOrder: "7",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
-      //if buyer is coop buying from producer set status 17
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 17,
+    setIsLoading(true);
+    try {
+      //coop has set out the order
+      await axios.post("/api/chat/messages", {
+        message: img,
+        messageOrder: "img",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
       });
-    } else {
-      //if buyer is not coop buying from producer set status to 9
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 9,
+      await axios.post("/api/chat/messages", {
+        message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
+        messageOrder: "6",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
       });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 8,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    axios.post("/api/stripe/transfer", {
-      //finalise stripe transaction
-      total: order.totalPrice * 100,
-      stripeAccountId: stripeAccountId,
-      orderId: order.id,
-      status: order.status,
-    });
   };
-  const onSubmit7 = () => {
-    axios.post("/api/chat/messages", {
+
+  const onSubmit6 = async () => {
+    setIsLoading(true);
+    try {
+      //buyer picks up/ receives delivery of the order, stripe transfer initiated
+      await axios.post("/api/chat/messages", {
+        message: "I have Received my order. Thank you!",
+        messageOrder: "7",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
+        //if buyer is coop buying from producer set status 17
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 17,
+        });
+      } else {
+        //if buyer is not coop buying from producer set status to 9
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 9,
+        });
+      }
+      const TotalPrice = order.totalPrice * 100;
+      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
+      await axios.post("/api/stripe/transfer", {
+        //finalise stripe transaction
+        total: TotalPrice - stripeFee,
+        stripeAccountId: stripeAccountId,
+        orderId: order.id,
+        status: order.status,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmit7 = async () => {
+    setIsLoading(true);
+    try {
       //seller marks order as complete.
-      message:
-        "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
-      messageOrder: "1.1",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 18,
-    });
-  };
-  const onSubmit8 = () => {
-    //early return if no time selected.
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
+      await axios.post("/api/chat/messages", {
+        message:
+          "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
+        messageOrder: "1.1",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 18,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    axios.post("/api/chat/messages", {
+  };
+
+  const onSubmit8 = async () => {
+    setIsLoading(true);
+    try {
+      //early return if no time selected.
+      if (validTime === "(select your time)") {
+        toast.error("You must select a time before choosing this option");
+        return;
+      }
       //handle producer reschedule or consumer reschedule
-      message: `No, that time does not work. Can it instead be at ${validTime}`,
-      messageOrder: "4",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.PRODUCER) {
-      //pretty sure this is not needed, will keep just in case
-      axios.post("/api/useractions/checkout/update-order", {
+      await axios.post("/api/chat/messages", {
+        message: `No, that time does not work. Can it instead be at ${validTime}`,
+        messageOrder: "4",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      if (user.role === UserRole.PRODUCER) {
+        //pretty sure this is not needed, will keep just in case
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 11,
+          pickupDate: dateTime,
+        });
+      } else {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 6,
+          pickupDate: dateTime,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmit9 = async () => {
+    setIsLoading(true);
+    try {
+      //handle producer reschedule
+      if (validTime === "(select your time)") {
+        toast.error("You must select a time before choosing this option");
+        return;
+      }
+      await axios.post("/api/chat/messages", {
+        message: `I can deliver these items to you at ${validTime}, does that work?`,
+        messageOrder: "11",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 11,
         pickupDate: dateTime,
       });
-    } else {
-      axios.post("/api/useractions/checkout/update-order", {
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmit10 = async () => {
+    setIsLoading(true);
+    try {
+      //handle producer accepts drop off time or producer accepts drop off time.
+      await axios.post("/api/chat/messages", {
+        message: "Yes, That time works, See you then!",
+        messageOrder: "12",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      if (user.role === UserRole.COOP) {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 13,
+        });
+      } else {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 10,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmit11 = async () => {
+    setIsLoading(true);
+    try {
+      //early return if time is not selected
+      if (validTime === "(select your time)") {
+        toast.error("You must select a time before choosing this option");
+        return;
+      }
+      //coop declares new drop off time for producer deliveries
+      await axios.post("/api/chat/messages", {
+        message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+        messageOrder: "13",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
-        status: 6,
+        status: 14,
         pickupDate: dateTime,
       });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const onSubmit9 = () => {
-    //handle producer reschedule
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    axios.post("/api/chat/messages", {
-      message: `I can deliver these items to you at ${validTime}, does that work?`,
-      messageOrder: "11",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 11,
-      pickupDate: dateTime,
-    });
-  };
-  const onSubmit10 = () => {
-    //handle producer accepts drop off time or producer accepts drop off time.
-    axios.post("/api/chat/messages", {
-      message: "Yes, That time works, See you then!",
-      messageOrder: "12",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP) {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 13,
-      });
-    } else {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 10,
-      });
-    }
-  };
-  const onSubmit11 = () => {
-    //early return if time is not selected
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    //coop declares new drop off time for producer deliveries
-    axios.post("/api/chat/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
-      messageOrder: "13",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 14,
-      pickupDate: dateTime,
-    });
-  };
+
   const onSubmit12 = async (img: string) => {
-    //producer delivers item and attaches an image.
-    //early returns are handles in image upload function, cannot click submit without uploading an image.
-    await axios.post("/api/chat/messages", {
-      message: img,
-      messageOrder: "img",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/chat/messages", {
-      message: "Your item has been delivered.",
-      messageOrder: "6",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 16,
-    });
-  };
-  const onSubmit13 = () => {
-    //early return if no time selected
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
+    setIsLoading(true);
+    try {
+      //producer delivers item and attaches an image.
+      //early returns are handles in image upload function, cannot click submit without uploading an image.
+      await axios.post("/api/chat/messages", {
+        message: img,
+        messageOrder: "img",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/chat/messages", {
+        message: "Your item has been delivered.",
+        messageOrder: "6",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 16,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    axios.post("/api/chat/messages", {
+  };
+
+  const onSubmit13 = async () => {
+    setIsLoading(true);
+    try {
+      //early return if no time selected
+      if (validTime === "(select your time)") {
+        toast.error("You must select a time before choosing this option");
+        return;
+      }
       //producer or consumer declare new pickup/dropoff time
       //pretty sure this is only producer declaring new time, but put in consumer logic just in case things get mixed up.
-      message: `No, that time does not work. Does ${validTime} work instead?`,
-      messageOrder: "11",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.PRODUCER) {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 11,
-        pickupDate: dateTime,
+      await axios.post("/api/chat/messages", {
+        message: `No, that time does not work. Does ${validTime} work instead?`,
+        messageOrder: "11",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
       });
-    } else {
-      axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 6,
-        pickupDate: dateTime,
-      });
+      if (user.role === UserRole.PRODUCER) {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 11,
+          pickupDate: dateTime,
+        });
+      } else {
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order.id,
+          status: 6,
+          pickupDate: dateTime,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const onSubmit14 = () => {
-    //producer confirms delivery time
-    axios.post("/api/chat/messages", {
-      message:
-        "Yes, That time works. Your item will be delivered at that time.",
-      messageOrder: "14",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
-      status: 10,
-    });
+
+  const onSubmit14 = async () => {
+    setIsLoading(true);
+    try {
+      //producer confirms delivery time
+      await axios.post("/api/chat/messages", {
+        message:
+          "Yes, That time works. Your item will be delivered at that time.",
+        messageOrder: "14",
+        conversationId: convoId,
+        otherUserId: otherUsersId,
+      });
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 10,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   //receive data from child and set date time based on user inputs in modal
@@ -511,50 +626,93 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       <button
         type="submit"
-        onClick={onSubmit1}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit1();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        Agree to Time
+        {isLoading ? "Loading..." : "Agree to Time"}
       </button>
       {dateTime ? (
         <>
           <button
             type="submit"
-            onClick={onSubmit2}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit2();
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarBlankLight />
-            Send Reschedule Offer
+            {isLoading ? "Loading..." : "Send Reschedule Offer"}
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarPlusLight />
-            Set New Reschedule Time{" "}
+            {isLoading ? "Loading..." : "Set New Reschedule Time"}
           </button>
         </>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Reschedule Time
+          {isLoading ? "Loading..." : "Reschedule Time"}
         </button>
       )}
 
       <button
         type="submit"
-        onClick={onSubmit3}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit3();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
-        <PiCalendarXLight /> Cancel Order
+        <PiCalendarXLight />
+        {isLoading ? "Loading..." : "Cancel Order"}
       </button>
     </div>
   );
-  //  COOP sets out item, if immediatley accept pick up time
+
   const resp2 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
       <div className="">
@@ -564,7 +722,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               endpoint="imageUploader"
               onClientUploadComplete={(res: { url: string }[]) => {
                 setImage(res[0].url);
-                onSubmit5(res[0].url);
+                setIsLoading(true);
+                try {
+                  onSubmit5(res[0].url);
+                } catch (error) {
+                  console.error(error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
@@ -572,11 +737,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                isLoading ? "cursor-not-allowed opacity-50" : ""
+              }`}
               content={{
                 button({ ready }) {
                   if (ready) return <div>Send a photo of the produce</div>;
-                  return "Getting ready...";
+                  return isLoading ? "Loading..." : "Getting ready...";
                 },
               }}
             />
@@ -623,84 +790,144 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </div>
     </div>
   );
-  //COOP chose new time and buyer gets these options
+
   const resp3 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       <button
         type="submit"
-        onClick={onSubmit4}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 text-white"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit4();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 text-white ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        Agree to Time
+        {isLoading ? "Loading..." : "Agree to Time"}
       </button>
       {dateTime ? (
         <button
           type="submit"
-          onClick={onSubmit8}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          onClick={async () => {
+            setIsLoading(true);
+            try {
+              await onSubmit8();
+            } catch (error) {
+              console.error(error);
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarBlankLight />
-          Send Reschedule Offer
+          {isLoading ? "Loading..." : "Send Reschedule Offer"}
         </button>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Reschedule Time
+          {isLoading ? "Loading..." : "Reschedule Time"}
         </button>
       )}
       <button
         onClick={() => setCustomTimeOpen(true)}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarPlusLight />
-        Set New Reschedule Time{" "}
+        {isLoading ? "Loading..." : "Set New Reschedule Time"}
       </button>
     </div>
   );
-  // BUYER chose new time and COOP receives these options
+
   const resp4 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       {" "}
       <button
         type="submit"
-        onClick={onSubmit1}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit1();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        Agree to Time
+        {isLoading ? "Loading..." : "Agree to Time"}
       </button>
       {dateTime ? (
         <button
           type="submit"
-          onClick={onSubmit2}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+          onClick={async () => {
+            setIsLoading(true);
+            try {
+              await onSubmit2();
+            } catch (error) {
+              console.error(error);
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarBlankLight />
-          Send Reschedule Offer
+          {isLoading ? "Loading..." : "Send Reschedule Offer"}
         </button>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Reschedule Time
+          {isLoading ? "Loading..." : "Reschedule Time"}
         </button>
       )}
       <button
         onClick={() => setCustomTimeOpen(true)}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarPlusLight />
-        Set New Reschedule Time{" "}
+        {isLoading ? "Loading..." : "Set New Reschedule Time"}
       </button>
     </div>
   );
-  // coop accepted new pickup time and sets out the item
+
   const resp5 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
       <div className="">
@@ -710,7 +937,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               endpoint="imageUploader"
               onClientUploadComplete={(res: { url: string }[]) => {
                 setImage(res[0].url);
-                onSubmit5(res[0].url);
+                setIsLoading(true);
+                try {
+                  onSubmit5(res[0].url);
+                } catch (error) {
+                  console.error(error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
@@ -718,11 +952,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                isLoading ? "cursor-not-allowed opacity-50" : ""
+              }`}
               content={{
                 button({ ready }) {
                   if (ready) return <div>Send a photo of the produce</div>;
-                  return "Getting ready...";
+                  return isLoading ? "Loading..." : "Getting ready...";
                 },
               }}
             />
@@ -775,36 +1011,61 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {" "}
       <button
         type="submit"
-        onClick={onSubmit6}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit6();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        Confirm Order
+        {isLoading ? "Loading..." : "Confirm Order"}
       </button>
       <button
         onClick={() => setDisputeOpen(true)}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarPlusLight />
-        Dispute Transaction
+        {isLoading ? "Loading..." : "Dispute Transaction"}
       </button>
     </div>
   );
-  //buyer has picked up the item and COOP or PRODUCER marks order as complete and asks for reviews, will be able to place their own review on the buyer
   const resp7 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       {" "}
       <button
         type="submit"
-        onClick={onSubmit7}
-        className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit7();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        Thank Buyer
+        {isLoading ? "Loading..." : "Thank Buyer"}
       </button>
     </div>
   );
-  // producer receives order from COOP, gets these options
   const resp8 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       {" "}
@@ -812,68 +1073,118 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <>
           <button
             type="submit"
-            onClick={onSubmit9}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit9();
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarBlankLight />
-            Send Delivery Time Offer
+            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarPlusLight />
-            Set Different Time
+            {isLoading ? "Loading..." : "Set Different Time"}
           </button>
         </>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Set Delivery Time
+          {isLoading ? "Loading..." : "Set Delivery Time"}
         </button>
       )}
     </div>
   );
-  // coop either agrees to drop off time or does not agree to drop off itme
   const resp9 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
       {" "}
-      <button type="submit" onClick={onSubmit10} className="m hover:bg-sky-500">
-        Accept Delivery Time
+      <button
+        type="submit"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit10();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`m hover:bg-sky-500 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
+      >
+        {isLoading ? "Loading..." : "Accept Delivery Time"}
       </button>
       {dateTime ? (
         <>
           <button
             type="submit"
-            onClick={onSubmit11}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit11();
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p -2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarBlankLight />
-            Send Delivery Time Offer
+            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarPlusLight />
-            Set Different Time
+            {isLoading ? "Loading..." : "Set Different Time"}
           </button>
         </>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Set Delivery Time
+          {isLoading ? "Loading..." : "Set Delivery Time"}
         </button>
       )}
     </div>
   );
-  // producer delivers the item, and is required to upload a photo
   const resp10 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
       <div className="">
@@ -883,7 +1194,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               endpoint="imageUploader"
               onClientUploadComplete={(res: { url: string }[]) => {
                 setImage(res[0].url);
-                onSubmit12(res[0].url);
+                setIsLoading(true);
+                try {
+                  onSubmit12(res[0].url);
+                } catch (error) {
+                  console.error(error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
               onUploadError={(error: Error) => {
                 alert(`ERROR! ${error.message}`);
@@ -891,12 +1209,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                isLoading ? "cursor-not-allowed opacity-50" : ""
+              }`}
               content={{
                 button({ ready }) {
                   if (ready)
                     return <div>Send a photo of the delivered produce</div>;
-                  return "Getting ready...";
+                  return isLoading ? "Loading..." : "Getting ready...";
                 },
               }}
             />
@@ -943,42 +1263,74 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </div>
     </div>
   );
-  // producer either agrees to drop off time or suggests a new one
   const resp11 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
-      <button type="submit" onClick={onSubmit14} className="m hover:bg-sky-600">
-        Accept Delivery Time
+      <button
+        type="submit"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit14();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`m hover:bg-sky-600 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
+      >
+        {isLoading ? "Loading..." : "Accept Delivery Time"}
       </button>
       {dateTime ? (
         <>
           <button
             type="submit"
-            onClick={onSubmit9}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit9();
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarBlankLight />
-            Send Delivery Time Offer
+            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
           >
             <PiCalendarPlusLight />
-            Set Different Time
+            {isLoading ? "Loading..." : "Set Different Time"}
           </button>
         </>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className="w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none"
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            isLoading ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          disabled={isLoading}
         >
           <PiCalendarPlusLight />
-          Set Delivery Time
+          {isLoading ? "Loading..." : "Set Delivery Time"}
         </button>
       )}
     </div>
   );
-  // producer delivers the item, and is required to upload a photo
   const resp12 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
       <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
@@ -989,7 +1341,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 endpoint="imageUploader"
                 onClientUploadComplete={(res: { url: string }[]) => {
                   setImage(res[0].url);
-                  onSubmit12(res[0].url);
+                  setIsLoading(true);
+                  try {
+                    onSubmit12(res[0].url);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsLoading(false);
+                  }
                 }}
                 onUploadError={(error: Error) => {
                   alert(`ERROR! ${error.message}`);
@@ -997,12 +1356,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 appearance={{
                   container: "h-full w-max",
                 }}
-                className="ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3"
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                  isLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
                 content={{
                   button({ ready }) {
                     if (ready)
                       return <div>Sent a photo of the delivered produce</div>;
-                    return "Getting ready...";
+                    return isLoading ? "Loading..." : "Getting ready...";
                   },
                 }}
               />
