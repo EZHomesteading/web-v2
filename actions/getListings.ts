@@ -188,7 +188,36 @@ function filterListingsByLocation1(listings: FinalListing1[]) {
       listing.location !== undefined && listing.location !== null
   );
 }
+export async function getListingsByIdsChat(listingIds: string[]) {
+  try {
+    const listings = await prisma.listing.findMany({
+      where: {
+        id: {
+          in: listingIds
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        imageSrc: true,
+        quantityType:true,
+      },
+     orderBy:{
+      price:"asc"
+     }
+    });
 
+    const orderedListings = listingIds.map(id => 
+      listings.find(listing => listing.id === id)
+    ).filter(Boolean);
+
+    return orderedListings;
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+    return [];
+  }
+}
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,

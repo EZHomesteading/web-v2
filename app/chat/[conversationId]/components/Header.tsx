@@ -7,9 +7,20 @@ import Avatar from "@/app/components/Avatar";
 import { FullConversationType } from "@/types";
 import { useRouter } from "next/navigation";
 import { Order, Reviews } from "@prisma/client";
-import Button from "@/app/components/modals/chatmodals/Button";
+import { Button } from "@/app/components/ui/button";
 import ReactStars from "react-stars";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
+import { IoMapOutline, IoStorefrontOutline } from "react-icons/io5";
+import { Outfit } from "next/font/google";
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface HeaderProps {
   conversation: FullConversationType;
   order: Order;
@@ -37,51 +48,63 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
   return (
     <>
       <div
-        className="
-        bg-slate-900 
-        w-full 
+        className={`${outfit.className} w-full 
         flex 
-        border-b-[1px] 
-        sm:px-4 
-        py-3 
+        border-b-[1px]
+        pb-2
         px-4 
         lg:px-6 
         justify-between 
-        items-center 
-        shadow-sm
-        text-white
-      "
+        
+        items-center `}
       >
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center justify-center">
           <Link
             href="/chat"
             className="
             lg:hidden 
             block 
-            text-sky-500 
-            hover:text-sky-600 
             transition 
             cursor-pointer
           "
           >
             <HiChevronLeft size={32} />
           </Link>
-          <div className="flex flex-row items-start gap-x-4">
-            <div className="flex-shrink-0">
-              <Avatar image={otherUser.image} />
-            </div>
-            <div className="flex flex-col flex-grow">
-              <div className="text-xl font-semibold mb-2">
-                {conversation.name || otherUser.name}
+          <div className="text-xl font-medium pl-2 xl:p-0">
+            {conversation.name || otherUser.name}
+          </div>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-x-4">
+          <Popover>
+            {/* <PopoverTrigger className="flex items-center border rounded-md shadow-sm px-2 py-2 bg-details"> */}
+            <PopoverTrigger>
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+                  />
+                </svg>
               </div>
+            </PopoverTrigger>
+            <PopoverContent className="bg-chat shadow-sm mt-2 flex flex-col w-[200px] space-y-2 mr-5 sm:mt-[.4rem] sm:mr-6 !text-black">
               {otherUser.id === order.sellerId ? (
-                <div className="flex flex-row justify-between w-full">
-                  <button
+                <>
+                  <Button
                     onClick={() => router.push(`/store/${otherUser.url}`)}
-                    className=" flex justify-center rounded-md px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600 mr-2"
+                    className={`${outfit.className} bg-inherit shadow-sm flex justify-start gap-x-2 items-center text-black hover:text-white bg-slate-400 font-light`}
                   >
-                    Go to Store
-                  </button>
+                    <IoStorefrontOutline />
+                    <div className="b">Visit Store</div>
+                  </Button>
                   <Button
                     onClick={() =>
                       window.open(
@@ -89,14 +112,16 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
                         "_ blank"
                       )
                     }
+                    className={`bg-inherit shadow-sm flex justify-start gap-x-2 items-center text-black bg-slate-400 hover:text-white ${outfit.className} font-light`}
                   >
-                    Get Directions
+                    <IoMapOutline />
+                    <div className="">Get Directions</div>
                   </Button>
-                </div>
+                </>
               ) : (
                 <button
                   className="
-        flex justify-center rounded-md px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600"
+        flex justify-center rounded-md px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                   onClick={() => router.push(`/profile/${otherUser.id}`)}
                   title="View reviews of this buyer"
                 >
@@ -111,11 +136,10 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
                   {avgRate === 0 ? "New" : avgRate}
                 </button>
               )}
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-      {/* </div> */}
     </>
   );
 };

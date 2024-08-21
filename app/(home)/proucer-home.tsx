@@ -27,7 +27,7 @@ const ProducerHome = ({ user }: Props) => {
             <span className="text-green-400 font-bold">{user.firstName}?</span>
           </div>
         </h1>
-        <div className="flex flex-row justify-evenly text-sm mt-5 ">
+        <div className="flex flex-col justify-evenly text-sm mt-5 ">
           <Link href="/create">
             {" "}
             <Button className="hover:underline">List produce</Button>

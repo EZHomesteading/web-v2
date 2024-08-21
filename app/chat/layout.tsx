@@ -15,7 +15,7 @@ export default async function ConversationsLayout({
 }) {
   const conversations = await getConversations();
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-chat">
       <NavbarHome user={conversations.user as unknown as navUser} />
       <ConversationList
         title="Messages"

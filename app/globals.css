@@ -320,6 +320,12 @@ body::-webkit-scrollbar {
 .fade-in {
   animation: fadeIn 0.75s ease-in;
 }
+.bg-chat {
+  background-color: #F1EFE7;
+}
+.bg-details {
+  background-color: #e7e9f1;
+}
 .d1dbbf {
   background-color: #d1dbbf;
 }

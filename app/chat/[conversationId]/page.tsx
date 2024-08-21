@@ -10,6 +10,7 @@ import { Order, Reviews, User } from "@prisma/client";
 import { UserInfo } from "@/next-auth";
 import { getUserWithBuyReviews } from "@/actions/getUser";
 import { redirect } from "next/navigation";
+import { getListingsByIdsChat } from "@/actions/getListings";
 
 interface IParams {
   conversationId: string;
@@ -37,6 +38,9 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const order = await GetOrderByConvoId(params.conversationId);
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
+  const listings = order?.listingIds
+    ? await getListingsByIdsChat(order.listingIds)
+    : [];
   if (
     currentUser.id === conversationData.userIds[1] ||
     currentUser.id === conversationData.userIds[0]
@@ -73,6 +77,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
                 order={order as unknown as Order}
                 otherUser={otherUser}
                 conversationId={conversationData.id}
+                listings={listings}
               />
             </>
           )}
@@ -102,6 +107,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
               order={order as unknown as Order}
               otherUser={otherUser}
               conversationId={conversationData.id}
+              listings={listings}
             />
           </>
         )}

@@ -185,15 +185,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   }
 
   //declare clsx styling
-  const container = clsx("flex flex-grow gap-3 p-2");
-  const body = clsx("flex flex-grow flex-col text-white");
+  const container = clsx(
+    "flex flex-grow items-start gap-2 py-2 px-4 testcontainer"
+  );
+  const body = clsx("flex flex-col");
   const message = clsx(
-    `text-xs md:text-sm w-fit ${outfit.className}`,
-    data.image ? "rounded-md p-0" : " py-2 px-3"
+    `text-xs md:text-sm w-fit font-light ${outfit.className}`,
+    data.image ? "rounded-md p-0" : " "
   );
   const notMessage = clsx(
     `text-xs md:text-sm w-fit ${outfit.className}`,
-    isOwn ? ` text-white` : ``,
+    isOwn ? ` ` : ``,
     data.image ? "rounded-md p-0" : " "
   );
 
@@ -623,7 +625,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   //Seller receives Order
   const resp1 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       <button
         type="submit"
         onClick={async () => {
@@ -714,7 +716,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   const resp2 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
@@ -737,7 +739,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
                 isLoading ? "cursor-not-allowed opacity-50" : ""
               }`}
               content={{
@@ -792,7 +794,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   const resp3 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       <button
         type="submit"
         onClick={async () => {
@@ -805,7 +807,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 text-white ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1  ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -860,7 +862,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   const resp4 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
       <button
         type="submit"
@@ -929,7 +931,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 
   const resp5 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
@@ -952,7 +954,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
                 isLoading ? "cursor-not-allowed opacity-50" : ""
               }`}
               content={{
@@ -1007,7 +1009,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   // buyer receives their item or can choose to dispute
   const resp6 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
       <button
         type="submit"
@@ -1042,7 +1044,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp7 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
       <button
         type="submit"
@@ -1067,7 +1069,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp8 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
       {dateTime ? (
         <>
@@ -1117,7 +1119,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp9 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
       <button
         type="submit"
@@ -1186,7 +1188,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp10 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
@@ -1209,7 +1211,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               appearance={{
                 container: "h-full w-max",
               }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
                 isLoading ? "cursor-not-allowed opacity-50" : ""
               }`}
               content={{
@@ -1264,7 +1266,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp11 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 !text-white py-1">
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       <button
         type="submit"
         onClick={async () => {
@@ -1332,8 +1334,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   const resp12 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end text-white py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden message text-white  py-2 px-3">
+    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
+      <div className="flex flex-col text-sm w-fit overflow-hidden message   py-2 px-3">
         <div className="">
           <div className=" p-2 rounded-lg">
             {!image && (
@@ -1356,7 +1358,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 appearance={{
                   container: "h-full w-max",
                 }}
-                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button:text-white ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
                   isLoading ? "cursor-not-allowed opacity-50" : ""
                 }`}
                 content={{
@@ -1412,7 +1414,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     </div>
   );
   return (
-    <div className="">
+    <div>
       {user.id === order.sellerId ? (
         <CustomTimeModal2
           isOpen={customTimeOpen}
@@ -1483,17 +1485,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           <button
             type="submit"
             onClick={() => setCancelOpen(true)}
-            className="
- rounded-full 
- p-2 
- bg-sky-500 
- cursor-pointer 
- hover:bg-sky-600 
- mt-2
- ml-1
- mr-1
- absolute top-[100px] right-2
-"
+            className="rounded-full p-2 bg-sky-500 cursor-pointer hover:bg-sky-600 mt-2ml-1mr-1absolute top-[100px] right-2"
           >
             Cancel
           </button>
@@ -1558,10 +1550,20 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         {/* messages body starts here */}
       </div>
       <div className={container}>
+        <div className="pt-2">
+          <Avatar image={data.sender.image} />
+        </div>
+
         <div className={body}>
-          <div className="text-xs text-gray-400 mx-1 mb-1">
-            <Avatar image={data.sender.image}></Avatar> {data.sender.name}:{" "}
-            {format(new Date(data.createdAt), "p")}
+          <div
+            className={`flex justify-start items-start gap-x-2 ${outfit.className} `}
+          >
+            <div className="flex items-center gap-x-2">
+              {data.sender.name}
+              <div className="text-[8px] text-neutral-400 font-extralight">
+                {format(new Date(data.createdAt), "p")}
+              </div>
+            </div>
           </div>
           {/* handle displaying images V.S. regular messages */}
           {data.messageOrder === "img" ? (
@@ -1677,14 +1679,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         isLast && (
           <Popover>
             <PopoverTrigger className="absolute bottom-5 right-5">
-              <IoIosArrowDown className="text-white" />
+              <IoIosArrowDown className="" />
             </PopoverTrigger>
             <PopoverContent
               className={`${outfit.className} absolute bottom-10 right-0 rounded-t-md w-[300px]`}
             >
               <div>
                 <div
-                  className={`${zilla.className} text-md lg:text-md text-white font-extralight pt-2 px-2`}
+                  className={`${zilla.className} text-md lg:text-md  font-extralight pt-2 px-2`}
                 >
                   Your Response Options
                 </div>
