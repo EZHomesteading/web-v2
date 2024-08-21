@@ -9,11 +9,14 @@ const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
   return (
     <div
       onClick={onClick}
-      className="px-4 
+      className="
+        px-6
+      
         py-3 
         hover:shadow-md
-        font-semibold
-        text-sm
+        font-normal
+        text-xl
+        md:text-lg
         flex
         items-center
         mi"

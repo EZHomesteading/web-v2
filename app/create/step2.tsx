@@ -40,7 +40,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
           <input
-            className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             id="title"
             placeholder="Title"
             disabled={isLoading}
@@ -51,12 +51,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
             }}
             value={title}
           />
-          {isSearching && (
-            <BiLoaderCircle
-              className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin"
-              size={24}
-            />
-          )}
         </div>
         {items.length > 0 && (
           <div className="relative w-full">
@@ -78,7 +72,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
           id="description"
           placeholder="Description"
           disabled={isLoading}
-          className="h-[30vh] shadow-sm text-[14px]"
+          className="h-[30vh] shadow-sm text-[16px]"
           maxLength={500}
           onChange={(e) => {
             setDescription(e.target.value);
@@ -109,6 +103,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               }
             }}
             value={tag}
+            className="text-[16px]"
           />
           <div className="mb-4 ml-[2px] mt-1 text-xs">
             Click a tag to remove

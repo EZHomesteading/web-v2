@@ -46,7 +46,7 @@ const CoopHome = ({ user }: Props) => {
             )}
           </div>
         </h1>
-        <div className="flex flex-row justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
+        <div className="flex flex-col justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
           <Link href="/market">
             {" "}
             <Button className="hover:bg-green-100 hover:text-black">
