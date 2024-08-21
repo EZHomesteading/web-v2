@@ -6,10 +6,18 @@ import {
   CardFooter,
   CardHeader,
 } from "@/app/components/ui/card";
-import { Header } from "@/app/components/auth/header";
 import { Social } from "@/app/components/auth/social";
 import { BackButton } from "@/app/components/auth/back-button";
-
+import { Outfit, Zilla_Slab } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const zilla = Zilla_Slab({
+  display: "swap",
+  weight: "400",
+  subsets: ["latin"],
+});
 interface CardWrapperProps {
   children: React.ReactNode;
   headerLabel: string;
@@ -17,8 +25,6 @@ interface CardWrapperProps {
   backButtonHref: string;
   label2: string;
   showSocial?: boolean;
-  activeTab: "buy" | "sell" | "sellAndSource";
-  onTabChange: (tab: "buy" | "sell" | "sellAndSource") => void;
 }
 
 export const CardWrapper = ({
@@ -27,57 +33,27 @@ export const CardWrapper = ({
   backButtonLabel,
   backButtonHref,
   showSocial,
-  activeTab,
-  onTabChange,
-  label2,
 }: CardWrapperProps) => {
   return (
-    <div className="flex flex-col items-center lg:right-[15%]">
-      <Card className="relative w-[80%] sm:w-[450px] md:w-[500px] rounded-none cardregister border-none">
-        <CardHeader>
-          <Header label={headerLabel} label2={label2} />
-        </CardHeader>
-        <CardContent>{children}</CardContent>
-        {showSocial && (
-          <CardFooter>
-            <Social />
-          </CardFooter>
-        )}
-        <CardFooter>
+    <div className={`${outfit.className} px-6  `}>
+      {" "}
+      <div className={`font-normal text-3xl text-center mb-[2%]`}>
+        {headerLabel}
+      </div>
+      <Card className="relative d1dbbf rounded-xl shadow-sm border-[2px]-black w-full min-w-[320px]">
+        <CardContent className="pt-6 pb-2 flex flex-col items-center">
+          {showSocial && (
+            <>
+              <Social />
+              <div className={`${zilla.className} text-xs my-2`}>OR</div>
+            </>
+          )}
+
+          {children}
+        </CardContent>
+        <CardFooter className="rounded-b-xl d1dbbf">
           <BackButton label={backButtonLabel} href={backButtonHref} />
         </CardFooter>
-        <div className="flex flex-row w-full items-center justify-between">
-          <button
-            className={`md:p-6 ${
-              activeTab === "buy"
-                ? "buttonsActive shadow-md"
-                : "buttonsNotActive"
-            }`}
-            onClick={() => onTabChange("buy")}
-          >
-            I want to buy
-          </button>
-          <button
-            className={`md:py-6 md:px-3 ${
-              activeTab === "sellAndSource"
-                ? "buttonsActive shadow-md"
-                : "buttonsNotActive"
-            }`}
-            onClick={() => onTabChange("sellAndSource")}
-          >
-            I want to sell & source
-          </button>
-          <button
-            className={`md:p-6 ${
-              activeTab === "sell"
-                ? "buttonsActive shadow-md"
-                : "buttonsNotActive"
-            }`}
-            onClick={() => onTabChange("sell")}
-          >
-            I just want to sell
-          </button>
-        </div>
       </Card>
     </div>
   );

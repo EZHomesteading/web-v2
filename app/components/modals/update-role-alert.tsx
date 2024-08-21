@@ -52,11 +52,15 @@ export function UpdateRoleAlert({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <CiSquarePlus
+        <div
           className={`${
             white ? "text-white" : "text-black"
-          } text-sm sm:text-lg md:text-2xl shadow-none bg-inherit hover:cursor-pointer rounded-full mr-1 h-8 w-8`}
-        />
+          } text-xs border rounded-full px-2 py-1 shadow-sm ${
+            outfit.className
+          }`}
+        >
+          Add a Product
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent className="xl:w-2/3 2xl:w-1/2 w-5/6  h-1/2 sm:aspect-square md:aspect-video overflow-hidden authlayoutbg rounded-xl flex">
         <div className="relative hidden lg:block lg:w-1/3 h-full">

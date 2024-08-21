@@ -23,6 +23,7 @@ import StepFive from "./step5";
 import StepSix from "./step6";
 import { Label } from "../components/ui/label";
 import Help from "./components/help";
+import { UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -32,10 +33,11 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
+  uniqueUrl: string;
 }
 
-const CreateClient = ({ user, index }: Props) => {
-  //seclare use state variables
+const CreateClient = ({ user, index, uniqueUrl }: Props) => {
+  console.log(user);
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -44,7 +46,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(7);
+  const [step, setStep] = useState(index);
   const [quantityType, setQuantityType] = useState<
     QuantityTypeValue | undefined
   >(undefined);
@@ -195,7 +197,7 @@ const CreateClient = ({ user, index }: Props) => {
   };
 
   //geocoding from autocompleted adress inputs
-
+  console.log(uniqueUrl);
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -205,7 +207,6 @@ const CreateClient = ({ user, index }: Props) => {
       parseInt(data.shelfLifeMonths, 10) * 30 +
       parseInt(data.shelfLifeYears, 10) * 365;
 
-    //onsubmit formstate to formdata=data to pass to create listing api endpoint
     const formData = {
       keyWords: tags,
       title: title,
@@ -216,56 +217,129 @@ const CreateClient = ({ user, index }: Props) => {
       subCategory: subCategory,
       rating: rating,
       price: formattedPrice,
-      imageSrc: data.imageSrc,
+      imageSrc: imageSrc,
       stock: parseInt(data.stock, 10),
       shelfLife: shelfLife,
       quantityType:
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
           : data.quantityType,
-      location: data.location,
+      location: data.location || 0,
     };
-    axios
-      .post("/api/listing/listings", formData)
-      .then(() => {
-        toast.success("Listing created!");
-        setValue("category", "");
-        setValue("subCategory", "");
-        setValue("location", "");
-        setValue("stock", null);
-        setValue("quantityType", "");
-        setValue("imageSrc", "");
-        setValue("price", null);
-        setValue("title", "");
-        setValue("description", "");
-        setValue("shelfLifeDays", 0);
-        setValue("shelfLifeWeeks", 0);
-        setValue("shelfLifeMonths", 0);
-        setValue("shelfLifeYears", 0);
-        setValue("sodt", 60);
-        setValue("rating", []);
-        setValue("minOrder", 1);
-        setClicked(false);
-        setClicked1(false);
-        setClicked2(false);
-        setRating([]);
-        setTags([]);
-        setCertificationChecked(false);
-        setQuantityType(undefined);
-        router.push("/dashboard/my-store");
-      })
-      .catch(() => {
-        toast.error(
-          "Please make sure you've added information for all of the fields.",
-          {
-            duration: 2000,
-            position: "bottom-center",
+
+    try {
+      // Create listing
+      const listingResponse = await axios.post(
+        "/api/listing/listings",
+        formData
+      );
+      console.log("Listing created successfully:", listingResponse.data);
+
+      if (user?.role === UserRole.CONSUMER) {
+        try {
+          const [stripeResponse, userUpdateResponse] = await Promise.all([
+            axios.post("/api/stripe/create-connected-account", {
+              userId: user?.id,
+            }),
+            axios.post("/api/useractions/update", {
+              role: UserRole.PRODUCER,
+              hasPickRole: false,
+              url: uniqueUrl,
+            }),
+          ]);
+
+          console.log("Stripe connected account created:", stripeResponse.data);
+          if (stripeResponse.data && stripeResponse.data.stripeAccountId) {
+            console.log(
+              "Stripe Account ID:",
+              stripeResponse.data.stripeAccountId
+            );
           }
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+
+          console.log(
+            "User role updated successfully:",
+            userUpdateResponse.data
+          );
+        } catch (error) {
+          console.error("Error in consumer API calls:", error);
+          if (axios.isAxiosError(error)) {
+            if (error.response) {
+              console.error("API error response:", error.response.data);
+              console.error("Status code:", error.response.status);
+            } else if (error.request) {
+              console.error("No response received:", error.request);
+            } else {
+              console.error("Error setting up the request:", error.message);
+            }
+          }
+          // Consider how you want to handle this error. You might want to show a warning to the user
+          // that some parts of the process failed, but continue with the rest of the function.
+          toast.warning(
+            "Some account setup steps failed. Please contact support."
+          );
+        }
+      }
+
+      // Reset form fields
+      [
+        "category",
+        "subCategory",
+        "location",
+        "stock",
+        "quantityType",
+        "imageSrc",
+        "price",
+        "title",
+        "description",
+        "shelfLifeDays",
+        "shelfLifeWeeks",
+        "shelfLifeMonths",
+        "shelfLifeYears",
+        "sodt",
+        "rating",
+        "minOrder",
+      ].forEach((field) =>
+        setValue(
+          field,
+          field === "rating"
+            ? []
+            : field === "minOrder"
+            ? 1
+            : field === "sodt"
+            ? 60
+            : ""
+        )
+      );
+
+      setClicked(false);
+      setClicked1(false);
+      setClicked2(false);
+      setRating([]);
+      setTags([]);
+      setCertificationChecked(false);
+      setQuantityType(undefined);
+
+      router.push("/onboard");
+      toast.success("Listing created successfully!");
+    } catch (error) {
+      console.error("Error in the overall process:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error("Server responded with error:", error.response.data);
+          console.error("Status code:", error.response.status);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Error setting up the request:", error.message);
+        }
+      }
+      toast.error(
+        "An error occurred while creating the listing. Please try again or contact support.",
+        { duration: 3000, position: "bottom-center" }
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
   const showError = (message: string) => {
     toast.error(message, {
@@ -359,7 +433,7 @@ const CreateClient = ({ user, index }: Props) => {
       if (checkField(error.condition(), error.message)) return;
     }
 
-    if (step === 7) {
+    if (step === 7 || (step === 6 && user?.location === null)) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -600,7 +674,7 @@ const CreateClient = ({ user, index }: Props) => {
           Back
         </Button>
       )}
-      {step === 7 && user?.location && user?.location[0] === null && (
+      {step === 7 && user?.location && user?.location[0] !== null && (
         <>
           <Button
             onClick={handleNext}
@@ -642,146 +716,142 @@ const CreateClient = ({ user, index }: Props) => {
       )}
       <Help step={step} role={user?.role} />
       {step === 7 && user?.location && user?.location[0] !== null && (
-        <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
-          <div className="flex flex-row justify-center items-center gap-2">
-            <div className="w-full max-w-[300px] px-4 flex flex-col items-center">
-              <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
-                Select a Selling Location
-              </Label>
+        <div className="w-full flex items-center justify-center px-2">
+          <div className="min-h-screen fade-in pt-[10%] flex flex-col items-center w-full">
+            <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
+              Select a Selling Location
+            </Label>
 
-              {user.location === null ||
-              user.location === undefined ||
-              ((user.location[0] === null || user.location[0] === undefined) &&
-                (user.location[1] === null || user.location[1] === undefined) &&
-                (user.location[2] === null ||
-                  user.location[2] === undefined)) ? (
-                <Card
-                  className={""}
-                  onClick={() => {
-                    router.replace("/dashboard/my-store/settings");
-                  }}
-                >
-                  <CardContent>
-                    <CardHeader className="pt-2 sm:pt-6">
+            {user.location === null ||
+            user.location === undefined ||
+            ((user.location[0] === null || user.location[0] === undefined) &&
+              (user.location[1] === null || user.location[1] === undefined) &&
+              (user.location[2] === null || user.location[2] === undefined)) ? (
+              <Card
+                className={""}
+                onClick={() => {
+                  router.replace("/dashboard/my-store/settings");
+                }}
+              >
+                <CardContent>
+                  <CardHeader className="pt-2 sm:pt-6">
+                    <div className="text-start">
+                      <div className="text-xl sm:text-2xl font-bold">
+                        You have no addresses set. Please set this up before
+                        creating a listing. Click Here to set up Store Locations
+                      </div>
+                    </div>
+                  </CardHeader>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="flex flex-col justify-evenly gap-2 pt-4 w-full max-w-md">
+                {user.location[0] !== null && (
+                  <Card
+                    className={
+                      clicked
+                        ? "bg-black text-white shadow-sm"
+                        : "shadow-sm hover:cursor-pointer"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked(true);
+                        setClicked1(false);
+                        setClicked2(false);
+                        setValue("location", 0);
+                      }
+                    }}
+                  >
+                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
                       <div className="text-start">
-                        <div className="text-xl sm:text-2xl font-bold">
-                          You have no addresses set. Please set this up before
-                          creating a listing. Click Here to set up Store
-                          Locations
+                        <div className="text-xl font-normal">
+                          Use My Default Address
                         </div>
                       </div>
-                    </CardHeader>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="flex flex-col lg:flex-row justify-evenly gap-2 pt-4">
-                  {user.location[0] !== null ? (
-                    <Card
-                      className={
-                        clicked
-                          ? "bg-black text-white shadow-sm"
-                          : "shadow-sm hover:cursor-pointer"
+                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                        <ul>
+                          <li className={`${outfit.className}`}></li>{" "}
+                          {user.location &&
+                          user?.location[0]?.address.length === 4 ? (
+                            <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
+                          ) : (
+                            <li>Full Address not available</li>
+                          )}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                {user.location[1] !== null && (
+                  <Card
+                    className={
+                      clicked1
+                        ? "bg-black text-white shadow-sm"
+                        : "shadow-sm hover:cursor-pointer"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked1(true);
+                        setClicked(false);
+                        setClicked2(false);
+                        setValue("location", 1);
                       }
-                      onClick={() => {
-                        if (user.location) {
-                          setClicked(true);
-                          setClicked1(false);
-                          setClicked2(false);
-                          setValue("location", 0);
-                        }
-                      }}
-                    >
-                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
-                        <div className="text-start">
-                          <div className="text-xl font-normal">
-                            Use My Default Address
-                          </div>
-                        </div>
+                    }}
+                  >
+                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                      <div className="text-start">
+                        <div className="text-xl ">Use My Second Location</div>
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
                             <li className={`${outfit.className}`}></li>{" "}
                             {user.location &&
-                            user?.location[0]?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
+                            user?.location[1]?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
                             ) : (
                               <li>Full Address not available</li>
                             )}
                           </ul>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ) : null}
-                  {user.location[1] !== null ? (
-                    <Card
-                      className={
-                        clicked1
-                          ? "bg-black text-white shadow-sm"
-                          : "shadow-sm hover:cursor-pointer"
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                {user.location[2] !== null && (
+                  <Card
+                    className={
+                      clicked2
+                        ? "bg-black text-white shadow-sm"
+                        : "shadow-sm hover:cursor-pointer"
+                    }
+                    onClick={() => {
+                      if (user.location) {
+                        setClicked2(true);
+                        setClicked1(false);
+                        setClicked(false);
+                        setValue("location", 2);
                       }
-                      onClick={() => {
-                        if (user.location) {
-                          setClicked1(true);
-                          setClicked(false);
-                          setClicked2(false);
-                          setValue("location", 1);
-                        }
-                      }}
-                    >
-                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
-                        <div className="text-start">
-                          <div className="text-xl ">Use My Second Location</div>
-                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                            <ul>
-                              <li className={`${outfit.className}`}></li>{" "}
-                              {user.location &&
-                              user?.location[1]?.address.length === 4 ? (
-                                <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
-                              ) : (
-                                <li>Full Address not available</li>
-                              )}
-                            </ul>
-                          </div>
+                    }}
+                  >
+                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                      <div className="text-start">
+                        <div className="text-xl ">Use My Third Location</div>
+                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                          <ul>
+                            <li className={`${outfit.className}`}></li>{" "}
+                            {user.location &&
+                            user?.location[2]?.address.length === 4 ? (
+                              <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
+                            ) : (
+                              <li>Full Address not available</li>
+                            )}
+                          </ul>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ) : null}
-                  {user.location[2] !== null ? (
-                    <Card
-                      className={
-                        clicked2
-                          ? "bg-black text-white shadow-sm"
-                          : "shadow-sm hover:cursor-pointer"
-                      }
-                      onClick={() => {
-                        if (user.location) {
-                          setClicked2(true);
-                          setClicked1(false);
-                          setClicked(false);
-                          setValue("location", 2);
-                        }
-                      }}
-                    >
-                      <CardContent className="pt-2 sm:pt-6 aspect-video flex flex-col items-start justify-center">
-                        <div className="text-start">
-                          <div className="text-xl ">Use My Third Location</div>
-                          <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                            <ul>
-                              <li className={`${outfit.className}`}></li>{" "}
-                              {user.location &&
-                              user?.location[2]?.address.length === 4 ? (
-                                <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
-                              ) : (
-                                <li>Full Address not available</li>
-                              )}
-                            </ul>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : null}
-                </div>
-              )}
-            </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

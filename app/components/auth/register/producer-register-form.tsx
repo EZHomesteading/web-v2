@@ -25,13 +25,9 @@ import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
 
 export const ProducerRegisterForm = () => {
-  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "sell"
-  );
 
   const form = useForm<z.infer<typeof RegisterVendorSchema>>({
     resolver: zodResolver(RegisterVendorSchema),
@@ -58,34 +54,14 @@ export const ProducerRegisterForm = () => {
     });
   };
 
-  useEffect(() => {
-    setActiveTab("sell");
-  }, []);
-
-  const handleTabChange = (tab: "buy" | "sell" | "sellAndSource") => {
-    switch (tab) {
-      case "buy":
-        router.push("/auth/register");
-        break;
-      case "sell":
-        router.push("/auth/register-producer");
-        break;
-      case "sellAndSource":
-        router.push("/auth/register-co-op");
-        break;
-    }
-  };
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
-      headerLabel="Become a Producer"
+      headerLabel=""
       label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      // showSocial
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -95,7 +71,7 @@ export const ProducerRegisterForm = () => {
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-280px sm:w-[350px]">
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
                       <Input

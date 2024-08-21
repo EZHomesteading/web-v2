@@ -57,7 +57,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
             subtitle="Modify your listings from this page"
           />
           <Link href="/dashboard/my-store/settings">
-            <Button>My Co-op Settings</Button>
+            <Button>Store Settings</Button>
           </Link>
         </div>
 

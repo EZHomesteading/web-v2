@@ -63,6 +63,7 @@ export const {
         session.user.SODT = token.SODT as number | undefined;
         session.user.bio = token.bio as string | undefined;
         session.user.banner = token.banner as string | undefined;
+        session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
       }
       return session;
     },
@@ -79,7 +80,7 @@ export const {
       token.phoneNumber = existingUser.phoneNumber;
       token.location = existingUser.location;
       token.image = existingUser.image;
-      //token.hours = existingUser.hours;
+      token.hasPickedRole = existingUser.hasPickedRole
       token.url = existingUser.url;
       token.role = existingUser.role;
       token.password = existingUser.password;

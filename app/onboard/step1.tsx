@@ -18,7 +18,7 @@ const StepOne: React.FC<Props> = async ({
   stepHandler,
 }) => {
   return (
-    <div className={`${outfit.className} grid grid-cols-12 min-h-screen`}>
+    <div className={`${outfit.className} grid grid-cols-12`}>
       <div className="col-span-1 2xl:col-span-4"></div>
       <div className="col-span-11 2xl:col-span-7">
         <div className="grid grid-rows-10 h-full">
@@ -46,7 +46,7 @@ const StepOne: React.FC<Props> = async ({
             </div>
             <div className="mb-10 font-light">Final Steps to Start Selling</div>
             <div className="mx-5">
-              <h1 className="text-2xl mb-5">Required</h1>
+              <h1 className="text-2xl mb-5">Required to Begin Selling</h1>
               <ul>
                 {session?.user?.location &&
                 session?.user?.location[0]?.address ? (
