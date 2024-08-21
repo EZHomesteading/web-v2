@@ -2,34 +2,39 @@
 //payout button component
 import axios from "axios";
 import { Button } from "@/app/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 interface p {
   stripeAccountId?: string;
-  totalSales?: number;
-  userId: string;
-  totalPaidOut: number;
+  total: number;
 }
 const PayoutButton = ({
   stripeAccountId,
-  totalPaidOut,
-  totalSales,
-  userId,
+
+  total,
 }: p) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const handlePayout = async () => {
     try {
-      axios.post("/api/stripe/payout", {
+      setIsLoading(true);
+      await axios.post("/api/stripe/payout", {
+        total: total,
         stripeAccountId: stripeAccountId,
-        totalPaidOut: totalPaidOut,
-        totalSales: totalSales,
-        userId: userId,
       });
+      setIsLoading(false);
     } catch (error) {
       console.error("Error with payout", error);
+    } finally {
+      setIsLoading(false);
+      router.refresh();
     }
   };
+
   return (
     <>
-      <Button className="mt-2 " onClick={handlePayout}>
-        Withdraw
+      <Button className="mt-2" onClick={handlePayout} disabled={isLoading}>
+        {isLoading ? "Loading..." : "Withdraw"}
       </Button>
     </>
   );

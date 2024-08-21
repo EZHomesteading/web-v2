@@ -12,6 +12,8 @@ import Overview from "@/app/dashboard/overview";
 import DashPopover from "./dashboard-popover";
 import { getFollowers } from "@/actions/getFollow";
 import DashboardPopup from "../(home)/info-modals/dashboard-info-modal";
+import axios from "axios";
+import PayoutButton from "./payout-button";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -70,6 +72,7 @@ const Dashboard = async () => {
     balance = await stripe.balance.retrieve({
       stripeAccount: currentUserr?.stripeAccountId,
     });
+    console.log(balance);
     const transfers = await stripe.transfers.list({
       destination: currentUserr?.stripeAccountId,
       limit: 1000,
@@ -113,7 +116,9 @@ const Dashboard = async () => {
     user?.sellerOrders?.filter(
       (order) => ![0, 4, 7, 12, 15, 19].includes(order.status)
     ).length ?? 0;
+  // console.log(user?.sellerOrders);
   totalSales = sumTotalPrice(user?.sellerOrders ?? []);
+  console.log(totalSales);
   totalSales = totalSales * 10;
   recentSales =
     user?.sellerOrders
@@ -129,6 +134,13 @@ const Dashboard = async () => {
         return status === 9 || (status >= 16 && status <= 19);
       })
       .slice(0, 6) ?? [];
+
+  const payout = async () => {
+    await axios.post("/api/stripe/payout", {
+      total: balance.available[0].amount,
+      stripeAccountId: currentUserr?.stripeAccountId,
+    });
+  };
   return (
     <>
       <head>
@@ -190,7 +202,16 @@ const Dashboard = async () => {
                 </CardHeader>
                 <CardContent className="sheet h-fit">
                   <div className="flex items-center justify-center h-full text-4xl md:text-5xl py-4">
-                    {balance ? formatPrice(balance.available[0].amount) : 0}
+                    {balance
+                      ? formatPrice(balance.available[0].amount / 100)
+                      : 0}
+                  </div>
+                  <div className="flex justify-end items-end">
+                    {" "}
+                    <PayoutButton
+                      total={balance.available[0].amount}
+                      stripeAccountId={currentUserr?.stripeAccountId}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -396,7 +417,10 @@ const Dashboard = async () => {
             </Card>
           )}
         </div>
-      </main>{(user?.role === UserRole.COOP || user?.role === UserRole.PRODUCER) && <DashboardPopup />}
+      </main>
+      {(user?.role === UserRole.COOP || user?.role === UserRole.PRODUCER) && (
+        <DashboardPopup />
+      )}
     </>
   );
 };
