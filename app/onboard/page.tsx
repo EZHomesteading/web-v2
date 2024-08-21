@@ -34,19 +34,17 @@ const Page = async () => {
 
   const user = await currentUser();
   let index = 1;
-
+  console.log(session?.user);
   return (
     <div>
-      {user ? (
+      {session?.user && (
         <Onboarding
           index={index}
-          user={user}
+          user={session?.user}
           apiKey={apiKey}
           canReceivePayouts={canReceivePayouts}
           session={session}
         />
-      ) : (
-        <></>
       )}
     </div>
   );

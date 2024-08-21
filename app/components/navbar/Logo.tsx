@@ -17,7 +17,7 @@ const Logo = () => {
 
   return (
     <div
-      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 hidden xl:block`}
+      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 hidden sm:block`}
     >
       <Link href="/">
         <h1

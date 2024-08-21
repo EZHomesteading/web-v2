@@ -320,7 +320,9 @@ body::-webkit-scrollbar {
 .fade-in {
   animation: fadeIn 0.75s ease-in;
 }
-
+.d1dbbf {
+  background-color: #d1dbbf;
+}
 .light {
   color: #e3eac9 !important;
 }

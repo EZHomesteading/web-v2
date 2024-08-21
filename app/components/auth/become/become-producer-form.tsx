@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/become/card-wrapper-become";
+import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -94,25 +94,7 @@ export const BecomeProducer = ({
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",
-      // location: {
-      //   0: {
-      //     type: "Point",
-      //     coordinates:
-      //       user && user.location
-      //         ? (user?.location[0]?.coordinates?.slice(0, 2) as [
-      //             number,
-      //             number
-      //           ])
-      //         : [0, 0],
-      //     address:
-      //       user && user.location
-      //         ? (user?.location[0]?.address as [string, string, string, string])
-      //         : ["", "", "", ""],
-      //     hours: null,
-      //   },
-      //   1: null,
-      //   2: null,
-      // },
+
       role: UserRole.PRODUCER,
     },
   });
@@ -145,32 +127,14 @@ export const BecomeProducer = ({
     }
   };
 
-  useEffect(() => {
-    setActiveTab("sell");
-  }, []);
-
   const [formStep, setFormStep] = useState<"step1" | "step2">("step1");
-
-  const handleTabChange = (tab: "sell" | "sellAndSource") => {
-    switch (tab) {
-      case "sell":
-        router.push("/auth/become-a-producer");
-        break;
-      case "sellAndSource":
-        router.push("/auth/become-a-co-op");
-        break;
-    }
-  };
 
   return (
     <CardWrapper
-      headerLabel="Become an EZH Producer"
+      headerLabel=""
       label2="Grow produce & sell directly to co-ops hassle free without consumer interaction. Use your current info or update it below."
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      showSocial
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -181,7 +145,7 @@ export const BecomeProducer = ({
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-[280px] sm:w-[350px]">
                       <FormLabel>Current Email</FormLabel>
                       <FormControl>
                         <Input

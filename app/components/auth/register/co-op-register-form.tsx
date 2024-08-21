@@ -63,29 +63,14 @@ export const CoOpRegisterForm = () => {
     setActiveTab("sellAndSource");
   }, []);
 
-  const handleTabChange = (tab: "buy" | "sell" | "sellAndSource") => {
-    switch (tab) {
-      case "buy":
-        router.push("/auth/register");
-        break;
-      case "sell":
-        router.push("/auth/register-producer");
-        break;
-      case "sellAndSource":
-        router.push("/auth/register-co-op");
-        break;
-    }
-  };
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
-      headerLabel="Become a Co-op"
+      headerLabel=""
       label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -112,7 +97,7 @@ export const CoOpRegisterForm = () => {
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-280px sm:w-[350px]">
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input
@@ -129,7 +114,7 @@ export const CoOpRegisterForm = () => {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-280px sm:w-[350px]">
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input

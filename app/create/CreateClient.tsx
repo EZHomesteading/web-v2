@@ -23,6 +23,7 @@ import StepFive from "./step5";
 import StepSix from "./step6";
 import { Label } from "../components/ui/label";
 import Help from "./components/help";
+import { UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -32,10 +33,11 @@ const outfit = Outfit({
 interface Props {
   user: UserInfo;
   index: number;
+  uniqueUrl: string;
 }
 
-const CreateClient = ({ user, index }: Props) => {
-  //seclare use state variables
+const CreateClient = ({ user, index, uniqueUrl }: Props) => {
+  console.log(user);
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -44,7 +46,7 @@ const CreateClient = ({ user, index }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(7);
+  const [step, setStep] = useState(index);
   const [quantityType, setQuantityType] = useState<
     QuantityTypeValue | undefined
   >(undefined);
@@ -195,7 +197,7 @@ const CreateClient = ({ user, index }: Props) => {
   };
 
   //geocoding from autocompleted adress inputs
-
+  console.log(uniqueUrl);
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -205,7 +207,6 @@ const CreateClient = ({ user, index }: Props) => {
       parseInt(data.shelfLifeMonths, 10) * 30 +
       parseInt(data.shelfLifeYears, 10) * 365;
 
-    //onsubmit formstate to formdata=data to pass to create listing api endpoint
     const formData = {
       keyWords: tags,
       title: title,
@@ -223,49 +224,122 @@ const CreateClient = ({ user, index }: Props) => {
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
           : data.quantityType,
-      location: data.location,
+      location: data.location || 0,
     };
-    axios
-      .post("/api/listing/listings", formData)
-      .then(() => {
-        toast.success("Listing created!");
-        setValue("category", "");
-        setValue("subCategory", "");
-        setValue("location", "");
-        setValue("stock", null);
-        setValue("quantityType", "");
-        setValue("imageSrc", "");
-        setValue("price", null);
-        setValue("title", "");
-        setValue("description", "");
-        setValue("shelfLifeDays", 0);
-        setValue("shelfLifeWeeks", 0);
-        setValue("shelfLifeMonths", 0);
-        setValue("shelfLifeYears", 0);
-        setValue("sodt", 60);
-        setValue("rating", []);
-        setValue("minOrder", 1);
-        setClicked(false);
-        setClicked1(false);
-        setClicked2(false);
-        setRating([]);
-        setTags([]);
-        setCertificationChecked(false);
-        setQuantityType(undefined);
-        router.push("/dashboard/my-store");
-      })
-      .catch(() => {
-        toast.error(
-          "Please make sure you've added information for all of the fields.",
-          {
-            duration: 2000,
-            position: "bottom-center",
+
+    try {
+      // Create listing
+      const listingResponse = await axios.post(
+        "/api/listing/listings",
+        formData
+      );
+      console.log("Listing created successfully:", listingResponse.data);
+
+      if (user?.role === UserRole.CONSUMER) {
+        try {
+          const [stripeResponse, userUpdateResponse] = await Promise.all([
+            axios.post("/api/stripe/create-connected-account", {
+              userId: user?.id,
+            }),
+            axios.post("/api/useractions/update", {
+              role: UserRole.PRODUCER,
+              hasPickRole: false,
+              url: uniqueUrl,
+            }),
+          ]);
+
+          console.log("Stripe connected account created:", stripeResponse.data);
+          if (stripeResponse.data && stripeResponse.data.stripeAccountId) {
+            console.log(
+              "Stripe Account ID:",
+              stripeResponse.data.stripeAccountId
+            );
           }
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+
+          console.log(
+            "User role updated successfully:",
+            userUpdateResponse.data
+          );
+        } catch (error) {
+          console.error("Error in consumer API calls:", error);
+          if (axios.isAxiosError(error)) {
+            if (error.response) {
+              console.error("API error response:", error.response.data);
+              console.error("Status code:", error.response.status);
+            } else if (error.request) {
+              console.error("No response received:", error.request);
+            } else {
+              console.error("Error setting up the request:", error.message);
+            }
+          }
+          // Consider how you want to handle this error. You might want to show a warning to the user
+          // that some parts of the process failed, but continue with the rest of the function.
+          toast.warning(
+            "Some account setup steps failed. Please contact support."
+          );
+        }
+      }
+
+      // Reset form fields
+      [
+        "category",
+        "subCategory",
+        "location",
+        "stock",
+        "quantityType",
+        "imageSrc",
+        "price",
+        "title",
+        "description",
+        "shelfLifeDays",
+        "shelfLifeWeeks",
+        "shelfLifeMonths",
+        "shelfLifeYears",
+        "sodt",
+        "rating",
+        "minOrder",
+      ].forEach((field) =>
+        setValue(
+          field,
+          field === "rating"
+            ? []
+            : field === "minOrder"
+            ? 1
+            : field === "sodt"
+            ? 60
+            : ""
+        )
+      );
+
+      setClicked(false);
+      setClicked1(false);
+      setClicked2(false);
+      setRating([]);
+      setTags([]);
+      setCertificationChecked(false);
+      setQuantityType(undefined);
+
+      router.push("/onboard");
+      toast.success("Listing created successfully!");
+    } catch (error) {
+      console.error("Error in the overall process:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error("Server responded with error:", error.response.data);
+          console.error("Status code:", error.response.status);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Error setting up the request:", error.message);
+        }
+      }
+      toast.error(
+        "An error occurred while creating the listing. Please try again or contact support.",
+        { duration: 3000, position: "bottom-center" }
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
   const showError = (message: string) => {
     toast.error(message, {
@@ -359,7 +433,7 @@ const CreateClient = ({ user, index }: Props) => {
       if (checkField(error.condition(), error.message)) return;
     }
 
-    if (step === 7) {
+    if (step === 7 || (step === 6 && user?.location === null)) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);

@@ -75,49 +75,32 @@ const UserMenu = ({ user }: Props) => {
             bOrders={user?.buyerOrders}
           />
           {user ? (
-            user?.role === UserRole.CONSUMER ? (
-              <UpdateRoleAlert
-                heading="Would you like to become an EZH producer or co-op?"
-                description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
-                backButtonLabel="No thanks"
-                actionButtonLabel="More Info"
-                actionButtonHref="/info/ezh-roles"
-                actionButtonLabelTwo="Co-op Registration"
-                actionButtonHrefTwo="/auth/become-a-co-op"
-                actionButtonLabelThree="Producer Registration"
-                actionButtonHrefThree="/auth/become-a-producer"
-              />
-            ) : (
-              <div
-                onClick={() => {
-                  if (user?.location[0] === null) {
-                    router.push("/dashboard/my-store/settings");
-                  } else {
-                    router.push("/create");
-                  }
-                }}
-                className="hover:cursor-pointer"
-              >
-                <CiSquarePlus
-                  className={`w-8 h-8 lg:w-8 lg:h-8 ${
+            <>
+              <Link href={`/create`}>
+                <div
+                  className={`${
                     white ? "text-white" : "text-black"
+                  } text-xs border rounded-full px-2 py-1 shadow-sm ${
+                    outfit.className
                   }`}
-                />
-              </div>
-            )
+                >
+                  Add a Product
+                </div>
+              </Link>
+            </>
           ) : (
             <>
-              <UpdateRoleAlert
-                heading="Would you like to become an EZH producer or co-op?"
-                description="You have to be a producer or co-op to add a product. There's no registration fee and it can be done in a few seconds."
-                backButtonLabel="No thanks"
-                actionButtonLabel="More Info"
-                actionButtonHref="/info/ezh-roles"
-                actionButtonLabelTwo="Co-op Registration"
-                actionButtonHrefTwo="/auth/register-co-op"
-                actionButtonLabelThree="Producer Registration"
-                actionButtonHrefThree="/auth/register-producer"
-              />
+              <Link href={`/auth/register?callbackUrl=/create`}>
+                <div
+                  className={`${
+                    white ? "text-white" : "text-black"
+                  } text-xs border rounded-full px-2 py-1 shadow-sm ${
+                    outfit.className
+                  }`}
+                >
+                  Add a Product
+                </div>
+              </Link>
             </>
           )}
 
@@ -262,44 +245,59 @@ const UserMenu = ({ user }: Props) => {
                     </SheetTrigger>
                     <SheetContent
                       side="top"
-                      className={`${outfit.className} h-screen w-screen bg text-black text-2xl sm:text-4xl md:text-7xl `}
+                      className={`${outfit.className} h-screen w-screen d1dbbf text-black text-2xl sm:text-4xl md:text-7xl `}
                     >
-                      <ul className="h-full flex flex-col items-start justify-center sm:items-center px-10 ">
-                        <li className="w-full ">
-                          <Link
-                            href="/auth/register"
-                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
-                          >
-                            <div className="flex flex-col mr-8">
-                              Sign up as a buyer
-                            </div>
-                            <CiUser className="text-4xl sm:text-7xl" />
-                          </Link>
-                        </li>
-
-                        <li className="border-t-[1px] border-b-[1px] my-10 py-10 border-black w-full">
-                          <Link
-                            href="/auth/register-co-op"
-                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
-                          >
-                            <div className="flex flex-col">
-                              Become a vendor & <div>sell to anyone</div>
-                            </div>
-                            <IoStorefrontOutline className="text-4xl sm:text-7xl" />
-                          </Link>
-                        </li>
-                        <li className="w-full">
-                          <Link
-                            href="/auth/register-producer"
-                            className="flex items-center justify-evenly w-full hover:text-neutral-600 hover:italic"
-                          >
-                            <div className="flex flex-col">
-                              Become a grower & <div>sell only to vendors</div>
-                            </div>
-                            <GiFruitTree className="text-4xl sm:text-7xl" />
-                          </Link>
-                        </li>
-                      </ul>
+                      <div className="h-full flex flex-col items-center justify-center px-10">
+                        <ul className="w-full max-w-3xl">
+                          {[
+                            {
+                              href: "/auth/register",
+                              text: "Sign Up",
+                              icon: CiUser,
+                            },
+                            {
+                              href: "/auth/register-co-op",
+                              text: ["Become a co-op &", "sell to anyone"],
+                              icon: IoStorefrontOutline,
+                            },
+                            {
+                              href: "/auth/register-producer",
+                              text: [
+                                "Become a grower &",
+                                "sell only to co-ops",
+                              ],
+                              icon: GiFruitTree,
+                            },
+                          ].map((item, index) => (
+                            <li
+                              key={item.href}
+                              className={`w-full ${
+                                index === 1
+                                  ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
+                                  : ""
+                              }`}
+                            >
+                              <Link
+                                href={item.href}
+                                className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+                              >
+                                <div className="flex flex-col">
+                                  {Array.isArray(item.text)
+                                    ? item.text.map((line, i) => (
+                                        <div key={i}>{line}</div>
+                                      ))
+                                    : item.text}
+                                </div>
+                                <item.icon className="text-4xl sm:text-7xl" />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="pt-10 text-xs text-black text-center">
+                          You can switch your account type to either seller role
+                          at any time
+                        </div>
+                      </div>
                     </SheetContent>
                   </Sheet>
                   <SheetTrigger className="w-full">

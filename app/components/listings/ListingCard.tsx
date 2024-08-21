@@ -1,7 +1,7 @@
 "use client";
 //listing card component, can be mapped over to create multiple cards on same page.
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import CartIcon from "@/app/components/listings/cart-icon";
 import { Button } from "@/app/components/ui/button";
@@ -28,6 +28,8 @@ import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
+import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
+import { BiError } from "react-icons/bi";
 
 const outfit = Outfit({
   display: "swap",
@@ -69,37 +71,38 @@ const ListingCard: React.FC<ListingCardProps> = ({
   priority,
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
+
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-
-      if (disabled) {
-        return;
-      }
-
+      if (disabled) return;
       onAction?.(actionId || "");
     },
     [disabled, onAction, actionId]
   );
 
+  const handleCardClick = useCallback(() => {
+    if (pathname !== "/dashboard/my-store") {
+      router.push(`/listings/${data.id}`);
+    }
+  }, [router, data.id, pathname]);
+
   const handleSecondAction = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-
-      if (disabled) {
-        return;
-      }
-
+      if (disabled) return;
       onSecondAction?.(secondActionId || "");
     },
     [disabled, onSecondAction, secondActionId]
   );
 
+  const hasError = !data.location || !data.location.hours;
   return (
     <div className="col-span-1 cursor-pointer group">
       <div className="flex flex-col w-full relative">
         <div
-          onClick={() => router.push(`/listings/${data.id}`)}
+          onClick={handleCardClick}
           className="w-full relative overflow-hidden rounded-xl"
         >
           <Carousel className="relative rounded-lg">
@@ -123,30 +126,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            {!data.location ? (
-              <div className=" overflow-hidden rounded-xl hover:shadow-xl absolute bottom-2 flex flex-col justify-center items-center bg-red-500 p-2 m-2">
-                <div>
-                  {" "}
-                  This item has no location set and is not visible to buyers.{" "}
-                </div>
-                <div>
-                  {" "}
-                  Go to store settings to set up this location, or change its
-                  location
-                </div>
-              </div>
-            ) : !data.location.hours ? (
-              <div className=" overflow-hidden rounded-xl hover:shadow-xl absolute bottom-2 flex-col flex justify-center items-center bg-red-500 p-2 m-2">
-                <div>
-                  {" "}
-                  This item has no hours set and is not visible to buyers.
-                </div>
-                <div>
-                  Go to store settings to set up hours for this location, or
-                  change its location
-                </div>
-              </div>
-            ) : null}
 
             {data.imageSrc.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -159,6 +138,27 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             )}
           </Carousel>
+          {hasError && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center sm:justify-start sm:pl-[10%]">
+              <Popover>
+                <PopoverTrigger className="text-white">
+                  <div className="flex flex-col items-center justify-center">
+                    <BiError className="h-6 w-6 mb-1" />
+                    <span className="text-xs text-center max-w-[150px]">
+                      Listing not visible yet, see why
+                    </span>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent align="center" className="z-50">
+                  <div className="text-sm">
+                    {!data.location
+                      ? "This item has no location set and is not visible to buyers. Go to store settings to set up this location, or change its location."
+                      : "This item has no hours set and is not visible to buyers. Go to store settings to set up hours for this location, or change its location."}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
           <div className="absolute top-3 right-3">
             {data.stock <= 0 ? (
               <></>
@@ -179,7 +179,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <div
             className={`font-light text-neutral-500 text-xs ${work.className}`}
           >
-            {data?.location?.address[1]}, {data?.location?.address[2]}
+            {data?.location?.address && (
+              <>
+                {" "}
+                {data?.location?.address[1]}, {data?.location?.address[2]}
+              </>
+            )}
           </div>
         </div>
         <div className="text-sm text-gray-600 ">
@@ -235,7 +240,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </AlertDialog>
           </div>
         </div>
-
         {onSecondAction && secondActionLabel && (
           <Button
             disabled={disabled}
@@ -244,7 +248,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           >
             <MdOutlineEdit />
           </Button>
-        )}
+        )}{" "}
       </div>
     </div>
   );

@@ -2,12 +2,24 @@
 import Image from "next/image";
 import authImg from "@/public/images/website-images/authimg2.png";
 import Logo from "../components/navbar/Logo";
-
+import Link from "next/link";
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="absolute top-1 left-1 z-10">
-        <Logo />
+      <div
+        className={`${outfit.className} absolute top-1 left-1 z font-thin text-lg block sm:hidden`}
+      >
+        <Link href="/">EZH </Link>
+      </div>
+      <div
+        className={`${outfit.className} absolute top-1 left-1 z font-thin text-lg hidden sm:block`}
+      >
+        <Link href="/">EZHomesteading </Link>
       </div>
       <div className="absolute z-10 bottom-0 left-0 hidden xl:block">
         <Image
@@ -16,15 +28,13 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           blurDataURL="data:..."
           placeholder="blur"
           priority={true}
-          width={800}
-          height={600}
+          width={600}
+          height={400}
           className="xl:display-hidden"
         />
       </div>
-      <div className="authlayoutbg flex min-h-screen items-center justify-center relative">
-        <div className="xl:absolute relative top-0 xl:right-12 right-0 sm:px-6 lg:px-8">
-          {children}
-        </div>
+      <div className="authlayoutbg flex min-h-screen pt-[5%] items-start justify-center relative w-screen">
+        <div>{children}</div>
       </div>
     </>
   );
