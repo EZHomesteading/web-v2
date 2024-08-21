@@ -17,6 +17,9 @@ export default async function getDisputes() {
         updatedAt: true,
         order: {
           select: {
+            id: true,
+            totalPrice: true,
+            paymentIntentId: true,
             conversationId: true,
             buyer: {
               select: {

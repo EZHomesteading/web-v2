@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       const a = pi.orderIds;
       const b = a.replace(/,(?=[^,]*$)/, "");
       const orderIds = JSON.parse(b);
-
+      const PID = event.data.object.id;
       await prisma.cart.deleteMany({
         where: { userId: pi.userId },
       });
@@ -106,7 +106,11 @@ export async function POST(request: NextRequest) {
           // Update the order with the new conversation ID and status
           const orderUpdate = await prisma.order.update({
             where: { id: order.id },
-            data: { conversationId: newConversation.id, status: 1 },
+            data: {
+              conversationId: newConversation.id,
+              status: 1,
+              paymentIntentId: PID,
+            },
           });
 
           // Prepare message bodies for buyer and seller

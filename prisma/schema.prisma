@@ -227,20 +227,21 @@ model TransactionHistory {
 }
 
 model Order {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
-  listingIds     String[]
-  sellerId       String      @db.ObjectId
-  pickupDate     DateTime
-  quantity       String
-  totalPrice     Float
-  status         Int         @default(0)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  fee            Float
-  location       LocationObj
-  conversationId String?     @db.ObjectId
-  payments       Payment[]
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String      @db.ObjectId
+  listingIds      String[]
+  sellerId        String      @db.ObjectId
+  pickupDate      DateTime
+  paymentIntentId String?
+  quantity        String
+  totalPrice      Float
+  status          Int         @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  fee             Float
+  location        LocationObj
+  conversationId  String?     @db.ObjectId
+  payments        Payment[]
 
   dispute Dispute?
   buyer   User?    @relation(name: "buyer", fields: [userId], references: [id])
