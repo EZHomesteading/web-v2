@@ -67,12 +67,10 @@ const RegisterForm = () => {
 
   const handleContinueWithEmail = () => {
     setShowFullForm(true);
-    // Explicitly set the name field to an empty string
     form.setValue("name", "");
   };
 
   useEffect(() => {
-    // Log form values whenever they change
     const subscription = form.watch((value) => {
       console.log("Form values changed:", value);
     });
