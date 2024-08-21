@@ -228,7 +228,6 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
     };
 
     try {
-      // Create listing
       const listingResponse = await axios.post(
         "/api/listing/listings",
         formData
@@ -238,9 +237,16 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       if (user?.role === UserRole.CONSUMER) {
         try {
           const [stripeResponse, userUpdateResponse] = await Promise.all([
-            axios.post("/api/stripe/create-connected-account", {
-              userId: user?.id,
-            }),
+            fetch(
+              `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId: user?.id }),
+              }
+            ),
             axios.post("/api/useractions/update", {
               role: UserRole.PRODUCER,
               hasPickRole: false,
@@ -248,12 +254,26 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
             }),
           ]);
 
-          console.log("Stripe connected account created:", stripeResponse.data);
-          if (stripeResponse.data && stripeResponse.data.stripeAccountId) {
-            console.log(
-              "Stripe Account ID:",
-              stripeResponse.data.stripeAccountId
-            );
+          // Check if the response is ok before trying to parse JSON
+          if (!stripeResponse.ok) {
+            const textResponse = await stripeResponse.text();
+            console.error("Stripe API error response:", textResponse);
+            throw new Error(`HTTP error! status: ${stripeResponse.status}`);
+          }
+
+          let stripeData;
+          try {
+            stripeData = await stripeResponse.json();
+          } catch (jsonError) {
+            console.error("Error parsing Stripe response:", jsonError);
+            const textResponse = await stripeResponse.text();
+            console.error("Raw Stripe response:", textResponse);
+            throw new Error("Invalid JSON in Stripe response");
+          }
+
+          console.log("Stripe connected account created:", stripeData);
+          if (stripeData && stripeData.stripeAccountId) {
+            console.log("Stripe Account ID:", stripeData.stripeAccountId);
           }
 
           console.log(
@@ -262,18 +282,12 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
           );
         } catch (error) {
           console.error("Error in consumer API calls:", error);
-          if (axios.isAxiosError(error)) {
-            if (error.response) {
-              console.error("API error response:", error.response.data);
-              console.error("Status code:", error.response.status);
-            } else if (error.request) {
-              console.error("No response received:", error.request);
-            } else {
-              console.error("Error setting up the request:", error.message);
-            }
+          if (error instanceof Error) {
+            console.error("Error message:", error.message);
           }
-          // Consider how you want to handle this error. You might want to show a warning to the user
-          // that some parts of the process failed, but continue with the rest of the function.
+          // Log the full error object for debugging
+          console.error("Full error object:", error);
+
           toast.warning(
             "Some account setup steps failed. Please contact support."
           );
@@ -323,15 +337,8 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       toast.success("Listing created successfully!");
     } catch (error) {
       console.error("Error in the overall process:", error);
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error("Server responded with error:", error.response.data);
-          console.error("Status code:", error.response.status);
-        } else if (error.request) {
-          console.error("No response received:", error.request);
-        } else {
-          console.error("Error setting up the request:", error.message);
-        }
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
       }
       toast.error(
         "An error occurred while creating the listing. Please try again or contact support.",

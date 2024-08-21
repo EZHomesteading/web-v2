@@ -2,6 +2,7 @@ import { Outfit } from "next/font/google";
 import FinTab from "./fintab";
 import { Session } from "next-auth";
 import { MdKeyboardArrowRight } from "react-icons/md";
+import { UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -22,12 +23,16 @@ const StepOne: React.FC<Props> = async ({
       <div className="col-span-1 2xl:col-span-4"></div>
       <div className="col-span-11 2xl:col-span-7">
         <div className="grid grid-rows-10 h-full">
-          <div className="row-span-1"></div>
+          <div className="row-span-1 hidden sm:block"></div>
           <div className="row-span-9">
             <div className="flex items-center gap-2 text-xs mb-10">
               Account Set Up
               <div className="bg-black w-[6px] h-[6px] rounded-full "></div>{" "}
-              Co-op
+              {session?.user?.role === UserRole.COOP ? (
+                <>Co-op</>
+              ) : (
+                <>Producer</>
+              )}
               {session &&
                 session.user &&
                 session.user.location &&
@@ -42,7 +47,7 @@ const StepOne: React.FC<Props> = async ({
               <div></div>
             </div>
             <div className="text-4xl font-semibold">
-              Welcome, {session?.user?.firstName}
+              Welcome, {session?.user?.firstName || session?.user?.name}
             </div>
             <div className="mb-10 font-light">Final Steps to Start Selling</div>
             <div className="mx-5">

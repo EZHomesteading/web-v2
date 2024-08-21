@@ -9,9 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  console.log(body);
   const { userId } = body;
-  console.log(userId)
+  console.log(body)
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },

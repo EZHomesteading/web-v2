@@ -67,14 +67,20 @@ const RegisterForm = () => {
 
   const handleContinueWithEmail = () => {
     setShowFullForm(true);
-    // Explicitly set the name field to an empty string
-    form.setValue("name", "");
+    // Reset all form fields except email
+    form.reset({
+      ...form.getValues(),
+      password: "",
+      confirmPassword: "",
+      name: "",
+    });
   };
 
   useEffect(() => {
-    // Log form values whenever they change
-    const subscription = form.watch((value) => {
+    const subscription = form.watch((value, { name, type }) => {
       console.log("Form values changed:", value);
+      console.log("Changed field:", name);
+      console.log("Type of change:", type);
     });
     return () => subscription.unsubscribe();
   }, [form]);
@@ -125,6 +131,25 @@ const RegisterForm = () => {
               <>
                 <FormField
                   control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="w-[280px] sm:w-[350px]">
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          disabled={isPending}
+                          placeholder="john.doe@example.com"
+                          type="email"
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem className="w-[280px] sm:w-[350px]">
@@ -135,11 +160,6 @@ const RegisterForm = () => {
                           disabled={isPending}
                           placeholder="Appleseed Store"
                           className="w-full"
-                          onFocus={() => {
-                            if (!field.value) {
-                              form.setValue("name", "");
-                            }
-                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -186,13 +206,6 @@ const RegisterForm = () => {
             )}
           </form>
         </Form>
-        {/* Debug information */}
-        <div className="mt-4 p-2 bg-gray-100 rounded">
-          <h3 className="font-bold">Debug Info:</h3>
-          <pre className="text-xs overflow-auto max-h-40">
-            {debugInfo || "No form submission yet"}
-          </pre>
-        </div>
       </CardWrapper>
     </div>
   );
