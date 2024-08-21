@@ -17,7 +17,6 @@ import StepFive from "./step5";
 import StepSeven from "./step7";
 import StepEight from "./step8";
 import StepNine from "./step9";
-import Link from "next/link";
 import { Session } from "next-auth";
 
 const outfit = Outfit({
@@ -45,15 +44,15 @@ interface UserLocation {
 }
 
 const Onboarding = ({
-  user,
+  user: initialUser,
   index,
   apiKey,
   canReceivePayouts,
   session,
 }: Props) => {
-
   const router = useRouter();
   const [step, setStep] = useState(index);
+  const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
     hours?: ExtendedHours;
     image?: string;
@@ -68,57 +67,83 @@ const Onboarding = ({
 
   const handleNext = async () => {
     try {
-      if (step === 3 || step === 4) {
+      if (step === 3) {
         const existingLocations: UserLocation =
           (user.location as UserLocation) || {};
-        let updatedLocations: UserLocation;
+        const updatedLocations: UserLocation = {
+          0: {
+            ...formData.location?.[0],
+            hours:
+              formData.location?.[0]?.hours ||
+              existingLocations[0]?.hours ||
+              null,
+          } as LocationObj,
+          ...Object.fromEntries(
+            Object.entries(existingLocations)
+              .filter(([key, value]) => key !== "0" && value !== null)
+              .map(([key, value]) => [Number(key), value])
+          ),
+        };
 
-        if (step === 3) {
-          updatedLocations = {
-            0: {
-              ...formData.location?.[0],
-              hours:
-                formData.location?.[0]?.hours ||
-                existingLocations[0]?.hours ||
-                null,
-            } as LocationObj,
-            ...Object.fromEntries(
-              Object.entries(existingLocations)
-                .filter(([key, value]) => key !== "0" && value !== null)
-                .map(([key, value]) => [Number(key), value])
-            ),
-          };
+        // Post the updated location data and wait for the response
+        const response = await axios.post("/api/useractions/update", {
+          location: updatedLocations,
+        });
 
-        } else if (step === 4) {
-          if (formData.location) {
-            console.log(formData.location);
-            await axios.post("/api/useractions/update", {
-              location: { 0: formData.location },
-            });
-          }
+        // Update the user state with the new location data
+        setUser((prevUser) => ({
+          ...prevUser,
+          location: response.data.location || updatedLocations,
+        }));
+
+        // Update the formData state
+        setFormData((prevData) => ({
+          ...prevData,
+          location: response.data.location || updatedLocations,
+        }));
+      } else if (step === 4) {
+        if (formData.location) {
+          const response = await axios.post("/api/useractions/update", {
+            location: { 0: formData.location[0] },
+          });
+          setUser((prevUser) => ({
+            ...prevUser,
+            location: response.data.location || formData.location,
+          }));
         }
-
       } else if (step === 6) {
         if (formData.image) {
-          await axios.post("/api/useractions/update", {
+          const response = await axios.post("/api/useractions/update", {
             image: formData.image,
           });
+          setUser((prevUser) => ({
+            ...prevUser,
+            image: response.data.image || formData.image,
+          }));
         }
       } else if (step === 7) {
         if (formData.bio) {
-          await axios.post("/api/useractions/update", { bio: formData.bio });
+          const response = await axios.post("/api/useractions/update", {
+            bio: formData.bio,
+          });
+          setUser((prevUser) => ({
+            ...prevUser,
+            bio: response.data.bio || formData.bio,
+          }));
         }
       } else if (step === 9) {
         router.push("/dashboard");
+        return; // Exit the function early to prevent unnecessary state updates
       }
+
+      // Move to the next step only after all async operations are complete
+      setStep((prevStep) => prevStep + 1);
+      setProgress((prevProgress) => prevProgress + 11);
     } catch (error) {
       console.error(`Error updating data for step ${step}:`, error);
+      // Handle the error appropriately (e.g., show an error message to the user)
     }
-
-    setStep(step + 1);
-    setProgress((step + 1) * 11);
   };
-
   const handlePrevious = () => {
     setStep(step - 1);
     setProgress((step - 1) * 11);

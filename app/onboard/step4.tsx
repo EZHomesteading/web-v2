@@ -16,7 +16,7 @@ interface UserLocation {
   } | null;
 }
 const StepFour = ({ user, updateFormData }: p) => {
-  const [location, setLocation] = useState(user?.location[0]);
+  const [location, setLocation] = useState(user?.location?.[0] || null);
 
   const handleHoursChange = (newHours: Prisma.JsonValue) => {
     let updatedLocation = { ...location };

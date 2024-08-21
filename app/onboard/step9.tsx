@@ -6,7 +6,7 @@ interface p {
 }
 const StepNine = ({ user }: p) => {
   return (
-    <div className="my-10 h-fit">
+    <div className="sm:my-10 mb-2 h-fit px-2">
       {user?.stripeAccountId ? (
         <AccountOnboardingUI user={user} />
       ) : (
