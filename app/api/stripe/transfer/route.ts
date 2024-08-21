@@ -11,23 +11,19 @@ interface TransferData {
   total: number;
   stripeAccountId: string;
   orderId: string;
-  status: number;
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { total, stripeAccountId, orderId, status } = body as TransferData;
+  const { total, stripeAccountId, orderId } = body as TransferData;
 
   const order = await getOrderByIdTransfer({ orderId: orderId });
 
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  } else if (
-    order.status !== status ||
-    (order.seller && order.seller.stripeAccountId !== stripeAccountId)
-  ) {
+  } else if (order.seller && order.seller.stripeAccountId !== stripeAccountId) {
     return NextResponse.json(
-      { error: "Invalid order status or Stripe account" },
+      { error: "Invalid Stripe account" },
       { status: 400 }
     );
   }

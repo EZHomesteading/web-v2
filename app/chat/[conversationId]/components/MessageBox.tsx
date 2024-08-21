@@ -356,7 +356,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         total: TotalPrice - stripeFee,
         stripeAccountId: stripeAccountId,
         orderId: order.id,
-        status: order.status,
       });
     } catch (error) {
       console.error(error);
