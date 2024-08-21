@@ -37,7 +37,6 @@ const ChatId = async ({ params }: { params: IParams }) => {
   const order = await GetOrderByConvoId(params.conversationId);
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
-  console.log(currentUser.id, conversationData.userIds);
   if (
     currentUser.id === conversationData.userIds[1] ||
     currentUser.id === conversationData.userIds[0]

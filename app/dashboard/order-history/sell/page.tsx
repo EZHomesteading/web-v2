@@ -28,9 +28,8 @@ const Page = async () => {
 
   const renderedCards = await Promise.all(
     seller?.sellerOrders
-      .filter(
-        (order) =>
-          order.status >= 17 || order.status === 9 || order.status === 0
+      .filter((order) =>
+        [0, 4, 7, 9, 12, 15, 17, 18, 19, 20, 21, 22].includes(order.status)
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>

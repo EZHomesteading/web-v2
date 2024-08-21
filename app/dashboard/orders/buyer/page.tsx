@@ -56,7 +56,7 @@ const Page = async () => {
     buyer?.buyerOrders
       .filter(
         (order) =>
-          ![0, 4, 7, 12, 15, 19].includes(order.status) && order.status < 18
+          ![0, 4, 7, 9, 12, 15, 19, 18, 17, 20, 21, 22].includes(order.status)
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>

@@ -17,6 +17,7 @@ interface ConfirmModalProps {
   otherUser: string | undefined;
   convoId: string;
   otherUserRole: string | undefined;
+  isSeller: boolean;
 }
 
 const CancelModal: React.FC<ConfirmModalProps> = ({
@@ -26,6 +27,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   otherUser,
   convoId,
   otherUserRole,
+  isSeller,
 }) => {
   const session = useSession();
   const router = useRouter();
@@ -35,13 +37,28 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     setText(e.target.value);
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
     //early return if the user ahs not entered a message, tell the user why
     if (text === "") {
-      toast.error("no message enteredd");
+      toast.error("no message entered");
       return;
     }
     setIsLoading(true);
+    console.log(order.paymentIntentId);
+    axios.post("/api/stripe/refund-payment", {
+      paymentId: order.paymentIntentId,
+    });
+    if (isSeller === true) {
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 4,
+      });
+    } else {
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 12,
+      });
+    }
     //axios post is always the same. post a message with the users input text
     axios.post("/api/chat/messages", {
       message: `I have canceled this item, because: ${text}`,

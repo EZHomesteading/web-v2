@@ -12,6 +12,7 @@ import {
 import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { useState } from "react";
+import { Dispute } from "./dispute.client";
 
 interface ExplanationDialogProps {
   onConfirm: (explanation: string) => void;
@@ -28,7 +29,7 @@ export function ExplanationDialog({ onConfirm }: ExplanationDialogProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" className="text-black">
-          Provide Explanation
+          Provide Explanation for
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
