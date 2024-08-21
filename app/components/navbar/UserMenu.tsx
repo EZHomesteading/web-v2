@@ -24,7 +24,11 @@ import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IoStorefrontOutline } from "react-icons/io5";
+import {
+  IoInformationCircleOutline,
+  IoStorefrontOutline,
+} from "react-icons/io5";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -41,7 +45,7 @@ const UserMenu = ({ user }: Props) => {
   const router = useRouter();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
-
+  const [about, setAbout] = useState(false);
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
@@ -58,6 +62,10 @@ const UserMenu = ({ user }: Props) => {
       );
     };
   }, []);
+  const isMdOrLarger = useMediaQuery("(min-width: 768px)");
+  const toggleAbout = () => {
+    setAbout((prevState) => !prevState);
+  };
   return (
     <>
       <Sheet>
@@ -112,7 +120,12 @@ const UserMenu = ({ user }: Props) => {
             />
           </SheetTrigger>
         </div>
-        <SheetContent className={`${outfit.className} bg pt-5 overflow-y-auto`}>
+        <SheetContent
+          side={isMdOrLarger ? "right" : "top"}
+          className={`${outfit.className} bg pt-5 overflow-y-auto h-screen ${
+            isMdOrLarger ? "" : ""
+          }`}
+        >
           <div>
             {user && (
               <div className="flex flex-row px-4">
@@ -215,6 +228,43 @@ const UserMenu = ({ user }: Props) => {
                     <></>
                   )}
                   <hr />
+                  <div
+                    onClick={toggleAbout}
+                    className="px-6 
+        py-3 
+        hover:shadow-md
+        font-normal
+      text-xl
+        md:text-lg
+        flex
+        items-center
+        mi hover:cursor-pointer "
+                  >
+                    <div className="mr-2">
+                      <IoInformationCircleOutline className="mr-2" />
+                    </div>
+                    About <RiArrowDropDownLine className="ml-2" />
+                  </div>
+                  {about && (
+                    <ul
+                      className="px-16  text-xl
+        md:text-lg space-y-3"
+                    >
+                      <li>
+                        <Link href="/" className="w-full py-2">
+                          About Us
+                        </Link>
+                      </li>
+                      <li className="">
+                        <Link
+                          href="/info/how-ezh-work"
+                          className=" w-full py-2"
+                        >
+                          How EZH Works
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
                   <SheetTrigger className="w-full">
                     <MenuItem
                       icon={<FaSignOutAlt className="mr-2" />}
@@ -245,7 +295,7 @@ const UserMenu = ({ user }: Props) => {
                     </SheetTrigger>
                     <SheetContent
                       side="top"
-                      className={`${outfit.className} h-screen w-screen d1dbbf text-black text-2xl sm:text-4xl md:text-7xl `}
+                      className={`${outfit.className} h-screen w-screen d1dbbf text-black  `}
                     >
                       <div className="h-full flex flex-col items-center justify-center px-10">
                         <ul className="w-full max-w-3xl">
@@ -324,10 +374,50 @@ const UserMenu = ({ user }: Props) => {
                       icon={<LiaMapMarkedSolid className="mr-2" />}
                       onClick={() => router.push("/map")}
                     />{" "}
+                  </SheetTrigger>
+                  <div
+                    onClick={toggleAbout}
+                    className="px-6 
+        py-3 
+        hover:shadow-md
+        font-normal
+        text-xl
+        md:text-lg
+        flex
+        items-center
+        mi hover:cursor-pointer "
+                  >
+                    <div className="mr-2">
+                      <IoInformationCircleOutline className="mr-2" />
+                    </div>
+                    About <RiArrowDropDownLine className="ml-2" />
+                  </div>
+                  {about && (
+                    <ul
+                      className="px-16  
+   text-xl
+        md:text-lg space-y-3"
+                    >
+                      <li>
+                        <Link href="/" className="w-full py-2">
+                          About Us
+                        </Link>
+                      </li>
+                      <li className="">
+                        <Link
+                          href="/info/how-ezh-work"
+                          className=" w-full py-2"
+                        >
+                          How EZH Works
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                  <SheetTrigger className="px-4 pt-3">
                     <Button onClick={() => router.push("/get-ezh-app")}>
                       Install the EZH App
                     </Button>
-                  </SheetTrigger>{" "}
+                  </SheetTrigger>
                 </>
               )}
             </div>
@@ -339,3 +429,18 @@ const UserMenu = ({ user }: Props) => {
 };
 
 export default UserMenu;
+const useMediaQuery = (query: any) => {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    setMatches(mediaQuery.matches);
+
+    const handler = (event: any) => setMatches(event.matches);
+    mediaQuery.addEventListener("change", handler);
+
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+};

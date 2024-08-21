@@ -26,6 +26,16 @@ interface InputProps {
   watch: UseFormWatch<FieldValues>;
   setValue: UseFormSetValue<FieldValues>;
   maxlength: number;
+  inputmode:
+    | "search"
+    | "text"
+    | "none"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | undefined;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -37,6 +47,7 @@ const Input: React.FC<InputProps> = ({
   required,
   errors,
   validationRules,
+  inputmode,
   watch,
   setValue,
   type,
@@ -63,6 +74,8 @@ const Input: React.FC<InputProps> = ({
             value: type === "number",
             ...registerOptions,
           })}
+          inputMode={inputmode}
+          pattern="[0-9]*\.?[0-9]*"
           placeholder=""
           className={`
           peer

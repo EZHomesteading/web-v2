@@ -69,6 +69,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                 label="Quantity"
                 type="number"
                 maxlength={6}
+                inputmode="numeric"
               />
               <PiBasketLight
                 size={25}
@@ -100,6 +101,7 @@ const StepThree: React.FC<StepThreeProps> = ({
               step="0.01"
               formatPrice
               maxlength={6}
+              inputmode="decimal"
             />
 
             <div className="relative ">
@@ -110,6 +112,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                 label="Minimum order"
                 type="number"
                 maxlength={4}
+                inputmode="numeric"
               />
               <HiOutlineExclamationTriangle
                 className="text-neutral-700 absolute top-5 right-2"
