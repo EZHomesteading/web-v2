@@ -15,7 +15,11 @@ import {
 import axios from "axios";
 import { UserInfo } from "@/next-auth";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
-
+import { Outfit } from "next/font/google";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface ConversationListProps {
   initialItems: FullConversationType[];
   title?: string;
@@ -27,13 +31,8 @@ const ConversationList: React.FC<ConversationListProps> = ({
   user,
 }) => {
   const items = initialItems;
-  //const [items, setItems] = useState(initialItems);
 
   const { conversationId, isOpen } = useConversation();
-
-  // const pusherKey = useMemo(() => {
-  //   return session.data?.user?.email;
-  // }, [session.data?.user?.email]);
 
   useEffect(() => {
     async function setUpServiceWorker() {
@@ -64,68 +63,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
     syncPushSubscription();
   }, []);
 
-  // useEffect(() => {
-  //   if (!pusherKey) {
-  //     return;
-  //   }
-  //   pusherClient.unsubscribe(pusherKey);
-  //   pusherClient.subscribe(pusherKey);
-
-  //   const updateHandler = (conversation: FullConversationType) => {
-  //     setItems((current) =>
-  //       current.map((currentConversation) => {
-  //         if (currentConversation.id === conversation.id) {
-  //           return {
-  //             ...currentConversation,
-  //             messages: conversation.messages,
-  //           };
-  //         }
-
-  //         return currentConversation;
-  //       })
-  //     );
-  //   };
-
-  //   const newHandler = (conversation: FullConversationType) => {
-  //     setItems((current) => {
-  //       if (find(current, { id: conversation.id })) {
-  //         return current;
-  //       }
-
-  //       return [conversation, ...current];
-  //     });
-  //   };
-
-  //   const removeHandler = (conversation: FullConversationType) => {
-  //     setItems((current) => {
-  //       return [...current.filter((convo) => convo.id !== conversation.id)];
-  //     });
-  //   };
-
-  //   pusherClient.bind("conversation:update", updateHandler);
-  //   pusherClient.bind("conversation:new", newHandler);
-  //   pusherClient.bind("conversation:remove", removeHandler);
-  // }, [pusherKey, router]);
-
   return (
     <>
       <aside
         className={clsx(
-          `fixed inset-y-20 pb-20 lg:pb-0 lg:w-80 lg:block overflow-y-auto border-gray-200`,
+          `fixed inset-y-20 pb-20 lg:pb-0 lg:w-80 lg:block overflow-y-auto border-r-[1px]`,
           isOpen ? "hidden" : "block w-full left-0"
         )}
       >
         <div className="px-5">
-          <div className="flex  mb-4 pt-4 items-center">
-            <div className="text-2xl font-bold text-white">Messages</div>
-
-            <div
-              className="
-                
-              "
-            >
-              <SubToggle />
+          <div className="flex  mb-4 pt-4 items-center justify-between">
+            <div className={`${outfit.className} text-2xl font-medium`}>
+              Messages
             </div>
+            <SubToggle />
           </div>
 
           {items.map((item) => (

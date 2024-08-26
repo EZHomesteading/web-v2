@@ -24,7 +24,9 @@ const Navbar = ({ user }: p) => {
             className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 text-grey hidden xl:block text-white`}
           >
             <Link href="/">
-              <h1 className={`${outfit.className} hover:text-green-800`}>
+              <h1
+                className={`${outfit.className} hover:text-green-800 text-black`}
+              >
                 EZ Homesteading
               </h1>
             </Link>

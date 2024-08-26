@@ -41,7 +41,7 @@ interface Props {
 }
 const UserMenu = ({ user }: Props) => {
   const pathname = usePathname();
-  const white = pathname === "/" || pathname?.startsWith("/chat");
+  const white = pathname === "/";
   const router = useRouter();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
