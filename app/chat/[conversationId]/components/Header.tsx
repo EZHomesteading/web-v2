@@ -1,14 +1,13 @@
 "use client";
 //header component for chat pages, simply displays some information about the chat.
-import { HiChevronLeft } from "react-icons/hi";
+
 import Link from "next/link";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
-import Avatar from "@/app/components/Avatar";
+import { HiChevronLeft } from "react-icons/hi";
 import { FullConversationType } from "@/types";
 import { useRouter } from "next/navigation";
 import { Order, Reviews } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
-import ReactStars from "react-stars";
 import {
   Popover,
   PopoverContent,
@@ -16,11 +15,13 @@ import {
 } from "@/app/components/ui/popover";
 import { IoMapOutline, IoStorefrontOutline } from "react-icons/io5";
 import { Outfit } from "next/font/google";
+import ReactStars from "react-stars";
 
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 interface HeaderProps {
   conversation: FullConversationType;
   order: Order;
