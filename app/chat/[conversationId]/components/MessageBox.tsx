@@ -330,6 +330,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     setIsLoading(true);
     try {
       //buyer picks up/ receives delivery of the order, stripe transfer initiated
+      const TotalPrice = order.totalPrice * 100;
+      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
+      await axios.post("/api/stripe/transfer", {
+        //finalise stripe transaction
+        total: TotalPrice - stripeFee,
+        stripeAccountId: stripeAccountId,
+        orderId: order.id,
+      });
+
       await axios.post("/api/chat/messages", {
         message: "I have Received my order. Thank you!",
         messageOrder: "7",
@@ -349,15 +358,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           status: 9,
         });
       }
-      const TotalPrice = order.totalPrice * 100;
-      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
-      await axios.post("/api/stripe/transfer", {
-        //finalise stripe transaction
-        total: TotalPrice - stripeFee,
-        stripeAccountId: stripeAccountId,
-        orderId: order.id,
-        status: order.status,
-      });
     } catch (error) {
       console.error(error);
     } finally {
