@@ -193,6 +193,8 @@ model Listing {
   keyWords     String[]
   minOrder     Int
   imageSrc     String[]
+  review        Boolean?
+  projectHarvest Boolean?
   reports      Int?
   shelfLife    Int
   location     Int        @default(0)
