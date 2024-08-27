@@ -1,9 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Button } from "@/app/components/ui/button";
-import Heading from "@/app/components/Heading";
-import { BiLoaderCircle } from "react-icons/bi";
-import InputField from "./components/suggestion-input";
 import SearchClient, { ProductValue } from "../components/client/SearchClient";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
@@ -45,7 +42,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setImageSrc,
   setReview,
 }) => {
-  console.log(subcat);
   const [product, setProduct] = useState<ProductValue>();
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
@@ -68,9 +64,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
             subcategory === "custom" ? (
               <div>
                 <input
-                  className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex min-h-[62px] pl-5 w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   id="title"
-                  placeholder="Title"
+                  placeholder="Enter Custom Product"
                   disabled={isLoading}
                   maxLength={64}
                   onChange={(e) => {
@@ -87,18 +83,21 @@ const StepTwo: React.FC<StepTwoProps> = ({
                         handleCheckboxChange(checked)
                       }
                     />
-                    <Label className="font-extralight">
-                      Use a Custom Title. This will put your product up for
-                      review before it goes public
+                    <Label className="font-light">
+                      Use a Custom Title
+                      <div className="font-light text-neutral-500 text-xs">
+                        Your title will be reviewed by EZH before the listing is
+                        visible to buyers
+                      </div>
                     </Label>
                   </div>
                 </div>
               </div>
             ) : (
               <input
-                className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-[62px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 id="title"
-                placeholder="Title"
+                placeholder="Enter Product Title"
                 disabled={isLoading}
                 maxLength={64}
                 onChange={(e) => {
@@ -126,9 +125,12 @@ const StepTwo: React.FC<StepTwoProps> = ({
                       handleCheckboxChange(checked)
                     }
                   />
-                  <Label className="font-extralight">
-                    Use a Custom Title. This will put your product up for review
-                    before it goes public
+                  <Label className="font-light">
+                    Use a Custom Title
+                    <div className="text-xs text-neutral-600 font-light">
+                      Your title will be reviewed by EZH before the listing is
+                      visible to buyers
+                    </div>
                   </Label>
                 </div>
               </div>

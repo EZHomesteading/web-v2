@@ -23,7 +23,6 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
     <div>
       <Select
         placeholder="Enter A Product Name"
-        isClearable
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as ProductValue)}
@@ -38,8 +37,8 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-2 shadow-md ",
-          input: () => "text-2xl text-black",
+          control: () => "p-2 shadow-sm h-[62px]",
+          input: () => "text-md text-black",
           option: () => "text-xs",
         }}
         theme={(theme) => ({
@@ -47,8 +46,8 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           borderRadius: 5,
           colors: {
             ...theme.colors,
-            primary: "#ced9bb",
-            primary25: "#ced9bb",
+            primary: "#000",
+            primary25: "#fff",
           },
         })}
       />
