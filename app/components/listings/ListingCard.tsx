@@ -55,9 +55,11 @@ interface ListingCardProps {
   user: UserInfo | null;
   storeUser: UserInfo;
   priority?: boolean;
+  review: boolean | null;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
+  review,
   data,
   onAction,
   disabled,
@@ -97,7 +99,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     [disabled, onSecondAction, secondActionId]
   );
 
-  const hasError = !data.location || !data.location.hours;
+  const hasError = !data.location || !data.location.hours || review;
   return (
     <div className="col-span-1 cursor-pointer group">
       <div className="flex flex-col w-full relative">
@@ -151,8 +153,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </PopoverTrigger>
                 <PopoverContent align="center" className="z-50">
                   <div className="text-sm">
-                    {!data.location
-                      ? "This item has no location set and is not visible to buyers. Go to store settings to set up this location, or change its location."
+                    {!data.location || review
+                      ? review
+                        ? "This item is under review by Admins as it's title is custom"
+                        : "This item has no location set and is not visible to buyers. Go to store settings to set up this location, or change its location."
                       : "This item has no hours set and is not visible to buyers. Go to store settings to set up hours for this location, or change its location."}
                   </div>
                 </PopoverContent>

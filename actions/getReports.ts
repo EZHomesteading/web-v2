@@ -12,6 +12,7 @@ export default async function getReports() {
       select: {
         id: true,
         reports: true,
+        review: true,
       },
       orderBy: {
         reports: "desc",

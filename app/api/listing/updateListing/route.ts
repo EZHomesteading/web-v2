@@ -22,6 +22,7 @@ export async function POST(request: Request) {
     minOrder,
     location,
     reports,
+    review,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
       SODT,
       minOrder,
       reports,
+      review,
     },
   });
 

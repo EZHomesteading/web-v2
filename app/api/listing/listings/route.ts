@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     price,
     subCategory,
     rating,
+    review,
+    reports,
   } = body;
 
   Object.keys(body).forEach((value: any) => {
@@ -33,25 +35,49 @@ export async function POST(request: Request) {
       NextResponse.error();
     }
   });
-
-  const listing = await prisma.listing.create({
-    data: {
-      keyWords,
-      title,
-      description,
-      SODT,
-      imageSrc,
-      category,
-      quantityType,
-      stock,
-      shelfLife,
-      subCategory,
-      price,
-      minOrder,
-      location,
-      rating,
-      userId: user.id!,
-    },
-  });
-  return NextResponse.json(listing);
+  if (review !== null) {
+    const listing = await prisma.listing.create({
+      data: {
+        keyWords,
+        title,
+        description,
+        SODT,
+        imageSrc,
+        category,
+        quantityType,
+        stock,
+        shelfLife,
+        subCategory,
+        price,
+        minOrder,
+        location,
+        rating,
+        review,
+        reports,
+        userId: user.id!,
+      },
+    });
+    return NextResponse.json(listing);
+  } else {
+    const listing = await prisma.listing.create({
+      data: {
+        keyWords,
+        title,
+        description,
+        SODT,
+        imageSrc,
+        category,
+        quantityType,
+        stock,
+        shelfLife,
+        subCategory,
+        price,
+        minOrder,
+        location,
+        rating,
+        userId: user.id!,
+      },
+    });
+    return NextResponse.json(listing);
+  }
 }
