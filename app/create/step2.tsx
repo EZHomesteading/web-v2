@@ -80,7 +80,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                   value={title}
                 />
                 <div className="flex flex-col gap-y-2">
-                  <div className="flex flex-row gap-x-2 items-center">
+                  <div className="flex flex-row gap-x-2 pt-4  items-center">
                     <Checkbox
                       checked={checkbox1Checked}
                       onCheckedChange={(checked: boolean) =>
@@ -119,7 +119,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 }}
               />
               <div className="flex flex-col gap-y-2">
-                <div className="flex flex-row gap-x-2 items-center">
+                <div className="flex flex-row gap-x-2 pt-4 items-center">
                   <Checkbox
                     checked={checkbox1Checked}
                     onCheckedChange={(checked: boolean) =>

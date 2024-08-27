@@ -38,7 +38,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-2 bg shadow-md ",
+          control: () => "p-2 shadow-md ",
           input: () => "text-2xl text-black",
           option: () => "text-xs",
         }}
