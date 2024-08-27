@@ -1,12 +1,18 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Button } from "@/app/components/ui/button";
 import Heading from "@/app/components/Heading";
 import { BiLoaderCircle } from "react-icons/bi";
+import InputField from "./components/suggestion-input";
+import SearchClient, { ProductValue } from "../components/client/SearchClient";
+import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
 
 interface StepTwoProps {
   title: string;
   setTitle: (value: string) => void;
+  setReview: (value: boolean) => void;
+  setImageSrc: (imageSrc: string[]) => void;
   description: string;
   setDescription: (value: string) => void;
   tag: string;
@@ -18,6 +24,7 @@ interface StepTwoProps {
   items: any[];
   buildKeyWords: (desc: string) => void;
   isLoading: boolean;
+  subcat: string;
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({
@@ -34,23 +41,99 @@ const StepTwo: React.FC<StepTwoProps> = ({
   items,
   buildKeyWords,
   isLoading,
+  subcat,
+  setImageSrc,
+  setReview,
 }) => {
+  console.log(subcat);
+  const [product, setProduct] = useState<ProductValue>();
+  const [checkbox1Checked, setCheckbox1Checked] = useState(false);
+  const [subcategory, setSubcategory] = useState(subcat);
+  const handleCheckboxChange = (checked: boolean) => {
+    setCheckbox1Checked(checked);
+
+    if (checked) {
+      setSubcategory("custom");
+      setReview(true);
+    } else {
+      setSubcategory(subcat);
+      setReview(false);
+    }
+  };
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
-          <input
-            className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            id="title"
-            placeholder="Title"
-            disabled={isLoading}
-            maxLength={64}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              handleSearchName(e);
-            }}
-            value={title}
-          />
+          {subcategory !== "fruit" ? (
+            subcategory === "custom" ? (
+              <div>
+                <input
+                  className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  id="title"
+                  placeholder="Title"
+                  disabled={isLoading}
+                  maxLength={64}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    handleSearchName(e);
+                  }}
+                  value={title}
+                />
+                <div className="flex flex-col gap-y-2">
+                  <div className="flex flex-row gap-x-2 pt-4  items-center">
+                    <Checkbox
+                      checked={checkbox1Checked}
+                      onCheckedChange={(checked: boolean) =>
+                        handleCheckboxChange(checked)
+                      }
+                    />
+                    <Label className="font-extralight">
+                      Use a Custom Title. This will put your product up for
+                      review before it goes public
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <input
+                className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                id="title"
+                placeholder="Title"
+                disabled={isLoading}
+                maxLength={64}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  handleSearchName(e);
+                }}
+                value={title}
+              />
+            )
+          ) : (
+            <div>
+              <SearchClient
+                value={product}
+                onChange={(value) => {
+                  setProduct(value as ProductValue);
+                  setTitle(value?.label);
+                  setImageSrc([value?.photo]);
+                }}
+              />
+              <div className="flex flex-col gap-y-2">
+                <div className="flex flex-row gap-x-2 pt-4 items-center">
+                  <Checkbox
+                    checked={checkbox1Checked}
+                    onCheckedChange={(checked: boolean) =>
+                      handleCheckboxChange(checked)
+                    }
+                  />
+                  <Label className="font-extralight">
+                    Use a Custom Title. This will put your product up for review
+                    before it goes public
+                  </Label>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         {items.length > 0 && (
           <div className="relative w-full">

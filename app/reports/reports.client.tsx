@@ -16,6 +16,7 @@ const outfit = Outfit({
 export type Report = {
   reports: number | null;
   id: string;
+  review: boolean | null;
 };
 interface p {
   reports: Report[];
@@ -63,6 +64,7 @@ const ReportComponent = ({ reports }: p) => {
         .post("/api/listing/updateListing", {
           id: report.id,
           reports: null,
+          review: null,
         })
         .then(() => {
           toast.success("Reports marked as invalid");
@@ -77,6 +79,7 @@ const ReportComponent = ({ reports }: p) => {
       <div className="grid grid-cols-5 fixed top-0 left-0 right-0 items-start bg-gray-800 text-white py-2">
         <div className="col-span-1 text-center">Reported listing Id</div>
         <div className="col-span-1 text-center">Number of reports</div>
+        <div className="col-span-1 text-center">Custom Listing Title</div>
         <div className="col-span-1 text-center">Options</div>
       </div>
 
@@ -92,6 +95,9 @@ const ReportComponent = ({ reports }: p) => {
             </Link>
 
             <div className="col-span-1 text-center">{report.reports}</div>
+            <div className="col-span-1 text-center">
+              {report.review ? "true" : "false"}
+            </div>
             <div className="flex flex-row col-span-1 text-center ">
               <Button className="mr-2" onClick={() => Delete(report.id)}>
                 Delete Listing

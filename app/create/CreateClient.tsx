@@ -135,6 +135,8 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       return prevRating;
     });
   };
+  const [review, setReview] = useState(false);
+  const subcat = watch("subCategory");
   const shelfLifeDays = watch("shelfLifeDays");
   const shelfLifeWeeks = watch("shelfLifeWeeks");
   const shelfLifeMonths = watch("shelfLifeMonths");
@@ -207,7 +209,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       parseInt(data.shelfLifeMonths, 10) * 30 +
       parseInt(data.shelfLifeYears, 10) * 365;
 
-    const formData = {
+    let formData = {
       keyWords: tags,
       title: title,
       SODT: parseInt(data.sodt),
@@ -225,6 +227,8 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
           ? ""
           : data.quantityType,
       location: data.location || 0,
+      review: review === true ? true : null,
+      reports: review === true ? 1 : null,
     };
 
     try {
@@ -624,8 +628,10 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       )}
       {step === 2 && (
         <StepTwo
+          setReview={setReview}
           title={title}
           setTitle={setTitle}
+          setImageSrc={setImageSrc}
           description={description}
           setDescription={setDescription}
           tag={tag}
@@ -637,6 +643,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
           items={items}
           buildKeyWords={buildKeyWords}
           isLoading={isLoading}
+          subcat={subCategory}
         />
       )}
       {step === 3 && (

@@ -215,7 +215,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   // all onsubmit options dependent on messages in chat.
   const [isLoading, setIsLoading] = useState(false);
-
   const onSubmit1 = async () => {
     setIsLoading(true);
     try {

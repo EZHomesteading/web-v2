@@ -121,13 +121,13 @@ export async function POST(request: NextRequest) {
             seller.name
           }! I just ordered ${titles} from you, please drop them off at ${
             buyer.location && buyer.location[0]
-              ? buyer.location[0]?.address
+              ? `${buyer.location[0]?.address[0]}, ${buyer.location[0]?.address[1]}, ${buyer.location[0]?.address[2]}. ${buyer.location[0]?.address[3]}`
               : buyer.location && buyer.location[1]
-              ? buyer.location[1]?.address
+              ? `${buyer.location[1]?.address[0]}, ${buyer.location[1]?.address[1]}, ${buyer.location[1]?.address[2]}. ${buyer.location[1]?.address[3]}`
               : buyer.location && buyer.location[2]
-              ? buyer.location[2]?.address
+              ? `${buyer.location[2]?.address[2]}, ${buyer.location[2]?.address[1]}, ${buyer.location[2]?.address[2]}. ${buyer.location[2]?.address[3]}`
               : "this user has no locations set"
-          } during my open `;
+          } during my open hours.`;
           // Send email notification to the seller if enabled
           if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
             // Prepare email parameters

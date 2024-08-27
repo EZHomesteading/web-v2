@@ -26,6 +26,7 @@ type Listing1 = {
   quantityType: string;
   minOrder: number | null;
   imageSrc: string[];
+  review: boolean | null;
 };
 type Listing2 = {
   user: {
@@ -70,6 +71,7 @@ export type FinalListing = {
   userId: string;
   subCategory: string;
   minOrder: number | null;
+  review: boolean | null;
   user: {
     id: string;
     SODT: number | null;
@@ -91,6 +93,7 @@ export type FinalListing1 = {
   imageSrc: string[];
   subCategory: string;
   minOrder: number | null;
+  review: boolean | null;
   user: {
     id: string;
     name: string;
@@ -173,13 +176,17 @@ function filterListingsByLocation(listings: FinalListing[]) {
 function filternullhours(listings: FinalListing[]) {
   return listings.filter(
     (listing: FinalListing) =>
-      listing.location.hours !== undefined && listing.location.hours !== null
+      listing.location.hours !== undefined &&
+      listing.location.hours !== null &&
+      !listing.review
   );
 }
 function filternullhours1(listings: FinalListing1[]) {
   return listings.filter(
     (listing: FinalListing1) =>
-      listing.location.hours !== undefined && listing.location.hours !== null
+      listing.location.hours !== undefined &&
+      listing.location.hours !== null &&
+      !listing.review
   );
 }
 function filterListingsByLocation1(listings: FinalListing1[]) {
@@ -193,24 +200,24 @@ export async function getListingsByIdsChat(listingIds: string[]) {
     const listings = await prisma.listing.findMany({
       where: {
         id: {
-          in: listingIds
-        }
+          in: listingIds,
+        },
       },
       select: {
         id: true,
         title: true,
         price: true,
         imageSrc: true,
-        quantityType:true,
+        quantityType: true,
       },
-     orderBy:{
-      price:"asc"
-     }
+      orderBy: {
+        price: "asc",
+      },
     });
 
-    const orderedListings = listingIds.map(id => 
-      listings.find(listing => listing.id === id)
-    ).filter(Boolean);
+    const orderedListings = listingIds
+      .map((id) => listings.find((listing) => listing.id === id))
+      .filter(Boolean);
 
     return orderedListings;
   } catch (error) {
@@ -250,6 +257,7 @@ const GetListingsMarket = async (
       stock: true,
       description: true,
       location: true,
+      review: true,
       user: {
         select: {
           id: true,
@@ -261,7 +269,6 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-      
 
       listings = await prisma.listing.findMany({
         where: {
@@ -662,7 +669,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       },
       include: { user: { select: { id: true } } },
     });
-    const safeListings = listings.map(async (listing:any) => {
+    const safeListings = listings.map(async (listing: any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing = listing as unknown as FinalListing;
       return {
@@ -700,7 +707,7 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { id: true } } },
     });
 
-    const safeListings = listings.map(async (listing:any) => {
+    const safeListings = listings.map(async (listing: any) => {
       const location = (await getUserLocation2(listing)) as unknown as Location;
       const Listing: FinalListing = listing as unknown as FinalListing;
       return {

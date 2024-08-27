@@ -78,6 +78,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
         >
           {listings.map((listing: FinalListing) => (
             <ListingCard
+              review={listing.review}
               key={listing.id}
               data={listing}
               actionId={listing.id}
