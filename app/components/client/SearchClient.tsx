@@ -1,36 +1,50 @@
 "use client";
-//search bar parent element
-import Select from "react-select";
-import useProduct from "@/hooks/use-product";
 
-export type ProductValue = {
-  cat: string;
-  label: string;
-  value: string;
-  category: string;
-  photo: string;
-};
+import React, { useState, useCallback } from "react";
+import AsyncSelect from "react-select/async";
+import useProducts from "@/hooks/use-product";
+import { FormattedProduct } from "@/hooks/use-product";
 
 interface ProductSelectProps {
-  value?: ProductValue;
-  onChange: (value: ProductValue) => void;
+  value?: FormattedProduct;
+  onChange: (value: FormattedProduct) => void;
 }
 
 const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
-  const { getAll } = useProduct();
+  const { searchProducts } = useProducts();
+  const [inputValue, setInputValue] = useState("");
+
+  const loadOptions = useCallback(
+    (inputValue: string) => {
+      const preprocessedQuery = inputValue
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+        .toLowerCase()
+        .trim();
+      return Promise.resolve(searchProducts(preprocessedQuery));
+    },
+    [searchProducts]
+  );
+
+  const handleInputChange = (newValue: string) => {
+    setInputValue(newValue);
+  };
 
   return (
     <div>
-      <Select
+      <AsyncSelect
         placeholder="Enter A Product Name"
         isClearable
-        options={getAll()}
+        cacheOptions
+        defaultOptions
         value={value}
-        onChange={(value) => onChange(value as ProductValue)}
-        formatOptionLabel={(option: { label: string }) => (
+        inputValue={inputValue}
+        onInputChange={handleInputChange}
+        onChange={(value) => onChange(value as FormattedProduct)}
+        loadOptions={loadOptions}
+        formatOptionLabel={(option: FormattedProduct) => (
           <div className="flex flex-row items-center gap-3">
-            {" "}
             <div>{option.label}</div>
+            <div className="text-gray-400 text-xs">({option.category})</div>
           </div>
         )}
         components={{
@@ -38,9 +52,9 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-2 shadow-md ",
+          control: () => "p-2 shadow-md",
           input: () => "text-2xl text-black",
-          option: () => "text-xs",
+          option: () => "text-sm",
         }}
         theme={(theme) => ({
           ...theme,

@@ -4,9 +4,11 @@ import { Button } from "@/app/components/ui/button";
 import Heading from "@/app/components/Heading";
 import { BiLoaderCircle } from "react-icons/bi";
 import InputField from "./components/suggestion-input";
-import SearchClient, { ProductValue } from "../components/client/SearchClient";
+import SearchClient from "../components/client/SearchClient";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
+import debounce from "debounce";
+import { FormattedProduct } from "@/hooks/use-product";
 
 interface StepTwoProps {
   title: string;
@@ -19,9 +21,6 @@ interface StepTwoProps {
   setTag: (value: string) => void;
   tags: string[];
   setTags: (value: string[]) => void;
-  handleSearchName: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isSearching: boolean;
-  items: any[];
   buildKeyWords: (desc: string) => void;
   isLoading: boolean;
   subcat: string;
@@ -36,17 +35,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setTag,
   tags,
   setTags,
-  handleSearchName,
-  isSearching,
-  items,
   buildKeyWords,
   isLoading,
   subcat,
   setImageSrc,
   setReview,
 }) => {
-  console.log(subcat);
-  const [product, setProduct] = useState<ProductValue>();
+  const [product, setProduct] = useState<FormattedProduct>();
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
   const handleCheckboxChange = (checked: boolean) => {
@@ -60,6 +55,37 @@ const StepTwo: React.FC<StepTwoProps> = ({
       setReview(false);
     }
   };
+  const [items, setItems] = useState<any>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const handleSearchName = debounce(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const query = event.target.value;
+      if (query === "") {
+        setItems([]);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/listing/listingSuggestionsCreate?query=${encodeURIComponent(
+            query
+          )}`
+        );
+        const data = await response.json();
+        if (data.listings) {
+          setItems(data.listings);
+        } else {
+          setItems([]);
+        }
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        setItems([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    1000
+  );
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
@@ -113,7 +139,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <SearchClient
                 value={product}
                 onChange={(value) => {
-                  setProduct(value as ProductValue);
+                  setProduct(value as FormattedProduct);
                   setTitle(value?.label);
                   setImageSrc([value?.photo]);
                 }}
