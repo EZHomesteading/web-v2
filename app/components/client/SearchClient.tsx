@@ -7,26 +7,74 @@ import { FormattedProduct } from "@/hooks/use-product";
 
 interface ProductSelectProps {
   value?: FormattedProduct;
-  onChange: (value: FormattedProduct) => void;
+  subcat: string;
+  onChange: (value: FormattedProduct | null) => void;
+  onCustomAction: () => void;
+  customActionLabel: string;
 }
 
-const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
-  const { searchProducts } = useProducts();
+const SearchClient: React.FC<ProductSelectProps> = ({
+  value,
+  onChange,
+  subcat,
+  onCustomAction,
+  customActionLabel,
+}) => {
+  const { searchProducts, getAll } = useProducts();
   const [inputValue, setInputValue] = useState("");
+  const [isFirstOpen, setIsFirstOpen] = useState(true);
+
+  const customAction: FormattedProduct = {
+    value: "custom-action",
+    label: customActionLabel,
+    cat: "",
+    category: "",
+    photo: "",
+  };
 
   const loadOptions = useCallback(
-    (inputValue: string) => {
-      const preprocessedQuery = inputValue
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-        .toLowerCase()
-        .trim();
-      return Promise.resolve(searchProducts(preprocessedQuery));
+    async (inputValue: string) => {
+      let results: FormattedProduct[];
+
+      if (inputValue === "") {
+        results = getAll().filter((product) => product.cat === subcat);
+      } else {
+        const preprocessedQuery = inputValue
+          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+          .toLowerCase()
+          .trim();
+        const searchResults = await searchProducts(preprocessedQuery);
+        results = searchResults.filter((product) => product.cat === subcat);
+      }
+
+      // Limit to 10 product results
+      const limitedResults = results.slice(0, 10);
+
+      // Always add the custom action at the end
+      return [...limitedResults, customAction];
     },
-    [searchProducts]
+    [searchProducts, getAll, subcat, customAction]
   );
 
   const handleInputChange = (newValue: string) => {
     setInputValue(newValue);
+  };
+
+  const handleChange = (selectedOption: FormattedProduct | null) => {
+    if (selectedOption && selectedOption.value === "custom-action") {
+      onCustomAction();
+      onChange(null); // Clear the selection
+    } else {
+      onChange(selectedOption);
+    }
+  };
+
+  const handleMenuOpen = () => {
+    if (isFirstOpen) {
+      setIsFirstOpen(false);
+      setInputValue(" "); // This will trigger loadOptions with a non-empty string
+      setTimeout(() => setInputValue(""), 0); // This will clear the input immediately after
+    }
   };
 
   return (
@@ -35,16 +83,19 @@ const SearchClient: React.FC<ProductSelectProps> = ({ value, onChange }) => {
         placeholder="Enter A Product Name"
         isClearable
         cacheOptions
-        defaultOptions
+        defaultOptions={false}
         value={value}
         inputValue={inputValue}
         onInputChange={handleInputChange}
-        onChange={(value) => onChange(value as FormattedProduct)}
+        onChange={handleChange}
         loadOptions={loadOptions}
+        onMenuOpen={handleMenuOpen}
         formatOptionLabel={(option: FormattedProduct) => (
           <div className="flex flex-row items-center gap-3">
             <div>{option.label}</div>
-            <div className="text-gray-400 text-xs">({option.category})</div>
+            {option.category && (
+              <div className="text-gray-400 text-xs">({option.category})</div>
+            )}
           </div>
         )}
         components={{

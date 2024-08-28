@@ -44,6 +44,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const [product, setProduct] = useState<FormattedProduct>();
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
+  const handleCustomAction = () => {
+    handleCheckboxChange(true);
+  };
   const handleCheckboxChange = (checked: boolean) => {
     setCheckbox1Checked(checked);
 
@@ -55,72 +58,43 @@ const StepTwo: React.FC<StepTwoProps> = ({
       setReview(false);
     }
   };
-  const [items, setItems] = useState<any>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const handleSearchName = debounce(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const query = event.target.value;
-      if (query === "") {
-        setItems([]);
-        return;
-      }
-      setIsSearching(true);
-      try {
-        const response = await fetch(
-          `/api/listing/listingSuggestionsCreate?query=${encodeURIComponent(
-            query
-          )}`
-        );
-        const data = await response.json();
-        if (data.listings) {
-          setItems(data.listings);
-        } else {
-          setItems([]);
-        }
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-        setItems([]);
-      } finally {
-        setIsSearching(false);
-      }
-    },
-    1000
-  );
+  // const [items, setItems] = useState<any>([]);
+  // const [isSearching, setIsSearching] = useState(false);
+  // const handleSearchName = debounce(
+  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     const query = event.target.value;
+  //     if (query === "") {
+  //       setItems([]);
+  //       return;
+  //     }
+  //     setIsSearching(true);
+  //     try {
+  //       const response = await fetch(
+  //         `/api/listing/listingSuggestionsCreate?query=${encodeURIComponent(
+  //           query
+  //         )}`
+  //       );
+  //       const data = await response.json();
+  //       if (data.listings) {
+  //         setItems(data.listings);
+  //       } else {
+  //         setItems([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching suggestions:", error);
+  //       setItems([]);
+  //     } finally {
+  //       setIsSearching(false);
+  //     }
+  //   },
+  //   1000
+  // );
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
-          {subcategory !== "fruit" ? (
-            subcategory === "custom" ? (
-              <div>
-                <input
-                  className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  id="title"
-                  placeholder="Title"
-                  disabled={isLoading}
-                  maxLength={64}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    handleSearchName(e);
-                  }}
-                  value={title}
-                />
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex flex-row gap-x-2 pt-4  items-center">
-                    <Checkbox
-                      checked={checkbox1Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked)
-                      }
-                    />
-                    <Label className="font-extralight">
-                      Use a Custom Title. This will put your product up for
-                      review before it goes public
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            ) : (
+          {subcategory === "custom" ? (
+            <div>
               <input
                 className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 id="title"
@@ -129,20 +103,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 maxLength={64}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  handleSearchName(e);
                 }}
                 value={title}
-              />
-            )
-          ) : (
-            <div>
-              <SearchClient
-                value={product}
-                onChange={(value) => {
-                  setProduct(value as FormattedProduct);
-                  setTitle(value?.label);
-                  setImageSrc([value?.photo]);
-                }}
               />
               <div className="flex flex-col gap-y-2">
                 <div className="flex flex-row gap-x-2 pt-4 items-center">
@@ -157,11 +119,39 @@ const StepTwo: React.FC<StepTwoProps> = ({
                     before it goes public
                   </Label>
                 </div>
-              </div>
+              </div>{" "}
+            </div>
+          ) : (
+            <div>
+              <SearchClient
+                subcat={subcat}
+                value={product}
+                onCustomAction={handleCustomAction}
+                customActionLabel="Create a Custom Title"
+                onChange={(value) => {
+                  setProduct(value as FormattedProduct);
+                  setTitle(value?.label ? value?.label : "");
+                  setImageSrc(value?.photo ? [value?.photo] : []);
+                }}
+              />
+              {/* <div className="flex flex-col gap-y-2">
+                <div className="flex flex-row gap-x-2 pt-4 items-center">
+                  <Checkbox
+                    checked={checkbox1Checked}
+                    onCheckedChange={(checked: boolean) =>
+                      handleCheckboxChange(checked)
+                    }
+                  />
+                  <Label className="font-extralight">
+                    Use a Custom Title. This will put your product up for review
+                    before it goes public
+                  </Label>
+                </div>
+              </div> */}
             </div>
           )}
         </div>
-        {items.length > 0 && (
+        {/* {items.length > 0 && (
           <div className="relative w-full">
             <div className="absolute justify-center bg-white w-full z-20 left-0 border p-1">
               {items.map((item: any) => (
@@ -175,7 +165,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               ))}
             </div>
           </div>
-        )}
+        )} */}
         <hr />
         <Textarea
           id="description"
