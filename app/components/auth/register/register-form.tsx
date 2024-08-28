@@ -86,128 +86,137 @@ const RegisterForm = () => {
   }, [form]);
 
   return (
-    <div className="flex items-center justify-center h-[60vh] w-screen">
-      <CardWrapper
-        headerLabel=""
-        label2="Find your local EZH co-ops"
-        backButtonLabel="Already have an account?"
-        backButtonHref="/auth/login"
-        showSocial={!showFullForm}
-      >
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-2 flex flex-col items-center"
-          >
-            {!showFullForm ? (
-              <>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-[280px] sm:w-[350px]">
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="button"
-                  className={`${zilla.className} w-[280px] sm:w-[350px]`}
-                  onClick={handleContinueWithEmail}
-                >
-                  Continue with Email
-                </Button>
-              </>
-            ) : (
-              <>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-[280px] sm:w-[350px]">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="w-[280px] sm:w-[350px]">
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="Appleseed Store"
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="w-[280px] sm:w-[350px]">
-                  <PasswordInput
-                    form={form}
-                    isPending={isPending}
-                    toggleShowPassword={toggleShowPassword}
-                    showPassword={showPassword}
+    <>
+      <div className="flex items-end justify-center h-[25vh] w-screen">
+        <div className="flex flex-col items-center justify-center">
+          <div>Welcome to EZHomesteading</div>
+          <div>To purchase or create a product. Make an account.</div>
+        </div>
+      </div>
+      <div className="flex items-top justify-center  w-screen">
+        <CardWrapper
+          headerLabel=""
+          label2="Find your local EZH co-ops"
+          backButtonLabel="Already have an account?"
+          backButtonHref="/auth/login"
+          showSocial={!showFullForm}
+        >
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-2 flex flex-col items-center"
+            >
+              {!showFullForm ? (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="john.doe@example.com"
+                            type="email"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem className="w-280px sm:w-[350px]">
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="******"
-                          type={showPassword ? "text" : "password"}
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormError message={error} />
-                <FormSuccess message={success} />
-                <Button
-                  disabled={isPending}
-                  type="submit"
-                  className="w-[280px] sm:w-[350px]"
-                >
-                  Create an account
-                </Button>
-              </>
-            )}
-          </form>
-        </Form>
-      </CardWrapper>
-    </div>
+
+                  <Button
+                    type="button"
+                    className={`${zilla.className} w-[280px] sm:w-[350px]`}
+                    onClick={handleContinueWithEmail}
+                  >
+                    Continue with Email
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="john.doe@example.com"
+                            type="email"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="Appleseed Store"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="w-[280px] sm:w-[350px]">
+                    <PasswordInput
+                      form={form}
+                      isPending={isPending}
+                      toggleShowPassword={toggleShowPassword}
+                      showPassword={showPassword}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem className="w-280px sm:w-[350px]">
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="******"
+                            type={showPassword ? "text" : "password"}
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormError message={error} />
+                  <FormSuccess message={success} />
+                  <Button
+                    disabled={isPending}
+                    type="submit"
+                    className="w-[280px] sm:w-[350px]"
+                  >
+                    Create an account
+                  </Button>
+                </>
+              )}
+            </form>
+          </Form>
+        </CardWrapper>
+      </div>
+    </>
   );
 };
 
