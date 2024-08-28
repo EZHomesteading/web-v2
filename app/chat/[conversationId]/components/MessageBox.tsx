@@ -42,7 +42,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover-msg";
-
+import { MessageSquare, ChevronDown } from "lucide-react";
 import { IoIosArrowDown } from "react-icons/io";
 import MessageInput from "./MessageInput";
 import { currentUser } from "@/lib/auth";
@@ -50,6 +50,7 @@ import Form from "./Form";
 import Avatar from "@/app/components/Avatar";
 import EscalateModal from "./EscalateModal";
 import RefundModal from "./RefundModal";
+import { BiMessageSquareEdit } from "react-icons/bi";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -129,6 +130,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [refund, setRefund] = useState(false);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
+  const pulseAnimation = `
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+  }
+`;
   //dependent on message order allow or dont allow the cancel button to be visible
   useEffect(() => {
     if (
@@ -201,7 +215,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   // all onsubmit options dependent on messages in chat.
   const [isLoading, setIsLoading] = useState(false);
-
   const onSubmit1 = async () => {
     setIsLoading(true);
     try {
@@ -332,15 +345,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     setIsLoading(true);
     try {
       //buyer picks up/ receives delivery of the order, stripe transfer initiated
-      const TotalPrice = order.totalPrice * 100;
-      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
-      await axios.post("/api/stripe/transfer", {
-        //finalise stripe transaction
-        total: TotalPrice - stripeFee,
-        stripeAccountId: stripeAccountId,
-        orderId: order.id,
-      });
-
       await axios.post("/api/chat/messages", {
         message: "I have Received my order. Thank you!",
         messageOrder: "7",
@@ -360,6 +364,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           status: 9,
         });
       }
+      const TotalPrice = order.totalPrice * 100;
+      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
+      await axios.post("/api/stripe/transfer", {
+        //finalise stripe transaction
+        total: TotalPrice - stripeFee,
+        stripeAccountId: stripeAccountId,
+        orderId: order.id,
+        status: order.status,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -638,7 +651,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -660,7 +673,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 setIsLoading(false);
               }
             }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -670,7 +683,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -682,7 +695,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -704,7 +717,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -807,7 +820,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1  ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1  ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -828,7 +841,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               setIsLoading(false);
             }
           }}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -839,7 +852,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -850,7 +863,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       <button
         onClick={() => setCustomTimeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -876,7 +889,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -897,7 +910,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               setIsLoading(false);
             }
           }}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -908,7 +921,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -919,7 +932,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       <button
         onClick={() => setCustomTimeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -1023,7 +1036,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -1033,7 +1046,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </button>
       <button
         onClick={() => setDisputeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -1058,7 +1071,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
@@ -1085,7 +1098,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 setIsLoading(false);
               }
             }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1095,7 +1108,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1107,7 +1120,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -1154,7 +1167,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 setIsLoading(false);
               }
             }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p -2 flex items-center gap-x-1 ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p -2 flex items-center gap-x-1 ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1164,7 +1177,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1176,7 +1189,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -1300,7 +1313,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 setIsLoading(false);
               }
             }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1310,7 +1323,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </button>
           <button
             onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1322,7 +1335,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm hover:bg-slate-900 text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
             isLoading ? "cursor-not-allowed opacity-50" : ""
           }`}
           disabled={isLoading}
@@ -1672,25 +1685,41 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       {/* MESSAGE OPTIONS START HERE */}
       {/* MESSAGE OPTIONS START HERE */}
       {/* COOP receives order responce options */}
-
       {isLast && data.messageOrder === "1.6" ? (
         <Form otherUsersId={otherUsersId} />
       ) : (
         isLast && (
           <Popover>
-            <PopoverTrigger className="absolute bottom-5 right-5">
-              <IoIosArrowDown className="" />
+            <style>{pulseAnimation}</style>
+            <PopoverTrigger asChild>
+              <Button
+                variant={notOwn ? "default" : "secondary"}
+                className={`fixed bottom-5 right-5 flex items-center gap-2 transition-all duration-300
+            ${notOwn ? "animate-bounce shadow-lg" : ""}
+            hover:scale-105
+            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
+                style={notOwn ? { animation: "pulse 2s infinite" } : {}}
+              >
+                {notOwn ? (
+                  <>
+                    <BiMessageSquareEdit className="w-6 h-6" />
+                    <span className="text-lg">Choose Response</span>
+                  </>
+                ) : (
+                  <span>No Options</span>
+                )}
+              </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} absolute bottom-10 right-0 rounded-t-md w-[300px]`}
+              className={`${outfit.className} rounded-t-md w-[300px] p-0`}
             >
               <div>
-                <div
-                  className={`${zilla.className} text-md lg:text-md  font-extralight pt-2 px-2`}
+                <h3
+                  className={`${zilla.className} text-md lg:text-md font-semibold p-4`}
                 >
                   Your Response Options
-                </div>
-                <div className="flex flex-col">
+                </h3>
+                <div className="flex flex-col p-4 pt-0">
                   {notOwn && data.messageOrder === "1" ? (
                     resp1
                   ) : isOwn && data.messageOrder === "2" ? (
@@ -1716,7 +1745,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   ) : isOwn && data.messageOrder === "14" ? (
                     resp12
                   ) : (
-                    <div className="px-2 text-slate-800 font-extralight text-xl">
+                    <div className="px-2 text-slate-500 font-light text-md">
                       No response options available
                     </div>
                   )}
