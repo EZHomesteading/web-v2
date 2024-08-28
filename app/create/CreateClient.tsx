@@ -37,7 +37,6 @@ interface Props {
 }
 
 const CreateClient = ({ user, index, uniqueUrl }: Props) => {
-  console.log(user);
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -199,7 +198,6 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
   };
 
   //geocoding from autocompleted adress inputs
-  console.log(uniqueUrl);
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -584,35 +582,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
     const noDupeKeywordArr = removeDuplicates(keywordarr);
     setTags(noDupeKeywordArr);
   };
-  const [items, setItems] = useState<any>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const handleSearchName = debounce(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const query = event.target.value;
-      if (query === "") {
-        setItems([]);
-        return;
-      }
-      setIsSearching(true);
-      try {
-        const response = await fetch(
-          `/api/listing/listingSuggestions?query=${encodeURIComponent(query)}`
-        );
-        const data = await response.json();
-        if (data.listings) {
-          setItems(data.listings);
-        } else {
-          setItems([]);
-        }
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-        setItems([]);
-      } finally {
-        setIsSearching(false);
-      }
-    },
-    1000
-  );
+
   const progress = ((step - 1) / 7) * 100;
 
   return (
@@ -638,9 +608,6 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
           setTag={setTag}
           tags={tags}
           setTags={setTags}
-          handleSearchName={handleSearchName}
-          isSearching={isSearching}
-          items={items}
           buildKeyWords={buildKeyWords}
           isLoading={isLoading}
           subcat={subCategory}

@@ -1,6 +1,12 @@
 import React from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { GiAppleCore, GiRopeCoil } from "react-icons/gi";
+import {
+  GiAppleCore,
+  GiCandyCanes,
+  GiOlive,
+  GiRopeCoil,
+  GiWheat,
+} from "react-icons/gi";
 import { LuBeef } from "react-icons/lu";
 import { CiApple, CiHome } from "react-icons/ci";
 import { Button } from "../components/ui/button";
@@ -67,13 +73,14 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
   vegetables: <GiCarrot size={30} />,
   nuts: <GiCoconuts size={30} />,
   herbs: <GiHerbsBundle size={30} />,
-  legumes: <GiBeanstalk size={30} />,
+  grains: <GiWheat size={30} />,
   crafts: <GiWoodCabin size={30} />,
   "baked-goods": <GiCupcake size={30} />,
   jams: <GiHoneypot size={30} />,
-  pastries: <GiCupcake size={30} />,
   breads: <GiSlicedBread size={30} />,
   pasta: <GiCookingPot size={30} />,
+  oils: <GiOlive size={30} />,
+  candy: <GiCandyCanes size={30} />,
   "canned-goods": <GiWaterBottle size={30} />,
   tools: <FaTools size={30} />,
   survival: <GiCampfire size={30} />,
@@ -85,13 +92,20 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
   pork: <GiPig size={30} />,
   "alternative-meats": <IoFastFoodOutline size={30} />,
   seafood: <GiFishCorpse size={30} />,
-  butter: <GiButterToast size={30} />,
-  cheese: <GiCheeseWedge size={30} />,
+  "dairy-products": <GiButterToast size={30} />,
 };
 
 const subCategories: Record<Exclude<Category, "">, string[]> = {
-  "unprocessed-produce": ["fruit", "vegetables", "nuts", "herbs", "legumes"],
-  homemade: ["crafts", "baked-goods", "jams", "pastries", "breads", "pasta"],
+  "unprocessed-produce": ["fruit", "vegetables", "nuts", "herbs", "grains"],
+  homemade: [
+    "crafts",
+    "baked-goods",
+    "jams",
+    "breads",
+    "pasta",
+    "oils",
+    "candy",
+  ],
   durables: ["canned-goods", "tools", "survival", "kitchen-wares"],
   "dairy-meat": [
     "milks",
@@ -101,8 +115,7 @@ const subCategories: Record<Exclude<Category, "">, string[]> = {
     "pork",
     "alternative-meats",
     "seafood",
-    "butter",
-    "cheese",
+    "dairy-products",
   ],
 };
 

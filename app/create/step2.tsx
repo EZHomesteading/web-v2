@@ -4,9 +4,11 @@ import { Button } from "@/app/components/ui/button";
 import Heading from "@/app/components/Heading";
 import { BiLoaderCircle } from "react-icons/bi";
 import InputField from "./components/suggestion-input";
-import SearchClient, { ProductValue } from "../components/client/SearchClient";
+import SearchClient from "../components/client/SearchClient";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
+import debounce from "debounce";
+import { FormattedProduct } from "@/hooks/use-product";
 
 interface StepTwoProps {
   title: string;
@@ -19,9 +21,6 @@ interface StepTwoProps {
   setTag: (value: string) => void;
   tags: string[];
   setTags: (value: string[]) => void;
-  handleSearchName: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  isSearching: boolean;
-  items: any[];
   buildKeyWords: (desc: string) => void;
   isLoading: boolean;
   subcat: string;
@@ -36,19 +35,18 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setTag,
   tags,
   setTags,
-  handleSearchName,
-  isSearching,
-  items,
   buildKeyWords,
   isLoading,
   subcat,
   setImageSrc,
   setReview,
 }) => {
-  console.log(subcat);
-  const [product, setProduct] = useState<ProductValue>();
+  const [product, setProduct] = useState<FormattedProduct>();
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
+  const handleCustomAction = () => {
+    handleCheckboxChange(true);
+  };
   const handleCheckboxChange = (checked: boolean) => {
     setCheckbox1Checked(checked);
 
@@ -60,41 +58,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
       setReview(false);
     }
   };
+
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
-          {subcategory !== "fruit" ? (
-            subcategory === "custom" ? (
-              <div>
-                <input
-                  className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  id="title"
-                  placeholder="Title"
-                  disabled={isLoading}
-                  maxLength={64}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    handleSearchName(e);
-                  }}
-                  value={title}
-                />
-                <div className="flex flex-col gap-y-2">
-                  <div className="flex flex-row gap-x-2 pt-4  items-center">
-                    <Checkbox
-                      checked={checkbox1Checked}
-                      onCheckedChange={(checked: boolean) =>
-                        handleCheckboxChange(checked)
-                      }
-                    />
-                    <Label className="font-extralight">
-                      Use a Custom Title. This will put your product up for
-                      review before it goes public
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            ) : (
+          {subcategory === "custom" ? (
+            <div>
               <input
                 className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 id="title"
@@ -103,20 +73,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 maxLength={64}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  handleSearchName(e);
                 }}
                 value={title}
-              />
-            )
-          ) : (
-            <div>
-              <SearchClient
-                value={product}
-                onChange={(value) => {
-                  setProduct(value as ProductValue);
-                  setTitle(value?.label);
-                  setImageSrc([value?.photo]);
-                }}
               />
               <div className="flex flex-col gap-y-2">
                 <div className="flex flex-row gap-x-2 pt-4 items-center">
@@ -131,25 +89,25 @@ const StepTwo: React.FC<StepTwoProps> = ({
                     before it goes public
                   </Label>
                 </div>
-              </div>
+              </div>{" "}
+            </div>
+          ) : (
+            <div>
+              <SearchClient
+                subcat={subcat}
+                value={product}
+                onCustomAction={handleCustomAction}
+                customActionLabel="Create a Custom Title"
+                onChange={(value) => {
+                  setProduct(value as FormattedProduct);
+                  setTitle(value?.label ? value?.label : "");
+                  setImageSrc(value?.photo ? [value?.photo] : []);
+                }}
+              />
             </div>
           )}
         </div>
-        {items.length > 0 && (
-          <div className="relative w-full">
-            <div className="absolute justify-center bg-white w-full z-20 left-0 border p-1">
-              {items.map((item: any) => (
-                <div
-                  key={item.title}
-                  onClick={() => setTitle(item.title)}
-                  className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
-                >
-                  {item.title}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
         <hr />
         <Textarea
           id="description"

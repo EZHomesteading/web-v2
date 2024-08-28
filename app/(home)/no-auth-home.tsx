@@ -8,7 +8,7 @@ import Image from "next/image";
 // import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
 // import consumer from "@/public/images/website-images/ezhconsumer.webp";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
-import homebg from "@/public/images/website-images/ezh-bg2.jpg";
+import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { Button } from "../components/ui/button";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
@@ -87,7 +87,7 @@ export default function Home() {
             className="object-cover 2xl:object-fit"
             sizes="100vw"
           />{" "}
-          <div className="absolute inset-0 bg-black bg-opacity-60 "></div>
+          <div className="absolute inset-0 bg-black bg-opacity-10 "></div>
         </div>
         <div className="absolute top-[15%] sm:top-[30%] left-[8%] sm:left-[5%] md:left-[15%]">
           <div className="flex flex-col">
@@ -102,7 +102,7 @@ export default function Home() {
                 <span className="text-xl mr-2 font-semibold">, </span>
               </div>
               <div>
-                <span className="text-green-400 font-bold text-5xl md:text-6xl">
+                <span className="text-green-300 font-bold text-5xl md:text-6xl">
                   Local
                 </span>
                 <span className="text-xl mr-2">
@@ -110,7 +110,7 @@ export default function Home() {
                 </span>
               </div>
               <div>
-                <span className="text-green-600 text-5xl md:text-6xl font-semibold">
+                <span className="text-green-400 text-5xl md:text-6xl font-semibold">
                   Organic
                 </span>{" "}
                 <span className="text-xl ml-1 tracking-wide">with </span>
@@ -118,13 +118,13 @@ export default function Home() {
             </div>
             <h2 className="2xl:text-5xl text-4xl font-bold tracking-tight outfit">
               <div
-                className={`${outfit.className} text-green-950 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
+                className={`${outfit.className} text-green-600 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
               >
                 EZ Homesteading
               </div>
             </h2>
           </div>
-          <p className="2xl:text-lg text-[.5rem] mb-2 text-extralight">
+          <p className="text-lg text-[.5rem] mb-2 text-extralight">
             Find produce in your area. Join a community of EZH consumers,
             co-ops, & producers.
           </p>
@@ -133,6 +133,15 @@ export default function Home() {
             className="shadow-xl pr-8 bg-emerald-400 hover:bg-emerald-100 text-black relative group sm:text-lg rounded-full py-6"
           >
             Find Produce Near Me
+            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
+              <Image src={arrow} alt="Arrow Icon" width={18} height={18} />
+            </span>
+          </Button>
+          <Button
+            onClick={() => router.push("/auth/register?callbackUrl=/create")}
+            className="shadow-xl pr-8 ml-8 sm:ml-[10%]  bg-emerald-400 hover:bg-emerald-100 text-black relative group  sm:text-lg rounded-full py-6"
+          >
+            List Your Produce
             <span className="absolute right-2 top-1/2 transform -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
               <Image src={arrow} alt="Arrow Icon" width={18} height={18} />
             </span>
