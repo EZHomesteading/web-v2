@@ -58,37 +58,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
       setReview(false);
     }
   };
-  // const [items, setItems] = useState<any>([]);
-  // const [isSearching, setIsSearching] = useState(false);
-  // const handleSearchName = debounce(
-  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     const query = event.target.value;
-  //     if (query === "") {
-  //       setItems([]);
-  //       return;
-  //     }
-  //     setIsSearching(true);
-  //     try {
-  //       const response = await fetch(
-  //         `/api/listing/listingSuggestionsCreate?query=${encodeURIComponent(
-  //           query
-  //         )}`
-  //       );
-  //       const data = await response.json();
-  //       if (data.listings) {
-  //         setItems(data.listings);
-  //       } else {
-  //         setItems([]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching suggestions:", error);
-  //       setItems([]);
-  //     } finally {
-  //       setIsSearching(false);
-  //     }
-  //   },
-  //   1000
-  // );
+
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
