@@ -93,9 +93,9 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         formatOptionLabel={(option: FormattedProduct) => (
           <div className="flex flex-row items-center gap-3">
             <div>{option.label}</div>
-            {option.category && (
+            {/* {option.category && (
               <div className="text-gray-400 text-xs">({option.category})</div>
-            )}
+            )} */}
           </div>
         )}
         components={{

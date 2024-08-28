@@ -134,38 +134,10 @@ const StepTwo: React.FC<StepTwoProps> = ({
                   setImageSrc(value?.photo ? [value?.photo] : []);
                 }}
               />
-              {/* <div className="flex flex-col gap-y-2">
-                <div className="flex flex-row gap-x-2 pt-4 items-center">
-                  <Checkbox
-                    checked={checkbox1Checked}
-                    onCheckedChange={(checked: boolean) =>
-                      handleCheckboxChange(checked)
-                    }
-                  />
-                  <Label className="font-extralight">
-                    Use a Custom Title. This will put your product up for review
-                    before it goes public
-                  </Label>
-                </div>
-              </div> */}
             </div>
           )}
         </div>
-        {/* {items.length > 0 && (
-          <div className="relative w-full">
-            <div className="absolute justify-center bg-white w-full z-20 left-0 border p-1">
-              {items.map((item: any) => (
-                <div
-                  key={item.title}
-                  onClick={() => setTitle(item.title)}
-                  className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
-                >
-                  {item.title}
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
+
         <hr />
         <Textarea
           id="description"

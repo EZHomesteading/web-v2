@@ -55,10 +55,6 @@ const useProducts = () => {
 
   const getAll = () => formattedProducts;
 
-  // const getByValue = (value: string) => {
-  //   return formattedProducts.find((item) => item.value === value);
-  // };
-
   const searchProducts = (query: string) => {
     if (!query) return formattedProducts;
     const preprocessedQuery = query
