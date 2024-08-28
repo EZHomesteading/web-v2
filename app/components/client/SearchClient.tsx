@@ -28,7 +28,6 @@ const SearchClient: React.FC<ProductSelectProps> = ({
     value: "custom-action",
     label: customActionLabel,
     cat: "",
-    category: "",
     photo: "",
   };
 
@@ -46,9 +45,18 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         const searchResults = await searchProducts(preprocessedQuery);
         results = searchResults.filter((product) => product.cat === subcat);
       }
+      // Filter for unique results based on label
+      const uniqueLabels = new Set();
+      const uniqueResults = results.filter((product) => {
+        if (!uniqueLabels.has(product.label)) {
+          uniqueLabels.add(product.label);
+          return true;
+        }
+        return false;
+      });
 
       // Limit to 10 product results
-      const limitedResults = results.slice(0, 10);
+      const limitedResults = uniqueResults.slice(0, 10);
 
       // Always add the custom action at the end
       return [...limitedResults, customAction];

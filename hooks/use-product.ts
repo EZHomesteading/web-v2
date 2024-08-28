@@ -4,7 +4,7 @@ import Fuse from "fuse.js";
 
 type Product = {
   title: string;
-  category: string;
+
   subCategory: string;
   photo: string;
 };
@@ -14,7 +14,6 @@ export type FormattedProduct = {
   label: string;
   cat: string;
   photo: string;
-  category: string;
 };
 
 const useProducts = () => {
@@ -36,7 +35,6 @@ const useProducts = () => {
         label: product.title,
         cat: product.subCategory,
         photo: product.photo,
-        category: product.category,
       })),
     [products]
   );
