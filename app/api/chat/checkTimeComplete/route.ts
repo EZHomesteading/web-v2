@@ -1,7 +1,6 @@
 // get conversation based on current user
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
-
 import { pusherServer } from "@/lib/pusher";
 
 export async function POST() {
