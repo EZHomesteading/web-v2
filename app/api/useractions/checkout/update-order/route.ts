@@ -10,13 +10,18 @@ export async function POST(
   request: Request,
   { params }: { params: CartParams }
 ) {
-  const { orderId, status, pickupDate } = await request.json();
+  const { orderId, status, pickupDate, completedAt } = await request.json();
   // Update a single cart item
   if (status) {
     const orderUpdate = await prisma.order.update({
       where: { id: orderId },
-      data: { status: status, pickupDate: pickupDate },
+      data: {
+        status: status,
+        pickupDate: pickupDate,
+        completedAt: completedAt,
+      },
     });
+
     return NextResponse.json(orderUpdate);
   }
 }

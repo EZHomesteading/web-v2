@@ -270,6 +270,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       await axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 4,
+        completedAt: new Date(),
       });
       await axios.post("/api/updateListingOnCancel", { order: order });
     } catch (error) {
@@ -1434,6 +1435,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
       <ConfirmModal
         isOpen={confirmOpen}
+        orderId={order.id}
         onClose={() => setConfirmOpen(false)}
       />
       <DisputeModal
@@ -1625,6 +1627,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 reviewedId={otherUsersId}
                 reviewerId={user?.id}
                 buyer={user.id === order.sellerId ? false : true}
+                orderId={order.id}
               />{" "}
               <div>
                 <div
@@ -1645,6 +1648,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 reviewerId={user?.id}
                 reviewedId={otherUsersId}
                 buyer={user.id === order.sellerId ? false : true}
+                orderId={order.id}
               />
               <div>
                 <div
