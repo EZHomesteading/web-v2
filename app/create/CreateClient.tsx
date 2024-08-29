@@ -253,7 +253,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
             ),
             axios.post("/api/useractions/update", {
               role: UserRole.PRODUCER,
-              hasPickRole: false,
+              hasPickedRole: false,
               url: uniqueUrl,
             }),
           ]);

@@ -55,7 +55,7 @@ interface ListingCardProps {
   user: UserInfo | null;
   storeUser: UserInfo;
   priority?: boolean;
-  review: boolean | null;
+  review?: boolean | null;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({

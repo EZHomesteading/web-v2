@@ -5,8 +5,6 @@ import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
 import { Location, Notification, UserRole } from "@prisma/client";
-import { ExtendedHours } from "@/next-auth";
-
 export const {
   handlers: { GET, POST },
   auth,

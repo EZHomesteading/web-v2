@@ -13,11 +13,7 @@ interface Props {
   canReceivePayouts: boolean | null;
   stepHandler: (arg0: number) => void;
 }
-const StepOne: React.FC<Props> = async ({
-  session,
-  canReceivePayouts,
-  stepHandler,
-}) => {
+const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
   return (
     <div className={`${outfit.className} grid grid-cols-12`}>
       <div className="col-span-1 2xl:col-span-4"></div>
@@ -53,6 +49,26 @@ const StepOne: React.FC<Props> = async ({
             <div className="mx-5">
               <h1 className="text-2xl mb-5">Required to Begin Selling</h1>
               <ul>
+                {session?.user?.hasPickedRole === false ? (
+                  <>
+                    <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
+                      <div
+                        onClick={() => {
+                          stepHandler(10);
+                        }}
+                        className="flex justify-between mx-5 items-center hover:cursor-pointer"
+                      >
+                        <li>Select your Seller Role</li>
+                        <MdKeyboardArrowRight />
+                      </div>
+                      <div className="my-5 border border-b-[1px]"></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FinTab label="Role has been selected" />
+                  </>
+                )}
                 {session?.user?.location &&
                 session?.user?.location[0]?.address ? (
                   <FinTab label="You already set a Primary Selling Location" />

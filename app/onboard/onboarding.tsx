@@ -18,6 +18,7 @@ import StepSeven from "./step7";
 import StepEight from "./step8";
 import StepNine from "./step9";
 import { Session } from "next-auth";
+import StepTen from "./step10";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -128,7 +129,7 @@ const Onboarding = ({
             bio: response.data.bio || formData.bio,
           }));
         }
-      } else if (step === 9) {
+      } else if (step === 10) {
         router.push("/dashboard");
         return;
       }
@@ -201,6 +202,7 @@ const Onboarding = ({
         )}
         {step === 8 && <StepEight />}
         {step === 9 && <StepNine user={user} />}
+        {step === 10 && <StepTen user={user} />}
       </div>
       <div>
         <div className="w-full absolute top-0 left-0 z-50">
