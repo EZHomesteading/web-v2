@@ -158,6 +158,7 @@ const DisputeComponent = ({ disputes }: p) => {
     axios.post("/api/useractions/checkout/update-order", {
       orderId: dispute.order.id,
       status: 20,
+      completedAt: new Date(),
     });
     axios
       .post("/api/chat/messages", {
@@ -179,6 +180,7 @@ const DisputeComponent = ({ disputes }: p) => {
     axios.post("/api/useractions/checkout/update-order", {
       orderId: dispute.order.id,
       status: 21,
+      completedAt: new Date(),
     });
     axios
       .post("/api/chat/messages", {

@@ -32,7 +32,9 @@ const statusTextMap: Record<
       ? `${buyerName} has proposed a different pickup time.`
       : `Waiting for ${sellerName} to respond to your new pickup time.`,
   7: ({ buyerName, isSeller }) =>
-    isSeller ? `${buyerName} created a new order.` : `You canceled this order.`,
+    isSeller
+      ? `${buyerName} cancelled this order.`
+      : `You canceled this order.`,
   8: ({ buyerName, isSeller }) =>
     isSeller
       ? `Waiting for ${buyerName} to pick up the order.`

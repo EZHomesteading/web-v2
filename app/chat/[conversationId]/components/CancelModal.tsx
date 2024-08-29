@@ -52,11 +52,13 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
       axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 4,
+        completedAt: new Date(),
       });
     } else {
       axios.post("/api/useractions/checkout/update-order", {
         orderId: order.id,
         status: 12,
+        completedAt: new Date(),
       });
     }
     //axios post is always the same. post a message with the users input text
@@ -78,6 +80,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               .post("/api/useractions/checkout/update-order", {
                 orderId: order.id,
                 status: 4,
+                completedAt: new Date(),
               })
               .then(() => {
                 onClose();
@@ -89,6 +92,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               .post("/api/useractions/checkout/update-order", {
                 orderId: order.id,
                 status: 12,
+                completedAt: new Date(),
               })
               .then(() => {
                 onClose();
@@ -108,6 +112,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
                 .post("/api/useractions/checkout/update-order", {
                   orderId: order.id,
                   status: 7,
+                  completedAt: new Date(),
                 })
                 .then(() => {
                   onClose();
@@ -119,6 +124,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
                 .post("/api/useractions/checkout/update-order", {
                   orderId: order.id,
                   status: 15,
+                  completedAt: new Date(),
                 })
                 .then(() => {
                   onClose();
@@ -131,6 +137,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               .post("/api/useractions/checkout/update-order", {
                 orderId: order.id,
                 status: 7,
+                completedAt: new Date(),
               })
               .then(() => {
                 onClose();

@@ -67,6 +67,7 @@ interface SheetContentCProps
   reviewerId: string;
   reviewedId: string | undefined;
   buyer: boolean;
+  orderId: string;
 }
 
 const SheetContentF = React.forwardRef<
@@ -80,6 +81,7 @@ const SheetContentF = React.forwardRef<
       children,
       reviewedId,
       reviewerId,
+      orderId,
       buyer,
       ...props
     },
@@ -107,6 +109,11 @@ const SheetContentF = React.forwardRef<
         reviewedId: reviewedId,
         reviewerId: reviewerId,
         buyer: buyer,
+      });
+      axios.post("/api/useractions/checkout/update-order", {
+        orderId: orderId,
+        status: 19,
+        completedAt: new Date(),
       });
       closeSheet();
     };
