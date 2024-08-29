@@ -13,16 +13,25 @@ import { toast } from "react-hot-toast";
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
+  orderId: string;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({
+  isOpen,
+  onClose,
+  orderId,
+}) => {
   const router = useRouter();
   const { conversationId } = useConversation();
   const [isLoading, setIsLoading] = useState(false);
 
   const onDelete = useCallback(() => {
     setIsLoading(true);
-
+    axios.post("/api/useractions/checkout/update-order", {
+      orderId: orderId,
+      status: 19,
+      completedAt: new Date(),
+    });
     axios
       .delete(`/api/chat/conversations/${conversationId}`)
       .then(() => {

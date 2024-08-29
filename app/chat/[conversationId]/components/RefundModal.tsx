@@ -43,6 +43,7 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
     axios.post("/api/useractions/checkout/update-order", {
       orderId: orderId,
       status: 22,
+      completedAt: new Date(),
     });
     axios
       .post("/api/chat/messages", {

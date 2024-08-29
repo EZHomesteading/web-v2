@@ -13,16 +13,12 @@ const statusTextMap: Record<
     isSeller
       ? ``
       : `Waiting for ${sName} to confirm, reschedule, or deny your order.`,
-  4: ({ isSeller, sName }) =>
-    isSeller ? `` : `${sName} is preparing your order.`,
+  4: () => ``,
   5: ({ isSeller, bName }) =>
     isSeller ? `${bName} has accepted your new pick up time` : ``,
   6: ({ isSeller, bName }) =>
     isSeller ? `${bName} has proposed a new pick up time` : ``,
-
-  7: ({ isSeller, bName }) =>
-    isSeller ? `${bName} has canceled the order` : ``,
-
+  7: () => ``,
   8: ({ isSeller, sName }) =>
     isSeller ? `` : `Your order from ${sName} is ready for pickup`,
   9: ({ isSeller, bName }) =>
@@ -49,7 +45,13 @@ const statusTextMap: Record<
     isSeller
       ? `Please leave a review for ${bName}`
       : `Please leave a review for ${sName}`,
-  19: ({ isSeller }) => (isSeller ? `` : ``),
+  19: () => ``,
+  20: () => ``,
+  21: () => ``,
+  22: () => ``,
+  23: () => `This order has an active dispute.`,
+  24: () =>
+    `This order has an active dispute. An admin has been notified and is reviewing your case`,
 };
 
 export const getStatusText = (

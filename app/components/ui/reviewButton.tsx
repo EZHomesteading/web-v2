@@ -9,9 +9,15 @@ interface StatusProps {
   reviewerId: string;
   reviewedId: string | undefined;
   buyer: boolean;
+  orderId: string;
 }
 
-const ReviewButton = ({ reviewedId, reviewerId, buyer }: StatusProps) => {
+const ReviewButton = ({
+  reviewedId,
+  reviewerId,
+  buyer,
+  orderId,
+}: StatusProps) => {
   return (
     <SheetCartC>
       <SheetTrigger className="border-[1px] bg-neutral-100 text-black px-2 py-2 rounded-lg shadow-lg">
@@ -22,6 +28,7 @@ const ReviewButton = ({ reviewedId, reviewerId, buyer }: StatusProps) => {
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         reviewedId={reviewedId}
         reviewerId={reviewerId}
+        orderId={orderId}
         buyer={buyer}
       ></SheetContentF>
     </SheetCartC>
