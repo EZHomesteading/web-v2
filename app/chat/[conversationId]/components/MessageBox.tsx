@@ -1471,7 +1471,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         orderAmount={order.totalPrice}
         conversationId={convoId}
         otherUserId={otherUsersId}
-        paymentId={order.paymentIntentId}
+        paymentId={order?.paymentIntentId}
       />
       {user.id === order.sellerId ? (
         <CancelModal

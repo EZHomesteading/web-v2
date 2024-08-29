@@ -181,28 +181,28 @@ model TwoFactorConfirmation {
 }
 
 model Listing {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  SODT         Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
-  title        String
-  category     String // "homemade", "unprocessed-produce", "dairy-meats", "durables" 
-  subCategory  String
-  stock        Int
-  quantityType String
-  price        Float
-  description  String
-  keyWords     String[]
-  minOrder     Int
-  imageSrc     String[]
-  review        Boolean?
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  SODT           Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
+  title          String
+  category       String // "homemade", "unprocessed-produce", "dairy-meats", "durables" 
+  subCategory    String
+  stock          Int
+  quantityType   String
+  price          Float
+  description    String
+  keyWords       String[]
+  minOrder       Int
+  imageSrc       String[]
+  review         Boolean?
   projectHarvest Boolean?
-  reports      Int?
-  shelfLife    Int
-  location     Int        @default(0)
-  rating       Int[]
-  userId       String     @db.ObjectId
-  createdAt    DateTime   @default(now())
-  emailList    notifList?
-  smsList      notifList?
+  reports        Int?
+  shelfLife      Int
+  location       Int        @default(0)
+  rating         Int[]
+  userId         String     @db.ObjectId
+  createdAt      DateTime   @default(now())
+  emailList      notifList?
+  smsList        notifList?
 
   user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   cart Cart[]

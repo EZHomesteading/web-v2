@@ -111,17 +111,17 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-2 shadow-md",
-          input: () => "text-2xl text-black",
-          option: () => "text-sm",
+          control: () => "p-2 shadow-sm h-[62px]",
+          input: () => "text-md text-black",
+          option: () => "text-xs",
         }}
         theme={(theme) => ({
           ...theme,
           borderRadius: 5,
           colors: {
             ...theme.colors,
-            primary: "#ced9bb",
-            primary25: "#ced9bb",
+            primary: "#000",
+            primary25: "#fff",
           },
         })}
       />

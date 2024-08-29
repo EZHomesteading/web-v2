@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Button } from "@/app/components/ui/button";
 import Heading from "@/app/components/Heading";
@@ -41,7 +41,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setImageSrc,
   setReview,
 }) => {
+
   const [product, setProduct] = useState<FormattedProduct>();
+
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
   const handleCustomAction = () => {
@@ -63,12 +65,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
+
           {subcategory === "custom" ? (
             <div>
               <input
-                className="flex min-h-[60px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-[62px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 id="title"
-                placeholder="Title"
+                placeholder="Enter Product Title"
                 disabled={isLoading}
                 maxLength={64}
                 onChange={(e) => {
@@ -84,9 +87,12 @@ const StepTwo: React.FC<StepTwoProps> = ({
                       handleCheckboxChange(checked)
                     }
                   />
-                  <Label className="font-extralight">
-                    Use a Custom Title. This will put your product up for review
-                    before it goes public
+                  <Label className="font-light">
+                    Use a Custom Title
+                    <div className="text-xs text-neutral-600 font-light">
+                      Your title will be reviewed by EZH before the listing is
+                      visible to buyers
+                    </div>
                   </Label>
                 </div>
               </div>{" "}

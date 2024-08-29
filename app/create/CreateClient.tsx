@@ -198,6 +198,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
   };
 
   //geocoding from autocompleted adress inputs
+
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -251,7 +252,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
             ),
             axios.post("/api/useractions/update", {
               role: UserRole.PRODUCER,
-              hasPickRole: false,
+              hasPickedRole: false,
               url: uniqueUrl,
             }),
           ]);
@@ -565,6 +566,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       "fuck",
       "fuckin",
       "fucking",
+      " ",
     ]);
     // Convert the input string to lowercase and split it into words
     const words = inputString.toLowerCase().match(/\b\w+\b/g) || [];
@@ -650,7 +652,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       {step > 1 && (
         <Button
           onClick={handlePrevious}
-          className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+          className="fixed bottom-6 left-5 text-xl hover:cursor-pointer"
         >
           Back
         </Button>
@@ -659,7 +661,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
         <>
           <Button
             onClick={handleNext}
-            className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+            className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
           >
             Finish
           </Button>
@@ -669,7 +671,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       {step < 7 && step !== 1 && (
         <Button
           onClick={handleNext}
-          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
         >
           Next
         </Button>
@@ -677,7 +679,7 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       {step === 1 && category && (
         <Button
           onClick={handleNext}
-          className="absolute bottom-5 right-5 text-xl hover:cursor-pointer"
+          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
         >
           Next
         </Button>

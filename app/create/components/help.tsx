@@ -28,9 +28,12 @@ const Help = ({ step, role }: p) => {
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");
   return (
     <Sheet>
-      <SheetTrigger className="bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 absolute sm:top-5 sm:right-5 bottom-5 right-1/2 translate-x-1/2 sm:translate-x-0 h-9 px-4 py-2 text-sm">
-        Help
-      </SheetTrigger>
+      {step !== 1 && (
+        <SheetTrigger className="bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 absolute sm:top-5 sm:right-5 bottom-6 right-1/2 translate-x-1/2 sm:translate-x-0 h-9 px-4 py-2 text-lg min-h-[36px]">
+          Help
+        </SheetTrigger>
+      )}
+
       <SheetContent
         side={isMdOrLarger ? "right" : "bottom"}
         className={`${outfit.className} h-[70vh] md:h-full pt-4 px-3 sheet w-screen md:w-1/3 2xl:w-1/5`}
