@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+//login card parent element
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Social } from "@/app/components/auth/social";
 import { BackButton } from "@/app/components/auth/back-button";
