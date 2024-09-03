@@ -35,7 +35,7 @@ export const CardWrapper = ({
   showSocial,
 }: CardWrapperProps) => {
   return (
-    <div className={`${outfit.className} px-6  `}>
+    <div className={`${outfit.className} px-6`}>
       {" "}
       <div className={`font-normal text-3xl text-center mb-[2%]`}>
         {headerLabel}

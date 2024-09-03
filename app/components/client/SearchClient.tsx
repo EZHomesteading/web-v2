@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import AsyncSelect from "react-select/async";
-import useProducts from "@/hooks/use-product";
 import { FormattedProduct } from "@/hooks/use-product";
 
 interface ProductSelectProps {
-  value?: FormattedProduct;
+  value?: FormattedProduct | null;
   subcat: string;
   onChange: (value: FormattedProduct | null) => void;
-  onCustomAction: () => void;
+  onCustomAction: (value: string) => void;
   customActionLabel: string;
+  inputValue: string;
+  onInputChange: (value: string) => void;
+  searchProducts: (query: string) => FormattedProduct[];
+  getAll: () => FormattedProduct[];
 }
 
 const SearchClient: React.FC<ProductSelectProps> = ({
@@ -19,11 +22,11 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   subcat,
   onCustomAction,
   customActionLabel,
+  inputValue,
+  onInputChange,
+  searchProducts,
+  getAll,
 }) => {
-  const { searchProducts, getAll } = useProducts();
-  const [inputValue, setInputValue] = useState("");
-  const [isFirstOpen, setIsFirstOpen] = useState(true);
-
   const customAction: FormattedProduct = {
     value: "custom-action",
     label: customActionLabel,
@@ -32,20 +35,17 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   };
 
   const loadOptions = useCallback(
-    async (inputValue: string) => {
+    async (input: string) => {
       let results: FormattedProduct[];
 
-      if (inputValue === "") {
+      if (input === "") {
         results = getAll().filter((product) => product.cat === subcat);
       } else {
-        const preprocessedQuery = inputValue
-          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-          .toLowerCase()
-          .trim();
-        const searchResults = await searchProducts(preprocessedQuery);
-        results = searchResults.filter((product) => product.cat === subcat);
+        results = searchProducts(input).filter(
+          (product) => product.cat === subcat
+        );
       }
-      // Filter for unique results based on label
+
       const uniqueLabels = new Set();
       const uniqueResults = results.filter((product) => {
         if (!uniqueLabels.has(product.label)) {
@@ -55,33 +55,18 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         return false;
       });
 
-      // Limit to 10 product results
       const limitedResults = uniqueResults.slice(0, 10);
 
-      // Always add the custom action at the end
       return [...limitedResults, customAction];
     },
     [searchProducts, getAll, subcat, customAction]
   );
 
-  const handleInputChange = (newValue: string) => {
-    setInputValue(newValue);
-  };
-
   const handleChange = (selectedOption: FormattedProduct | null) => {
     if (selectedOption && selectedOption.value === "custom-action") {
-      onCustomAction();
-      onChange(null); // Clear the selection
+      onCustomAction(inputValue);
     } else {
       onChange(selectedOption);
-    }
-  };
-
-  const handleMenuOpen = () => {
-    if (isFirstOpen) {
-      setIsFirstOpen(false);
-      setInputValue(" "); // This will trigger loadOptions with a non-empty string
-      setTimeout(() => setInputValue(""), 0); // This will clear the input immediately after
     }
   };
 
@@ -91,19 +76,15 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         placeholder="Enter A Product Name"
         isClearable
         cacheOptions
-        defaultOptions={false}
+        defaultOptions
         value={value}
         inputValue={inputValue}
-        onInputChange={handleInputChange}
+        onInputChange={onInputChange}
         onChange={handleChange}
         loadOptions={loadOptions}
-        onMenuOpen={handleMenuOpen}
         formatOptionLabel={(option: FormattedProduct) => (
           <div className="flex flex-row items-center gap-3">
             <div>{option.label}</div>
-            {/* {option.category && (
-              <div className="text-gray-400 text-xs">({option.category})</div>
-            )} */}
           </div>
         )}
         components={{
@@ -124,6 +105,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
             primary25: "#fff",
           },
         })}
+        blurInputOnSelect={false}
       />
     </div>
   );
