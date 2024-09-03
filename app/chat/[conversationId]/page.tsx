@@ -78,6 +78,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
                 otherUser={otherUser}
                 conversationId={conversationData.id}
                 listings={listings}
+                reviews={reviewsFinal}
               />
             </>
           )}
@@ -108,6 +109,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
               otherUser={otherUser}
               conversationId={conversationData.id}
               listings={listings}
+              reviews={reviewsFinal}
             />
           </>
         )}
