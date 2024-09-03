@@ -3474,7 +3474,6 @@ const defaultProducts = [
 const getlistings = async () => {
   const response = await fetch(`/api/listing/listingSuggestionsCreate/`);
   const data = await response.json();
-  console.log(data);
   const formattedListings = data.listings.map((product: any) => ({
     title: product.title,
     subCategory: product.subCategory,
