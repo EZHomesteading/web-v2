@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Button } from "@/app/components/ui/button";
-import Heading from "@/app/components/Heading";
-import { BiLoaderCircle } from "react-icons/bi";
-import InputField from "./components/suggestion-input";
-import SearchClient from "../components/client/SearchClient";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
-import debounce from "debounce";
+import SearchClient from "../components/client/SearchClient";
 import { FormattedProduct } from "@/hooks/use-product";
+import useProducts from "@/hooks/use-product";
 
 interface StepTwoProps {
   title: string;
@@ -41,14 +38,18 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setImageSrc,
   setReview,
 }) => {
-
-  const [product, setProduct] = useState<FormattedProduct>();
-
+  const [product, setProduct] = useState<FormattedProduct | null>(null);
+  const [searchInput, setSearchInput] = useState("");
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
-  const handleCustomAction = () => {
+  const { getAll, searchProducts } = useProducts();
+
+  const handleCustomAction = (value: string) => {
+    setTitle(value);
+    setSearchInput(value);
     handleCheckboxChange(true);
   };
+
   const handleCheckboxChange = (checked: boolean) => {
     setCheckbox1Checked(checked);
 
@@ -61,11 +62,29 @@ const StepTwo: React.FC<StepTwoProps> = ({
     }
   };
 
+  const handleProductChange = (value: FormattedProduct | null) => {
+    setProduct(value);
+    if (value) {
+      setTitle(value.label);
+      setImageSrc(value.photo ? [value.photo] : []);
+      setSearchInput(value.label);
+    }
+  };
+
+  const handleInputChange = (newValue: string) => {
+    setSearchInput(newValue);
+  };
+
+  useEffect(() => {
+    if (subcategory === "custom") {
+      setSearchInput(title);
+    }
+  }, [subcategory, title]);
+
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[500px] px-4">
         <div className="relative">
-
           {subcategory === "custom" ? (
             <div>
               <input
@@ -76,6 +95,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 maxLength={64}
                 onChange={(e) => {
                   setTitle(e.target.value);
+                  setSearchInput(e.target.value);
                 }}
                 value={title}
               />
@@ -95,7 +115,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                     </div>
                   </Label>
                 </div>
-              </div>{" "}
+              </div>
             </div>
           ) : (
             <div>
@@ -104,11 +124,11 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 value={product}
                 onCustomAction={handleCustomAction}
                 customActionLabel="Create a Custom Title"
-                onChange={(value) => {
-                  setProduct(value as FormattedProduct);
-                  setTitle(value?.label ? value?.label : "");
-                  setImageSrc(value?.photo ? [value?.photo] : []);
-                }}
+                onChange={handleProductChange}
+                inputValue={searchInput}
+                onInputChange={handleInputChange}
+                searchProducts={searchProducts}
+                getAll={getAll}
               />
             </div>
           )}
