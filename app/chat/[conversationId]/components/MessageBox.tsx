@@ -115,19 +115,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   createMapsLinks();
   const [image, setImage] = useState("");
+  const [customTimeOpen, setCustomTimeOpen] = useState(false);
+  const [validTime, setValidTime] = useState<string>("(select your time)");
+  const [dateTime, setDateTime] = useState<Date | string>("");
+
+  const [disputeOpen, setDisputeOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [escalateOpen, setEscalateOpen] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
 
-  const [disputeOpen, setDisputeOpen] = useState(false);
-  const [customTimeOpen, setCustomTimeOpen] = useState(false);
-  const [validTime, setValidTime] = useState<string>("(select your time)");
-  const [dateTime, setDateTime] = useState<Date | string>("");
-  const [cancel, setCancel] = useState(true);
-  const [dispute, setDispute] = useState(true);
-  const [escalate, setEscalate] = useState(false);
-  const [refund, setRefund] = useState(false);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
   const pulseAnimation = `
@@ -144,51 +141,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   }
 `;
   //dependent on message order allow or dont allow the cancel button to be visible
-  useEffect(() => {
-    if (
-      (data.messageOrder === "4" && isLast) ||
-      (data.messageOrder === "7" && isLast) ||
-      (data.messageOrder === "15" && isLast) ||
-      (data.messageOrder === "9" && isLast) ||
-      (data.messageOrder === "18" && isLast) ||
-      (data.messageOrder === "19" && isLast) ||
-      (data.messageOrder === "17" && isLast) ||
-      (data.messageOrder === "12" && isLast) ||
-      (data.messageOrder === "6" && isLast) ||
-      (data.messageOrder === "1.1" && isLast) ||
-      (data.messageOrder === "1.6" && isLast)
-    ) {
-      setCancel(false);
-    }
-  }),
-    [order];
-  useEffect(() => {
-    if (
-      (data.messageOrder === "1" && isLast) ||
-      (data.messageOrder === "2" && isLast) ||
-      (data.messageOrder === "3" && isLast) ||
-      (data.messageOrder === "4" && isLast) ||
-      (data.messageOrder === "5" && isLast) ||
-      (data.messageOrder === "7" && isLast) ||
-      (data.messageOrder === "8" && isLast) ||
-      (data.messageOrder === "9" && isLast) ||
-      (data.messageOrder === "10" && isLast) ||
-      (data.messageOrder === "1.1" && isLast) ||
-      (data.messageOrder === "11" && isLast) ||
-      (data.messageOrder === "12" && isLast) ||
-      (data.messageOrder === "1.6" && isLast)
-    ) {
-      setDispute(false);
-    }
-  }),
-    [order];
-  useEffect(() => {
-    if (data.messageOrder === "1.6" && isLast) {
-      setEscalate(true);
-      setRefund(true);
-    }
-  }),
-    [order];
+
   //handle seen messages
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
@@ -1494,76 +1447,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           isSeller={false}
         />
       )}
-      {/* allow cancel button to appear */}
-      <div className="flex flex-row">
-        {cancel === true && isLast ? (
-          <button
-            type="submit"
-            onClick={() => setCancelOpen(true)}
-            className="rounded-full p-2 bg-sky-500 cursor-pointer hover:bg-sky-600 mt-2ml-1mr-1absolute top-[100px] right-2"
-          >
-            Cancel
-          </button>
-        ) : null}
-        {dispute === true && isLast ? (
-          <button
-            type="submit"
-            onClick={() => setDisputeOpen(true)}
-            className="
- rounded-full 
- p-2 
- bg-sky-500 
- cursor-pointer 
- hover:bg-sky-600 
- mt-2
- ml-1
- mr-1
- absolute top-[100px] right-2
-"
-          >
-            Dispute Order
-          </button>
-        ) : null}
-        {escalate === true && isLast ? (
-          <button
-            type="submit"
-            onClick={() => setEscalateOpen(true)}
-            className="
- rounded-full 
- p-2 
- bg-sky-500 
- cursor-pointer 
- hover:bg-sky-600 
- mt-2
- ml-1
- mr-1
- absolute top-[100px] right-2
-"
-          >
-            Get an Admin Involved
-          </button>
-        ) : null}
-        {refund === true && isLast && user.id === order.sellerId ? (
-          <button
-            type="submit"
-            onClick={() => setRefundOpen(true)}
-            className="
- rounded-full 
- p-2 
- bg-sky-500 
- cursor-pointer 
- hover:bg-sky-600 
- mt-2
- ml-1
- mr-1
- absolute top-[100px] right-[200px]
-"
-          >
-            Refund Buyer
-          </button>
-        ) : null}
-        {/* messages body starts here */}
-      </div>
+
+      {/* messages body starts here */}
       <div className={container}>
         <div className="pt-2">
           <Avatar image={data.sender.image} />

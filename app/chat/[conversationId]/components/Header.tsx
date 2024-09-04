@@ -7,15 +7,15 @@ import { HiChevronLeft } from "react-icons/hi";
 import { FullConversationType } from "@/types";
 import { useRouter } from "next/navigation";
 import { Order, Reviews } from "@prisma/client";
-import { Button } from "@/app/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { IoMapOutline, IoStorefrontOutline } from "react-icons/io5";
+// import { Button } from "@/app/components/ui/button";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/app/components/ui/popover";
+// import { IoMapOutline, IoStorefrontOutline } from "react-icons/io5";
+// import ReactStars from "react-stars";
 import { Outfit } from "next/font/google";
-import ReactStars from "react-stars";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -35,17 +35,17 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
     router.refresh();
     return <div>Loading...</div>; // Or any loading indicator
   }
-  function getAverageRating(reviews: Reviews[]) {
-    if (reviews.length === 0) return 0;
+  // function getAverageRating(reviews: Reviews[]) {
+  //   if (reviews.length === 0) return 0;
 
-    const totalRatings = reviews.reduce(
-      (sum, review) => sum + review.rating,
-      0
-    );
-    const averageRating = totalRatings / reviews.length;
-    return Math.round(averageRating * 2) / 2;
-  }
-  const avgRate = getAverageRating(reviews);
+  //   const totalRatings = reviews.reduce(
+  //     (sum, review) => sum + review.rating,
+  //     0
+  //   );
+  //   const averageRating = totalRatings / reviews.length;
+  //   return Math.round(averageRating * 2) / 2;
+  // }
+  // const avgRate = getAverageRating(reviews);
   return (
     <>
       <div
@@ -75,10 +75,10 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
             {conversation.name || otherUser.name}
           </div>
         </div>
-        <div className="flex flex-row items-center justify-between gap-x-4">
+        {/* <div className="flex flex-row items-center justify-between gap-x-4">
           <Popover>
             {/* <PopoverTrigger className="flex items-center border rounded-md shadow-sm px-2 py-2 bg-details"> */}
-            <PopoverTrigger>
+        {/* <PopoverTrigger>
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
               )}
             </PopoverContent>
           </Popover>
-        </div>
+        </div> */}
       </div>
     </>
   );

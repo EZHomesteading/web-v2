@@ -20,7 +20,10 @@ const ReviewButton = ({
 }: StatusProps) => {
   return (
     <SheetCartC>
-      <SheetTrigger className="border-[1px] bg-neutral-100 text-black px-2 py-2 rounded-lg shadow-lg">
+      <SheetTrigger
+        asChild
+        className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
+      >
         Write a review
       </SheetTrigger>
       <SheetContentF

@@ -16,7 +16,7 @@ interface ConfirmModalProps {
   onClose: () => void;
   orderId: string;
   orderAmount: number;
-  conversationId: string;
+  conversationId: string | null;
   otherUserId: string | undefined;
   paymentId: string | null;
 }

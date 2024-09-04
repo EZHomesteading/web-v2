@@ -43,7 +43,7 @@ interface p {
   isOpen?: boolean;
   onClose: () => void;
   orderId: string;
-  conversationId: string;
+  conversationId: string | null;
   otherUserId: string | undefined;
 }
 
