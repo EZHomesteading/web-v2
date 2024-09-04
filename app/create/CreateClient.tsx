@@ -31,12 +31,13 @@ const outfit = Outfit({
 });
 
 interface Props {
+  canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
   uniqueUrl: string;
 }
 
-const CreateClient = ({ user, index, uniqueUrl }: Props) => {
+const CreateClient = ({ user, index, uniqueUrl, canReceivePayouts }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -335,8 +336,20 @@ const CreateClient = ({ user, index, uniqueUrl }: Props) => {
       setTags([]);
       setCertificationChecked(false);
       setQuantityType(undefined);
+      if (
+        (user.hasPickedRole === true || user.hasPickedRole === null) &&
+        user?.location &&
+        user?.location[0]?.address &&
+        user?.location[0]?.hours &&
+        user?.image &&
+        user?.bio &&
+        canReceivePayouts === true
+      ) {
+        router.push("/dashboard/my-store");
+      } else {
+        router.push("/onboard");
+      }
 
-      router.push("/onboard");
       toast.success("Listing created successfully!");
     } catch (error) {
       console.error("Error in the overall process:", error);

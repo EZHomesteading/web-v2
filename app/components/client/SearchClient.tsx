@@ -55,7 +55,11 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         return false;
       });
 
+<<<<<<< HEAD
       const limitedResults = uniqueResults.slice(0, 10);
+=======
+      const limitedResults = uniqueResults.slice(0, 6);
+>>>>>>> origin
 
       return [...limitedResults, customAction];
     },
