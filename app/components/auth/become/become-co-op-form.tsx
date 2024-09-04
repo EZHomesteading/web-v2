@@ -59,30 +59,6 @@ export const BecomeCoop = ({
     }
   };
 
-  const handleAddressParsed = async (parsedAddress: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  }) => {
-    const { street, city, state, zip } = parsedAddress;
-    const latLng = await getLatLngFromAddress(
-      `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
-    );
-
-    if (latLng) {
-      form.setValue("location", {
-        0: {
-          type: "Point",
-          coordinates: [latLng.lng, latLng.lat],
-          address: [street, city, state, zip],
-          hours: null,
-        },
-        1: null,
-        2: null,
-      });
-    }
-  };
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
@@ -143,6 +119,7 @@ export const BecomeCoop = ({
                         disabled={isPending}
                         placeholder="john"
                         type="name"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -161,6 +138,7 @@ export const BecomeCoop = ({
                         disabled={isPending}
                         placeholder="john.doe@example.com"
                         type="email"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -188,6 +166,7 @@ export const BecomeCoop = ({
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -206,6 +185,7 @@ export const BecomeCoop = ({
                         disabled={isPending}
                         placeholder="Appleseed Store"
                         type="name"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />

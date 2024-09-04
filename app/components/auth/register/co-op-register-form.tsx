@@ -75,6 +75,7 @@ export const CoOpRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Johnny"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -92,6 +93,7 @@ export const CoOpRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Appleseed Co-op"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -110,6 +112,7 @@ export const CoOpRegisterForm = () => {
                         disabled={isPending}
                         placeholder="johnny.appleseed@example.com"
                         type="email"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -137,6 +140,7 @@ export const CoOpRegisterForm = () => {
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -161,6 +165,7 @@ export const CoOpRegisterForm = () => {
                         disabled={isPending}
                         placeholder="******"
                         type={showPassword ? "text" : "password"}
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />

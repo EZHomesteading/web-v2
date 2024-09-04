@@ -76,6 +76,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Johnny"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -93,6 +94,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Appleseed Farm"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -109,8 +111,9 @@ export const ProducerRegisterForm = () => {
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="johnny.appleseed@example.com"
+                        placeholder="jappleseedfarms@example.com"
                         type="email"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -138,6 +141,7 @@ export const ProducerRegisterForm = () => {
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -161,6 +165,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="******"
+                        className="font-light"
                         type={showPassword ? "text" : "password"}
                       />
                     </FormControl>
@@ -174,7 +179,7 @@ export const ProducerRegisterForm = () => {
                 type="submit"
                 className="w-full"
               >
-                Become an EZH Producer
+                Become an EZH Grower
               </Button>
             </>
           </div>
