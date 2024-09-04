@@ -6,11 +6,13 @@ import { pusherClient } from "@/lib/pusher";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
-import { $Enums, Order } from "@prisma/client";
-import { UserInfo } from "@/next-auth";
+import { $Enums, Order, Reviews } from "@prisma/client";
+import { ExtendedHours, UserInfo } from "@/next-auth";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import { Outfit } from "next/font/google";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+
 import {
   Popover,
   PopoverTrigger,
@@ -19,10 +21,14 @@ import {
 import Image from "next/image";
 import {
   IoMapOutline,
+  IoStar,
   IoStorefront,
   IoStorefrontOutline,
 } from "react-icons/io5";
 import { CiClock1 } from "react-icons/ci";
+import { useRouter } from "next/navigation";
+import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+import ReactStars from "react-stars";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
@@ -33,11 +39,13 @@ interface BodyProps {
     image: string | null;
     email: string;
     stripeAccountId: string | null;
+    url: string | undefined;
   } | null;
   order: Order;
   user: UserInfo;
   conversationId: string;
   listings: any;
+  reviews: Reviews[];
 }
 const outfit = Outfit({
   subsets: ["latin"],
@@ -50,14 +58,25 @@ const Body: React.FC<BodyProps> = ({
   user,
   conversationId,
   listings,
+  reviews,
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(initialMessages);
+  function getAverageRating(reviews: Reviews[]) {
+    if (reviews.length === 0) return 0;
 
+    const totalRatings = reviews.reduce(
+      (sum, review) => sum + review.rating,
+      0
+    );
+    const averageRating = totalRatings / reviews.length;
+    return Math.round(averageRating * 2) / 2;
+  }
+  const avgRate = getAverageRating(reviews);
   useEffect(() => {
     axios.post(`/api/chat/conversations/${conversationId}/seen`);
   }, [conversationId]);
-
+  const router = useRouter();
   useEffect(() => {
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/chat/conversations/${conversationId}/seen`);
@@ -118,7 +137,7 @@ const Body: React.FC<BodyProps> = ({
         </div>
         <Popover>
           <PopoverTrigger>
-            <Button>More Details</Button>
+            <Button>More Options</Button>
           </PopoverTrigger>
           <PopoverContent className={`${outfit.className} mr-9  `}>
             <div className="font-normal text-xl mb-3 border-b-[1px]">
@@ -127,7 +146,11 @@ const Body: React.FC<BodyProps> = ({
 
             <div className="space-y-4">
               {listings.map((listing: any) => (
-                <div key={listing.id} className="flex items-center space-x-4">
+                <div
+                  key={listing.id}
+                  className="flex items-center space-x-4"
+                  onClick={() => router.push(`/listings/${listing.id}`)}
+                >
                   <div className="flex-shrink-0">
                     <Image
                       src={listing.imageSrc[0] || "/placeholder.jpg"}
@@ -147,20 +170,55 @@ const Body: React.FC<BodyProps> = ({
               ))}
             </div>
             <div className="font-normal text-xl my-3 border-b-[1px]">
-              Seller Details
+              {user.id === order.sellerId ? "Buyer Details" : "Seller Details"}
             </div>
-            <div className="flex flex-col items-center justify-center space-y-1 w-full ">
-              <Button className="w-full flex-items-center gap-x-2 justify-between font-light text-sm">
-                <div>Open & Close Hours</div> <CiClock1 />
-              </Button>
-              <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
-                <div>Get Directions</div> <IoMapOutline />
-              </Button>
-              <Button className="w-full flex gap-x-2 items-center justify-between font-light text-sm">
-                <div>Visit Store</div>
-                <IoStorefrontOutline />
-              </Button>
-            </div>
+
+            {user.id === order.sellerId ? (
+              <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                <Button
+                  className="
+      w-full flex items-center gap-x-2 justify-between font-light text-sm "
+                  onClick={() => router.push(`/profile/${order.userId}`)}
+                  title="View reviews of this buyer"
+                >
+                  <div>View Reviews</div> <IoStar />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
+                      <div>View Hours</div> <IoStorefront />
+                    </Button>
+                  </SheetTrigger>
+
+                  <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                    <HoursDisplay
+                      coOpHours={order.location.hours as ExtendedHours}
+                    />
+                  </SheetContent>
+                </Sheet>
+                <Button
+                  onClick={() =>
+                    window.open(
+                      `http://maps.apple.com/?q=${order.location.coordinates[1]},${order.location.coordinates[0]}`,
+                      "_ blank"
+                    )
+                  }
+                  className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
+                >
+                  <div>Get Directions</div> <IoMapOutline />
+                </Button>
+                <Button
+                  onClick={() => router.push(`/store/${otherUser?.url}`)}
+                  className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
+                >
+                  <div>Visit Store</div>
+                  <IoStorefrontOutline />
+                </Button>
+              </div>
+            )}
           </PopoverContent>
         </Popover>
       </div>
