@@ -3,13 +3,12 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
-import ReviewButton from "@/app/components/ui/reviewButton";
 import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
 import { $Enums, Order, Reviews } from "@prisma/client";
 import { ExtendedHours, UserInfo } from "@/next-auth";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import { Outfit } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
@@ -28,10 +27,8 @@ import {
   IoStorefrontOutline,
   IoTrash,
 } from "react-icons/io5";
-import { CiClock1 } from "react-icons/ci";
 import { useRouter } from "next/navigation";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import ReactStars from "react-stars";
 import CancelModal from "./CancelModal";
 import ConfirmModal from "./ConfirmModal";
 import DisputeModal from "./DisputeModal";
@@ -91,6 +88,7 @@ const Body: React.FC<BodyProps> = ({
   const [refund, setRefund] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [review, setReview] = useState(false);
+
   //dependent on message order allow or dont allow the cancel button to be visible
   useEffect(() => {
     if (
@@ -169,21 +167,34 @@ const Body: React.FC<BodyProps> = ({
   }, [conversationId]);
   const router = useRouter();
   useEffect(() => {
-    const messageHandler = (message: FullMessageType) => {
-      axios.post(`/api/chat/conversations/${conversationId}/seen`);
-      setMessages((current) => {
-        if (find(current, { id: message.id })) {
-          return current;
-        }
-        return [...current, message];
-      });
-      bottomRef?.current?.scrollIntoView();
+    bottomRef?.current?.scrollIntoView();
+  }, [initialMessages, conversationId]);
+  useEffect(() => {
+    const messageHandler = async (message: FullMessageType) => {
+      try {
+        await axios.post(`/api/chat/conversations/${conversationId}/seen`);
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages, message];
+          // Check if the new message is the last one in the updated messages array
+          if (updatedMessages.length === prevMessages.length + 1) {
+            // Scroll to the bottom after adding the new message
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+          }
+          return updatedMessages;
+        });
+      } catch (error) {
+        console.error("Error handling new message:", error);
+      }
     };
 
     const updateMessageHandler = (newMessage: FullMessageType) => {
-      setMessages((current) =>
-        current.map((currentMessage) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((currentMessage) => {
           if (currentMessage.id === newMessage.id) {
+            // Check if the updated message is the last one in the prevMessages array
+            if (prevMessages.length === messages.length) {
+              bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+            }
             return newMessage;
           }
           return currentMessage;
@@ -200,9 +211,8 @@ const Body: React.FC<BodyProps> = ({
       pusherClient.unsubscribe(conversationId);
       pusherClient.unbind("messages:new", messageHandler);
       pusherClient.unbind("message:update", updateMessageHandler);
-      //pusherClient.disconnect(); // Disconnect Pusher connection
     };
-  }, [conversationId]);
+  }, [conversationId, messages]);
   const formattedPickupDate = order?.pickupDate
     ? formatPickupDate(order.pickupDate)
     : "No pickup date set";
@@ -261,7 +271,7 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-12 px-2 sm:px-10 w-full border-b-[1px] flex justify-between items-center`}
+        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[100] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600">
           <div>
@@ -429,6 +439,7 @@ const Body: React.FC<BodyProps> = ({
           </PopoverContent>
         </Popover>
       </div>
+      <div className="pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}

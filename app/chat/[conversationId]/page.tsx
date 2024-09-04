@@ -62,7 +62,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
       },
     ];
     return (
-      <div className="lg:pl-80 min-h-[110vh]">
+      <div className="lg:pl-80 min-h-[100vh]">
         <div className="h-full flex flex-col">
           {conversationData && (
             <>
@@ -93,7 +93,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
     })
   );
   return (
-    <div className="lg:pl-80 min-h-[110vh]">
+    <div className="lg:pl-80 min-h-[100vh]">
       <div className="h-full flex flex-col">
         {conversationData && (
           <>
