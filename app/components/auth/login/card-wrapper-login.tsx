@@ -42,7 +42,7 @@ export const CardWrapper = ({
   }, []);
 
   return (
-    <div className="flex grow flex-col pt-6 [@media(min-height:800px)]:pt-40 [@media(min-height:900px)]:pt-40 w-full min-h-screen px-5">
+    <div className="flex grow flex-col pt-10 w-full min-h-screen px-5">
       <div className="flex justify-center items-center">
         <Image src={logo} alt="EZHomesteading logo" height={30} width={30} />
         <span className={`ml-2 text-xl font-normal ${outfit.className}`}>
@@ -70,8 +70,8 @@ export const CardWrapper = ({
           ))}
         </div>
       </div>
-      <Card className="relative rounded-xl shadow-sm border-2 border-black w-full bg-inherit min-w-[320px] ">
-        <CardContent className={`${outfit.className} pt-6`}>
+      <Card className="relative rounded-xl d1dbbf shadow-md border-2 border-black w-full bg-inherit min-w-[320px] ">
+        <CardContent className={`${outfit.className} pb-3 pt-6`}>
           {children}
         </CardContent>
         {showSocial && (

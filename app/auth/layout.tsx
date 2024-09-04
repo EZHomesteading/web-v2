@@ -1,13 +1,7 @@
 //base auth forms layout page.
 import Image from "next/image";
 import authImg from "@/public/images/website-images/authimg2.png";
-import Logo from "../components/navbar/Logo";
-import Link from "next/link";
 import { Outfit } from "next/font/google";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
@@ -23,7 +17,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           className="xl:display-hidden"
         />
       </div>
-      <div className="authlayoutbg flex items-center justify-center">
+      <div className="authlayoutbg flex items-center justify-center min-h-screen">
         <div>{children}</div>
       </div>
     </>

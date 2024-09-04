@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "../login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -122,134 +122,105 @@ export const BecomeCoop = ({
     }
   };
 
-  const [formStep, setFormStep] = useState<"step1" | "step2">("step1");
-
   return (
     <CardWrapper
-      headerLabel=""
-      label2="Grow produce & source from producers to expand then start selling. Use your current info or update it below."
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            {formStep === "step1" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem className="w-[280px] sm:w-[350px]">
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="john"
-                          type="name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Current Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <PhoneInput
-                          {...field}
-                          disabled={isPending}
-                          placeholder="(743) 216-9078"
-                          value={field.value as any}
-                          onChange={(value) => field.onChange(value)}
-                          format="(###) ###-####"
-                          style={{
-                            backgroundColor: "inherit",
-                          }}
-                          international={false}
-                          defaultCountry="US"
-                          countrySelectProps={{ disabled: true }}
-                          maxLength={14}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  disabled={isPending}
-                  type="button"
-                  className="w-full"
-                  onClick={() => setFormStep("step2")}
-                >
-                  Next
-                </Button>
-              </>
-            )}
-            {formStep === "step2" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Co-Op Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="Appleseed Store"
-                          type="name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex flex-row">
-                  <Button
-                    disabled={isPending}
-                    type="button"
-                    className="w-full"
-                    onClick={() => setFormStep("step1")}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={() => onSubmit(form.getValues())}
-                    disabled={isPending}
-                    type="submit"
-                    className="w-full"
-                  >
-                    Become an EZH Co-op
-                  </Button>
-                </div>
-              </>
-            )}
+            <>
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="w-[280px] sm:w-[350px]">
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="john"
+                        type="name"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="john.doe@example.com"
+                        type="email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <PhoneInput
+                        {...field}
+                        disabled={isPending}
+                        placeholder="(743) 216-9078"
+                        value={field.value as any}
+                        onChange={(value) => field.onChange(value)}
+                        format="(###) ###-####"
+                        style={{
+                          backgroundColor: "inherit",
+                        }}
+                        international={false}
+                        defaultCountry="US"
+                        countrySelectProps={{ disabled: true }}
+                        maxLength={14}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Co-op Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Appleseed Store"
+                        type="name"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                onClick={() => onSubmit(form.getValues())}
+                disabled={isPending}
+                type="submit"
+                className="w-1/2 text-xs"
+              >
+                Become an EZH Co-op
+              </Button>
+            </>
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />

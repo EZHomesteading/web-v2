@@ -16,25 +16,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
 import { Button } from "@/app/components/ui/button";
+import { CardWrapper } from "../login/card-wrapper-login";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register-vendor";
-import { useRouter } from "next/navigation";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
 
 export const CoOpRegisterForm = () => {
-  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "sellAndSource"
-  );
-
   const form = useForm<z.infer<typeof RegisterVendorSchema>>({
     resolver: zodResolver(RegisterVendorSchema),
     defaultValues: {
@@ -59,16 +53,10 @@ export const CoOpRegisterForm = () => {
     });
   };
 
-  useEffect(() => {
-    setActiveTab("sellAndSource");
-  }, []);
-
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
-      headerLabel=""
-      label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
     >

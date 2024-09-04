@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "@/app/components/auth/login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -58,8 +58,6 @@ export const ProducerRegisterForm = () => {
   const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
-      headerLabel=""
-      label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
     >
