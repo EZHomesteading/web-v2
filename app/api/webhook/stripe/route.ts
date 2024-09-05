@@ -270,6 +270,19 @@ export async function POST(request: NextRequest) {
           }
 
           if (seller.role === UserRole.PRODUCER) {
+            const orderUpdate = await prisma.order.update({
+              where: { id: orderId },
+              data: {
+                location:
+                  buyer.location && buyer.location[0]
+                    ? buyer.location[0]
+                    : buyer.location && buyer.location[1]
+                    ? buyer.location[1]
+                    : buyer.location && buyer.location[2]
+                    ? buyer.location[2]
+                    : order.location,
+              },
+            });
             const newMessage = await prisma.message.create({
               include: {
                 seen: true,

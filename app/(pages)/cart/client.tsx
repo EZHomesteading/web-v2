@@ -123,7 +123,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
   // Group cart items by user and calculate the earliest expiry date for each group
   const mappedCartItems: CartGroup[] = cartItems.reduce(
     (acc: CartGroup[], cartItem: CartItem, index: number) => {
-      const expiry = convertToDate(shelfLife(cartItem.listing));
+      const expiry = convertToDate(shelfLife(cartItem.listing as FinalListing));
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
 
@@ -373,7 +373,9 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                                 </div>
                                 {cartItem.listing.shelfLife && (
                                   <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500 text-xs sm:text-sm">
-                                    {shelfLife(cartItem.listing)}
+                                    {shelfLife(
+                                      cartItem.listing as FinalListing
+                                    )}
                                   </p>
                                 )}
                               </div>

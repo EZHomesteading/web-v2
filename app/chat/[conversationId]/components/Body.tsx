@@ -271,7 +271,7 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[100] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600">
           <div>
@@ -323,16 +323,61 @@ const Body: React.FC<BodyProps> = ({
             </div>
 
             {user.id === order.sellerId ? (
-              <div className="flex flex-col items-center justify-center space-y-1 w-full ">
-                <Button
-                  className="
+              user.role === "PRODUCER" ? (
+                <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
+                        <div>View Hours</div> <IoStorefront />
+                      </Button>
+                    </SheetTrigger>
+
+                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                      <HoursDisplay
+                        coOpHours={order.location.hours as ExtendedHours}
+                      />
+                    </SheetContent>
+                  </Sheet>
+                  <Button
+                    onClick={() =>
+                      window.open(
+                        `http://maps.apple.com/?address=${order.location.address}`,
+                        "_ blank"
+                      )
+                    }
+                    className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
+                  >
+                    <div>Get Directions</div> <IoMapOutline />
+                  </Button>
+                  <Button
+                    className="
       w-full flex items-center gap-x-2 justify-between font-light text-sm "
-                  onClick={() => router.push(`/profile/${order.userId}`)}
-                  title="View reviews of this buyer"
-                >
-                  <div>View Reviews</div> <IoStar />
-                </Button>
-              </div>
+                    onClick={() => router.push(`/profile/${order.userId}`)}
+                    title="View reviews of this buyer"
+                  >
+                    <div>View Reviews</div> <IoStar />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                  <Button
+                    className="
+      w-full flex items-center gap-x-2 justify-between font-light text-sm "
+                    onClick={() => router.push(`/profile/${order.userId}`)}
+                    title="View reviews of this buyer"
+                  >
+                    <div>View Reviews</div> <IoStar />
+                  </Button>
+                </div>
+              )
+            ) : otherUser?.role === "PRODUCER" ? (
+              <Button
+                onClick={() => router.push(`/store/${otherUser?.url}`)}
+                className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
+              >
+                <div>Visit Store</div>
+                <IoStorefrontOutline />
+              </Button>
             ) : (
               <div className="flex flex-col items-center justify-center space-y-1 w-full ">
                 <Sheet>
@@ -351,7 +396,7 @@ const Body: React.FC<BodyProps> = ({
                 <Button
                   onClick={() =>
                     window.open(
-                      `http://maps.apple.com/?q=${order.location.coordinates[1]},${order.location.coordinates[0]}`,
+                      `http://maps.apple.com/?address=${order.location.address}`,
                       "_ blank"
                     )
                   }

@@ -141,7 +141,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div>
-        <div className="flex flex-row justify-center items-center   ">
+        <div className="flex flex-row justify-center  z-[100] items-center   ">
           {isSeller === true ? (
             <div className="w-[40%] mx-3 border-none shadow-none">
               <div className="grid gap-4">
