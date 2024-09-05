@@ -35,13 +35,13 @@ export const CardWrapper = ({
   showSocial,
 }: CardWrapperProps) => {
   return (
-    <div className={`${outfit.className} px-6  `}>
+    <div className={`${outfit.className} px-6`}>
       {" "}
       <div className={`font-normal text-3xl text-center mb-[2%]`}>
         {headerLabel}
       </div>
       <Card className="relative d1dbbf rounded-xl shadow-sm border-[2px]-black w-full min-w-[320px]">
-        <CardContent className="pt-6 pb-2 flex flex-col items-center">
+        <CardContent className="pt-6 pb-3 flex flex-col items-center">
           {showSocial && (
             <>
               <Social />

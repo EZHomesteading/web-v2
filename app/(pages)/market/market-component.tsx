@@ -35,7 +35,7 @@ const Shop = ({
   currentPage,
 }: ShopProps) => {
   // const router = useRouter();
-  // const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(true);
   // const [showPopup, setShowPopup] = useState(false);
 
   // useEffect(() => {

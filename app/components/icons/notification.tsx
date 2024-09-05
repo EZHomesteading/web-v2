@@ -75,9 +75,9 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
         <SheetTrigger className="cursor-pointer">
           <div className="relative">
             <IoMdNotificationsOutline
-              className={`h-10 w-9 ${white ? "text-white" : "text-black"}`}
+              className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
             />
-            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
+            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-2 p-[1px] text-xs">
               {notifications.length}
             </div>
           </div>

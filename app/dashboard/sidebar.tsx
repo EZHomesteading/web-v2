@@ -21,7 +21,11 @@ import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import Link from "next/link";
 import { GiCorn } from "react-icons/gi";
 import { TbClockDollar } from "react-icons/tb";
-
+import { Outfit } from "next/font/google";
+const o = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 interface p {
   role?: UserRole;
 }
@@ -210,7 +214,7 @@ const Sidebar = ({ role }: p) => {
   return (
     <>
       <div
-        className={`hidden lg:block relative h-full ${
+        className={`hidden ${o.className} lg:block relative h-full ${
           isCollapsed ? "w-10" : "w-64"
         } transition-width duration-300`}
       >
