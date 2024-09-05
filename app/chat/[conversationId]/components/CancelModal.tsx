@@ -15,7 +15,7 @@ interface ConfirmModalProps {
   onClose: () => void;
   order: Order;
   otherUser: string | undefined;
-  convoId: string;
+  convoId: string | null;
   otherUserRole: string | undefined;
   isSeller: boolean;
 }

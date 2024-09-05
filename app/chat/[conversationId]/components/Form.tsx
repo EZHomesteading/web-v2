@@ -45,7 +45,7 @@ const Form: React.FC<MessageFormProps> = ({ otherUsersId }) => {
       className="
         py-4 
         px-4 
-        bg-white 
+        bg-inherit
         border-t 
         flex 
         items-center 
