@@ -1,7 +1,7 @@
 //base auth forms layout page.
 import Image from "next/image";
 import authImg from "@/public/images/website-images/authimg2.png";
-import { Outfit } from "next/font/google";
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>

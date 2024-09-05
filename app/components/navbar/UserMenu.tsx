@@ -10,8 +10,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
-import { UserRole } from "@prisma/client";
-import { UpdateRoleAlert } from "../modals/update-role-alert";
 import { Outfit } from "next/font/google";
 import { GoPeople } from "react-icons/go";
 import Avatar from "../Avatar";
@@ -29,7 +27,10 @@ import {
   IoStorefrontOutline,
 } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
-
+import Image from "next/image";
+import placeholder from "@/public/images/website-images/placeholder.jpg";
+import { IoIosMenu } from "react-icons/io";
+import { VscAccount } from "react-icons/vsc";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -69,62 +70,41 @@ const UserMenu = ({ user }: Props) => {
   return (
     <>
       <Sheet>
-        <div className="flex flex-row items-center justify-end min-w-screen gap-x-6 md:gap-x-3">
-          <GiBarn
-            className={`h-8 w-8 block sm:hidden text-white ${
-              white ? "text-white" : "text-black"
-            }`}
-            onClick={() => router.push("/")}
+        <div className="flex flex-row items-center justify-between sm:justify-end pt-2 min-w-screen gap-x-3 md:gap-x-4">
+          <LiaMapMarkedSolid
+            className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
+            onClick={() => router.push("/map")}
           />
           <CartIcon cart={user?.cart} />
-
           <NotificationIcon
             sOrders={user?.sellerOrders}
             bOrders={user?.buyerOrders}
           />
-          {user ? (
-            <>
-              <Link href={`/create`}>
-                <div
-                  className={`${
-                    white ? "text-white" : "text-black"
-                  } text-xs border rounded-full px-2 py-1 shadow-sm ${
-                    outfit.className
-                  }`}
-                >
-                  Add a Product
-                </div>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href={`/auth/register?callbackUrl=/create`}>
-                <div
-                  className={`${
-                    white ? "text-white" : "text-black"
-                  } text-xs border rounded-full px-2 py-1 shadow-sm ${
-                    outfit.className
-                  }`}
-                >
-                  Add a Product
-                </div>
-              </Link>
-            </>
-          )}
-
-          <SheetTrigger className="border-none p-[2px] rounded-md">
-            <AiOutlineMenu
-              className={`w-8 h-8 lg:w-8 lg:h-8 ${
-                white ? "text-white" : "text-black"
-              }`}
+          <CiShop
+            className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
+            onClick={() => router.push("/market")}
+          />
+          <SheetTrigger className="block sm:hidden">
+            <VscAccount
+              className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
+            />
+          </SheetTrigger>
+          <SheetTrigger className="relative shadow-md border-[1px] py-1 px-2 rounded-full hidden sm:flex justify-center items-center">
+            <IoIosMenu
+              className={`w-4 h-4 mr-1 ${white ? "text-white" : "text-black"}`}
+            />
+            <Image
+              src={user?.image || placeholder}
+              alt="Profile Image"
+              height={25}
+              width={25}
+              className="object-fit rounded-full"
             />
           </SheetTrigger>
         </div>
         <SheetContent
-          side={isMdOrLarger ? "right" : "top"}
-          className={`${outfit.className} bg pt-5 overflow-y-auto h-screen ${
-            isMdOrLarger ? "" : ""
-          }`}
+          side={isMdOrLarger ? "right" : "bottom"}
+          className={`${outfit.className} bg pt-5 overflow-y-auto h-screen`}
         >
           <div>
             {user && (

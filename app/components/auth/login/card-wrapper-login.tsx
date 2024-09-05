@@ -7,6 +7,7 @@ import { BackButton } from "@/app/components/auth/back-button";
 import Image from "next/image";
 import logo from "@/public/images/website-images/ezh-logo-no-text.png";
 import { Outfit } from "next/font/google";
+import Link from "next/link";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,9 +22,9 @@ interface CardWrapperProps {
 }
 
 const phrases = [
+  { line1: "Buy local, fresh, & organic ", line2: "produce easily" },
   { line1: "Sell excess produce on", line2: "your schedule" },
   { line1: "Expand your produce", line2: "catalogue" },
-  { line1: "Buy local, fresh, & organic ", line2: "produce easily" },
 ];
 
 export const CardWrapper = ({
@@ -37,18 +38,21 @@ export const CardWrapper = ({
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % phrases.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex grow flex-col pt-10 w-full min-h-screen px-5">
-      <div className="flex justify-center items-center">
+      <Link
+        className="flex justify-center items-center hover:cursor-pointer"
+        href={`/`}
+      >
         <Image src={logo} alt="EZHomesteading logo" height={30} width={30} />
         <span className={`ml-2 text-xl font-normal ${outfit.className}`}>
           EZHomesteading
         </span>
-      </div>
+      </Link>
       <div className="my-4 h-20 overflow-hidden text-center">
         <div
           className="transition-transform duration-500 ease-in-out"

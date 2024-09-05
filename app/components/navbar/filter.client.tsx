@@ -97,7 +97,7 @@ const Filters = ({ user }: Props) => {
   return (
     <Sheet>
       <SheetTrigger className="flex flex-row border-[1px] border-gray-500 rounded-full px-2 py-2 bg-transparent">
-        <FiltersIcon /> Filters
+        <FiltersIcon />
       </SheetTrigger>
       <SheetContent
         side="left"
