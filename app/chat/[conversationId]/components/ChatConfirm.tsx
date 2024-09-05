@@ -1,51 +1,34 @@
 "use client";
 //modal to confirm that user wants to delete that chat, should only be able to delete if messages are at a finalised state such as completed or cancelled.
 import React, { useCallback, useState } from "react";
+
 import { Dialog } from "@headlessui/react";
 import { FiAlertTriangle } from "react-icons/fi";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
-import useConversation from "@/hooks/messenger/useConversation";
-import { toast } from "react-hot-toast";
 
+type SubmitFunction = () => Promise<void>;
 interface ConfirmModalProps {
-  isOpen?: boolean;
-  onClose: () => void;
-  orderId: string;
+  open: boolean;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+  modalMessage: string;
+  currentSubmitFunction: SubmitFunction | null;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  onConfirm: () => void;
+  onCancel: () => void;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  isOpen,
-  onClose,
-  orderId,
+const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
+  open,
+  onOpenChange,
+  setIsLoading,
+  modalMessage,
+  currentSubmitFunction,
+  onCancel,
+  onConfirm,
 }) => {
-  const router = useRouter();
-  const { conversationId } = useConversation();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const onDelete = useCallback(() => {
-    setIsLoading(true);
-    axios.post("/api/useractions/checkout/update-order", {
-      conversationId: null,
-      orderId: orderId,
-      status: 19,
-      completedAt: new Date(),
-    });
-    axios
-      .delete(`/api/chat/conversations/${conversationId}`)
-      .then(() => {
-        onClose();
-        router.push("/chat");
-        router.refresh();
-      })
-      .catch(() => toast.error("Something went wrong!"))
-      .finally(() => setIsLoading(false));
-  }, [router, conversationId, onClose]);
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={open} onClose={onCancel}>
       <div className="sm:flex sm:items-start">
         <div
           className="
@@ -81,26 +64,25 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             as="h3"
             className="text-base font-semibold leading-6 text-gray-900"
           >
-            Delete conversation
+            Confirm action
           </Dialog.Title>
           <div className="mt-2">
             <p className="text-sm text-gray-500">
-              Are you sure you want to delete this conversation? This action
-              cannot be undone.
+              This will send this message: {modalMessage}
             </p>
           </div>
         </div>
       </div>
       <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-        <Button disabled={isLoading} danger onClick={onDelete}>
-          Delete
-        </Button>
-        <Button disabled={isLoading} secondary onClick={onClose}>
+        <Button danger onClick={onCancel}>
           Cancel
+        </Button>
+        <Button secondary onClick={onConfirm}>
+          Confirm
         </Button>
       </div>
     </Modal>
   );
 };
 
-export default ConfirmModal;
+export default ChatConfirmModal;

@@ -27,6 +27,8 @@ import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
@@ -41,6 +43,12 @@ import {
 import Form from "./Form";
 import Avatar from "@/app/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
+import {
+  AlertDialogAction,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@radix-ui/react-alert-dialog";
+import ChatConfirmModal from "./ChatConfirm";
 
 const zilla = Zilla_Slab({
   subsets: ["latin"],
@@ -51,7 +59,7 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
-
+type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
   data: FullMessageType;
   isLast?: boolean;
@@ -79,6 +87,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [dateTime, setDateTime] = useState<Date | string>("");
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [currentSubmitFunction, setCurrentSubmitFunction] =
+    useState<SubmitFunction | null>(null);
+
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
   const pulseAnimation = `
@@ -123,39 +136,81 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     isOwn ? ` ` : ``,
     data.image ? "rounded-md p-0" : " "
   );
+  let onConfirm = async () => {
+    setIsModalOpen(false);
+    setIsLoading(false);
+    if (currentSubmitFunction) {
+      await currentSubmitFunction();
+    }
+  };
+
+  let onCancel = () => {
+    setIsModalOpen(false);
+    setIsLoading(false);
+  };
+  const handleConfirm = (
+    message: string,
+    submitFunction: SubmitFunction
+  ): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setModalMessage(message);
+      setCurrentSubmitFunction(() => submitFunction);
+      setIsModalOpen(true);
+
+      onConfirm = async () => {
+        setIsModalOpen(false);
+        resolve(true);
+      };
+
+      onCancel = () => {
+        setIsModalOpen(false);
+        resolve(false);
+        setIsLoading(false);
+      };
+    });
+  };
 
   // all onsubmit options dependent on messages in chat.
   const [isLoading, setIsLoading] = useState(false);
   const onSubmit1 = async () => {
-    setIsLoading(true);
-    try {
-      //coop seller confirms order pickup time
-      await axios.post("/api/chat/messages", {
-        message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
-        messageOrder: "2",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      if (user.role === UserRole.COOP) {
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 2,
+    const message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
+
+    const submitFunction = async () => {
+      setIsLoading(true);
+      try {
+        //coop seller confirms order pickup time
+        await axios.post("/api/chat/messages", {
+          message: message,
+          messageOrder: "2",
+          conversationId: convoId,
+          otherUserId: otherUsersId,
         });
-      } else {
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 10,
-        });
+        if (user.role === UserRole.COOP) {
+          await axios.post("/api/useractions/checkout/update-order", {
+            orderId: order.id,
+            status: 2,
+          });
+        } else {
+          await axios.post("/api/useractions/checkout/update-order", {
+            orderId: order.id,
+            status: 10,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    };
+    const confirmed = await handleConfirm(message, submitFunction);
+    if (confirmed && currentSubmitFunction) {
+      await currentSubmitFunction();
     }
   };
 
   const onSubmit2 = async () => {
     setIsLoading(true);
+    const message = `No, that time does not work. Does ${validTime} work instead? If not, `;
     try {
       // coop chooses new delivery/pickup time
       if (validTime === "(select your time)") {
@@ -163,7 +218,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         return;
       }
       await axios.post("/api/chat/messages", {
-        message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+        message: message,
         messageOrder: "3",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -182,11 +237,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit4 = async () => {
     setIsLoading(true);
+    const message =
+      "Fantastic, I will be there to pick up the item at the specified time.";
     try {
       //buyer confirms new pickup time set by seller
       await axios.post("/api/chat/messages", {
-        message:
-          "Fantastic, I will be there to pick up the item at the specified time.",
+        message: message,
         messageOrder: "5",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -204,6 +260,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit5 = async (img: string) => {
     setIsLoading(true);
+    const message = `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`;
     try {
       //coop has set out the order
       await axios.post("/api/chat/messages", {
@@ -213,7 +270,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
+        message: message,
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -231,10 +288,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit6 = async () => {
     setIsLoading(true);
+    const message = "I have Received my order. Thank you!";
     try {
       //buyer picks up/ receives delivery of the order, stripe transfer initiated
       await axios.post("/api/chat/messages", {
-        message: "I have Received my order. Thank you!",
+        message: message,
         messageOrder: "7",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -270,11 +328,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit7 = async () => {
     setIsLoading(true);
+    const message =
+      "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
     try {
       //seller marks order as complete.
       await axios.post("/api/chat/messages", {
-        message:
-          "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
+        message: message,
         messageOrder: "1.1",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -292,6 +351,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit8 = async () => {
     setIsLoading(true);
+    const message = `No, that time does not work. Can it instead be at ${validTime}`;
     try {
       //early return if no time selected.
       if (validTime === "(select your time)") {
@@ -300,7 +360,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       }
       //handle producer reschedule or consumer reschedule
       await axios.post("/api/chat/messages", {
-        message: `No, that time does not work. Can it instead be at ${validTime}`,
+        message: message,
         messageOrder: "4",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -328,6 +388,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit9 = async () => {
     setIsLoading(true);
+    const message = `I can deliver these items to you at ${validTime}, does that work?`;
     try {
       //handle producer reschedule
       if (validTime === "(select your time)") {
@@ -335,7 +396,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         return;
       }
       await axios.post("/api/chat/messages", {
-        message: `I can deliver these items to you at ${validTime}, does that work?`,
+        message: message,
         messageOrder: "11",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -354,10 +415,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit10 = async () => {
     setIsLoading(true);
+    const message = "Yes, That time works, See you then!";
     try {
       //handle producer accepts drop off time or producer accepts drop off time.
       await axios.post("/api/chat/messages", {
-        message: "Yes, That time works, See you then!",
+        message: message,
         messageOrder: "12",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -382,6 +444,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit11 = async () => {
     setIsLoading(true);
+    const message = `No, that time does not work. Does ${validTime} work instead? If not, `;
     try {
       //early return if time is not selected
       if (validTime === "(select your time)") {
@@ -390,7 +453,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       }
       //coop declares new drop off time for producer deliveries
       await axios.post("/api/chat/messages", {
-        message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+        message: message,
         messageOrder: "13",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -409,6 +472,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit12 = async (img: string) => {
     setIsLoading(true);
+    const message = "Your item has been delivered.";
     try {
       //producer delivers item and attaches an image.
       //early returns are handles in image upload function, cannot click submit without uploading an image.
@@ -419,7 +483,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: "Your item has been delivered.",
+        message: message,
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -437,11 +501,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
   const onSubmit14 = async () => {
     setIsLoading(true);
+    const message =
+      "Yes, That time works. Your item will be delivered at that time.";
     try {
       //producer confirms delivery time
       await axios.post("/api/chat/messages", {
-        message:
-          "Yes, That time works. Your item will be delivered at that time.",
+        message: message,
         messageOrder: "14",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -1312,6 +1377,45 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         conversationId={convoId}
         otherUserId={otherUsersId}
       />
+      <ChatConfirmModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        modalMessage={modalMessage}
+        currentSubmitFunction={currentSubmitFunction}
+        setIsLoading={setIsLoading}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
+      {/* <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base font-semibold leading-6 text-gray-900">
+              Confirm Action
+            </AlertDialogTitle>
+            <AlertDialogDescription>{modalMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setIsModalOpen(false);
+                setIsLoading(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setIsModalOpen(false);
+                if (currentSubmitFunction) {
+                  await currentSubmitFunction();
+                }
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog> */}
       {/* messages body starts here */}
       <div className={container}>
         <div className="pt-2">

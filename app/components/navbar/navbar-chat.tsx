@@ -17,7 +17,7 @@ interface p {
 }
 const Navbar = ({ user }: p) => {
   return (
-    <div className=" w-full  z-[1000] bg-[#F1EFE7]  fixed   pb-2">
+    <div className=" w-full  z-[10] bg-[#F1EFE7]  fixed   pb-2">
       <Container>
         <div className="flex flex-row items-center py-4 justify-around md:justify-between">
           <div
