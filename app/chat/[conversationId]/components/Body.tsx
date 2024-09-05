@@ -72,6 +72,19 @@ const Body: React.FC<BodyProps> = ({
   listings,
   reviews,
 }) => {
+  const sellerRole =
+    otherUser?.id === order.sellerId ? otherUser.role : user.role;
+  const quantities = JSON.parse(order.quantity);
+  console.log(quantities);
+  const getQuantitiy = (listingId: string) => {
+    // Find the listing with the matching id
+    const foundListing = quantities.find(
+      (quantity: any) => quantity.id === listingId
+    );
+
+    // Return the found listing or null if not found
+    return foundListing.quantity || null;
+  };
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(initialMessages);
   const lastMessage = messages[messages.length - 1];
@@ -279,10 +292,15 @@ const Body: React.FC<BodyProps> = ({
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
           <div>
-            <div className="text-xs">{formattedPickupDate}</div>
+            <div className="text-xs">
+              {sellerRole === "PRODUCER"
+                ? "Current drop off time:"
+                : "Current pickup time:"}{" "}
+              {formattedPickupDate}
+            </div>
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
-          <div className="text-xs">${order?.totalPrice}</div>
+          <div className="text-xs">Order total: ${order?.totalPrice}</div>
         </div>
         <Popover>
           <PopoverTrigger>
@@ -311,8 +329,12 @@ const Body: React.FC<BodyProps> = ({
                   </div>
                   <div className="flex-grow">
                     <p className="font-normal">{listing.title}</p>
-                    <p className="text-xs font-extralight text-gray-500">
+                    <p className="text-xs font-extralight text-gray-700">
                       ${listing.price} per {listing.quantityType}
+                    </p>
+                    <p className="text-xs font-extralight text-gray-700">
+                      {getQuantitiy(listing.id)} {listing.quantityType} for $
+                      {getQuantitiy(listing.id) * listing.price}
                     </p>
                   </div>
                 </div>
