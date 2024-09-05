@@ -58,6 +58,7 @@ export async function POST() {
               prisma.order.update({
                 where: { id: order.id },
                 data: {
+                  conversationId: null,
                   status: order.status,
                   completedAt: null,
                 },
