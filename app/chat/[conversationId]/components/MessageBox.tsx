@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import CustomTimeModal2 from "./dateStates";
 import toast from "react-hot-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
@@ -89,9 +89,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [currentSubmitFunction, setCurrentSubmitFunction] =
     useState<SubmitFunction | null>(null);
-
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
   const pulseAnimation = `
@@ -108,7 +108,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   }
 `;
   //dependent on message order allow or dont allow the cancel button to be visible
-
   //handle seen messages
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
@@ -117,17 +116,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   if (!user?.id) {
     return null;
   }
-
   //declare clsx styling
   const container = clsx(
     "flex flex-grow items-start gap-2 py-2 px-4 testcontainer"
   );
   const body = clsx("flex  flex-col");
   const message = clsx(
-    `text-xs md:text-sm w-fit font-light ${outfit.className}`,
-    data.image ? "rounded-md p-0" : " "
-  );
-  const messageForm = clsx(
     `text-xs md:text-sm w-fit font-light ${outfit.className}`,
     data.image ? "rounded-md p-0" : " "
   );
@@ -138,7 +132,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   let onConfirm = async () => {
     setIsModalOpen(false);
-    setIsLoading(false);
     if (currentSubmitFunction) {
       await currentSubmitFunction();
     }
@@ -171,31 +164,229 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   // all onsubmit options dependent on messages in chat.
-  const [isLoading, setIsLoading] = useState(false);
-  const onSubmit1 = async () => {
-    const message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
-
+  const tryone = async (message: string) => {
+    //coop seller confirms order pickup time
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "2",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    if (user.role === UserRole.COOP) {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 2,
+      });
+    } else {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 10,
+      });
+    }
+  };
+  const trytwo = async (message: string) => {
+    // coop chooses new delivery/pickup time
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "3",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 3,
+      pickupDate: dateTime,
+    });
+  };
+  const tryfour = async (message: string) => {
+    //buyer confirms new pickup time set by seller
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "5",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 5,
+    });
+  };
+  const trysix = async (message: string) => {
+    //buyer picks up/ receives delivery of the order, stripe transfer initiated
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "7",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
+      //if buyer is coop buying from producer set status 17
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 17,
+      });
+    } else {
+      //if buyer is not coop buying from producer set status to 9
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 9,
+      });
+    }
+    const TotalPrice = order.totalPrice * 100;
+    const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
+    await axios.post("/api/stripe/transfer", {
+      //finalise stripe transaction
+      total: TotalPrice - stripeFee,
+      stripeAccountId: stripeAccountId,
+      orderId: order.id,
+      status: order.status,
+    });
+  };
+  const tryseven = async (message: string) => {
+    //seller marks order as complete.
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "1.1",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 18,
+    });
+  };
+  const tryeight = async (message: string) => {
+    //early return if no time selected.
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
+    //handle producer reschedule or consumer reschedule
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "4",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    if (user.role === UserRole.PRODUCER) {
+      //pretty sure this is not needed, will keep just in case
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 11,
+        pickupDate: dateTime,
+      });
+    } else {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 6,
+        pickupDate: dateTime,
+      });
+    }
+  };
+  const trynine = async (message: string) => {
+    //handle producer reschedule
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "11",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 11,
+      pickupDate: dateTime,
+    });
+  };
+  const tryten = async (message: string) => {
+    //handle producer accepts drop off time or producer accepts drop off time.
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "12",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    if (user.role === UserRole.COOP) {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 13,
+      });
+    } else {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order.id,
+        status: 10,
+      });
+    }
+  };
+  const tryeleven = async (message: string) => {
+    //early return if time is not selected
+    if (validTime === "(select your time)") {
+      toast.error("You must select a time before choosing this option");
+      return;
+    }
+    //coop declares new drop off time for producer deliveries
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "13",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 14,
+      pickupDate: dateTime,
+    });
+  };
+  const tryfourteen = async (message: string) => {
+    //producer confirms delivery time
+    await axios.post("/api/chat/messages", {
+      message: message,
+      messageOrder: "14",
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order.id,
+      status: 10,
+    });
+  };
+  const onSubmit = async (trynum: (message: string) => Promise<void>) => {
+    let message = "";
+    if (trynum === tryone) {
+      message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
+    } else if (trynum === trytwo) {
+      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+    } else if (trynum === tryfour) {
+      message =
+        "Fantastic, I will be there to pick up the item at the specified time.";
+    } else if (trynum === trysix) {
+      message = "I have Received my order. Thank you!";
+    } else if (trynum === tryseven) {
+      message =
+        "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
+    } else if (trynum === tryeight) {
+      message = `No, that time does not work. Can it instead be at ${validTime}`;
+    } else if (trynum === trynine) {
+      message = `I can deliver these items to you at ${validTime}, does that work?`;
+    } else if (trynum === tryten) {
+      message = "Yes, That time works, See you then!";
+    } else if (trynum === tryeleven) {
+      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+    } else if (trynum === tryfourteen) {
+      message =
+        "Yes, That time works. Your item will be delivered at that time.";
+    }
     const submitFunction = async () => {
       setIsLoading(true);
       try {
-        //coop seller confirms order pickup time
-        await axios.post("/api/chat/messages", {
-          message: message,
-          messageOrder: "2",
-          conversationId: convoId,
-          otherUserId: otherUsersId,
-        });
-        if (user.role === UserRole.COOP) {
-          await axios.post("/api/useractions/checkout/update-order", {
-            orderId: order.id,
-            status: 2,
-          });
-        } else {
-          await axios.post("/api/useractions/checkout/update-order", {
-            orderId: order.id,
-            status: 10,
-          });
-        }
+        await trynum(message);
       } catch (error) {
         console.error(error);
       } finally {
@@ -207,60 +398,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       await currentSubmitFunction();
     }
   };
-
-  const onSubmit2 = async () => {
-    setIsLoading(true);
-    const message = `No, that time does not work. Does ${validTime} work instead? If not, `;
-    try {
-      // coop chooses new delivery/pickup time
-      if (validTime === "(select your time)") {
-        toast.error("You must select a time before choosing this option");
-        return;
-      }
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "3",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 3,
-        pickupDate: dateTime,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit4 = async () => {
-    setIsLoading(true);
-    const message =
-      "Fantastic, I will be there to pick up the item at the specified time.";
-    try {
-      //buyer confirms new pickup time set by seller
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "5",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 5,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onSubmit5 = async (img: string) => {
     setIsLoading(true);
-    const message = `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`;
     try {
       //coop has set out the order
       await axios.post("/api/chat/messages", {
@@ -270,7 +409,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: message,
+        message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -285,194 +424,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       setIsLoading(false);
     }
   };
-
-  const onSubmit6 = async () => {
-    setIsLoading(true);
-    const message = "I have Received my order. Thank you!";
-    try {
-      //buyer picks up/ receives delivery of the order, stripe transfer initiated
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "7",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
-        //if buyer is coop buying from producer set status 17
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 17,
-        });
-      } else {
-        //if buyer is not coop buying from producer set status to 9
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 9,
-        });
-      }
-      const TotalPrice = order.totalPrice * 100;
-      const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
-      await axios.post("/api/stripe/transfer", {
-        //finalise stripe transaction
-        total: TotalPrice - stripeFee,
-        stripeAccountId: stripeAccountId,
-        orderId: order.id,
-        status: order.status,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit7 = async () => {
-    setIsLoading(true);
-    const message =
-      "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
-    try {
-      //seller marks order as complete.
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "1.1",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 18,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit8 = async () => {
-    setIsLoading(true);
-    const message = `No, that time does not work. Can it instead be at ${validTime}`;
-    try {
-      //early return if no time selected.
-      if (validTime === "(select your time)") {
-        toast.error("You must select a time before choosing this option");
-        return;
-      }
-      //handle producer reschedule or consumer reschedule
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "4",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      if (user.role === UserRole.PRODUCER) {
-        //pretty sure this is not needed, will keep just in case
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 11,
-          pickupDate: dateTime,
-        });
-      } else {
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 6,
-          pickupDate: dateTime,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit9 = async () => {
-    setIsLoading(true);
-    const message = `I can deliver these items to you at ${validTime}, does that work?`;
-    try {
-      //handle producer reschedule
-      if (validTime === "(select your time)") {
-        toast.error("You must select a time before choosing this option");
-        return;
-      }
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "11",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 11,
-        pickupDate: dateTime,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit10 = async () => {
-    setIsLoading(true);
-    const message = "Yes, That time works, See you then!";
-    try {
-      //handle producer accepts drop off time or producer accepts drop off time.
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "12",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      if (user.role === UserRole.COOP) {
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 13,
-        });
-      } else {
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: order.id,
-          status: 10,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSubmit11 = async () => {
-    setIsLoading(true);
-    const message = `No, that time does not work. Does ${validTime} work instead? If not, `;
-    try {
-      //early return if time is not selected
-      if (validTime === "(select your time)") {
-        toast.error("You must select a time before choosing this option");
-        return;
-      }
-      //coop declares new drop off time for producer deliveries
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "13",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 14,
-        pickupDate: dateTime,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onSubmit12 = async (img: string) => {
     setIsLoading(true);
-    const message = "Your item has been delivered.";
     try {
       //producer delivers item and attaches an image.
       //early returns are handles in image upload function, cannot click submit without uploading an image.
@@ -483,7 +436,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: message,
+        message: "Your item has been delivered.",
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -498,37 +451,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       setIsLoading(false);
     }
   };
-
-  const onSubmit14 = async () => {
-    setIsLoading(true);
-    const message =
-      "Yes, That time works. Your item will be delivered at that time.";
-    try {
-      //producer confirms delivery time
-      await axios.post("/api/chat/messages", {
-        message: message,
-        messageOrder: "14",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
-        status: 10,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   //receive data from child and set date time based on user inputs in modal
   const handleTime = (childTime: ValidTime) => {
     setDateTime(childTime.pickupTime);
     const date = formatTime(childTime.pickupTime);
     setValidTime(date);
   };
-
   //extra view hours component
   const hoursButton = () => {
     return (
@@ -561,7 +489,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit1();
+            await onSubmit(tryone);
           } catch (error) {
             console.error(error);
           } finally {
@@ -583,7 +511,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit2();
+                await onSubmit(trytwo);
               } catch (error) {
                 console.error(error);
               } finally {
@@ -642,41 +570,45 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </button>
     </div>
   );
-
   const resp2 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res: { url: string }[]) => {
-                setImage(res[0].url);
-                setIsLoading(true);
-                try {
-                  onSubmit5(res[0].url);
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                container: "h-full w-max",
-              }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                isLoading ? "cursor-not-allowed opacity-50" : ""
-              }`}
-              content={{
-                button({ ready }) {
-                  if (ready) return <div>Send a photo of the produce</div>;
-                  return isLoading ? "Loading..." : "Getting ready...";
-                },
-              }}
-            />
+            <div>
+              {" "}
+              Send a photo of the produce to confirm that it is ready to be
+              picked up.
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: { url: string }[]) => {
+                  setImage(res[0].url);
+                  setIsLoading(true);
+                  try {
+                    onSubmit5(res[0].url);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                  isLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                content={{
+                  button({ ready }) {
+                    if (ready) return <div>Send a photo of the produce</div>;
+                    return isLoading ? "Loading..." : "Getting ready...";
+                  },
+                }}
+              />
+            </div>
           )}
           {image && (
             <>
@@ -720,7 +652,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </div>
     </div>
   );
-
   const resp3 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       <button
@@ -728,7 +659,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit4();
+            await onSubmit(tryfour);
           } catch (error) {
             console.error(error);
           } finally {
@@ -749,7 +680,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           onClick={async () => {
             setIsLoading(true);
             try {
-              await onSubmit8();
+              await onSubmit(tryeight);
             } catch (error) {
               console.error(error);
             } finally {
@@ -788,7 +719,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </button>
     </div>
   );
-
   const resp4 = (
     <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
       {" "}
@@ -797,7 +727,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit1();
+            await onSubmit(tryone);
           } catch (error) {
             console.error(error);
           } finally {
@@ -818,7 +748,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           onClick={async () => {
             setIsLoading(true);
             try {
-              await onSubmit2();
+              await onSubmit(trytwo);
             } catch (error) {
               console.error(error);
             } finally {
@@ -857,41 +787,44 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </button>
     </div>
   );
-
   const resp5 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res: { url: string }[]) => {
-                setImage(res[0].url);
-                setIsLoading(true);
-                try {
-                  onSubmit5(res[0].url);
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                container: "h-full w-max",
-              }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                isLoading ? "cursor-not-allowed opacity-50" : ""
-              }`}
-              content={{
-                button({ ready }) {
-                  if (ready) return <div>Send a photo of the produce</div>;
-                  return isLoading ? "Loading..." : "Getting ready...";
-                },
-              }}
-            />
+            <div>
+              {" "}
+              Upload an image to confirm item is ready for pickup.
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: { url: string }[]) => {
+                  setImage(res[0].url);
+                  setIsLoading(true);
+                  try {
+                    onSubmit5(res[0].url);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                  isLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                content={{
+                  button({ ready }) {
+                    if (ready) return <div>Send a photo of the produce</div>;
+                    return isLoading ? "Loading..." : "Getting ready...";
+                  },
+                }}
+              />
+            </div>
           )}
           {image && (
             <>
@@ -944,7 +877,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit6();
+            await onSubmit(trysix);
           } catch (error) {
             console.error(error);
           } finally {
@@ -979,7 +912,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit7();
+            await onSubmit(tryseven);
           } catch (error) {
             console.error(error);
           } finally {
@@ -1006,7 +939,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit9();
+                await onSubmit(trynine);
               } catch (error) {
                 console.error(error);
               } finally {
@@ -1054,7 +987,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit10();
+            await onSubmit(tryten);
           } catch (error) {
             console.error(error);
           } finally {
@@ -1075,7 +1008,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit11();
+                await onSubmit(tryeleven);
               } catch (error) {
                 console.error(error);
               } finally {
@@ -1120,36 +1053,40 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res: { url: string }[]) => {
-                setImage(res[0].url);
-                setIsLoading(true);
-                try {
-                  onSubmit12(res[0].url);
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                container: "h-full w-max",
-              }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                isLoading ? "cursor-not-allowed opacity-50" : ""
-              }`}
-              content={{
-                button({ ready }) {
-                  if (ready)
-                    return <div>Send a photo of the delivered produce</div>;
-                  return isLoading ? "Loading..." : "Getting ready...";
-                },
-              }}
-            />
+            <div>
+              {" "}
+              Upload an image to confirm delivery.
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: { url: string }[]) => {
+                  setImage(res[0].url);
+                  setIsLoading(true);
+                  try {
+                    onSubmit12(res[0].url);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                  isLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                content={{
+                  button({ ready }) {
+                    if (ready)
+                      return <div>Send a photo of the delivered produce</div>;
+                    return isLoading ? "Loading..." : "Getting ready...";
+                  },
+                }}
+              />
+            </div>
           )}
           {image && (
             <>
@@ -1200,7 +1137,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit14();
+            await onSubmit(tryfourteen);
           } catch (error) {
             console.error(error);
           } finally {
@@ -1221,7 +1158,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit9();
+                await onSubmit(trynine);
               } catch (error) {
                 console.error(error);
               } finally {
@@ -1386,36 +1323,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
-      {/* <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base font-semibold leading-6 text-gray-900">
-              Confirm Action
-            </AlertDialogTitle>
-            <AlertDialogDescription>{modalMessage}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                setIsModalOpen(false);
-                setIsLoading(false);
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                setIsModalOpen(false);
-                if (currentSubmitFunction) {
-                  await currentSubmitFunction();
-                }
-              }}
-            >
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog> */}
       {/* messages body starts here */}
       <div className={container}>
         <div className="pt-2">
