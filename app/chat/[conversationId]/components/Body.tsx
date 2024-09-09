@@ -164,17 +164,6 @@ const Body: React.FC<BodyProps> = ({
   if (!user?.id) {
     return null;
   }
-  function getAverageRating(reviews: Reviews[]) {
-    if (reviews.length === 0) return 0;
-
-    const totalRatings = reviews.reduce(
-      (sum, review) => sum + review.rating,
-      0
-    );
-    const averageRating = totalRatings / reviews.length;
-    return Math.round(averageRating * 2) / 2;
-  }
-  const avgRate = getAverageRating(reviews);
   useEffect(() => {
     axios.post(`/api/chat/conversations/${conversationId}/seen`);
   }, [conversationId]);
