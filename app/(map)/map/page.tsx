@@ -41,14 +41,9 @@ const MapPage = async () => {
   return (
     <div className="h-sreen overflow-hidden touch-none">
       <div className="relative w-full z-10 shadow-sm h-[64px]">
-        <div className="py-4">
-          <Container>
-            <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
-              <Logo />
-              <UserMenu user={user as unknown as navUser} />
-            </div>
-          </Container>
-        </div>
+        <Container>
+          <UserMenu user={user as unknown as navUser} />
+        </Container>
       </div>
       <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
         <Map

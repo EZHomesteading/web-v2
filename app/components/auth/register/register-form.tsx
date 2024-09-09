@@ -179,7 +179,7 @@ const RegisterForm = () => {
                     control={form.control}
                     name="confirmPassword"
                     render={({ field }) => (
-                      <FormItem className="w-280px sm:w-[350px]">
+                      <FormItem className="w-[280px] sm:w-[350px]">
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <Input
