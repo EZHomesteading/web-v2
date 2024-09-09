@@ -164,10 +164,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   // all onsubmit options dependent on messages in chat.
-  const tryone = async () => {
+  const tryone = async (message: string) => {
     //coop seller confirms order pickup time
     await axios.post("/api/chat/messages", {
-      message: `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`,
+      message: message,
       messageOrder: "2",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -184,14 +184,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       });
     }
   };
-  const trytwo = async () => {
+  const trytwo = async (message: string) => {
     // coop chooses new delivery/pickup time
     if (validTime === "(select your time)") {
       toast.error("You must select a time before choosing this option");
       return;
     }
     await axios.post("/api/chat/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+      message: message,
       messageOrder: "3",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -202,11 +202,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const tryfour = async () => {
+  const tryfour = async (message: string) => {
     //buyer confirms new pickup time set by seller
     await axios.post("/api/chat/messages", {
-      message:
-        "Fantastic, I will be there to pick up the item at the specified time.",
+      message: message,
       messageOrder: "5",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -216,10 +215,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: 5,
     });
   };
-  const trysix = async () => {
+  const trysix = async (message: string) => {
     //buyer picks up/ receives delivery of the order, stripe transfer initiated
     await axios.post("/api/chat/messages", {
-      message: "I have Received my order. Thank you!",
+      message: message,
       messageOrder: "7",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -247,11 +246,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: order.status,
     });
   };
-  const tryseven = async () => {
+  const tryseven = async (message: string) => {
     //seller marks order as complete.
     await axios.post("/api/chat/messages", {
-      message:
-        "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours",
+      message: message,
       messageOrder: "1.1",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -261,7 +259,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: 18,
     });
   };
-  const tryeight = async () => {
+  const tryeight = async (message: string) => {
     //early return if no time selected.
     if (validTime === "(select your time)") {
       toast.error("You must select a time before choosing this option");
@@ -269,7 +267,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
     //handle producer reschedule or consumer reschedule
     await axios.post("/api/chat/messages", {
-      message: `No, that time does not work. Can it instead be at ${validTime}`,
+      message: message,
       messageOrder: "4",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -289,14 +287,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       });
     }
   };
-  const trynine = async () => {
+  const trynine = async (message: string) => {
     //handle producer reschedule
     if (validTime === "(select your time)") {
       toast.error("You must select a time before choosing this option");
       return;
     }
     await axios.post("/api/chat/messages", {
-      message: `I can deliver these items to you at ${validTime}, does that work?`,
+      message: message,
       messageOrder: "11",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -307,10 +305,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const tryten = async () => {
+  const tryten = async (message: string) => {
     //handle producer accepts drop off time or producer accepts drop off time.
     await axios.post("/api/chat/messages", {
-      message: "Yes, That time works, See you then!",
+      message: message,
       messageOrder: "12",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -327,7 +325,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       });
     }
   };
-  const tryeleven = async () => {
+  const tryeleven = async (message: string) => {
     //early return if time is not selected
     if (validTime === "(select your time)") {
       toast.error("You must select a time before choosing this option");
@@ -335,7 +333,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
     //coop declares new drop off time for producer deliveries
     await axios.post("/api/chat/messages", {
-      message: `No, that time does not work. Does ${validTime} work instead? If not, `,
+      message: message,
       messageOrder: "13",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -346,11 +344,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       pickupDate: dateTime,
     });
   };
-  const tryfourteen = async () => {
+  const tryfourteen = async (message: string) => {
     //producer confirms delivery time
     await axios.post("/api/chat/messages", {
-      message:
-        "Yes, That time works. Your item will be delivered at that time.",
+      message: message,
       messageOrder: "14",
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -360,13 +357,36 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: 10,
     });
   };
-  const onSubmit = async (trynum: () => Promise<void>) => {
-    const message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
-
+  const onSubmit = async (trynum: (message: string) => Promise<void>) => {
+    let message = "";
+    if (trynum === tryone) {
+      message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
+    } else if (trynum === trytwo) {
+      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+    } else if (trynum === tryfour) {
+      message =
+        "Fantastic, I will be there to pick up the item at the specified time.";
+    } else if (trynum === trysix) {
+      message = "I have Received my order. Thank you!";
+    } else if (trynum === tryseven) {
+      message =
+        "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
+    } else if (trynum === tryeight) {
+      message = `No, that time does not work. Can it instead be at ${validTime}`;
+    } else if (trynum === trynine) {
+      message = `I can deliver these items to you at ${validTime}, does that work?`;
+    } else if (trynum === tryten) {
+      message = "Yes, That time works, See you then!";
+    } else if (trynum === tryeleven) {
+      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+    } else if (trynum === tryfourteen) {
+      message =
+        "Yes, That time works. Your item will be delivered at that time.";
+    }
     const submitFunction = async () => {
       setIsLoading(true);
       try {
-        await trynum();
+        await trynum(message);
       } catch (error) {
         console.error(error);
       } finally {
@@ -555,35 +575,40 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       <div className="">
         <div className=" p-2 rounded-lg">
           {!image && (
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res: { url: string }[]) => {
-                setImage(res[0].url);
-                setIsLoading(true);
-                try {
-                  onSubmit5(res[0].url);
-                } catch (error) {
-                  console.error(error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              appearance={{
-                container: "h-full w-max",
-              }}
-              className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                isLoading ? "cursor-not-allowed opacity-50" : ""
-              }`}
-              content={{
-                button({ ready }) {
-                  if (ready) return <div>Send a photo of the produce</div>;
-                  return isLoading ? "Loading..." : "Getting ready...";
-                },
-              }}
-            />
+            <div>
+              {" "}
+              Send a photo of the produce to confirm that it is ready to be
+              picked up.
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res: { url: string }[]) => {
+                  setImage(res[0].url);
+                  setIsLoading(true);
+                  try {
+                    onSubmit5(res[0].url);
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`ERROR! ${error.message}`);
+                }}
+                appearance={{
+                  container: "h-full w-max",
+                }}
+                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
+                  isLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                content={{
+                  button({ ready }) {
+                    if (ready) return <div>Send a photo of the produce</div>;
+                    return isLoading ? "Loading..." : "Getting ready...";
+                  },
+                }}
+              />
+            </div>
           )}
           {image && (
             <>
