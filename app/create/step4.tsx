@@ -34,7 +34,10 @@ const StepFour = ({
                 How long do you estimate your product will last before expiring?
               </div>
               <div className="flex justify-between items-center mb-5">
-                <div className="font-light">Non-perishable</div>
+                <div className="font-light">
+                  Click the box if this item is <em>Non-perishable</em>
+                </div>
+
                 <div className="mr-10">
                   <Checkbox
                     id="nonPerishable"

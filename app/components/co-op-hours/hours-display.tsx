@@ -13,7 +13,7 @@ import {
   TableCell,
   TableRow,
 } from "@/app/components/ui/table";
-import { Outfit, Zilla_Slab } from "next/font/google";
+import { Outfit } from "next/font/google";
 
 export type Days = {
   id: string;
@@ -23,11 +23,6 @@ export type Days = {
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
-});
-const zilla = Zilla_Slab({
-  subsets: ["latin-ext"],
-  display: "swap",
-  weight: ["300"],
 });
 const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);

@@ -7,11 +7,9 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import CustomTimeModal2 from "./dateStates";
 import toast from "react-hot-toast";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import CancelModal from "./CancelModal";
 import { Order, UserRole } from "@prisma/client";
@@ -22,13 +20,10 @@ import {
   PiCalendarPlusLight,
   PiCalendarXLight,
 } from "react-icons/pi";
-
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
@@ -43,13 +38,7 @@ import {
 import Form from "./Form";
 import Avatar from "@/app/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
-import {
-  AlertDialogAction,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from "@radix-ui/react-alert-dialog";
 import ChatConfirmModal from "./ChatConfirm";
-
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -363,7 +352,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     if (trynum === tryone) {
       message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
     } else if (trynum === trytwo) {
-      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+      message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
     } else if (trynum === tryfour) {
       message =
         "Fantastic, I will be there to pick up the item at the specified time.";
@@ -379,7 +368,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     } else if (trynum === tryten) {
       message = "Yes, That time works, See you then!";
     } else if (trynum === tryeleven) {
-      message = `No, that time does not work. Does ${validTime} work instead? If not, `;
+      message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
     } else if (trynum === tryfourteen) {
       message =
         "Yes, That time works. Your item will be delivered at that time.";
@@ -458,21 +447,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     const date = formatTime(childTime.pickupTime);
     setValidTime(date);
   };
-  //extra view hours component
-  const hoursButton = () => {
-    return (
-      <span className="bg-slate-500 rounded-md px-1">
-        <Sheet>
-          <SheetTrigger>here are my hours.</SheetTrigger>
-          <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-            <HoursDisplay
-              coOpHours={order.location.hours as unknown as ExtendedHours}
-            />
-          </SheetContent>
-        </Sheet>
-      </span>
-    );
-  };
+
   const anyhours: ExtendedHours = {
     0: [{ open: 0, close: 1439 }],
     1: [{ open: 0, close: 1439 }],
@@ -1385,10 +1360,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               {data.messageOrder === "10" ||
               data.messageOrder === "13" ||
               data.messageOrder === "3" ? (
-                <div className={message}>
-                  {data.body}
-                  <span>{hoursButton()}</span>
-                </div>
+                <div className={message}>{data.body}</div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}
