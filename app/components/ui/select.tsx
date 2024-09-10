@@ -9,7 +9,6 @@ import {
 } from "@radix-ui/react-icons";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cn } from "@/lib/utils";
-import { CiTimer } from "react-icons/ci";
 
 const Select = SelectPrimitive.Root;
 
@@ -30,7 +29,6 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <CiTimer size={20} className="absolute top-5 right-2" />
   </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
