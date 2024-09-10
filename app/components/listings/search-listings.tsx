@@ -16,6 +16,8 @@ import { BsBasket } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
 import debounce from "debounce";
 import { BiLoaderCircle } from "react-icons/bi";
+import { Outfit } from "next/font/google";
+import { PiBasketThin, PiMapPinThin, PiMapTrifoldThin } from "react-icons/pi";
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.MAPS_KEY as string;
@@ -39,6 +41,10 @@ const getLatLngFromAddress = async (address: string) => {
 interface p {
   apiKey: string;
 }
+const outfit = Outfit({
+  subsets:["latin"],
+  display:"swap"
+})
 const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
@@ -224,23 +230,24 @@ const SearchLocation = ({ apiKey }: p) => {
   );
   return (
     <div
-      className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
+    className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[500px] lg:max-w-[700px] ${outfit.className}`}
+  >
+    <PlacesAutocomplete
+      value={address}
+      onChange={handleChange}
+      onSelect={handleSelect}
+      googleCallbackName="lazyLoadMap"
     >
-      <PlacesAutocomplete
-        value={address}
-        onChange={handleChange}
-        onSelect={handleSelect}
-        googleCallbackName="lazyLoadMap"
-      >
-        {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-          <div className="relative">
-            <FiMapPin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg " />
-            <input
-              {...getInputProps({
-                placeholder: "Everywhere",
-                className:
-                  "rounded-md sm:rounded-l-full px-4 py-2 pl-8 border-[.1px] border-black text-black outline-none transition-all duration-200",
-              })}
+      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+        <div className="relative w-full sm:w-1/2  sm:mb-0 ">
+          <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
+          <div className="absolute text-black z-50 left-9 top-2 font-medium transform text-sm">Where</div>
+          
+          <input
+            {...getInputProps({
+              placeholder: "Everywhere",
+              className: "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none text-black outline-none transition-all duration-200",
+            })}
               onKeyDown={(e) => handleKeyDown(e, suggestions)}
               onFocus={() => setFocus({ ...focus, left: true })}
               onBlur={() => setFocus({ ...focus, left: false })}
@@ -267,36 +274,36 @@ const SearchLocation = ({ apiKey }: p) => {
           </div>
         )}
       </PlacesAutocomplete>
-      <div className="w-full mb-2 sm:mb-0 sm:w-auto">
-        <div className="relative flex items-center mb-2 sm:mb-0 ">
-          <BsBasket className="absolute text-black text-lg left-2" />
-          <input
-            type="text"
-            placeholder="Everything"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              handleSearchName(e);
-            }}
-            onKeyDown={handleEnterDown}
-            className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
-            onFocus={() => setFocus({ ...focus, right: true })}
-            onBlur={() => setFocus({ ...focus, right: false })}
-            tabIndex={0}
-          />
-          {isSearching ? (
+      <div className="relative w-full sm:w-1/2 border-l-[1px]">
+        <PiBasketThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
+        <div className="absolute text-black z-50 left-9 top-2 font-medium transform text-sm">What</div>
+        <input
+          type="text"
+          placeholder="Everything"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            handleSearchName(e);
+          }}
+          onKeyDown={handleEnterDown}
+          className= "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none text-black outline-none transition-all duration-200"
+          onFocus={() => setFocus({ ...focus, right: true })}
+          onBlur={() => setFocus({ ...focus, right: false })}
+          tabIndex={0}
+        />
+          {/* {isSearching ? ( 
             <BiLoaderCircle
               className="absolute items-center justify-center right-[50px] animate-spin"
               size={22}
             />
-          ) : null}
+          ) : null} */}
           {items.length > 0 ? (
             <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
               {items.map((item: any) => (
                 <div className="p-1" key={item.title}>
                   <div
                     onClick={async () => {
-                      setSearchQuery(item.title);
+                      setSearchQuery(item.title); 
                       setItems([]);
                       handleSearch(item.title);
                     }}
@@ -308,16 +315,16 @@ const SearchLocation = ({ apiKey }: p) => {
               ))}
             </div>
           ) : null}
+          </div>
           <button
             onClick={() => handleSearch(searchQuery)}
             className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
           >
-            <IoIosSearch className="text-2xl text-black" />
+            <IoIosSearch className="text-2xl text-white bg-black rounded-full p-1" />
           </button>
-        </div>
-      </div>
+    
       <button
-        className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full ${
+        className={`absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full ${
           focus.left ? "visible" : "hidden"
         }`}
         onMouseDown={handleNearMeClick}

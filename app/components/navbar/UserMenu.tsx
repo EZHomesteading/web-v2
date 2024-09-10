@@ -36,10 +36,10 @@ import {
 } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Image from "next/image";
-import placeholder from "@/public/images/website-images/placeholder.jpg";
 import { IoIosMenu } from "react-icons/io";
 import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
+import placeholder from "@/public/images/website-images/placeholder.jpg"
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -73,7 +73,6 @@ const UserMenu = ({ user }: Props) => {
     };
   }, []);
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");
-
   const toggleAbout = () => {
     setAbout((prevState) => !prevState);
   };

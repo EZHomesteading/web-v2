@@ -1,36 +1,16 @@
 //default navbar parent element
-import Categories from "./Categories";
-import Container from "../Container";
-import Logo from "./Logo";
-import UserMenu from "./UserMenu";
-import FindListingsComponent from "@/app/components/listings/search-listings";
-import SearchNative from "./search-native";
 import { NavUser } from "@/actions/getUser";
-import { navUser } from "@/next-auth";
+import NavbarClient from "@/app/components/navbar/navbar.client"
 
 interface p {
   user?: NavUser | null;
 }
+
 const apiKey = process.env.MAPS_KEY as string;
+
 const Navbar = ({ user }: p) => {
   return (
-    <div className="relative w-full z-10 pb-2">
-      <div className="py-2 sm:py-4">
-        <Container>
-          <div className="flex flex-row items-center justify-end sm:justify-center xl:justify-between gap-3 md:gap-0">
-            <Logo />
-            <div className="hidden xl:block">
-              <FindListingsComponent apiKey={apiKey} />
-            </div>
-            <div className="flex flex-row items-center gap-x-4">
-              <SearchNative />
-              <UserMenu user={user as unknown as navUser} />
-            </div>
-          </div>
-        </Container>
-      </div>
-      <Categories user={user as unknown as navUser} />
-    </div>
+    <NavbarClient user={user} apiKey={apiKey} /> 
   );
 };
 
