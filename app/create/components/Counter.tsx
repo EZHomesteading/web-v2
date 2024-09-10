@@ -39,14 +39,15 @@ const Counter: React.FC<CounterProps> = ({
         <div className="font-light">{title}</div>
         <div className="font-light text-gray-600">{subtitle}</div>
       </div>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-4 mb-2">
         <div
           onClick={onReduce}
           className="
             w-10
             h-10
             rounded-full
-            border-[1px]
+            border-[2px]
+            !border-gray-600
             flex
             items-center
             justify-center
@@ -72,14 +73,14 @@ const Counter: React.FC<CounterProps> = ({
             w-10
             h-10
             rounded-full
-            border-[1px]
+            border-[2px]
+            !border-gray-600
             flex
             items-center
             justify-center
             cursor-pointer
             hover:opacity-80
             transition
-            mb-2
             shadow-sm
           "
         >
