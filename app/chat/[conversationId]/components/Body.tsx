@@ -72,6 +72,19 @@ const Body: React.FC<BodyProps> = ({
   listings,
   reviews,
 }) => {
+  const sellerRole =
+    otherUser?.id === order.sellerId ? otherUser.role : user.role;
+  const quantities = JSON.parse(order.quantity);
+  console.log(quantities);
+  const getQuantitiy = (listingId: string) => {
+    // Find the listing with the matching id
+    const foundListing = quantities.find(
+      (quantity: any) => quantity.id === listingId
+    );
+
+    // Return the found listing or null if not found
+    return foundListing.quantity || null;
+  };
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState(initialMessages);
   const lastMessage = messages[messages.length - 1];
@@ -151,17 +164,6 @@ const Body: React.FC<BodyProps> = ({
   if (!user?.id) {
     return null;
   }
-  function getAverageRating(reviews: Reviews[]) {
-    if (reviews.length === 0) return 0;
-
-    const totalRatings = reviews.reduce(
-      (sum, review) => sum + review.rating,
-      0
-    );
-    const averageRating = totalRatings / reviews.length;
-    return Math.round(averageRating * 2) / 2;
-  }
-  const avgRate = getAverageRating(reviews);
   useEffect(() => {
     axios.post(`/api/chat/conversations/${conversationId}/seen`);
   }, [conversationId]);
@@ -271,7 +273,7 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[100] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600">
           <div>
@@ -279,10 +281,15 @@ const Body: React.FC<BodyProps> = ({
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
           <div>
-            <div className="text-xs">{formattedPickupDate}</div>
+            <div className="text-xs">
+              {sellerRole === "PRODUCER"
+                ? "Current drop off time:"
+                : "Current pickup time:"}{" "}
+              {formattedPickupDate}
+            </div>
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
-          <div className="text-xs">${order?.totalPrice}</div>
+          <div className="text-xs">Order total: ${order?.totalPrice}</div>
         </div>
         <Popover>
           <PopoverTrigger>
@@ -311,8 +318,12 @@ const Body: React.FC<BodyProps> = ({
                   </div>
                   <div className="flex-grow">
                     <p className="font-normal">{listing.title}</p>
-                    <p className="text-xs font-extralight text-gray-500">
+                    <p className="text-xs font-extralight text-gray-700">
                       ${listing.price} per {listing.quantityType}
+                    </p>
+                    <p className="text-xs font-extralight text-gray-700">
+                      {getQuantitiy(listing.id)} {listing.quantityType} for $
+                      {getQuantitiy(listing.id) * listing.price}
                     </p>
                   </div>
                 </div>
@@ -323,16 +334,61 @@ const Body: React.FC<BodyProps> = ({
             </div>
 
             {user.id === order.sellerId ? (
-              <div className="flex flex-col items-center justify-center space-y-1 w-full ">
-                <Button
-                  className="
+              user.role === "PRODUCER" ? (
+                <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
+                        <div>View Hours</div> <IoStorefront />
+                      </Button>
+                    </SheetTrigger>
+
+                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                      <HoursDisplay
+                        coOpHours={order.location.hours as ExtendedHours}
+                      />
+                    </SheetContent>
+                  </Sheet>
+                  <Button
+                    onClick={() =>
+                      window.open(
+                        `http://maps.apple.com/?address=${order.location.address}`,
+                        "_ blank"
+                      )
+                    }
+                    className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
+                  >
+                    <div>Get Directions</div> <IoMapOutline />
+                  </Button>
+                  <Button
+                    className="
       w-full flex items-center gap-x-2 justify-between font-light text-sm "
-                  onClick={() => router.push(`/profile/${order.userId}`)}
-                  title="View reviews of this buyer"
-                >
-                  <div>View Reviews</div> <IoStar />
-                </Button>
-              </div>
+                    onClick={() => router.push(`/profile/${order.userId}`)}
+                    title="View reviews of this buyer"
+                  >
+                    <div>View Reviews</div> <IoStar />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                  <Button
+                    className="
+      w-full flex items-center gap-x-2 justify-between font-light text-sm "
+                    onClick={() => router.push(`/profile/${order.userId}`)}
+                    title="View reviews of this buyer"
+                  >
+                    <div>View Reviews</div> <IoStar />
+                  </Button>
+                </div>
+              )
+            ) : otherUser?.role === "PRODUCER" ? (
+              <Button
+                onClick={() => router.push(`/store/${otherUser?.url}`)}
+                className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
+              >
+                <div>Visit Store</div>
+                <IoStorefrontOutline />
+              </Button>
             ) : (
               <div className="flex flex-col items-center justify-center space-y-1 w-full ">
                 <Sheet>
@@ -351,7 +407,7 @@ const Body: React.FC<BodyProps> = ({
                 <Button
                   onClick={() =>
                     window.open(
-                      `http://maps.apple.com/?q=${order.location.coordinates[1]},${order.location.coordinates[0]}`,
+                      `http://maps.apple.com/?address=${order.location.address}`,
                       "_ blank"
                     )
                   }

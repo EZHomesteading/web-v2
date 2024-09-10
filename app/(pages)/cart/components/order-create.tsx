@@ -54,7 +54,7 @@ const OrderCreate = ({ cartItems, pickupArr, stillExpiry }: Create) => {
     const percentExpiry = new Date(
       now.getTime() + cartItem.listing.shelfLife * 0.3 * 24 * 60 * 60 * 1000
     );
-    const expiry = shelfLife(cartItem.listing);
+    const expiry = shelfLife(cartItem.listing as FinalListing);
     const adjustedListings = {
       listingId: cartItem.listing.id,
       title: cartItem.listing.title,
