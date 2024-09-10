@@ -28,7 +28,7 @@ export type UserInfo = DefaultSession["user"] & {
   SODT?: number;
   bio?: string;
   banner?: string;
-  hasPickedRole?: boolean
+  hasPickedRole?: boolean;
 };
 
 type Times = {

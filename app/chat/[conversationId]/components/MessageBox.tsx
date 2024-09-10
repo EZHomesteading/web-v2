@@ -94,6 +94,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     useState<SubmitFunction | null>(null);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
+
   const pulseAnimation = `
   @keyframes pulse {
     0% {
