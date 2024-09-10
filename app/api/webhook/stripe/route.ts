@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
               : buyer.location && buyer.location[2]
               ? `${buyer.location[2]?.address[2]}, ${buyer.location[2]?.address[1]}, ${buyer.location[2]?.address[2]}. ${buyer.location[2]?.address[3]}`
               : "this user has no locations set"
-          } during my open hours.`;
+          } during my open hours. My hours can be viewed in More Options.`;
           // Send email notification to the seller if enabled
           if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
             // Prepare email parameters
