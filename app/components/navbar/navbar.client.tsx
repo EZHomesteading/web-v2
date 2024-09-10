@@ -16,7 +16,7 @@ interface p {
 
 const Navbar = ({ user, apiKey }: p) => {
   const pathname = usePathname();
-  const showSearchBar = pathname?.startsWith('/market');
+  const isMarketPage = pathname?.startsWith('/market');
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -31,31 +31,59 @@ const Navbar = ({ user, apiKey }: p) => {
   }, []);
 
   return (
-    <div className="relative w-full z-10 pb-2">
-      <div className="py-2 sm:py-4">
-        <Container>
-          <div className="flex items-center">
-            <div className="hidden sm:block">
-              <Logo />
-            </div>
-            <div className="flex flex-col sm:flex-row w-full">
-              {!isSmallScreen && <UserMenu user={user as unknown as navUser} />}
-              {showSearchBar && (
-                <div className="flex justify-center w-full mt-1">
-                  <FindListingsComponent apiKey={apiKey} />
-                </div>
+    <>
+      <div className="fixed top-0 left-0 right-0 bg-white z-10">
+        {!isSmallScreen ? (
+          // Layout for screens 600px and above
+          <div>
+            <Container>
+              <div className="flex items-center justify-between pt-2">
+                <Logo />
+                <UserMenu user={user as unknown as navUser} />
+              </div>
+            </Container>
+            {isMarketPage && (
+              <div className="w-full relative border-b-[1px] py-6">
+                  <div className="flex justify-center">
+                      <FindListingsComponent apiKey={apiKey} />
+                  </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Small screen layout (below 600px)
+          <Container>
+            <div className="py-2">
+              {isMarketPage && (
+                <>
+                  <div className="flex justify-center mb-2">
+                    <div className="w-full max-w-2xl">
+                      <FindListingsComponent apiKey={apiKey} />
+                    </div>
+                  </div>
+                  <Categories user={user as unknown as navUser} />
+                </>
               )}
             </div>
-          </div>
-        </Container>
+          </Container>
+        )}
       </div>
-      <Categories user={user as unknown as navUser} />
+
+      {/* Spacer to prevent content from being hidden under the fixed navbar */}
+      <div className={`${isSmallScreen ? 'h-16' : (isMarketPage ? 'h-32' : 'h-20')}`} />
+
       {isSmallScreen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
           <UserMenu user={user as unknown as navUser} />
         </div>
       )}
-    </div>
+
+      {!isSmallScreen && isMarketPage && (
+        <div className="mt-10">
+          <Categories user={user as unknown as navUser} />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -230,7 +230,7 @@ const SearchLocation = ({ apiKey }: p) => {
   );
   return (
     <div
-    className={`flex items-center rounded-full shadow-[0_0_3px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[400px] ${outfit.className}`}
+    className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[500px] lg:max-w-[700px] ${outfit.className}`}
   >
     <PlacesAutocomplete
       value={address}
