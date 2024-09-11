@@ -6,6 +6,7 @@ import axios from "axios";
 import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { Outfit, Zilla_Slab } from "next/font/google";
+import { PiBasketThin } from "react-icons/pi";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -117,14 +118,21 @@ const CartIcon = ({ cart }: c) => {
   return (
     <div className={`${outfit.className}`}>
       <Sheet>
-        <SheetTrigger>
+        <SheetTrigger className="flex flex-col items-center">
           <div className="relative">
-            <BsBasket
-              className={`w-8 h-8 ${white ? "text-white" : "text-black"}`}
+            <PiBasketThin
+              className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
             />
-            <div className="absolute top-[0px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
+            <div className="absolute top-[0px] right-[-5px] text-green bg-red-400 rounded-full w-4 text-white p-[1px] text-xs">
               {cart.length}
             </div>
+          </div>
+          <div
+            className={` text-xs font-thin ${outfit.className} ${
+              white ? "text-white" : "text-black"
+            }`}
+          >
+            Cart
           </div>
         </SheetTrigger>
 

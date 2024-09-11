@@ -5,11 +5,11 @@ import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import Link from "next/link";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
-import LocationPermissionPopup from "@/app/(home)/location-permission-modal";
-import { SkeletonCard } from "./skeleton-card";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import qs from "query-string";
+// import LocationPermissionPopup from "@/app/(home)/location-permission-modal";
+// import { SkeletonCard } from "./skeleton-card";
+// import { useRouter } from "next/navigation";
+// import { useEffect, useState } from "react";
+// import qs from "query-string";
 import { FinalListing } from "@/actions/getListings";
 import { UserInfo } from "@/next-auth";
 
@@ -35,7 +35,7 @@ const Shop = ({
   currentPage,
 }: ShopProps) => {
   // const router = useRouter();
-  // const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(true);
   // const [showPopup, setShowPopup] = useState(false);
 
   // useEffect(() => {

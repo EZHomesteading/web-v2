@@ -8,6 +8,7 @@ import { navBuyOrder, navSellOrder } from "@/next-auth";
 import { formatDistanceToNow } from "date-fns";
 import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
+import { PiBellThin } from "react-icons/pi";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -72,14 +73,24 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   return (
     <>
       <Sheet>
-        <SheetTrigger className="cursor-pointer">
-          <div className="relative">
-            <IoMdNotificationsOutline
-              className={`h-10 w-9 ${white ? "text-white" : "text-black"}`}
-            />
-            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
-              {notifications.length}
-            </div>
+        <SheetTrigger className="hover:cursor-pointer relative flex flex-col items-center">
+          <PiBellThin
+            className={`h-8 w-8 !font-thin ${
+              white ? "text-white" : "text-black"
+            }`}
+          />
+          <div
+            className={`${outfit.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
+          >
+            {notifications.length}
+          </div>
+
+          <div
+            className={`text-xs ${outfit.className} ${
+              white ? "text-white" : "text-black"
+            }`}
+          >
+            Alerts
           </div>
         </SheetTrigger>
         <SheetContent className="pt-12 bg-slate-500 opacity-border-none justify-start flex flex-col gap-y-1 border-none overflow-y-auto">

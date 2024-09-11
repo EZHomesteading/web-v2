@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "../login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -127,122 +127,90 @@ export const BecomeProducer = ({
     }
   };
 
-  const [formStep, setFormStep] = useState<"step1" | "step2">("step1");
-
   return (
     <CardWrapper
-      headerLabel=""
-      label2="Grow produce & sell directly to co-ops hassle free without consumer interaction. Use your current info or update it below."
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            {formStep === "step1" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-[280px] sm:w-[350px]">
-                      <FormLabel>Current Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <PhoneInput
-                          {...field}
-                          disabled={isPending}
-                          placeholder="(743) 216-9078"
-                          value={field.value as any}
-                          onChange={(value) => field.onChange(value)}
-                          format="(###) ###-####"
-                          style={{
-                            backgroundColor: "inherit",
-                          }}
-                          international={false}
-                          defaultCountry="US"
-                          countrySelectProps={{ disabled: true }}
-                          maxLength={14}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  disabled={isPending}
-                  type="button"
-                  className="w-full"
-                  onClick={() => setFormStep("step2")}
-                >
-                  Next
-                </Button>
-              </>
-            )}
-            {formStep === "step2" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Co-Op Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="Appleseed Store"
-                          type="name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* <AuthLocation
-                  address={address}
-                  setAddress={setAddress}
-                  onAddressParsed={handleAddressParsed}
-                /> */}
-
-                <div className="flex flex-row justify-evenly space-x-10">
-                  <Button
-                    disabled={isPending}
-                    type="button"
-                    className="w-full"
-                    onClick={() => setFormStep("step1")}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={() => onSubmit(form.getValues())}
-                    disabled={isPending}
-                    type="submit"
-                    className="w-full"
-                  >
-                    Become an EZH Producer
-                  </Button>
-                </div>
-              </>
-            )}
+            <>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="w-[280px] sm:w-[350px]">
+                    <FormLabel>Current Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="john.doe@example.com"
+                        type="email"
+                        className="font-light"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <PhoneInput
+                        {...field}
+                        disabled={isPending}
+                        placeholder="(743) 216-9078"
+                        value={field.value as any}
+                        onChange={(value) => field.onChange(value)}
+                        format="(###) ###-####"
+                        style={{
+                          backgroundColor: "inherit",
+                        }}
+                        international={false}
+                        defaultCountry="US"
+                        countrySelectProps={{ disabled: true }}
+                        maxLength={14}
+                        className="font-light"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Producer Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Appleseed Store"
+                        type="name"
+                        className="font-light"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                onClick={() => onSubmit(form.getValues())}
+                disabled={isPending}
+                type="submit"
+                className="w-full text-xs"
+              >
+                Become an EZH Producer
+              </Button>
+            </>
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />

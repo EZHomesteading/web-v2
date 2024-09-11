@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "@/app/components/auth/login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
@@ -58,8 +58,6 @@ export const ProducerRegisterForm = () => {
   const toggleShowPassword = () => setShowPassword(!showPassword);
   return (
     <CardWrapper
-      headerLabel=""
-      label2="Grow produce & sell to co-ops hassle-free"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
     >
@@ -78,6 +76,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Johnny"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -95,6 +94,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Appleseed Farm"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -111,8 +111,9 @@ export const ProducerRegisterForm = () => {
                       <Input
                         {...field}
                         disabled={isPending}
-                        placeholder="johnny.appleseed@example.com"
+                        placeholder="jappleseedfarms@example.com"
                         type="email"
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,6 +141,7 @@ export const ProducerRegisterForm = () => {
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
+                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -163,6 +165,7 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="******"
+                        className="font-light"
                         type={showPassword ? "text" : "password"}
                       />
                     </FormControl>
@@ -176,7 +179,7 @@ export const ProducerRegisterForm = () => {
                 type="submit"
                 className="w-full"
               >
-                Become an EZH Producer
+                Become an EZH Grower
               </Button>
             </>
           </div>

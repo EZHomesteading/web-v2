@@ -13,12 +13,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "../login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import PasswordInput from "./password-input";
 import { Zilla_Slab } from "next/font/google";
 
@@ -29,7 +29,6 @@ const zilla = Zilla_Slab({
 });
 
 const RegisterForm = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -87,16 +86,8 @@ const RegisterForm = () => {
 
   return (
     <>
-      <div className="flex items-end justify-center h-[25vh] w-screen">
-        <div className="flex flex-col items-center justify-center">
-          <div>Welcome to EZHomesteading</div>
-          <div>To purchase or create a product. Make an account.</div>
-        </div>
-      </div>
-      <div className="flex items-top justify-center  w-screen">
+      <div className="flex items-top justify-center">
         <CardWrapper
-          headerLabel=""
-          label2="Find your local EZH co-ops"
           backButtonLabel="Already have an account?"
           backButtonHref="/auth/login"
           showSocial={!showFullForm}
@@ -113,6 +104,7 @@ const RegisterForm = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -134,6 +126,7 @@ const RegisterForm = () => {
                   >
                     Continue with Email
                   </Button>
+                  <div className={`${zilla.className}`}>OR</div>
                 </>
               ) : (
                 <>
@@ -186,7 +179,7 @@ const RegisterForm = () => {
                     control={form.control}
                     name="confirmPassword"
                     render={({ field }) => (
-                      <FormItem className="w-280px sm:w-[350px]">
+                      <FormItem className="w-[280px] sm:w-[350px]">
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <Input
