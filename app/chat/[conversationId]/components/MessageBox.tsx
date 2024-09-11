@@ -1267,8 +1267,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                         Click to Enlarge
                       </div>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="xl:flex xl:justify-center">
-                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                    <AlertDialogContent className="xl:flex xl:justify-center z-[50]">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative z-[50]">
                         {" "}
                         <div>
                           <Image

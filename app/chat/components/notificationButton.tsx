@@ -8,13 +8,13 @@ import {
 import Loading from "@/app/components/secondary-loader";
 import { BellOff, BellRing } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 const SubToggle = () => {
   const [hasActivePushSubscription, setHasActivePushSubscription] =
     useState<boolean>();
   const [loading, setLoading] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState<string>();
+  //const [confirmationMessage, setConfirmationMessage] = useState<string>();
   useEffect(() => {
     async function getActivePushSubscription() {
       const subscription = await getCurrentPushSubscription();
@@ -26,16 +26,15 @@ const SubToggle = () => {
   async function setPushNotificationsEnabled(enabled: boolean) {
     if (loading) return;
     setLoading(true);
-    setConfirmationMessage(undefined);
+    let confirmationMessage = undefined;
     try {
       if (enabled) {
         await registerPushNotifications();
       } else {
         await unregisterPushNotifications();
       }
-      setConfirmationMessage(
-        "Push notifications " + (enabled ? "disabled" : "enabled")
-      );
+      confirmationMessage =
+        "Push notifications " + (enabled ? "disabled" : "enabled");
       setHasActivePushSubscription(enabled);
       if (confirmationMessage) {
         toast.success(confirmationMessage);

@@ -290,7 +290,7 @@ const Body: React.FC<BodyProps> = ({
           <div className="text-xs">Total: ${order?.totalPrice}</div>
         </div>
         <Popover>
-          <PopoverTrigger className=" absolute right-4 bottom-12">
+          <PopoverTrigger asChild className=" absolute right-4 bottom-12">
             <Button>More Options</Button>
           </PopoverTrigger>
           <PopoverContent className={`${outfit.className} mr-9  `}>
