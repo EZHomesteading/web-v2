@@ -75,7 +75,6 @@ const Body: React.FC<BodyProps> = ({
   const sellerRole =
     otherUser?.id === order.sellerId ? otherUser.role : user.role;
   const quantities = JSON.parse(order.quantity);
-  console.log(quantities);
   const getQuantitiy = (listingId: string) => {
     // Find the listing with the matching id
     const foundListing = quantities.find(
