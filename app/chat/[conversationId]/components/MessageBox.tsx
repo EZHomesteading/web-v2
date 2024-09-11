@@ -2,6 +2,8 @@
 // message box, handles all styling, logic for messages, and logic for available actions for the entire automated message system.
 //THIS COMPONENT IS ESSENTIALLY A TEXT BASED RPG
 import clsx from "clsx";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+
 import Image from "next/image";
 import React, { useState } from "react";
 import { format } from "date-fns";
@@ -19,6 +21,7 @@ import {
   PiCalendarCheckLight,
   PiCalendarPlusLight,
   PiCalendarXLight,
+  PiNewspaperClippingThin,
 } from "react-icons/pi";
 import {
   AlertDialog,
@@ -39,6 +42,8 @@ import Form from "./Form";
 import Avatar from "@/app/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
+import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+import { IoStorefront } from "react-icons/io5";
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -1285,10 +1290,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           ) : (
             <div>
               {/* display hours button dependent on message */}
-              {data.messageOrder === "10" ||
-              data.messageOrder === "13" ||
-              data.messageOrder === "3" ? (
-                <div className={message}>{data.body}</div>
+              {data.messageOrder === "10" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                        <PiNewspaperClippingThin className="mt-1 mr-1" />
+                        View Hours
+                      </button>
+                    </SheetTrigger>
+
+                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                      <HoursDisplay
+                        coOpHours={order.location.hours as ExtendedHours}
+                      />
+                    </SheetContent>
+                  </Sheet>
+                </div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}
