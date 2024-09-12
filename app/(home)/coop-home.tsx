@@ -4,6 +4,8 @@ import { Outfit } from "next/font/google";
 import Link from "next/link";
 import StripeButton from "./stripe-onboard";
 import { Button } from "../components/ui/button";
+import Image from "next/image";
+import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -17,8 +19,18 @@ interface Props {
 
 const CoopHome = ({ user }: Props) => {
   return (
-    <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
-      <header className="py-12">
+    <main className="h-screen bg-black text-white px-2 py-2 pt-60 flex flex-col items-center   sm:items-center">
+      <div className="absolute inset-0 ">
+        <Image
+          src={homebg}
+          alt="Home Page"
+          fill
+          className="object-cover 2xl:object-fit"
+          sizes="100vw"
+        />{" "}
+        <div className="absolute inset-0 bg-black bg-opacity-10 "></div>
+      </div>
+      <header className="py-12 z-[3]">
         <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
           <div className={`${outfit.className} `}>
             {!user?.stripeAccountId ||
@@ -46,7 +58,7 @@ const CoopHome = ({ user }: Props) => {
             )}
           </div>
         </h1>
-        <div className="flex flex-col justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
+        <div className="flex flex-row justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
           <Link href="/market">
             {" "}
             <Button className="hover:bg-green-100 hover:text-black">
