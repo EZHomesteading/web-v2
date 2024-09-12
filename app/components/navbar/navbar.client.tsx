@@ -31,6 +31,7 @@ interface NavbarProps {
   apiKey?: string;
   isDashboard?: boolean;
   isMarketPage?: boolean;
+  isChat?: boolean;
 }
 
 const conNav: NavigationItem[] = [
@@ -146,6 +147,7 @@ const Navbar = ({
   apiKey,
   isDashboard = false,
   isMarketPage = false,
+  isChat = false,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -233,7 +235,11 @@ const Navbar = ({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 bg-white z-10">
+      <div
+        className={`fixed top-0 left-0 right-0 ${
+          isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
+        }  z-10`}
+      >
         {!isSmallScreen ? (
           <div>
             <Container>

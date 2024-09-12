@@ -19,10 +19,7 @@ export default async function ConversationsLayout({
   return (
     <div className="min-h-screen bg-chat">
       {apiKey && (
-        <Navbar
-          apiKey={apiKey}
-          user={conversations.user as unknown as navUser}
-        />
+        <Navbar isChat={true} user={conversations.user as unknown as navUser} />
       )}
       <ConversationList
         title="Messages"

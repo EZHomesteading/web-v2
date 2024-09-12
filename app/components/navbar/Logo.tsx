@@ -10,10 +10,12 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
-
-const Logo = () => {
+interface p {
+  isChat?: boolean;
+}
+const Logo = ({ isChat = false }: p) => {
   const pathname = usePathname();
-  const white = pathname === "/" || pathname?.startsWith("/chat");
+  const white = pathname === "/";
 
   return (
     <div

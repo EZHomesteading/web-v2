@@ -366,3 +366,36 @@ body::-webkit-scrollbar {
     display: block;
   }
 }
+.bar {
+  fill: currentColor;
+  transition: height 0.3s ease, y 0.3s ease;
+}
+
+.bar1 {
+  transition-delay: 0s;
+}
+.bar2 {
+  transition-delay: 0.1s;
+}
+.bar3 {
+  transition-delay: 0.2s;
+}
+
+.bar-chart-icon:hover .bar1 {
+  height: 160px;
+  y: 44px;
+}
+
+.bar-chart-icon:hover .bar2 {
+  height: 160px;
+  y: 44px;
+}
+
+.bar-chart-icon:hover .bar3 {
+  height: 160px;
+  y: 44px;
+}
+.bar {
+  fill: red !important;/* Change all bars to red */
+}
+

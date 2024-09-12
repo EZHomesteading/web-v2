@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
 import MenuItem from "./MenuItem";
 import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { CiShop, CiUser } from "react-icons/ci";
+import { CiMenuFries, CiShop, CiUser } from "react-icons/ci";
 import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
@@ -34,12 +34,14 @@ import {
   IoInformationCircleOutline,
   IoStorefrontOutline,
 } from "react-icons/io5";
+import DashboardSVG from "./icons/dashboard.svg";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Image from "next/image";
 import { IoIosMenu } from "react-icons/io";
 import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
+import { CgMenuRight } from "react-icons/cg";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -83,12 +85,12 @@ const UserMenu = ({ user }: Props) => {
 
   const isCartEmpty = (user?.cart?.length ?? 0) === 0;
   const IconWrapper: React.FC<{
-    icon: React.ElementType;
+    icon: any;
     label: string;
     onClick: () => void;
   }> = ({ icon: Icon, label, onClick }) => (
     <div
-      className="flex flex-col pb-2 items-center hover:cursor-pointer"
+      className="flex flex-col pb-4 sm:pb-2 items-center hover:cursor-pointer"
       onClick={onClick}
     >
       <Icon
@@ -131,8 +133,7 @@ const UserMenu = ({ user }: Props) => {
           icon={PiPlusThin}
           label="Create"
           onClick={() => router.push("/create")}
-        />,
-        <MenuIcon key="menu" user={user} />
+        />
       );
     } else if (user.role === UserRole.PRODUCER || user.role === UserRole.COOP) {
       if (isMdOrLarger) {
@@ -167,8 +168,7 @@ const UserMenu = ({ user }: Props) => {
             icon={PiChartBarThin}
             label="Dashboard"
             onClick={() => router.push("/dashboard")}
-          />,
-          <MenuIcon key="menu" user={user} />
+          />
         );
       } else {
         // COOP or PRODUCER on smaller screens: Up to 5 icons with priority
@@ -184,8 +184,7 @@ const UserMenu = ({ user }: Props) => {
             icon={PiStorefrontThin}
             label="Market"
             onClick={() => router.push("/market")}
-          />,
-          <MenuIcon key="menu" user={user} />
+          />
         );
         if (!isCartEmpty || hasNotifications) {
           icons.push(
@@ -251,8 +250,7 @@ const UserMenu = ({ user }: Props) => {
             icon={PiChartBarThin}
             label="Dashboard"
             onClick={() => router.push("/dashboard")}
-          />,
-          <MenuIcon key="menu" user={user} />
+          />
         );
       } else {
         icons.push(
@@ -267,8 +265,7 @@ const UserMenu = ({ user }: Props) => {
             icon={PiStorefrontThin}
             label="Market"
             onClick={() => router.push("/market")}
-          />,
-          <MenuIcon key="menu" user={user} />
+          />
         );
         if (!isCartEmpty || hasNotifications) {
           icons.push(
@@ -303,25 +300,23 @@ const UserMenu = ({ user }: Props) => {
       }
     }
 
+    // Always add MenuIcon as the last icon
+    icons.push(<MenuIcon key="menu" user={user} />);
+
     return icons.filter(Boolean).slice(0, 7);
   };
+
   const MenuIcon: React.FC<{ user?: navUser }> = ({ user }) => (
     <>
       <SheetTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
-        <PiUserCircleThin
-          className={`h-8 w-8 ${
-            pathname === "/" ? "text-white" : "text-black"
-          }`}
+        <IconWrapper
+          key="menu"
+          icon={CiMenuFries}
+          label="Menu"
+          onClick={() => {}}
         />
-        <div
-          className={`text-xs ${outfit.className} ${
-            pathname === "/" ? "text-white" : "text-black"
-          }`}
-        >
-          Menu
-        </div>
       </SheetTrigger>
-      <SheetTrigger className="relative shadow-md border-[1px] py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
+      <SheetTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
         <IoIosMenu
           className={`w-4 h-4 mr-1 ${
             pathname === "/" ? "text-white" : "text-black"

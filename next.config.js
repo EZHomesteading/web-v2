@@ -16,6 +16,19 @@ const nextConfig = {
     ],
     domains: ["res.cloudinary.com", "lh3.googleusercontent.com"],
   },
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/, 
+      use: [
+        {
+          loader: '@svgr/webpack',
+          options: {
+          },
+        },
+      ],
+    });
+    return config;
+  },
 };
 
 const withPWA = require("next-pwa")({
@@ -26,3 +39,4 @@ const withPWA = require("next-pwa")({
 });
 
 module.exports = withPWA(nextConfig);
+
