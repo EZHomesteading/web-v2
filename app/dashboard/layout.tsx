@@ -5,6 +5,7 @@ import Sidebar from "./sidebar";
 import { getNavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 import { UserInfo, navUser } from "@/next-auth";
+import { UserRole } from "@prisma/client";
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
@@ -17,7 +18,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className={`${outfit.className} flex flex-row h-full`}>
       <div className="sheet py-3 pt-12 border-r-[1px] border-neutral-300">
-        <Sidebar role={user?.role} />
+        <Sidebar role={user?.role as UserRole} />
       </div>
 
       <div className="flex flex-col bg w-full">

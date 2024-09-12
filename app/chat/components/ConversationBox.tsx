@@ -108,7 +108,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
             (lastMessage?.messageOrder === "2" ||
               lastMessage?.messageOrder === "14")) ? (
             <span
-              className=" bg-white w-3 h-3 rounded-[40px] absolute left-[50px] top-[45px] group"
+              className=" bg-white w-3 h-3 rounded-[40px] absolute left-[40px] top-[43px] md:left-[50px] md:top-[45px] group"
               aria-label="Your turn to respond"
             >
               <IoNotificationsCircle

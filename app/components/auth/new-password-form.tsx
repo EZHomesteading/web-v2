@@ -50,10 +50,10 @@ export const NewPasswordForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Enter a new password"
+      // headerLabel="Enter a new password"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
-      label2=""
+      // label2=""
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
