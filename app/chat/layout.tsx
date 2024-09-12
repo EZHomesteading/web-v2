@@ -7,7 +7,7 @@ import { UserInfo, navUser } from "@/next-auth";
 import Navbar from "../components/navbar/navbar.client";
 
 export const viewport: Viewport = {
-  themeColor: "rgb(15 23 42)",
+  themeColor: "rgb(	241 239 231)",
 };
 export default async function ConversationsLayout({
   children,

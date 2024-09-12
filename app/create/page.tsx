@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import Stripe from "stripe";
 export const viewport: Viewport = {
-  themeColor: "#ced9bb",
+  themeColor: "rgb(255,255,255)",
 };
 
 const Page = async () => {

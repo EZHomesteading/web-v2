@@ -1,4 +1,5 @@
 //button component specifically for chat features
+"use Client";
 import clsx from "clsx";
 
 interface ButtonProps {

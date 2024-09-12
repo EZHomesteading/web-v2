@@ -75,7 +75,6 @@ const Body: React.FC<BodyProps> = ({
   const sellerRole =
     otherUser?.id === order.sellerId ? otherUser.role : user.role;
   const quantities = JSON.parse(order.quantity);
-  console.log(quantities);
   const getQuantitiy = (listingId: string) => {
     // Find the listing with the matching id
     const foundListing = quantities.find(
@@ -112,6 +111,7 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "18" ||
       lastMessage.messageOrder === "19" ||
       lastMessage.messageOrder === "17" ||
+      (user.id !== order.sellerId && lastMessage.messageOrder === "14") ||
       lastMessage.messageOrder === "12" ||
       lastMessage.messageOrder === "6" ||
       lastMessage.messageOrder === "1.1" ||
@@ -134,7 +134,6 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "10" ||
       lastMessage.messageOrder === "1.1" ||
       lastMessage.messageOrder === "11" ||
-      lastMessage.messageOrder === "12" ||
       lastMessage.messageOrder === "1.6"
     ) {
       setDispute(false);
@@ -218,9 +217,9 @@ const Body: React.FC<BodyProps> = ({
   const formattedPickupDate = order?.pickupDate
     ? formatPickupDate(order.pickupDate)
     : "No pickup date set";
-  let item = "products";
+  let item = "items";
   if (order?.listingIds?.length === 1) {
-    item = "product";
+    item = "item";
   }
   return (
     <div className="flex-1 overflow-y-auto">
@@ -282,17 +281,15 @@ const Body: React.FC<BodyProps> = ({
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
           <div>
             <div className="text-xs">
-              {sellerRole === "PRODUCER"
-                ? "Current drop off time:"
-                : "Current pickup time:"}{" "}
+              {sellerRole === "PRODUCER" ? "Drop off time:" : "Pickup time:"}{" "}
               {formattedPickupDate}
             </div>
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
-          <div className="text-xs">Order total: ${order?.totalPrice}</div>
+          <div className="text-xs">Total: ${order?.totalPrice}</div>
         </div>
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger asChild className=" absolute right-4 bottom-12">
             <Button>More Options</Button>
           </PopoverTrigger>
           <PopoverContent className={`${outfit.className} mr-9  `}>

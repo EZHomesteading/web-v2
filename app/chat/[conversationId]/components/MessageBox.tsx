@@ -2,6 +2,8 @@
 // message box, handles all styling, logic for messages, and logic for available actions for the entire automated message system.
 //THIS COMPONENT IS ESSENTIALLY A TEXT BASED RPG
 import clsx from "clsx";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+
 import Image from "next/image";
 import React, { useState } from "react";
 import { format } from "date-fns";
@@ -19,6 +21,7 @@ import {
   PiCalendarCheckLight,
   PiCalendarPlusLight,
   PiCalendarXLight,
+  PiNewspaperClippingThin,
 } from "react-icons/pi";
 import {
   AlertDialog,
@@ -39,6 +42,8 @@ import Form from "./Form";
 import Avatar from "@/app/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
+import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+import { IoStorefront } from "react-icons/io5";
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -549,12 +554,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const resp2 = (
     <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
       <div className="">
-        <div className=" p-2 rounded-lg">
+        <div>
           {!image && (
             <div>
-              {" "}
-              Send a photo of the produce to confirm that it is ready to be
-              picked up.
+              <div className=" py-2 rounded-lg">
+                Send a photo of the produce to confirm that it is ready to be
+                picked up.
+              </div>
               <UploadButton
                 endpoint="imageUploader"
                 onClientUploadComplete={(res: { url: string }[]) => {
@@ -651,26 +657,38 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         {isLoading ? "Loading..." : "Agree to Time"}
       </button>
       {dateTime ? (
-        <button
-          type="submit"
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await onSubmit(tryeight);
-            } catch (error) {
-              console.error(error);
-            } finally {
-              setIsLoading(false);
-            }
-          }}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarBlankLight />
-          {isLoading ? "Loading..." : "Send Reschedule Offer"}
-        </button>
+        <div>
+          <button
+            type="submit"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit(tryeight);
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
+          >
+            <PiCalendarBlankLight />
+            {isLoading ? "Loading..." : "Send Reschedule Offer"}
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
+          >
+            <PiCalendarPlusLight />
+            {isLoading ? "Loading..." : "Set New Reschedule Time"}
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
@@ -683,16 +701,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           {isLoading ? "Loading..." : "Reschedule Time"}
         </button>
       )}
-      <button
-        onClick={() => setCustomTimeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarPlusLight />
-        {isLoading ? "Loading..." : "Set New Reschedule Time"}
-      </button>
     </div>
   );
   const resp4 = (
@@ -719,26 +727,38 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         {isLoading ? "Loading..." : "Agree to Time"}
       </button>
       {dateTime ? (
-        <button
-          type="submit"
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await onSubmit(trytwo);
-            } catch (error) {
-              console.error(error);
-            } finally {
-              setIsLoading(false);
-            }
-          }}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarBlankLight />
-          {isLoading ? "Loading..." : "Send Reschedule Offer"}
-        </button>
+        <div>
+          <button
+            type="submit"
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                await onSubmit(trytwo);
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
+          >
+            <PiCalendarBlankLight />
+            {isLoading ? "Loading..." : "Send Reschedule Offer"}
+          </button>
+          <button
+            onClick={() => setCustomTimeOpen(true)}
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
+              isLoading ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            disabled={isLoading}
+          >
+            <PiCalendarPlusLight />
+            {isLoading ? "Loading..." : "Set New Reschedule Time"}
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
@@ -751,16 +771,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           {isLoading ? "Loading..." : "Reschedule Time"}
         </button>
       )}
-      <button
-        onClick={() => setCustomTimeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarPlusLight />
-        {isLoading ? "Loading..." : "Set New Reschedule Time"}
-      </button>
     </div>
   );
   const resp5 = (
@@ -769,8 +779,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <div className=" p-2 rounded-lg">
           {!image && (
             <div>
-              {" "}
-              Upload an image to confirm item is ready for pickup.
+              <div className=" pb-2 rounded-lg">
+                Upload an image to confirm item is ready for pickup.
+              </div>
               <UploadButton
                 endpoint="imageUploader"
                 onClientUploadComplete={(res: { url: string }[]) => {
@@ -970,15 +981,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`m hover:bg-sky-500 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
       >
+        <PiCalendarCheckLight />
         {isLoading ? "Loading..." : "Accept Delivery Time"}
       </button>
       {dateTime ? (
-        <>
+        <div>
           <button
             type="submit"
             onClick={async () => {
@@ -991,7 +1003,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 setIsLoading(false);
               }
             }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p -2 flex items-center gap-x-1 ${
+            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
               isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
             disabled={isLoading}
@@ -1009,7 +1021,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <PiCalendarPlusLight />
             {isLoading ? "Loading..." : "Set Different Time"}
           </button>
-        </>
+        </div>
       ) : (
         <button
           onClick={() => setCustomTimeOpen(true)}
@@ -1030,8 +1042,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <div className=" p-2 rounded-lg">
           {!image && (
             <div>
-              {" "}
-              Upload an image to confirm delivery.
+              <div className=" pb-2 rounded-lg">
+                Upload an image to confirm delivery.
+              </div>
               <UploadButton
                 endpoint="imageUploader"
                 onClientUploadComplete={(res: { url: string }[]) => {
@@ -1056,8 +1069,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 }`}
                 content={{
                   button({ ready }) {
-                    if (ready)
-                      return <div>Send a photo of the delivered produce</div>;
+                    if (ready) return <div>Send a photo of the delivery</div>;
                     return isLoading ? "Loading..." : "Getting ready...";
                   },
                 }}
@@ -1120,11 +1132,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             setIsLoading(false);
           }
         }}
-        className={`m hover:bg-sky-600 ${
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
           isLoading ? "cursor-not-allowed opacity-50" : ""
         }`}
         disabled={isLoading}
       >
+        <PiCalendarCheckLight />
         {isLoading ? "Loading..." : "Accept Delivery Time"}
       </button>
       {dateTime ? (
@@ -1172,86 +1185,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           {isLoading ? "Loading..." : "Set Delivery Time"}
         </button>
       )}
-    </div>
-  );
-  const resp12 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
-      <div className="flex flex-col text-sm w-fit overflow-hidden message   py-2 px-3">
-        <div className="">
-          <div className=" p-2 rounded-lg">
-            {!image && (
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res: { url: string }[]) => {
-                  setImage(res[0].url);
-                  setIsLoading(true);
-                  try {
-                    onSubmit12(res[0].url);
-                  } catch (error) {
-                    console.error(error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  container: "h-full w-max",
-                }}
-                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                  isLoading ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                content={{
-                  button({ ready }) {
-                    if (ready)
-                      return <div>Sent a photo of the delivered produce</div>;
-                    return isLoading ? "Loading..." : "Getting ready...";
-                  },
-                }}
-              />
-            )}
-            {image && (
-              <>
-                <div>
-                  <div className="m-5 relative">
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Image
-                          src={image}
-                          height={180}
-                          width={180}
-                          alt="a"
-                          className="aspect-square rounded-lg object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                          Click to Enlarge
-                        </div>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="xl:flex xl:justify-center">
-                        <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                          {" "}
-                          <div>
-                            <Image
-                              src={image}
-                              fill
-                              className="object-cover w-full"
-                              alt="a"
-                            />
-                          </div>
-                          <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                            Close
-                          </AlertDialogCancel>
-                        </div>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
   return (
@@ -1334,8 +1267,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                         Click to Enlarge
                       </div>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="xl:flex xl:justify-center">
-                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
+                    <AlertDialogContent className="xl:flex xl:justify-center z-[50]">
+                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative z-[50]">
                         {" "}
                         <div>
                           <Image
@@ -1357,10 +1290,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           ) : (
             <div>
               {/* display hours button dependent on message */}
-              {data.messageOrder === "10" ||
-              data.messageOrder === "13" ||
-              data.messageOrder === "3" ? (
-                <div className={message}>{data.body}</div>
+              {data.messageOrder === "10" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                        <PiNewspaperClippingThin className="mt-1 mr-1" />
+                        View Hours
+                      </button>
+                    </SheetTrigger>
+
+                    <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
+                      <HoursDisplay
+                        coOpHours={order.location.hours as ExtendedHours}
+                      />
+                    </SheetContent>
+                  </Sheet>
+                </div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}
@@ -1454,11 +1401,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             >
               <div>
                 <h3
-                  className={`${zilla.className} text-md lg:text-md font-semibold p-4`}
+                  className={`${zilla.className} text-md rounded-t-md bg-[#F1EFE7] lg:text-md font-semibold pt-2 px-4`}
                 >
                   Your Response Options
                 </h3>
-                <div className="flex flex-col p-4 pt-0">
+                <div className="flex flex-col p-4 pt-0 bg-[#F1EFE7] rounded-b-md">
                   {notOwn && data.messageOrder === "1" ? (
                     resp1
                   ) : isOwn && data.messageOrder === "2" ? (
@@ -1482,7 +1429,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   ) : notOwn && data.messageOrder === "13" ? (
                     resp11
                   ) : isOwn && data.messageOrder === "14" ? (
-                    resp12
+                    resp10
                   ) : (
                     <div className="px-2 text-slate-500 font-light text-md">
                       No response options available
