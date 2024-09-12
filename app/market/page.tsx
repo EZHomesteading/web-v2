@@ -1,11 +1,10 @@
 //market server side layout with search parameters for grabbing data
 import dynamic from "next/dynamic";
 import EmptyState from "@/app/components/EmptyState";
-import ClientOnly from "../../components/client/ClientOnly";
+import ClientOnly from "@/app/components/client/ClientOnly";
 import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getUserwithCart } from "@/actions/getUser";
 import { UserInfo } from "@/next-auth";
-import { ZodStringDef } from "zod";
 
 interface ShopProps {
   userId?: string;
@@ -25,12 +24,9 @@ interface ShopProps {
   };
 }
 
-const MarketComponent = dynamic(
-  () => import("@/app/(pages)/market/market-component"),
-  {
-    ssr: true,
-  }
-);
+const MarketComponent = dynamic(() => import("@/app/market/market-component"), {
+  ssr: true,
+});
 
 const ShopPage = async ({
   searchParams,

@@ -4,6 +4,7 @@ import NavbarHome from "../components/navbar/navbar-chat";
 import { getConversations } from "@/actions/chat/getChat";
 import type { Viewport } from "next";
 import { UserInfo, navUser } from "@/next-auth";
+import Navbar from "../components/navbar/navbar.client";
 
 export const viewport: Viewport = {
   themeColor: "rgb(15 23 42)",
@@ -14,9 +15,15 @@ export default async function ConversationsLayout({
   children: React.ReactNode;
 }) {
   const conversations = await getConversations();
+  const apiKey = process.env.MAPS_KEY;
   return (
     <div className="min-h-screen bg-chat">
-      <NavbarHome user={conversations.user as unknown as navUser} />
+      {apiKey && (
+        <Navbar
+          apiKey={apiKey}
+          user={conversations.user as unknown as navUser}
+        />
+      )}
       <ConversationList
         title="Messages"
         initialItems={conversations.conversations}

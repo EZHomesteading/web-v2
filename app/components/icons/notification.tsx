@@ -73,7 +73,7 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
   return (
     <>
       <Sheet>
-        <SheetTrigger className="hover:cursor-pointer relative flex flex-col items-center">
+        <SheetTrigger className="pb-2 hover:cursor-pointer relative flex flex-col items-center">
           <PiBellThin
             className={`h-8 w-8 !font-thin ${
               white ? "text-white" : "text-black"

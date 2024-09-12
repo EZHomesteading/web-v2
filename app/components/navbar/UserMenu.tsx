@@ -39,7 +39,7 @@ import Image from "next/image";
 import { IoIosMenu } from "react-icons/io";
 import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
-import placeholder from "@/public/images/website-images/placeholder.jpg"
+import placeholder from "@/public/images/website-images/placeholder.jpg";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -88,7 +88,7 @@ const UserMenu = ({ user }: Props) => {
     onClick: () => void;
   }> = ({ icon: Icon, label, onClick }) => (
     <div
-      className="flex flex-col items-center hover:cursor-pointer"
+      className="flex flex-col pb-2 items-center hover:cursor-pointer"
       onClick={onClick}
     >
       <Icon

@@ -329,6 +329,9 @@ body::-webkit-scrollbar {
 .d1dbbf {
   background-color: #d1dbbf;
 }
+.text-d1dbbf {
+  color: #d1dbbf;
+}
 .light {
   color: #e3eac9 !important;
 }

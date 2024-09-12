@@ -159,15 +159,15 @@ const Dashboard = async () => {
         <meta property="og:url" content={metadata.openGraph.url} />
         <meta property="og:type" content={metadata.openGraph.type} />
       </head>
-      <main className="grid grid-rows-[auto_auto_1fr] h-fit md:h-screen pt-1 md:pt-12 gap-3 px-3 pb-3 md:grid-rows-[auto_auto_1fr]">
-        <h1 className="text-3xl font-bold mb-3">Dashboard</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 md:gap-x-3 xl:grid-cols-3  2xl:grid-cols-6">
+      <main className="grid grid-rows-[auto_auto_1fr] h-auto md:h-[calc(100vh-3rem)]  pt-1 md:pt-12 gap-3 px-3 pb-[5.5rem] md:pb-3 md:grid-rows-[auto_auto_1fr]">
+        <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 md:gap-x-3 xl:grid-cols-3 2xl:grid-cols-6">
           {" "}
           {user?.role == UserRole.CONSUMER ? (
             <></>
           ) : (
             <>
-              <Card className="w-full h-64 sheet shadow-lg">
+              <Card className="w-full h-64 sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
                 <CardHeader
                   className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
                 >
@@ -193,7 +193,7 @@ const Dashboard = async () => {
                   </Link>
                 </CardContent>
               </Card>
-              <Card className="w-full h-64 sheet shadow-lg">
+              <Card className="w-full h-64 sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
                 <CardHeader
                   className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
                 >
@@ -220,7 +220,7 @@ const Dashboard = async () => {
           {user?.role == UserRole.CONSUMER ? (
             <></>
           ) : (
-            <Card className="w-full sheet shadow-lg">
+            <Card className="w-full sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
               <CardHeader
                 className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
               >
@@ -240,7 +240,7 @@ const Dashboard = async () => {
               </CardContent>
             </Card>
           )}
-          <Card className="w-full h-64 sheet shadow-lg">
+          <Card className="w-full h-64 sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
             <CardHeader
               className={`${outfit.className} text-md md:2xl flex flex-row gap-x-1`}
             >
@@ -259,7 +259,7 @@ const Dashboard = async () => {
               </Link>
             </CardContent>
           </Card>
-          <Card className="w-full h-64 sheet shadow-lg">
+          <Card className="w-full h-64 sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
             <CardHeader
               className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
             >
@@ -281,7 +281,7 @@ const Dashboard = async () => {
           {user?.role == UserRole.CONSUMER ? (
             <></>
           ) : (
-            <Card className="w-full h-64 sheet shadow-lg">
+            <Card className="w-full h-64 sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
               <CardHeader
                 className={`${outfit.className} text-[.95rem] 2xl:text-lg flex flex-row gap-x-1`}
               >
@@ -306,14 +306,14 @@ const Dashboard = async () => {
           {user?.role == UserRole.CONSUMER ? (
             <></>
           ) : (
-            <Card className="w-full sheet shadow-lg md:col-span-1">
+            <Card className="w-full sheet shadow-[0_0_3px_rgba(0,0,0,.1)] md:col-span-1">
               <CardHeader
                 className={`${outfit.className} text-xl md:2xl flex flex-row gap-x-1`}
               >
                 Overview
                 <DashPopover c="This graph indicates your sales month over month." />
               </CardHeader>
-              <CardContent className="sheet p-0">
+              <CardContent className="sheet p-0 rounded-xl">
                 {totalSales === 0 ? (
                   <div className="px-6 pb-6">
                     You have not sold anything yet.
@@ -324,11 +324,11 @@ const Dashboard = async () => {
               </CardContent>
             </Card>
           )}
-          <Card className="w-full sheet shadow-lg">
+          <Card className="w-full sheet shadow-[0_0_3px_rgba(0,0,0,.1)]">
             <CardHeader className={`${outfit.className} text-xl md:2xl`}>
               Recent Purchases
             </CardHeader>
-            <CardContent className="sheet">
+            <CardContent className="rounded-lg">
               {recentPurchases.length > 0 ? (
                 await Promise.all(
                   recentPurchases.map(async (order) => {
@@ -371,11 +371,11 @@ const Dashboard = async () => {
           {user?.role == UserRole.CONSUMER ? (
             <></>
           ) : (
-            <Card className="w-full sheet shadow-lg">
+            <Card className="w-full sheet shadow-[0_0_5px_rgba(0,0,0,.1)]">
               <CardHeader className={`${outfit.className} text-xl md:2xl`}>
                 Recent Sales
               </CardHeader>
-              <CardContent className="sheet">
+              <CardContent className="rounded-lg">
                 {recentSales.length > 0 ? (
                   await Promise.all(
                     recentSales.map(async (order) => {
