@@ -3,6 +3,8 @@ import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
 import { Button } from "../components/ui/button";
+import Image from "next/image";
+import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -16,9 +18,19 @@ interface Props {
 
 const ProducerHome = ({ user }: Props) => {
   return (
-    <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
-      <header className="py-12">
-        <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
+    <main className="h-screen bg-black text-white px-2 py-2 pt-60 flex flex-col items-center   sm:items-center">
+      <div className="absolute inset-0 ">
+        <Image
+          src={homebg}
+          alt="Home Page"
+          fill
+          className="object-cover 2xl:object-fit"
+          sizes="100vw"
+        />{" "}
+        <div className="absolute inset-0 bg-black bg-opacity-10 "></div>
+      </div>
+      <header className="py-12 z-[3]">
+        <h1 className="2xl:text-5xl text-3xl font-bold tracking-tight f">
           <div className={`${outfit.className} `}>
             <span className="text-green-200 tracking font-medium">
               Ready to get started
@@ -27,14 +39,14 @@ const ProducerHome = ({ user }: Props) => {
             <span className="text-green-400 font-bold">{user.firstName}?</span>
           </div>
         </h1>
-        <div className="flex flex-col justify-evenly text-sm mt-5 ">
+        <div className="flex flex-row justify-evenly  text-sm mt-5 ">
           <Link href="/create">
             {" "}
-            <Button className="hover:underline">List produce</Button>
+            <Button className="hover:underline mr-2">List produce</Button>
           </Link>
           <Link href="/market">
             {" "}
-            <Button className="hover:underline">Market</Button>
+            <Button className="hover:underline mr-2">Market</Button>
           </Link>
           <Link href="/map">
             {" "}

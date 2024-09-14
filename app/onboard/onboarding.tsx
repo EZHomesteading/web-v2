@@ -10,15 +10,16 @@ import { useRouter } from "next/navigation";
 import { Outfit } from "next/font/google";
 import StepOne from "./step1";
 import StepTwo from "./step2";
-import StepThree from "./step3";
-import StepFour from "./step4";
-import StepSix from "./step6";
-import StepFive from "./step5";
-import StepSeven from "./step7";
-import StepEight from "./step8";
-import StepNine from "./step9";
+import StepNotif from "./step3";
+import StepThree from "./step4";
+import StepFour from "./step5";
+import StepSix from "./step7";
+import StepFive from "./step6";
+import StepSeven from "./step8";
+import StepEight from "./step9";
+import StepNine from "./step10";
 import { Session } from "next-auth";
-import StepTen from "./step10";
+import StepTen from "./step11";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -68,7 +69,7 @@ const Onboarding = ({
 
   const handleNext = async () => {
     try {
-      if (step === 3) {
+      if (step === 4) {
         const existingLocations: UserLocation =
           (user.location as UserLocation) || {};
         const updatedLocations: UserLocation = {
@@ -85,21 +86,22 @@ const Onboarding = ({
               .map(([key, value]) => [Number(key), value])
           ),
         };
+        if (formData.location) {
+          const response = await axios.post("/api/useractions/update", {
+            location: updatedLocations,
+          });
 
-        const response = await axios.post("/api/useractions/update", {
-          location: updatedLocations,
-        });
+          setUser((prevUser) => ({
+            ...prevUser,
+            location: response.data.location || updatedLocations,
+          }));
 
-        setUser((prevUser) => ({
-          ...prevUser,
-          location: response.data.location || updatedLocations,
-        }));
-
-        setFormData((prevData) => ({
-          ...prevData,
-          location: response.data.location || updatedLocations,
-        }));
-      } else if (step === 4) {
+          setFormData((prevData) => ({
+            ...prevData,
+            location: response.data.location || updatedLocations,
+          }));
+        }
+      } else if (step === 5) {
         if (formData.location) {
           const response = await axios.post("/api/useractions/update", {
             location: { 0: formData.location[0] },
@@ -109,7 +111,7 @@ const Onboarding = ({
             location: response.data.location || formData.location,
           }));
         }
-      } else if (step === 6) {
+      } else if (step === 7) {
         if (formData.image) {
           const response = await axios.post("/api/useractions/update", {
             image: formData.image,
@@ -119,7 +121,7 @@ const Onboarding = ({
             image: response.data.image || formData.image,
           }));
         }
-      } else if (step === 7) {
+      } else if (step === 8) {
         if (formData.bio) {
           const response = await axios.post("/api/useractions/update", {
             bio: formData.bio,
@@ -129,7 +131,7 @@ const Onboarding = ({
             bio: response.data.bio || formData.bio,
           }));
         }
-      } else if (step === 10) {
+      } else if (step === 11) {
         router.push("/dashboard");
         return;
       }
@@ -182,27 +184,28 @@ const Onboarding = ({
           />
         )}
         {step === 2 && <StepTwo />}
-        {step === 3 && apiKey && (
+        {step === 3 && <StepNotif />}
+        {step === 4 && apiKey && (
           <StepThree
             user={user}
             apiKey={apiKey}
             updateFormData={updateFormData}
           />
         )}
-        {step === 4 && <StepFour user={user} updateFormData={updateFormData} />}
-        {step === 5 && <StepFive />}
-        {step === 6 && (
+        {step === 5 && <StepFour user={user} updateFormData={updateFormData} />}
+        {step === 6 && <StepFive />}
+        {step === 7 && (
           <StepSix
             userImage={formData.image || user?.image}
             updateFormData={updateFormData}
           />
         )}
-        {step === 7 && (
+        {step === 8 && (
           <StepSeven userBio={user?.bio} updateFormData={updateFormData} />
         )}
-        {step === 8 && <StepEight />}
-        {step === 9 && <StepNine user={user} />}
-        {step === 10 && <StepTen user={user} />}
+        {step === 9 && <StepEight />}
+        {step === 10 && <StepNine user={user} />}
+        {step === 11 && <StepTen user={user} />}
       </div>
       <div>
         <div className="w-full absolute top-0 left-0 z-50">
@@ -219,8 +222,8 @@ const Onboarding = ({
                 Back
               </Button>
             )}
-            {step < 9 && <Button onClick={handleNext}>Next</Button>}
-            {step === 9 && <Button onClick={handleNext}>Finish</Button>}
+            {step < 10 && <Button onClick={handleNext}>Next</Button>}
+            {step === 10 && <Button onClick={handleNext}>Finish</Button>}
           </div>
         )}
       </div>
