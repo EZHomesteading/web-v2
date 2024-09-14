@@ -1,6 +1,6 @@
-'use client'
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Categories from "./Categories";
 import Container from "../Container";
 import Logo from "./Logo";
@@ -11,12 +11,12 @@ import { navUser } from "@/next-auth";
 
 interface p {
   user?: NavUser | null;
-  apiKey: string
+  apiKey: string;
 }
 
 const Navbar = ({ user, apiKey }: p) => {
   const pathname = usePathname();
-  const isMarketPage = pathname?.startsWith('/market');
+  const isMarketPage = pathname?.startsWith("/market");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -25,14 +25,14 @@ const Navbar = ({ user, apiKey }: p) => {
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   return (
-    <>
-      <div className="fixed top-0 left-0 right-0 bg-white z-10">
+    <div className="z-[100]">
+      <div className="fixed top-0 left-0 right-0 bg-white z-[100]">
         {!isSmallScreen ? (
           // Layout for screens 600px and above
           <div>
@@ -44,9 +44,9 @@ const Navbar = ({ user, apiKey }: p) => {
             </Container>
             {isMarketPage && (
               <div className="w-full relative border-b-[1px] py-6">
-                  <div className="flex justify-center">
-                      <FindListingsComponent apiKey={apiKey} />
-                  </div>
+                <div className="flex justify-center">
+                  <FindListingsComponent apiKey={apiKey} />
+                </div>
               </div>
             )}
           </div>
@@ -70,7 +70,9 @@ const Navbar = ({ user, apiKey }: p) => {
       </div>
 
       {/* Spacer to prevent content from being hidden under the fixed navbar */}
-      <div className={`${isSmallScreen ? 'h-16' : (isMarketPage ? 'h-32' : 'h-20')}`} />
+      <div
+        className={`${isSmallScreen ? "h-16" : isMarketPage ? "h-32" : "h-20"}`}
+      />
 
       {isSmallScreen && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
@@ -83,7 +85,7 @@ const Navbar = ({ user, apiKey }: p) => {
           <Categories user={user as unknown as navUser} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

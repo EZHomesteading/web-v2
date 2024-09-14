@@ -8,7 +8,7 @@ interface p {
 }
 const NavbarHome = ({ user }: p) => {
   return (
-    <div className="absolute w-full  ">
+    <div className="absolute w-full z-[100]  ">
       <Container>
         <UserMenu user={user} />
       </Container>

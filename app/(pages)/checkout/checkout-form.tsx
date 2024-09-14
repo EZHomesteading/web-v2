@@ -37,11 +37,14 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Calculate item totals
   const itemTotals = cartItems.map(
     (cartItem: CartItem) => cartItem.quantity * cartItem.listing.price
   );
 
+  // Ensure total is not NaN or undefined
   const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
+  const formattedTotal = total > 0 ? Round(total, 2) : 0; // Default to 0 if total is not valid
 
   useEffect(() => {
     const fetchPaymentIntents = async () => {
@@ -50,7 +53,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
       try {
         const orderIds = await sessionStorage.getItem("ORDER");
-        if (orderIds === null || orderIds === "") {
+        if (!orderIds) {
           throw new Error("No order IDs found");
         }
 
@@ -195,7 +198,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
             <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
               <div className="flex items-center justify-between">
                 <dt className="text-gray-600">Subtotal</dt>
-                <dd>${Round(total, 2)}</dd>
+                <dd>${formattedTotal}</dd>
               </div>
 
               <div className="flex items-center justify-between">
@@ -210,7 +213,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
               <div className="flex items-center justify-between border-t border-gray-200 pt-6">
                 <dt className="text-base">Total</dt>
-                <dd className="text-base">${Round(total, 2)}</dd>
+                <dd className="text-base">${formattedTotal}</dd>
               </div>
             </dl>
 
@@ -219,7 +222,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                 <div className="mx-auto max-w-lg">
                   <Popover.Button className="flex w-full items-center py-6 font-medium">
                     <span className="mr-auto text-base">Total</span>
-                    <span className="mr-2 text-base">${Round(total, 2)}</span>
+                    <span className="mr-2 text-base">${formattedTotal}</span>
                     <ChevronUpIcon
                       className="h-5 w-5 text-gray-500"
                       aria-hidden="true"
@@ -255,7 +258,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                       <dl className="mx-auto max-w-lg space-y-6">
                         <div className="flex items-center justify-between">
                           <dt className="text-gray-600">Subtotal</dt>
-                          <dd>${Round(total, 2)}</dd>
+                          <dd>${formattedTotal}</dd>
                         </div>
                         <div className="flex items-center justify-between">
                           <dt className="text-gray-600">Taxes</dt>

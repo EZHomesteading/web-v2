@@ -1,13 +1,37 @@
-import CenteredStep from "./explanation";
+import { Outfit } from 'next/font/google';
+import { useState } from 'react';
+import { Textarea } from '../components/ui/textarea';
+const outfit = Outfit({
+    subsets: ["latin"],
+    display: "swap",
+  });
+interface Props {
+  userBio?: string;
+  updateFormData: (data: { bio: string }) => void;
+}
 
-const StepEight = () => {
+const StepSeven: React.FC<Props> = ({ userBio, updateFormData }) => {
+  const [bio, setBio] = useState(userBio || '');
+
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBio(e.target.value);
+    updateFormData({ bio: e.target.value });
+  };
+
   return (
-    <CenteredStep
-      stepNumber={3}
-      title="Set Up Payouts"
-      description="Lastly, EZHomesteading partners with Stripe for both payments and payouts. The information you provide here is required by government regulation to protect yourself and others against fraud. You can skip this step for now, but the funds from any completed orders will be held in escrow under your account name until this is set up."
-    />
+    <div className="flex flex-col items-center justify-center h-full">
+
+      <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
+              {userBio ? <>Change your Bio</> : <>Add a Store Bio</>}
+      </h1>
+      <Textarea
+        value={bio}
+        onChange={handleBioChange}
+        placeholder="Tell us about yourself..."
+        className="w-full max-w-md h-40 p-2 border rounded"
+      />
+    </div>
   );
 };
 
-export default StepEight;
+export default StepSeven;
