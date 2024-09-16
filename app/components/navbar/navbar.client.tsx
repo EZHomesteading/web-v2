@@ -32,7 +32,7 @@ const Navbar = ({ user, apiKey }: p) => {
 
   return (
     <div className="z-[100]">
-      <div className="fixed top-0 left-0 right-0 bg-white z-[100]">
+      <div className="fixed top-0 left-0 right-0 bg-white z-[10]">
         {!isSmallScreen ? (
           // Layout for screens 600px and above
           <div>
