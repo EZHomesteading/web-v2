@@ -1,5 +1,5 @@
 "use client";
-//unit autocomplete searchable field
+
 import Select from "react-select";
 import useQuantityTypes from "@/hooks/listing/use-quantitytype";
 
@@ -15,6 +15,7 @@ interface ProductSelectProps {
 
 const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
   const { getAll } = useQuantityTypes();
+
   return (
     <div className="relative peer">
       <Select
@@ -23,26 +24,49 @@ const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
         value={value}
         onChange={(value) => onChange(value as QuantityTypeValue)}
         formatOptionLabel={(option: any) => (
-          <div className="rounded-lg">{option.label}</div>
+          <div className="rounded-lg text-black">{option.label}</div>
         )}
         components={{
           DropdownIndicator: () => null,
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "py-3 pl-2 shadow-sm peer font-extralight",
-          input: () => "text-lg font-extralight",
-          option: () => "text-xs font-extralight",
+          control: () => "py-3 pl-2 shadow-sm",
+          input: () => "text-lg",
+          option: () => "text-xs",
           dropdownIndicator: () => "hidden",
-          placeholder: () => "text-black",
+        }}
+        styles={{
+          control: (base) => ({
+            ...base,
+            color: "black",
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: "black",
+          }),
+          input: (base) => ({
+            ...base,
+            color: "black",
+          }),
+          option: (base) => ({
+            ...base,
+            color: "black",
+          }),
+          placeholder: (base) => ({
+            ...base,
+            color: "black",
+          }),
         }}
         theme={(theme) => ({
           ...theme,
           borderRadius: 10,
           colors: {
             ...theme.colors,
-            primary: "#fff",
-            primary25: "#fff",
+            primary: "#000",
+            primary25: "#f0f0f0",
+            neutral50: "black", // This controls the placeholder text color
+            neutral80: "black",
           },
         })}
       />

@@ -39,7 +39,7 @@ import Image from "next/image";
 import { IoIosMenu } from "react-icons/io";
 import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
-import placeholder from "@/public/images/website-images/placeholder.jpg"
+import placeholder from "@/public/images/website-images/placeholder.jpg";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -129,7 +129,7 @@ const UserMenu = ({ user }: Props) => {
         <IconWrapper
           key="create"
           icon={PiPlusThin}
-          label="Create"
+          label="Add a Product"
           onClick={() => router.push("/create")}
         />,
         <MenuIcon key="menu" user={user} />

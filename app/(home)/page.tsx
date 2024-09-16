@@ -18,7 +18,7 @@ const HomePage = async () => {
         ) : user?.role == UserRole.ADMIN ? (
           <AdminHome user={user} />
         ) : (
-          <Home />
+          <Home user={user} />
         )
       ) : (
         <NoAuthHome />
