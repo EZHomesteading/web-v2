@@ -8,6 +8,11 @@ import FindListingsComponent from "@/app/components/listings/search-listings";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
+import { UserInfo } from "@/next-auth";
+interface Props {
+  user: UserInfo;
+}
+
 const footerNavigation = {
   shop: [
     { name: "More Info", href: "/info" },
@@ -29,7 +34,7 @@ const outfit = Outfit({
   display: "swap",
 });
 
-export default function Home() {
+export default function Home({ user }: Props) {
   const apiKey = process.env.MAPS_KEY;
   return (
     <>
@@ -47,6 +52,11 @@ export default function Home() {
         <div className="h-screen z-[3] px-2 py-2 pt-20 flex flex-col items-center   sm:items-center">
           <header className="py-12 z-[3]">
             <div className="flex flex-col">
+              <div
+                className={`${outfit.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
+              >
+                Welcome {user.name}
+              </div>
               <div className={` 2xl:text-3xl text-lg font-light `}>
                 Easily Find
               </div>

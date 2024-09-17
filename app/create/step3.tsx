@@ -87,7 +87,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                 }}
               />{" "}
               <PiRulerThin
-                className="text-neutral-700 absolute top-5 right-2"
+                className="text-neutral-900 absolute top-5 right-2"
                 size={25}
               />{" "}
             </div>
