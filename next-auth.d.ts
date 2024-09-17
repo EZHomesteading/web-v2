@@ -89,7 +89,10 @@ type navUser = {
   id: string;
   name: string;
   firstName?: string;
+  url: string | null;
   image?: string;
+  stripeAccountId: string | null;
+  hasPickedRole: boolean | null;
   role: UserRole;
   email: string;
   sellerOrders?: navSellOrder[];

@@ -40,6 +40,8 @@ import { IoIosMenu } from "react-icons/io";
 import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
+import axios from "axios";
+import { toast } from "sonner";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -48,8 +50,10 @@ const outfit = Outfit({
 });
 interface Props {
   user?: navUser;
+  canReceivePayouts: boolean;
+  uniqueUrl: string;
 }
-const UserMenu = ({ user }: Props) => {
+const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
   const pathname = usePathname();
   const white = pathname === "/";
   const router = useRouter();
@@ -72,11 +76,90 @@ const UserMenu = ({ user }: Props) => {
       );
     };
   }, []);
-  const isMdOrLarger = useMediaQuery("(min-width: 768px)");
+  const isMdOrLarger = useMediaQuery("(min-width: 640px)");
   const toggleAbout = () => {
     setAbout((prevState) => !prevState);
   };
+  const handleCreateClickConsumer = async () => {
+    try {
+      const [stripeResponse, userUpdateResponse] = await Promise.all([
+        fetch(
+          `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: user?.id }),
+          }
+        ),
+        axios.post("/api/useractions/update", {
+          role: UserRole.PRODUCER,
+          hasPickedRole: false,
+          url: uniqueUrl,
+        }),
+      ]);
 
+      // Check if the response is ok before trying to parse JSON
+      if (!stripeResponse.ok) {
+        const textResponse = await stripeResponse.text();
+        console.error("Stripe API error response:", textResponse);
+        throw new Error(`HTTP error! status: ${stripeResponse.status}`);
+      }
+
+      let stripeData;
+      try {
+        stripeData = await stripeResponse.json();
+      } catch (jsonError) {
+        console.error("Error parsing Stripe response:", jsonError);
+        const textResponse = await stripeResponse.text();
+        console.error("Raw Stripe response:", textResponse);
+        throw new Error("Invalid JSON in Stripe response");
+      }
+
+      console.log("Stripe connected account created:", stripeData);
+      if (stripeData && stripeData.stripeAccountId) {
+        console.log("Stripe Account ID:", stripeData.stripeAccountId);
+      }
+
+      console.log("User role updated successfully:", userUpdateResponse.data);
+    } catch (error) {
+      console.error("Error in consumer API calls:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+      // Log the full error object for debugging
+      console.error("Full error object:", error);
+
+      toast.warning("Some account setup steps failed. Please contact support.");
+    }
+    if (
+      (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
+      user?.location &&
+      user?.location[0]?.address &&
+      user?.location[0]?.hours &&
+      user?.image &&
+      canReceivePayouts === true
+    ) {
+      router.push("/create");
+    } else {
+      router.push("/onboard");
+    }
+  };
+  const handleCreateClickSeller = () => {
+    if (
+      (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
+      user?.location &&
+      user?.location[0]?.address &&
+      user?.location[0]?.hours &&
+      user?.image &&
+      canReceivePayouts === true
+    ) {
+      router.push("/create");
+    } else {
+      router.push("/onboard");
+    }
+  };
   const hasNotifications =
     (user?.sellerOrders?.length ?? 0) > 0 ||
     (user?.buyerOrders?.length ?? 0) > 0;
@@ -88,14 +171,16 @@ const UserMenu = ({ user }: Props) => {
     onClick: () => void;
   }> = ({ icon: Icon, label, onClick }) => (
     <div
-      className="flex flex-col items-center hover:cursor-pointer"
+      className="flex flex-col items-center justify-center hover:cursor-pointer"
       onClick={onClick}
     >
       <Icon
-        className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
+        className={`h-12 w-12 ${
+          pathname === "/" ? "text-white" : "text-black"
+        }`}
       />
       <div
-        className={`text-xs ${outfit.className} ${
+        className={`text-s ${outfit.className} ${
           pathname === "/" ? "text-white" : "text-black"
         }`}
       >
@@ -129,7 +214,7 @@ const UserMenu = ({ user }: Props) => {
         <IconWrapper
           key="create"
           icon={PiPlusThin}
-          label="Add a Product"
+          label="Add Product"
           onClick={() => router.push("/create")}
         />,
         <MenuIcon key="menu" user={user} />
@@ -159,8 +244,8 @@ const UserMenu = ({ user }: Props) => {
           <IconWrapper
             key="create"
             icon={PiPlusThin}
-            label="Create"
-            onClick={() => router.push("/create")}
+            label="Add Product"
+            onClick={() => handleCreateClickSeller()}
           />,
           <IconWrapper
             key="dashboard"
@@ -176,8 +261,8 @@ const UserMenu = ({ user }: Props) => {
           <IconWrapper
             key="create"
             icon={PiPlusThin}
-            label="Create"
-            onClick={() => router.push("/create")}
+            label="Add Product"
+            onClick={() => handleCreateClickSeller()}
           />,
           <IconWrapper
             key="market"
@@ -243,8 +328,8 @@ const UserMenu = ({ user }: Props) => {
           <IconWrapper
             key="create"
             icon={PiPlusThin}
-            label="Create"
-            onClick={() => router.push("/create")}
+            label="Add Product"
+            onClick={() => handleCreateClickConsumer()}
           />,
           <IconWrapper
             key="dashboard"
@@ -287,8 +372,8 @@ const UserMenu = ({ user }: Props) => {
             <IconWrapper
               key="create"
               icon={PiPlusThin}
-              label="Create"
-              onClick={() => router.push("/create")}
+              label="Add Product"
+              onClick={() => handleCreateClickConsumer()}
             />
           );
         if (icons.length < 5)
@@ -309,7 +394,7 @@ const UserMenu = ({ user }: Props) => {
     <>
       <SheetTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
         <PiUserCircleThin
-          className={`h-8 w-8 ${
+          className={`h-12 w-12 ${
             pathname === "/" ? "text-white" : "text-black"
           }`}
         />
@@ -323,7 +408,7 @@ const UserMenu = ({ user }: Props) => {
       </SheetTrigger>
       <SheetTrigger className="relative shadow-md border-[1px] py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
         <IoIosMenu
-          className={`w-4 h-4 mr-1 ${
+          className={`w-8 h-8 mr-1 ${
             pathname === "/" ? "text-white" : "text-black"
           }`}
         />
@@ -339,7 +424,7 @@ const UserMenu = ({ user }: Props) => {
   );
   return (
     <Sheet>
-      <div className="flex flex-row items-center justify-between sm:justify-end pt-2 min-w-screen gap-x-3 md:gap-x-4">
+      <div className="flex flex-row items-center justify-center  pt-2 min-w-screen gap-x-3 md:gap-x-4">
         {renderIcons()}
       </div>
       <SheetContent

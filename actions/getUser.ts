@@ -535,8 +535,10 @@ const getNavUser = async () => {
       select: {
         id: true,
         firstName: true,
+        hasPickedRole: true,
         role: true,
         name: true,
+        url: true,
         email: true,
         image: true,
         cart: {
@@ -560,6 +562,7 @@ const getNavUser = async () => {
             },
           },
         },
+        stripeAccountId: true,
         sellerOrders: {
           select: {
             id: true,
@@ -724,11 +727,14 @@ interface Cart {
 export interface NavUser {
   id: string;
   firstName: string | null;
-  role: string;
+  url: string | null;
+  role: UserRole;
   name: string;
   email: string;
   image: string | null;
   cart: Cart[];
+  stripeAccountId: string | null;
+  hasPickedRole: boolean | null;
   buyerOrders: {
     id: string;
     conversationId: string | null;
