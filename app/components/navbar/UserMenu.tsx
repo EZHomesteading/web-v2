@@ -24,7 +24,6 @@ import {
   PiPersonSimpleRunThin,
   PiPlusThin,
   PiStorefrontThin,
-  PiUserCircleThin,
 } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
@@ -34,14 +33,11 @@ import {
   IoInformationCircleOutline,
   IoStorefrontOutline,
 } from "react-icons/io5";
-import DashboardSVG from "./icons/dashboard.svg";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Image from "next/image";
 import { IoIosMenu } from "react-icons/io";
-import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
-import { CgMenuRight } from "react-icons/cg";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -51,8 +47,9 @@ const outfit = Outfit({
 });
 interface Props {
   user?: navUser;
+  isHome?: boolean;
 }
-const UserMenu = ({ user }: Props) => {
+const UserMenu = ({ user, isHome = false }: Props) => {
   const pathname = usePathname();
   const white = pathname === "/";
   const router = useRouter();
