@@ -1,8 +1,8 @@
 "use client";
 //update listing page
 import axios from "axios";
-import { useCallback, useState } from "react";
-import { toast } from "react-hot-toast";
+import { useCallback, useState, useEffect } from "react";
+import { toast } from "sonner";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { Label } from "@/app/components/ui/label";
@@ -56,13 +56,41 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
   const [clicked, setClicked] = useState(false);
   const [clicked1, setClicked1] = useState(false);
   const [clicked2, setClicked2] = useState(false);
-
+  const [rating, setRating] = useState<number[]>(listing?.rating);
   const [coopRating, setCoopRating] = useState(1);
   const router = useRouter();
+  useEffect(() => {
+    if (listing.rating.includes(1)) {
+      setCheckbox1Checked(true);
+      console.log(listing.rating);
+    }
+    if (listing.rating.includes(2)) {
+      setCheckbox2Checked(true);
+      console.log(listing.rating);
+    }
+    if (listing.rating.includes(3)) {
+      setCheckbox3Checked(true);
+      console.log(listing.rating);
+    }
+    if (listing.rating.includes(4)) {
+      setCheckbox4Checked(true);
+      console.log(listing.rating);
+    }
+  }, []);
+
   const handleCheckboxChange = (checked: boolean, index: number) => {
-    let newRating = checked ? coopRating + 1 : coopRating - 1;
-    newRating = Math.max(1, Math.min(newRating, 5));
-    setCoopRating(newRating);
+    setRating((prevRating) => {
+      let newRating = [...prevRating];
+      if (checked) {
+        if (!newRating.includes(index + 1)) {
+          newRating.push(index + 1);
+        }
+      } else {
+        newRating = newRating.filter((value) => value !== index + 1);
+      }
+      console.log(newRating.sort((a, b) => a - b));
+      return newRating.sort((a, b) => a - b);
+    });
 
     switch (index) {
       case 0:
@@ -83,6 +111,18 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
   };
   const handleCertificationCheckboxChange = (checked: boolean) => {
     setCertificationChecked(checked);
+    setRating((prevRating) => {
+      if (checked) {
+        if (!prevRating.includes(0)) {
+          return [0, ...prevRating];
+        }
+      } else {
+        console.log(prevRating.filter((value) => value !== 0));
+        return prevRating.filter((value) => value !== 0);
+      }
+      console.log(prevRating);
+      return prevRating;
+    });
   };
   const {
     register,
@@ -149,8 +189,13 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
         data.emailList = null;
       }
     }
+    if (rating !== listing.rating && certificationChecked === false) {
+      toast.success("You must verify your organic rating");
+      return;
+    }
     const formData = {
       ...data,
+      rating: rating,
       minOrder: parseInt(data.minOrder),
       SODT: parseInt(data.sodt),
       stock: parseInt(data.stock),

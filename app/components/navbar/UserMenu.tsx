@@ -42,6 +42,7 @@ import { VscAccount } from "react-icons/vsc";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import { CgMenuRight } from "react-icons/cg";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -131,7 +132,7 @@ const UserMenu = ({ user }: Props) => {
         <IconWrapper
           key="create"
           icon={PiPlusThin}
-          label="Create"
+          label="Add a Product"
           onClick={() => router.push("/create")}
         />
       );
