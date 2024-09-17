@@ -1,8 +1,10 @@
 import { UserInfo } from "@/next-auth";
+import axios from "axios";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
 import { GiFruitTree } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
+import { toast } from "sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -13,6 +15,28 @@ interface p {
 }
 
 const StepTen = ({ user }: p) => {
+  const Producer = async () => {
+    try {
+      await axios.post("/api/useractions/update", {
+        role: "PRODUCER",
+        hasPickedRole: null,
+      });
+    } catch (error) {
+    } finally {
+      toast.success("Role Updated to Grower");
+    }
+  };
+  const Coop = async () => {
+    try {
+      await axios.post("/api/useractions/update", {
+        role: "COOP",
+        hasPickedRole: null,
+      });
+    } catch (error) {
+    } finally {
+      toast.success("Role Updated to Co-op");
+    }
+  };
   return (
     <div className={`${outfit.className} h-screen w-screen text-black  `}>
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
@@ -42,6 +66,9 @@ const StepTen = ({ user }: p) => {
           ].map((item, index) => (
             <li
               key={index}
+              onClick={() => {
+                index === 1 ? Producer() : Coop();
+              }}
               className={`w-full hover:cursor-pointer ${
                 index === 1
                   ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black "

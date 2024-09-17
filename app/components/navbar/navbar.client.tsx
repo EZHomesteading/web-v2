@@ -12,9 +12,11 @@ import { navUser } from "@/next-auth";
 interface p {
   user?: NavUser | null;
   apiKey: string;
+  canReceivePayouts: boolean;
+  uniqueUrl: string;
 }
 
-const Navbar = ({ user, apiKey }: p) => {
+const Navbar = ({ user, apiKey, canReceivePayouts, uniqueUrl }: p) => {
   const pathname = usePathname();
   const isMarketPage = pathname?.startsWith("/market");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -32,14 +34,18 @@ const Navbar = ({ user, apiKey }: p) => {
 
   return (
     <div className="z-[100]">
-      <div className="fixed top-0 left-0 right-0 bg-white z-[100]">
+      <div className="fixed top-0 left-0 right-0 bg-white z-[10]">
         {!isSmallScreen ? (
           // Layout for screens 600px and above
           <div>
             <Container>
               <div className="flex items-center justify-between pt-2">
                 <Logo />
-                <UserMenu user={user as unknown as navUser} />
+                <UserMenu
+                  user={user as unknown as navUser}
+                  canReceivePayouts={canReceivePayouts}
+                  uniqueUrl={uniqueUrl}
+                />
               </div>
             </Container>
             {isMarketPage && (
@@ -76,7 +82,11 @@ const Navbar = ({ user, apiKey }: p) => {
 
       {isSmallScreen && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
-          <UserMenu user={user as unknown as navUser} />
+          <UserMenu
+            user={user as unknown as navUser}
+            canReceivePayouts={canReceivePayouts}
+            uniqueUrl={uniqueUrl}
+          />
         </div>
       )}
 

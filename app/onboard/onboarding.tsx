@@ -102,9 +102,10 @@ const Onboarding = ({
           }));
         }
       } else if (step === 5) {
+        console.log(formData.location);
         if (formData.location) {
           const response = await axios.post("/api/useractions/update", {
-            location: { 0: formData.location[0] },
+            location: { 0: formData.location },
           });
           setUser((prevUser) => ({
             ...prevUser,
@@ -222,8 +223,8 @@ const Onboarding = ({
                 Back
               </Button>
             )}
-            {step < 10 && <Button onClick={handleNext}>Next</Button>}
-            {step === 10 && <Button onClick={handleNext}>Finish</Button>}
+            {step < 11 && <Button onClick={handleNext}>Next</Button>}
+            {step === 11 && <Button onClick={handleNext}>Finish</Button>}
           </div>
         )}
       </div>

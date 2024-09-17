@@ -25,7 +25,7 @@ const StepSix = ({ userImage, updateFormData }: p) => {
     setImage(url);
     try {
       await axios.post("/api/useractions/update", {
-        image: image,
+        image: url,
       });
     } catch (error) {}
   };
