@@ -1,19 +1,35 @@
-"use client";
-
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import AsyncSelect from "react-select/async";
 import { FormattedProduct } from "@/hooks/use-product";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 
 interface ProductSelectProps {
-  value?: FormattedProduct | null;
+  value: FormattedProduct | null;
   subcat: string;
   onChange: (value: FormattedProduct | null) => void;
   onCustomAction: (value: string) => void;
   customActionLabel: string;
-  inputValue: string;
-  onInputChange: (value: string) => void;
   searchProducts: (query: string) => FormattedProduct[];
   getAll: () => FormattedProduct[];
+}
+
+interface ProductSelectProps {
+  value: FormattedProduct | null;
+  subcat: string;
+  onChange: (value: FormattedProduct | null) => void;
+  onCustomAction: (value: string) => void;
+  customActionLabel: string;
+  searchProducts: (query: string) => FormattedProduct[];
+  getAll: () => FormattedProduct[];
+  onCustomTitleSet: () => void; // New prop
 }
 
 const SearchClient: React.FC<ProductSelectProps> = ({
@@ -22,11 +38,28 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   subcat,
   onCustomAction,
   customActionLabel,
-  inputValue,
-  onInputChange,
   searchProducts,
   getAll,
+  onCustomTitleSet,
 }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [selectedOption, setSelectedOption] = useState<FormattedProduct | null>(
+    value
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customTitleInput, setCustomTitleInput] = useState("");
+  const selectRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (value) {
+      setInputValue(value.label);
+      setSelectedOption(value);
+    } else {
+      setInputValue("");
+      setSelectedOption(null);
+    }
+  }, [value]);
+
   const customAction: FormattedProduct = {
     value: "custom-action",
     label: customActionLabel,
@@ -62,26 +95,66 @@ const SearchClient: React.FC<ProductSelectProps> = ({
     [searchProducts, getAll, subcat, customAction]
   );
 
-  const handleChange = (selectedOption: FormattedProduct | null) => {
-    if (selectedOption && selectedOption.value === "custom-action") {
+  const handleChange = (newValue: FormattedProduct | null) => {
+    if (newValue && newValue.value === "custom-action") {
       onCustomAction(inputValue);
     } else {
-      onChange(selectedOption);
+      setSelectedOption(newValue);
+      onChange(newValue);
+      setInputValue(newValue ? newValue.label : "");
+
+      // Force unfocus
+      setTimeout(() => {
+        if (selectRef.current) {
+          selectRef.current.blur();
+        }
+      }, 0);
     }
+  };
+
+  const handleInputChange = (newValue: string) => {
+    setInputValue(newValue);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const exactMatch = loadOptions(inputValue).then((options) =>
+        options.find(
+          (option) => option.label.toLowerCase() === inputValue.toLowerCase()
+        )
+      );
+      exactMatch.then((match) => {
+        if (!match) {
+          setCustomTitleInput(inputValue);
+          setIsModalOpen(true);
+        } else {
+          handleChange(match);
+        }
+      });
+    }
+  };
+
+  const handleUseCustomTitle = () => {
+    onCustomAction(customTitleInput);
+    onCustomTitleSet();
+    setIsModalOpen(false);
   };
 
   return (
     <div>
       <AsyncSelect
+        ref={selectRef}
         placeholder="Enter A Product Name"
         isClearable
         cacheOptions
         defaultOptions
-        value={value}
+        value={selectedOption}
         inputValue={inputValue}
-        onInputChange={onInputChange}
+        onInputChange={handleInputChange}
         onChange={handleChange}
         loadOptions={loadOptions}
+        onKeyDown={handleKeyDown}
         formatOptionLabel={(option: FormattedProduct) => (
           <div className="flex flex-row items-center gap-3">
             <div>{option.label}</div>
@@ -105,8 +178,25 @@ const SearchClient: React.FC<ProductSelectProps> = ({
             primary25: "#fff",
           },
         })}
-        blurInputOnSelect={false}
       />
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Use Custom Title?</DialogTitle>
+            <DialogDescription>
+              "{customTitleInput}" does not match any existing options. Would
+              you like to use it as a custom title? Be sure to capitalise your
+              title properly.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUseCustomTitle}>Use Custom Title</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

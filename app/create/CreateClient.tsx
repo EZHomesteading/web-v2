@@ -91,6 +91,10 @@ const CreateClient = ({ user, index, uniqueUrl, canReceivePayouts }: Props) => {
       minOrder: null,
     },
   });
+  const handleCustomTitleSet = () => {
+    setImageSrc([]); // Clear the imageSrc array
+    setValue("imageSrc", []); // Clear the imageSrc in the form state
+  };
   const handleCheckboxChange = (checked: boolean, index: number) => {
     setRating((prevRating) => {
       let newRating = [...prevRating];
@@ -626,6 +630,7 @@ const CreateClient = ({ user, index, uniqueUrl, canReceivePayouts }: Props) => {
           buildKeyWords={buildKeyWords}
           isLoading={isLoading}
           subcat={subCategory}
+          onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
         />
       )}
       {step === 3 && (
