@@ -32,6 +32,7 @@ interface NavbarProps {
   isDashboard?: boolean;
   isMarketPage?: boolean;
   isChat?: boolean;
+  isHome?: boolean;
 }
 
 const conNav: NavigationItem[] = [
@@ -148,6 +149,7 @@ const Navbar = ({
   isDashboard = false,
   isMarketPage = false,
   isChat = false,
+  isHome = false,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 

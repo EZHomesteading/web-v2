@@ -8,9 +8,12 @@ interface p {
 }
 const NavbarHome = ({ user }: p) => {
   return (
-    <div className="absolute w-full  ">
+    <div className="absolute w-full z bg-emerald-950/70">
       <Container>
-        <UserMenu user={user} />
+        <div className="sm:flex sm:justify-between sm:items-center">
+          <Logo />
+          <UserMenu user={user} isHome={true} />
+        </div>{" "}
       </Container>
     </div>
   );

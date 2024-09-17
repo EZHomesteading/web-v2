@@ -137,7 +137,6 @@ const UserMenu = ({ user }: Props) => {
       );
     } else if (user.role === UserRole.PRODUCER || user.role === UserRole.COOP) {
       if (isMdOrLarger) {
-        // COOP or PRODUCER on larger screens: Show all 7 icons
         icons.push(
           <CartIcon key="cart" cart={user.cart} />,
           <IconWrapper
@@ -171,7 +170,6 @@ const UserMenu = ({ user }: Props) => {
           />
         );
       } else {
-        // COOP or PRODUCER on smaller screens: Up to 5 icons with priority
         icons.push(
           <IconWrapper
             key="create"
@@ -219,7 +217,6 @@ const UserMenu = ({ user }: Props) => {
       }
     } else if (user.role === UserRole.CONSUMER) {
       if (isMdOrLarger) {
-        // CONSUMER on larger screens: Show all 7 icons
         icons.push(
           <CartIcon key="cart" cart={user.cart} />,
           <IconWrapper
@@ -300,7 +297,6 @@ const UserMenu = ({ user }: Props) => {
       }
     }
 
-    // Always add MenuIcon as the last icon
     icons.push(<MenuIcon key="menu" user={user} />);
 
     return icons.filter(Boolean).slice(0, 7);

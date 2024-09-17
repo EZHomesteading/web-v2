@@ -12,6 +12,7 @@ import SessionStorageManager from "@/app/components/sessionStorageManager";
 // import qs from "query-string";
 import { FinalListing } from "@/actions/getListings";
 import { UserInfo } from "@/next-auth";
+import { Outfit } from "next/font/google";
 
 interface ShopProps {
   listings: FinalListing[];
@@ -24,7 +25,10 @@ interface ShopProps {
   pageNumbers: number[];
   currentPage: number;
 }
-
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+});
 const Shop = ({
   listings,
   user,
@@ -92,7 +96,7 @@ const Shop = ({
         ) : (
           <> */}
         {emptyState || (
-          <div className="pt-2 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+          <div className="pt-[140px] pb-[90px] sm:pb-0 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
             {listings.map((listing: FinalListing, index) => (
               <ListingCard
                 user={user}
@@ -109,7 +113,9 @@ const Shop = ({
             {isPageOutOfRange ? (
               <></>
             ) : (
-              <div className="flex justify-center items-end mt-16">
+              <div
+                className={`flex justify-center items-end my-4 ${outfit.className}`}
+              >
                 <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
                   {/* builds cards dynamically based on data passed in */}
                   {pageNumbers.map((pageNumber, index) => (
@@ -117,8 +123,8 @@ const Shop = ({
                       key={index}
                       className={
                         currentPage === pageNumber
-                          ? "bg-green-600 fw-bold px-2 rounded-md text-black"
-                          : "hover:bg-green-600 px-1 rounded-md"
+                          ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
+                          : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
                       }
                       href={`?page=${pageNumber}`}
                     >
