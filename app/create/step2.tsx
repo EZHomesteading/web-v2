@@ -21,6 +21,7 @@ interface StepTwoProps {
   buildKeyWords: (desc: string) => void;
   isLoading: boolean;
   subcat: string;
+  onCustomTitleSet: () => void;
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({
@@ -37,19 +38,18 @@ const StepTwo: React.FC<StepTwoProps> = ({
   subcat,
   setImageSrc,
   setReview,
+  onCustomTitleSet,
 }) => {
   const [product, setProduct] = useState<FormattedProduct | null>(null);
-  const [searchInput, setSearchInput] = useState("");
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
   const { getAll, searchProducts } = useProducts();
 
   const handleCustomAction = (value: string) => {
     setTitle(value);
-    setSearchInput(value);
     handleCheckboxChange(true);
+    onCustomTitleSet();
   };
-
   const handleCheckboxChange = (checked: boolean) => {
     setCheckbox1Checked(checked);
 
@@ -67,17 +67,15 @@ const StepTwo: React.FC<StepTwoProps> = ({
     if (value) {
       setTitle(value.label);
       setImageSrc(value.photo ? [value.photo] : []);
-      setSearchInput(value.label);
+    } else {
+      setTitle("");
+      setImageSrc([]);
     }
-  };
-
-  const handleInputChange = (newValue: string) => {
-    setSearchInput(newValue);
   };
 
   useEffect(() => {
     if (subcategory === "custom") {
-      setSearchInput(title);
+      setProduct(null);
     }
   }, [subcategory, title]);
 
@@ -95,7 +93,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 maxLength={64}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  setSearchInput(e.target.value);
                 }}
                 value={title}
               />
@@ -125,10 +122,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 onCustomAction={handleCustomAction}
                 customActionLabel="Create a Custom Title"
                 onChange={handleProductChange}
-                inputValue={searchInput}
-                onInputChange={handleInputChange}
                 searchProducts={searchProducts}
                 getAll={getAll}
+                onCustomTitleSet={onCustomTitleSet}
               />
             </div>
           )}

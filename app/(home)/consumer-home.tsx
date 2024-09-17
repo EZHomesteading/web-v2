@@ -6,6 +6,12 @@ import FindListingsComponent from "@/app/components/listings/search-listings";
 // import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
 // import consumer from "@/public/images/website-images/ezhconsumer.webp";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
+import Image from "next/image";
+import homebg from "@/public/images/website-images/ezh-bg5.jpg";
+import { UserInfo } from "@/next-auth";
+interface Props {
+  user: UserInfo;
+}
 
 const footerNavigation = {
   shop: [
@@ -28,44 +34,65 @@ const outfit = Outfit({
   display: "swap",
 });
 
-export default function Home() {
+export default function Home({ user }: Props) {
   const apiKey = process.env.MAPS_KEY;
   return (
     <>
-      <div className="bg-black text-white w-full">
-        <div className="h-screen px-2 py-2 flex flex-col justify-center lg:p-0 lg:flex-row lg:justify-evenly sm:items-center">
-          <header className="py-12">
-            <h1 className="2xl:text-5xl text-lg font-bold tracking-tight ">
+      <div className="bg-black text-white w-full ">
+        <div className="absolute inset-0 ">
+          <Image
+            src={homebg}
+            alt="Home Page"
+            fill
+            className="object-cover 2xl:object-fit"
+            sizes="100vw"
+          />{" "}
+          <div className="absolute inset-0 bg-black bg-opacity-10 "></div>
+        </div>
+        <div className="h-screen z-[3] px-2 py-2 pt-20 flex flex-col items-center   sm:items-center">
+          <header className="py-12 z-[3]">
+            <div className="flex flex-col">
               <div
-                className={`${outfit.className} 2xl:text-4xl text-md font-light`}
+                className={`${outfit.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
               >
+                Welcome {user.name}
+              </div>
+              <div className={` 2xl:text-3xl text-lg font-light `}>
                 Easily Find
               </div>
-              <div className={`${outfit.className} `}>
-                <em>
-                  <span className="text-green-200 tracking font-medium">
+              <div className="flex flex-col sm:flex-row">
+                <div>
+                  <span className="text-green-200 tracking font-medium text-5xl md:text-6xl">
                     Fresh
                   </span>
-                  <span className="text-xl mr-2 font-semibold">, {""}</span>
-                  <span className="text-green-400 font-bold">Local</span>
-                  <span className="text-xl mr-2 tracking-widest">
+                  <span className="text-xl mr-2 font-semibold">, </span>
+                </div>
+                <div>
+                  <span className="text-green-300 font-bold text-5xl md:text-6xl">
+                    Local
+                  </span>
+                  <span className="text-xl mr-2">
                     ,{""} &{""}
                   </span>
-                  <span className="text-green-600">Organic</span>{" "}
-                  <span className="text-xl mr-2 tracking-wide">with{""}</span>
-                </em>
+                </div>
+                <div>
+                  <span className="text-green-400 text-5xl md:text-6xl font-semibold">
+                    Organic
+                  </span>{" "}
+                  <span className="text-xl ml-1 tracking-wide">with </span>
+                </div>
               </div>
-            </h1>
-            <h2 className="2xl:text-5xl text-2xl font-bold tracking-tight mb-2 outfit">
-              <div
-                className={`${outfit.className} text-green-900 2xl:text-6xl text-2xl font-extrabold tracking-tight`}
-              >
-                EZ Homesteading
-              </div>
-            </h2>
-            <p className="2xl:text-lg text-xs mb-2">
-              Find local produce in your area. Join a community of EZH
-              consumers, co-ops, & producers.
+              <h2 className="2xl:text-5xl text-4xl font-bold tracking-tight outfit">
+                <div
+                  className={`${outfit.className} text-green-600 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
+                >
+                  EZ Homesteading
+                </div>
+              </h2>
+            </div>
+            <p className="text-lg text-[.5rem] mb-2 text-extralight">
+              Find produce in your area. Join a community of EZH consumers,
+              co-ops, & producers.
             </p>
             <div className="flex">
               {apiKey && <FindListingsComponent apiKey={apiKey} />}
@@ -118,7 +145,7 @@ export default function Home() {
         {/* </Link> */}
         {/* </section> */}
       </div>
-      <footer aria-labelledby="footer-heading" className="bg-gray-500">
+      <footer aria-labelledby="footer-heading" className="bg-gray-500 z-[3]">
         <h2 id="footer-heading" className="sr-only">
           Footer
         </h2>

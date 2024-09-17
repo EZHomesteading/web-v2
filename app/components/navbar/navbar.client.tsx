@@ -1,5 +1,5 @@
 "use client";
-
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Categories from "./Categories";
 import Container from "../Container";
@@ -279,9 +279,7 @@ const Navbar = ({
           </>
         )}
       </div>
-
       <div className={`${isSmallScreen ? "" : isMarketPage ? "h-32" : ""}`} />
-
       {isSmallScreen && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
           <UserMenu user={user as unknown as navUser} />
@@ -293,7 +291,7 @@ const Navbar = ({
           <Categories user={user as unknown as navUser} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 
