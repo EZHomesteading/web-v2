@@ -286,7 +286,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
             >
               Continue Shopping
             </Link>
-            <div className="justify-center">
+            {/* <div className="justify-center">
               <Button
                 className="bg-red-300 text-black hover:bg-red-600 hover:text-white hover:shadow-lg shadow-md"
                 onClick={handleDelete}
@@ -294,7 +294,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                 <BsTrash2 className="text-lg mr-1" />
                 Empty Cart
               </Button>
-            </div>
+            </div> */}
           </header>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
