@@ -105,7 +105,7 @@ const StepThree: React.FC<StepThreeProps> = ({
             </div>
             <div className="flex justify-between items-center mb-3">
               <div className="font-light">
-                Click the box if this item will be available at a later date.
+                Click the box if this item is not currently available.
               </div>
               <Checkbox
                 id="projectHarvest"
@@ -119,7 +119,7 @@ const StepThree: React.FC<StepThreeProps> = ({
             {projectHarvest && (
               <div className="mb-4">
                 <Label className="text-lg font-light mb-2">
-                  Select Harvest Months
+                  When will it be available?
                 </Label>
                 <div className="grid grid-cols-4 gap-2">
                   {months.map((month) => (
