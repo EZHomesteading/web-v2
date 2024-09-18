@@ -56,6 +56,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
   const [clicked2, setClicked2] = useState(false);
   const [category, setCategory] = useState<Category>("");
   const [subCategory, setSubCategory] = useState<SubCategory>("");
+  const [projectHarvest, setProjectHarvest] = useState(false);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
@@ -83,6 +84,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       title: "",
       description: "",
       shelfLifeDays: 0,
+      projectStock: null,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
@@ -220,6 +222,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       description: description,
       category: category,
       subCategory: subCategory,
+      projectedStock: parseInt(data.projectedStock),
       rating: rating,
       price: formattedPrice,
       imageSrc: imageSrc,
@@ -233,73 +236,13 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       review: review === true ? true : null,
       reports: review === true ? 1 : null,
     };
-
+    console.log(formData);
     try {
       const listingResponse = await axios.post(
         "/api/listing/listings",
         formData
       );
       console.log("Listing created successfully:", listingResponse.data);
-
-      // if (user?.role === UserRole.CONSUMER) {
-      //   try {
-      //     const [stripeResponse, userUpdateResponse] = await Promise.all([
-      //       fetch(
-      //         `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
-      //         {
-      //           method: "POST",
-      //           headers: {
-      //             "Content-Type": "application/json",
-      //           },
-      //           body: JSON.stringify({ userId: user?.id }),
-      //         }
-      //       ),
-      //       axios.post("/api/useractions/update", {
-      //         role: UserRole.PRODUCER,
-      //         hasPickedRole: false,
-      //         url: uniqueUrl,
-      //       }),
-      //     ]);
-
-      //     // Check if the response is ok before trying to parse JSON
-      //     if (!stripeResponse.ok) {
-      //       const textResponse = await stripeResponse.text();
-      //       console.error("Stripe API error response:", textResponse);
-      //       throw new Error(`HTTP error! status: ${stripeResponse.status}`);
-      //     }
-
-      //     let stripeData;
-      //     try {
-      //       stripeData = await stripeResponse.json();
-      //     } catch (jsonError) {
-      //       console.error("Error parsing Stripe response:", jsonError);
-      //       const textResponse = await stripeResponse.text();
-      //       console.error("Raw Stripe response:", textResponse);
-      //       throw new Error("Invalid JSON in Stripe response");
-      //     }
-
-      //     console.log("Stripe connected account created:", stripeData);
-      //     if (stripeData && stripeData.stripeAccountId) {
-      //       console.log("Stripe Account ID:", stripeData.stripeAccountId);
-      //     }
-
-      //     console.log(
-      //       "User role updated successfully:",
-      //       userUpdateResponse.data
-      //     );
-      //   } catch (error) {
-      //     console.error("Error in consumer API calls:", error);
-      //     if (error instanceof Error) {
-      //       console.error("Error message:", error.message);
-      //     }
-      //     // Log the full error object for debugging
-      //     console.error("Full error object:", error);
-
-      //     toast.warning(
-      //       "Some account setup steps failed. Please contact support."
-      //     );
-      //   }
-      // }
 
       // Reset form fields
       [
@@ -316,6 +259,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
         "shelfLifeWeeks",
         "shelfLifeMonths",
         "shelfLifeYears",
+        "projectedStock",
         "sodt",
         "rating",
         "minOrder",
@@ -411,7 +355,8 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
           message: "Please enter a set out/delivery time for your listing",
         },
         {
-          condition: () => parseInt(quantity) <= 0 || !quantity,
+          condition: () =>
+            parseInt(quantity) <= 0 || (projectHarvest === false && !quantity),
           message: "Quantity must be greater than 0",
         },
 
@@ -420,7 +365,8 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
           message: "Please enter a price greater than 0",
         },
         {
-          condition: () => parseInt(minOrder) <= 0 || !quantity,
+          condition: () =>
+            parseInt(minOrder) <= 0 || (projectHarvest === false && !quantity),
           message: "Please enter a minimum order greater than 0",
         },
       ],
@@ -490,6 +436,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
   }
 
   const [postSODT, setPostSODT] = useState(false);
+
   useEffect(() => {
     setPostSODT(false);
   }, [sodt]);
@@ -510,7 +457,16 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       console.error("Error posting SODT:", error);
     }
   };
-
+  const handleProjectHarvestCheckboxChange = (checked: boolean) => {
+    setProjectHarvest(checked);
+    if (checked) {
+      setValue("projectedStock", watch("stock") || "");
+      setValue("stock", "0");
+    } else {
+      setValue("stock", watch("projectedStock") || "");
+      setValue("projectedStock", "1");
+    }
+  };
   const handleSODTCheckboxChange = (checked: boolean, index: number) => {
     if (index === 0) {
       setPostSODT(checked);
@@ -641,6 +597,10 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
           usersodt={user.SODT ?? null}
           commonInputProps={commonInputProps}
           inputProps={inputProps}
+          projectHarvest={projectHarvest}
+          handleProjectHarvestCheckboxChange={
+            handleProjectHarvestCheckboxChange
+          }
         />
       )}
       {step === 4 && (

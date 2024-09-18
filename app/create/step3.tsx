@@ -20,15 +20,17 @@ const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
 });
+
 interface StepThreeProps {
   quantityType: QuantityTypeValue | undefined;
   setQuantityType: (value: QuantityTypeValue | undefined) => void;
   postSODT: boolean;
   handleSODTCheckboxChange: (checked: boolean, index: number) => void;
-
+  handleProjectHarvestCheckboxChange: (checked: boolean, index: number) => void;
   usersodt: number | null;
   commonInputProps: CommonInputProps;
   inputProps: InputProps;
+  projectHarvest: boolean;
 }
 
 const StepThree: React.FC<StepThreeProps> = ({
@@ -36,7 +38,8 @@ const StepThree: React.FC<StepThreeProps> = ({
   setQuantityType,
   postSODT,
   handleSODTCheckboxChange,
-
+  handleProjectHarvestCheckboxChange,
+  projectHarvest,
   usersodt,
   commonInputProps,
   inputProps,
@@ -51,6 +54,16 @@ const StepThree: React.FC<StepThreeProps> = ({
     }
   }
 
+  React.useEffect(() => {
+    if (projectHarvest) {
+      inputProps.setValue("projectedStock", inputProps.watch("stock") || "");
+      inputProps.setValue("stock", "");
+    } else {
+      inputProps.setValue("stock", inputProps.watch("projectedStock") || "");
+      inputProps.setValue("projectedStock", "");
+    }
+  }, [projectHarvest]);
+
   return (
     <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
       <div className="flex flex-row justify-center items-start gap-2">
@@ -62,11 +75,26 @@ const StepThree: React.FC<StepThreeProps> = ({
             <div className="text-xs font-extralight text-neutral-500 mb-2">
               Click the icons or help for more info
             </div>
+            <div className="flex justify-between items-center mb-3">
+              <div className="font-light">
+                Click the box if this item will be available at a later date.
+              </div>
+              <Checkbox
+                id="projectHarvest"
+                checked={projectHarvest}
+                onCheckedChange={(checked: boolean) =>
+                  handleProjectHarvestCheckboxChange(checked, 0)
+                }
+                label=""
+              />
+            </div>
             <div className="relative my-2">
               <Input
                 {...commonInputProps}
-                id="stock"
-                label="Quantity"
+                id={projectHarvest ? "projectedStock" : "stock"}
+                label={
+                  projectHarvest ? "Expected Quantity Per Day" : "Quantity"
+                }
                 type="number"
                 maxlength={6}
                 inputmode="numeric"
@@ -76,6 +104,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                 className="text-neutral-700 absolute top-5 right-2"
               />
             </div>
+
             <div className="relative">
               <UnitSelect
                 value={quantityType}
