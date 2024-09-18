@@ -34,13 +34,13 @@ const NavbarHome = async ({ user }: p) => {
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
   return (
-    <div className="absolute w-full z-[10]  ">
+
+    <div className="absolute w-full z bg-emerald-950/70">
       <Container>
-        <UserMenu
-          user={user}
-          canReceivePayouts={canReceivePayouts}
-          uniqueUrl={uniqueUrl}
-        />
+        <div className="sm:flex sm:justify-between sm:items-center">
+          <Logo />
+          <UserMenu user={user} isHome={true} />
+        </div>{" "}
       </Container>
     </div>
   );

@@ -27,7 +27,7 @@ const o = Outfit({
   display: "swap",
 });
 interface p {
-  role?: UserRole | undefined;
+  role?: string;
 }
 interface NavigationItem {
   name: string;

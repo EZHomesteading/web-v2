@@ -116,6 +116,7 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/google.maps": "^3.55.4",

@@ -151,7 +151,7 @@ const vendorNav: NavigationItem[] = [
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-const Navbar = ({ user }: p) => {
+const NavbarDashboard = ({ user }: p) => {
   return (
     <div className="sheet py-2 xl: p-0">
       <div className="relative lg:absolute lg:top-5 lg:right-0 w-full z-10">
@@ -234,4 +234,4 @@ const Navbar = ({ user }: p) => {
   );
 };
 
-export default Navbar;
+export default NavbarDashboard;

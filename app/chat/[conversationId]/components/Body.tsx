@@ -272,9 +272,9 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-12 mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} mt-[45px] h-6 sm:mt-[110px] px-2 sm:px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
-        <div className="flex items-center gap-x-1 text-xs text-neutral-600">
+        <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
             {order?.listingIds?.length} {item}
           </div>
@@ -289,7 +289,10 @@ const Body: React.FC<BodyProps> = ({
           <div className="text-xs">Total: ${order?.totalPrice}</div>
         </div>
         <Popover>
-          <PopoverTrigger asChild className=" absolute right-4 bottom-12">
+          <PopoverTrigger
+            asChild
+            className=" absolute right-4 bottom-[1.75rem] sm:bottom-5"
+          >
             <Button>More Options</Button>
           </PopoverTrigger>
           <PopoverContent className={`${outfit.className} mr-9  `}>
@@ -492,7 +495,7 @@ const Body: React.FC<BodyProps> = ({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="pb-[150px]"></div>
+      <div className="pb-[65px] sm:pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}

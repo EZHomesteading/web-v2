@@ -131,7 +131,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-2 px-3 hover:text-neutral-800 transition cursor-pointer ${
+      className={`flex flex-col items-center justify-center gap-2 px-3 pt-2 hover:text-neutral-800 transition cursor-pointer ${
         selected ? "border-b-neutral-800" : "border-transparent"
       } ${selected ? "text-neutral-800" : "text-neutral-500"}
       `}
@@ -277,7 +277,7 @@ const Categories = ({ user }: Props) => {
     <Container>
       {isMarket ? (
         <div className="flex items-center justify-center">
-          <div>
+          <div className="pt-2">
             <Filters user={user} />
           </div>
           <div className="w-full p-0 sm:pt-4">
