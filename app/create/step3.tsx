@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/app/components/ui/label";
 import {
   Select,
@@ -15,6 +15,12 @@ import { CommonInputProps, InputProps } from "./create.types";
 import { Outfit } from "next/font/google";
 import { PiBasketLight, PiRulerThin } from "react-icons/pi";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  FieldValues,
+  UseFormSetValue,
+} from "react-hook-form";
 
 const outfit = Outfit({
   display: "swap",
@@ -31,6 +37,9 @@ interface StepThreeProps {
   commonInputProps: CommonInputProps;
   inputProps: InputProps;
   projectHarvest: boolean;
+  setValue: UseFormSetValue<FieldValues>;
+  harvestDates: string[];
+  setHarvestDates: (newDates: string[]) => void;
 }
 
 const StepThree: React.FC<StepThreeProps> = ({
@@ -43,7 +52,36 @@ const StepThree: React.FC<StepThreeProps> = ({
   usersodt,
   commonInputProps,
   inputProps,
+  setValue,
 }) => {
+  const [harvestDates, setHarvestDates] = useState<string[]>([]);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const toggleMonth = (month: string) => {
+    setHarvestDates((prevDates) => {
+      const newDates = prevDates.includes(month)
+        ? prevDates.filter((date) => date !== month)
+        : [...prevDates, month];
+      setValue("harvestDates", newDates);
+      console.log(newDates);
+      return newDates;
+    });
+  };
+
   let label = "Price";
 
   if (quantityType) {
@@ -53,16 +91,6 @@ const StepThree: React.FC<StepThreeProps> = ({
       label = `Price per ${quantityType.value}`;
     }
   }
-
-  React.useEffect(() => {
-    if (projectHarvest) {
-      inputProps.setValue("projectedStock", inputProps.watch("stock") || "");
-      inputProps.setValue("stock", "");
-    } else {
-      inputProps.setValue("stock", inputProps.watch("projectedStock") || "");
-      inputProps.setValue("projectedStock", "");
-    }
-  }, [projectHarvest]);
 
   return (
     <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
@@ -88,6 +116,28 @@ const StepThree: React.FC<StepThreeProps> = ({
                 label=""
               />
             </div>
+            {projectHarvest && (
+              <div className="mb-4">
+                <Label className="text-lg font-light mb-2">
+                  Select Harvest Months
+                </Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {months.map((month) => (
+                    <button
+                      key={month}
+                      onClick={() => toggleMonth(month)}
+                      className={`p-2 text-sm border rounded ${
+                        harvestDates.includes(month)
+                          ? "bg-black text-white"
+                          : "bg-white text-black"
+                      }`}
+                    >
+                      {month}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="relative my-2">
               <Input
                 {...commonInputProps}

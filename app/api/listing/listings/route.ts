@@ -23,6 +23,9 @@ export async function POST(request: Request) {
     shelfLife,
     minOrder,
     location,
+    harvestDates,
+    projectedStock,
+    harvestFeatures,
     price,
     subCategory,
     rating,
@@ -35,7 +38,7 @@ export async function POST(request: Request) {
       NextResponse.error();
     }
   });
-  if (review !== null) {
+  if (review !== null && harvestFeatures !== true) {
     const listing = await prisma.listing.create({
       data: {
         keyWords,
@@ -58,6 +61,27 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json(listing);
+  } else if (harvestFeatures !== true) {
+    const listing = await prisma.listing.create({
+      data: {
+        keyWords,
+        title,
+        description,
+        SODT,
+        imageSrc,
+        category,
+        quantityType,
+        stock,
+        shelfLife,
+        subCategory,
+        price,
+        minOrder,
+        location,
+        rating,
+        userId: user.id!,
+      },
+    });
+    return NextResponse.json(listing);
   } else {
     const listing = await prisma.listing.create({
       data: {
@@ -68,6 +92,9 @@ export async function POST(request: Request) {
         imageSrc,
         category,
         quantityType,
+        harvestDates,
+        projectedStock,
+        harvestFeatures,
         stock,
         shelfLife,
         subCategory,

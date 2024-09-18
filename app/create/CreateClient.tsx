@@ -57,6 +57,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
   const [category, setCategory] = useState<Category>("");
   const [subCategory, setSubCategory] = useState<SubCategory>("");
   const [projectHarvest, setProjectHarvest] = useState(false);
+  const [harvestDates, setHarvestDates] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
@@ -65,7 +66,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
   if (user.SODT && user.SODT !== null) {
     usersodt = user.SODT;
   }
-  let {
+  const {
     register,
     setValue,
     handleSubmit,
@@ -77,19 +78,20 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       category: "",
       subCategory: "",
       location: null,
-      stock: null,
+      stock: "",
+      projectedStock: "",
       quantityType: "",
       imageSrc: [],
-      price: null,
+      price: "",
       title: "",
       description: "",
       shelfLifeDays: 0,
-      projectStock: null,
       shelfLifeWeeks: 0,
       shelfLifeMonths: 0,
       shelfLifeYears: 0,
       rating: [],
-      minOrder: null,
+      minOrder: "",
+      harvestDates: [],
     },
   });
   const handleCustomTitleSet = () => {
@@ -222,11 +224,13 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       description: description,
       category: category,
       subCategory: subCategory,
-      projectedStock: parseInt(data.projectedStock),
+      projectedStock: projectHarvest ? parseInt(data.projectedStock) : null,
+      harvestFeatures: projectHarvest ? true : null,
+      harvestDates: projectHarvest ? data.harvestDates : [],
       rating: rating,
       price: formattedPrice,
       imageSrc: imageSrc,
-      stock: parseInt(data.stock, 10),
+      stock: projectHarvest ? 0 : parseInt(data.stock, 10),
       shelfLife: shelfLife,
       quantityType:
         data.quantityType === "none" || data.quantityType === "each"
@@ -260,6 +264,7 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
         "shelfLifeMonths",
         "shelfLifeYears",
         "projectedStock",
+        "harvestDates",
         "sodt",
         "rating",
         "minOrder",
@@ -347,7 +352,8 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
           message: "Please enter a unit for your listing",
         },
         {
-          condition: () => parseInt(minOrder) > parseInt(quantity),
+          condition: () =>
+            projectHarvest === false && parseInt(minOrder) > parseInt(quantity),
           message: "Minimum order cannot be more than your quantity",
         },
         {
@@ -464,7 +470,8 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
       setValue("stock", "0");
     } else {
       setValue("stock", watch("projectedStock") || "");
-      setValue("projectedStock", "1");
+      setValue("projectedStock", "");
+      setValue("harvestDates", []);
     }
   };
   const handleSODTCheckboxChange = (checked: boolean, index: number) => {
@@ -601,6 +608,12 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
           handleProjectHarvestCheckboxChange={
             handleProjectHarvestCheckboxChange
           }
+          setValue={setValue}
+          harvestDates={harvestDates}
+          setHarvestDates={(newDates: string[]) => {
+            setHarvestDates(newDates);
+            setValue("harvestDates", newDates);
+          }}
         />
       )}
       {step === 4 && (
