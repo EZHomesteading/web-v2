@@ -11,7 +11,7 @@ import {
 import { Progress } from "@/app/components/ui/progress";
 import { Outfit } from "next/font/google";
 import AnimatedResultBar from "./progress-bar.animated";
-
+import DashboardSVG from "@/app/components/navbar/icons/dashboard.svg";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",

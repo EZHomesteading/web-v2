@@ -15,7 +15,7 @@ export default async function RootLayout({
   return (
     <>
       <Navbar user={user as unknown as NavUser} />
-      <div className=" pt-25">{children}</div>
+      <div className="pt-25">{children}</div>
     </>
   );
 }

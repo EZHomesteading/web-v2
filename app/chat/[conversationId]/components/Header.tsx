@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, order, reviews }) => {
   return (
     <>
       <div
-        className={`${outfit.className} w-full lg:max-w-[calc(100%-320px)] mt-[75px] z-[10] bg-[#F1EFE7]  fixed 
+        className={`${outfit.className} h-12 w-full lg:max-w-[calc(100%-320px)] pt-1 sm:mt-[75px] z-[10] bg-[#F1EFE7]  fixed 
         flex 
         border-b-[1px]
         pb-2
