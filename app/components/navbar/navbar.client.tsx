@@ -33,6 +33,8 @@ interface NavbarProps {
   isMarketPage?: boolean;
   isChat?: boolean;
   isHome?: boolean;
+  canReceivePayouts: boolean;
+  uniqueUrl: string;
 }
 
 const conNav: NavigationItem[] = [
@@ -150,7 +152,11 @@ const Navbar = ({
   isMarketPage = false,
   isChat = false,
   isHome = false,
+  canReceivePayouts,
+  uniqueUrl,
 }: NavbarProps) => {
+
+
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -248,7 +254,9 @@ const Navbar = ({
               <div className="flex items-center justify-between pt-2">
                 {!isDashboard && <Logo />}
                 {isDashboard && renderDashboardNav()}
-                <UserMenu user={user as unknown as navUser} />
+                <UserMenu user={user as unknown as navUser} canReceivePayouts={canReceivePayouts}
+                  uniqueUrl={uniqueUrl}
+                />
               </div>
             </Container>
             {isMarketPage && (
@@ -282,7 +290,11 @@ const Navbar = ({
       <div className={`${isSmallScreen ? "" : isMarketPage ? "h-32" : ""}`} />
       {isSmallScreen && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
-          <UserMenu user={user as unknown as navUser} />
+          <UserMenu
+            user={user as unknown as navUser}
+            canReceivePayouts={canReceivePayouts}
+            uniqueUrl={uniqueUrl}
+          />
         </div>
       )}
 

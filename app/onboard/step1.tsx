@@ -54,7 +54,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                     <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                       <div
                         onClick={() => {
-                          stepHandler(10);
+                          stepHandler(11);
                         }}
                         className="flex justify-between mx-5 items-center hover:cursor-pointer"
                       >
@@ -76,7 +76,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(3);
+                        stepHandler(4);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -93,7 +93,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(4);
+                        stepHandler(5);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -114,7 +114,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(6);
+                        stepHandler(7);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -130,7 +130,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(7);
+                        stepHandler(8);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >

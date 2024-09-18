@@ -34,10 +34,9 @@ interface Props {
   canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
-  uniqueUrl: string;
 }
 
-const CreateClient = ({ user, index, uniqueUrl, canReceivePayouts }: Props) => {
+const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -242,65 +241,65 @@ const CreateClient = ({ user, index, uniqueUrl, canReceivePayouts }: Props) => {
       );
       console.log("Listing created successfully:", listingResponse.data);
 
-      if (user?.role === UserRole.CONSUMER) {
-        try {
-          const [stripeResponse, userUpdateResponse] = await Promise.all([
-            fetch(
-              `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ userId: user?.id }),
-              }
-            ),
-            axios.post("/api/useractions/update", {
-              role: UserRole.PRODUCER,
-              hasPickedRole: false,
-              url: uniqueUrl,
-            }),
-          ]);
+      // if (user?.role === UserRole.CONSUMER) {
+      //   try {
+      //     const [stripeResponse, userUpdateResponse] = await Promise.all([
+      //       fetch(
+      //         `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+      //         {
+      //           method: "POST",
+      //           headers: {
+      //             "Content-Type": "application/json",
+      //           },
+      //           body: JSON.stringify({ userId: user?.id }),
+      //         }
+      //       ),
+      //       axios.post("/api/useractions/update", {
+      //         role: UserRole.PRODUCER,
+      //         hasPickedRole: false,
+      //         url: uniqueUrl,
+      //       }),
+      //     ]);
 
-          // Check if the response is ok before trying to parse JSON
-          if (!stripeResponse.ok) {
-            const textResponse = await stripeResponse.text();
-            console.error("Stripe API error response:", textResponse);
-            throw new Error(`HTTP error! status: ${stripeResponse.status}`);
-          }
+      //     // Check if the response is ok before trying to parse JSON
+      //     if (!stripeResponse.ok) {
+      //       const textResponse = await stripeResponse.text();
+      //       console.error("Stripe API error response:", textResponse);
+      //       throw new Error(`HTTP error! status: ${stripeResponse.status}`);
+      //     }
 
-          let stripeData;
-          try {
-            stripeData = await stripeResponse.json();
-          } catch (jsonError) {
-            console.error("Error parsing Stripe response:", jsonError);
-            const textResponse = await stripeResponse.text();
-            console.error("Raw Stripe response:", textResponse);
-            throw new Error("Invalid JSON in Stripe response");
-          }
+      //     let stripeData;
+      //     try {
+      //       stripeData = await stripeResponse.json();
+      //     } catch (jsonError) {
+      //       console.error("Error parsing Stripe response:", jsonError);
+      //       const textResponse = await stripeResponse.text();
+      //       console.error("Raw Stripe response:", textResponse);
+      //       throw new Error("Invalid JSON in Stripe response");
+      //     }
 
-          console.log("Stripe connected account created:", stripeData);
-          if (stripeData && stripeData.stripeAccountId) {
-            console.log("Stripe Account ID:", stripeData.stripeAccountId);
-          }
+      //     console.log("Stripe connected account created:", stripeData);
+      //     if (stripeData && stripeData.stripeAccountId) {
+      //       console.log("Stripe Account ID:", stripeData.stripeAccountId);
+      //     }
 
-          console.log(
-            "User role updated successfully:",
-            userUpdateResponse.data
-          );
-        } catch (error) {
-          console.error("Error in consumer API calls:", error);
-          if (error instanceof Error) {
-            console.error("Error message:", error.message);
-          }
-          // Log the full error object for debugging
-          console.error("Full error object:", error);
+      //     console.log(
+      //       "User role updated successfully:",
+      //       userUpdateResponse.data
+      //     );
+      //   } catch (error) {
+      //     console.error("Error in consumer API calls:", error);
+      //     if (error instanceof Error) {
+      //       console.error("Error message:", error.message);
+      //     }
+      //     // Log the full error object for debugging
+      //     console.error("Full error object:", error);
 
-          toast.warning(
-            "Some account setup steps failed. Please contact support."
-          );
-        }
-      }
+      //     toast.warning(
+      //       "Some account setup steps failed. Please contact support."
+      //     );
+      //   }
+      // }
 
       // Reset form fields
       [
