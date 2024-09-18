@@ -155,8 +155,6 @@ const Navbar = ({
   canReceivePayouts,
   uniqueUrl,
 }: NavbarProps) => {
-
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -242,7 +240,7 @@ const Navbar = ({
   );
 
   return (
-    <>
+    <div>
       <div
         className={`fixed top-0 left-0 right-0 ${
           isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
@@ -254,7 +252,9 @@ const Navbar = ({
               <div className="flex items-center justify-between pt-2">
                 {!isDashboard && <Logo />}
                 {isDashboard && renderDashboardNav()}
-                <UserMenu user={user as unknown as navUser} canReceivePayouts={canReceivePayouts}
+                <UserMenu
+                  user={user as unknown as navUser}
+                  canReceivePayouts={canReceivePayouts}
                   uniqueUrl={uniqueUrl}
                 />
               </div>
