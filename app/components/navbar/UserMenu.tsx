@@ -18,7 +18,6 @@ import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import {
   PiChartBarThin,
-  PiHeartThin,
   PiHouseThin,
   PiMapTrifoldThin,
   PiPersonSimpleRunThin,
@@ -53,7 +52,6 @@ interface Props {
   uniqueUrl: string;
 }
 const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
-
   const pathname = usePathname();
   const white = pathname === "/";
   const router = useRouter();
@@ -388,7 +386,6 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
   const MenuIcon: React.FC<{ user?: navUser }> = ({ user }) => (
     <>
       <SheetTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
-
         <IconWrapper
           key="menu"
           icon={CiMenuFries}

@@ -3,11 +3,10 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Input from "../../components/Input";
+import Input from "./input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
 import LocationSearchInput from "@/app/components/map/LocationSearchInputSettings";
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
 import {
@@ -24,6 +23,7 @@ import { useRouter } from "next/navigation";
 import Avatar from "@/app/components/Avatar";
 import { UploadButton } from "@/utils/uploadthing";
 import PhoneInput from "react-phone-number-input";
+import AccountCard from "./account-card";
 
 interface Props {
   apiKey: string;
@@ -31,6 +31,7 @@ interface Props {
 const Page = ({ apiKey }: Props) => {
   const user = useCurrentUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [editingCard, setEditingCard] = useState<string | null>(null);
   const router = useRouter();
   let fullAddress =
     user?.location && Object.entries(user.location).length > 0
@@ -114,7 +115,6 @@ const Page = ({ apiKey }: Props) => {
           if (datas.success === "Password updated!") {
             toast.error("Password updated!");
           }
-          // return;
         }
       } else {
         toast.error("passwords do not match");
@@ -225,211 +225,140 @@ const Page = ({ apiKey }: Props) => {
   };
   const [image, setImage] = useState(user?.image);
   return (
-    <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
-      <h1 className="sr-only">Account Settings</h1>
+    <div className="flex flex-col px-2 pt-5 mb-8 bg-white h-screen">
+      <h1 className="sr-only">Personal Info</h1>
       <header className="flex flex-row justify-between items-center mt-1">
-        <h2 className="text-base font-semibold leading-7">Account Settings</h2>
-
-        <Button
-          type="submit"
-          onClick={handleSubmit(onSubmit)}
-          className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-        >
-          Save Changes
-        </Button>
+        <h2 className="text-2xl font-medium">Personal Info</h2>
       </header>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
-            <div>
-              <h1 className="text-lg lg:text-3xl">Profile Image</h1>
-              <ul>
-                <li>This is your current profile image.</li>
-                <li>
-                  Click on the image to upload a custom one from your device.
-                  Press save after clicking upload even if the image doesnt
-                  change at first.
-                </li>
-              </ul>
-            </div>{" "}
-            <Avatar image={image} />
-          </div>
-
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            A profile picture is optional but we recommend it.
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res: { url: string }[]) => {
-                setImage(res[0].url);
-              }}
-              onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
-              }}
-              className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
-              content={{
-                button({ ready }) {
-                  if (ready) return <div>Upload Profile Image</div>;
-                  return "Getting ready...";
-                },
-              }}
-            />
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h2 className="lg:text-3xl text-lg">Username</h2>
+      {/* <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
+        <div>
+          <h1 className="text-lg ">Profile Image</h1>
           <ul>
-            <li>This name is unique to you & visible to other users.</li>
-            <li>Type in a new username to change it.</li>
+            <li>This is your current profile image.</li>
+            <li>
+              Click on the image to upload a custom one from your device. Press
+              save after clicking upload even if the image doesnt change at
+              first.
+            </li>
           </ul>
-          <div className="flex justify-end">
-            <Input
-              id="name"
-              label="Username"
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              isUsername={true}
-              required
-            />
-          </div>
+        </div>{" "}
+        <Avatar image={image} />
+      </div>
+      A profile picture is optional but we recommend it.
+      <UploadButton
+        endpoint="imageUploader"
+        onClientUploadComplete={(res: { url: string }[]) => {
+          setImage(res[0].url);
+        }}
+        onUploadError={(error: Error) => {
+          alert(`ERROR! ${error.message}`);
+        }}
+        className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
+        content={{
+          button({ ready }) {
+            if (ready) return <div>Upload Profile Image</div>;
+            return "Getting ready...";
+          },
+        }}
+      /> */}
+      <AccountCard
+        title="Username"
+        info={user?.name || "No Username Saved"}
+        onSave={handleSubmit(onSubmit)}
+        isEditing={editingCard === "Username"}
+        onEditStart={() => setEditingCard("Username")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "Username"}
+      >
+        <Input
+          id="name"
+          label="Username"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          isUsername={true}
+          required
+        />
+      </AccountCard>
+      <AccountCard
+        title="Email"
+        info={user?.email || "No Email Saved"}
+        onSave={() => handleSave("Email")}
+        isEditing={editingCard === "Email"}
+        onEditStart={() => setEditingCard("Email")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "Email"}
+      >
+        <Input
+          id="email"
+          label="Email"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          isEmail={true}
+          required
+        />
+      </AccountCard>
 
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            A username is required.
-          </CardFooter>
-        </CardContent>
-      </Card>
+      <AccountCard
+        title="Phone Number"
+        info={user?.phoneNumber || "No Phone Number Saved"}
+        onSave={() => handleSave("phoneNumber")}
+        isEditing={editingCard === "phoneNumber"}
+        onEditStart={() => setEditingCard("phoneNumber")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "phoneNumber"}
+      >
+        <PhoneInput
+          className="bg-white rounded-md "
+          id="phoneNumber"
+          disabled={isLoading}
+          placeholder="(743) 216-9078"
+          value={user?.phoneNumber as any}
+          onChange={(value) => setValue("phoneNumber", value)}
+          format="(###) ###-####"
+          style={{
+            backgroundColor: "inherit",
+          }}
+          international={false}
+          defaultCountry="US"
+          countrySelectProps={{ disabled: true }}
+          maxLength={14}
+        />
+      </AccountCard>
 
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h3 className="text-lg lg:text-3xl">Email Address</h3>
-          <ul>
-            <li>This email address is unique to your account.</li>
-            <li>Type in a new email to change it.</li>
-          </ul>
-          <div className="justify-end flex">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6"
-            ></label>
-
-            <Input
-              id="email"
-              label="Email address"
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              isEmail={true}
-              required
-            />
-          </div>
-
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            An email address is required.
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h4 className="text-lg lg:text-3xl">Phone number</h4>
-          <ul>
-            <li>Type in a new phone number to change it.</li>
-          </ul>
-          <div className="flex justify-end">
-            <label
-              htmlFor="phoneNumber"
-              className="block text-sm font-medium leading-6"
-            ></label>
-
-            <PhoneInput
-              className="bg-white rounded-lg p-4 right-4 "
-              id="phoneNumber"
-              disabled={isLoading}
-              placeholder="(743) 216-9078"
-              value={user?.phoneNumber as any}
-              onChange={(value) => setValue("phoneNumber", value)}
-              format="(###) ###-####"
-              style={{
-                backgroundColor: "inherit",
-              }}
-              international={false}
-              defaultCountry="US"
-              countrySelectProps={{ disabled: true }}
-              maxLength={14}
-            />
-          </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            {user?.role == UserRole.COOP || user?.role == UserRole.PRODUCER ? (
-              <>A phone number is required for your account type.</>
-            ) : (
-              <>A phone number is not required.</>
-            )}
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        {user?.role === "COOP" ? null : (
-          <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-            <h5 className="text-lg lg:text-2xl">Address</h5>
-            <ul>
-              <li>
-                {user?.role == UserRole.PRODUCER ? (
-                  <>This is your default selling location.</>
-                ) : (
-                  <></>
-                )}
-              </li>
-            </ul>
-            <div>
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium leading-6"
-              >
-                {!user?.location ||
-                Object.entries(user.location).length === 0 ? (
-                  <>You do not currently have a saved address</>
-                ) : (
-                  `Your current address is${" "}${
-                    user?.location[0]?.address[0]
-                  }, ${user?.location[0]?.address[1]},${" "}
-      ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`
-                )}
-              </label>
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium leading-6"
-              >
-                To change this, enter a new address
-              </label>
-              <div className="flex justify-end">
-                <LocationSearchInput
-                  apiKey={apiKey}
-                  address={watch("address")}
-                  setAddress={(address: any) => setValue("address", address)}
-                  onAddressParsed={handleAddressSelect}
-                />
-              </div>
-            </div>
-            <CardFooter className="flex justify-between m-0 p-0 pt-2">
-              {user?.role == UserRole.PRODUCER ? (
-                <>
-                  An address is required for your account type to prevent
-                  fradulence.
-                </>
-              ) : (
-                <>
-                  An address is not required for your account type, but will
-                  improve your experience on EZH.
-                </>
-              )}
-            </CardFooter>
-          </CardContent>
-        )}
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h2 className="lg:text-3xl text-lg">Change Password</h2>
+      <AccountCard
+        title="Address"
+        info={fullAddress || "No address saved"}
+        onSave={() => handleSave("Address")}
+        isEditing={editingCard === "Address"}
+        onEditStart={() => setEditingCard("Address")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "Address"}
+      >
+        <>
+          <LocationSearchInput
+            apiKey={apiKey}
+            address={watch("address")}
+            setAddress={(address: any) => setValue("address", address)}
+            onAddressParsed={handleAddressSelect}
+          />
+        </>
+      </AccountCard>
+      <AccountCard
+        title="Profile Image"
+        info=""
+        onSave={() => handleSave("Image")}
+        isEditing={editingCard === "Image"}
+        onEditStart={() => setEditingCard("Image")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "Image"}
+      >
+        <></>
+      </AccountCard>
+      {/* <div>
+        <div className="flex flex-col sheet  border-none shadow-lg w-full">
+          <h2 className=" text-lg">Change Password</h2>
           <ul>
             <li>Think your account is compromised?</li>
             <li>Change your password.</li>
@@ -466,13 +395,11 @@ const Page = ({ apiKey }: Props) => {
               </Button>
             </div>
           </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
-            This is not required to update other information.
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="sheet shadow-lg">
+          This is not required to update other information.
+        </div>
+      </div> */}
+      {/* <div>
+        <div className="sheet shadow-lg">
           <div className="text-base font-semibold leading-7">
             Delete account
           </div>
@@ -508,8 +435,8 @@ const Page = ({ apiKey }: Props) => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </CardContent>
-      </Card>
+        </div>
+      </div> */}
     </div>
   );
 };

@@ -155,8 +155,6 @@ const Navbar = ({
   canReceivePayouts,
   uniqueUrl,
 }: NavbarProps) => {
-
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -171,80 +169,81 @@ const Navbar = ({
   }, []);
 
   const renderDashboardNav = () => (
-    <Sheet>
-      <SheetTrigger
-        className={`
-    ${isSmallScreen ? "fixed left-0 top-[18vh] w-fit" : "sm:hidden "}
-    transition-transform hover:scale-105 focus:scale-105 focus:outline-none
-  `}
-      >
-        <TbLayoutSidebarRightCollapse
-          className={`${
-            isSmallScreen
-              ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
-              : "z border-none"
-          }`}
-        />
-      </SheetTrigger>
+    //   <Sheet>
+    //     <SheetTrigger
+    //       className={`
+    //   ${isSmallScreen ? "fixed left-0 z top-[18vh] w-fit" : "sm:hidden "}
+    //   transition-transform hover:scale-105 focus:scale-105 focus:outline-none
+    // `}
+    //     >
+    //       <TbLayoutSidebarRightCollapse
+    //         className={`${
+    //           isSmallScreen
+    //             ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
+    //             : "z border-none"
+    //         }`}
+    //       />
+    //     </SheetTrigger>
 
-      <SheetContent side="left">
-        <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
-          <nav className="flex flex-2 flex-col">
-            <ul role="list" className="flex flex-2 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="mx-3 space-y-1">
-                  {user?.role !== UserRole.CONSUMER
-                    ? vendorNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))
-                    : conNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </SheetContent>
-    </Sheet>
+    //     <SheetContent side="left">
+    //       <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
+    //         <nav className="flex flex-2 flex-col">
+    //           <ul role="list" className="flex flex-2 flex-col gap-y-7">
+    //             <li>
+    //               <ul role="list" className="mx-3 space-y-1">
+    //                 {user?.role !== UserRole.CONSUMER
+    //                   ? vendorNav.map((item) => (
+    //                       <li key={item.name}>
+    //                         <a
+    //                           href={item.href}
+    //                           className={classNames(
+    //                             item.current
+    //                               ? "bg-gray-81"
+    //                               : "text-gray-401 hover:text-white hover:bg-gray-800",
+    //                             "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+    //                           )}
+    //                         >
+    //                           <item.icon
+    //                             className="h-7 w-6 shrink-0"
+    //                             aria-hidden="true"
+    //                           />
+    //                           {item.name}
+    //                         </a>
+    //                       </li>
+    //                     ))
+    //                   : conNav.map((item) => (
+    //                       <li key={item.name}>
+    //                         <a
+    //                           href={item.href}
+    //                           className={classNames(
+    //                             item.current
+    //                               ? "bg-gray-81"
+    //                               : "text-gray-401 hover:text-white hover:bg-gray-800",
+    //                             "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+    //                           )}
+    //                         >
+    //                           <item.icon
+    //                             className="h-7 w-6 shrink-0"
+    //                             aria-hidden="true"
+    //                           />
+    //                           {item.name}
+    //                         </a>
+    //                       </li>
+    //                     ))}
+    //               </ul>
+    //             </li>
+    //           </ul>
+    //         </nav>
+    //       </div>
+    //     </SheetContent>
+    //   </Sheet>
+    <></>
   );
 
   return (
     <>
       <div
-        className={`fixed top-0 left-0 right-0 ${
+        className={`fixed z top-0 left-0 right-0 ${
           isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
         }  z-10`}
       >
@@ -254,7 +253,9 @@ const Navbar = ({
               <div className="flex items-center justify-between pt-2">
                 {!isDashboard && <Logo />}
                 {isDashboard && renderDashboardNav()}
-                <UserMenu user={user as unknown as navUser} canReceivePayouts={canReceivePayouts}
+                <UserMenu
+                  user={user}
+                  canReceivePayouts={canReceivePayouts}
                   uniqueUrl={uniqueUrl}
                 />
               </div>
@@ -278,7 +279,7 @@ const Navbar = ({
                         {apiKey && <FindListingsComponent apiKey={apiKey} />}
                       </div>
                     </div>
-                    <Categories user={user as unknown as navUser} />
+                    <Categories user={user} />
                   </div>
                 </Container>
               </>
@@ -291,7 +292,7 @@ const Navbar = ({
       {isSmallScreen && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
           <UserMenu
-            user={user as unknown as navUser}
+            user={user}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
           />
@@ -300,10 +301,10 @@ const Navbar = ({
 
       {!isSmallScreen && isMarketPage && (
         <div className="mt-10">
-          <Categories user={user as unknown as navUser} />
+          <Categories user={user} />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
