@@ -156,7 +156,7 @@ const Navbar = ({
   uniqueUrl,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-
+  console.log(canReceivePayouts);
   useEffect(() => {
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 600 && window.innerHeight < 900);
@@ -238,69 +238,94 @@ const Navbar = ({
       </SheetContent>
     </Sheet>
   );
-
-  return (
-    <div>
-      <div
-        className={`fixed top-0 left-0 right-0 ${
-          isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
-        }  z-10`}
-      >
-        {!isSmallScreen ? (
-          <div>
-            <Container>
-              <div className="flex items-center justify-between pt-2">
-                {!isDashboard && <Logo />}
-                {isDashboard && renderDashboardNav()}
-                <UserMenu
-                  user={user as unknown as navUser}
-                  canReceivePayouts={canReceivePayouts}
-                  uniqueUrl={uniqueUrl}
-                />
-              </div>
-            </Container>
-            {isMarketPage && (
-              <div className="w-full relative border-b-[1px] py-6">
-                <div className="flex justify-center">
-                  {apiKey && <FindListingsComponent apiKey={apiKey} />}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <>
-            {isMarketPage && (
-              <>
-                <Container>
-                  <div className="py-2">
-                    <div className="flex justify-center mb-2">
-                      <div className="w-full max-w-2xl">
-                        {apiKey && <FindListingsComponent apiKey={apiKey} />}
-                      </div>
-                    </div>
-                    <Categories user={user as unknown as navUser} />
-                  </div>
-                </Container>
-              </>
-            )}
-            {isDashboard && renderDashboardNav()}
-          </>
-        )}
-      </div>
-      <div className={`${isSmallScreen ? "" : isMarketPage ? "h-32" : ""}`} />
-      {isSmallScreen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
+  const renderHomeNav = () => (
+    <div className="absolute w-full z-[10] bg-emerald-950/70">
+      <Container>
+        <div className="sm:flex sm:justify-between sm:items-center">
+          <Logo />
           <UserMenu
-            user={user as unknown as navUser}
+            user={user}
+            isHome={true}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
           />
-        </div>
-      )}
+        </div>{" "}
+      </Container>
+    </div>
+  );
+  return (
+    <div>
+      {isHome ? (
+        renderHomeNav()
+      ) : (
+        <div>
+          <div
+            className={`fixed top-0 left-0 right-0 ${
+              isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
+            }  z-10`}
+          >
+            {!isSmallScreen ? (
+              <div>
+                <Container>
+                  <div className="flex items-center justify-between py-3 ">
+                    {!isDashboard && <Logo />}
+                    {isDashboard && renderDashboardNav()}
 
-      {!isSmallScreen && isMarketPage && (
-        <div className="mt-10">
-          <Categories user={user as unknown as navUser} />
+                    <UserMenu
+                      user={user as unknown as navUser}
+                      canReceivePayouts={canReceivePayouts}
+                      uniqueUrl={uniqueUrl}
+                    />
+                    {isMarketPage && (
+                      <div className="w-full absolute border-b-[1px] py-[18px]">
+                        <div className="flex justify-center">
+                          {apiKey && <FindListingsComponent apiKey={apiKey} />}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Container>
+              </div>
+            ) : (
+              <>
+                {isMarketPage && (
+                  <>
+                    <Container>
+                      <div className="py-2">
+                        <div className="flex justify-center mb-2">
+                          <div className="w-full max-w-2xl">
+                            {apiKey && (
+                              <FindListingsComponent apiKey={apiKey} />
+                            )}
+                          </div>
+                        </div>
+                        <Categories user={user as unknown as navUser} />
+                      </div>
+                    </Container>
+                  </>
+                )}
+                {isDashboard && renderDashboardNav()}
+              </>
+            )}
+          </div>
+          <div
+            className={`${isSmallScreen ? "" : isMarketPage ? "h-32" : ""}`}
+          />
+          {isSmallScreen && (
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
+              <UserMenu
+                user={user as unknown as navUser}
+                canReceivePayouts={canReceivePayouts}
+                uniqueUrl={uniqueUrl}
+              />
+            </div>
+          )}
+
+          {!isSmallScreen && isMarketPage && (
+            <div className="mt-[-30px]">
+              <Categories user={user as unknown as navUser} />
+            </div>
+          )}
         </div>
       )}
     </div>

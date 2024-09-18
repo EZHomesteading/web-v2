@@ -9,6 +9,7 @@ import UserMenu from "@/app/components/navbar/UserMenu";
 import type { Viewport } from "next";
 import { navUser } from "@/next-auth";
 import MapPopup from "@/app/(home)/info-modals/map-info-modal";
+import Navbar from "@/app/components/navbar/Navbar";
 
 export const viewport: Viewport = {
   themeColor: "white",
@@ -42,7 +43,7 @@ const MapPage = async () => {
     <div className="h-sreen overflow-hidden touch-none">
       <div className="relative w-full z-10 shadow-sm h-[64px]">
         <Container>
-          <UserMenu user={user as unknown as navUser} />
+          <Navbar user={user as unknown as navUser} />
         </Container>
       </div>
       <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">

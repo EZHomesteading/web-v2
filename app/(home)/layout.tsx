@@ -1,6 +1,6 @@
 //get navbar for home page and pass it the current user
 import { getNavUser } from "@/actions/getUser";
-import NavbarHome from "../components/navbar/NavbarHome";
+import Navbar from "../components/navbar/Navbar";
 import type { Viewport } from "next";
 import { navUser } from "@/next-auth";
 
@@ -15,7 +15,7 @@ export default async function RootLayout({
   const user = await getNavUser();
   return (
     <>
-      <NavbarHome user={user as unknown as navUser} />
+      <Navbar isHome={true} user={user as unknown as navUser} />
       {children}
     </>
   );

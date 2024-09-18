@@ -53,7 +53,6 @@ interface Props {
   uniqueUrl: string;
 }
 const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
-
   const pathname = usePathname();
   const white = pathname === "/";
   const router = useRouter();
@@ -147,6 +146,14 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
     }
   };
   const handleCreateClickSeller = () => {
+    console.log(
+      user?.hasPickedRole,
+      user?.location,
+      user?.location[0]?.address,
+      user?.location[0]?.hours,
+      user?.image,
+      canReceivePayouts
+    );
     if (
       (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
       user?.location &&
@@ -175,9 +182,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
       onClick={onClick}
     >
       <Icon
-        className={`h-12 w-12 ${
-          pathname === "/" ? "text-white" : "text-black"
-        }`}
+        className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
       />
       <div
         className={`text-s ${outfit.className} ${
@@ -388,7 +393,6 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
   const MenuIcon: React.FC<{ user?: navUser }> = ({ user }) => (
     <>
       <SheetTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
-
         <IconWrapper
           key="menu"
           icon={CiMenuFries}
