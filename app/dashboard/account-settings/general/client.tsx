@@ -232,7 +232,7 @@ const Page = ({ apiKey }: Props) => {
     state,
     zip,
   }: AddressComponents) => {
-    setAddress(street); // Set only the street in the main input
+    setAddress(street);
     setValue("street", street);
     setValue("city", city);
     setValue("state", state);
