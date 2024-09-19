@@ -243,7 +243,7 @@ const Navbar = ({
   return (
     <>
       <div
-        className={`fixed z top-0 left-0 right-0 ${
+        className={`fixed !zmax top-0 left-0 right-0 ${
           isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
         }  z-10`}
       >

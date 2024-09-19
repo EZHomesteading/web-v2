@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "./input";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LocationSearchInput from "@/app/components/map/LocationSearchInputSettings";
 import { Button } from "@/app/components/ui/button";
 import { UserRole } from "@prisma/client";
@@ -33,10 +33,20 @@ const Page = ({ apiKey }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
   const router = useRouter();
-  let fullAddress =
-    user?.location && Object.entries(user.location).length > 0
-      ? `${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`
-      : "";
+  let fullAddress = "";
+  const [addressFields, setAddressFields] = useState({
+    street: user?.location?.[0]?.address?.[0] || "",
+    city: user?.location?.[0]?.address?.[1] || "",
+    state: user?.location?.[0]?.address?.[2] || "",
+    zip: user?.location?.[0]?.address?.[3] || "",
+  });
+  if (user?.location && user.location[0]?.address) {
+    const addressArray = user.location[0].address;
+    fullAddress = addressArray
+      .filter((element) => element && element.trim())
+      .join(", ");
+  }
+
   type AddressComponents = {
     street: string;
     city: string;
@@ -60,6 +70,10 @@ const Page = ({ apiKey }: Props) => {
       role: user?.role,
       name: user?.name,
       image: user?.image,
+      street: user?.location?.[0]?.address?.[0] || "",
+      city: user?.location?.[0]?.address?.[1] || "",
+      state: user?.location?.[0]?.address?.[2] || "",
+      zip: user?.location?.[0]?.address?.[3] || "",
     },
   });
 
@@ -211,56 +225,32 @@ const Page = ({ apiKey }: Props) => {
         location.replace("/");
       });
   };
-
+  const [address, setAddress] = useState("");
   const handleAddressSelect = ({
     street,
     city,
     state,
     zip,
   }: AddressComponents) => {
+    setAddress(street); // Set only the street in the main input
     setValue("street", street);
     setValue("city", city);
     setValue("state", state);
     setValue("zip", zip);
   };
   const [image, setImage] = useState(user?.image);
+  useEffect(() => {
+    Object.entries(addressFields).forEach(([key, value]) => {
+      setValue(key, value);
+    });
+  }, [addressFields, setValue]);
   return (
-    <div className="flex flex-col px-2 pt-5 mb-8 bg-white h-screen">
+    <div className="flex flex-col px-2  mb-8 sm:px-20 md:px-40 2xl:px-80 bg-inherit ">
       <h1 className="sr-only">Personal Info</h1>
       <header className="flex flex-row justify-between items-center mt-1">
         <h2 className="text-2xl font-medium">Personal Info</h2>
       </header>
-      {/* <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
-        <div>
-          <h1 className="text-lg ">Profile Image</h1>
-          <ul>
-            <li>This is your current profile image.</li>
-            <li>
-              Click on the image to upload a custom one from your device. Press
-              save after clicking upload even if the image doesnt change at
-              first.
-            </li>
-          </ul>
-        </div>{" "}
-        <Avatar image={image} />
-      </div>
-      A profile picture is optional but we recommend it.
-      <UploadButton
-        endpoint="imageUploader"
-        onClientUploadComplete={(res: { url: string }[]) => {
-          setImage(res[0].url);
-        }}
-        onUploadError={(error: Error) => {
-          alert(`ERROR! ${error.message}`);
-        }}
-        className="ut-allowed-content:hidden ut-button:bg-white ut-button:text-black ut-button:w-fit ut-button:px-2 ut-button:h-full"
-        content={{
-          button({ ready }) {
-            if (ready) return <div>Upload Profile Image</div>;
-            return "Getting ready...";
-          },
-        }}
-      /> */}
+
       <AccountCard
         title="Username"
         info={user?.name || "No Username Saved"}
@@ -283,7 +273,7 @@ const Page = ({ apiKey }: Props) => {
       <AccountCard
         title="Email"
         info={user?.email || "No Email Saved"}
-        onSave={() => handleSave("Email")}
+        onSave={handleSubmit(onSubmit)}
         isEditing={editingCard === "Email"}
         onEditStart={() => setEditingCard("Email")}
         onEditCancel={() => setEditingCard(null)}
@@ -303,34 +293,26 @@ const Page = ({ apiKey }: Props) => {
       <AccountCard
         title="Phone Number"
         info={user?.phoneNumber || "No Phone Number Saved"}
-        onSave={() => handleSave("phoneNumber")}
+        onSave={() => handleSubmit(onSubmit)}
         isEditing={editingCard === "phoneNumber"}
         onEditStart={() => setEditingCard("phoneNumber")}
         onEditCancel={() => setEditingCard(null)}
         isDisabled={editingCard !== null && editingCard !== "phoneNumber"}
       >
-        <PhoneInput
-          className="bg-white rounded-md "
+        <Input
+          isPhoneNumber={true}
           id="phoneNumber"
+          label="Phone Number"
+          register={register}
+          errors={errors}
           disabled={isLoading}
-          placeholder="(743) 216-9078"
-          value={user?.phoneNumber as any}
-          onChange={(value) => setValue("phoneNumber", value)}
-          format="(###) ###-####"
-          style={{
-            backgroundColor: "inherit",
-          }}
-          international={false}
-          defaultCountry="US"
-          countrySelectProps={{ disabled: true }}
-          maxLength={14}
         />
       </AccountCard>
 
       <AccountCard
         title="Address"
-        info={fullAddress || "No address saved"}
-        onSave={() => handleSave("Address")}
+        info={fullAddress || "No Address Saved"}
+        onSave={() => {}}
         isEditing={editingCard === "Address"}
         onEditStart={() => setEditingCard("Address")}
         onEditCancel={() => setEditingCard(null)}
@@ -339,104 +321,145 @@ const Page = ({ apiKey }: Props) => {
         <>
           <LocationSearchInput
             apiKey={apiKey}
-            address={watch("address")}
-            setAddress={(address: any) => setValue("address", address)}
+            address={address}
+            setAddress={setAddress}
             onAddressParsed={handleAddressSelect}
           />
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <Input
+              id="apt"
+              label="Apt, suite. (optional)"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+            />
+            <Input
+              id="city"
+              label="City"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+            />
+            <Input
+              id="state"
+              label="State"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+            />
+            <Input
+              id="zip"
+              label="ZIP Code"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+            />
+          </div>
         </>
       </AccountCard>
       <AccountCard
         title="Profile Image"
-        info=""
-        onSave={() => handleSave("Image")}
+        info={user?.image}
+        showAvatar={true}
+        onSave={() => {}}
         isEditing={editingCard === "Image"}
         onEditStart={() => setEditingCard("Image")}
         onEditCancel={() => setEditingCard(null)}
         isDisabled={editingCard !== null && editingCard !== "Image"}
       >
-        <></>
+        {" "}
+        <UploadButton
+          endpoint="imageUploader"
+          onClientUploadComplete={(res: { url: string }[]) => {
+            setImage(res[0].url);
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
+          }}
+          className="ut-allowed-content:hidden ut-button:inline-flex ut-button:items-center ut-button:justify-center ut-button:whitespace-nowrap ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:transition-colors ut-button:focus-visible:outline-none ut-button:focus-visible:ring-1 ut-button:focus-visible:ring-ring ut-button:disabled:pointer-events-none ut-button:disabled:opacity-50 ut-button:h-9 ut-button:px-4 ut-button:py-2 ut-button:border ut-button:border-input  ut-button:hover:bg-accent ut-button:hover:text-accent-foreground ut-button:text-black ut-button:mr-2 ut-button:bg-inherit"
+          content={{
+            button({ ready }) {
+              if (ready) return <div>Upload Profile Image</div>;
+              return "Getting ready...";
+            },
+          }}
+        />
       </AccountCard>
-      {/* <div>
-        <div className="flex flex-col sheet  border-none shadow-lg w-full">
-          <h2 className=" text-lg">Change Password</h2>
-          <ul>
-            <li>Think your account is compromised?</li>
-            <li>Change your password.</li>
-          </ul>
-          <div className="flex justify-end">
-            <div className="flex flex-col w-1/4 justify-end">
-              <Input
-                id="oldPass"
-                label="Current Password"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-              />
-              <Input
-                id="newPass"
-                label="New Password"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-              />
-              <Input
-                id="verifNewPass"
-                label="Verify Password"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-              />
-              <Button
-                type="submit"
-                onClick={handleSubmit(onSubmit)}
-                className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-              >
-                Change Password
-              </Button>
-            </div>
-          </div>
-          This is not required to update other information.
+      <AccountCard
+        title="Password"
+        info="**********"
+        onSave={() => {}}
+        isEditing={editingCard === "Password"}
+        onEditStart={() => setEditingCard("Password")}
+        onEditCancel={() => setEditingCard(null)}
+        isDisabled={editingCard !== null && editingCard !== "Password"}
+        showSave={false}
+      >
+        <div className="space-y-2">
+          <Input
+            id="oldPass"
+            label="Current Password"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
+          <Input
+            id="newPass"
+            label="New Password"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
+          <Input
+            id="verifNewPass"
+            label="Verify Password"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+          />
+          <Button
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            className="font-light"
+          >
+            Change Password
+          </Button>
         </div>
-      </div> */}
-      {/* <div>
-        <div className="sheet shadow-lg">
-          <div className="text-base font-semibold leading-7">
-            Delete account
-          </div>
-          <p className="mt-1 text-sm text-gray-400 mb-2">
-            No longer want to use EZHomesteading? You can delete your account
-            here. This action is not reversible. All information related to this
-            account will be deleted permanently including listed products for
-            Co-Ops and Producers.
-          </p>
-          <AlertDialog>
-            <AlertDialogTrigger className="px-2 py-2 bg-red-500 rounded-xl">
-              Delete
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-black rounded-lg px-4 py-4 w-fit ">
-              <AlertDialogHeader className="text-3xl">
-                Are you sure?
-              </AlertDialogHeader>
-              <AlertDialogDescription className="text-white pt-2">
-                We cannot recover a user after it has been deleted, this is
-                irreversible.
-              </AlertDialogDescription>
+      </AccountCard>
 
-              <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
-                <AlertDialogAction
-                  className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
-                  onClick={onDelete}
-                >
-                  Yes, I&apos;m sure
-                </AlertDialogAction>
-                <AlertDialogCancel className=" shadow-none bg-green-600 text-3xl hover:bg-green-700 text-md text-white border-none hover:text-white m-0">
-                  Nevermind
-                </AlertDialogCancel>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div> */}
+      <div className="py-8 flex justify-center border-b-[1px]">
+        <AlertDialog>
+          <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
+            Delete Account
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-black rounded-lg px-4 py-4 w-fit ">
+            <AlertDialogHeader className="text-3xl">
+              Are you sure?
+            </AlertDialogHeader>
+            <AlertDialogDescription className="text-white pt-2">
+              We cannot recover a user after it has been deleted, this is
+              irreversible. All information related to this account will be
+              deleted permanently.
+            </AlertDialogDescription>
+
+            <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
+              <AlertDialogAction
+                className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
+                onClick={onDelete}
+              >
+                Yes, I&apos;m sure
+              </AlertDialogAction>
+              <AlertDialogCancel className=" shadow-none bg-green-600 text-3xl hover:bg-green-700 text-md text-white border-none hover:text-white m-0">
+                Nevermind
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 };

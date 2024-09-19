@@ -1,3 +1,4 @@
+import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import React from "react";
 
@@ -10,6 +11,8 @@ interface AccountCardProps {
   onEditStart: () => void;
   onEditCancel: () => void;
   isDisabled: boolean;
+  showSave?: boolean;
+  showAvatar?: boolean;
 }
 
 const AccountCard: React.FC<AccountCardProps> = ({
@@ -21,6 +24,8 @@ const AccountCard: React.FC<AccountCardProps> = ({
   onEditStart,
   onEditCancel,
   isDisabled,
+  showSave = true,
+  showAvatar = false,
 }) => {
   const handleEditClick = () => {
     if (isEditing) {
@@ -28,10 +33,6 @@ const AccountCard: React.FC<AccountCardProps> = ({
     } else {
       onEditStart();
     }
-  };
-
-  const handleSaveClick = () => {
-    onSave();
   };
 
   return (
@@ -44,6 +45,11 @@ const AccountCard: React.FC<AccountCardProps> = ({
         <div>
           <div className="text-md font-normal">{title}</div>
           {!isEditing && <div className="font-light text-sm">{info}</div>}
+          {showAvatar && (
+            <div className="py-3">
+              <Avatar image={info} />
+            </div>
+          )}
         </div>
         <button
           onClick={handleEditClick}
@@ -54,14 +60,20 @@ const AccountCard: React.FC<AccountCardProps> = ({
         </button>
       </div>
       {isEditing && (
-        <div className="mt-2">
+        <div
+          className={`${
+            showAvatar ? `flex items-center justify-start` : `mt-2`
+          }`}
+        >
           {children}
-          <Button
-            onClick={handleSaveClick}
-            className="mt-2 font-normal text-sm"
-          >
-            Save Changes
-          </Button>
+          {showSave && (
+            <Button
+              onClick={onSave}
+              className={`${showAvatar ? `` : `mt-2`}  font-normal text-sm`}
+            >
+              Save Changes
+            </Button>
+          )}
         </div>
       )}
       <div className="border-b-[1px] pb-3 mt-3" />

@@ -173,12 +173,10 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
       onClick={onClick}
     >
       <Icon
-        className={`h-12 w-12 ${
-          pathname === "/" ? "text-white" : "text-black"
-        }`}
+        className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
       />
       <div
-        className={`text-s ${outfit.className} ${
+        className={`text-xs ${outfit.className} ${
           pathname === "/" ? "text-white" : "text-black"
         }`}
       >
