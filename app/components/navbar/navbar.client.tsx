@@ -156,10 +156,10 @@ const Navbar = ({
   uniqueUrl,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  console.log(canReceivePayouts);
+
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 600 && window.innerHeight < 900);
+      setIsSmallScreen(window.innerWidth < 768 && window.innerHeight < 4200);
     };
 
     checkScreenSize();
@@ -167,7 +167,6 @@ const Navbar = ({
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
-
   const renderDashboardNav = () => (
     <Sheet>
       <SheetTrigger
@@ -253,21 +252,23 @@ const Navbar = ({
       </Container>
     </div>
   );
+
   return (
-    <div>
+    <>
       {isHome ? (
         renderHomeNav()
       ) : (
-        <div>
+        <>
           <div
-            className={`fixed top-0 left-0 right-0 ${
+            className={`fixed top-0 left-0 right-0  py-3 ${
               isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
-            }  z-10`}
+            } z-10`}
+            style={{ height: isSmallScreen ? "12px" : "80px" }} // Adjust the height as needed
           >
             {!isSmallScreen ? (
-              <div>
-                <Container>
-                  <div className="flex items-center justify-between py-3 ">
+              <div className="h-full py-3 mt-2">
+                <div className="container mx-auto h-full">
+                  <div className="flex items-center justify-between h-full">
                     {!isDashboard && <Logo />}
                     {isDashboard && renderDashboardNav()}
 
@@ -283,55 +284,50 @@ const Navbar = ({
                       </div>
                     )}
                     <UserMenu
-                      user={user as unknown as navUser}
+                      user={user}
                       canReceivePayouts={canReceivePayouts}
                       uniqueUrl={uniqueUrl}
                     />
                   </div>
-                </Container>
+                </div>
               </div>
             ) : (
               <>
                 {isMarketPage && (
-                  <>
-                    <Container>
-                      <div className="py-2">
-                        <div className="flex justify-center mb-2">
-                          <div className="w-full max-w-2xl">
-                            {apiKey && (
-                              <FindListingsComponent apiKey={apiKey} />
-                            )}
-                          </div>
+                  <div className="container mx-auto">
+                    <div className="py-2">
+                      <div className="flex justify-center mb-2">
+                        <div className="w-full">
+                          {apiKey && <FindListingsComponent apiKey={apiKey} />}
                         </div>
-                        <Categories user={user as unknown as navUser} />
                       </div>
-                    </Container>
-                  </>
+                      <Categories user={user} />
+                    </div>
+                  </div>
                 )}
                 {isDashboard && renderDashboardNav()}
               </>
             )}
           </div>
-          <div
-            className={`${isSmallScreen ? "" : isMarketPage ? "h-32" : ""}`}
-          />
-          {isSmallScreen && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
-              <UserMenu
-                user={user as unknown as navUser}
-                canReceivePayouts={canReceivePayouts}
-                uniqueUrl={uniqueUrl}
-              />
-            </div>
-          )}
+          <div style={{ paddingTop: isSmallScreen ? "24px" : "64px" }} />{" "}
+          {/* Spacer div */}
           {!isSmallScreen && isMarketPage && (
-            <div className="mt-[-30px]">
-              <Categories user={user as unknown as navUser} />
+            <div className="container mx-auto mt-4">
+              <Categories user={user} />
             </div>
           )}
+        </>
+      )}
+      {isSmallScreen && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
+          <UserMenu
+            user={user}
+            canReceivePayouts={canReceivePayouts}
+            uniqueUrl={uniqueUrl}
+          />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
