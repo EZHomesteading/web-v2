@@ -94,6 +94,14 @@ const Filters = ({ user }: Props) => {
     }
     router.push(`/market?${params.toString()}`);
   };
+  const handleSelectChange =
+    (setter: (value: string) => void) => (value: string) => {
+      setter(value);
+    };
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
   return (
     <Sheet>
       <SheetTrigger className="flex flex-row border-[1px] border-gray-500 rounded-full px-2 py-2 bg-transparent">
@@ -140,11 +148,14 @@ const Filters = ({ user }: Props) => {
             <BsPersonWalking /> Pick Produce Myself
           </div>{" "}
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Select onValueChange={(value) => setRa(value)}>
+            <Select onValueChange={handleSelectChange(setRa)}>
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={ra || "htl"} />
               </SelectTrigger>
-              <SelectContent className={`${outfit.className}`}>
+              <SelectContent
+                className={`${outfit.className}`}
+                onClick={stopPropagation}
+              >
                 <SelectGroup>
                   <SelectItem value="htl">High to Low</SelectItem>
                   <SelectItem value="lth">Low to High</SelectItem>
@@ -159,11 +170,14 @@ const Filters = ({ user }: Props) => {
             <GiFruiting /> Sort EZH Organic Rating
           </div>
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Select onValueChange={(value) => setPr(value)}>
+            <Select onValueChange={handleSelectChange(setPr)}>
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={pr || "htl"} />
               </SelectTrigger>
-              <SelectContent className={`${outfit.className}`}>
+              <SelectContent
+                className={`${outfit.className}`}
+                onClick={stopPropagation}
+              >
                 <SelectGroup>
                   <SelectItem value="htl">High to Low</SelectItem>
                   <SelectItem value="lth">Low to High</SelectItem>
