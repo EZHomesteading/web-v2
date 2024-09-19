@@ -94,6 +94,7 @@ const Filters = ({ user }: Props) => {
     }
     router.push(`/market?${params.toString()}`);
   };
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleSelectChange =
     (setter: (value: string) => void) => (value: string) => {
       setter(value);
@@ -122,6 +123,7 @@ const Filters = ({ user }: Props) => {
             className="px-2"
             value={[radius || rMi]}
             onValueChange={(value: number[]) => setRadius(value[0])}
+            disabled={isDropdownOpen}
           />
         )}
 
@@ -130,25 +132,40 @@ const Filters = ({ user }: Props) => {
             (user.role !== UserRole.CONSUMER && (
               <>
                 <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-                  <Switch checked={c} onCheckedChange={setC} />
+                  <Switch
+                    checked={c}
+                    onCheckedChange={setC}
+                    disabled={isDropdownOpen}
+                  />
                   <IoStorefrontOutline /> See Co-op Listings
                 </div>
                 <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-                  <Switch checked={p} onCheckedChange={setP} />
+                  <Switch
+                    checked={p}
+                    onCheckedChange={setP}
+                    disabled={isDropdownOpen}
+                  />
                   <GiFruitTree /> See Producer Listings
                 </div>
               </>
             ))}
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Switch checked={s} onCheckedChange={setS} />
+            <Switch
+              checked={s}
+              onCheckedChange={setS}
+              disabled={isDropdownOpen}
+            />
             <ClockIcon /> Not in stock or Coming Soon
           </div>
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Switch />
+            <Switch disabled={isDropdownOpen} />
             <BsPersonWalking /> Pick Produce Myself
           </div>{" "}
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Select onValueChange={handleSelectChange(setRa)}>
+            <Select
+              onValueChange={handleSelectChange(setRa)}
+              onOpenChange={(open) => setIsDropdownOpen(open)}
+            >
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={ra || "htl"} />
               </SelectTrigger>
@@ -170,7 +187,10 @@ const Filters = ({ user }: Props) => {
             <GiFruiting /> Sort EZH Organic Rating
           </div>
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
-            <Select onValueChange={handleSelectChange(setPr)}>
+            <Select
+              onValueChange={handleSelectChange(setPr)}
+              onOpenChange={(open) => setIsDropdownOpen(open)}
+            >
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={pr || "htl"} />
               </SelectTrigger>
@@ -190,13 +210,19 @@ const Filters = ({ user }: Props) => {
 
         <SheetTrigger
           onClick={handleSeeListings}
-          className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
+          className={`flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg ${
+            isDropdownOpen ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={isDropdownOpen}
         >
           See Listings
         </SheetTrigger>
         <SheetTrigger
           onClick={() => router.push("/market")}
-          className="flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg"
+          className={`flex w-full font-extralight text-xl bg-slate-500 text-center justify-center text-white p-3 rounded-full shadow-lg ${
+            isDropdownOpen ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={isDropdownOpen}
         >
           Clear Filters
         </SheetTrigger>
