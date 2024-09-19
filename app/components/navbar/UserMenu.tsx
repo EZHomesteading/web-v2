@@ -145,6 +145,14 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
     }
   };
   const handleCreateClickSeller = () => {
+    console.log(
+      user?.hasPickedRole,
+      user?.location,
+      user?.location[0]?.address,
+      user?.location[0]?.hours,
+      user?.image,
+      canReceivePayouts
+    );
     if (
       (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
       user?.location &&

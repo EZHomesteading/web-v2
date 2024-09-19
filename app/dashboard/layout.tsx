@@ -1,11 +1,10 @@
 //dashboard layout parent element
-import NavbarDashboard from "@/app/components/navbar/navbar-dashboard";
+import Navbar from "@/app/components/navbar/Navbar";
 import { Outfit } from "next/font/google";
 import Sidebar from "./sidebar";
 import { getNavUser } from "@/actions/getUser";
 import { Viewport } from "next";
-import { UserInfo, navUser } from "@/next-auth";
-import Navbar from "../components/navbar/navbar.client";
+import { navUser } from "@/next-auth";
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };

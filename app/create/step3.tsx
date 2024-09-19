@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/app/components/ui/label";
 import {
   Select,
@@ -15,20 +15,31 @@ import { CommonInputProps, InputProps } from "./create.types";
 import { Outfit } from "next/font/google";
 import { PiBasketLight, PiRulerThin } from "react-icons/pi";
 import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  FieldValues,
+  UseFormSetValue,
+} from "react-hook-form";
 
 const outfit = Outfit({
   display: "swap",
   subsets: ["latin"],
 });
+
 interface StepThreeProps {
   quantityType: QuantityTypeValue | undefined;
   setQuantityType: (value: QuantityTypeValue | undefined) => void;
   postSODT: boolean;
   handleSODTCheckboxChange: (checked: boolean, index: number) => void;
-
+  handleProjectHarvestCheckboxChange: (checked: boolean, index: number) => void;
   usersodt: number | null;
   commonInputProps: CommonInputProps;
   inputProps: InputProps;
+  projectHarvest: boolean;
+  setValue: UseFormSetValue<FieldValues>;
+  harvestDates: string[];
+  setHarvestDates: (newDates: string[]) => void;
 }
 
 const StepThree: React.FC<StepThreeProps> = ({
@@ -36,11 +47,41 @@ const StepThree: React.FC<StepThreeProps> = ({
   setQuantityType,
   postSODT,
   handleSODTCheckboxChange,
-
+  handleProjectHarvestCheckboxChange,
+  projectHarvest,
   usersodt,
   commonInputProps,
   inputProps,
+  setValue,
 }) => {
+  const [harvestDates, setHarvestDates] = useState<string[]>([]);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const toggleMonth = (month: string) => {
+    setHarvestDates((prevDates) => {
+      const newDates = prevDates.includes(month)
+        ? prevDates.filter((date) => date !== month)
+        : [...prevDates, month];
+      setValue("harvestDates", newDates);
+      console.log(newDates);
+      return newDates;
+    });
+  };
+
   let label = "Price";
 
   if (quantityType) {
@@ -62,11 +103,48 @@ const StepThree: React.FC<StepThreeProps> = ({
             <div className="text-xs font-extralight text-neutral-500 mb-2">
               Click the icons or help for more info
             </div>
+            <div className="flex justify-between items-center mb-3">
+              <div className="font-light">
+                Click the box if this item is not currently available.
+              </div>
+              <Checkbox
+                id="projectHarvest"
+                checked={projectHarvest}
+                onCheckedChange={(checked: boolean) =>
+                  handleProjectHarvestCheckboxChange(checked, 0)
+                }
+                label=""
+              />
+            </div>
+            {projectHarvest && (
+              <div className="mb-4">
+                <Label className="text-lg font-light mb-2">
+                  When will it be available?
+                </Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {months.map((month) => (
+                    <button
+                      key={month}
+                      onClick={() => toggleMonth(month)}
+                      className={`p-2 text-sm border rounded ${
+                        harvestDates.includes(month)
+                          ? "bg-black text-white"
+                          : "bg-white text-black"
+                      }`}
+                    >
+                      {month}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="relative my-2">
               <Input
                 {...commonInputProps}
-                id="stock"
-                label="Quantity"
+                id={projectHarvest ? "projectedStock" : "stock"}
+                label={
+                  projectHarvest ? "Expected Quantity Per Day" : "Quantity"
+                }
                 type="number"
                 maxlength={6}
                 inputmode="numeric"
@@ -76,6 +154,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                 className="text-neutral-700 absolute top-5 right-2"
               />
             </div>
+
             <div className="relative">
               <UnitSelect
                 value={quantityType}

@@ -733,6 +733,7 @@ export interface NavUser {
   email: string;
   image: string | null;
   cart: Cart[];
+  location: Location[];
   stripeAccountId: string | null;
   hasPickedRole: boolean | null;
   buyerOrders: {

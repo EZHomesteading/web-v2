@@ -2,8 +2,8 @@
 //follow button component
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import UnfollowIcon from "../icons/unfollow-svg";
-import FollowIcon from "../icons/follow-svg";
+import { RiUserFollowLine } from "react-icons/ri";
+import { RiUserUnfollowLine } from "react-icons/ri";
 import { Outfit } from "next/font/google";
 import { toast } from "sonner";
 
@@ -64,7 +64,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
         className={`${outfit.className} bg-slate-300  text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <FollowIcon />{" "}
+        <RiUserFollowLine size={24} />
         <div
           className="pl-1 text-xl 
             font-semibold"
@@ -87,7 +87,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
         className={`${outfit.className} bg-slate-300   text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
-        <UnfollowIcon />{" "}
+        <RiUserUnfollowLine size={24} />
         <div
           className="pl-1 text-xl 
             font-semibold"

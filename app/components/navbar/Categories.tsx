@@ -41,7 +41,7 @@ const outfit = Outfit({
 
 export const categories = [
   {
-    label: "Unprocessed Produce",
+    label: "Produce",
     icon: FaAppleAlt,
     url: "unprocessed-produce",
   },
@@ -51,12 +51,12 @@ export const categories = [
     url: "homemade",
   },
   {
-    label: "Durable Products",
+    label: "Durables",
     icon: GiCannedFish,
     url: "durable-products",
   },
   {
-    label: "Dairy & Meats",
+    label: "Deli",
     icon: GiMilkCarton,
     url: "dairy-meats",
   },
@@ -99,19 +99,15 @@ export const dairyAndMeats = [
   { label: "Cheese", icon: TbCheese, url: "cheese" },
 ];
 
-type CategoryKey =
-  | "Unprocessed Produce"
-  | "Homemade"
-  | "Durable Products"
-  | "Dairy & Meats";
+type CategoryKey = "Produce" | "Homemade" | "Durables" | "Deli";
 
 type SubcategoryItem = { label: string; icon: IconType; url: string };
 
 const subcategories: Record<CategoryKey, SubcategoryItem[]> = {
-  "Unprocessed Produce": unprocessedProduce,
+  Produce: unprocessedProduce,
   Homemade: homemade,
-  "Durable Products": durableProducts,
-  "Dairy & Meats": dairyAndMeats,
+  Durables: durableProducts,
+  Deli: dairyAndMeats,
 };
 
 interface CategoryBoxProps {
@@ -137,9 +133,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
       `}
     >
       <Icon size={25} />
-      <div className={`${outfit.className} font-medium text-[8px] sm:text-sm`}>
-        {label}
-      </div>
+      <div className={`${outfit.className} font-medium text-sm `}>{label}</div>
     </div>
   );
 };
@@ -280,7 +274,7 @@ const Categories = ({ user }: Props) => {
           <div className="pt-2">
             <Filters user={user} />
           </div>
-          <div className="w-full p-0 sm:pt-4">
+          <div className="w-full p-0">
             <AnimatePresence mode="wait">
               {showSubcategories
                 ? renderCategories().subcategoryElements
