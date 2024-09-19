@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import { Slider } from "./radius-slider";
 import { Switch } from "../ui/switch";
 import FiltersIcon from "../icons/filters-icon";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Outfit } from "next/font/google";
 import { UserRole } from "@prisma/client";
@@ -95,6 +95,21 @@ const Filters = ({ user }: Props) => {
     router.push(`/market?${params.toString()}`);
   };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleDropdownOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      setIsDropdownOpen(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    } else {
+      timeoutRef.current = setTimeout(() => {
+        setIsDropdownOpen(false);
+      }, 250); // 0.25 seconds delay
+    }
+  }, []);
+
   const handleSelectChange =
     (setter: (value: string) => void) => (value: string) => {
       setter(value);
@@ -164,7 +179,7 @@ const Filters = ({ user }: Props) => {
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
             <Select
               onValueChange={handleSelectChange(setRa)}
-              onOpenChange={(open) => setIsDropdownOpen(open)}
+              onOpenChange={handleDropdownOpenChange}
             >
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={ra || "htl"} />
@@ -189,7 +204,7 @@ const Filters = ({ user }: Props) => {
           <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
             <Select
               onValueChange={handleSelectChange(setPr)}
-              onOpenChange={(open) => setIsDropdownOpen(open)}
+              onOpenChange={handleDropdownOpenChange}
             >
               <SelectTrigger className="w-[75px]">
                 <SelectValue placeholder="" defaultValue={pr || "htl"} />
