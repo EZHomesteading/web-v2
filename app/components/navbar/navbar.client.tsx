@@ -271,18 +271,22 @@ const Navbar = ({
                     {!isDashboard && <Logo />}
                     {isDashboard && renderDashboardNav()}
 
+                    {isMarketPage && (
+                      <div className="py-2">
+                        <div className="flex justify-center mb-2">
+                          <div className="w-full max-w-2xl">
+                            {apiKey && (
+                              <FindListingsComponent apiKey={apiKey} />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <UserMenu
                       user={user as unknown as navUser}
                       canReceivePayouts={canReceivePayouts}
                       uniqueUrl={uniqueUrl}
                     />
-                    {isMarketPage && (
-                      <div className="w-full absolute border-b-[1px] py-[18px]">
-                        <div className="flex justify-center">
-                          {apiKey && <FindListingsComponent apiKey={apiKey} />}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </Container>
               </div>
@@ -320,7 +324,6 @@ const Navbar = ({
               />
             </div>
           )}
-
           {!isSmallScreen && isMarketPage && (
             <div className="mt-[-30px]">
               <Categories user={user as unknown as navUser} />
