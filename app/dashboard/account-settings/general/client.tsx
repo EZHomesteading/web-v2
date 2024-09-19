@@ -363,7 +363,7 @@ const Page = ({ apiKey }: Props) => {
       </AccountCard>
       <AccountCard
         title="Profile Image"
-        info={user?.image}
+        info={image}
         showAvatar={true}
         onSave={() => {}}
         isEditing={editingCard === "Image"}

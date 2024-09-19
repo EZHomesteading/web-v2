@@ -81,7 +81,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
             <div className="relative">
               <input
                 {...getInputProps({
-                  placeholder: "Search for an address",
+                  placeholder: "",
                   className: `
                     peer
                     w-full

@@ -44,7 +44,9 @@ const AccountCard: React.FC<AccountCardProps> = ({
       <div className="flex justify-between items-start">
         <div>
           <div className="text-md font-normal">{title}</div>
-          {!isEditing && <div className="font-light text-sm">{info}</div>}
+          {!isEditing && !showAvatar && (
+            <div className="font-light text-sm">{info}</div>
+          )}
           {showAvatar && (
             <div className="py-3">
               <Avatar image={info} />
