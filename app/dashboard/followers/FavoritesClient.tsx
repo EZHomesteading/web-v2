@@ -27,27 +27,15 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   return (
     <Container>
       <Heading title="Followers" subtitle="List of people following you." />
-      <div
-        className="
-          mt-10
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
-          lg:grid-cols-4
-          xl:grid-cols-5
-          2xl:grid-cols-6
-          gap-8
-        "
-      >
-        {followarr.map(
-          async (follow: { id: string; userId: string; follows: string[] }) => {
+      <div className="mt-10">
+        <div className="flex flex-wrap gap-4 justify-start">
+          {followarr.map(async (follow) => {
             const shop = await getFavCardUser({ userId: follow.userId });
             return (
               <FollowCard key={shop?.id} data={shop} followarr={myFollow} />
             );
-          }
-        )}
+          })}
+        </div>
       </div>
     </Container>
   );
