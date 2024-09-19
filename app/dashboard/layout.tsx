@@ -20,9 +20,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         <Sidebar role={user?.role} />
       </div>
 
-      <div className="flex flex-col bg w-full">
+      <div className="flex flex-col sheet w-full">
         <Navbar user={user as unknown as navUser} isDashboard={true} />
-        <div className="sheet w-full border-t-[0px] min-h-screen sm:mt-6">
+        <div className=" w-full border-t-[0px] min-h-screen sm:mt-6">
           {children}
         </div>
       </div>

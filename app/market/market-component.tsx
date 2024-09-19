@@ -117,7 +117,6 @@ const Shop = ({
                 className={`flex justify-center items-end my-4 ${outfit.className}`}
               >
                 <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
-                  {/* builds cards dynamically based on data passed in */}
                   {pageNumbers.map((pageNumber, index) => (
                     <Link
                       key={index}

@@ -245,7 +245,9 @@
   border-right: none !important;
   border-left: 10px solid #e6f2ff !important;
 }
-
+.zmax {
+  z-index: 9999 !important;
+}
 .z {
   z-index: 100 !important;
 }

@@ -18,7 +18,6 @@ import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import {
   PiChartBarThin,
-  PiHeartThin,
   PiHouseThin,
   PiMapTrifoldThin,
   PiPersonSimpleRunThin,
@@ -185,7 +184,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
         className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
       />
       <div
-        className={`text-s ${outfit.className} ${
+        className={`text-xs ${outfit.className} ${
           pathname === "/" ? "text-white" : "text-black"
         }`}
       >

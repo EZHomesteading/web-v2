@@ -168,74 +168,75 @@ const Navbar = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
   const renderDashboardNav = () => (
-    <Sheet>
-      <SheetTrigger
-        className={`
-    ${isSmallScreen ? "fixed left-0 top-[18vh] w-fit" : "sm:hidden "}
-    transition-transform hover:scale-105 focus:scale-105 focus:outline-none
-  `}
-      >
-        <TbLayoutSidebarRightCollapse
-          className={`${
-            isSmallScreen
-              ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
-              : "z border-none"
-          }`}
-        />
-      </SheetTrigger>
+      <Sheet>
+        <SheetTrigger
+          className={`
+      ${isSmallScreen ? "fixed left-0 z top-[18vh] w-fit" : "sm:hidden "}
+      transition-transform hover:scale-105 focus:scale-105 focus:outline-none
+    `}
+        >
+          <TbLayoutSidebarRightCollapse
+            className={`${
+              isSmallScreen
+                ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
+                : "z border-none"
+            }`}
+          />
+        </SheetTrigger>
 
-      <SheetContent side="left">
-        <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
-          <nav className="flex flex-2 flex-col">
-            <ul role="list" className="flex flex-2 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="mx-3 space-y-1">
-                  {user?.role !== UserRole.CONSUMER
-                    ? vendorNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))
-                    : conNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </SheetContent>
-    </Sheet>
+        <SheetContent side="left">
+          <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
+            <nav className="flex flex-2 flex-col">
+              <ul role="list" className="flex flex-2 flex-col gap-y-7">
+                <li>
+                  <ul role="list" className="mx-3 space-y-1">
+                    {user?.role !== UserRole.CONSUMER
+                      ? vendorNav.map((item) => (
+                          <li key={item.name}>
+                            <a
+                              href={item.href}
+                              className={classNames(
+                                item.current
+                                  ? "bg-gray-81"
+                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
+                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
+                            >
+                              <item.icon
+                                className="h-7 w-6 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </li>
+                        ))
+                      : conNav.map((item) => (
+                          <li key={item.name}>
+                            <a
+                              href={item.href}
+                              className={classNames(
+                                item.current
+                                  ? "bg-gray-81"
+                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
+                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
+                            >
+                              <item.icon
+                                className="h-7 w-6 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </li>
+                        ))}
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </SheetContent>
+      </Sheet>
+    <></>
   );
   const renderHomeNav = () => (
     <div className="absolute w-full z-[10] bg-emerald-950/70">
@@ -255,6 +256,7 @@ const Navbar = ({
 
   return (
     <>
+
       {isHome ? (
         renderHomeNav()
       ) : (
@@ -327,6 +329,7 @@ const Navbar = ({
           />
         </div>
       )}
+
     </>
   );
 };
