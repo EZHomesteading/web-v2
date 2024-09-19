@@ -3472,14 +3472,26 @@ const defaultProducts = [
 ];
 
 const getlistings = async () => {
-  const response = await fetch(`/api/listing/listingSuggestionsCreate/`);
-  const data = await response.json();
-  const formattedListings = data.listings.map((product: any) => ({
-    title: product.title,
-    subCategory: product.subCategory,
-    photo: "",
-  }));
-  return [...defaultProducts, ...formattedListings];
+  try {
+    if (typeof window !== "undefined") {
+      const response = await fetch(`/api/listing/listingSuggestionsCreate`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const formattedListings = data.listings.map((product: any) => ({
+        title: product.title,
+        subCategory: product.subCategory,
+        photo: "",
+      }));
+      return [...defaultProducts, ...formattedListings];
+    } else {
+      return [...defaultProducts];
+    }
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+    return defaultProducts; // Return default products in case of error
+  }
 };
 
 export const getProducts = getlistings();

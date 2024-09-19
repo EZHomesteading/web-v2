@@ -42,9 +42,9 @@ interface p {
   apiKey: string;
 }
 const outfit = Outfit({
-  subsets:["latin"],
-  display:"swap"
-})
+  subsets: ["latin"],
+  display: "swap",
+});
 const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
@@ -230,24 +230,27 @@ const SearchLocation = ({ apiKey }: p) => {
   );
   return (
     <div
-    className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[500px] lg:max-w-[700px] ${outfit.className}`}
-  >
-    <PlacesAutocomplete
-      value={address}
-      onChange={handleChange}
-      onSelect={handleSelect}
-      googleCallbackName="lazyLoadMap"
+      className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfit.className}`}
     >
-      {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-        <div className="relative w-full sm:w-1/2  sm:mb-0 ">
-          <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
-          <div className="absolute text-black z-50 left-9 top-2 font-medium transform text-sm">Where</div>
-          
-          <input
-            {...getInputProps({
-              placeholder: "Everywhere",
-              className: "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none text-black outline-none transition-all duration-200",
-            })}
+      <PlacesAutocomplete
+        value={address}
+        onChange={handleChange}
+        onSelect={handleSelect}
+        googleCallbackName="lazyLoadMap"
+      >
+        {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+          <div className="relative w-full sm:w-1/2  sm:mb-0 ">
+            <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
+            <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+              Where
+            </div>
+
+            <input
+              {...getInputProps({
+                placeholder: "Everywhere",
+                className:
+                  "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none placeholder-black !text-black outline-none transition-all duration-200",
+              })}
               onKeyDown={(e) => handleKeyDown(e, suggestions)}
               onFocus={() => setFocus({ ...focus, left: true })}
               onBlur={() => setFocus({ ...focus, left: false })}
@@ -276,7 +279,9 @@ const SearchLocation = ({ apiKey }: p) => {
       </PlacesAutocomplete>
       <div className="relative w-full sm:w-1/2 border-l-[1px]">
         <PiBasketThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
-        <div className="absolute text-black z-50 left-9 top-2 font-medium transform text-sm">What</div>
+        <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+          What
+        </div>
         <input
           type="text"
           placeholder="Everything"
@@ -286,43 +291,43 @@ const SearchLocation = ({ apiKey }: p) => {
             handleSearchName(e);
           }}
           onKeyDown={handleEnterDown}
-          className= "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none text-black outline-none transition-all duration-200"
+          className="w-full rounded-full px-4 pb-2 pt-6 pl-9 placeholder-black border-none text-black outline-none transition-all duration-200"
           onFocus={() => setFocus({ ...focus, right: true })}
           onBlur={() => setFocus({ ...focus, right: false })}
           tabIndex={0}
         />
-          {/* {isSearching ? ( 
+        {/* {isSearching ? ( 
             <BiLoaderCircle
               className="absolute items-center justify-center right-[50px] animate-spin"
               size={22}
             />
           ) : null} */}
-          {items.length > 0 ? (
-            <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
-              {items.map((item: any) => (
-                <div className="p-1" key={item.title}>
-                  <div
-                    onClick={async () => {
-                      setSearchQuery(item.title); 
-                      setItems([]);
-                      handleSearch(item.title);
-                    }}
-                    className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
-                  >
-                    {item.title}
-                  </div>
+        {items.length > 0 ? (
+          <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
+            {items.map((item: any) => (
+              <div className="p-1" key={item.title}>
+                <div
+                  onClick={async () => {
+                    setSearchQuery(item.title);
+                    setItems([]);
+                    handleSearch(item.title);
+                  }}
+                  className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
+                >
+                  {item.title}
                 </div>
-              ))}
-            </div>
-          ) : null}
+              </div>
+            ))}
           </div>
-          <button
-            onClick={() => handleSearch(searchQuery)}
-            className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
-          >
-            <IoIosSearch className="text-2xl text-white bg-black rounded-full p-1" />
-          </button>
-    
+        ) : null}
+      </div>
+      <button
+        onClick={() => handleSearch(searchQuery)}
+        className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
+      >
+        <IoIosSearch className="text-2xl text-white bg-black rounded-full p-1" />
+      </button>
+
       <button
         className={`absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full ${
           focus.left ? "visible" : "hidden"

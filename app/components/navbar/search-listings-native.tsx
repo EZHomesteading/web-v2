@@ -231,7 +231,7 @@ const SearchLocation = ({ onClose }: any) => {
       >
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
           <div className="relative">
-            <FiMapPin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg " />
+            <FiMapPin className="absolute text-gray-600 z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg " />
             <input
               {...getInputProps({
                 placeholder: "Everywhere",

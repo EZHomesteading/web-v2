@@ -2,21 +2,16 @@
 import { getNavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 import { navUser } from "@/next-auth";
-import Navbar from "../components/navbar/navbar.client";
+import Navbar from "../components/navbar/Navbar";
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
 
 const MarketLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
-  const apiKey = process.env.MAPS_KEY;
   return (
     <>
-      <Navbar
-        user={user as unknown as navUser}
-        isMarketPage={true}
-        apiKey={apiKey}
-      />
+      <Navbar user={user as unknown as navUser} isMarketPage={true} />
       {children}
     </>
   );

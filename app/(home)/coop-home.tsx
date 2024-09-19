@@ -41,9 +41,7 @@ const CoopHome = ({ user }: Props) => {
                   You&apos;re almost ready to start getting payed
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
-                <span className="text-green-400 font-bold">
-                  {user.firstName}.
-                </span>
+                <span className="text-green-400 font-bold">{user.name}.</span>
               </>
             ) : (
               <>
@@ -51,9 +49,7 @@ const CoopHome = ({ user }: Props) => {
                   Congrats on setting up your account
                 </span>
                 <span className="text-xl mr-2 font-semibold">, {""}</span>
-                <span className="text-green-400 font-bold">
-                  {user.firstName}.
-                </span>
+                <span className="text-green-400 font-bold">{user.name}.</span>
               </>
             )}
           </div>
