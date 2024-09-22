@@ -5,9 +5,6 @@ import { GiSettingsKnobs } from "react-icons/gi";
 import { HiOutlineDocument } from "react-icons/hi";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
-import { VscHistory } from "react-icons/vsc";
-import Logo from "../components/navbar/Logo";
-import { RiUserHeartLine } from "react-icons/ri";
 import { UserRole } from "@prisma/client";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { MdDashboard } from "react-icons/md";
@@ -19,8 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import Link from "next/link";
-import { GiCorn } from "react-icons/gi";
-import { TbClockDollar } from "react-icons/tb";
+
 import { Outfit } from "next/font/google";
 const o = Outfit({
   subsets: ["latin"],
@@ -49,16 +45,9 @@ const conNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Ongoing Buy Orders",
+    name: "Orders",
     href: "/dashboard/orders/buyer",
     icon: LiaCartArrowDownSolid,
-    current: false,
-  },
-
-  {
-    name: "Buy Order History",
-    href: "/dashboard/order-history",
-    icon: VscHistory,
     current: false,
   },
   {
@@ -118,47 +107,15 @@ const vendorNav: NavigationItem[] = [
     current: false,
   },
   {
-    name: "Ongoing Sell Orders",
-    href: "/dashboard/orders/seller",
-    icon: TbShoppingCartDollar,
-    current: false,
-  },
-
-  {
-    name: "Ongoing Buy Orders",
+    name: "Orders",
     href: "/dashboard/orders/buyer",
-    icon: LiaCartArrowDownSolid,
-    current: false,
-  },
-
-  {
-    name: "Buy Order History",
-    href: "/dashboard/order-history",
-    icon: VscHistory,
-    current: false,
-  },
-  {
-    name: "Sell Order History",
-    href: "/dashboard/order-history/sell",
-    icon: TbClockDollar,
-    current: false,
-  },
-  {
-    name: "Followers",
-    href: "/dashboard/followers",
-    icon: RiUserHeartLine,
+    icon: TbShoppingCartDollar,
     current: false,
   },
   {
     name: "Following",
     href: "/dashboard/following",
     icon: RiUserShared2Line,
-    current: false,
-  },
-  {
-    name: "Project Harvest",
-    href: "/project-havest",
-    icon: GiCorn,
     current: false,
   },
   {
@@ -214,8 +171,8 @@ const Sidebar = ({ role }: p) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} lg:block relative h-full ${
-          isCollapsed ? "w-10" : "w-64"
+        className={`hidden ${o.className} pt-4 lg:block relative h-full ${
+          isCollapsed ? "w-16" : "w-64"
         } transition-width duration-300`}
       >
         <div className="flex grow  flex-col gap-y-6 px-6">

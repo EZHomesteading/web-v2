@@ -168,6 +168,7 @@ const Navbar = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
   const renderDashboardNav = () => (
+    <>
       <Sheet>
         <SheetTrigger
           className={`
@@ -236,7 +237,7 @@ const Navbar = ({
           </div>
         </SheetContent>
       </Sheet>
-    <></>
+    </>
   );
   const renderHomeNav = () => (
     <div className="absolute w-full z-[10] bg-emerald-950/70">
@@ -256,22 +257,25 @@ const Navbar = ({
 
   return (
     <>
-
       {isHome ? (
         renderHomeNav()
       ) : (
         <>
           <div
-            className={`fixed top-0 left-0 right-0  py-3 ${
-              isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
+            className={`fixed top-0 left-0 right-0 sm:py-2 ${
+              isChat
+                ? "bg-[#F1EFE7] border-b-[1px] "
+                : isDashboard
+                ? "bg-inherit border-b-[1px]"
+                : "bg-white"
             } z-10`}
-            style={{ height: isSmallScreen ? "12px" : "80px" }} // Adjust the height as needed
+            style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
-              <div className="h-full py-3 mt-2">
+              <div className="h-fullpy-3">
                 <div className="container mx-auto h-full">
                   <div className="flex items-center justify-between h-full">
-                    {!isDashboard && <Logo />}
+                    <Logo />
                     {isDashboard && renderDashboardNav()}
 
                     {isMarketPage && (
@@ -329,7 +333,6 @@ const Navbar = ({
           />
         </div>
       )}
-
     </>
   );
 };

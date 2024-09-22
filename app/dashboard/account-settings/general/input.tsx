@@ -1,46 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import {
-  FieldErrors,
-  FieldValues,
-  UseFormRegister,
-  RegisterOptions,
-} from "react-hook-form";
+import React, { useState } from "react";
+import { FieldErrors, UseFormRegister, RegisterOptions } from "react-hook-form";
+import { FormValues } from "./types";
 import { BiDollar } from "react-icons/bi";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 
 interface InputProps {
-  id: string;
+  id: keyof FormValues;
+  label: string;
   type?: string;
   disabled?: boolean;
-  formatPrice?: boolean;
-  label?: string;
   required?: boolean;
+  register: UseFormRegister<FormValues>;
+  errors: FieldErrors<FormValues>;
   isUsername?: boolean;
   isEmail?: boolean;
-  isNumber?: boolean;
   isPhoneNumber?: boolean;
-  register: UseFormRegister<FieldValues>;
-  errors: FieldErrors;
-  step?: string;
-  validationRules?: RegisterOptions<FieldValues>;
+  formatPrice?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
   id,
+  label,
   type = "text",
   disabled,
-  label,
-  formatPrice,
-  isUsername = false,
-  isEmail = false,
-  isNumber = false,
-  isPhoneNumber = false,
   register,
   required,
   errors,
-  validationRules,
+  isUsername = false,
+  isEmail = false,
+  isPhoneNumber = false,
+  formatPrice = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -81,7 +72,6 @@ const Input: React.FC<InputProps> = ({
       const rawNumbers = value.replace(/\D/g, "");
       value = formatPhoneNumber(rawNumbers);
 
-      // Calculate cursor position for phone numbers
       const newCursorPosition = calculateCursorPosition(
         input.value,
         value,
@@ -90,7 +80,6 @@ const Input: React.FC<InputProps> = ({
 
       setInputValue(value);
 
-      // Update cursor position for phone numbers
       setTimeout(() => {
         input.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);
@@ -98,7 +87,6 @@ const Input: React.FC<InputProps> = ({
       setInputValue(value);
     }
 
-    // Update the form state
     register(id, registerOptions).onChange({
       ...event,
       target: {
@@ -108,22 +96,15 @@ const Input: React.FC<InputProps> = ({
     });
   };
 
-  const registerOptions: RegisterOptions<FieldValues> = {
+  const registerOptions: RegisterOptions<FormValues, typeof id> = {
     required: required ? "This field is required" : false,
-    ...validationRules,
   };
 
   if (isUsername) {
     registerOptions.pattern = {
       value: /^(?=.{4,})[a-zA-Z0-9&' ]+$/,
-      message: "Username must not contain spaces or special characters",
-    };
-  }
-
-  if (isNumber) {
-    registerOptions.pattern = {
-      value: /^[0-9]*$/,
-      message: "Only enter numbers",
+      message:
+        "Username must be at least 4 characters long and can only contain letters, numbers, &, and '",
     };
   }
 
@@ -142,23 +123,13 @@ const Input: React.FC<InputProps> = ({
   }
 
   return (
-    <div className="w-inherit relative">
+    <div className="w-full relative">
       {formatPrice && (
         <BiDollar
           size={24}
           className="text-neutral-700 absolute top-5 left-2"
         />
       )}
-      {type === "password" && (
-        <button
-          type="button"
-          onClick={toggleShowPassword}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-        >
-          {showPassword ? <PiEye size={20} /> : <PiEyeClosedThin size={20} />}
-        </button>
-      )}
-
       <input
         id={id}
         type={showPassword ? "text" : type}
@@ -171,7 +142,7 @@ const Input: React.FC<InputProps> = ({
           peer
           w-full
           max-w-screen
-          sm:max-w-[500px]
+          ${type === "password" ? "w-full" : "sm:max-w-[500px]"}
           font-light
           p-2
           pt-6
@@ -183,6 +154,7 @@ const Input: React.FC<InputProps> = ({
           disabled:opacity-70
           disabled:cursor-not-allowed
           ${formatPrice ? "pl-9" : "pl-4"}
+          ${type === "password" ? "pr-10" : "pr-4"}
           ${errors[id] ? "border-rose-500" : "border-neutral-300"}
           ${errors[id] ? "focus:border-rose-500" : "focus:border-black"}
         `}
@@ -196,7 +168,6 @@ const Input: React.FC<InputProps> = ({
           -translate-y-3
           top-5
           text-sm
-          z-10
           origin-[0]
           ${formatPrice ? "left-9" : "left-4"}
           peer-placeholder-shown:scale-100
@@ -208,6 +179,15 @@ const Input: React.FC<InputProps> = ({
       >
         {label}
       </label>
+      {type === "password" && (
+        <button
+          type="button"
+          onClick={toggleShowPassword}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+        >
+          {showPassword ? <PiEye size={20} /> : <PiEyeClosedThin size={20} />}
+        </button>
+      )}
       {errors[id] && (
         <p className="text-rose-500 text-sm mt-1">
           {errors[id]?.message?.toString()}

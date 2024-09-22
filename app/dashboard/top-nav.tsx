@@ -29,7 +29,7 @@ const TopNav = () => {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <header className="border-b border-white/5 mt-0 lg:mt-6">
+    <header className="border-b border-white/5 mt-0">
       <nav className="flex overflow-x-auto py-4">
         <ul
           role="list"
