@@ -14,7 +14,7 @@ interface p {
   user: UserInfo;
 }
 
-const StepTen = ({ user }: p) => {
+const StepTwo = ({ user }: p) => {
   const Producer = async () => {
     try {
       await axios.post("/api/useractions/update", {
@@ -99,4 +99,4 @@ const StepTen = ({ user }: p) => {
   );
 };
 
-export default StepTen;
+export default StepTwo;

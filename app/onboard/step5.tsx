@@ -30,7 +30,7 @@ interface UserLocation {
 
 interface Props {
   user: UserInfo;
-  apiKey: string | undefined;
+  apiKey: string;
   updateFormData: (data: Partial<{ location: UserLocation }>) => void;
 }
 
