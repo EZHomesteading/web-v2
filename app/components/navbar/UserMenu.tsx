@@ -424,7 +424,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
         {renderIcons()}
       </div>
       <PopoverContent
-        className={`${outfit.className} mb-1 w-screen h-[calc(100vh-90px)] sm:h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
+        className={`${outfit.className} mb-1 w-screen h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
         align="end"
         alignOffset={0}
       >
