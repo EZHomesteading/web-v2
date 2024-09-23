@@ -54,7 +54,7 @@ interface Props {
   canReceivePayouts: boolean;
   uniqueUrl: string;
 }
-const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
+const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
   const pathname = usePathname();
   const white = pathname === "/";
   const router = useRouter();
@@ -532,11 +532,15 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
             ) : (
               <>
                 <Popover>
-                  <MenuItem
-                    onClick={() => {}}
-                    label="Sign Up"
-                    icon={<BsPersonPlus />}
-                  ></MenuItem>
+                  <PopoverTrigger>
+                    {" "}
+                    <MenuItem
+                      onClick={() => {}}
+                      label="Sign Up"
+                      icon={<BsPersonPlus />}
+                    ></MenuItem>
+                  </PopoverTrigger>
+
                   <PopoverContent
                     className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
                   >

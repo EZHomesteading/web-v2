@@ -39,10 +39,12 @@ interface StepThreeProps {
   projectHarvest: boolean;
   setValue: UseFormSetValue<FieldValues>;
   harvestDates: string[];
+  title: string;
   setHarvestDates: (newDates: string[]) => void;
 }
 
 const StepThree: React.FC<StepThreeProps> = ({
+  title,
   quantityType,
   setQuantityType,
   postSODT,
@@ -105,18 +107,32 @@ const StepThree: React.FC<StepThreeProps> = ({
             </div>
             <div className="flex justify-between items-center mb-3">
               <div className="font-light">
-                Click the box if this item is not currently available.
+                Are your "{title}" currently available.
               </div>
-              <Checkbox
-                id="projectHarvest"
-                checked={projectHarvest}
-                onCheckedChange={(checked: boolean) =>
-                  handleProjectHarvestCheckboxChange(checked, 0)
-                }
-                label=""
-              />
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleProjectHarvestCheckboxChange(true, 0)}
+                  className={`p-2 text-sm border rounded ${
+                    projectHarvest
+                      ? "bg-black text-white"
+                      : "bg-white text-black"
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => handleProjectHarvestCheckboxChange(false, 0)}
+                  className={`p-2 text-sm border rounded ${
+                    !projectHarvest
+                      ? "bg-black text-white"
+                      : "bg-white text-black"
+                  }`}
+                >
+                  No
+                </button>
+              </div>
             </div>
-            {projectHarvest && (
+            {!projectHarvest && (
               <div className="mb-4">
                 <Label className="text-lg font-light mb-2">
                   When will it be available?
@@ -141,9 +157,9 @@ const StepThree: React.FC<StepThreeProps> = ({
             <div className="relative my-2">
               <Input
                 {...commonInputProps}
-                id={projectHarvest ? "projectedStock" : "stock"}
+                id={!projectHarvest ? "projectedStock" : "stock"}
                 label={
-                  projectHarvest ? "Expected Quantity Per Day" : "Quantity"
+                  !projectHarvest ? "Expected Quantity Per Day" : "Quantity"
                 }
                 type="number"
                 maxlength={6}
@@ -227,7 +243,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                         onCheckedChange={(checked: boolean) =>
                           handleSODTCheckboxChange(checked, 0)
                         }
-                        label="Save as Account Default"
+                        label="Make this time to prepare, your Account Default?"
                       />
                     )}
                   </div>

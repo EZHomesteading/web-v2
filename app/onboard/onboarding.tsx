@@ -133,7 +133,7 @@ const Onboarding = ({
           }));
         }
       } else if (step === 11) {
-        router.push("/dashboard");
+        router.push("/create");
         return;
       }
 
