@@ -109,14 +109,28 @@ const StepThree: React.FC<StepThreeProps> = ({
               <div className="font-light">
                 Are your "{title}" currently available.
               </div>
-              <Checkbox
-                id="projectHarvest"
-                checked={projectHarvest}
-                onCheckedChange={(checked: boolean) =>
-                  handleProjectHarvestCheckboxChange(checked, 0)
-                }
-                label=""
-              />
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleProjectHarvestCheckboxChange(true, 0)}
+                  className={`p-2 text-sm border rounded ${
+                    projectHarvest
+                      ? "bg-black text-white"
+                      : "bg-white text-black"
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => handleProjectHarvestCheckboxChange(false, 0)}
+                  className={`p-2 text-sm border rounded ${
+                    !projectHarvest
+                      ? "bg-black text-white"
+                      : "bg-white text-black"
+                  }`}
+                >
+                  No
+                </button>
+              </div>
             </div>
             {!projectHarvest && (
               <div className="mb-4">
