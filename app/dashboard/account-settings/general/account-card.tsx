@@ -45,7 +45,9 @@ const AccountCard: React.FC<AccountCardProps> = ({
         <div>
           <div className="text-md font-normal">{title}</div>
           {!isEditing && !showAvatar && (
-            <div className="font-light text-sm">{info}</div>
+            <p className="text-sm text-gray-500 truncate max-w-[300px] sm:max-w-[500px] md:max-w-[600px]">
+              {info}
+            </p>
           )}
           {showAvatar && (
             <div className="py-3">
@@ -71,7 +73,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
           {showSave && (
             <Button
               onClick={onSave}
-              className={`${showAvatar ? `` : `mt-2`}  font-normal text-sm`}
+              className={`${showAvatar ? `` : `mt-4`}  font-normal text-sm`}
             >
               Save Changes
             </Button>

@@ -73,7 +73,7 @@ const Page = async () => {
           seller?.name || "(Deleted User)"
         );
         const metadata = {
-          title: `${user?.name} Buy Orders | EZHomesteading`,
+          title: `${user?.name} Orders | EZHomesteading`,
           description: "Track your ongoing buy orders.",
           keywords: [
             "buy",
@@ -88,7 +88,7 @@ const Page = async () => {
             "organic food",
           ],
           openGraph: {
-            title: `${user?.name} Buy Orders | EZHomesteading`,
+            title: `${user?.name} Orders | EZHomesteading`,
             description: "Track your ongoing buy orders.",
             url: "https://www.ezhomesteading.com/dashboard/orders/buyer",
             type: "website",
@@ -168,14 +168,17 @@ const Page = async () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-start">
-      <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
-        Buy Orders
-      </h1>{" "}
-      {user?.role !== UserRole.CONSUMER && (
-        <Link className="px-2 py-4" href="/dashboard/orders/seller">
-          <Button>Go to Sell Orders</Button>
-        </Link>
-      )}{" "}
+      <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">Orders</h1>{" "}
+      <div className="flex space-x-3 px-2">
+        <Button className="rounded-full">My Purchases</Button>
+        <Button className="rounded-full">Purchase History</Button>
+        {user?.role !== UserRole.CONSUMER && (
+          <>
+            <Button className="rounded-full">Sales</Button>
+            <Button className="rounded-full">Sales History</Button>
+          </>
+        )}
+      </div>
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
         {renderedCards}
       </main>

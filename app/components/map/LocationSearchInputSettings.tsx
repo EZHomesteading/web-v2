@@ -8,12 +8,12 @@ interface LocationSearchInputProps {
   apiKey: string;
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
-  onAddressParsed?: (address: {
-    fullAddress: string;
+  onAddressParsed: (address: {
     street: string;
     city: string;
     state: string;
     zip: string;
+    fullAddress: string;
   }) => void;
 }
 
@@ -54,16 +54,15 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
             zip = component.long_name;
           }
         });
-
-        setAddress(street.trim());
-
-        onAddressParsed?.({
-          fullAddress: selectedAddress,
+        onAddressParsed({
           street: street.trim(),
           city,
           state,
           zip,
+          fullAddress: selectedAddress,
         });
+
+        setAddress(street.trim());
       })
       .catch((error) => console.error("Error", error));
   };
@@ -110,7 +109,6 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                   -translate-y-3
                   top-5
                   text-sm
-                  z-10
                   origin-[0]
                   left-4
                   peer-placeholder-shown:scale-100
@@ -120,7 +118,7 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
                   text-zinc-400
                 `}
               >
-                Address
+                Street Address
               </label>
               <div className="absolute z-10 w-full bg-white shadow-md">
                 {suggestions.map((suggestion) => {

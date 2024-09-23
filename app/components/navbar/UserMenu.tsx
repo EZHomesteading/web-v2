@@ -1,10 +1,10 @@
 "use client";
 //user menu popover component
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
 import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { CiMenuFries, CiShop, CiUser } from "react-icons/ci";
+import { CiMenuFries, CiSettings, CiShop, CiUser } from "react-icons/ci";
 import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
@@ -17,12 +17,15 @@ import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import {
+  PiChartBarLight,
   PiChartBarThin,
+  PiChatCircleThin,
   PiHouseThin,
   PiMapTrifoldThin,
   PiPersonSimpleRunThin,
   PiPlusThin,
   PiStorefrontThin,
+  PiTreeThin,
 } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
@@ -34,7 +37,7 @@ import {
 } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Image from "next/image";
-import { IoIosMenu } from "react-icons/io";
+import { IoIosLogOut, IoIosMenu } from "react-icons/io";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
@@ -391,15 +394,15 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
 
   const MenuIcon: React.FC<{ user?: navUser }> = ({ user }) => (
     <>
-      <SheetTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
+      <PopoverTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
         <IconWrapper
           key="menu"
           icon={CiMenuFries}
           label="Menu"
           onClick={() => {}}
         />
-      </SheetTrigger>
-      <SheetTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
+      </PopoverTrigger>
+      <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
         <IoIosMenu
           className={`w-8 h-8 mr-1 ${
             pathname === "/" ? "text-white" : "text-black"
@@ -412,185 +415,130 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
           width={25}
           className="object-fit rounded-full"
         />
-      </SheetTrigger>
+      </PopoverTrigger>
     </>
   );
   return (
-    <Sheet>
-      <div className="flex flex-row items-center justify-center  pt-2 min-w-screen gap-x-3 md:gap-x-4">
+    <Popover>
+      <div className="flex flex-row items-center justify-evenly sm:justify-end pt-2 min-w-screen gap-x-3 md:gap-x-4">
         {renderIcons()}
       </div>
-      <SheetContent
-        side={isMdOrLarger ? "right" : "bottom"}
-        className={`${outfit.className} bg pt-5 overflow-y-auto h-screen`}
+      <PopoverContent
+        className={`${outfit.className} mb-1 w-screen h-[calc(100vh-90px)] sm:h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
+        align="end"
+        alignOffset={0}
       >
         <div>
-          {user && (
-            <div className="flex flex-row px-4">
-              <Avatar image={user?.image} />
-              <div className="flex flex-col ml-2">
-                <div className="font-bold">{user?.name}</div>
-                <div>{user?.firstName}</div>
-              </div>
-            </div>
-          )}
-
           <div>
             {user?.role === "COOP" ? (
               <div>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Sell Orders"
-                    icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/orders/seller")}
-                  />
-                </SheetTrigger>
+                <MenuItem
+                  label="Sell Orders"
+                  icon={<FaStore />}
+                  onClick={() => router.push("/dashboard/orders/seller")}
+                />
               </div>
             ) : user?.role === "PRODUCER" ? (
               <div>
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    label="Sell Orders"
-                    icon={<FaStore className="mr-2" />}
-                    onClick={() => router.push("/dashboard/orders/seller")}
-                  />
-                </SheetTrigger>
+                <MenuItem
+                  label="Sell Orders"
+                  icon={<FaStore />}
+                  onClick={() => router.push("/dashboard/orders/seller")}
+                />
               </div>
             ) : (
               <div></div>
             )}
             {user ? (
               <>
-                <SheetTrigger className="w-full">
+                <MenuItem
+                  label="Dashboard"
+                  icon={<PiChartBarLight />}
+                  onClick={() => router.push("/dashboard")}
+                />{" "}
+                <MenuItem
+                  label="Chat"
+                  icon={<PiChatCircleThin />}
+                  onClick={() => router.push("/chat")}
+                />{" "}
+                <MenuItem
+                  label="Market"
+                  icon={<CiShop />}
+                  onClick={() => router.push("/market")}
+                />
+                <MenuItem
+                  label="Map"
+                  icon={<LiaMapMarkedSolid />}
+                  onClick={() => router.push("/map")}
+                />
+                <MenuItem
+                  label="Cart"
+                  icon={<BsBasket />}
+                  onClick={() => router.push("/cart")}
+                />
+                <MenuItem
+                  label="Following"
+                  icon={<GoPeople />}
+                  onClick={() => router.push("/dashboard/following")}
+                />
+                <MenuItem
+                  label="Profile Settings"
+                  icon={<CiSettings />}
+                  onClick={() =>
+                    router.push("/dashboard/account-settings/general")
+                  }
+                />
+                <div className=" block sm:hidden">
                   <MenuItem
-                    label="Dashboard"
-                    icon={<MdDashboard className="mr-2" />}
-                    onClick={() => router.push("/dashboard")}
-                  />{" "}
-                  <MenuItem
-                    label="Chat"
-                    icon={<FaComment className="mr-2" />}
-                    onClick={() => router.push("/chat")}
-                  />{" "}
-                  <MenuItem
-                    label="Market"
-                    icon={<CiShop className="mr-2" />}
-                    onClick={() => router.push("/market")}
+                    label="Home"
+                    icon={<GiBarn />}
+                    onClick={() => router.push("/")}
                   />
-                  <MenuItem
-                    label="Map"
-                    icon={<LiaMapMarkedSolid className="mr-2" />}
-                    onClick={() => router.push("/map")}
-                  />
-                  <MenuItem
-                    label="Cart"
-                    icon={<BsBasket className="mr-2" />}
-                    onClick={() => router.push("/cart")}
-                  />
-                  <MenuItem
-                    label="Following"
-                    icon={<GoPeople className="mr-2" />}
-                    onClick={() => router.push("/dashboard/following")}
-                  />
-                  <MenuItem
-                    label="Profile Settings"
-                    icon={<MdSettings className="mr-2" />}
-                    onClick={() =>
-                      router.push("/dashboard/account-settings/general")
-                    }
-                  />
-                  <div className=" block sm:hidden">
+                </div>
+                {user?.role === "CONSUMER" && (
+                  <div>
                     <MenuItem
-                      label="Home"
-                      icon={<GiBarn className="mr-2" />}
-                      onClick={() => router.push("/")}
+                      icon={<PiStorefrontThin />}
+                      label="Become a Co-Op"
+                      onClick={() => router.push("/auth/become-a-co-op")}
+                    />
+                    <MenuItem
+                      icon={<PiTreeThin />}
+                      label="Become a Producer"
+                      onClick={() => router.push("/auth/become-a-producer")}
                     />
                   </div>
-                </SheetTrigger>
-                {user?.role === "CONSUMER" ? (
-                  <div>
-                    <SheetTrigger className="w-full">
-                      <MenuItem
-                        icon={<FaStore className="mr-2" />}
-                        label="Become a Co-Op"
-                        onClick={() => router.push("/auth/become-a-co-op")}
-                      />
-                      <MenuItem
-                        icon={<GiFruitTree className="mr-2" />}
-                        label="Become a Producer"
-                        onClick={() => router.push("/auth/become-a-producer")}
-                      />
-                    </SheetTrigger>
-                  </div>
-                ) : (
-                  <></>
                 )}
                 <hr />
-                <div
-                  onClick={toggleAbout}
-                  className="px-6 
-        py-3 
-        hover:shadow-md
-        font-normal
-      text-xl
-        md:text-lg
-        flex
-        items-center
-        mi hover:cursor-pointer "
-                >
-                  <div className="mr-2">
-                    <IoInformationCircleOutline className="mr-2" />
-                  </div>
-                  About <RiArrowDropDownLine className="ml-2" />
-                </div>
-                {about && (
-                  <ul
-                    className="px-16  text-xl
-        md:text-lg space-y-3"
-                  >
-                    <li>
-                      <Link href="/" className="w-full py-2">
-                        About Us
-                      </Link>
-                    </li>
-                    <li className="">
-                      <Link href="/info/how-ezh-work" className=" w-full py-2">
-                        How EZH Works
-                      </Link>
-                    </li>
-                  </ul>
+                <MenuItem
+                  icon={<IoIosLogOut />}
+                  label="Logout"
+                  onClick={() => signOut()}
+                />
+                {showInstallBtn &&
+                !window.matchMedia("(display-mode: standalone)").matches ? (
+                  <>
+                    <Button
+                      className="w-full"
+                      onClick={() => router.push("/get-ezh-app")}
+                    >
+                      Install EZH App
+                    </Button>{" "}
+                  </>
+                ) : (
+                  <div></div>
                 )}
-                <SheetTrigger className="w-full">
-                  <MenuItem
-                    icon={<FaSignOutAlt className="mr-2" />}
-                    label="Logout"
-                    onClick={() => signOut()}
-                  />
-                  {showInstallBtn &&
-                  !window.matchMedia("(display-mode: standalone)").matches ? (
-                    <>
-                      <Button onClick={() => router.push("/get-ezh-app")}>
-                        Install EZH App
-                      </Button>{" "}
-                    </>
-                  ) : (
-                    <div></div>
-                  )}
-                </SheetTrigger>
               </>
             ) : (
               <>
-                <Sheet>
-                  <SheetTrigger className="w-full">
-                    <MenuItem
-                      onClick={() => {}}
-                      label="Sign Up"
-                      icon={<BsPersonPlus className="mr-2" />}
-                    ></MenuItem>
-                  </SheetTrigger>
-                  <SheetContent
-                    side="top"
-                    className={`${outfit.className} h-screen w-screen d1dbbf text-black  `}
+                <Popover>
+                  <MenuItem
+                    onClick={() => {}}
+                    label="Sign Up"
+                    icon={<BsPersonPlus />}
+                  ></MenuItem>
+                  <PopoverContent
+                    className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
                   >
                     <div className="h-full flex flex-col items-center justify-center px-10">
                       <ul className="w-full max-w-3xl">
@@ -640,12 +588,12 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                         at any time
                       </div>
                     </div>
-                  </SheetContent>
-                </Sheet>
-                <SheetTrigger className="w-full">
+                  </PopoverContent>
+                </Popover>
+                <PopoverTrigger className="w-full">
                   <MenuItem
                     label="Sign In"
-                    icon={<PiPersonSimpleRunThin className="mr-2" />}
+                    icon={<PiPersonSimpleRunThin />}
                     onClick={() => {
                       let callbackUrl = window.location.href;
                       const encodedCallbackUrl =
@@ -658,15 +606,15 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                   />
                   <MenuItem
                     label="Market"
-                    icon={<CiShop className="mr-2" />}
+                    icon={<CiShop />}
                     onClick={() => router.push("/market")}
                   />
                   <MenuItem
                     label="Map"
-                    icon={<LiaMapMarkedSolid className="mr-2" />}
+                    icon={<LiaMapMarkedSolid />}
                     onClick={() => router.push("/map")}
                   />{" "}
-                </SheetTrigger>
+                </PopoverTrigger>
                 <div
                   onClick={toggleAbout}
                   className="px-6 
@@ -679,8 +627,8 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
         items-center
         mi hover:cursor-pointer "
                 >
-                  <div className="mr-2">
-                    <IoInformationCircleOutline className="mr-2" />
+                  <div>
+                    <IoInformationCircleOutline />
                   </div>
                   About <RiArrowDropDownLine className="ml-2" />
                 </div>
@@ -702,17 +650,17 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                     </li>
                   </ul>
                 )}
-                <SheetTrigger className="px-4 pt-3">
+                <PopoverTrigger className="px-4 pt-3">
                   <Button onClick={() => router.push("/get-ezh-app")}>
                     Install the EZH App
                   </Button>
-                </SheetTrigger>
+                </PopoverTrigger>
               </>
             )}
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </PopoverContent>
+    </Popover>
   );
 };
 
