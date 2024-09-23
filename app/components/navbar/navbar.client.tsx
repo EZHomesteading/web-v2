@@ -179,7 +179,7 @@ const Navbar = ({
           <TbLayoutSidebarRightCollapse
             className={`${
               isSmallScreen
-                ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
+                ? "transform text-6xl border text-black rounded-r-lg d1dbbf  -translate-x-1/4"
                 : "z border-none"
             }`}
           />
