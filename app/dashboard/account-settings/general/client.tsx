@@ -267,12 +267,8 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
         title="Address"
         info={
           truncateAddress(
-            `${watchedFields.street}${
-              watchedFields.apt ? ", " + watchedFields.apt : ""
-            }, ${watchedFields.city}, ${watchedFields.state}, ${
-              watchedFields.zip
-            }`
-          ) || "No Address Saved"
+            `${watchedFields.street} ${
+              watchedFields.apt} || "No Full Address Saved"
         }
         onSave={handleSubmit(onSubmit)}
         isEditing={editingCard === "Address"}
