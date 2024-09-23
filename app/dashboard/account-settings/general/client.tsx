@@ -1,57 +1,53 @@
 "use client";
-//general account settings page
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  useForm,
+  FieldValues,
+  SubmitHandler,
+  UseFormRegister,
+} from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Input from "./input";
+import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import { useEffect, useState } from "react";
 import LocationSearchInput from "@/app/components/map/LocationSearchInputSettings";
+import AccountCard from "./account-card";
+import Input from "./input";
 import { Button } from "@/app/components/ui/button";
-import { UserRole } from "@prisma/client";
+import { UploadButton } from "@/utils/uploadthing";
+import { FormValues, AddressFields } from "./types";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTrigger,
+  AlertDialogAction,
+  AlertDialogCancel,
 } from "@/app/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import Avatar from "@/app/components/Avatar";
-import { UploadButton } from "@/utils/uploadthing";
-import PhoneInput from "react-phone-number-input";
-import AccountCard from "./account-card";
-
-interface Props {
+interface PageProps {
   apiKey: string;
 }
-const Page = ({ apiKey }: Props) => {
+
+const Page: React.FC<PageProps> = ({ apiKey }) => {
   const user = useCurrentUser();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
-  const router = useRouter();
-  let fullAddress = "";
-  const [addressFields, setAddressFields] = useState({
+  const [image, setImage] = useState<string | undefined>(user?.image);
+  const [address, setAddress] = useState("");
+  const [addressFields, setAddressFields] = useState<AddressFields>({
     street: user?.location?.[0]?.address?.[0] || "",
     city: user?.location?.[0]?.address?.[1] || "",
     state: user?.location?.[0]?.address?.[2] || "",
     zip: user?.location?.[0]?.address?.[3] || "",
+    apt: user?.location?.[0]?.address?.[4] || "",
   });
-  if (user?.location && user.location[0]?.address) {
-    const addressArray = user.location[0].address;
-    fullAddress = addressArray
-      .filter((element) => element && element.trim())
-      .join(", ");
-  }
 
-  type AddressComponents = {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
+  const truncateAddress = (address: string, maxLength: number = 60) => {
+    if (address.length <= maxLength) return address;
+    return `${address.substring(0, maxLength)}...`;
   };
 
   const {
@@ -60,22 +56,44 @@ const Page = ({ apiKey }: Props) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FieldValues>({
+    reset,
+  } = useForm<FormValues>({
     defaultValues: {
-      oldPass: null,
-      newPass: null,
-      verifNewPass: null,
-      phoneNumber: user?.phoneNumber,
-      email: user?.email,
-      role: user?.role,
       name: user?.name,
-      image: user?.image,
-      street: user?.location?.[0]?.address?.[0] || "",
-      city: user?.location?.[0]?.address?.[1] || "",
-      state: user?.location?.[0]?.address?.[2] || "",
-      zip: user?.location?.[0]?.address?.[3] || "",
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
+      ...addressFields,
     },
   });
+
+  const watchedFields = watch();
+
+  useEffect(() => {
+    reset({
+      name: user?.name,
+      email: user?.email,
+      phoneNumber: user?.phoneNumber,
+      ...addressFields,
+    });
+  }, [user, addressFields, reset]);
+
+  const handleAddressSelect = useCallback(
+    ({
+      street,
+      city,
+      state,
+      zip,
+      fullAddress,
+    }: AddressFields & { fullAddress: string }) => {
+      setAddressFields({ street, apt: "", city, state, zip });
+      setValue("street", street, { shouldValidate: true, shouldDirty: true });
+      setValue("city", city, { shouldValidate: true, shouldDirty: true });
+      setValue("state", state, { shouldValidate: true, shouldDirty: true });
+      setValue("zip", zip, { shouldValidate: true, shouldDirty: true });
+      setAddress(fullAddress);
+    },
+    [setValue]
+  );
 
   const getLatLngFromAddress = async (address: string) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -96,122 +114,79 @@ const Page = ({ apiKey }: Props) => {
     }
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if ((data.newPass, data.oldPass, data.verifNewPass)) {
-      const password: string = data.oldPass;
-      const password2: string = data.newPass;
-      if (data.newPass === data.verifNewPass) {
-        if (!user || !user.email) {
-          return;
-        }
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
+    console.log("Form data on submit:", data);
 
-        const email: string = user.email;
+    const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
+    console.log("Full address:", fullAddress);
 
-        const response = await axios.post("/api/auth/verifypass", {
-          password,
-          email,
-        });
+    let geoData = null;
+    if (fullAddress.trim() !== ", , , ") {
+      console.log("Calling getLatLngFromAddress with:", fullAddress);
+      geoData = await getLatLngFromAddress(fullAddress);
+      console.log("Geo data received:", geoData);
+    }
 
-        const data = await response.data;
-        if (data.isValid === false) {
-          toast.error("Old Password is incorrect");
-          return;
-        }
-        if (data.isValid === true) {
-          const response2 = await axios.post(
-            "/api/auth/verifypass/updatepass",
-            {
-              password2,
-              email,
-            }
-          );
-          const datas = await response2.data;
-          if (datas.success === "Password updated!") {
-            toast.error("Password updated!");
+    const formData = {
+      image,
+      name: data.name,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      location: geoData
+        ? {
+            0: {
+              type: "Point",
+              coordinates: [geoData.lng, geoData.lat],
+              address: [data.street, data.city, data.state, data.zip],
+              hours: user?.location?.[0]?.hours || null,
+            },
           }
-        }
-      } else {
-        toast.error("passwords do not match");
-        return;
-      }
-    }
-    if (
-      fullAddress !== `${data.street}, ${data.city}, ${data.state}, ${data.zip}`
-    ) {
-      fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
-    }
-    if (fullAddress !== ", , , ") {
-      if (user?.location && Object.entries(user.location).length === 0) {
-      }
-      const geoData = await getLatLngFromAddress(fullAddress);
-      setIsLoading(true);
-      if (geoData) {
-        const formData = {
-          image: image,
-          name: data.name,
-          email: data.email,
-          phoneNumer: data.phoneNumber,
-          location:
-            (user?.location && Object.entries(user.location).length === 0) ||
-            user?.location === undefined ||
-            user?.location === null
-              ? {
-                  0: {
-                    type: "Point",
-                    coordinates: [geoData.lng, geoData.lat],
-                    address: [data.street, data.city, data.state, data.zip],
-                    hours: null,
-                  },
-                }
-              : {
-                  0: {
-                    type: "Point",
-                    coordinates: [geoData.lng, geoData.lat],
-                    address: [data.street, data.city, data.state, data.zip],
-                    hours: user?.location[0]?.hours
-                      ? user?.location[0]?.hours
-                      : null,
-                  },
-                },
-        };
-        axios
-          .post("/api/useractions/update", formData)
-          .then(() => {
-            router.refresh();
-            toast.success("Your account details have changed");
-          })
-          .catch((error) => {
-            toast.error(error);
-          })
-          .finally(() => {
-            // window.location.reload();
-            setIsLoading(false);
-            return;
-          });
-      } else {
-        const formData = {
-          image: image,
-          name: data.name,
-          email: data.email,
-          phoneNumer: data.phoneNumber,
-        };
-        axios
-          .post("/api/useractions/update", formData)
-          .then(() => {
-            router.refresh();
-            toast.success("Your account details have changed");
-          })
-          .catch((error) => {
-            toast.error(error);
-          })
-          .finally(() => {
-            // window.location.reload();
-            setIsLoading(false);
-          });
-      }
+        : user?.location,
+    };
+
+    console.log("Sending form data:", formData);
+
+    try {
+      await axios.post("/api/useractions/update", formData);
+      router.refresh();
+      toast.success("Your account details have been updated");
+      setEditingCard(null);
+    } catch (error) {
+      toast.error("Failed to update account details");
+      console.error("Update error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleEditStart = (cardName: string) => {
+    setEditingCard(cardName);
+    if (cardName === "Address") {
+      setAddress("");
+      setAddressFields({ street: "", apt: "", city: "", state: "", zip: "" });
+      setValue("street", "");
+      setValue("apt", "");
+      setValue("city", "");
+      setValue("state", "");
+      setValue("zip", "");
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditingCard(null);
+    reset();
+    if (editingCard === "Address") {
+      setAddress(user?.location?.[0]?.address?.join(", ") || "");
+      setAddressFields({
+        street: user?.location?.[0]?.address?.[0] || "",
+        apt: "",
+        city: user?.location?.[0]?.address?.[1] || "",
+        state: user?.location?.[0]?.address?.[2] || "",
+        zip: user?.location?.[0]?.address?.[3] || "",
+      });
+    }
+  };
   const onDelete = () => {
     axios
       .delete(`/api/auth/register/${user?.id}`)
@@ -225,39 +200,17 @@ const Page = ({ apiKey }: Props) => {
         location.replace("/");
       });
   };
-  const [address, setAddress] = useState("");
-  const handleAddressSelect = ({
-    street,
-    city,
-    state,
-    zip,
-  }: AddressComponents) => {
-    setAddress(street);
-    setValue("street", street);
-    setValue("city", city);
-    setValue("state", state);
-    setValue("zip", zip);
-  };
-  const [image, setImage] = useState(user?.image);
-  useEffect(() => {
-    Object.entries(addressFields).forEach(([key, value]) => {
-      setValue(key, value);
-    });
-  }, [addressFields, setValue]);
   return (
-    <div className="flex flex-col px-2  mb-8 sm:px-20 md:px-40 2xl:px-80 bg-inherit ">
-      <h1 className="sr-only">Personal Info</h1>
-      <header className="flex flex-row justify-between items-center mt-1">
-        <h2 className="text-2xl font-medium">Personal Info</h2>
-      </header>
+    <div className="flex flex-col px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit h-[120vh] sm:h-fit">
+      <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">Personal Info</h2>
 
       <AccountCard
         title="Username"
-        info={user?.name || "No Username Saved"}
+        info={watchedFields.name || "No Username Saved"}
         onSave={handleSubmit(onSubmit)}
         isEditing={editingCard === "Username"}
-        onEditStart={() => setEditingCard("Username")}
-        onEditCancel={() => setEditingCard(null)}
+        onEditStart={() => handleEditStart("Username")}
+        onEditCancel={handleEditCancel}
         isDisabled={editingCard !== null && editingCard !== "Username"}
       >
         <Input
@@ -270,13 +223,14 @@ const Page = ({ apiKey }: Props) => {
           required
         />
       </AccountCard>
+
       <AccountCard
         title="Email"
-        info={user?.email || "No Email Saved"}
+        info={watchedFields.email || "No Email Saved"}
         onSave={handleSubmit(onSubmit)}
         isEditing={editingCard === "Email"}
-        onEditStart={() => setEditingCard("Email")}
-        onEditCancel={() => setEditingCard(null)}
+        onEditStart={() => handleEditStart("Email")}
+        onEditCancel={handleEditCancel}
         isDisabled={editingCard !== null && editingCard !== "Email"}
       >
         <Input
@@ -292,12 +246,12 @@ const Page = ({ apiKey }: Props) => {
 
       <AccountCard
         title="Phone Number"
-        info={user?.phoneNumber || "No Phone Number Saved"}
-        onSave={() => handleSubmit(onSubmit)}
-        isEditing={editingCard === "phoneNumber"}
-        onEditStart={() => setEditingCard("phoneNumber")}
-        onEditCancel={() => setEditingCard(null)}
-        isDisabled={editingCard !== null && editingCard !== "phoneNumber"}
+        info={watchedFields.phoneNumber || "No Phone Number Saved"}
+        onSave={handleSubmit(onSubmit)}
+        isEditing={editingCard === "PhoneNumber"}
+        onEditStart={() => handleEditStart("PhoneNumber")}
+        onEditCancel={handleEditCancel}
+        isDisabled={editingCard !== null && editingCard !== "PhoneNumber"}
       >
         <Input
           isPhoneNumber={true}
@@ -311,11 +265,19 @@ const Page = ({ apiKey }: Props) => {
 
       <AccountCard
         title="Address"
-        info={fullAddress || "No Address Saved"}
-        onSave={() => {}}
+        info={
+          truncateAddress(
+            `${watchedFields.street}${
+              watchedFields.apt ? ", " + watchedFields.apt : ""
+            }, ${watchedFields.city}, ${watchedFields.state}, ${
+              watchedFields.zip
+            }`
+          ) || "No Address Saved"
+        }
+        onSave={handleSubmit(onSubmit)}
         isEditing={editingCard === "Address"}
-        onEditStart={() => setEditingCard("Address")}
-        onEditCancel={() => setEditingCard(null)}
+        onEditStart={() => handleEditStart("Address")}
+        onEditCancel={handleEditCancel}
         isDisabled={editingCard !== null && editingCard !== "Address"}
       >
         <>
@@ -325,14 +287,13 @@ const Page = ({ apiKey }: Props) => {
             setAddress={setAddress}
             onAddressParsed={handleAddressSelect}
           />
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-rows-4 sm:grid-rows-2 sm:grid-cols-2 gap-4 mt-4">
             <Input
               id="apt"
-              label="Apt, suite. (optional)"
+              label="Apt. No, Suite (optional)"
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
             />
             <Input
               id="city"
@@ -402,6 +363,7 @@ const Page = ({ apiKey }: Props) => {
         <div className="space-y-2">
           <Input
             id="oldPass"
+            type="password"
             label="Current Password"
             disabled={isLoading}
             register={register}
@@ -409,13 +371,15 @@ const Page = ({ apiKey }: Props) => {
           />
           <Input
             id="newPass"
+            type="password"
             label="New Password"
             disabled={isLoading}
             register={register}
             errors={errors}
           />
           <Input
-            id="verifNewPass"
+            id="verifPass"
+            type="password"
             label="Verify Password"
             disabled={isLoading}
             register={register}
@@ -431,7 +395,7 @@ const Page = ({ apiKey }: Props) => {
         </div>
       </AccountCard>
 
-      <div className="py-8 flex justify-center border-b-[1px]">
+      <div className="py-8 flex justify-center">
         <AlertDialog>
           <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
             Delete Account

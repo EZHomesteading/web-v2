@@ -118,7 +118,7 @@ const CartIcon = ({ cart }: c) => {
   return (
     <div className={`${outfit.className}`}>
       <Sheet>
-        <SheetTrigger className="flex flex-col items-center">
+        <SheetTrigger className="flex pb-4 sm:pb-2 flex-col items-center">
           <div className="relative">
             <PiBasketThin
               className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}

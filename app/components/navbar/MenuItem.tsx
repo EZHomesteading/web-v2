@@ -10,19 +10,19 @@ const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
     <div
       onClick={onClick}
       className="
-        px-6
-      
-        py-3 
-        hover:shadow-md
+        p-2
+        hover:shadow-sm
+        hover:cursor-pointer
         font-normal
-        text-xl
-        md:text-lg
+        text-lg
+        sm:text-sm
         flex
         items-center
+        justify-between
         mi"
     >
-      <div className="mr-2">{icon}</div>
       {label}
+      <div>{icon}</div>
     </div>
   );
 };

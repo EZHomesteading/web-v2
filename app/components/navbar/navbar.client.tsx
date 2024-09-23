@@ -168,74 +168,76 @@ const Navbar = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
   const renderDashboardNav = () => (
-    <Sheet>
-      <SheetTrigger
-        className={`
+    <>
+      <Sheet>
+        <SheetTrigger
+          className={`
       ${isSmallScreen ? "fixed left-0 z top-[18vh] w-fit" : "sm:hidden "}
       transition-transform hover:scale-105 focus:scale-105 focus:outline-none
     `}
-      >
-        <TbLayoutSidebarRightCollapse
-          className={`${
-            isSmallScreen
-              ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
-              : "z border-none"
-          }`}
-        />
-      </SheetTrigger>
+        >
+          <TbLayoutSidebarRightCollapse
+            className={`${
+              isSmallScreen
+                ? "transform text-6xl border shadow-[5px_5px_10px_rgba(0,0,0,0.5),-5px_-5px_10px_rgba(255,255,255,0.5)] text-black rounded-r-lg d1dbbf  -translate-x-1/4"
+                : "z border-none"
+            }`}
+          />
+        </SheetTrigger>
 
-      <SheetContent side="left">
-        <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
-          <nav className="flex flex-2 flex-col">
-            <ul role="list" className="flex flex-2 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="mx-3 space-y-1">
-                  {user?.role !== UserRole.CONSUMER
-                    ? vendorNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))
-                    : conNav.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-81"
-                                : "text-gray-401 hover:text-white hover:bg-gray-800",
-                              "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                            )}
-                          >
-                            <item.icon
-                              className="h-7 w-6 shrink-0"
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </SheetContent>
-    </Sheet>
+        <SheetContent side="left">
+          <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
+            <nav className="flex flex-2 flex-col">
+              <ul role="list" className="flex flex-2 flex-col gap-y-7">
+                <li>
+                  <ul role="list" className="mx-3 space-y-1">
+                    {user?.role !== UserRole.CONSUMER
+                      ? vendorNav.map((item) => (
+                          <li key={item.name}>
+                            <a
+                              href={item.href}
+                              className={classNames(
+                                item.current
+                                  ? "bg-gray-81"
+                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
+                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
+                            >
+                              <item.icon
+                                className="h-7 w-6 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </li>
+                        ))
+                      : conNav.map((item) => (
+                          <li key={item.name}>
+                            <a
+                              href={item.href}
+                              className={classNames(
+                                item.current
+                                  ? "bg-gray-81"
+                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
+                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
+                              )}
+                            >
+                              <item.icon
+                                className="h-7 w-6 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </li>
+                        ))}
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
   const renderHomeNav = () => (
     <div className="absolute w-full z-[10] bg-emerald-950/70">
@@ -260,16 +262,20 @@ const Navbar = ({
       ) : (
         <>
           <div
-            className={`fixed top-0 left-0 right-0  py-3 ${
-              isChat ? "bg-[#F1EFE7] border-b-[1px]" : "bg-white"
+            className={`fixed top-0 left-0 right-0 sm:py-2 ${
+              isChat
+                ? "bg-[#F1EFE7] border-b-[1px] "
+                : isDashboard
+                ? "bg-inherit border-b-[1px]"
+                : "bg-white"
             } z-10`}
-            style={{ height: isSmallScreen ? "12px" : "80px" }} // Adjust the height as needed
+            style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
-              <div className="h-full py-3 mt-2">
+              <div className="h-fullpy-3">
                 <div className="container mx-auto h-full">
                   <div className="flex items-center justify-between h-full">
-                    {!isDashboard && <Logo />}
+                    <Logo />
                     {isDashboard && renderDashboardNav()}
 
                     {isMarketPage && (
