@@ -590,31 +590,28 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                     </div>
                   </PopoverContent>
                 </Popover>
-                <PopoverTrigger className="w-full">
-                  <MenuItem
-                    label="Sign In"
-                    icon={<PiPersonSimpleRunThin />}
-                    onClick={() => {
-                      let callbackUrl = window.location.href;
-                      const encodedCallbackUrl =
-                        encodeURIComponent(callbackUrl);
+                <MenuItem
+                  label="Sign In"
+                  icon={<PiPersonSimpleRunThin />}
+                  onClick={() => {
+                    let callbackUrl = window.location.href;
+                    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
-                      router.push(
-                        `/auth/login?callbackUrl=${encodedCallbackUrl}`
-                      );
-                    }}
-                  />
-                  <MenuItem
-                    label="Market"
-                    icon={<CiShop />}
-                    onClick={() => router.push("/market")}
-                  />
-                  <MenuItem
-                    label="Map"
-                    icon={<LiaMapMarkedSolid />}
-                    onClick={() => router.push("/map")}
-                  />{" "}
-                </PopoverTrigger>
+                    router.push(
+                      `/auth/login?callbackUrl=${encodedCallbackUrl}`
+                    );
+                  }}
+                />
+                <MenuItem
+                  label="Market"
+                  icon={<CiShop />}
+                  onClick={() => router.push("/market")}
+                />
+                <MenuItem
+                  label="Map"
+                  icon={<LiaMapMarkedSolid />}
+                  onClick={() => router.push("/map")}
+                />{" "}
                 <div
                   onClick={toggleAbout}
                   className="px-6 
@@ -650,11 +647,9 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                     </li>
                   </ul>
                 )}
-                <PopoverTrigger className="px-4 pt-3">
-                  <Button onClick={() => router.push("/get-ezh-app")}>
-                    Install the EZH App
-                  </Button>
-                </PopoverTrigger>
+                <Button onClick={() => router.push("/get-ezh-app")}>
+                  Install the EZH App
+                </Button>
               </>
             )}
           </div>
