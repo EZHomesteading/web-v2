@@ -4,7 +4,7 @@ import { Viewport } from "next";
 import { navUser } from "@/next-auth";
 import Navbar from "../components/navbar/Navbar";
 export const viewport: Viewport = {
-  themeColor: "#ced9bb",
+  themeColor: "#fff",
 };
 
 const MarketLayout = async ({ children }: { children: React.ReactNode }) => {
