@@ -1,8 +1,11 @@
+"use client";
 import { Outfit } from "next/font/google";
 import FinTab from "./fintab";
 import { Session } from "next-auth";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { UserRole } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -14,6 +17,23 @@ interface Props {
   stepHandler: (arg0: number) => void;
 }
 const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
+  const router = useRouter();
+  const consumerUpdate = async () => {
+    try {
+      await axios.post("/api/useractions/update", {
+        role: "PRODUCER",
+        hasPickedRole: false,
+      });
+    } catch (error) {
+    } finally {
+      router.refresh();
+    }
+  };
+  console.log(session?.user.stripeAccountId);
+  console.log(session?.user.role);
+  if (session?.user.role === "CONSUMER") {
+    consumerUpdate();
+  }
   return (
     <div className={`${outfit.className} grid grid-cols-12`}>
       <div className="col-span-1 2xl:col-span-4"></div>
@@ -46,6 +66,11 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
               Welcome, {session?.user?.firstName || session?.user?.name}
             </div>
             <div className="mb-10 font-light">Final Steps to Start Selling</div>
+            <div className="mb-10 font-light">
+              Some additional information is required before you can start list
+              items
+            </div>
+
             <div className="mx-5">
               <h1 className="text-2xl mb-5">Required to Begin Selling</h1>
               <ul>

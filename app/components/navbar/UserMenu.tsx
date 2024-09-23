@@ -49,7 +49,7 @@ interface Props {
   canReceivePayouts: boolean;
   uniqueUrl: string;
 }
-const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
+const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -418,7 +418,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
         {renderIcons()}
       </div>
       <PopoverContent
-        className={`${outfit.className} mb-1 w-screen h-[calc(100vh-90px)] sm:h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
+        className={`${outfit.className} mb-1 w-screen h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
         align="end"
         alignOffset={0}
       >
@@ -526,11 +526,15 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
             ) : (
               <>
                 <Popover>
-                  <MenuItem
-                    onClick={() => {}}
-                    label="Sign Up"
-                    icon={<BsPersonPlus />}
-                  ></MenuItem>
+                  <PopoverTrigger>
+                    {" "}
+                    <MenuItem
+                      onClick={() => {}}
+                      label="Sign Up"
+                      icon={<BsPersonPlus />}
+                    ></MenuItem>
+                  </PopoverTrigger>
+
                   <PopoverContent
                     className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
                   >

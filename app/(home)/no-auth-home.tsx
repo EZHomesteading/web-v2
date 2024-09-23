@@ -138,7 +138,7 @@ export default function Home() {
             </span>
           </Button>
           <Button
-            onClick={() => router.push("/auth/register?callbackUrl=/create")}
+            onClick={() => router.push("/auth/register?callbackUrl=/onboard")}
             className="shadow-xl pr-8 ml-8 sm:ml-[10%]  bg-emerald-400 hover:bg-emerald-100 text-black relative group  sm:text-lg rounded-full py-6"
           >
             List Your Produce

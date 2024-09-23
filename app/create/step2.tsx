@@ -6,8 +6,10 @@ import { Label } from "../components/ui/label";
 import SearchClient from "../components/client/SearchClient";
 import { FormattedProduct } from "@/hooks/use-product";
 import useProducts from "@/hooks/use-product";
+import { FieldValues, UseFormSetValue } from "react-hook-form";
 
 interface StepTwoProps {
+  setValue: UseFormSetValue<FieldValues>;
   title: string;
   setTitle: (value: string) => void;
   setReview: (value: boolean) => void;
@@ -39,6 +41,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
   setImageSrc,
   setReview,
   onCustomTitleSet,
+  setValue,
 }) => {
   const [product, setProduct] = useState<FormattedProduct | null>(null);
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
@@ -67,7 +70,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
     if (value) {
       setTitle(value.label);
       setImageSrc(value.photo ? [value.photo] : []);
+      setValue("title", title);
     } else {
+      setValue("title", "");
       setTitle("");
       setImageSrc([]);
     }
@@ -145,6 +150,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
         />
         <hr />
         <div className="w-full">
+          <div className="mb-1 ml-[2px] text-sm">
+            Tags are used to help users search for your products.
+          </div>
+          <div className="mb-1 ml-[2px] mt-1 text-sm">
+            Tags must be entered one word at a time and will not be visible to
+            users.
+          </div>
           <Textarea
             id="keywords"
             placeholder="Enter keywords to make your product easier to find"
@@ -168,7 +180,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
             value={tag}
             className="text-[16px]"
           />
-          <div className="mb-4 ml-[2px] mt-1 text-xs">
+          <div className="mb-4 ml-[2px] mt-1 text-sm">
             Click a tag to remove
           </div>
           <Button
