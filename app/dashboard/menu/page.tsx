@@ -1,31 +1,79 @@
 import React from "react";
-import { PiUserCircleGear } from "react-icons/pi";
-import { LiaCartArrowDownSolid } from "react-icons/lia";
+import {
+  PiBasketThin,
+  PiBookOpenTextThin,
+  PiCardholderThin,
+  PiClipboardTextThin,
+  PiCookieThin,
+  PiGearThin,
+  PiLockSimpleThin,
+  PiSignatureThin,
+  PiUsersThreeThin,
+  PiUserThin,
+} from "react-icons/pi";
 import MenuCard from "./menu-card";
 import UserInfoCard from "./user-info-card";
-import { CiSettings } from "react-icons/ci";
 
 const menuItems = [
   {
     title: "Personal Info",
-    icon: <PiUserCircleGear className="h-8 w-8" />,
+    icon: <PiUserThin className="h-8 w-8" />,
     href: "/dashboard/account-settings/general",
   },
   {
-    title: "Account Preferences",
-    icon: <CiSettings className="h-8 w-8" />,
-    href: "/dashboard/account-settings/home",
+    title: "Notification Preferences",
+    icon: <PiGearThin className="h-8 w-8" />,
+    href: "/dashboard/account-settings/",
+    showDiv: true,
   },
   {
     title: "Orders",
-    icon: <LiaCartArrowDownSolid className="h-8 w-8" />,
+    icon: <PiClipboardTextThin className="h-8 w-8" />,
     href: "/dashboard/orders",
+  },
+  {
+    title: "Cart",
+    icon: <PiBasketThin className="h-8 w-8" />,
+    href: "/cart",
+    showDiv: true,
+  },
+  {
+    title: "Payment Methods",
+    icon: <PiCardholderThin className="h-8 w-8" />,
+    href: "/cards",
+    showDiv: true,
+  },
+  {
+    title: "Following",
+    icon: <PiUsersThreeThin className="h-8 w-8" />,
+    href: "/dashboard/following",
+    showDiv: true,
+  },
+  {
+    title: "Privacy Policy",
+    icon: <PiLockSimpleThin className="h8w8" />,
+    href: "/",
+  },
+  {
+    title: "Terms of Service",
+    icon: <PiSignatureThin className="h8w8" />,
+    href: "/",
+  },
+  {
+    title: "Cookie Policy",
+    icon: <PiCookieThin className="h8w8" />,
+    href: "/cookie-policy",
+  },
+  {
+    title: "Community Standards",
+    icon: <PiBookOpenTextThin className="h8w8" />,
+    href: "/",
   },
 ];
 
 const AccountHome = () => {
   return (
-    <div className="px-6">
+    <div className="px-2 sm:px-6 md:px-2 lg:w-2/3">
       <UserInfoCard />
       {menuItems.map((item, index) => (
         <MenuCard
@@ -33,6 +81,7 @@ const AccountHome = () => {
           title={item.title}
           icon={item.icon}
           href={item.href}
+          showDiv={item.showDiv}
         />
       ))}
     </div>

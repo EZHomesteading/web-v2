@@ -2,16 +2,14 @@
 //user menu popover component
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
-import { FaComment, FaSignOutAlt, FaStore } from "react-icons/fa";
+import { FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { CiMenuFries, CiSettings, CiShop, CiUser } from "react-icons/ci";
 import { usePathname, useRouter } from "next/navigation";
-import { MdDashboard, MdSettings } from "react-icons/md";
 import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
 import { Outfit } from "next/font/google";
 import { GoPeople } from "react-icons/go";
-import Avatar from "../Avatar";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
@@ -31,17 +29,14 @@ import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  IoInformationCircleOutline,
-  IoStorefrontOutline,
-} from "react-icons/io5";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { IoStorefrontOutline } from "react-icons/io5";
 import Image from "next/image";
 import { IoIosLogOut, IoIosMenu } from "react-icons/io";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
+import Barn from "./icons/barn";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -56,7 +51,6 @@ interface Props {
 }
 const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
   const pathname = usePathname();
-  const white = pathname === "/";
   const router = useRouter();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
@@ -78,9 +72,9 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
     };
   }, []);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
-  const toggleAbout = () => {
-    setAbout((prevState) => !prevState);
-  };
+  // const toggleAbout = () => {
+  //   setAbout((prevState) => !prevState);
+  // };
   const handleCreateClickConsumer = async () => {
     try {
       const [stripeResponse, userUpdateResponse] = await Promise.all([
@@ -202,7 +196,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
       icons.push(
         <IconWrapper
           key="home"
-          icon={PiHouseThin}
+          icon={Barn}
           label="Home"
           onClick={() => router.push("/")}
         />,
@@ -430,7 +424,7 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
       >
         <div>
           <div>
-            {user?.role === "COOP" ? (
+            {user?.role === UserRole.COOP ? (
               <div>
                 <MenuItem
                   label="Sell Orders"

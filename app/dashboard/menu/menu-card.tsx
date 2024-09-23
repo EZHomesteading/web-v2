@@ -1,6 +1,5 @@
-import { Card, CardContent } from "@/app/components/ui/card";
 import Link from "next/link";
-import { IoIosArrowRoundForward } from "react-icons/io";
+import { PiArrowRightThin } from "react-icons/pi";
 interface p {
   title: string;
   href: string;
@@ -12,15 +11,15 @@ const MenuCard = ({ title, href, icon, showDiv = false }: p) => {
     <>
       <Link
         href={href}
-        className="flex items-center hover:cursor-pointer justify-between"
+        className={` flex items-center hover:cursor-pointer hover:text-white justify-between pb-3`}
       >
         <div className="flex items-center">
           <div>{icon}</div>
-          <div className="ml-1">{title}</div>
+          <div className="ml-1 font-light">{title}</div>
         </div>
-        <IoIosArrowRoundForward className="h-8 w-8" />
+        <PiArrowRightThin className={`h-8 w-8`} />
       </Link>
-      {showDiv && <div className="border-b py-3" />}
+      {showDiv && <hr className="mb-6 mt-3" />}
     </>
   );
 };

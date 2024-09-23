@@ -359,10 +359,10 @@ const VendorsMap = ({
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfit.className} absolute top-1 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${outfit.className} absolute top-1 sm:top-5 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
-          Drawing Tool Usage
+          Drawing Tool
         </PopoverTrigger>
         <PopoverContent className=" bg-slate-800 text-white mt-1 ml-1 rounded-md z">
           <ul className={`${outfit.className} p-2 rounded-md text-xs`}>
@@ -422,7 +422,7 @@ const VendorsMap = ({
       </div>
       {!isDrawingEnabled && (
         <Button
-          className="absolute top-1 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
+          className="absolute top-1 sm:top-5 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
           onClick={startDrawing}
         >
           <CiEdit size={20} className="mr-1" />

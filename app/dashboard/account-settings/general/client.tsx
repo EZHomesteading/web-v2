@@ -1,11 +1,7 @@
 "use client";
+
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  useForm,
-  FieldValues,
-  SubmitHandler,
-  UseFormRegister,
-} from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -26,6 +22,9 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/app/components/ui/alert-dialog";
+import { PiArrowLeftThin } from "react-icons/pi";
+import Link from "next/link";
+
 interface PageProps {
   apiKey: string;
 }
@@ -116,10 +115,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    console.log("Form data on submit:", data);
-
     const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
-    console.log("Full address:", fullAddress);
 
     let geoData = null;
     if (fullAddress.trim() !== ", , , ") {
@@ -144,8 +140,6 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
           }
         : user?.location,
     };
-
-    console.log("Sending form data:", formData);
 
     try {
       await axios.post("/api/useractions/update", formData);
@@ -201,230 +195,230 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
       });
   };
   return (
-    <div className="flex flex-col px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit h-[120vh] sm:h-fit">
-      <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">Personal Info</h2>
+    <>
+      <div className="flex flex-col px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit h-[120vh] sm:h-fit relative">
+        <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">Personal Info</h2>
 
-      <AccountCard
-        title="Username"
-        info={watchedFields.name || "No Username Saved"}
-        onSave={handleSubmit(onSubmit)}
-        isEditing={editingCard === "Username"}
-        onEditStart={() => handleEditStart("Username")}
-        onEditCancel={handleEditCancel}
-        isDisabled={editingCard !== null && editingCard !== "Username"}
-      >
-        <Input
-          id="name"
-          label="Username"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          isUsername={true}
-          required
-        />
-      </AccountCard>
-
-      <AccountCard
-        title="Email"
-        info={watchedFields.email || "No Email Saved"}
-        onSave={handleSubmit(onSubmit)}
-        isEditing={editingCard === "Email"}
-        onEditStart={() => handleEditStart("Email")}
-        onEditCancel={handleEditCancel}
-        isDisabled={editingCard !== null && editingCard !== "Email"}
-      >
-        <Input
-          id="email"
-          label="Email"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          isEmail={true}
-          required
-        />
-      </AccountCard>
-
-      <AccountCard
-        title="Phone Number"
-        info={watchedFields.phoneNumber || "No Phone Number Saved"}
-        onSave={handleSubmit(onSubmit)}
-        isEditing={editingCard === "PhoneNumber"}
-        onEditStart={() => handleEditStart("PhoneNumber")}
-        onEditCancel={handleEditCancel}
-        isDisabled={editingCard !== null && editingCard !== "PhoneNumber"}
-      >
-        <Input
-          isPhoneNumber={true}
-          id="phoneNumber"
-          label="Phone Number"
-          register={register}
-          errors={errors}
-          disabled={isLoading}
-        />
-      </AccountCard>
-
-      <AccountCard
-        title="Address"
-        info={
-          truncateAddress(
-            `${watchedFields.street}${
-              watchedFields.apt ? ", " + watchedFields.apt : ""
-            }, ${watchedFields.city}, ${watchedFields.state}, ${
-              watchedFields.zip
-            }`
-          ) || "No Address Saved"
-        }
-        onSave={handleSubmit(onSubmit)}
-        isEditing={editingCard === "Address"}
-        onEditStart={() => handleEditStart("Address")}
-        onEditCancel={handleEditCancel}
-        isDisabled={editingCard !== null && editingCard !== "Address"}
-      >
-        <>
-          <LocationSearchInput
-            apiKey={apiKey}
-            address={address}
-            setAddress={setAddress}
-            onAddressParsed={handleAddressSelect}
+        <AccountCard
+          title="Username"
+          info={watchedFields.name || "No Username Saved"}
+          onSave={handleSubmit(onSubmit)}
+          isEditing={editingCard === "Username"}
+          onEditStart={() => handleEditStart("Username")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "Username"}
+        >
+          <Input
+            id="name"
+            label="Username"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            isUsername={true}
+            required
           />
-          <div className="grid grid-rows-4 sm:grid-rows-2 sm:grid-cols-2 gap-4 mt-4">
+        </AccountCard>
+
+        <AccountCard
+          title="Email"
+          info={watchedFields.email || "No Email Saved"}
+          onSave={handleSubmit(onSubmit)}
+          isEditing={editingCard === "Email"}
+          onEditStart={() => handleEditStart("Email")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "Email"}
+        >
+          <Input
+            id="email"
+            label="Email"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            isEmail={true}
+            required
+          />
+        </AccountCard>
+        <AccountCard
+          title="Phone Number"
+          info={watchedFields.phoneNumber || "No Phone Number Saved"}
+          onSave={handleSubmit(onSubmit)}
+          isEditing={editingCard === "PhoneNumber"}
+          onEditStart={() => handleEditStart("PhoneNumber")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "PhoneNumber"}
+        >
+          <Input
+            isPhoneNumber={true}
+            id="phoneNumber"
+            label="Phone Number"
+            register={register}
+            errors={errors}
+            disabled={isLoading}
+          />
+        </AccountCard>
+        <AccountCard
+          title="Address"
+          info={
+            truncateAddress(
+              `${watchedFields.street}${
+                watchedFields.apt ? ", " + watchedFields.apt : ""
+              }, ${watchedFields.city}, ${watchedFields.state}, ${
+                watchedFields.zip
+              }`
+            ) || "No Address Saved"
+          }
+          onSave={handleSubmit(onSubmit)}
+          isEditing={editingCard === "Address"}
+          onEditStart={() => handleEditStart("Address")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "Address"}
+        >
+          <>
+            <LocationSearchInput
+              apiKey={apiKey}
+              address={address}
+              setAddress={setAddress}
+              onAddressParsed={handleAddressSelect}
+            />
+            <div className="grid grid-rows-4 sm:grid-rows-2 sm:grid-cols-2 gap-4 mt-4">
+              <Input
+                id="apt"
+                label="Apt. No, Suite (optional)"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+              />
+              <Input
+                id="city"
+                label="City"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+                required
+              />
+              <Input
+                id="state"
+                label="State"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+                required
+              />
+              <Input
+                id="zip"
+                label="ZIP Code"
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+                required
+              />
+            </div>
+          </>
+        </AccountCard>
+        <AccountCard
+          title="Profile Image"
+          info={image}
+          showAvatar={true}
+          onSave={() => {}}
+          isEditing={editingCard === "Image"}
+          onEditStart={() => setEditingCard("Image")}
+          onEditCancel={() => setEditingCard(null)}
+          isDisabled={editingCard !== null && editingCard !== "Image"}
+        >
+          {" "}
+          <UploadButton
+            endpoint="imageUploader"
+            onClientUploadComplete={(res: { url: string }[]) => {
+              setImage(res[0].url);
+            }}
+            onUploadError={(error: Error) => {
+              alert(`ERROR! ${error.message}`);
+            }}
+            className="ut-allowed-content:hidden ut-button:inline-flex ut-button:items-center ut-button:justify-center ut-button:whitespace-nowrap ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:transition-colors ut-button:focus-visible:outline-none ut-button:focus-visible:ring-1 ut-button:focus-visible:ring-ring ut-button:disabled:pointer-events-none ut-button:disabled:opacity-50 ut-button:h-9 ut-button:px-4 ut-button:py-2 ut-button:border ut-button:border-input  ut-button:hover:bg-accent ut-button:hover:text-accent-foreground ut-button:text-black ut-button:mr-2 ut-button:bg-inherit"
+            content={{
+              button({ ready }) {
+                if (ready) return <div>Upload Profile Image</div>;
+                return "Getting ready...";
+              },
+            }}
+          />
+        </AccountCard>
+        <AccountCard
+          title="Password"
+          info="**********"
+          onSave={() => {}}
+          isEditing={editingCard === "Password"}
+          onEditStart={() => setEditingCard("Password")}
+          onEditCancel={() => setEditingCard(null)}
+          isDisabled={editingCard !== null && editingCard !== "Password"}
+          showSave={false}
+        >
+          <div className="space-y-2">
             <Input
-              id="apt"
-              label="Apt. No, Suite (optional)"
+              id="oldPass"
+              type="password"
+              label="Current Password"
               disabled={isLoading}
               register={register}
               errors={errors}
             />
             <Input
-              id="city"
-              label="City"
+              id="newPass"
+              type="password"
+              label="New Password"
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
             />
             <Input
-              id="state"
-              label="State"
+              id="verifPass"
+              type="password"
+              label="Verify Password"
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
             />
-            <Input
-              id="zip"
-              label="ZIP Code"
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              required
-            />
+            <Button
+              type="submit"
+              onClick={handleSubmit(onSubmit)}
+              className="font-light"
+            >
+              Change Password
+            </Button>
           </div>
-        </>
-      </AccountCard>
-      <AccountCard
-        title="Profile Image"
-        info={image}
-        showAvatar={true}
-        onSave={() => {}}
-        isEditing={editingCard === "Image"}
-        onEditStart={() => setEditingCard("Image")}
-        onEditCancel={() => setEditingCard(null)}
-        isDisabled={editingCard !== null && editingCard !== "Image"}
-      >
-        {" "}
-        <UploadButton
-          endpoint="imageUploader"
-          onClientUploadComplete={(res: { url: string }[]) => {
-            setImage(res[0].url);
-          }}
-          onUploadError={(error: Error) => {
-            alert(`ERROR! ${error.message}`);
-          }}
-          className="ut-allowed-content:hidden ut-button:inline-flex ut-button:items-center ut-button:justify-center ut-button:whitespace-nowrap ut-button:rounded-md ut-button:text-sm ut-button:font-medium ut-button:transition-colors ut-button:focus-visible:outline-none ut-button:focus-visible:ring-1 ut-button:focus-visible:ring-ring ut-button:disabled:pointer-events-none ut-button:disabled:opacity-50 ut-button:h-9 ut-button:px-4 ut-button:py-2 ut-button:border ut-button:border-input  ut-button:hover:bg-accent ut-button:hover:text-accent-foreground ut-button:text-black ut-button:mr-2 ut-button:bg-inherit"
-          content={{
-            button({ ready }) {
-              if (ready) return <div>Upload Profile Image</div>;
-              return "Getting ready...";
-            },
-          }}
-        />
-      </AccountCard>
-      <AccountCard
-        title="Password"
-        info="**********"
-        onSave={() => {}}
-        isEditing={editingCard === "Password"}
-        onEditStart={() => setEditingCard("Password")}
-        onEditCancel={() => setEditingCard(null)}
-        isDisabled={editingCard !== null && editingCard !== "Password"}
-        showSave={false}
-      >
-        <div className="space-y-2">
-          <Input
-            id="oldPass"
-            type="password"
-            label="Current Password"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-          />
-          <Input
-            id="newPass"
-            type="password"
-            label="New Password"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-          />
-          <Input
-            id="verifPass"
-            type="password"
-            label="Verify Password"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-          />
-          <Button
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            className="font-light"
-          >
-            Change Password
-          </Button>
+        </AccountCard>
+
+        <div className="py-8 flex justify-center">
+          <AlertDialog>
+            <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
+              Delete Account
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-black rounded-lg px-4 py-4 w-fit ">
+              <AlertDialogHeader className="text-3xl">
+                Are you sure?
+              </AlertDialogHeader>
+              <AlertDialogDescription className="text-white pt-2">
+                We cannot recover a user after it has been deleted, this is
+                irreversible. All information related to this account will be
+                deleted permanently.
+              </AlertDialogDescription>
+
+              <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
+                <AlertDialogAction
+                  className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
+                  onClick={onDelete}
+                >
+                  Yes, I&apos;m sure
+                </AlertDialogAction>
+                <AlertDialogCancel className=" shadow-none bg-green-600 text-3xl hover:bg-green-700 text-md text-white border-none hover:text-white m-0">
+                  Nevermind
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-      </AccountCard>
-
-      <div className="py-8 flex justify-center">
-        <AlertDialog>
-          <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
-            Delete Account
-          </AlertDialogTrigger>
-          <AlertDialogContent className="bg-black rounded-lg px-4 py-4 w-fit ">
-            <AlertDialogHeader className="text-3xl">
-              Are you sure?
-            </AlertDialogHeader>
-            <AlertDialogDescription className="text-white pt-2">
-              We cannot recover a user after it has been deleted, this is
-              irreversible. All information related to this account will be
-              deleted permanently.
-            </AlertDialogDescription>
-
-            <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
-              <AlertDialogAction
-                className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
-                onClick={onDelete}
-              >
-                Yes, I&apos;m sure
-              </AlertDialogAction>
-              <AlertDialogCancel className=" shadow-none bg-green-600 text-3xl hover:bg-green-700 text-md text-white border-none hover:text-white m-0">
-                Nevermind
-              </AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
-    </div>
+    </>
   );
 };
 

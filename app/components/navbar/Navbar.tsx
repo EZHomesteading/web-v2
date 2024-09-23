@@ -42,7 +42,6 @@ const Navbar = async ({
       return null;
     }
   }
-  console.log("bean", canReceivePayouts);
   if (user && (user.name || user.role === UserRole.CONSUMER) && !user.url) {
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);

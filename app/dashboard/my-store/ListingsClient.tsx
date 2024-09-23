@@ -42,7 +42,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
 
   const onEdit = (id: string) => {
     id;
-    router.push(`/dashboard/my-store/update-listing/${id}`);
+    router.push(`/dashboard/update-listing/${id}`);
   };
 
   return (
