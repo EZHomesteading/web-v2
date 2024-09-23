@@ -101,13 +101,8 @@ const Navbar = ({
       ) : (
         <>
           <div
-            className={`fixed top-0 left-0 right-0 sm:py-2 ${
-              isChat
-                ? "!bg-[#F1EFE7] border-b-[1px] "
-                : isDashboard
-                ? "!bg-inherit md:border-b-[1px]"
-                : "bg-white"
-            } z-10`}
+            className={`fixed top-0 left-0 right-0 sm:py-2 
+                !bg-inherit md:border-b-[1px] z-10`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
@@ -153,7 +148,6 @@ const Navbar = ({
               </>
             )}
           </div>
-          <div style={{ paddingTop: isSmallScreen ? "0px" : "64px" }} />{" "}
           {!isSmallScreen && isMarketPage && (
             <div className="container mx-auto mt-4">
               <Categories user={user} />

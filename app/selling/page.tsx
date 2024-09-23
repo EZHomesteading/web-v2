@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Button } from "../components/ui/button";
 import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
-import Overview from "@/app/dashboard/overview";
+import Overview from "@/app/selling/overview";
 import DashPopover from "./dashboard-popover";
 import { getFollowers } from "@/actions/getFollow";
 import DashboardPopup from "../(home)/info-modals/dashboard-info-modal";

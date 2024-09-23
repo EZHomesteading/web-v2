@@ -11,25 +11,25 @@ import {
   PiUsersThreeThin,
   PiUserThin,
 } from "react-icons/pi";
-import MenuCard from "./menu-card";
-import UserInfoCard from "./user-info-card";
+import MenuCard from "./components/menu-card";
+import UserInfoCard from "./components/user-info-card";
 
 const menuItems = [
   {
     title: "Personal Info",
     icon: <PiUserThin className="h-8 w-8" />,
-    href: "/dashboard/account-settings/general",
+    href: "/account/personal-info",
   },
   {
     title: "Notification Preferences",
     icon: <PiGearThin className="h-8 w-8" />,
-    href: "/dashboard/account-settings/",
+    href: "/account/notification-preferences",
     showDiv: true,
   },
   {
     title: "Orders",
     icon: <PiClipboardTextThin className="h-8 w-8" />,
-    href: "/dashboard/orders",
+    href: "/account/orders",
   },
   {
     title: "Cart",
@@ -46,7 +46,7 @@ const menuItems = [
   {
     title: "Following",
     icon: <PiUsersThreeThin className="h-8 w-8" />,
-    href: "/dashboard/following",
+    href: "/account/following",
     showDiv: true,
   },
   {

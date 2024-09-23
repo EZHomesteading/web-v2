@@ -1,7 +1,7 @@
 //dashboard layout parent element
 import Navbar from "@/app/components/navbar/Navbar";
 import { Outfit } from "next/font/google";
-import Sidebar from "./sidebar";
+import Sidebar from "./update-listing/components/sidebar";
 import { getNavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 import { navUser } from "@/next-auth";

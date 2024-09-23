@@ -23,7 +23,6 @@ const Navbar = async ({
   isMarketPage,
   isHome,
 }: p) => {
-  console.log("bean");
   let uniqueUrl = "";
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -32,7 +31,6 @@ const Navbar = async ({
     (user?.stripeAccountId
       ? await checkPayoutCapability(user?.stripeAccountId)
       : false) || false;
-  //console.log(user?.hasPickedRole);
   async function checkPayoutCapability(stripeAccountId: string) {
     try {
       const account = await stripe.accounts.retrieve(stripeAccountId);

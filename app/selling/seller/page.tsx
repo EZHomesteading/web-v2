@@ -6,9 +6,9 @@ import {
   PiMoneyThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import MenuCard from "../menu/menu-card";
+import MenuCard from "../../account/components/menu-card";
 import { CiSettings } from "react-icons/ci";
-import UserInfoCard from "../menu/user-info-card";
+import UserInfoCard from "../../account/components/user-info-card";
 
 const menuItems = [
   {

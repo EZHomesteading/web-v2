@@ -1,15 +1,17 @@
 import { currentUser } from "@/lib/auth";
-import { getUserWithBuyOrders } from "@/actions/getUser";
+import { getUserWithSellOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
-import { GetListingsByIds } from "@/actions/getListings";
-import { getStatusText } from "@/app/dashboard/order-status";
+import { SafeListing } from "@/types";
+import { FinalListing, GetListingsByIds } from "@/actions/getListings";
+import { getStatusText } from "@/app/selling/update-listing/components/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ActualListing, ListingGroup } from "./buyer/page";
+import { Fragment } from "react";
+import { ActualListing, ListingGroup } from "../buyer/page";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -22,12 +24,13 @@ const formatPrice = (price: number): string => {
 
 const Page = async () => {
   let user = await currentUser();
-  const buyer = await getUserWithBuyOrders({ userId: user?.id });
+  const seller = await getUserWithSellOrders({ userId: user?.id });
+
   const renderedCards = await Promise.all(
-    buyer?.buyerOrders
+    seller?.sellerOrders
       .filter(
         (order) =>
-          ![0, 4, 7, 9, 12, 15, 17, 18, 19, 20, 21, 22].includes(order.status)
+          ![0, 4, 7, 9, 12, 15, 19, 18, 17, 20, 21, 22].includes(order.status)
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>
@@ -36,7 +39,8 @@ const Page = async () => {
         const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
-        const seller = await getUserById({ userId: order.sellerId });
+
+        const buyer = await getUserById({ userId: order.userId });
         const statusText = getStatusText(
           order.status,
           false,
@@ -44,10 +48,10 @@ const Page = async () => {
           seller?.name || "(Deleted User)"
         );
         const metadata = {
-          title: `${user?.name} Buy Orders | EZHomesteading`,
-          description: "Track your ongoing buy orders.",
+          title: `${user?.name} Sell Orders | EZHomesteading`,
+          description: "Track your ongoing sell orders.",
           keywords: [
-            "buy",
+            "seller",
             "orders",
             "vendor",
             "ezh",
@@ -59,9 +63,10 @@ const Page = async () => {
             "organic food",
           ],
           openGraph: {
-            title: `${user?.name} Buy Orders | EZHomesteading`,
-            description: "Track your ongoing buy orders.",
-            url: "https://www.ezhomesteading.com/dashboard/orders",
+            title: `${user?.name}'s Dashboard | EZHomesteading`,
+            description:
+              "Track your ongoing sell and buy orders, payouts, total sales, and recent transactions from the dashboard.",
+            url: "https://www.ezhomesteading.com/dashboard/orders/seller",
             type: "website",
           },
         };
@@ -82,7 +87,7 @@ const Page = async () => {
             </head>
             <Card key={order.id} className="sheet shadow-lg mb-4">
               <CardHeader className="text-xl sm:text-2xl lg:text-3xl py-3 border-b-[1px] border-gray-100 relative">
-                {seller?.name}
+                {buyer?.name}
                 <Link
                   href={`/chat/${order.conversationId}`}
                   className="absolute top-2 lg:top-0 right-2 "
@@ -121,7 +126,7 @@ const Page = async () => {
                     );
                   })
                 )}
-                <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
+                <div>Order Total: {formatPrice(order.totalPrice)}</div>
                 <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
               </CardContent>
               <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
@@ -140,15 +145,17 @@ const Page = async () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-start">
       <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
-        Buy Orders
+        Sell Orders
       </h1>{" "}
       {user?.role !== UserRole.CONSUMER && (
-        <Link className="px-2 py-4" href="/dashboard/orders/seller">
-          <Button>Go to Sell Orders</Button>
+        <Link className="px-2 py-4" href="/dashboard/orders/buyer">
+          <Button>Go to Buy Orders</Button>
         </Link>
-      )}{" "}
+      )}
       <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
-        {renderedCards}
+        {renderedCards.map((card, index: number) => (
+          <Fragment key={index}>{card}</Fragment>
+        ))}
       </main>
     </div>
   );
