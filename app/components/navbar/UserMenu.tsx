@@ -612,41 +612,6 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
                   icon={<LiaMapMarkedSolid />}
                   onClick={() => router.push("/map")}
                 />{" "}
-                <div
-                  onClick={toggleAbout}
-                  className="px-6 
-        py-3 
-        hover:shadow-md
-        font-normal
-        text-xl
-        md:text-lg
-        flex
-        items-center
-        mi hover:cursor-pointer "
-                >
-                  <div>
-                    <IoInformationCircleOutline />
-                  </div>
-                  About <RiArrowDropDownLine className="ml-2" />
-                </div>
-                {about && (
-                  <ul
-                    className="px-16  
-   text-xl
-        md:text-lg space-y-3"
-                  >
-                    <li>
-                      <Link href="/" className="w-full py-2">
-                        About Us
-                      </Link>
-                    </li>
-                    <li className="">
-                      <Link href="/info/how-ezh-work" className=" w-full py-2">
-                        How EZH Works
-                      </Link>
-                    </li>
-                  </ul>
-                )}
                 <Button onClick={() => router.push("/get-ezh-app")}>
                   Install the EZH App
                 </Button>
