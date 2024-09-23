@@ -46,6 +46,11 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
               Welcome, {session?.user?.firstName || session?.user?.name}
             </div>
             <div className="mb-10 font-light">Final Steps to Start Selling</div>
+            <div className="mb-10 font-light">
+              Some additional information is required before you can start list
+              items
+            </div>
+
             <div className="mx-5">
               <h1 className="text-2xl mb-5">Required to Begin Selling</h1>
               <ul>

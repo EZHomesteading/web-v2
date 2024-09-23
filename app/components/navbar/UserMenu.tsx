@@ -532,11 +532,15 @@ const UserMenu = ({ user, canReceivePayouts, isHome, uniqueUrl }: Props) => {
             ) : (
               <>
                 <Popover>
-                  <MenuItem
-                    onClick={() => {}}
-                    label="Sign Up"
-                    icon={<BsPersonPlus />}
-                  ></MenuItem>
+                  <PopoverTrigger>
+                    {" "}
+                    <MenuItem
+                      onClick={() => {}}
+                      label="Sign Up"
+                      icon={<BsPersonPlus />}
+                    ></MenuItem>
+                  </PopoverTrigger>
+
                   <PopoverContent
                     className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
                   >
