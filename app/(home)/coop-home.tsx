@@ -1,3 +1,4 @@
+"use client";
 //homepage displayed if user role is COOP
 import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
@@ -6,6 +7,7 @@ import StripeButton from "./stripe-onboard";
 import { Button } from "../components/ui/button";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
+import { useRouter } from "next/navigation";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -15,9 +17,25 @@ const outfit = Outfit({
 
 interface Props {
   user: UserInfo;
+  canReceivePayouts: boolean;
 }
 
-const CoopHome = ({ user }: Props) => {
+const CoopHome = ({ user, canReceivePayouts }: Props) => {
+  const router = useRouter();
+  const handleCreateClickSeller = () => {
+    if (
+      (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
+      user?.location &&
+      user?.location[0]?.address &&
+      user?.location[0]?.hours &&
+      user?.image &&
+      canReceivePayouts === true
+    ) {
+      router.push("/create");
+    } else {
+      router.push("/onboard");
+    }
+  };
   return (
     <main className="h-screen bg-black text-white px-2 py-2 pt-60 flex flex-col items-center   sm:items-center">
       <div className="absolute inset-0 ">
@@ -55,6 +73,13 @@ const CoopHome = ({ user }: Props) => {
           </div>
         </h1>
         <div className="flex flex-row justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
+          <Button
+            onClick={handleCreateClickSeller}
+            className="hover:underline mr-2"
+          >
+            List produce
+          </Button>
+
           <Link href="/market">
             {" "}
             <Button className="hover:bg-green-100 hover:text-black">
