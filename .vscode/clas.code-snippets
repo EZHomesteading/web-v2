@@ -1,0 +1,10 @@
+{
+	"Print className": {
+	  "scope": "javascript,typescript,javascriptreact,typescriptreact",
+	  "prefix": "cn",
+	  "body": [
+		"className={`$1`}$0"
+	  ],
+	  "description": "Print className with template literal"
+	}
+  }

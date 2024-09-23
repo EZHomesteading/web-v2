@@ -8,14 +8,24 @@ import {
 } from "@/app/components/ui/alert-dialog";
 interface AvatarProps {
   image?: string | null;
+  h?: string;
+  h2?: string;
+  h3?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ image }: AvatarProps) => {
+const Avatar: React.FC<AvatarProps> = ({
+  image,
+  h = "9",
+  h2 = "12",
+  h3 = "15",
+}: AvatarProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
         <div className="relative">
-          <div className="relative inline-block rounded-full overflow-hidden h-9 w-9 md:h-12 md:w-12">
+          <div
+            className={`relative inline-block rounded-full overflow-hidden h-${h} w-${h} md:h-${h2} md:w-${h2}`}
+          >
             <Image
               fill
               src={image || "/images/website-images/placeholder.jpg"}
