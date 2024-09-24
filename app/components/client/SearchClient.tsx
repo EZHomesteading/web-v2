@@ -11,17 +11,18 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 
-interface ProductSelectProps {
-  value: FormattedProduct | null;
-  subcat: string;
-  onChange: (value: FormattedProduct | null) => void;
-  onCustomAction: (value: string) => void;
-  customActionLabel: string;
-  searchProducts: (query: string) => FormattedProduct[];
-  getAll: () => FormattedProduct[];
-}
+// interface ProductSelectProps {
+//   value: FormattedProduct | null;
+//   subcat: string;
+//   onChange: (value: FormattedProduct | null) => void;
+//   onCustomAction: (value: string) => void;
+//   customActionLabel: string;
+//   searchProducts: (query: string) => FormattedProduct[];
+//   getAll: () => FormattedProduct[];
+// }
 
 interface ProductSelectProps {
+  title: string;
   value: FormattedProduct | null;
   subcat: string;
   onChange: (value: FormattedProduct | null) => void;
@@ -41,6 +42,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   searchProducts,
   getAll,
   onCustomTitleSet,
+  title,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedOption, setSelectedOption] = useState<FormattedProduct | null>(
@@ -117,7 +119,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" || event.key === "Tab") {
       event.preventDefault();
       const exactMatch = loadOptions(inputValue).then((options) =>
         options.find(
@@ -145,7 +147,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
     <div>
       <AsyncSelect
         ref={selectRef}
-        placeholder="Enter A Product Name"
+        placeholder={title ? title : "Enter A Product Name"}
         isClearable
         cacheOptions
         defaultOptions
@@ -185,8 +187,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
             <DialogTitle>Use Custom Title?</DialogTitle>
             <DialogDescription>
               "{customTitleInput}" does not match any existing options. Would
-              you like to use it as a custom title? Be sure to capitalise your
-              title properly.
+              you like to use it as a custom title?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -9,8 +9,11 @@ const outfit = Outfit({
 
 const StepFour = () => {
   return (
-    <>
-      <div className="flex items-center sm:justify-center h-full px-20 ">
+    <div className="h-screen">
+      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
+        Notification Settings
+      </div>
+      <div className="h-full flex flex-col items-center sm:pt-[10%] pt-[30%] px-10">
         <div
           className={`w-full max-w-2xl flex flex-col items-start text-start ${outfit.className}`}
         >
@@ -39,7 +42,7 @@ const StepFour = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
