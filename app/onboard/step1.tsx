@@ -79,7 +79,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                     <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                       <div
                         onClick={() => {
-                          stepHandler(11);
+                          stepHandler(2);
                         }}
                         className="flex justify-between mx-5 items-center hover:cursor-pointer"
                       >
@@ -101,7 +101,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(4);
+                        stepHandler(5);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -118,7 +118,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(5);
+                        stepHandler(6);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -139,7 +139,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(7);
+                        stepHandler(8);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -155,7 +155,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(8);
+                        stepHandler(9);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
@@ -174,7 +174,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
                     <div
                       onClick={() => {
-                        stepHandler(9);
+                        stepHandler(10);
                       }}
                       className="flex justify-between mx-5 items-center hover:cursor-pointer"
                     >
