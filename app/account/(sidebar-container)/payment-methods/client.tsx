@@ -2,7 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X } from "lucide-react";
-
+import Modal from "@/app/components/modals/chatmodals/Modal";
+import Input from "./input";
+import { useForm } from "react-hook-form";
+import { FormValues } from "./input";
+import { Button } from "@/app/components/ui/button";
 interface StripeCard {
   id: string;
   brand: string;
@@ -34,6 +38,20 @@ const getCardBackground = (brand: string) => {
 };
 
 const PaymentMethods: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm<FormValues>();
+
+  const watchedFields = watch();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   const [cards, setCards] = useState<StripeCard[]>([
     {
       id: "card_1MvoiELkdIwHu7ixOeFGbN9D",
@@ -104,8 +122,6 @@ const PaymentMethods: React.FC = () => {
       setActiveCardId(null);
     }
   };
-
-  const addCard = () => {};
 
   const toggleCard = (id: string) => {
     setActiveCardId(activeCardId === id ? null : id);
@@ -184,13 +200,71 @@ const PaymentMethods: React.FC = () => {
       />
       <div style={{ ...cardStyle, marginTop: "1rem" }}>
         <button
-          onClick={addCard}
+          onClick={openModal}
           className="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center"
         >
           <Plus size={24} className="mr-2" />
           Add New Card
         </button>
       </div>
+      <Modal
+        bgWhite={true}
+        showX={false}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      >
+        <div className="flex flex-col">
+          <Input
+            id="cardNumber"
+            label="Card Number"
+            register={register}
+            errors={errors}
+            type="cardNumber"
+            roundT={true}
+          />
+          <div className="flex flex-row">
+            <Input
+              id="expirationDate"
+              label="Expiry Date"
+              register={register}
+              errors={errors}
+              roundLB={true}
+            />
+            <Input
+              id="ccv"
+              label="CCV"
+              register={register}
+              errors={errors}
+              roundRB={true}
+            />
+          </div>
+          <div className="mt-2 pb-3">
+            <Input
+              id="zipCode"
+              label="Zip Code"
+              register={register}
+              errors={errors}
+              round={true}
+            />
+          </div>
+          <hr className="pb-3" />
+          <div className="flex justify-between !font-light items-center">
+            <Button
+              className="font-light"
+              onClick={() => setIsModalOpen(false)}
+              variant={`outline`}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="font-light"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Add Card
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
