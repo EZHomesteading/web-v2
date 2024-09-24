@@ -286,6 +286,10 @@ button:focus {
 .authlayouttext {
   color: #ced9bb !important;
 }
+.h8w8 {
+  height: 2rem;
+  width: 2rem;
+}
 .transition-width {
   transition-property: width;
 }

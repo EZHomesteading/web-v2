@@ -41,7 +41,7 @@ const MapPage = async () => {
 
   return (
     <div className="h-sreen overflow-hidden touch-none">
-      <div className="relative w-full z-10 shadow-sm h-[64px]">
+      <div className="relative w-full z-10 shadow-sm">
         <Container>
           <Navbar user={user as unknown as navUser} />
         </Container>

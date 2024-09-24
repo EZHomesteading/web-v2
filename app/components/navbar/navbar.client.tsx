@@ -1,15 +1,14 @@
 "use client";
-import { usePathname } from "next/navigation";
+
 import { useEffect, useState } from "react";
 import Categories from "./Categories";
 import Container from "../Container";
-import Logo from "./Logo";
+import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import { navUser } from "@/next-auth";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { UserRole } from "@prisma/client";
-import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import { MdDashboard, MdOutlinePrivacyTip } from "react-icons/md";
 import { CgCommunity } from "react-icons/cg";
 import { FaOpencart } from "react-icons/fa";
@@ -19,6 +18,9 @@ import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
 import { TbShoppingCartDollar } from "react-icons/tb";
 import { VscHistory } from "react-icons/vsc";
 import { LiaCartArrowDownSolid } from "react-icons/lia";
+import { Button } from "../ui/button";
+import Link from "next/link";
+
 interface NavigationItem {
   name: string;
   href: string;
@@ -35,111 +37,8 @@ interface NavbarProps {
   isHome?: boolean;
   canReceivePayouts: boolean;
   uniqueUrl: string;
+  seller?: boolean;
 }
-
-const conNav: NavigationItem[] = [
-  { name: "Dashboard", href: "/dashboard", icon: MdDashboard, current: false },
-  {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
-    icon: GiSettingsKnobs,
-    current: true,
-  },
-  {
-    name: "Orders",
-    href: "/dashboard/reservations",
-    icon: FaOpencart,
-    current: false,
-  },
-  {
-    name: "Order History",
-    href: "/dashboard/order-history",
-    icon: VscHistory,
-    current: false,
-  },
-  {
-    name: "Privacy Policy",
-    href: "/privacy-policy",
-    icon: MdOutlinePrivacyTip,
-    current: false,
-  },
-  {
-    name: "Terms of Service",
-    href: "#",
-    icon: HiOutlineDocument,
-    current: false,
-  },
-  {
-    name: "Cookies Policy",
-    href: "/cookie-policy",
-    icon: PiCookieThin,
-    current: false,
-  },
-  {
-    name: "Community Standards",
-    href: "/community-standards",
-    icon: CgCommunity,
-    current: false,
-  },
-];
-
-const vendorNav: NavigationItem[] = [
-  { name: "Dashboard", href: "/dashboard", icon: MdDashboard, current: false },
-  {
-    name: "Sell Orders",
-    href: "/dashboard/orders/seller",
-    icon: TbShoppingCartDollar,
-    current: false,
-  },
-  {
-    name: "My Store",
-    href: "/dashboard/my-store",
-    icon: PiStorefrontThin,
-    current: false,
-  },
-  {
-    name: "Buy Orders",
-    href: "/dashboard/orders/buyer",
-    icon: LiaCartArrowDownSolid,
-    current: false,
-  },
-  {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
-    icon: GiSettingsKnobs,
-    current: true,
-  },
-  {
-    name: "Order History",
-    href: "/dashboard/order-history",
-    icon: VscHistory,
-    current: false,
-  },
-  {
-    name: "Privacy Policy",
-    href: "/privacy-policy",
-    icon: MdOutlinePrivacyTip,
-    current: false,
-  },
-  {
-    name: "Terms of Service",
-    href: "#",
-    icon: HiOutlineDocument,
-    current: false,
-  },
-  {
-    name: "Cookies Policy",
-    href: "/cookie-policy",
-    icon: PiCookieThin,
-    current: false,
-  },
-  {
-    name: "Community Standards",
-    href: "/community-standards",
-    icon: CgCommunity,
-    current: false,
-  },
-];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -152,6 +51,7 @@ const Navbar = ({
   isMarketPage = false,
   isChat = false,
   isHome = false,
+  seller = false,
   canReceivePayouts,
   uniqueUrl,
 }: NavbarProps) => {
@@ -167,78 +67,7 @@ const Navbar = ({
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
-  const renderDashboardNav = () => (
-    <>
-      <Sheet>
-        <SheetTrigger
-          className={`
-      ${isSmallScreen ? "fixed left-0 z top-[18vh] w-fit" : "sm:hidden "}
-      transition-transform hover:scale-105 focus:scale-105 focus:outline-none
-    `}
-        >
-          <TbLayoutSidebarRightCollapse
-            className={`${
-              isSmallScreen
-                ? "transform text-6xl border text-black rounded-r-lg d1dbbf  -translate-x-1/4"
-                : "z border-none"
-            }`}
-          />
-        </SheetTrigger>
 
-        <SheetContent side="left">
-          <div className="flex grow flex-col gap-y-6 overflow-y-auto bg-black/10 px-3 ring-1 ring-white/5 h-screen bg pt-10">
-            <nav className="flex flex-2 flex-col">
-              <ul role="list" className="flex flex-2 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="mx-3 space-y-1">
-                    {user?.role !== UserRole.CONSUMER
-                      ? vendorNav.map((item) => (
-                          <li key={item.name}>
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                item.current
-                                  ? "bg-gray-81"
-                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
-                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                              )}
-                            >
-                              <item.icon
-                                className="h-7 w-6 shrink-0"
-                                aria-hidden="true"
-                              />
-                              {item.name}
-                            </a>
-                          </li>
-                        ))
-                      : conNav.map((item) => (
-                          <li key={item.name}>
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                item.current
-                                  ? "bg-gray-81"
-                                  : "text-gray-401 hover:text-white hover:bg-gray-800",
-                                "group flex gap-x-4 rounded-md p-2 text-sm leading-6 font-semibold"
-                              )}
-                            >
-                              <item.icon
-                                className="h-7 w-6 shrink-0"
-                                aria-hidden="true"
-                              />
-                              {item.name}
-                            </a>
-                          </li>
-                        ))}
-                  </ul>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
-  );
   const renderHomeNav = () => (
     <div className="absolute w-full z-[10] bg-emerald-950/70">
       <Container>
@@ -254,29 +83,33 @@ const Navbar = ({
       </Container>
     </div>
   );
-
+  const link = seller ? "/dashboard/seller" : "/dashboard/menu";
+  const renderSwitchButton = () => (
+    <Link href={link}>
+      <Button
+        className="bg-inherit rounded-full shadow-sm text-lg font-normal hover:shadow-emerald-100 hover:bg-inherit mr-2"
+        variant="outline"
+      >
+        {seller ? "Switch to Buying" : "Switch to Selling"}
+      </Button>
+    </Link>
+  );
   return (
     <>
-      {isHome ? (
+      {isHome && !isSmallScreen ? (
         renderHomeNav()
       ) : (
         <>
           <div
-            className={`fixed top-0 left-0 right-0 sm:py-2 ${
-              isChat
-                ? "bg-[#F1EFE7] border-b-[1px] "
-                : isDashboard
-                ? "bg-inherit border-b-[1px]"
-                : "bg-white"
-            } z-10`}
+            className={`fixed top-0 left-0 right-0 sm:py-2 
+                !bg-inherit md:border-b-[1px] z-10`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
-              <div className="h-fullpy-3">
+              <div className="h-full">
                 <div className="container mx-auto h-full">
                   <div className="flex items-center justify-between h-full">
                     <Logo />
-                    {isDashboard && renderDashboardNav()}
 
                     {isMarketPage && (
                       <div className="py-2">
@@ -289,6 +122,7 @@ const Navbar = ({
                         </div>
                       </div>
                     )}
+                    {!isSmallScreen && isDashboard && renderSwitchButton()}
                     <UserMenu
                       user={user}
                       canReceivePayouts={canReceivePayouts}
@@ -311,12 +145,9 @@ const Navbar = ({
                     </div>
                   </div>
                 )}
-                {isDashboard && renderDashboardNav()}
               </>
             )}
           </div>
-          <div style={{ paddingTop: isSmallScreen ? "24px" : "64px" }} />{" "}
-          {/* Spacer div */}
           {!isSmallScreen && isMarketPage && (
             <div className="container mx-auto mt-4">
               <Categories user={user} />
@@ -325,7 +156,11 @@ const Navbar = ({
         </>
       )}
       {isSmallScreen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-10">
+        <div
+          className={`fixed bottom-0 left-0 right-0 bg-inherit border-t border-gray-200 p-2 z-10 ${
+            isHome ? "!bg-emerald-950/70" : "bg-white"
+          } `}
+        >
           <UserMenu
             user={user}
             canReceivePayouts={canReceivePayouts}

@@ -8,9 +8,17 @@ interface ModalProps {
   isOpen?: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  bgWhite?: boolean;
+  showX?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  bgWhite = false,
+  isOpen,
+  onClose,
+  children,
+  showX = true,
+}) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -58,13 +66,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className="
-    relative 
+                className={` relative 
     transform 
     overflow-y-auto 
     rounded-lg 
     px-4 
-    bg-green-100
+    ${!bgWhite ? `bg-green-100` : `bg-white`}
     pb-4
     pt-5 
     text-left 
@@ -76,11 +83,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     flex
     flex-col
     items-center
-    sm:p-6
-  "
+    sm:p-6`}
               >
-                <div
-                  className="
+                {showX && (
+                  <div
+                    className="
                     absolute 
                     right-0 
                     top-0 
@@ -90,10 +97,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
                     sm:block
                     z-10
                   "
-                >
-                  <button
-                    type="button"
-                    className="
+                  >
+                    <button
+                      type="button"
+                      className="
                       rounded-md
                       bg-white
                       text-gray-400
@@ -101,12 +108,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
                
                       absolute top-1 right-1
                     "
-                    onClick={onClose}
-                  >
-                    <span className="sr-only">Close</span>
-                    <IoClose className="h-6 w-6 bg-green-100" />
-                  </button>
-                </div>
+                      onClick={onClose}
+                    >
+                      <span className="sr-only">Close</span>
+                      <IoClose className="h-5 w-5 " />
+                    </button>
+                  </div>
+                )}
+
                 {children}
               </Dialog.Panel>
             </Transition.Child>
