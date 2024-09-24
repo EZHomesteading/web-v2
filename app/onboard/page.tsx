@@ -15,7 +15,9 @@ const Page = async () => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
   });
-
+  if (!apiKey) {
+    return;
+  }
   async function checkPayoutCapability(stripeAccountId: string) {
     try {
       const account = await stripe.accounts.retrieve(stripeAccountId);
