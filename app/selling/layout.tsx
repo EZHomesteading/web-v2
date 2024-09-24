@@ -17,7 +17,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className={`${outfit.className} flex flex-row h-full`}>
       <div className="sheet py-3 pt-12 border-r-[1px] border-neutral-300 sm:mt-6">
-        <Sidebar role={user?.role} />
+        <Sidebar nav="sell" />
       </div>
 
       <div className="flex flex-col sheet w-full">

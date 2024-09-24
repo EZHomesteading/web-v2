@@ -8,12 +8,12 @@ import Link from "next/link";
 import { Button } from "../components/ui/button";
 import Avatar from "../components/Avatar";
 import prisma from "@/lib/prisma";
-import Overview from "@/app/selling/overview";
-import DashPopover from "./dashboard-popover";
+import Overview from "./update-listing/components/overview";
+import DashPopover from "./update-listing/components/dashboard-popover";
 import { getFollowers } from "@/actions/getFollow";
 import DashboardPopup from "../(home)/info-modals/dashboard-info-modal";
 import axios from "axios";
-import PayoutButton from "./payout-button";
+import PayoutButton from "./update-listing/components/payout-button";
 
 const outfit = Outfit({
   subsets: ["latin"],

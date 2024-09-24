@@ -4,7 +4,6 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
 
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
@@ -126,22 +125,22 @@ const Page = () => {
       : "custom";
 
   return (
-    <div className="flex flex-col gap-y-8 px-2 lg:px-40 mb-8">
+    <div className="flex flex-col gap-y-8 px-2 lg:w-2/3 mb-8">
       <h1 className="sr-only">Notification Settings</h1>
-      <header className="flex flex-row justify-between items-center mt-1">
-        <h2 className="text-base font-semibold leading-7">
+      <header className="flex flex-col ">
+        <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">
           Notification Preferences
         </h2>
         <Button
           type="submit"
           onClick={onSubmit}
-          className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+          className="rounded-md sm:w-fit bg-green-700 px-3 py-2 text-sm font-semibold -sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
         >
           Save Changes
         </Button>
       </header>
-      <Card>
-        <CardContent className="flex flex-col sheet border-none shadow-lg w-full">
+      <div>
+        <div className="flex flex-col sheet border-none -lg w-full">
           <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
             <div>
               <h1 className="text-lg lg:text-3xl">
@@ -192,13 +191,13 @@ const Page = () => {
               </RadioGroup>
             </div>
           </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
+          <div className="flex justify-between m-0 p-0 pt-2">
             Notifications are highly recommended for sellers.
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet border-none shadow-lg w-full">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col sheet border-none -lg w-full">
           <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
             <div className="w-full">
               <div className="flex flex-row justify-between w-full">
@@ -336,13 +335,13 @@ const Page = () => {
               </ul>
             </div>
           </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
+          <div className="flex justify-between m-0 p-0 pt-2">
             Notifications are highly recommended for sellers.
-          </CardFooter>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="flex flex-col sheet border-none shadow-lg w-full">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col sheet border-none -lg w-full">
           <div className="flex flex-row items-center justify-between m-0 p-0 pt-2">
             <div className="w-full">
               <div className="flex flex-row justify-between w-full">
@@ -483,11 +482,11 @@ const Page = () => {
               </ul>
             </div>
           </div>
-          <CardFooter className="flex justify-between m-0 p-0 pt-2">
+          <div className="flex justify-between m-0 p-0 pt-2">
             Notifications are highly recommended for sellers.
-          </CardFooter>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

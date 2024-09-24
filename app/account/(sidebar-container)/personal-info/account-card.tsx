@@ -80,7 +80,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
           )}
         </div>
       )}
-      <div className="border-b-[1px] pb-3 mt-3" />
+      <div className={`border-b-[1px] pb-3 ${!showAvatar && `mt-3`} `} />
     </div>
   );
 };

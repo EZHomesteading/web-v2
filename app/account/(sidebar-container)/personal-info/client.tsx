@@ -196,7 +196,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
   };
   return (
     <>
-      <div className="flex flex-col px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit h-[120vh] sm:h-fit relative">
+      <div className="flex flex-col ">
         <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">Personal Info</h2>
 
         <AccountCard
@@ -388,7 +388,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
           </div>
         </AccountCard>
 
-        <div className="py-8 flex justify-center">
+        <div className="pt-8 pb-20 flex justify-center">
           <AlertDialog>
             <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
               Delete Account

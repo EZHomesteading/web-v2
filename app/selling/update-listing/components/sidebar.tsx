@@ -68,7 +68,7 @@ const conNav: NavigationItem[] = [
   },
   {
     name: "Payment Methods",
-    href: "/cards",
+    href: "/account/payment-methods",
     icon: PiCardholderThin,
     current: false,
   },
@@ -191,7 +191,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} lg:block relative h-full ${
+        className={`hidden ${o.className} md:block relative h-full ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >
