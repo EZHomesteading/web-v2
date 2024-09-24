@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SliderSelection from "@/app/dashboard/my-store/settings/slider-selection";
+import SliderSelection from "@/app/selling/my-store/settings/slider-selection";
 import { Prisma } from "@prisma/client";
 
 interface p {
