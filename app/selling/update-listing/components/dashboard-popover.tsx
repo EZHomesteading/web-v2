@@ -1,7 +1,7 @@
 "use client";
 //dashboard menu popover parent element
 import { CiCircleInfo } from "react-icons/ci";
-import { Popover, PopoverTrigger } from "../components/ui/popover";
+import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 
 interface p {
