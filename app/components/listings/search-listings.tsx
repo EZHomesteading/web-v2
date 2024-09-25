@@ -1,5 +1,6 @@
 "use client";
-//listing seach bar component with places autocomplete, sending queries to url
+
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -7,7 +8,6 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 import { FiMapPin } from "react-icons/fi";
 import Script from "next/script";
-import { useEffect, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import qs from "query-string";
@@ -18,6 +18,21 @@ import debounce from "debounce";
 import { BiLoaderCircle } from "react-icons/bi";
 import { Outfit } from "next/font/google";
 import { PiBasketThin, PiMapPinThin, PiMapTrifoldThin } from "react-icons/pi";
+import Fuse from "fuse.js";
+
+type Listing = {
+  title: string;
+  subCategory: string;
+};
+
+interface p {
+  apiKey: string;
+}
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.MAPS_KEY as string;
@@ -38,13 +53,7 @@ const getLatLngFromAddress = async (address: string) => {
     return null;
   }
 };
-interface p {
-  apiKey: string;
-}
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+
 const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
@@ -58,13 +67,73 @@ const SearchLocation = ({ apiKey }: p) => {
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
     null
   );
-
+  const [items, setItems] = useState<Listing[]>([]);
+  const [allListings, setAllListings] = useState<Listing[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showListingSuggestions, setShowListingSuggestions] = useState(false);
+  const listingInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchAllListings = async () => {
+      try {
+        const response = await fetch(`/api/listing/listingSuggestions`);
+        const data = await response.json();
+        if (data.listings) {
+          setAllListings(data.listings);
+        }
+      } catch (error) {
+        console.error("Error fetching all listings:", error);
+      }
+    };
+
+    fetchAllListings();
+  }, []);
+
+  useEffect(() => {
+    if (!geocodingApiLoaded) return;
+    setGeocodingService(new window.google.maps.Geocoder());
+  }, [geocodingApiLoaded]);
+
+  useEffect(() => {
+    if (!geocodingService || !address) return;
+    geocodingService.geocode({ address }, (results, status) => {
+      if (results && status === "OK") {
+        setGeocodingResult(results[0]);
+      }
+    });
+  }, [geocodingService, address]);
+
+  useEffect(() => {
+    const formState = getFormState();
+    if (formState) {
+      setLocation(formState.location);
+      setLatLng(formState.latLng);
+    }
+  }, []);
+
+  const fuse = useMemo(() => {
+    const options = {
+      keys: ["title", "subCategory"],
+      threshold: 0.6,
+      distance: 100,
+      ignoreLocation: true,
+      shouldSort: true,
+      minMatchCharLength: 2,
+    };
+    return new Fuse<Listing>(allListings, options);
+  }, [allListings]);
+
   const handleEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleSearch(searchQuery);
+      setShowListingSuggestions(false);
     }
   };
+
   const handleSearch = async (searchQuery: string) => {
     try {
       let lat: string | null = null;
@@ -127,7 +196,6 @@ const SearchLocation = ({ apiKey }: p) => {
           setAddress("Near Me");
           setFocus({ left: false, right: true });
         },
-
         (error) => {
           console.error("Error getting location: ", error);
         }
@@ -140,18 +208,6 @@ const SearchLocation = ({ apiKey }: p) => {
   const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
     setLatLng(latLng);
   };
-  useEffect(() => {
-    if (!geocodingApiLoaded) return;
-    setGeocodingService(new window.google.maps.Geocoder());
-  }, [geocodingApiLoaded]);
-  useEffect(() => {
-    if (!geocodingService || !address) return;
-    geocodingService.geocode({ address }, (results, status) => {
-      if (results && status === "OK") {
-        setGeocodingResult(results[0]);
-      }
-    });
-  }, [geocodingService, address]);
 
   const handleChange = (address: string) => {
     setAddress(address);
@@ -161,15 +217,10 @@ const SearchLocation = ({ apiKey }: p) => {
     const formState = sessionStorage.getItem("formState");
     return formState ? JSON.parse(formState) : null;
   };
-  useEffect(() => {
-    const formState = getFormState();
-    if (formState) {
-      setLocation(formState.location);
-      setLatLng(formState.latLng);
-    }
-  }, []);
+
   const handleSelect = (address: string) => {
     setAddress(address);
+    setShowSuggestions(false);
     geocodeByAddress(address)
       .then((results) => getLatLng(results[0]))
       .then((latLng) => {
@@ -186,41 +237,96 @@ const SearchLocation = ({ apiKey }: p) => {
     suggestions: readonly Suggestion[]
   ) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       if (suggestions.length > 0) {
         const topSuggestion = suggestions[0].description;
         setAddress(topSuggestion);
         handleSelect(topSuggestion);
       }
-    }
-
-    const nextElement = e.currentTarget
-      .nextElementSibling as HTMLElement | null;
-    if (nextElement && nextElement.tabIndex >= 0) {
-      nextElement.focus();
+      setShowSuggestions(false);
+      inputRef.current?.blur();
     }
   };
-  const [items, setItems] = useState<any>([]);
-  const [isSearching, setIsSearching] = useState(false);
+
+  const preprocessTerm = (term: string) =>
+    term
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+      .toLowerCase()
+      .trim();
+
+  const removeDuplicates = (listings: Listing[]): Listing[] => {
+    const uniqueListings = new Map<string, Listing>();
+    listings.forEach((listing) => {
+      const key = `${listing.title}`;
+      if (!uniqueListings.has(key)) {
+        uniqueListings.set(key, listing);
+      }
+    });
+    return Array.from(uniqueListings.values());
+  };
+
+  const searchSingleTerm = (term: string): Listing[] => {
+    const preprocessedTerm = preprocessTerm(term);
+    return fuse.search(preprocessedTerm).map((result) => result.item);
+  };
+
+  const searchMultipleTerms = (
+    terms: string[],
+    originalQuery: string
+  ): Listing[] => {
+    const preprocessedQuery = preprocessTerm(originalQuery);
+    return allListings.filter((listing) => {
+      const preprocessedTitle = preprocessTerm(listing.title);
+      const preprocessedSubCategory = preprocessTerm(listing.subCategory);
+
+      if (
+        preprocessedTitle.includes(preprocessedQuery) ||
+        preprocessedSubCategory.includes(preprocessedQuery)
+      ) {
+        return true;
+      }
+
+      return terms.every((term) => {
+        const preprocessedTerm = preprocessTerm(term);
+        return (
+          preprocessedTitle.includes(preprocessedTerm) ||
+          preprocessedSubCategory.includes(preprocessedTerm)
+        );
+      });
+    });
+  };
+
   const handleSearchName = debounce(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       const query = event.target.value;
       if (query === "") {
         setItems([]);
+        setShowListingSuggestions(false);
         return;
       }
       setIsSearching(true);
       try {
-        const response = await fetch(
-          `/api/listing/listingSuggestions?query=${encodeURIComponent(query)}`
-        );
-        const data = await response.json();
-        if (data.listings) {
-          setItems(data.listings);
+        const searchTerms = query
+          .split(/\s+/)
+          .filter((term) => term.length > 0);
+
+        let searchResults;
+        if (searchTerms.length === 1) {
+          searchResults = searchSingleTerm(searchTerms[0]);
         } else {
-          setItems([]);
+          const multiTermResults = searchMultipleTerms(searchTerms, query);
+          searchResults =
+            multiTermResults.length > 0
+              ? multiTermResults
+              : searchSingleTerm(query);
         }
+
+        // Ensure duplicates are removed before setting the state
+        const uniqueResults = removeDuplicates(searchResults);
+        setItems(uniqueResults);
+        setShowListingSuggestions(true);
       } catch (error) {
-        console.error("Error fetching suggestions:", error);
+        console.error("Error searching listings:", error);
         setItems([]);
       } finally {
         setIsSearching(false);
@@ -228,6 +334,12 @@ const SearchLocation = ({ apiKey }: p) => {
     },
     1000
   );
+
+  const handleListingSelect = (item: Listing) => {
+    setSearchQuery(item.title);
+    setShowListingSuggestions(false);
+    handleSearch(item.title);
+  };
   return (
     <div
       className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfit.className}`}
@@ -239,7 +351,7 @@ const SearchLocation = ({ apiKey }: p) => {
         googleCallbackName="lazyLoadMap"
       >
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-          <div className="relative w-full sm:w-1/2  sm:mb-0 ">
+          <div className="relative w-full sm:w-1/2 sm:mb-0">
             <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
             <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
               Where
@@ -247,33 +359,47 @@ const SearchLocation = ({ apiKey }: p) => {
 
             <input
               {...getInputProps({
+                ref: inputRef,
                 placeholder: "Everywhere",
                 className:
-                  "w-full rounded-full px-4 pb-2 pt-6 pl-9  border-none placeholder-black !text-black outline-none transition-all duration-200",
+                  "w-full rounded-full px-4 pb-2 pt-6 pl-9 border-none placeholder-black !text-black outline-none transition-all duration-200",
+                onKeyDown: (e) => handleKeyDown(e, suggestions),
+                onFocus: () => {
+                  setFocus({ ...focus, left: true });
+                  setShowSuggestions(true);
+                },
+                onBlur: () => {
+                  setFocus({ ...focus, left: false });
+                  // Use setTimeout to allow click events on suggestions to fire before hiding
+                  setTimeout(() => setShowSuggestions(false), 200);
+                },
               })}
-              onKeyDown={(e) => handleKeyDown(e, suggestions)}
-              onFocus={() => setFocus({ ...focus, left: true })}
-              onBlur={() => setFocus({ ...focus, left: false })}
             />
-            <div className="absolute mt-1 text-black shadow-lg z-10 max-w-full rounded-full">
-              {suggestions.map((suggestion, index) => {
-                const className = suggestion.active
-                  ? "cursor-pointer"
-                  : "cursor-pointer";
-                return (
-                  <div
-                    {...getSuggestionItemProps(suggestion, {
-                      className: `px-4 py-2 bg-white text-black flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
-                    })}
-                    key={suggestion.placeId || index}
-                  >
-                    <span className="overflow-hidden text-black overflow-ellipsis whitespace-nowrap ">
-                      {suggestion.description}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute mt-1 text-black shadow-lg z-10 max-w-full rounded-full">
+                {suggestions.map((suggestion, index) => {
+                  const className = suggestion.active
+                    ? "cursor-pointer bg-gray-100"
+                    : "cursor-pointer";
+                  return (
+                    <div
+                      {...getSuggestionItemProps(suggestion, {
+                        className: `px-4 py-2 bg-white text-black flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
+                        onClick: () => {
+                          handleSelect(suggestion.description);
+                          setShowSuggestions(false);
+                        },
+                      })}
+                      key={suggestion.placeId || index}
+                    >
+                      <span className="overflow-hidden text-black overflow-ellipsis whitespace-nowrap">
+                        {suggestion.description}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </PlacesAutocomplete>
@@ -283,6 +409,7 @@ const SearchLocation = ({ apiKey }: p) => {
           What
         </div>
         <input
+          ref={listingInputRef}
           type="text"
           placeholder="Everything"
           value={searchQuery}
@@ -292,34 +419,32 @@ const SearchLocation = ({ apiKey }: p) => {
           }}
           onKeyDown={handleEnterDown}
           className="w-full rounded-full px-4 pb-2 pt-6 pl-9 placeholder-black border-none text-black outline-none transition-all duration-200"
-          onFocus={() => setFocus({ ...focus, right: true })}
-          onBlur={() => setFocus({ ...focus, right: false })}
+          onFocus={() => {
+            setFocus({ ...focus, right: true });
+            setShowListingSuggestions(true);
+          }}
+          onBlur={() => {
+            setFocus({ ...focus, right: false });
+            // Use setTimeout to allow click events on suggestions to fire before hiding
+            setTimeout(() => setShowListingSuggestions(false), 200);
+          }}
           tabIndex={0}
         />
-        {/* {isSearching ? ( 
-            <BiLoaderCircle
-              className="absolute items-center justify-center right-[50px] animate-spin"
-              size={22}
-            />
-          ) : null} */}
-        {items.length > 0 ? (
+        {showListingSuggestions && items.length > 0 && (
           <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
-            {items.map((item: any) => (
-              <div className="p-1" key={item.title}>
-                <div
-                  onClick={async () => {
-                    setSearchQuery(item.title);
-                    setItems([]);
-                    handleSearch(item.title);
-                  }}
-                  className="flex items-center justify-between w-full cursor-pointer hover:bg-gray-200 p-1 px-2"
-                >
+            {items.map((item: Listing) => (
+              <div
+                className="p-1 cursor-pointer hover:bg-gray-200"
+                key={item.title}
+                onMouseDown={() => handleListingSelect(item)}
+              >
+                <div className="flex items-center justify-between w-full p-1 px-2">
                   {item.title}
                 </div>
               </div>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
       <button
         onClick={() => handleSearch(searchQuery)}
