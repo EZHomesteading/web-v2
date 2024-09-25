@@ -140,30 +140,6 @@ const vendorNav: NavigationItem[] = [
     icon: RiUserShared2Line,
     current: false,
   },
-  {
-    name: "Privacy Policy",
-    href: "/info/privacy-policy",
-    icon: MdOutlinePrivacyTip,
-    current: false,
-  },
-  {
-    name: "Terms of Service",
-    href: "/info/tos",
-    icon: HiOutlineDocument,
-    current: false,
-  },
-  {
-    name: "Cookies Policy",
-    href: "/info/cookie-policy",
-    icon: PiCookieThin,
-    current: false,
-  },
-  {
-    name: "Community Standards",
-    href: "/info/community-standards",
-    icon: CgCommunity,
-    current: false,
-  },
 ];
 const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);

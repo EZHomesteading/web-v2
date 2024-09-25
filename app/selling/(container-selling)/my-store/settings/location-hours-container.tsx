@@ -148,10 +148,7 @@ const CardComponent = memo(
       }
     };
     return (
-      <Card
-        key={locationIndex}
-        className="col-span-1 h-fit bg relative w-5/6 sm:w-full"
-      >
+      <Card key={locationIndex} className="col-span-1 h-fit w-5/6 sm:w-full">
         <CardContent className="">
           <h3 className={locationHeadings[locationIndex]?.style || ""}>
             {locationHeadings[locationIndex]?.text || ""}
@@ -553,7 +550,7 @@ const HoursLocationContainer = ({
         } sm:grid-cols-3 xl:grid-cols-4 gap-4`}
       >
         {nonNullLocations.length === 0 ? (
-          <Card className="col-span-1 h-full bg-red-600 relative w-5/6 sm:w-full justify-center items-center">
+          <Card className="col-span-1 h-full bg-red-600 relative justify-center items-center">
             <CardContent className="flex flex-col justify-center items-center h-full pt-3">
               <div>
                 You have no default location set, if you would like to create a

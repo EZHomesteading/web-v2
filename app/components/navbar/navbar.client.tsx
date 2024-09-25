@@ -7,26 +7,8 @@ import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import { navUser } from "@/next-auth";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { UserRole } from "@prisma/client";
-import { MdDashboard, MdOutlinePrivacyTip } from "react-icons/md";
-import { CgCommunity } from "react-icons/cg";
-import { FaOpencart } from "react-icons/fa";
-import { GiSettingsKnobs } from "react-icons/gi";
-import { HiOutlineDocument } from "react-icons/hi";
-import { PiCookieThin, PiStorefrontThin } from "react-icons/pi";
-import { TbShoppingCartDollar } from "react-icons/tb";
-import { VscHistory } from "react-icons/vsc";
-import { LiaCartArrowDownSolid } from "react-icons/lia";
 import { Button } from "../ui/button";
 import Link from "next/link";
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: React.ElementType;
-  current: boolean;
-}
 
 interface NavbarProps {
   user?: navUser;
@@ -38,10 +20,6 @@ interface NavbarProps {
   canReceivePayouts: boolean;
   uniqueUrl: string;
   seller?: boolean;
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
 }
 
 const Navbar = ({
@@ -83,17 +61,7 @@ const Navbar = ({
       </Container>
     </div>
   );
-  const link = seller ? "/dashboard/seller" : "/dashboard/menu";
-  const renderSwitchButton = () => (
-    <Link href={link}>
-      <Button
-        className="bg-inherit rounded-full shadow-sm text-lg font-normal hover:shadow-emerald-100 hover:bg-inherit mr-2"
-        variant="outline"
-      >
-        {seller ? "Switch to Buying" : "Switch to Selling"}
-      </Button>
-    </Link>
-  );
+
   return (
     <>
       {isHome && !isSmallScreen ? (
@@ -122,7 +90,6 @@ const Navbar = ({
                         </div>
                       </div>
                     )}
-                    {!isSmallScreen && isDashboard && renderSwitchButton()}
                     <UserMenu
                       user={user}
                       canReceivePayouts={canReceivePayouts}
