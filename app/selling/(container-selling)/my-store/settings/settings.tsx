@@ -26,6 +26,7 @@ import { GiFruitTree } from "react-icons/gi";
 import { CiCircleInfo } from "react-icons/ci";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import HoursLocationContainer from "./location-hours-container";
+import AccountCard from "@/app/account/(sidebar-container)/personal-info/account-card";
 
 const outfit = Outfit({
   display: "swap",
@@ -57,7 +58,16 @@ const StoreSettings = ({ apiKey }: p) => {
         toast.error(error.message);
       });
   };
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingCard, setEditingCard] = useState<string | null>(null);
+  const [image, setImage] = useState<string | undefined>(user?.image);
+  const handleEditStart = (cardName: string) => {
+    setEditingCard(cardName);
+  };
 
+  const handleEditCancel = () => {
+    setEditingCard(null);
+  };
   if (user?.role === UserRole.CONSUMER) {
     return (
       <div className="p-6">
@@ -151,27 +161,70 @@ const StoreSettings = ({ apiKey }: p) => {
           />
         )}
 
-        <Select
-          onValueChange={(value) => setSODT(parseInt(value, 10))}
-          value={SODT.toString()}
+        <AccountCard
+          title="SODT"
+          info={SODT.toString() || "No SODT Saved"}
+          onSave={() => {
+            onSubmit;
+          }}
+          isEditing={editingCard === "SODT"}
+          onEditStart={() => handleEditStart("SODT")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "SODT"}
         >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={user?.SODT || "Select a Time"} />
-          </SelectTrigger>
-          <SelectContent className={`${outfit.className} sheet`}>
-            <SelectGroup>
-              <SelectItem value="15">15 Minutes</SelectItem>
-              <SelectItem value="30">30 Minutes</SelectItem>
-              <SelectItem value="45">45 Minutes</SelectItem>
-              <SelectItem value="60">1 Hour</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Textarea
-          maxLength={200}
-          value={bio ?? ""}
-          onChange={(e) => setBio(e.target.value)}
-        />
+          <Select
+            onValueChange={(value) => setSODT(parseInt(value, 10))}
+            value={SODT.toString()}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={user?.SODT || "Select a Time"} />
+            </SelectTrigger>
+            <SelectContent className={`${outfit.className} sheet`}>
+              <SelectGroup>
+                <SelectItem value="15">15 Minutes</SelectItem>
+                <SelectItem value="30">30 Minutes</SelectItem>
+                <SelectItem value="45">45 Minutes</SelectItem>
+                <SelectItem value="60">1 Hour</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </AccountCard>
+        <AccountCard
+          title="Store Bio"
+          info={bio || "No Bio Saved"}
+          onSave={() => {
+            onSubmit;
+          }}
+          isEditing={editingCard === "bio"}
+          onEditStart={() => handleEditStart("bio")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "bio"}
+        >
+          {" "}
+          <Textarea
+            maxLength={200}
+            value={bio || ""}
+            onChange={(e) => setBio(e.target.value)}
+          />
+        </AccountCard>
+        <AccountCard
+          title="Store Url"
+          info={user?.url || "No Url Saved"}
+          onSave={() => {
+            onSubmit;
+          }}
+          isEditing={editingCard === "bio"}
+          onEditStart={() => handleEditStart("bio")}
+          onEditCancel={handleEditCancel}
+          isDisabled={editingCard !== null && editingCard !== "bio"}
+        >
+          {" "}
+          <Textarea
+            maxLength={200}
+            value={bio || ""}
+            onChange={(e) => setBio(e.target.value)}
+          />
+        </AccountCard>
       </div>
     );
 };

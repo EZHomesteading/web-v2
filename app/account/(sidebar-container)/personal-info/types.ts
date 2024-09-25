@@ -13,5 +13,8 @@ export interface AddressFields {
     oldPass?: string;
     newPass?: string;
     verifPass?: string;
-    id?: string
+    id?: string;
+    url?:string;
+    location?: any;
+    image?:string
   }

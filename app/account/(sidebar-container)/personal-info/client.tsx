@@ -22,8 +22,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/app/components/ui/alert-dialog";
-import { PiArrowLeftThin } from "react-icons/pi";
-import Link from "next/link";
 
 interface PageProps {
   apiKey: string;

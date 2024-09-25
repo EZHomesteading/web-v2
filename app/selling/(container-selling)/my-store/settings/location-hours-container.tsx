@@ -148,196 +148,198 @@ const CardComponent = memo(
       }
     };
     return (
-      <Card key={locationIndex} className="col-span-1 h-fit w-5/6 sm:w-full">
-        <CardContent className="">
-          <h3 className={locationHeadings[locationIndex]?.style || ""}>
-            {locationHeadings[locationIndex]?.text || ""}
-          </h3>
-          <ul>
-            <li className={`${zilla.className}`}>
+      <>
+        <Card key={locationIndex} className="col-span-1 h-fit w-5/6 sm:w-full">
+          <CardContent className="">
+            <h3 className={locationHeadings[locationIndex]?.style || ""}>
+              {locationHeadings[locationIndex]?.text || ""}
+            </h3>
+            <ul>
+              <li className={`${zilla.className}`}>
+                {showAddressChange ? (
+                  <div className="gap-y-2 flex flex-col">
+                    <Input
+                      onChange={(e) => handleAddressChange(0, e.target.value)}
+                      placeholder="street"
+                    />
+                    <Input
+                      onChange={(e) => handleAddressChange(1, e.target.value)}
+                      placeholder="city"
+                    />
+                    <Input
+                      onChange={(e) => handleAddressChange(2, e.target.value)}
+                      placeholder="state"
+                    />
+                    <Input
+                      onChange={(e) => handleAddressChange(3, e.target.value)}
+                      placeholder="zip"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-[1rem] truncate w-full">
+                    {address
+                      ? `${address[0]}, ${address[1]}, ${address[2]}, ${address[3]}`
+                      : null}
+                  </div>
+                )}
+              </li>
+            </ul>
+
+            <div className="flex flex-col gap-2 mt-2 font-light w-full">
               {showAddressChange ? (
-                <div className="gap-y-2 flex flex-col">
-                  <Input
-                    onChange={(e) => handleAddressChange(0, e.target.value)}
-                    placeholder="street"
-                  />
-                  <Input
-                    onChange={(e) => handleAddressChange(1, e.target.value)}
-                    placeholder="city"
-                  />
-                  <Input
-                    onChange={(e) => handleAddressChange(2, e.target.value)}
-                    placeholder="state"
-                  />
-                  <Input
-                    onChange={(e) => handleAddressChange(3, e.target.value)}
-                    placeholder="zip"
-                  />
+                <div className="flex w-full gap-2">
+                  <Button
+                    onClick={handleCancelAddressChange}
+                    className="w-1/2 font-light"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveAddress}
+                    className="w-1/2 font-light"
+                  >
+                    Confirm
+                  </Button>
                 </div>
               ) : (
-                <div className="text-[1rem] truncate w-full">
-                  {address
-                    ? `${address[0]}, ${address[1]}, ${address[2]}, ${address[3]}`
-                    : null}
-                </div>
-              )}
-            </li>
-          </ul>
-
-          <div className="flex flex-col gap-2 mt-2 font-light w-full">
-            {showAddressChange ? (
-              <div className="flex w-full gap-2">
-                <Button
-                  onClick={handleCancelAddressChange}
-                  className="w-1/2 font-light"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSaveAddress}
-                  className="w-1/2 font-light"
-                >
-                  Confirm
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Dialog>
-                  {hours === null ? (
-                    <DialogTrigger className="text-white bg-red-600 font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                      Set Hours
-                    </DialogTrigger>
-                  ) : (
-                    <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                      Change Hours
-                    </DialogTrigger>
-                  )}
-                  <DialogContent className="bg">
-                    {locationState && (
-                      <SliderSelection
-                        hours={hours}
-                        index={locationIndex}
-                        location={
-                          location as unknown as {
-                            0: {
-                              type: string;
-                              coordinates: number[];
-                              address: string[];
-                              hours: Prisma.JsonValue;
-                            } | null;
-                            1: {
-                              type: string;
-                              coordinates: number[];
-                              address: string[];
-                              hours: Prisma.JsonValue;
-                            } | null;
-                            2: {
-                              type: string;
-                              coordinates: number[];
-                              address: string[];
-                              hours: Prisma.JsonValue;
-                            } | null;
-                          }
-                        }
-                        showUpdate={true}
-                      />
+                <>
+                  <Dialog>
+                    {hours === null ? (
+                      <DialogTrigger className="text-white bg-red-600 font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                        Set Hours
+                      </DialogTrigger>
+                    ) : (
+                      <DialogTrigger className="text-white bg-primary font-extralight h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                        Change Hours
+                      </DialogTrigger>
                     )}
-                  </DialogContent>
-                </Dialog>
+                    <DialogContent className="bg">
+                      {locationState && (
+                        <SliderSelection
+                          hours={hours}
+                          index={locationIndex}
+                          location={
+                            location as unknown as {
+                              0: {
+                                type: string;
+                                coordinates: number[];
+                                address: string[];
+                                hours: Prisma.JsonValue;
+                              } | null;
+                              1: {
+                                type: string;
+                                coordinates: number[];
+                                address: string[];
+                                hours: Prisma.JsonValue;
+                              } | null;
+                              2: {
+                                type: string;
+                                coordinates: number[];
+                                address: string[];
+                                hours: Prisma.JsonValue;
+                              } | null;
+                            }
+                          }
+                          showUpdate={true}
+                        />
+                      )}
+                    </DialogContent>
+                  </Dialog>
 
-                <Button
-                  className="font-extralight"
-                  onClick={handleShowAddressChange}
-                >
-                  Change Address
-                </Button>
+                  <Button
+                    className="font-extralight"
+                    onClick={handleShowAddressChange}
+                  >
+                    Change Address
+                  </Button>
 
-                {locationIndex === 0 ? (
-                  <div className="flex flex-col w-full gap-2">
-                    {location && location[1] !== null ? (
-                      <Button
-                        className="font-extralight "
-                        onClick={() => handleSetSecond(locationIndex)}
-                      >
-                        Set as secondary location
-                      </Button>
-                    ) : null}
-                    {location && location[2] !== null ? (
-                      <Button
-                        className="font-extralight"
-                        onClick={() => handleSetThird(locationIndex)}
-                      >
-                        Set as third location
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : null}
-                {locationIndex === 1 ? (
-                  <div className="flex flex-col w-full gap-2">
-                    {location && location[0] !== null ? (
-                      <Button
-                        className="font-extralight "
-                        onClick={() => handleSetDefault(locationIndex)}
-                      >
-                        Set as Default location
-                      </Button>
-                    ) : null}
-                    {location && location[2] !== null ? (
-                      <Button
-                        className="font-extralight"
-                        onClick={() => handleSetThird(locationIndex)}
-                      >
-                        Set as third location
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : null}
-                {locationIndex === 2 ? (
-                  <div className="flex flex-col w-full gap-2">
-                    {location && location[0] !== null ? (
-                      <Button
-                        className="font-extralight "
-                        onClick={() => handleSetDefault(locationIndex)}
-                      >
-                        Set as default location
-                      </Button>
-                    ) : null}
-                    {location && location[1] !== null ? (
-                      <Button
-                        className="font-extralight"
-                        onClick={() => handleSetSecond(locationIndex)}
-                      >
-                        Set as secondary location
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                <Dialog>
-                  <DialogTrigger>
-                    <PiTrashSimple className="text-red-500 font-extralight absolute top-2 right-2" />
-                  </DialogTrigger>
-                  <DialogContent>
-                    <div>
-                      Are you sure you want to delete this location and hours?
-                      All of the listings associated with this location will be
-                      deleted as well. This action is irreversible
-                      <Button
-                        onClick={() => {
-                          handleDeleteLocation(locationIndex);
-                          close();
-                        }}
-                      >
-                        I'm sure
-                      </Button>
+                  {locationIndex === 0 ? (
+                    <div className="flex flex-col w-full gap-2">
+                      {location && location[1] !== null ? (
+                        <Button
+                          className="font-extralight "
+                          onClick={() => handleSetSecond(locationIndex)}
+                        >
+                          Set as secondary location
+                        </Button>
+                      ) : null}
+                      {location && location[2] !== null ? (
+                        <Button
+                          className="font-extralight"
+                          onClick={() => handleSetThird(locationIndex)}
+                        >
+                          Set as third location
+                        </Button>
+                      ) : null}
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                  ) : null}
+                  {locationIndex === 1 ? (
+                    <div className="flex flex-col w-full gap-2">
+                      {location && location[0] !== null ? (
+                        <Button
+                          className="font-extralight "
+                          onClick={() => handleSetDefault(locationIndex)}
+                        >
+                          Set as Default location
+                        </Button>
+                      ) : null}
+                      {location && location[2] !== null ? (
+                        <Button
+                          className="font-extralight"
+                          onClick={() => handleSetThird(locationIndex)}
+                        >
+                          Set as third location
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {locationIndex === 2 ? (
+                    <div className="flex flex-col w-full gap-2">
+                      {location && location[0] !== null ? (
+                        <Button
+                          className="font-extralight "
+                          onClick={() => handleSetDefault(locationIndex)}
+                        >
+                          Set as default location
+                        </Button>
+                      ) : null}
+                      {location && location[1] !== null ? (
+                        <Button
+                          className="font-extralight"
+                          onClick={() => handleSetSecond(locationIndex)}
+                        >
+                          Set as secondary location
+                        </Button>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  <Dialog>
+                    <DialogTrigger>
+                      <PiTrashSimple className="text-red-500 font-extralight absolute top-2 right-2" />
+                    </DialogTrigger>
+                    <DialogContent>
+                      <div>
+                        Are you sure you want to delete this location and hours?
+                        All of the listings associated with this location will
+                        be deleted as well. This action is irreversible
+                        <Button
+                          onClick={() => {
+                            handleDeleteLocation(locationIndex);
+                            close();
+                          }}
+                        >
+                          I'm sure
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </>
     );
   }
 );
