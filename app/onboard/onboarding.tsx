@@ -105,7 +105,20 @@ const Onboarding = ({
         console.log(formData.location);
         if (formData.location) {
           const response = await axios.post("/api/useractions/update", {
-            location: { 0: formData.location },
+            location: {
+              0: {
+                coordinates: formData?.location[0]
+                  ? formData?.location[0].coordinates
+                  : user?.location?.[0] && user?.location?.[0].coordinates,
+                address: formData?.location[0]
+                  ? formData?.location[0].address
+                  : user?.location?.[0] && user?.location?.[0].address,
+                hours: formData?.location[0]
+                  ? formData?.location[0].hours
+                  : user?.location?.[0] && user?.location?.[0].hours,
+                type: "Point",
+              },
+            },
           });
           setUser((prevUser) => ({
             ...prevUser,
@@ -194,7 +207,13 @@ const Onboarding = ({
             updateFormData={updateFormData}
           />
         )}
-        {step === 6 && <StepSix user={user} updateFormData={updateFormData} />}
+        {step === 6 && (
+          <StepSix
+            user={user}
+            formData={formData.location}
+            updateFormData={updateFormData}
+          />
+        )}
         {step === 7 && <StepSeven />}
         {step === 8 && (
           <StepEight
@@ -234,11 +253,11 @@ const Onboarding = ({
               </Button>
             )}
 
-            {step === 11 && (
+            {(step === 11 || step === 10) && (
               <div onClick={() => router.push("/create")}>
                 <HoverButton
                   buttonText="Skip for now"
-                  hoverMessage="If you skip these steps you will not be able to withdraw from your account."
+                  hoverMessage="If you skip these steps you will not be able to withdraw Funds from your account."
                 ></HoverButton>
               </div>
             )}

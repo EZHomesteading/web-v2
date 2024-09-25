@@ -151,8 +151,12 @@ const StepFive: React.FC<Props> = ({ updateFormData, apiKey, user }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
+      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
+        Location Setup
+      </div>
       <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
-        Add a Default Selling Location
+        Add your First Selling Location. Users can have up to Three Selling
+        Locations
       </h1>
       {user.location && user?.location[0] ? (
         <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>

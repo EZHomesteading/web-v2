@@ -46,7 +46,7 @@ const StepTwo = ({ user }: p) => {
         <ul className="w-full max-w-3xl">
           {[
             {
-              text: ["Become a co-op & sell to anyone"],
+              text: ["Become a Co-Op & sell to anyone"],
               icon: IoStorefrontOutline,
               subtext: [
                 "People who already have farmer's market stands &",
@@ -55,7 +55,7 @@ const StepTwo = ({ user }: p) => {
               ],
             },
             {
-              text: ["Become a grower & sell only to co-ops"],
+              text: ["Become a grower & sell only to Co-Ops"],
               icon: GiFruitTree,
               subtext: [
                 "People who prefer to sell in larger quantities &",
@@ -75,15 +75,15 @@ const StepTwo = ({ user }: p) => {
                   : ""
               }`}
             >
-              <div className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic">
+              <div className="flex items-center justify-between w-full hover:text-black hover:italic">
                 <div className="flex flex-col">
-                  <div className="text-lg sm:text-2xl font-light">
+                  <div className="text-2xl  font-light">
                     {Array.isArray(item.text)
                       ? item.text.map((line, i) => <div key={i}>{line}</div>)
                       : item.text}
                   </div>
 
-                  <div className="sm:text-xs text-[.6rem] w-[75%] font-light text-neutral-400">
+                  <div className="text-sm  w-[75%] font-light text-neutral-800">
                     {Array.isArray(item.subtext)
                       ? item.subtext.map((line, i) => <div key={i}>{line}</div>)
                       : item.subtext}

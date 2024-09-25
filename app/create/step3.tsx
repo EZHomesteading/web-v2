@@ -107,7 +107,7 @@ const StepThree: React.FC<StepThreeProps> = ({
             </div>
             <div className="flex justify-between items-center mb-3">
               <div className="font-light">
-                Are your "{title}" currently available.
+                {title}: Is this product available now?
               </div>
               <div className="flex space-x-2">
                 <button

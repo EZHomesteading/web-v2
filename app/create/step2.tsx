@@ -47,9 +47,57 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [subcategory, setSubcategory] = useState(subcat);
   const { getAll, searchProducts } = useProducts();
+  const titleCase = (str: string): string => {
+    const exceptions = [
+      "a",
+      "and",
+      "as",
+      "at",
+      "but",
+      "by",
+      "down",
+      "for",
+      "from",
+      "if",
+      "in",
+      "into",
+      "like",
+      "near",
+      "nor",
+      "of",
+      "off",
+      "on",
+      "once",
+      "onto",
+      "or",
+      "over",
+      "past",
+      "so",
+      "than",
+      "that",
+      "to",
+      "upon",
+      "when",
+      "with",
+      "yet",
+      "the",
+    ];
 
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word, index) => {
+        if (index === 0 || !exceptions.includes(word)) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        return word;
+      })
+      .join(" ");
+  };
   const handleCustomAction = (value: string) => {
-    setTitle(value);
+    const titleCasedValue = titleCase(value);
+    setTitle(titleCasedValue);
+    setValue("title", titleCasedValue);
     handleCheckboxChange(true);
     onCustomTitleSet();
   };
@@ -70,7 +118,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
     if (value) {
       setTitle(value.label);
       setImageSrc(value.photo ? [value.photo] : []);
-      setValue("title", title);
+      setValue("title", value.label);
     } else {
       setValue("title", "");
       setTitle("");
@@ -93,7 +141,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <input
                 className="flex min-h-[62px] w-full text-[16px] rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 id="title"
-                placeholder="Enter Product Title"
+                placeholder={title ? title : "Enter Product Title"}
                 disabled={isLoading}
                 maxLength={64}
                 onChange={(e) => {
@@ -122,6 +170,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
           ) : (
             <div>
               <SearchClient
+                title={title}
                 subcat={subcat}
                 value={product}
                 onCustomAction={handleCustomAction}
@@ -155,7 +204,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
           </div>
           <div className="mb-1 ml-[2px] mt-1 text-sm">
             Tags must be entered one word at a time and will not be visible to
-            users.
+            users. Enter ONE Tag and select “Add Tag” each time.
           </div>
           <Textarea
             id="keywords"
