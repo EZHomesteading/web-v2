@@ -27,6 +27,7 @@ import { CiCircleInfo } from "react-icons/ci";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import HoursLocationContainer from "./location-hours-container";
 import AccountCard from "@/app/account/(sidebar-container)/personal-info/account-card";
+import Input from "@/app/account/(sidebar-container)/personal-info/input";
 
 const outfit = Outfit({
   display: "swap",
@@ -207,24 +208,19 @@ const StoreSettings = ({ apiKey }: p) => {
             onChange={(e) => setBio(e.target.value)}
           />
         </AccountCard>
-        <AccountCard
-          title="Store Url"
+        {/* <AccountCard
+          title="Store URL"
           info={user?.url || "No Url Saved"}
           onSave={() => {
             onSubmit;
           }}
-          isEditing={editingCard === "bio"}
-          onEditStart={() => handleEditStart("bio")}
+          isEditing={editingCard === "url"}
+          onEditStart={() => handleEditStart("url")}
           onEditCancel={handleEditCancel}
-          isDisabled={editingCard !== null && editingCard !== "bio"}
+          isDisabled={editingCard !== null && editingCard !== "url"}
         >
-          {" "}
-          <Textarea
-            maxLength={200}
-            value={bio || ""}
-            onChange={(e) => setBio(e.target.value)}
-          />
-        </AccountCard>
+         <Input id="url" label="Store URL" errors={error}/>
+        </AccountCard> */}
       </div>
     );
 };
