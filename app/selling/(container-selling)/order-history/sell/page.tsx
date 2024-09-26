@@ -7,7 +7,7 @@ import { getUserById } from "@/actions/getUser";
 
 import { SafeListing } from "@/types";
 import { FinalListing, GetListingsByIds } from "@/actions/getListings";
-import { getStatusText } from "@/app/selling/update-listing/components/order-status";
+import { getStatusText } from "@/app/selling/(container-selling)/update-listing/components/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";

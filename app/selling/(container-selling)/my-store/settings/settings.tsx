@@ -135,24 +135,7 @@ const StoreSettings = ({ apiKey }: p) => {
     return (
       <div className="flex flex-col mb-8">
         <h1 className="sr-only">Store Settings</h1>
-        <div className="w-full flex justify-between items-center mt-1">
-          {user?.role === UserRole.COOP ? (
-            <h2 className="text-base font-semibold leading-7">
-              Co-op Store Settings
-            </h2>
-          ) : (
-            <h2 className="text-base font-semibold leading-7">
-              Producer Store Settings
-            </h2>
-          )}
-          <Button
-            type="submit"
-            onClick={onSubmit}
-            className="rounded-md bg-green-700 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-          >
-            Save Changes
-          </Button>
-        </div>
+        <div className="text-2xl font-medium pb-0">Store Settings</div>
         {user?.role && user?.id && (
           <HoursLocationContainer
             location={user?.location}
@@ -201,7 +184,6 @@ const StoreSettings = ({ apiKey }: p) => {
           onEditCancel={handleEditCancel}
           isDisabled={editingCard !== null && editingCard !== "bio"}
         >
-          {" "}
           <Textarea
             maxLength={200}
             value={bio || ""}

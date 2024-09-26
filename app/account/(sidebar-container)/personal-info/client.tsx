@@ -141,8 +141,6 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
 
     try {
       await axios.post("/api/useractions/update", formData);
-      router.refresh();
-      toast.success("Your account details have been updated");
       setEditingCard(null);
     } catch (error) {
       toast.error("Failed to update account details");
@@ -195,7 +193,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
   return (
     <>
       <div className="flex flex-col ">
-        <h2 className="text-2xl font-medium 2xl:pt-6 pb-0">Personal Info</h2>
+        <h2 className="text-2xl font-medium pb-0">Personal Info</h2>
 
         <AccountCard
           title="Username"

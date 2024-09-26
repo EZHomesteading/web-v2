@@ -9,7 +9,7 @@ import {
   GetListingsByIds,
   Location,
 } from "@/actions/getListings";
-import { getStatusText } from "@/app/selling/update-listing/components/order-status";
+import { getStatusText } from "../../update-listing/components/order-status";
 import { $Enums, UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
