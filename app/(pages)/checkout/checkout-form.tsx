@@ -11,7 +11,43 @@ import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
 import { Outfit } from "next/font/google";
-import { CartItem } from "@/actions/getCart";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { UserRole } from "@prisma/client";
+
+// Define CartItem type
+interface CartItem {
+  id: string;
+  quantity: number;
+  listing: {
+    id: string;
+    title: string;
+    price: number;
+    reports: number;
+    stock: number;
+    SODT: number | null;
+    quantityType: string | null;
+    shelfLife: number;
+    rating: number[];
+    createdAt: string;
+    location: {
+      type: string;
+      coordinates: number[];
+      address: string[];
+      hours: JsonValue;
+    };
+    imageSrc: string[];
+    userId: string;
+    subCategory: string;
+    minOrder: number;
+    user: {
+      id: string;
+      SODT: number | null;
+      name: string;
+      role: UserRole;
+    };
+  };
+}
+[];
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -19,8 +55,9 @@ const outfit = Outfit({
   weight: ["400"],
 });
 
+// Ensure NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is defined
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
 interface CheckoutFormProps {
@@ -44,7 +81,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
   // Ensure total is not NaN or undefined
   const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
-  const formattedTotal = total > 0 ? Round(total, 2) : 0; // Default to 0 if total is not valid
+  const formattedTotal = total > 0 ? Round(total, 2) : 0;
 
   useEffect(() => {
     const fetchPaymentIntents = async () => {
@@ -103,7 +140,6 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
   }
-
   if (isLoading) {
     return (
       <div
@@ -150,7 +186,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
         <section
           aria-labelledby="summary-heading"
-          className="bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16"
+          className={`${outfit.className} bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16`}
         >
           <div className="mx-auto max-w-lg lg:max-w-none">
             <h2
@@ -177,6 +213,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                       width={80}
                       height={80}
                       className="h-20 w-20 flex-none rounded-md object-cover object-center"
+                      priority={true}
                     />
                     <div className="flex-auto space-y-1">
                       <h3>{cartItem.listing.title}</h3>

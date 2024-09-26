@@ -359,7 +359,7 @@ const VendorsMap = ({
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfit.className} absolute top-1 sm:top-5 left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${outfit.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool
@@ -386,7 +386,7 @@ const VendorsMap = ({
               - Click{" "}
               <button
                 onClick={() => resetMap()}
-                className="mx-1 text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 "
+                className="mx-1  text-xs bg-red-500 hover:bg-red-700 flex flex-row items-center rounded-md px-1 "
               >
                 <CiBookmarkRemove size={15} className="ml-1" />
                 Remove Filters
@@ -398,9 +398,9 @@ const VendorsMap = ({
       </Popover>
       <div>
         {user && user.role !== "CONSUMER" && (
-          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 z-10 bg-white bg-opacity-75 rounded-lg pr-5">
-            <div className="flex flex-col items-center justify-start">
-              <div className="flex items-center gap-x-2 text-sm xl:text-base font-medium mb-2 whitespace-nowrap">
+          <div className="absolute top-1 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5">
+            <div className="flex flex-col items-start justify-start">
+              <div className="flex items-center gap-x-2 text-xl  font-medium mb-2 whitespace-nowrap">
                 <Switch
                   checked={showCoops}
                   onCheckedChange={setShowCoops}
@@ -408,7 +408,7 @@ const VendorsMap = ({
                 />
                 <span>Co-ops</span>
               </div>
-              <div className="flex items-center gap-x-2 text-sm xl:text-base font-medium whitespace-nowrap">
+              <div className="flex items-center justify-start gap-x-2 text-xl  font-medium whitespace-nowrap">
                 <Switch
                   checked={showProducers}
                   onCheckedChange={setShowProducers}
@@ -440,7 +440,7 @@ const VendorsMap = ({
       )}
       {drawnShape && (
         <Button
-          className="absolute top-11 left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
+          className="absolute top-[120px] left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
           onClick={() => resetMap()}
         >
           <CiBookmarkRemove size={20} className="ml-1" />
@@ -485,7 +485,7 @@ const VendorsMap = ({
                     position={coop.coordinates}
                     clusterer={clusterer}
                     icon={{
-                      url: "https://i.ibb.co/kJ7KYN7/circle-2-1.png",
+                      url: "https://utfs.io/f/f3a25818-2570-45d5-bc4c-cabe3ce88fe9-ie3okn.png",
                       scaledSize: new window.google.maps.Size(28, 28),
                       size: {
                         height: 28,
@@ -501,6 +501,7 @@ const VendorsMap = ({
             )}
           </MarkerClusterer>
         )}
+
         {showProducers && (
           <MarkerClusterer
             options={{
@@ -517,7 +518,7 @@ const VendorsMap = ({
                     key={`producer-${index}`}
                     position={producer.coordinates}
                     icon={{
-                      url: "https://i.ibb.co/W6Sr1Rx/circle-2-1.png",
+                      url: "https://utfs.io/f/ec4f6766-4c18-4752-a3b2-6030aed3cb33-os33pn.png",
                       scaledSize: new window.google.maps.Size(28, 28),
                       anchor: new window.google.maps.Point(25, 22),
                     }}
