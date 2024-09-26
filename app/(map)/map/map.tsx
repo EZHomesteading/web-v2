@@ -485,7 +485,7 @@ const VendorsMap = ({
                     position={coop.coordinates}
                     clusterer={clusterer}
                     icon={{
-                      url: "https://i.ibb.co/kJ7KYN7/circle-2-1.png",
+                      url: "https://utfs.io/f/f3a25818-2570-45d5-bc4c-cabe3ce88fe9-ie3okn.png",
                       scaledSize: new window.google.maps.Size(28, 28),
                       size: {
                         height: 28,
@@ -501,6 +501,7 @@ const VendorsMap = ({
             )}
           </MarkerClusterer>
         )}
+
         {showProducers && (
           <MarkerClusterer
             options={{
@@ -517,7 +518,7 @@ const VendorsMap = ({
                     key={`producer-${index}`}
                     position={producer.coordinates}
                     icon={{
-                      url: "https://i.ibb.co/W6Sr1Rx/circle-2-1.png",
+                      url: "https://utfs.io/f/ec4f6766-4c18-4752-a3b2-6030aed3cb33-os33pn.png",
                       scaledSize: new window.google.maps.Size(28, 28),
                       anchor: new window.google.maps.Point(25, 22),
                     }}

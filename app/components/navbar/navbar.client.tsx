@@ -69,8 +69,12 @@ const Navbar = ({
       ) : (
         <>
           <div
-            className={`fixed top-0 left-0 right-0 sm:py-2 
-                !bg-inherit md:border-b-[1px] z-10`}
+            className={` top-0 left-0 right-0 sm:py-2 
+                 md:border-b-[1px] z-10 ${
+                   isMarketPage && !isSmallScreen
+                     ? "bg-white sticky"
+                     : "!bg-inherit relative"
+                 }`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
@@ -80,7 +84,7 @@ const Navbar = ({
                     <Logo />
 
                     {isMarketPage && (
-                      <div className="py-2">
+                      <div className="py-2 ">
                         <div className="flex justify-center mb-2">
                           <div className="w-full max-w-2xl">
                             {apiKey && (
