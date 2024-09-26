@@ -464,7 +464,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
   //Seller receives Order
   const resp1 = (
-    <div className="flex flex-col  items-start t md:text-xl gap-0 ! py-1">
+    <div className="flex flex-col  items-start  md:text-xl gap-0  py-1">
       <button
         type="submit"
         onClick={async () => {
@@ -1340,7 +1340,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           </Button>
         ) : (
           <div className="flex flex-col flex-grow items-end justify-end w-full">
-            <div className="fixed bottom-0 pb-[20px] bg-[#F1EFE7] w-full lg:max-w-[calc(100%-320px)]">
+            <div className="fixed md:mb-0 mb-20 bottom-0 pb-[20px] bg-[#F1EFE7] w-full lg:max-w-[calc(100%-320px)]">
               <Form otherUsersId={otherUsersId} />
             </div>
           </div>
@@ -1360,7 +1360,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     ? "default"
                     : "secondary"
                 }
-                className={`fixed bottom-5 right-5 flex items-center gap-2 transition-all duration-300
+                className={`fixed mb-20 md:mb-0 bottom-5 right-5 flex items-center gap-2 transition-all duration-300
             ${
               (notOwn &&
                 data.messageOrder !== "2" &&
