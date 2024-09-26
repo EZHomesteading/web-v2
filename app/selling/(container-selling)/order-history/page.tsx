@@ -1,16 +1,17 @@
-//buy history page
+//order history page
 import { currentUser } from "@/lib/auth";
 import { getUserWithBuyOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
-import { GetListingsByIds } from "@/actions/getListings";
-import { getStatusText } from "@/app/selling/update-listing/components/order-status";
+import { SafeListing } from "@/types";
+import { FinalListing, GetListingsByIds } from "@/actions/getListings";
+import { getStatusText } from "@/app/selling/(container-selling)/update-listing/components/order-status";
 import { UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ActualListing, ListingGroup } from "../../orders/buyer/page";
+import { ActualListing, ListingGroup } from "../orders/buyer/page";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -34,7 +35,7 @@ const Page = async () => {
         const listingPromises = order.listingIds.map((id) =>
           GetListingsByIds({ listingIds: [id] })
         );
-        const listingsss = await Promise.all(listingPromises).then((results) =>
+        const listings = await Promise.all(listingPromises).then((results) =>
           results.flat()
         );
         const seller = await getUserById({ userId: order.sellerId });
@@ -94,7 +95,7 @@ const Page = async () => {
                 </Link>
               </CardHeader>
               <CardContent className="flex flex-col pt-1 pb-1 text-xs sm:text-md lg:text-lg">
-                {listingsss.flatMap((listingGroup: ListingGroup) =>
+                {listings.flatMap((listingGroup: ListingGroup) =>
                   listingGroup.listings.map((listing: ActualListing) => {
                     const quantities = JSON.parse(order.quantity);
                     const quantityObj = quantities.find(
@@ -122,7 +123,7 @@ const Page = async () => {
                     );
                   })
                 )}
-                <div>Order Total: {formatPrice(order.totalPrice)}</div>
+                <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
                 <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
               </CardContent>
               <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
@@ -137,7 +138,6 @@ const Page = async () => {
         );
       }) || []
   );
-
   const metadata = {
     title: `${user?.name} Buy Order History | EZHomesteading`,
     description: "View your buy order history.",

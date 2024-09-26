@@ -1,17 +1,19 @@
-//order history page
 import { currentUser } from "@/lib/auth";
 import { getUserWithBuyOrders } from "@/actions/getUser";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
-import { FinalListing, GetListingsByIds } from "@/actions/getListings";
-import { getStatusText } from "@/app/selling/update-listing/components/order-status";
-import { UserRole } from "@prisma/client";
+import {
+  FinalListing,
+  GetListingsByIds,
+  Location,
+} from "@/actions/getListings";
+import { getStatusText } from "../../update-listing/components/order-status";
+import { $Enums, UserRole } from "@prisma/client";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ActualListing, ListingGroup } from "../orders/buyer/page";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
@@ -21,15 +23,40 @@ const formatPrice = (price: number): string => {
     maximumFractionDigits: 2,
   });
 };
+export type ActualListing = {
+  createdAt: string;
+  id: string;
+  title: string;
+  price: number;
+  stock: number;
+  SODT: number | null;
+  quantityType: string | null;
+  shelfLife: number;
+  location: Location;
+  imageSrc: string[];
+  userId: string;
+  subCategory: string;
+  minOrder: number | null;
+  user: {
+    id: string;
+    SODT: number | null;
+    name: string;
+    role: UserRole;
+  };
+};
 
+export type ListingGroup = {
+  listings: ActualListing[];
+};
 const Page = async () => {
   let user = await currentUser();
   const buyer = await getUserWithBuyOrders({ userId: user?.id });
 
   const renderedCards = await Promise.all(
     buyer?.buyerOrders
-      .filter((order) =>
-        [0, 4, 7, 9, 12, 15, 17, 18, 19, 20, 21, 22].includes(order.status)
+      .filter(
+        (order) =>
+          ![0, 4, 7, 9, 12, 15, 19, 18, 17, 20, 21, 22].includes(order.status)
       )
       .map(async (order) => {
         const listingPromises = order.listingIds.map((id) =>
@@ -46,11 +73,11 @@ const Page = async () => {
           seller?.name || "(Deleted User)"
         );
         const metadata = {
-          title: `${user?.name} Buy Order History | EZHomesteading`,
-          description: "View your buy order history.",
+          title: `${user?.name} Orders | EZHomesteading`,
+          description: "Track your ongoing buy orders.",
           keywords: [
             "buy",
-            "order history",
+            "orders",
             "vendor",
             "ezh",
             "ezhomesteading",
@@ -61,9 +88,9 @@ const Page = async () => {
             "organic food",
           ],
           openGraph: {
-            title: `${user?.name} Buy Order History | EZHomesteading`,
+            title: `${user?.name} Orders | EZHomesteading`,
             description: "Track your ongoing buy orders.",
-            url: "https://www.ezhomesteading.com/dashboard/order-history/buy",
+            url: "https://www.ezhomesteading.com/dashboard/orders/buyer",
             type: "website",
           },
         };
@@ -123,7 +150,7 @@ const Page = async () => {
                     );
                   })
                 )}
-                <div>Order Total: {formatPrice(order.totalPrice * 10)}</div>
+                <div>Order Total: {formatPrice(order.totalPrice)}</div>
                 <div>Current Pick Up Date: {formatTime(order.pickupDate)}</div>
               </CardContent>
               <div className="justify-start md:justify-between m-0 p-0 pt-2 border-t-[1px] border-gray-100 px-6 py-1 flex flex-col md:flex-row  items-start">
@@ -138,57 +165,24 @@ const Page = async () => {
         );
       }) || []
   );
-  const metadata = {
-    title: `${user?.name} Buy Order History | EZHomesteading`,
-    description: "View your buy order history.",
-    keywords: [
-      "buy",
-      "order history",
-      "vendor",
-      "ezh",
-      "ezhomesteading",
-      "produce near me",
-      "virtual farmer's market",
-      "fresh food",
-      "local food",
-      "organic food",
-    ],
-    openGraph: {
-      title: `${user?.name} Buy Order History | EZHomesteading`,
-      description: "Track your ongoing buy orders.",
-      url: "https://www.ezhomesteading.com/dashboard/order-history/buy",
-      type: "website",
-    },
-  };
 
   return (
-    <>
-      <head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-        <meta name="keywords" content={metadata.keywords.join(", ")} />
-        <meta property="og:title" content={metadata.openGraph.title} />
-        <meta
-          property="og:description"
-          content={metadata.openGraph.description}
-        />
-        <meta property="og:url" content={metadata.openGraph.url} />
-        <meta property="og:type" content={metadata.openGraph.type} />
-      </head>
-      <div className="min-h-screen w-full flex flex-col items-start">
-        <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">
-          Buy Order History
-        </h1>{" "}
+    <div className="min-h-screen w-full flex flex-col items-start">
+      <h1 className="px-2 pb-2 pt-2 lg:pt-14 text-3xl sm:text-5xl">Orders</h1>{" "}
+      <div className="flex space-x-3 px-2">
+        <Button className="rounded-full">My Purchases</Button>
+        <Button className="rounded-full">Purchase History</Button>
         {user?.role !== UserRole.CONSUMER && (
-          <Link className="px-2 py-4" href="/dashboard/order-history/sell">
-            <Button>Go to Sell Order History</Button>
-          </Link>
-        )}{" "}
-        <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
-          {renderedCards}
-        </main>
+          <>
+            <Button className="rounded-full">Sales</Button>
+            <Button className="rounded-full">Sales History</Button>
+          </>
+        )}
       </div>
-    </>
+      <main className="px-4 md:px-8 w-full md:w-2/3 xl:w-1/2">
+        {renderedCards}
+      </main>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ import { Outfit } from "next/font/google";
 import Navbar from "../components/navbar/Navbar";
 import { getNavUser } from "@/actions/getUser";
 import { navUser } from "@/next-auth";
-import Sidebar from "../selling/update-listing/components/sidebar";
+import Sidebar from "@/app/selling/(container-selling)/update-listing/components/sidebar";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",

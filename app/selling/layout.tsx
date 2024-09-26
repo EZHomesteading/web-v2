@@ -1,33 +1,26 @@
-//dashboard layout parent element
-import Navbar from "@/app/components/navbar/Navbar";
 import { Outfit } from "next/font/google";
-import Sidebar from "./update-listing/components/sidebar";
+// import Link from "next/link";
+// import { PiArrowLeftThin } from "react-icons/pi";
+import Navbar from "../components/navbar/Navbar";
 import { getNavUser } from "@/actions/getUser";
-import { Viewport } from "next";
 import { navUser } from "@/next-auth";
-export const viewport: Viewport = {
-  themeColor: "#ced9bb",
-};
 const outfit = Outfit({
-  display: "swap",
   subsets: ["latin"],
+  display: "swap",
 });
-const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+//notification setting parent element
+const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
-    <div className={`${outfit.className} flex flex-row h-full`}>
-      <div className="sheet py-3 pt-12 border-r-[1px] border-neutral-300 sm:mt-6">
-        <Sidebar nav="sell" />
-      </div>
-
-      <div className="flex flex-col sheet w-full">
-        <Navbar user={user as unknown as navUser} isDashboard={true} />
-        <div className=" w-full border-t-[0px] min-h-screen sm:mt-6">
-          {children}
-        </div>
+    <div className={`${outfit.className} `}>
+      <div
+        className={`md:pt-10 pt-2 sheet min-h-screen w-full ${outfit.className} `}
+      >
+        <Navbar user={user as unknown as navUser} />
+        {children}
       </div>
     </div>
   );
 };
 
-export default DashboardLayout;
+export default Layout;
