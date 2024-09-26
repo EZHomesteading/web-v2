@@ -140,45 +140,39 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div>
-        <div className="flex flex-row justify-center  z-[100] items-center   ">
-          {isSeller === true ? (
-            <div className="w-[40%] mx-3 border-none shadow-none">
-              <div className="grid gap-4">
-                <div className="bg-white">
-                  <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                    These are not your open hours feel free to set whatever time
-                    you are able to set this item out
-                  </div>
-                </div>
+      <div className="p-6 rounded-lg max-w-3xl mx-auto">
+        <div className="flex flex-col  justify-between items-start md:items-center space-y-6  md:space-x-6">
+          {isSeller ? (
+            <div className="w-full ">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  These are not your open hours. Feel free to set whatever time
+                  you are able to set this item out.
+                </p>
               </div>
             </div>
           ) : (
-            <div className="w-fit border-none shadow-none">
-              <div className="grid gap-4">
-                <div className="bg-white">
-                  <div className="px-1 py-[.35rem] rounded-lg border-gray-200 border-[1px]">
-                    Co-op Hours Each Day
-                  </div>
-                  <div className="mt-1">
-                    <HoursDisplay coOpHours={hours} />
-                  </div>
-                </div>
+            <div className="w-full md:w-auto">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold mb-2">
+                  Co-op Hours Each Day
+                </h3>
+                <HoursDisplay coOpHours={hours} />
               </div>
             </div>
           )}
 
-          <div className="flex flex-col w-fit">
+          <div className="flex flex-col w-full space-y-4">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   className={cn(
-                    "w-fit sm:w-fit justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-gray-500"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="mr-2 h-5 w-5" />
                   {date ? format(date, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
@@ -193,31 +187,29 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                 />
               </PopoverContent>
             </Popover>
-            <ScrollArea className="h-[16.1rem] w-full rounded-md border mt-1">
+            <ScrollArea className="h-64 w-full rounded-md border bg-white border-gray-200">
               <div className="p-4">
-                <h4 className="mb-4 text-sm font-medium leading-none">
-                  Open Hours
-                </h4>
+                <h4 className="mb-4 text-sm font-medium">Open Hours</h4>
                 {!options.length ? (
-                  <div>No available times on this day</div>
-                ) : null}
-
-                {options.map((option) => (
-                  <div key={option} className="hover:bg-slate">
-                    <div onClick={onClose}>
+                  <p className="text-gray-500">
+                    No available times on this day
+                  </p>
+                ) : (
+                  options.map((option) => (
+                    <div key={option} className="group">
                       <div
-                        className="text-sm cursor-pointer hover:bg-slate-400"
+                        className="py-2 px-3 rounded-md cursor-pointer transition-colors duration-200 ease-in-out group-hover:bg-gray-100"
                         onClick={() => {
                           setTime(option);
-                          onClose;
+                          onClose();
                         }}
                       >
-                        {option}
+                        <p className="text-sm">{option}</p>
                       </div>
+                      <Separator className="my-1" />
                     </div>
-                    <Separator className="my-2" />
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </ScrollArea>
           </div>
