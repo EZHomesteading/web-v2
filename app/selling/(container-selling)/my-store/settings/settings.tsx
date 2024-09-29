@@ -39,7 +39,6 @@ interface p {
 const StoreSettings = ({ apiKey }: p) => {
   const user = useCurrentUser();
 
-  // const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
 
@@ -47,7 +46,6 @@ const StoreSettings = ({ apiKey }: p) => {
     const formData = {
       SODT: SODT,
       bio: bio,
-      // banner: banner,
     };
     axios
       .post("/api/useractions/update", formData)

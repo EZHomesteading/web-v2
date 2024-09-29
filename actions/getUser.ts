@@ -1,8 +1,7 @@
 import prisma from "@/lib/prismadb";
-import { Reviews, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { ExtendedHours } from "@/next-auth";
-import { JsonValue } from "@prisma/client/runtime/library";
 import { Location } from "./getListings";
 
 interface p {
@@ -15,6 +14,47 @@ interface Params {
 interface IStoreParams {
   url?: string;
 }
+type LocationObject = {
+  "0": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
+  "1": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
+  "2": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
+};
+
+interface GetLocationByIndexParams {
+  userId: string;
+  index: 0 | 1 | 2;
+}
+
+const getLocationByIndex = async ({ userId, index }: GetLocationByIndexParams) => {
+   if (!userId) {
+    throw new Error("User ID is required");
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        location: true,
+      },
+    });
+
+    if (!user || !user.location) {
+      return null;
+    }
+
+    const locationObject = user.location as LocationObject;
+    const location = locationObject[index];
+
+    if (!location) {
+      return null;
+    }
+
+    return location;
+  } catch (error: any) {
+    throw new Error(`Error fetching location: ${error.message}`);
+  }
+};
 
 const getVendors = async ({ role }: p) => {
   const session = await authCache();
@@ -674,6 +714,7 @@ export {
   getNavUser,
   getRoleGate,
   getRole,
+  getLocationByIndex
 };
 
 export type StoreUser = {
