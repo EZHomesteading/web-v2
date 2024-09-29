@@ -10,7 +10,7 @@ export const HoverButton = ({ buttonText, hoverMessage }: Props) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div>
+    <div className="relative">
       <Button
         variant="outline"
         onMouseEnter={() => setIsHovered(true)}
