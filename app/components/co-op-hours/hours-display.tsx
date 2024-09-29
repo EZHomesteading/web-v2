@@ -1,4 +1,5 @@
 "use client";
+//hours display component
 import * as React from "react";
 import {
   ColumnDef,
@@ -12,13 +13,17 @@ import {
   TableCell,
   TableRow,
 } from "@/app/components/ui/table";
+import { Outfit } from "next/font/google";
 
 export type Days = {
   id: string;
   day: string;
   hours: Array<{ open: number; close: number }> | null;
 };
-
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -88,13 +93,13 @@ export function HoursDisplay({ coOpHours }: HoursDisplayProps) {
   });
 
   return (
-    <div className="flex bg-white rounded-lg px-2 py-2 bg shadow-lg">
+    <div className="flex rounded-lg px-2 py-2 ">
       <Table>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
+                <TableCell key={cell.id} className={`${outfit.className}`}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}

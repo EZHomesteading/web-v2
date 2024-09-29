@@ -1,10 +1,8 @@
 "use client";
-
-import * as z from "zod";
-import { useEffect, useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import * as z from "zod";
 import { RegisterSchema } from "@/schemas";
 import { Input } from "@/app/components/ui/input";
 import {
@@ -15,28 +13,33 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/register/card-wrapper-register";
+import { CardWrapper } from "../login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register";
-import { useRouter } from "next/navigation";
-import { PiEye, PiEyeClosedThin } from "react-icons/pi";
+import { useSearchParams } from "next/navigation";
 import PasswordInput from "./password-input";
+import { Zilla_Slab } from "next/font/google";
 
-export const RegisterForm = () => {
-  const router = useRouter();
+const zilla = Zilla_Slab({
+  display: "swap",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const RegisterForm = () => {
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"buy" | "sell" | "sellAndSource">(
-    "buy"
-  );
+  const [showFullForm, setShowFullForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      firstName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -48,130 +51,166 @@ export const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
-
+    setDebugInfo(JSON.stringify(values, null, 2));
     startTransition(() => {
-      register(values).then((data) => {
+      register(values, searchParams?.toString() || "/").then((data) => {
         setError(data?.error);
+        if (data?.user) {
+          setSuccess("Registration successful!");
+        }
       });
     });
   };
 
-  useEffect(() => {
-    setActiveTab("buy");
-  }, []);
-
-  const handleTabChange = (tab: "buy" | "sell" | "sellAndSource") => {
-    switch (tab) {
-      case "buy":
-        router.push("/auth/register");
-        break;
-      case "sell":
-        router.push("/auth/register-producer");
-        break;
-      case "sellAndSource":
-        router.push("/auth/register-co-op");
-        break;
-    }
-  };
-  const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(!showPassword);
+
+  const handleContinueWithEmail = () => {
+    setShowFullForm(true);
+    // Reset all form fields except email
+    form.reset({
+      ...form.getValues(),
+      password: "",
+      confirmPassword: "",
+      name: "",
+    });
+  };
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      console.log("Form values changed:", value);
+      console.log("Changed field:", name);
+      console.log("Type of change:", type);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   return (
-    <CardWrapper
-      headerLabel="Welcome to EZ Homesteading"
-      label2="Find your local EZH co-ops"
-      backButtonLabel="Already have an account?"
-      backButtonHref="/auth/login"
-      showSocial
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="Johnny"
+    <>
+      <div className="flex items-top justify-center">
+        <CardWrapper
+          backButtonLabel="Already have an account?"
+          backButtonHref="/auth/login"
+          showSocial={!showFullForm}
+        >
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-2 flex flex-col items-center"
+            >
+              {!showFullForm ? (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="john.doe@example.com"
+                            type="email"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="button"
+                    className={`${zilla.className} w-[280px] sm:w-[350px]`}
+                    onClick={handleContinueWithEmail}
+                  >
+                    Continue with Email
+                  </Button>
+                  <div className={`${zilla.className}`}>OR</div>
+                </>
+              ) : (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="john.doe@example.com"
+                            type="email"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="Appleseed Store"
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="w-[280px] sm:w-[350px]">
+                    <PasswordInput
+                      form={form}
+                      isPending={isPending}
+                      toggleShowPassword={toggleShowPassword}
+                      showPassword={showPassword}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem className="w-[280px] sm:w-[350px]">
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            placeholder="******"
+                            type={showPassword ? "text" : "password"}
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormError message={error} />
+                  <FormSuccess message={success} />
+                  <Button
+                    disabled={isPending}
+                    type="submit"
+                    className="w-[280px] sm:w-[350px]"
+                  >
+                    Create an account
+                  </Button>
+                </>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="Appleseed Store"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="john.doe@example.com"
-                      type="email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <PasswordInput
-              form={form}
-              isPending={isPending}
-              toggleShowPassword={toggleShowPassword}
-              showPassword={showPassword}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="******"
-                      type={showPassword ? "text" : "password"}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button disabled={isPending} type="submit" className="w-full">
-            Create an account
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+            </form>
+          </Form>
+        </CardWrapper>
+      </div>
+    </>
   );
 };
+
+export default RegisterForm;

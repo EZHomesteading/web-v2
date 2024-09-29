@@ -1,11 +1,10 @@
 "use client";
-
+//password forms for auth
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { NewPasswordSchema } from "@/schemas";
 import { Input } from "@/app/components/ui/input";
 import {
@@ -51,10 +50,10 @@ export const NewPasswordForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Enter a new password"
+      // headerLabel="Enter a new password"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
-      label2=""
+      // label2=""
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

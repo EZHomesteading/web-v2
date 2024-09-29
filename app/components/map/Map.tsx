@@ -1,4 +1,5 @@
 "use client";
+//default map parent element
 import React from "react";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";

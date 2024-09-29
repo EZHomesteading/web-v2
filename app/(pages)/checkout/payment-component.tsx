@@ -1,5 +1,5 @@
 "use client";
-
+//stripe payment component
 import { Button } from "@/app/components/ui/button";
 import {
   PaymentElement,
@@ -15,6 +15,7 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
+
 export default function PaymentComponent() {
   const stripe = useStripe();
   const elements = useElements();
@@ -31,7 +32,7 @@ export default function PaymentComponent() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "https://ezhomesteading.com/chat",
+        return_url: "https://ezhomesteading.com/dashboard/orders/buyer",
         shipping: null,
       },
     });

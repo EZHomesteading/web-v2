@@ -1,5 +1,5 @@
 "use client";
-
+//login form child element
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { useState, useTransition } from "react";
@@ -17,8 +17,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/app/components/ui/form";
-import { CardWrapper } from "@/app/components/auth/login/card-wrapper-login";
 import { Button } from "@/app/components/ui/button";
+import { CardWrapper } from "./card-wrapper-login";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { login } from "@/actions/auth/login";
@@ -28,7 +28,7 @@ export const LoginForm = () => {
   const callbackUrl = searchParams?.get("callbackUrl");
   const urlError =
     searchParams?.get("error") === "OAuthAccountNotLinked"
-      ? "Email already in use with different provider!"
+      ? "Email already in use with different provider"
       : "";
 
   const [showTwoFactor, setShowTwoFactor] = useState(false);
@@ -62,8 +62,6 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Welcome back"
-      label2=""
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"
       showSocial
@@ -76,13 +74,14 @@ export const LoginForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email or Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="jd123 or jd@gmail.com"
+                      placeholder="johnnyappleseed@gmail.com"
                       type="text"
+                      className="font-light"
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,6 +100,7 @@ export const LoginForm = () => {
                       disabled={isPending}
                       placeholder="******"
                       type="password"
+                      className="font-light"
                     />
                   </FormControl>
                   <Button

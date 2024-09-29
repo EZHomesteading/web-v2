@@ -6,24 +6,13 @@
 
 export const publicRoutes = [
   "/",
-  "/auth/new-verification",
   "/market",
-  "/listings/[listingId]",
-  "/listings",
-  "/auth/become-a-producer",
-  "/auth/become-a-co-op",
-  "/store",
-  "/info/how-ezh-works",
-  "/info/privacy-policy",
-  "/info/terms-and-conditions",
-  "/who-we-are",
   "/api/webhook/stripe",
-  "/api/conversations",
-  "/api/messages",
   "/map",
-  "/info",
+  "/get-ezh-app",
+  "/api/user/marker-info",
+  "/api/uploadthing",
 ];
-
 /**
  * An array of routes that are used for authentication
  * These routes will redirect logged in users to /settings
@@ -37,11 +26,9 @@ export const authRoutes = [
   "/auth/error",
   "/auth/reset",
   "/auth/new-password",
+  "/api/stripe/create-connected-account",
 ];
 
-export const updateRoutes = ["/auth/become-a-co-op", "/auth/become-a-producer"];
-
-// export const coopRoutes = ["/onboard", "/map"];
 /**
  * The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes

@@ -1,15 +1,14 @@
 "use client";
-
+//shadCN sheet component CUSTOMISED
 import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader } from "./card";
 import { Outfit } from "next/font/google";
 import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
 import { ExtendedHours } from "@/next-auth";
+import { CartGroup2, ValidTime } from "@/app/(pages)/cart/client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -64,7 +63,9 @@ interface SheetContentCProps
     VariantProps<typeof sheetVariants> {
   hours: ExtendedHours;
   index: number;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
+  role: string;
+  sodtarr: CartGroup2[];
 }
 
 const SheetContentC = React.forwardRef<
@@ -72,7 +73,17 @@ const SheetContentC = React.forwardRef<
   SheetContentCProps
 >(
   (
-    { side = "right", className, children, index, hours, onSetTime, ...props },
+    {
+      side = "right",
+      className,
+      children,
+      index,
+      hours,
+      onSetTime,
+      role,
+      sodtarr,
+      ...props
+    },
     ref
   ) => (
     <SheetPortalC>
@@ -84,7 +95,13 @@ const SheetContentC = React.forwardRef<
         {...props}
       >
         <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-          <EarliestPickup hours={hours} index={index} onSetTime={onSetTime} />
+          <EarliestPickup
+            hours={hours}
+            index={index}
+            onSetTime={onSetTime}
+            role={role}
+            sodtarr={sodtarr}
+          />
         </SheetPrimitive.Close>
         <div className="lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200 rounded-lg">
           {" "}

@@ -1,3 +1,4 @@
+"use client";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { getStatusText } from "@/app/components/icons/notification-order-status";
@@ -5,25 +6,32 @@ import Link from "next/link";
 import { Outfit } from "next/font/google";
 import { navBuyOrder, navSellOrder } from "@/next-auth";
 import { formatDistanceToNow } from "date-fns";
+import { FaComment } from "react-icons/fa";
+import { usePathname } from "next/navigation";
+import { PiBellThin } from "react-icons/pi";
+
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
   weight: ["200"],
 });
+
 interface Props {
-  bOrders: navBuyOrder[];
-  sOrders: navSellOrder[];
+  bOrders: navBuyOrder[] | undefined;
+  sOrders: navSellOrder[] | undefined;
 }
 
-const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
+const NotificationIcon = ({ bOrders, sOrders }: Props) => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   const notifications: {
     text: string;
     conversationId: string;
-    updatedAt: string;
+    updatedAt: Date;
   }[] = [];
 
   if (bOrders) {
-    bOrders.forEach((order: any) => {
+    bOrders.forEach((order: navBuyOrder) => {
       const statusText = getStatusText(
         order.status,
         false,
@@ -41,7 +49,7 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
   }
 
   if (sOrders) {
-    sOrders.forEach((order: any) => {
+    sOrders.forEach((order: navSellOrder) => {
       const statusText = getStatusText(
         order.status,
         true,
@@ -65,62 +73,54 @@ const NotificationIcon = async ({ bOrders, sOrders }: Props) => {
   return (
     <>
       <Sheet>
-        <SheetTrigger className="cursor-pointer">
-          <div className="relative">
-            <IoMdNotificationsOutline className="h-9 w-9 " />
-            <div className="absolute top-[1px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
-              {notifications.length}
-            </div>
+        <SheetTrigger className="pb-2 hover:cursor-pointer relative flex flex-col items-center">
+          <PiBellThin
+            className={`h-8 w-8  bell-icon ${
+              white ? "text-white" : "text-black"
+            }`}
+          />
+          <div
+            className={`${outfit.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
+          >
+            {notifications.length}
+          </div>
+
+          <div
+            className={`text-xs pb-2 font-thin sm:pb-0 ${outfit.className} ${
+              white ? "text-white" : "text-black"
+            }`}
+          >
+            Alerts
           </div>
         </SheetTrigger>
-        <SheetContent className="pt-12 bg-neutral-400 border-none justify-start flex flex-col px-2 gap-y-2">
+        <SheetContent className="pt-12 bg-slate-500 opacity-border-none justify-start flex flex-col gap-y-1 border-none overflow-y-auto">
           {notifications.map((notification, index) => (
             <Link
               key={index}
-              className="relative"
+              className="relative hover:opacity-60"
               href={`/chat/${notification.conversationId}`}
             >
               <SheetTrigger
-                className={`${outfit.className} px-2 py-5 pb-2 min-w-full`}
+                className={`${outfit.className} border-neutral-200 border-b-[1px] min-w-full`}
               >
-                <span className="absolute top-0 right-2 text-xs text-black">
-                  {formatDistanceToNow(new Date(notification.updatedAt), {
-                    addSuffix: true,
-                  })}
-                </span>
-
-                <div className="flex justify-start items-start text-start text-white notification-bubble">
-                  {notification.text}
+                <div className="relative">
+                  <div className="flex justify-start items-center text-start text-white bg-slate-500 pl-2 py-3">
+                    <FaComment className="h-6 w-6 mr-2 text-slate-200 flex-shrink-0" />
+                    <div>
+                      <span className="absolute top-0 right-2 text-xs text-gray-200">
+                        {formatDistanceToNow(new Date(notification.updatedAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                      {notification.text}
+                    </div>
+                  </div>
                 </div>
               </SheetTrigger>
             </Link>
           ))}
         </SheetContent>
       </Sheet>
-      <style jsx>{`
-        .notification-bubble {
-          position: relative;
-          background-color: #4a5568;
-          border-radius: 20px;
-          padding: 10px 20px;
-          margin-bottom: 10px;
-        }
-        .notification-bubble:hover {
-          box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1),
-            0 2px 4px rgba(0, 0, 0, 0.06);
-          scale: 1.003;
-        }
-        .notification-bubble::after {
-          content: "";
-          position: absolute;
-          bottom: 5px;
-          right: 15px;
-          transform: translateY(50%) rotate(45deg);
-          width: 15px;
-          height: 15px;
-          background-color: #4a5568;
-        }
-      `}</style>
     </>
   );
 };

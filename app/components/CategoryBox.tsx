@@ -1,8 +1,16 @@
 "use client";
+//query based category boxes for use on market page
 import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["200"],
+});
 
 interface CategoryBoxProps {
   icon: IconType;
@@ -25,18 +33,18 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
       currentQuery = qs.parse(params.toString());
     }
 
-    const updatedQuery: any = {
+    const updatedQuery = {
       ...currentQuery,
       q: label,
     };
 
     if (params?.get("q") === label) {
-      delete updatedQuery.q;
+      delete (updatedQuery as { q?: string }).q;
     }
 
     const url = qs.stringifyUrl(
       {
-        url: "/shop",
+        url: "/market",
         query: updatedQuery,
       },
       { skipNull: true }
@@ -45,17 +53,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     router.push(url);
   }, [label, router, params]);
 
-  const baseStyles = `
-  flex 
-  flex-col 
-  items-center 
-  justify-center 
-  gap-2
-  p-3
-  border-b-2
-  transition
-  cursor-pointer
-`;
+  const baseStyles = `flex flex-col items-center justify-center gap-2 p-3 border-b-2 transition cursor-pointer`;
 
   const selectedStyles = selected
     ? "border-b-neutral-800 dark:border-b-neutral-200"
@@ -64,23 +62,16 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`
-        flex 
-        flex-col 
-        items-center 
-        justify-center 
-        gap-2
-        px-3
-        hover:text-neutral-800
-        transition
-        cursor-pointer
-        ${selected ? "border-b-neutral-800" : "border-transparent"}
-        ${selected ? "text-neutral-800" : "text-neutral-500"}
+      className={`flex flex-col items-center justify-center gap-2 px-3 hover:text-neutral-800 transition cursor-pointer ${
+        selected ? "border-b-neutral-800" : "border-transparent"
+      } ${selected ? "text-neutral-800" : "text-neutral-500"}
       `}
     >
-      <Icon size={20} />
+      <Icon size={25} />
 
-      <div className="font-medium text-sm">{label}</div>
+      <div className={`${outfit.className} font-medium text-[8px] sm:text-sm`}>
+        {label}
+      </div>
     </div>
   );
 };

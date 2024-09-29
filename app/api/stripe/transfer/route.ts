@@ -1,0 +1,50 @@
+//tranfer $$ between stripe and users on site.
+import { getOrderByIdTransfer } from "@/actions/getOrder";
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2023-10-16",
+});
+
+interface TransferData {
+  total: number;
+  stripeAccountId: string;
+  orderId: string;
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { total, stripeAccountId, orderId } = body as TransferData;
+
+  const order = await getOrderByIdTransfer({ orderId: orderId });
+
+  if (!order) {
+    return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  } else if (order.seller && order.seller.stripeAccountId !== stripeAccountId) {
+    return NextResponse.json(
+      { error: "Invalid Stripe account" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const transfer = await stripe.transfers.create({
+      amount: total,
+      currency: "usd",
+      destination: stripeAccountId,
+      description: "Transfer to vendor",
+    });
+
+    return NextResponse.json(
+      { message: "Transfer initiated successfully", transfer },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Transfer error:", error);
+    return NextResponse.json(
+      { error: "Failed to initiate transfer" },
+      { status: 500 }
+    );
+  }
+}

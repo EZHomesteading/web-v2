@@ -1,0 +1,57 @@
+const questions: Question[] = [
+  {
+    id: 1,
+    text: "Do you already run a farmer's market stand?",
+    weight: 3,
+    options: [
+      { text: "Yes, regularly", producerScore: 1, coopScore: 4 },
+      { text: "Occasionally", producerScore: 2, coopScore: 3 },
+      { text: "No, but I'm interested", producerScore: 3, coopScore: 2 },
+      { text: "No, and I'm not interested", producerScore: 4, coopScore: 1 },
+    ],
+  },
+  {
+    id: 2,
+    text: "Are you comfortable with people visiting your property or stand?",
+    weight: 2,
+    options: [
+      { text: "Very comfortable", producerScore: 1, coopScore: 4 },
+      { text: "Somewhat comfortable", producerScore: 2, coopScore: 3 },
+      { text: "Not very comfortable", producerScore: 3, coopScore: 2 },
+      { text: "Not at all comfortable", producerScore: 4, coopScore: 1 },
+    ],
+  },
+  {
+    id: 3,
+    text: "How much time can you dedicate to selling products?",
+    weight: 2,
+    options: [
+      { text: "Full-time", producerScore: 1, coopScore: 4 },
+      { text: "Part-time", producerScore: 2, coopScore: 3 },
+      { text: "A few hours a week", producerScore: 3, coopScore: 2 },
+      { text: "Minimal time", producerScore: 4, coopScore: 1 },
+    ],
+  },
+  {
+    id: 4,
+    text: "How much variety of products can you offer?",
+    weight: 2,
+    options: [
+      { text: "Wide variety", producerScore: 1, coopScore: 4 },
+      { text: "Several types", producerScore: 2, coopScore: 3 },
+      { text: "A few types", producerScore: 3, coopScore: 2 },
+      { text: "One or two products", producerScore: 4, coopScore: 1 },
+    ],
+  },
+  {
+    id: 5,
+    text: "How interested are you in handling customer interactions?",
+    weight: 1,
+    options: [
+      { text: "Very interested", producerScore: 1, coopScore: 4 },
+      { text: "Somewhat interested", producerScore: 2, coopScore: 3 },
+      { text: "Not very interested", producerScore: 3, coopScore: 2 },
+      { text: "Not at all interested", producerScore: 4, coopScore: 1 },
+    ],
+  },
+];

@@ -1,55 +1,64 @@
 "use client";
-
-import useActiveList from "@/hooks/messenger/useActiveList";
+//avatar component to be used anywhere
 import Image from "next/image";
-
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
 interface AvatarProps {
-  user: any;
+  image?: string | null;
+  h?: string;
+  h2?: string;
+  h3?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ user }: AvatarProps) => {
-  const { members } = useActiveList();
-  const isActive = members.indexOf(user?.email!) !== -1;
+const Avatar: React.FC<AvatarProps> = ({
+  image,
+  h = "9",
+  h2 = "12",
+  h3 = "15",
+}: AvatarProps) => {
   return (
-    <div className="relative">
-      <div
-        className="
-        relative 
-        inline-block 
-        rounded-full 
-        overflow-hidden
-        h-9 
-        w-9 
-        md:h-11 
-        md:w-11
-      "
-      >
-        <Image
-          fill
-          src={user?.image || "/images/website-images/placeholder.jpg"}
-          alt="Avatar"
-          className="object-cover"
-        />
-      </div>
-      {isActive ? (
-        <span
-          className="
-            absolute 
-            block 
-            rounded-full 
-            bg-green-500 
-            ring-2 
-            ring-white 
-            top-0 
-            right-0
-            h-2 
-            w-2 
-            md:h-3 
-            md:w-3
-          "
-        />
-      ) : null}
-    </div>
+    <AlertDialog>
+      <AlertDialogTrigger>
+        <div className="relative">
+          <div
+            className={`relative inline-block rounded-full overflow-hidden h-${h} w-${h} md:h-${h2} md:w-${h2}`}
+          >
+            <Image
+              fill
+              src={image || "/images/website-images/placeholder.jpg"}
+              alt="Avatar"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </AlertDialogTrigger>{" "}
+      <AlertDialogContent>
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-2xl">
+            <div className="relative pb-[56.25%]">
+              <Image
+                fill
+                src={image || "/images/website-images/placeholder.jpg"}
+                alt="Avatar"
+                className="absolute inset-0 object-contain"
+              />
+            </div>
+            <AlertDialogTrigger className="absolute top-2 right-12 lg:right-21 bg-white bg-opacity-70 rounded-full p-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 "
+                stroke="currentColor"
+              >
+                <path strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </AlertDialogTrigger>
+          </div>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

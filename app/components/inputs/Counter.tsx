@@ -1,5 +1,5 @@
 "use client";
-
+//basic counter component
 import { useCallback } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
@@ -43,6 +43,7 @@ const Counter: React.FC<CounterProps> = ({
             rounded-full
             border-[1px]
             flex
+            bg
             items-center
             justify-center
             cursor-pointer
@@ -65,6 +66,7 @@ const Counter: React.FC<CounterProps> = ({
           className="
             w-10
             h-10
+            bg
             rounded-full
             border-[1px]
             flex

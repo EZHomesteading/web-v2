@@ -4,8 +4,7 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Location, UserRole } from "@prisma/client";
-import { ExtendedHours } from "@/next-auth";
+import { Location, Notification, UserRole } from "@prisma/client";
 export const {
   handlers: { GET, POST },
   auth,
@@ -21,6 +20,17 @@ export const {
       if (account?.provider !== "credentials") return true;
       return true;
     },
+    async authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      if (isOnDashboard) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      } else if (isLoggedIn) {
+        return Response.redirect(new URL("/dashboard", nextUrl));
+      }
+      return true;
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
@@ -34,18 +44,24 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        session.user.location = token.location as Location;
+        (session.user.location as unknown) = token.location as Location;
         session.user.image = token.image as string | undefined;
-        session.user.hours = token.hours as ExtendedHours;
+        //session.user.hours = token.hours as ExtendedHours;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
+        session.user.url = token.url as string;
         session.user.createdAt = token.createdAt as Date | undefined;
         session.user.updatedAt = token.updatedAt as Date | undefined;
         session.user.conversationIds = token.conversationIds as string[];
         session.user.seenMessageIds = token.seenMessageIds as string[];
-        session.user.favoriteIds = token.favoriteIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
+        session.user.totalPaidOut = token.totalPaidOut as number;
+        session.user.notifications = token.notifications as Notification;
+        session.user.SODT = token.SODT as number | undefined;
+        session.user.bio = token.bio as string | undefined;
+        session.user.banner = token.banner as string | undefined;
+        session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
       }
       return session;
     },
@@ -62,7 +78,8 @@ export const {
       token.phoneNumber = existingUser.phoneNumber;
       token.location = existingUser.location;
       token.image = existingUser.image;
-      token.hours = existingUser.hours;
+      token.hasPickedRole = existingUser.hasPickedRole
+      token.url = existingUser.url;
       token.role = existingUser.role;
       token.password = existingUser.password;
       token.stripeAccountId = existingUser.stripeAccountId;
@@ -70,12 +87,19 @@ export const {
       token.updatedAt = existingUser.updatedAt;
       token.conversationIds = existingUser.conversationIds;
       token.seenMessageIds = existingUser.seenMessageIds;
-      token.favoriteIds = existingUser.favoriteIds;
       token.subscriptions = existingUser.subscriptions;
+      token.totalPaidOut = existingUser.totalPaidOut;
+      token.notifications = existingUser.notifications;
+      token.SODT = existingUser.SODT;
+      token.bio = existingUser.bio;
+      token.banner = existingUser.banner;
       return token;
     },
   },
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  jwt: {
+    maxAge: 3 * 24 * 60 * 60,
+  },
   ...authConfig,
 });

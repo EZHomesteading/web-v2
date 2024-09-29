@@ -1,5 +1,5 @@
 "use client";
-
+//calendar type input component
 import { DateRange, Range, RangeKeyDict } from "react-date-range";
 
 import "react-date-range/dist/styles.css";

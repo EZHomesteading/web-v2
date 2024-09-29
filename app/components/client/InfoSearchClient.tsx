@@ -1,8 +1,7 @@
 "use client";
-
+//info pages parent component
 import Select from "react-select";
-import useInfoPage from "@/hooks/listing/use-product";
-import useInfoPages from "@/hooks/use-info-pages";
+import useInfoPages from "@/app/info/use-info-pages";
 
 export type InfoPageValue = {
   label: string;
@@ -29,24 +28,27 @@ const InfoSearchClient: React.FC<InfoPageSelectProps> = ({
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as InfoPageValue)}
-        formatOptionLabel={(option: any) => (
-          <div className="flex flex-row items-center gap-3">
-            {" "}
-            <div>{option.label}</div>
-          </div>
+        formatOptionLabel={(option: { label: string }) => (
+          <div className="rounded-lg">{option.label}</div>
         )}
+        components={{
+          DropdownIndicator: () => null,
+          IndicatorSeparator: () => null,
+          ClearIndicator: () => null,
+        }}
         classNames={{
-          control: () => "p-3 border-2",
+          control: () => "px-2 bg shadow-sm peer",
           input: () => "text-lg",
-          option: () => "text-lg",
+          option: () => "text-xs",
+          dropdownIndicator: () => "hidden",
         }}
         theme={(theme) => ({
           ...theme,
-          borderRadius: 6,
+          borderRadius: 20,
           colors: {
             ...theme.colors,
-            primary: "black",
-            primary25: "#ffe4e6",
+            primary: "#ced9bb",
+            primary25: "#ced9bb",
           },
         })}
       />

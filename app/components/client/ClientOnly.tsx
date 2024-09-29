@@ -1,5 +1,5 @@
 "use client";
-
+//set items as client only components
 import React, { useState, useEffect } from "react";
 
 interface ClientOnlyProps {

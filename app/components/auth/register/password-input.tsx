@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+//create password component
 import {
   FormControl,
   FormField,
@@ -11,7 +11,7 @@ import { Input } from "@/app/components/ui/input";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 interface p {
   form: any;
-  isPending: any;
+  isPending: boolean;
   toggleShowPassword: () => void;
   showPassword: boolean;
 }

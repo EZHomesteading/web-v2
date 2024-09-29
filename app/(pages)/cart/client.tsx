@@ -1,5 +1,5 @@
 "use client";
-
+//cart renderign and handling of all cart related data dynamically as the user changes inputs.
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
@@ -7,19 +7,16 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { SafeListing } from "@/types";
+//import { SafeListing } from "@/types";
 import { addDays, format } from "date-fns";
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import OrderCreate from "@/app/components/order-create";
-import { Button } from "@/app/components/ui/button";
+import OrderCreate from "./components/order-create";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import SpCounter from "@/app/(pages)/cart/components/counter";
 import DateState from "@/app/(pages)/cart/components/dateStates";
 import { ExtendedHours } from "@/next-auth";
-import { UserInfo, CartGroups } from "@/next-auth";
-import { BsTrash2 } from "react-icons/bs";
 import { MdErrorOutline } from "react-icons/md";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
@@ -28,6 +25,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
+import { CartItem } from "@/actions/getCart";
+import { FinalListing } from "@/actions/getListings";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -35,39 +34,59 @@ const outfit = Outfit({
   display: "swap",
 });
 interface CartProps {
-  cartItems?: any;
-  user?: UserInfo;
+  cartItems?: CartItem[];
 }
-
-const Cart = ({ cartItems, user }: CartProps) => {
-  const [validTime, setValidTime] = useState<any>();
-  const [checkoutPickup, setCheckoutPickup] = useState<any>("");
-  const [stillExpiry, setStillExpiry] = useState(true);
+interface CartGroup {
+  expiry: Date;
+  cartIndex: number;
+}
+export type CartGroup2 = {
+  cartIndex: number;
+  sodt: number;
+};
+export type ValidTime = { pickupTime: Date; index: number };
+export type checkoutTime = {
+  pickupTime: Date | undefined;
+  cartIndex: number;
+  expiry: Date | undefined;
+};
+const Cart = ({ cartItems = [] }: CartProps) => {
+  // State variables
+  const [validTime, setValidTime] = useState<ValidTime>(); // Stores the valid pickup time
+  const [checkoutPickup, setCheckoutPickup] = useState<checkoutTime[]>(); // Stores the checkout pickup data
+  const [stillExpiry, setStillExpiry] = useState(true); // Indicates if there are still items with expiry date
   const [total, setTotal] = useState(
     cartItems.reduce(
-      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      (acc: number, cartItem: CartItem) =>
+        acc + cartItem.listing.price * cartItem.quantity,
       0
     )
-  );
-
-  const handleDataFromChild = (childTotal: any) => {
+  ); // Calculates the total price of all items in the cart
+  // Function to update the total from a child component
+  const handleDataFromChild = (childTotal: number) => {
     setTotal(childTotal);
   };
+
+  // Update the total whenever cartItems or total changes
   useEffect(() => {
     const newTotal = cartItems.reduce(
-      (acc: number, cartItem: any) => acc + cartItem.price * cartItem.quantity,
+      (acc: number, cartItem: CartItem) =>
+        acc + cartItem.listing.price * cartItem.quantity,
       0
     );
     setTotal(newTotal);
   }, [cartItems, total]);
 
+  // Helper function to round a number to a specified precision
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
   }
 
   const router = useRouter();
-  const shelfLife = (listing: SafeListing) => {
+
+  // Function to calculate and display the shelf life or expiry date of a listing
+  const shelfLife = (listing: FinalListing) => {
     const adjustedListing = {
       ...listing,
       createdAt: new Date(listing.createdAt),
@@ -85,34 +104,43 @@ const Cart = ({ cartItems, user }: CartProps) => {
       : "This product is non-perisable";
     return shelfLifeDisplay;
   };
-  const handleDelete: any = async () => {
-    await axios.delete(`/api/cart`);
+
+  // Function to delete the cart
+  const handleDelete = async () => {
+    await axios.delete(`/api/useractions/checkout/cart`);
     router.refresh();
   };
+
+  // Function to convert a date string to a Date object
   function convertToDate(dateString: string) {
-    // Remove the leading text "Estimated Expiry Date: "
     const datePart = dateString.split(": ")[1];
-
-    // Convert the date string to a Date object
     const dateObj = new Date(datePart);
-
     return dateObj;
   }
-  const mappedCartItems: CartGroups = cartItems.reduce(
-    (acc: any, cartItem: any, index: number) => {
-      const expiry = convertToDate(shelfLife(cartItem.listing)); // Replace with the actual expiry date calculation
+
+  // Group cart items by user and calculate the earliest expiry date for each group
+  const mappedCartItems: CartGroup[] = cartItems.reduce(
+    (acc: CartGroup[], cartItem: CartItem, index: number) => {
+      const expiry = convertToDate(shelfLife(cartItem.listing as FinalListing));
       const existingOrder = acc[acc.length - 1];
       const prevCartItem = cartItems[index - 1];
 
       if (
-        existingOrder &&
-        prevCartItem?.listing.userId === cartItem.listing.userId
+        (existingOrder &&
+          prevCartItem?.listing.userId === cartItem.listing.userId) ||
+        (existingOrder &&
+          prevCartItem?.listing.location?.address[0] !==
+            cartItem.listing.location.address[0])
       ) {
         if (existingOrder.expiry > expiry) {
           existingOrder.expiry = expiry;
         }
       }
-      if (prevCartItem?.listing.userId !== cartItem.listing.userId) {
+      if (
+        prevCartItem?.listing.userId !== cartItem.listing.userId ||
+        prevCartItem?.listing.location?.address[0] !==
+          cartItem.listing.location.address[0]
+      ) {
         acc.push({
           expiry,
           cartIndex: index,
@@ -122,56 +150,114 @@ const Cart = ({ cartItems, user }: CartProps) => {
     },
     []
   );
-  function updateObjectWithCartIndex(arr: any, targetCartIndex: number) {
-    let foundObject = null;
+  const handleSodtMap: CartGroup2[] = cartItems.reduce(
+    (acc: CartGroup2[], cartItem: CartItem, index: number) => {
+      const sodt = cartItem.listing.SODT;
+      const usersodt = cartItem.listing.user.SODT;
+      const existingOrder = acc[acc.length - 1];
+      const prevCartItem = cartItems[index - 1];
+      if (
+        (existingOrder &&
+          prevCartItem?.listing.userId === cartItem.listing.userId) ||
+        (existingOrder &&
+          prevCartItem?.listing.location?.address[0] !==
+            cartItem.listing.location.address[0])
+      ) {
+        if (
+          (sodt !== null || sodt !== undefined) &&
+          (usersodt !== null || usersodt !== undefined)
+        ) {
+          if (usersodt && existingOrder.sodt < usersodt) {
+            existingOrder.sodt = usersodt;
+          } else if (sodt && existingOrder.sodt < sodt) {
+            existingOrder.sodt = sodt;
+          }
+        } else {
+          existingOrder.sodt = 60;
+        }
+      }
+      if (
+        prevCartItem?.listing.userId !== cartItem.listing.userId ||
+        prevCartItem?.listing.location?.address[0] !==
+          cartItem.listing.location.address[0]
+      ) {
+        if (
+          (sodt === null || sodt === undefined) &&
+          (usersodt === null || usersodt === undefined)
+        ) {
+          acc.push({
+            sodt: 60,
+            cartIndex: index,
+          });
+        } else if (sodt) {
+          acc.push({
+            sodt,
+            cartIndex: index,
+          });
+        } else if (usersodt) {
+          acc.push({
+            sodt: usersodt,
+            cartIndex: index,
+          });
+        }
+      }
+      return acc;
+    },
+    []
+  );
+  const sodtarr = handleSodtMap;
 
-    arr.forEach((obj: any, index: number) => {
+  // Function to update an object in an array with the pickup time and remove the expiry property
+  function updateObjectWithCartIndex(
+    arr: checkoutTime[],
+    targetCartIndex: number
+  ) {
+    let foundObject = null;
+    arr.forEach((obj: checkoutTime, index: number) => {
       if (obj.cartIndex === targetCartIndex) {
-        arr[index].pickupTime = validTime.pickupTime;
+        arr[index].pickupTime = validTime?.pickupTime;
         delete arr[index].expiry;
         foundObject = obj;
       }
     });
-    //setCheckoutPickup(mappedCartItems);
     return arr;
   }
-  useEffect(() => {
-    console.log(checkoutPickup);
-  }),
-    [checkoutPickup];
+
+  // Update the checkoutPickup state whenever validTime changes
   useEffect(() => {
     if (validTime) {
-      if (checkoutPickup === "") {
+      if (checkoutPickup === undefined) {
         const initialPickupBuild = updateObjectWithCartIndex(
-          mappedCartItems,
+          mappedCartItems as unknown as checkoutTime[],
           validTime.index
         );
         setStillExpiry(
-          initialPickupBuild.some((item: any) => !item.pickupTime)
+          initialPickupBuild.some((item: checkoutTime) => !item.pickupTime)
         );
-        console.log(stillExpiry);
         setCheckoutPickup(initialPickupBuild);
       } else {
         const updatePickupBuild = updateObjectWithCartIndex(
           checkoutPickup,
           validTime.index
         );
-        setStillExpiry(updatePickupBuild.some((item: any) => !item.pickupTime));
-        console.log(stillExpiry);
+        setStillExpiry(
+          updatePickupBuild.some((item: checkoutTime) => !item.pickupTime)
+        );
         setCheckoutPickup(updatePickupBuild);
-        console.log(checkoutPickup);
       }
     }
   }),
     [validTime];
-  const handleTime = (childTime: Date) => {
+
+  // Function to update the validTime state from a child component
+  const handleTime = (childTime: ValidTime) => {
     setValidTime(childTime);
   };
-  //console.log(mappedCartItems);
-  function findObjectWithCartIndex(arr: any, targetCartIndex: number) {
-    let foundObject = null;
 
-    arr.forEach((obj: any) => {
+  // Function to find an object in an array based on the cartIndex property
+  function findObjectWithCartIndex(arr: CartGroup[], targetCartIndex: number) {
+    let foundObject = null;
+    arr.forEach((obj: CartGroup) => {
       if (obj.cartIndex === targetCartIndex) {
         foundObject = obj;
       }
@@ -188,7 +274,17 @@ const Cart = ({ cartItems, user }: CartProps) => {
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Cart
             </h1>
-            <div className="justify-center">
+            <Link
+              href="/market"
+              className="
+              block 
+            transition 
+           cursor-pointer
+           text-center bg-green-400 hover:bg-green-700 rounded-lg px-4 py-2 text-sm"
+            >
+              Continue Shopping
+            </Link>
+            {/* <div className="justify-center">
               <Button
                 className="bg-red-300 text-black hover:bg-red-600 hover:text-white hover:shadow-lg shadow-md"
                 onClick={handleDelete}
@@ -196,7 +292,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 <BsTrash2 className="text-lg mr-1" />
                 Empty Cart
               </Button>
-            </div>
+            </div> */}
           </header>
           <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
             <section aria-labelledby="cart-heading" className="lg:col-span-7">
@@ -207,13 +303,14 @@ const Cart = ({ cartItems, user }: CartProps) => {
                 role="list"
                 className="divide-y divide-gray-200 border-b border-t border-gray-200"
               >
-                {cartItems.map((cartItem: any, index: any) => {
+                {cartItems.map((cartItem: CartItem, index: number) => {
                   const prevCartItem = cartItems[index - 1];
-
                   return (
-                    <div key={cartItem.listingId}>
+                    <div key={index}>
                       {prevCartItem?.listing.userId !==
-                      cartItem.listing.userId ? (
+                        cartItem.listing.userId ||
+                      prevCartItem?.listing.location?.address[0] !==
+                        cartItem.listing.location.address[0] ? (
                         <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p
                             className={`${outfit.className} text-2xl md:text-4xl`}
@@ -221,10 +318,12 @@ const Cart = ({ cartItems, user }: CartProps) => {
                             {cartItem.listing.user.name}
                           </p>
                           <DateState
+                            role={cartItem.listing.user.role}
                             hours={
-                              cartItem?.listing.user.hours as ExtendedHours
+                              cartItem?.listing.location.hours as ExtendedHours
                             }
                             onSetTime={handleTime}
+                            sodtarr={sodtarr}
                             index={index}
                             cartGroup={findObjectWithCartIndex(
                               mappedCartItems,
@@ -239,7 +338,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                       >
                         <div className="flex-shrink-0">
                           <Image
-                            src={cartItem.listing.imageSrc}
+                            src={cartItem.listing.imageSrc[0]}
                             className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
                             width={100}
                             height={100}
@@ -272,10 +371,21 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                 </div>
                                 {cartItem.listing.shelfLife && (
                                   <p className="sm:ml-4 sm:border-l border-none sm:border-gray-200 sm:pl-4 text-gray-500 text-xs sm:text-sm">
-                                    {shelfLife(cartItem.listing)}
+                                    {shelfLife(
+                                      cartItem.listing as FinalListing
+                                    )}
                                   </p>
                                 )}
                               </div>
+                              {cartItem.listing.minOrder === null ||
+                              cartItem.listing.minOrder === 1 ? (
+                                <></>
+                              ) : (
+                                <div className=" sm:border-l border-none sm:border-gray-200  text-gray-500 text-xs sm:text-sm">
+                                  Minimum order: {cartItem.listing.minOrder}{" "}
+                                  {cartItem.listing.quantityType}
+                                </div>
+                              )}
                               <div className="mt-1 text-sm font-medium text-gray-900 flex flex-row">
                                 ${cartItem.listing.price}{" "}
                                 {cartItem.listing.quantityType ? (
@@ -311,7 +421,9 @@ const Cart = ({ cartItems, user }: CartProps) => {
                                   className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                                   onClick={async () => {
                                     const cartId = cartItem.id;
-                                    await axios.delete(`/api/cart/${cartId}`);
+                                    await axios.delete(
+                                      `/api/useractions/checkout/cart/${cartId}`
+                                    );
                                     router.refresh();
                                   }}
                                 >
@@ -326,7 +438,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                           </div>
 
                           <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                            {cartItem.listing.stock ? (
+                            {cartItem.listing.stock > 0 ? (
                               <CheckIcon
                                 className="h-5 w-5 flex-shrink-0 text-green-500"
                                 aria-hidden="true"
@@ -339,7 +451,7 @@ const Cart = ({ cartItems, user }: CartProps) => {
                             )}
 
                             <span>
-                              {cartItem.listing.stock
+                              {cartItem.listing.stock > 0
                                 ? "In stock"
                                 : `None in Stock`}
                             </span>
@@ -371,27 +483,6 @@ const Cart = ({ cartItems, user }: CartProps) => {
                     ${Round(total, 2)}
                   </dd>
                 </div>
-
-                {/* <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                  <dt className="flex text-sm text-gray-600">
-                    <span>Tax Estimate</span>
-                    <a
-                      href="#"
-                      className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">
-                        Learn more about how tax is calculated
-                      </span>
-                      <QuestionMarkCircleIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </dt>
-                  <dd className="text-sm font-medium text-gray-900">
-                    ${Round(total * 0.08, 2)}
-                  </dd>
-                </div> */}
                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <dt className="flex text-sm text-gray-600">
                     <span>EZH Processing Fees Always</span>

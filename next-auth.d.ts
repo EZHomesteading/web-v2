@@ -1,4 +1,10 @@
-import { Cart, Hours, UserRole } from "@prisma/client";
+import {
+  Cart,
+  Hours,
+  LocationObj,
+  Notification,
+  UserRole,
+} from "@prisma/client";
 import NextAuth, { type DefaultSession } from "next-auth";
 
 export type UserInfo = DefaultSession["user"] & {
@@ -9,7 +15,7 @@ export type UserInfo = DefaultSession["user"] & {
   phoneNumber?: string;
   image?: string;
   location?: Location;
-  hours?: Hours;
+  url?: string;
   stripeAccountId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -17,7 +23,12 @@ export type UserInfo = DefaultSession["user"] & {
   seenMessageIds: string[];
   favoriteIds: string[];
   subscriptions?: string;
-  cart?: Cart[];
+  totalPaidOut?: number;
+  notifications?: Notification;
+  SODT?: number;
+  bio?: string;
+  banner?: string;
+  hasPickedRole?: boolean;
 };
 
 type Times = {
@@ -34,6 +45,7 @@ type Hours = {
   5: Times[];
   6: Times[];
 };
+
 type navBuyOrder = {
   id: string;
   conversationId: string;
@@ -42,13 +54,20 @@ type navBuyOrder = {
   buyer: {
     name: string;
   };
+  seller: {
+    name: string;
+  };
 };
+
 type navSellOrder = {
   id: string;
   conversationId: string;
   status: number;
   updatedAt: Date;
   seller: {
+    name: string;
+  };
+  buyer: {
     name: string;
   };
 };
@@ -70,18 +89,18 @@ type navUser = {
   id: string;
   name: string;
   firstName?: string;
+  url: string | null;
   image?: string;
+  stripeAccountId: string | null;
+  hasPickedRole: boolean | null;
   role: UserRole;
   email: string;
   sellerOrders?: navSellOrder[];
   buyerOrders?: navBuyOrder[];
   cart?: nav;
+  location: Location;
 };
-type Location = {
-  type: string;
-  coordinates: number[];
-  address: string[];
-};
+type Location = { 0?: LocationObj; 1?: LocationObj; 2?: LocationObj };
 type CartGroup = {
   expiry?: date;
   cartIndex?: number;
@@ -92,7 +111,9 @@ interface ExtendedHours extends Hours {
 type CartGroups = {
   cartGroup: CartGroup[];
 };
-
+type UserWithCart = UserInfo & {
+  cart: Cart;
+};
 declare module "next-auth" {
   interface Session {
     user: UserInfo;

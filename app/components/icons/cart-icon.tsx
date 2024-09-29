@@ -2,7 +2,20 @@ import { BsBasket } from "react-icons/bs";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
-
+import axios from "axios";
+import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
+import { usePathname, useRouter } from "next/navigation";
+import { Outfit, Zilla_Slab } from "next/font/google";
+import { PiBasketThin } from "react-icons/pi";
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const zilla = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 interface CartItem {
   id: string;
   quantity: number;
@@ -81,9 +94,12 @@ const getQuantityWording = (
 };
 
 const CartIcon = ({ cart }: c) => {
+  const pathname = usePathname();
+  const white = pathname === "/" || pathname?.startsWith("/chat");
   if (!cart || cart.length === 0) {
     return null;
   }
+  const router = useRouter();
   const groupedListings: Record<string, CartItem[]> = cart.reduce(
     (acc: Record<string, CartItem[]>, item: CartItem) => {
       const userId = item.listing.user.id;
@@ -100,19 +116,56 @@ const CartIcon = ({ cart }: c) => {
   //   return null;
   // }
   return (
-    <>
+    <div className={`${outfit.className}`}>
       <Sheet>
-        <SheetTrigger>
+        <SheetTrigger className="flex pb-4 sm:pb-2 flex-col items-center">
           <div className="relative">
-            <BsBasket className="w-7 h-7" />
-            <div className="absolute top-[0px] right-0 text-green bg-red-600 rounded-full w-5 p-[1px] text-xs">
+            <PiBasketThin
+              className={`h-8 w-8 ${white ? "text-white" : "text-black"}`}
+            />
+            <div className="absolute top-[0px] right-[-5px] text-green bg-red-400 rounded-full w-4 text-white p-[1px] text-xs">
               {cart.length}
             </div>
           </div>
+          <div
+            className={` text-xs font-thin ${outfit.className} ${
+              white ? "text-white" : "text-black"
+            }`}
+          >
+            Cart
+          </div>
         </SheetTrigger>
 
-        <SheetContent className="bg px-4 py-4 min-h-screen overflow-y-auto">
-          <SheetHeader className="text-3xl mb-3">Cart</SheetHeader>
+        <SheetContent
+          className={`${outfit.className} bg px-4 py-4 min-h-screen overflow-y-auto`}
+        >
+          <SheetHeader className="text-3xl mb-3 font-bold">
+            <div className=" flex flex-row justify-start text-nowrap">
+              <Link href="/cart">
+                {" "}
+                <SheetTrigger
+                  className="
+         
+         cursor-pointer
+         text-center bg-emerald-950 text-white hover:bg-green-700  rounded-full shadow-sm px-4 py-2 text-sm "
+                >
+                  Go to Cart
+                </SheetTrigger>
+              </Link>
+              <Link href="/market">
+                <SheetTrigger
+                  className="
+           
+           cursor-pointer
+           text-center bg-emerald-950 hover:bg-green-700 text-white  ml-2 rounded-full px-4 py-2 text-sm"
+                >
+                  Continue Shopping
+                </SheetTrigger>
+              </Link>
+            </div>
+            Cart
+          </SheetHeader>
+
           {Object.entries(groupedListings).map(([userId, userListings]) => (
             <div key={userId}>
               <h3 className="font-semibold mb-2">
@@ -121,33 +174,42 @@ const CartIcon = ({ cart }: c) => {
               {(userListings as CartItem[]).map((item) => (
                 <div key={item.id} className="flex items-center gap-4 mb-4">
                   <Image
-                    src={item.listing.imageSrc}
+                    src={item.listing.imageSrc[0]}
                     alt={item.listing.title}
-                    height={100}
-                    width={100}
+                    height={80}
+                    width={80}
                     className="w-16 h-16 object-cover rounded-xl"
                   />
-                  <div>
-                    <h4 className="font-semibold">
+                  <div className="flex flex-row justify-between w-full">
+                    <h4 className={`${zilla.className} text-sm font-light`}>
                       {getQuantityWording(
                         item.listing.quantityType,
                         item.quantity,
                         item.listing.title
                       )}
                     </h4>
+                    <div>
+                      <button
+                        type="button"
+                        className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+                        onClick={async () => {
+                          const cartId = item.id;
+                          await axios.delete(`/api/cart/${cartId}`);
+                          router.refresh();
+                        }}
+                      >
+                        <span className="sr-only">Remove</span>
+                        <XMarkIconMini className="h-5 w-5" aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           ))}
-          <Link href="/cart">
-            <SheetTrigger className="w-full shadow-xl mb-2 text-md py-1 rounded-xl">
-              Go to Cart
-            </SheetTrigger>
-          </Link>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 };
 

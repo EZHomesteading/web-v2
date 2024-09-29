@@ -1,5 +1,5 @@
 "use server";
-
+//auth action for verifying emails, and creating new tokens for verified emails
 import prisma from "@/lib/prisma";
 import { getUserByEmail } from "@/data/user";
 import { getVerificationTokenByToken } from "@/data/verification-token";

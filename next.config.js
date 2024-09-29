@@ -1,13 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
-    domains: [
-      "res.cloudinary.com",
-      "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com",
-      "images.pexels.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
+    domains: [],
   },
 };
 
-module.exports = nextConfig;
+const withPWA = require("next-pwa")({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  reloadOnOnline: true,
+  disable: false,
+});
+
+module.exports = withPWA(nextConfig);

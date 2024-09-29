@@ -1,4 +1,6 @@
+//payment intent API
 import { NextRequest, NextResponse } from "next/server";
+import { getOrderById } from "@/actions/getOrder";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -6,17 +8,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
-  const {
-    totalSum,
-    userId,
-    orderTotals,
-    body,
-    // parentOrderId,
-    email,
-    orderIds,
-  } = await request.json();
-  console.log("totalSum: ", totalSum);
+  const { totalSum, userId, orderTotals, body, email, orderIds } =
+    await request.json();
+
   try {
+    if (orderIds === null) {
+      console.error("Error creating PaymentIntent:");
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 }
+      );
+    }
+    const b = orderIds.replace(/,(?=[^,]*$)/, "");
+    const orderIdsArray = JSON.parse(b);
+    orderIdsArray.map(async (orderId: string) => {
+      const order = await getOrderById({ orderId });
+    });
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,
       currency: "usd",
@@ -27,7 +34,6 @@ export async function POST(request: NextRequest) {
         orderTotals: JSON.stringify(orderTotals),
         orderIds,
       },
-      // transfer_group: parentOrderId,
       receipt_email: email,
     });
 

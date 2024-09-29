@@ -1,24 +1,43 @@
 "use client";
-
+//parent element for date picker and handling of datepicker related data to be sent to the cart parent element.
 import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
-import { Sheet, SheetTrigger } from "@/app/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
+import { SheetTrigger } from "@/app/components/ui/sheet";
+import { useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
-import CustomTime from "./custom-time";
 import "react-datetime-picker/dist/DateTimePicker.css";
+import CustomTimeModal from "./customTimeModal";
+import { Outfit } from "next/font/google";
+import { CartGroup2, ValidTime } from "../client";
+
+const outfit = Outfit({
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface StatusProps {
+  role: string;
   hours: ExtendedHours;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
   index: number;
   cartGroup: CartGroup | null;
+  sodtarr: CartGroup2[];
 }
 
-const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
-  const [selectedTime, setSelectedTime] = useState<any>(); //users selected time
-
-  const formatPickupTime = (selectedTime: any) => {
+const DateState = ({
+  hours,
+  cartGroup,
+  onSetTime,
+  index,
+  role,
+  sodtarr,
+}: StatusProps) => {
+  const [selectedTime, setSelectedTime] = useState<ValidTime>(); //users selected time
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const formatPickupTime = (selectedTime: ValidTime) => {
+    // formats pickup time from date type to date string readable by our other formatters.
     if (!selectedTime) return "";
 
     const { pickupTime } = selectedTime;
@@ -47,16 +66,31 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
       )}`;
     }
   };
-
-  const handleTimer = (childTime: Date) => {
+  //function to pass data to parent element
+  const handleTimer = (childTime: ValidTime) => {
     onSetTime(childTime);
     setSelectedTime(childTime);
   };
 
   return (
     <SheetCartC>
+      <CustomTimeModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        hours={hours}
+        index={index}
+        cartGroup={cartGroup}
+        onSetTime={handleTimer}
+        role={role}
+      />
       <SheetTrigger className="border-[1px] px-2 py-2 rounded-lg shadow-lg">
-        {selectedTime?.pickupTime ? (
+        {role === "PRODUCER" ? (
+          selectedTime?.pickupTime ? (
+            <>{formatPickupTime(selectedTime)}</>
+          ) : (
+            "Set Delivery Time"
+          )
+        ) : selectedTime?.pickupTime ? (
           <>{formatPickupTime(selectedTime)}</>
         ) : (
           "Set Pickup Time"
@@ -68,15 +102,32 @@ const DateState = ({ hours, cartGroup, onSetTime, index }: StatusProps) => {
         hours={hours}
         index={index}
         onSetTime={handleTimer}
+        role={role}
+        sodtarr={sodtarr}
       >
-        <Sheet>
-          <CustomTime
-            hours={hours}
-            index={index}
-            cartGroup={cartGroup}
-            onSetTime={handleTimer}
-          />
-        </Sheet>
+        <div onClick={() => setConfirmOpen(true)} className="h-full w-full">
+          <SheetTrigger className="h-full w-full">
+            <Card className="bg-inherit border-none">
+              <CardHeader
+                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+              >
+                {" "}
+                {role === "PRODUCER"
+                  ? `Set a custom delivery time`
+                  : `Set a custom pickup time`}
+              </CardHeader>
+              <CardContent className={`${outfit.className} mt-2`}>
+                {role === "PRODUCER"
+                  ? `Don't need it ASAP? Feel free to set a delivery time anytime within the
+                  freshness window of your cart items and this producers delivery
+                  hours.`
+                  : `Not in a rush? Feel free to set a pick up anytime within the
+                  freshness window of your cart items and this co-op's open
+                  hours.`}
+              </CardContent>
+            </Card>
+          </SheetTrigger>
+        </div>
       </SheetContentC>
     </SheetCartC>
   );

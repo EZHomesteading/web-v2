@@ -1,3 +1,4 @@
+//stripe create account and update user with stripe ID
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import Stripe from "stripe";
@@ -9,6 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 export async function POST(request: Request) {
   const body = await request.json();
   const { userId } = body;
+  console.log(body)
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -22,10 +24,9 @@ export async function POST(request: Request) {
       country: "US",
       type: "custom",
       business_type: "individual",
-      email: user?.email,
       business_profile: {
         name: user?.name,
-        url: `https.ezhomesteading.vercel.app/store/${user?.id}`,
+        url: `https://www.ezhomesteading.com/store/${user?.url}`,
         product_description: "Agriculture and Farming",
         mcc: "0763",
       },
@@ -38,21 +39,12 @@ export async function POST(request: Request) {
           requested: true,
         },
       },
-      individual: {
-        address: {
-          line1: user?.location?.address[0],
-          city: user?.location?.address[1],
-          state: user?.location?.address[2],
-          postal_code: user?.location?.address[3],
-        },
-      },
     });
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { stripeAccountId: account.id },
     });
-    console.log(updatedUser);
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.error("Error creating Stripe connected account:", error);

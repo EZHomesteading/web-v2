@@ -10,7 +10,7 @@ node_modules
 .yarn/install-state.gz
 # testing
 /coverage
-
+pnpm-lock.yaml
 # next.js
 /.next/
 /out/
@@ -31,7 +31,8 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
-
+/public/sw.js.map
+public/sw.js.map
 # vercel
 .vercel
 

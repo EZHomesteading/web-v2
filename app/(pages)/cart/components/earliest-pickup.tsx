@@ -1,8 +1,11 @@
 "use client";
+
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
-import { useEffect, useState } from "react";
+import { CartGroup2, ValidTime } from "../client";
+
 const outfit = Outfit({
   style: ["normal"],
   subsets: ["latin"],
@@ -12,99 +15,126 @@ const outfit = Outfit({
 interface Props {
   hours: ExtendedHours;
   index: number;
-  onSetTime: any;
+  onSetTime: (childTime: ValidTime) => void;
+  role: string;
+  sodtarr: CartGroup2[];
 }
-const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
-  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null); //datetime calculated on page load, that takes all of coops hours, anbd finds next available time that they can sell.
-  const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>( // stringified version of nextacvailableTime
+
+interface Timer {
+  pickupTime: Date;
+}
+
+const EarliestPickup = ({ hours, onSetTime, index, role, sodtarr }: Props) => {
+  const [nextAvailableTime, setNextAvailableTime] = useState<Date | null>(null);
+  const [earliestPickupTime, setEarliestPickupTime] = useState<string | null>(
     null
   );
-  useEffect(() => {
-    calculateEarliestPickupTime();
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const calculateEarliestPickupTime = () => {
+  const calculateEarliestPickupTime = useCallback(() => {
     const now = new Date();
+    const currentDayIndex = (now.getDay() + 6) % 7;
     const currentMin = now.getHours() * 60 + now.getMinutes();
     let nextAvailableTime = null;
-    //console.log("user time in minutes:", currentMin);
+
+    let sodt =
+      sodtarr.find((item: CartGroup2) => item.cartIndex === index) ||
+      sodtarr[index];
+
     for (let i = 0; i < 7; i++) {
-      const newHoursIndex = ((now.getDay() + i) % 7) as keyof ExtendedHours;
-      //console.log("index", newHoursIndex);
+      const newHoursIndex = ((currentDayIndex + i) % 7) as keyof ExtendedHours;
       const newHours = hours[newHoursIndex];
 
-      if (newHours === null) {
-        continue; //skips to next day if the co-op is closed
+      if (newHours === null || (newHours && newHours.length === 0)) {
+        continue;
       }
 
-      if (newHours && newHours.length === 0) continue;
+      let foundSlot = false;
 
-      const openTime = newHours ? newHours[0].open : 0; // time the co-op opens on the day
-      const closeTime = newHours ? newHours[0].close : 0; // time the co-op closes on the day
-      //console.log("open time for co-op", openTime);
-      //console.log("closing time for co-op", closeTime);
+      if (i === 0) {
+        let foundSlotOnSameDay = false;
 
-      if (i === 0 && currentMin < closeTime) {
-        // if the user is trying to buy today and before the co-op is closed, proceed
-        if (currentMin < openTime) {
-          // if the user is trying to buy today and before the co-op is open, pick up is when the co-op opens plus 30 minutes
-          // we will need another check here that if the time difference between co-op open time and order time is less than the co-ops set out time, the pick up time is the order time plus set out time
-          //console.log("entered case 1");
-          nextAvailableTime = new Date(now);
-          nextAvailableTime.setHours(
-            Math.floor(openTime / 60),
-            openTime % 60,
-            0,
-            0
-          );
-          nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
-        } else {
-          // if the user is buying today after the co-op has opened but before they close, the pick up is now plus the set out time
-          //console.log("entered case 2");
-          nextAvailableTime = new Date(now);
-          nextAvailableTime.setMinutes(now.getMinutes() + 30);
+        for (const hourSlot of newHours) {
+          const openTime = hourSlot.open;
+          const closeTime = hourSlot.close;
+
+          if (currentMin < openTime) {
+            if (openTime - currentMin >= 30) {
+              nextAvailableTime = new Date(now);
+              nextAvailableTime.setHours(
+                Math.floor(openTime / 60),
+                openTime % 60,
+                0,
+                0
+              );
+              foundSlotOnSameDay = true;
+              break;
+            }
+          } else if (
+            currentMin >= openTime &&
+            currentMin + sodt.sodt < closeTime
+          ) {
+            nextAvailableTime = new Date(now);
+            const futureMin = currentMin + sodt.sodt;
+            const futureHours = Math.floor(futureMin / 60);
+            const futureMinutes = futureMin % 60;
+            nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0);
+            foundSlotOnSameDay = true;
+            break;
+          }
         }
-        break;
-      } else if (i > 0) {
-        //console.log("entered case 3");
+
+        if (foundSlotOnSameDay) {
+          foundSlot = true;
+          break;
+        }
+      } else {
+        const openTime = newHours[0].open;
         nextAvailableTime = new Date(now);
         nextAvailableTime.setDate(now.getDate() + i);
-        if (newHours) {
-          nextAvailableTime.setHours(
-            Math.floor(newHours[0].open / 60),
-            newHours[0].open % 60,
-            0,
-            0
-          );
-        }
-        nextAvailableTime.setMinutes(nextAvailableTime.getMinutes() + 30);
+        nextAvailableTime.setHours(
+          Math.floor(openTime / 60),
+          openTime % 60,
+          0,
+          0
+        );
+        foundSlot = true;
+        break;
+      }
+
+      if (foundSlot) {
         break;
       }
     }
-    if (nextAvailableTime) {
-      const formattedEarliestTime = formatPickupTime({
-        pickupTime: nextAvailableTime,
-      });
-      setEarliestPickupTime(formattedEarliestTime);
+
+    if (!nextAvailableTime) {
+      setNextAvailableTime(null);
+      setEarliestPickupTime(null);
+      setIsLoading(false);
+      return;
     }
 
-    return nextAvailableTime;
-  };
-  useEffect(() => {
-    const nextAvailableTime = calculateEarliestPickupTime();
+    const formattedEarliestTime = formatPickupTime({
+      pickupTime: nextAvailableTime,
+    });
     setNextAvailableTime(nextAvailableTime);
-  }, []);
+    setEarliestPickupTime(formattedEarliestTime);
+    setIsLoading(false);
+  }, [hours, sodtarr, index]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    calculateEarliestPickupTime();
+  }, [calculateEarliestPickupTime]);
 
   const handleAsSoonAsPossible = () => {
-    if (nextAvailableTime) {
+    if (!isLoading && nextAvailableTime) {
       onSetTime({ pickupTime: nextAvailableTime, index: index });
     }
-    //console.log(nextAvailableTime);
   };
 
-  const formatPickupTime = (selectedTimer: any) => {
+  const formatPickupTime = (selectedTimer: Timer) => {
     if (!selectedTimer) return "";
-
     const { pickupTime } = selectedTimer;
     const now = new Date();
     const pickupDate = new Date(pickupTime);
@@ -131,17 +161,49 @@ const EarliestPickup = ({ hours, onSetTime, index }: Props) => {
       )}`;
     }
   };
+
+  if (!hours || !sodtarr) {
+    return null;
+  }
+
+  if (Object.values(hours).every((dayHours) => dayHours === null)) {
+    return (
+      <Card className="bg-inherit border-none cursor-not-allowed opacity-50">
+        <CardHeader
+          className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+        >
+          Earliest pickup not available
+        </CardHeader>
+        <CardContent className={`${outfit.className}`}>
+          {role === "PRODUCER"
+            ? `This Producer has not provided their hours. Please contact them for more information.`
+            : `This co-op has not provided their hours. Please contact them for more information.`}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
+    <Card
+      onClick={handleAsSoonAsPossible}
+      className={`bg-inherit border-none ${
+        isLoading ? "cursor-wait opacity-50" : "cursor-pointer"
+      }`}
+    >
       <CardHeader
         className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
       >
-        Pickup as soon as possible
+        {role === "PRODUCER"
+          ? `Get delivered as soon as possible`
+          : `Pickup as soon as possible`}
       </CardHeader>
       <CardContent className={`${outfit.className}`}>
-        In a hurry? The earliest possible time for pickup from this co-op is{" "}
+        {role === "PRODUCER"
+          ? `In a hurry? The earliest possible delivery time from this producer is `
+          : `In a hurry? The earliest possible time for pickup from this co-op is `}
+
         <span className={`${outfit.className} text-lg`}>
-          {earliestPickupTime || "loading..."}
+          {isLoading ? "Calculating..." : earliestPickupTime || "not available"}
         </span>
       </CardContent>
     </Card>

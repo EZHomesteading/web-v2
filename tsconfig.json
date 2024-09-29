@@ -3,6 +3,7 @@
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noErrorTruncation": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -24,24 +25,6 @@
     },
     "allowJs": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "app/(pages)/page.jsx",
-    "app/(pages)/checkout/page.jsx",
-    "app/(pages)/test/slider-component.tsx",
-    "app/api/update-order/route.ts",
-    "app/components/co-op-hours/hours.jsx",
-    "app/(pages)/onboarding/page.tsx",
-    "app/components/map/markers-map.jsx",
-    "app/components/listings/search-locationtsx",
-    "app/api/stripe/create-connected-account/route.ts",
-    "app/components/listings/image-upload.jsx",
-    "app/api/upload/route.js",
-    "app/(home)/dashboard/orders/buyer",
-    "actions/user/getOrdersByUserIdtsx"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

@@ -1,122 +1,288 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { IconType } from "react-icons";
+import qs from "query-string";
 import {
-  GiCoolSpices,
   GiGrainBundle,
-  GiWrappedSweet,
-  GiPorcelainVase,
-  GiJellyBeans,
   GiBread,
   GiTomato,
   GiMilkCarton,
+  GiCakeSlice,
+  GiCannedFish,
+  GiButter,
+  GiPeanut,
+  GiHerbsBundle,
+  GiClothes,
+  GiHorseshoe,
+  GiRaspberry,
+  GiStrawberry,
+  GiChicken,
 } from "react-icons/gi";
-import { LuNut, LuBeef } from "react-icons/lu";
-import { CiApple, CiFilter } from "react-icons/ci";
-import { FaSeedling } from "react-icons/fa6";
+import { LuBeef, LuBean, LuMilk } from "react-icons/lu";
+import { CiApple, CiForkAndKnife } from "react-icons/ci";
+import { FaAppleAlt } from "react-icons/fa";
 
-import CategoryBox from "../CategoryBox";
 import Container from "../Container";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import Filters from "./filter";
-import { UserInfo } from "@/next-auth";
+import Filters from "./filter.client";
+import { navUser } from "@/next-auth";
+import { Outfit } from "next/font/google";
+import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
+import { IoFishOutline } from "react-icons/io5";
+import { MdOutlineSolarPower } from "react-icons/md";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["200"],
+});
 
 export const categories = [
   {
-    label: "Fruits",
-    icon: CiApple,
-    description: "",
+    label: "Produce",
+    icon: FaAppleAlt,
+    url: "unprocessed-produce",
   },
   {
-    label: "Vegetables",
-    icon: GiTomato,
-    description: "",
+    label: "Homemade",
+    icon: GiCakeSlice,
+    url: "homemade",
   },
   {
-    label: "Dairy",
+    label: "Durables",
+    icon: GiCannedFish,
+    url: "durable-products",
+  },
+  {
+    label: "Deli",
     icon: GiMilkCarton,
-    description: "",
-  },
-  {
-    label: "Bread",
-    icon: GiBread,
-    description: "",
-  },
-  {
-    label: "Meats",
-    icon: LuBeef,
-    description: "",
-  },
-  {
-    label: "Grains",
-    icon: GiGrainBundle,
-    description: "",
-  },
-  {
-    label: "Herbs",
-    icon: GiCoolSpices,
-    description: "",
-  },
-  {
-    label: "Nuts",
-    icon: LuNut,
-    description: "",
-  },
-  {
-    label: "Seeds",
-    icon: FaSeedling,
-    description: "",
-  },
-  {
-    label: "Sweets",
-    icon: GiWrappedSweet,
-    description: "",
-  },
-  {
-    label: "Oils",
-    icon: GiPorcelainVase,
-    description: "",
-  },
-  {
-    label: "Legumes",
-    icon: GiJellyBeans,
-    description: "",
+    url: "dairy-meats",
   },
 ];
+
+// Subcategories
+export const unprocessedProduce = [
+  { label: "Fruits", icon: CiApple, url: "fruit" },
+  { label: "Vegetables", icon: GiTomato, url: "vegetables" },
+  { label: "Nuts", icon: GiPeanut, url: "nuts" },
+  { label: "Herbs", icon: GiHerbsBundle, url: "herbs" },
+  { label: "Legumes", icon: LuBean, url: "legumes" },
+];
+
+export const homemade = [
+  { label: "Baked Goods", icon: GiCakeSlice, url: "baked-goods" },
+  { label: "Crafts", icon: GiClothes, url: "crafts" },
+  { label: "Jams", icon: GiRaspberry, url: "jams" },
+  { label: "Preserves", icon: GiStrawberry, url: "preserves" },
+  { label: "Breads", icon: GiBread, url: "breads" },
+];
+
+export const durableProducts = [
+  { label: "Canned Goods", icon: GiCannedFish, url: "canned-goods" },
+  { label: "Dry Goods", icon: GiGrainBundle, url: "dry-goods" },
+  { label: "Survival", icon: MdOutlineSolarPower, url: "survival" },
+  { label: "Tools", icon: GiHorseshoe, url: "tools" },
+  { label: "Kitchen Ware", icon: CiForkAndKnife, url: "kitchen-wares" },
+];
+
+export const dairyAndMeats = [
+  { label: "Milk", icon: LuMilk, url: "milks" },
+  { label: "Eggs", icon: TbEggs, url: "eggs" },
+  { label: "Poultry", icon: GiChicken, url: "poultry" },
+  { label: "Beef", icon: LuBeef, url: "beef" },
+  { label: "Pork", icon: TbPig, url: "pork" },
+  { label: "Exotic Meat", icon: TbMeat, url: "alternative-meats" },
+  { label: "Seafood", icon: IoFishOutline, url: "seafood" },
+  { label: "Butter", icon: GiButter, url: "butter" },
+  { label: "Cheese", icon: TbCheese, url: "cheese" },
+];
+
+type CategoryKey = "Produce" | "Homemade" | "Durables" | "Deli";
+
+type SubcategoryItem = { label: string; icon: IconType; url: string };
+
+const subcategories: Record<CategoryKey, SubcategoryItem[]> = {
+  Produce: unprocessedProduce,
+  Homemade: homemade,
+  Durables: durableProducts,
+  Deli: dairyAndMeats,
+};
+
+interface CategoryBoxProps {
+  icon: IconType;
+  label: string;
+  url: string;
+  selected?: boolean;
+  onClick: () => void;
+}
+
+const CategoryBox: React.FC<CategoryBoxProps> = ({
+  icon: Icon,
+  label,
+  selected,
+  onClick,
+}) => {
+  return (
+    <div
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center gap-2 px-3 pt-2 hover:text-neutral-800 transition cursor-pointer ${
+        selected ? "border-b-neutral-800" : "border-transparent"
+      } ${selected ? "text-neutral-800" : "text-neutral-500"}
+      `}
+    >
+      <Icon size={25} />
+      <div className={`${outfit.className} font-medium text-sm `}>{label}</div>
+    </div>
+  );
+};
+
 interface Props {
-  user?: UserInfo;
+  user?: navUser;
 }
 
 const Categories = ({ user }: Props) => {
-  const params = useSearchParams();
-  const q = params?.get("q");
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const isShopPage = pathname === "/market" && "/";
+  const [category, setCategory] = useState<string | null>(null);
+  const [subcategory, setSubcategory] = useState<string | null>(null);
+  const [showSubcategories, setShowSubcategories] = useState(false);
 
-  if (!isShopPage) {
-    return null;
-  }
+  useEffect(() => {
+    const cat = searchParams?.get("cat") ?? null;
+    const subcat = searchParams?.get("subcat") ?? null;
+    setCategory(cat);
+    setSubcategory(subcat);
+    setShowSubcategories(!!cat && !subcat);
+  }, [searchParams]);
+
+  const handleCategoryClick = useCallback(
+    (clickedUrl: string) => {
+      const clickedCategory = categories.find((cat) => cat.url === clickedUrl);
+      const currentParams = searchParams
+        ? qs.parse(searchParams.toString())
+        : {};
+      delete currentParams.q;
+      if (clickedCategory) {
+        const updatedParams = {
+          ...currentParams,
+          cat: clickedUrl,
+          subcat: undefined,
+        };
+        setCategory(clickedUrl);
+        setSubcategory(null);
+        setShowSubcategories(true);
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
+          scroll: false,
+        });
+      } else {
+        const updatedParams = {
+          ...currentParams,
+          cat: category,
+          subcat: clickedUrl,
+        };
+        setSubcategory(clickedUrl);
+        router.push(`/market?${qs.stringify(updatedParams)}`, {
+          scroll: false,
+        });
+      }
+    },
+    [router, category, searchParams]
+  );
+
+  const handleBackToMain = useCallback(() => {
+    const currentParams = searchParams ? qs.parse(searchParams.toString()) : {};
+    const updatedParams = {
+      ...currentParams,
+      cat: undefined,
+      subcat: undefined,
+    };
+    setCategory(null);
+    setSubcategory(null);
+    setShowSubcategories(false);
+    router.push(`/market?${qs.stringify(updatedParams)}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const renderCategories = () => {
+    const mainCategories = (
+      <motion.div
+        key="main"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-row items-center justify-evenly w-full"
+      >
+        {categories.map((item) => (
+          <CategoryBox
+            key={item.label}
+            label={item.label}
+            icon={item.icon}
+            url={item.url}
+            onClick={() => handleCategoryClick(item.url)}
+            selected={item.url === category}
+          />
+        ))}
+      </motion.div>
+    );
+
+    let subcategoryElements = null;
+    if (category && showSubcategories) {
+      const currentSubcategories =
+        subcategories[
+          categories.find((cat) => cat.url === category)?.label as CategoryKey
+        ];
+      subcategoryElements = (
+        <motion.div
+          key="sub"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-row items-center justify-evenly w-full"
+        >
+          {currentSubcategories?.map((item) => (
+            <CategoryBox
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              url={item.url}
+              onClick={() => handleCategoryClick(item.url)}
+              selected={item.url === subcategory}
+            />
+          ))}
+        </motion.div>
+      );
+    }
+
+    return { mainCategories, subcategoryElements };
+  };
+
+  const marketPathName = "/market";
+  const isMarket = pathname === marketPathName;
+
+  const fadeVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
 
   return (
     <Container>
-      <div className="flex flex-row items-center">
-        <div>
-          <Filters />
-        </div>
-        <div className="w-full p-0 sm:pt-4">
-          <div className="flex flex-row items-center justify-between overflow-x-auto overflow-y-auto h-fit relative">
-            {categories.map((item) => (
-              <CategoryBox
-                key={item.label}
-                label={item.label}
-                icon={item.icon}
-                selected={q === item.label}
-              />
-            ))}
+      {isMarket ? (
+        <div className="flex items-center justify-center">
+          <div className="pt-2">
+            <Filters user={user} />
+          </div>
+          <div className="w-full p-0">
+            <AnimatePresence mode="wait">
+              {showSubcategories
+                ? renderCategories().subcategoryElements
+                : renderCategories().mainCategories}
+            </AnimatePresence>
           </div>
         </div>
-      </div>
+      ) : null}
     </Container>
   );
 };

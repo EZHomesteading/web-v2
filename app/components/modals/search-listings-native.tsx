@@ -1,5 +1,5 @@
 "use client";
-
+//search listings based on location parent component
 import SearchLocation from "@/app/components/navbar/search-listings-native";
 
 const FindListingsComponent = ({ onClose }: any) => {

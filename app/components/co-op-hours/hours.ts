@@ -1,3 +1,4 @@
+//status type declaration
 export type Status = {
   value: string;
   label: string;

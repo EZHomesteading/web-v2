@@ -1,4 +1,6 @@
 "use client";
+
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -6,16 +8,34 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 import { FiMapPin } from "react-icons/fi";
 import Script from "next/script";
-import { useEffect, useState } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import qs from "query-string";
 import { useRouter } from "next/navigation";
 import { BsBasket } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
+import debounce from "debounce";
+import { BiLoaderCircle } from "react-icons/bi";
+import { Outfit } from "next/font/google";
+import { PiBasketThin, PiMapPinThin, PiMapTrifoldThin } from "react-icons/pi";
+import Fuse from "fuse.js";
+
+type Listing = {
+  title: string;
+  subCategory: string;
+};
+
+interface p {
+  apiKey: string;
+}
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const getLatLngFromAddress = async (address: string) => {
-  const apiKey = process.env.NEXT_PUBLIC_MAPS_API_KEY;
+  const apiKey = process.env.MAPS_KEY as string;
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
   )}&key=${apiKey}&loading=async&libraries=places`;
@@ -34,7 +54,7 @@ const getLatLngFromAddress = async (address: string) => {
   }
 };
 
-const SearchLocation = () => {
+const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,14 +67,74 @@ const SearchLocation = () => {
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
     null
   );
-
+  const [items, setItems] = useState<Listing[]>([]);
+  const [allListings, setAllListings] = useState<Listing[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showListingSuggestions, setShowListingSuggestions] = useState(false);
+  const listingInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchAllListings = async () => {
+      try {
+        const response = await fetch(`/api/listing/listingSuggestions`);
+        const data = await response.json();
+        if (data.listings) {
+          setAllListings(data.listings);
+        }
+      } catch (error) {
+        console.error("Error fetching all listings:", error);
+      }
+    };
+
+    fetchAllListings();
+  }, []);
+
+  useEffect(() => {
+    if (!geocodingApiLoaded) return;
+    setGeocodingService(new window.google.maps.Geocoder());
+  }, [geocodingApiLoaded]);
+
+  useEffect(() => {
+    if (!geocodingService || !address) return;
+    geocodingService.geocode({ address }, (results, status) => {
+      if (results && status === "OK") {
+        setGeocodingResult(results[0]);
+      }
+    });
+  }, [geocodingService, address]);
+
+  useEffect(() => {
+    const formState = getFormState();
+    if (formState) {
+      setLocation(formState.location);
+      setLatLng(formState.latLng);
+    }
+  }, []);
+
+  const fuse = useMemo(() => {
+    const options = {
+      keys: ["title", "subCategory"],
+      threshold: 0.6,
+      distance: 100,
+      ignoreLocation: true,
+      shouldSort: true,
+      minMatchCharLength: 2,
+    };
+    return new Fuse<Listing>(allListings, options);
+  }, [allListings]);
+
   const handleEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch();
+      e.preventDefault();
+      handleSearch(searchQuery);
+      setShowListingSuggestions(false);
     }
   };
-  const handleSearch = async () => {
+
+  const handleSearch = async (searchQuery: string) => {
     try {
       let lat: string | null = null;
       let lng: string | null = null;
@@ -77,6 +157,8 @@ const SearchLocation = () => {
         ...(lat ? { lat: lat.toString() } : {}),
         ...(lng ? { lng: lng.toString() } : {}),
         ...(radius ? { radius: radius.toString() } : {}),
+        ...{ p: "true" },
+        ...{ c: "true" },
       };
 
       const url = qs.stringifyUrl(
@@ -114,7 +196,6 @@ const SearchLocation = () => {
           setAddress("Near Me");
           setFocus({ left: false, right: true });
         },
-
         (error) => {
           console.error("Error getting location: ", error);
         }
@@ -127,18 +208,6 @@ const SearchLocation = () => {
   const handleAddressParsed = (latLng: { lat: number; lng: number } | null) => {
     setLatLng(latLng);
   };
-  useEffect(() => {
-    if (!geocodingApiLoaded) return;
-    setGeocodingService(new window.google.maps.Geocoder());
-  }, [geocodingApiLoaded]);
-  useEffect(() => {
-    if (!geocodingService || !address) return;
-    geocodingService.geocode({ address }, (results, status) => {
-      if (results && status === "OK") {
-        setGeocodingResult(results[0]);
-      }
-    });
-  }, [geocodingService, address]);
 
   const handleChange = (address: string) => {
     setAddress(address);
@@ -148,15 +217,10 @@ const SearchLocation = () => {
     const formState = sessionStorage.getItem("formState");
     return formState ? JSON.parse(formState) : null;
   };
-  useEffect(() => {
-    const formState = getFormState();
-    if (formState) {
-      setLocation(formState.location);
-      setLatLng(formState.latLng);
-    }
-  }, []);
+
   const handleSelect = (address: string) => {
     setAddress(address);
+    setShowSuggestions(false);
     geocodeByAddress(address)
       .then((results) => getLatLng(results[0]))
       .then((latLng) => {
@@ -173,23 +237,112 @@ const SearchLocation = () => {
     suggestions: readonly Suggestion[]
   ) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       if (suggestions.length > 0) {
         const topSuggestion = suggestions[0].description;
         setAddress(topSuggestion);
         handleSelect(topSuggestion);
       }
-    }
-
-    const nextElement = e.currentTarget
-      .nextElementSibling as HTMLElement | null;
-    if (nextElement && nextElement.tabIndex >= 0) {
-      nextElement.focus();
+      setShowSuggestions(false);
+      inputRef.current?.blur();
     }
   };
 
+  const preprocessTerm = (term: string) =>
+    term
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+      .toLowerCase()
+      .trim();
+
+  const removeDuplicates = (listings: Listing[]): Listing[] => {
+    const uniqueListings = new Map<string, Listing>();
+    listings.forEach((listing) => {
+      const key = `${listing.title}`;
+      if (!uniqueListings.has(key)) {
+        uniqueListings.set(key, listing);
+      }
+    });
+    return Array.from(uniqueListings.values());
+  };
+
+  const searchSingleTerm = (term: string): Listing[] => {
+    const preprocessedTerm = preprocessTerm(term);
+    return fuse.search(preprocessedTerm).map((result) => result.item);
+  };
+
+  const searchMultipleTerms = (
+    terms: string[],
+    originalQuery: string
+  ): Listing[] => {
+    const preprocessedQuery = preprocessTerm(originalQuery);
+    return allListings.filter((listing) => {
+      const preprocessedTitle = preprocessTerm(listing.title);
+      const preprocessedSubCategory = preprocessTerm(listing.subCategory);
+
+      if (
+        preprocessedTitle.includes(preprocessedQuery) ||
+        preprocessedSubCategory.includes(preprocessedQuery)
+      ) {
+        return true;
+      }
+
+      return terms.every((term) => {
+        const preprocessedTerm = preprocessTerm(term);
+        return (
+          preprocessedTitle.includes(preprocessedTerm) ||
+          preprocessedSubCategory.includes(preprocessedTerm)
+        );
+      });
+    });
+  };
+
+  const handleSearchName = debounce(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const query = event.target.value;
+      if (query === "") {
+        setItems([]);
+        setShowListingSuggestions(false);
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const searchTerms = query
+          .split(/\s+/)
+          .filter((term) => term.length > 0);
+
+        let searchResults;
+        if (searchTerms.length === 1) {
+          searchResults = searchSingleTerm(searchTerms[0]);
+        } else {
+          const multiTermResults = searchMultipleTerms(searchTerms, query);
+          searchResults =
+            multiTermResults.length > 0
+              ? multiTermResults
+              : searchSingleTerm(query);
+        }
+
+        // Ensure duplicates are removed before setting the state
+        const uniqueResults = removeDuplicates(searchResults);
+        setItems(uniqueResults);
+        setShowListingSuggestions(true);
+      } catch (error) {
+        console.error("Error searching listings:", error);
+        setItems([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    1000
+  );
+
+  const handleListingSelect = (item: Listing) => {
+    setSearchQuery(item.title);
+    setShowListingSuggestions(false);
+    handleSearch(item.title);
+  };
   return (
     <div
-      className={`flex flex-col sm:flex-row items-start md:items-center justify-center relative`}
+      className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfit.className}`}
     >
       <PlacesAutocomplete
         value={address}
@@ -198,64 +351,110 @@ const SearchLocation = () => {
         googleCallbackName="lazyLoadMap"
       >
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-          <div className="relative">
-            <FiMapPin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-lg " />
+          <div className="relative w-full sm:w-1/2 sm:mb-0">
+            <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
+            <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+              Where
+            </div>
+
             <input
               {...getInputProps({
+                ref: inputRef,
                 placeholder: "Everywhere",
                 className:
-                  "rounded-md sm:rounded-l-full px-4 py-2 pl-8 border-[.1px] border-black text-black outline-none transition-all duration-200",
+                  "w-full rounded-full px-4 pb-2 pt-6 pl-9 border-none placeholder-black !text-black outline-none transition-all duration-200",
+                onKeyDown: (e) => handleKeyDown(e, suggestions),
+                onFocus: () => {
+                  setFocus({ ...focus, left: true });
+                  setShowSuggestions(true);
+                },
+                onBlur: () => {
+                  setFocus({ ...focus, left: false });
+                  // Use setTimeout to allow click events on suggestions to fire before hiding
+                  setTimeout(() => setShowSuggestions(false), 200);
+                },
               })}
-              onKeyDown={(e) => handleKeyDown(e, suggestions)}
-              onFocus={() => setFocus({ ...focus, left: true })}
-              onBlur={() => setFocus({ ...focus, left: false })}
             />
-            <div className="absolute mt-1 text-black shadow-lg z-10 max-w-full rounded-full">
-              {suggestions.map((suggestion, index) => {
-                const className = suggestion.active
-                  ? "cursor-pointer"
-                  : "cursor-pointer";
-                return (
-                  <div
-                    {...getSuggestionItemProps(suggestion, {
-                      className: `px-4 py-2 bg-white text-black flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
-                    })}
-                    key={suggestion.placeId || index}
-                  >
-                    <span className="overflow-hidden text-black overflow-ellipsis whitespace-nowrap ">
-                      {suggestion.description}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute mt-1 text-black shadow-lg z-10 max-w-full rounded-full">
+                {suggestions.map((suggestion, index) => {
+                  const className = suggestion.active
+                    ? "cursor-pointer bg-gray-100"
+                    : "cursor-pointer";
+                  return (
+                    <div
+                      {...getSuggestionItemProps(suggestion, {
+                        className: `px-4 py-2 bg-white text-black flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
+                        onClick: () => {
+                          handleSelect(suggestion.description);
+                          setShowSuggestions(false);
+                        },
+                      })}
+                      key={suggestion.placeId || index}
+                    >
+                      <span className="overflow-hidden text-black overflow-ellipsis whitespace-nowrap">
+                        {suggestion.description}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </PlacesAutocomplete>
-      <div className="w-full mb-2 sm:mb-0 sm:w-auto">
-        <div className="relative flex items-center mb-2 sm:mb-0 ">
-          <BsBasket className="absolute text-black text-lg left-2" />
-          <input
-            type="text"
-            placeholder="Everything"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleEnterDown}
-            className="rounded-md text-black sm:rounded-r-full px-4 py-2 pl-8 outline-none transition-all border-[.1px] border-black duration-200"
-            onFocus={() => setFocus({ ...focus, right: true })}
-            onBlur={() => setFocus({ ...focus, right: false })}
-            tabIndex={0}
-          />
-          <button
-            onClick={handleSearch}
-            className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
-          >
-            <IoIosSearch className="text-2xl text-black" />
-          </button>
+      <div className="relative w-full sm:w-1/2 border-l-[1px]">
+        <PiBasketThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
+        <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+          What
         </div>
+        <input
+          ref={listingInputRef}
+          type="text"
+          placeholder="Everything"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            handleSearchName(e);
+          }}
+          onKeyDown={handleEnterDown}
+          className="w-full rounded-full px-4 pb-2 pt-6 pl-9 placeholder-black border-none text-black outline-none transition-all duration-200"
+          onFocus={() => {
+            setFocus({ ...focus, right: true });
+            setShowListingSuggestions(true);
+          }}
+          onBlur={() => {
+            setFocus({ ...focus, right: false });
+            // Use setTimeout to allow click events on suggestions to fire before hiding
+            setTimeout(() => setShowListingSuggestions(false), 200);
+          }}
+          tabIndex={0}
+        />
+        {showListingSuggestions && items.length > 0 && (
+          <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
+            {items.map((item: Listing) => (
+              <div
+                className="p-1 cursor-pointer hover:bg-gray-200"
+                key={item.title}
+                onMouseDown={() => handleListingSelect(item)}
+              >
+                <div className="flex items-center justify-between w-full p-1 px-2">
+                  {item.title}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <button
-        className={`absolute top-full mt-2 py-1 px-4 border-[1px] rounded-lg text-grey w-full ${
+        onClick={() => handleSearch(searchQuery)}
+        className="absolute right-3 text-black top-1/2 transform -translate-y-1/2"
+      >
+        <IoIosSearch className="text-2xl text-white bg-black rounded-full p-1" />
+      </button>
+
+      <button
+        className={`absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full ${
           focus.left ? "visible" : "hidden"
         }`}
         onMouseDown={handleNearMeClick}
@@ -265,7 +464,7 @@ const SearchLocation = () => {
       <Script
         async
         defer
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_MAPS_API_KEY}&loading=async&libraries=places&callback=lazyLoadMap`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=places&callback=lazyLoadMap`}
       />
     </div>
   );

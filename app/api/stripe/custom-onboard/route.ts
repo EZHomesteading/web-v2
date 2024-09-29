@@ -1,3 +1,4 @@
+//onboarding apI, where we accept information required for users to be verified on stripe.
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 

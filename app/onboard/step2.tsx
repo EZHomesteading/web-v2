@@ -1,0 +1,102 @@
+import { UserInfo } from "@/next-auth";
+import axios from "axios";
+import { Outfit } from "next/font/google";
+import Link from "next/link";
+import { GiFruitTree } from "react-icons/gi";
+import { IoStorefrontOutline } from "react-icons/io5";
+import { toast } from "sonner";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+interface p {
+  user: UserInfo;
+}
+
+const StepTwo = ({ user }: p) => {
+  const Producer = async () => {
+    try {
+      await axios.post("/api/useractions/update", {
+        role: "PRODUCER",
+        hasPickedRole: null,
+      });
+    } catch (error) {
+    } finally {
+      toast.success("Role Updated to Grower");
+    }
+  };
+  const Coop = async () => {
+    try {
+      await axios.post("/api/useractions/update", {
+        role: "COOP",
+        hasPickedRole: null,
+      });
+    } catch (error) {
+    } finally {
+      toast.success("Role Updated to Co-op");
+    }
+  };
+  return (
+    <div className={`${outfit.className} h-screen w-screen text-black  `}>
+      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
+        Select a Role
+      </div>
+      <div className="h-full flex flex-col items-center sm:pt-[10%] pt-[30%] px-10">
+        <ul className="w-full max-w-3xl">
+          {[
+            {
+              text: ["Become a Co-Op & sell to anyone"],
+              icon: IoStorefrontOutline,
+              subtext: [
+                "People who already have farmer's market stands &",
+                "are looking to expand their cataloug generally choose to be a Co-op.",
+                "A co-op is a greater time commitment but the rewards are better as well.",
+              ],
+            },
+            {
+              text: ["Become a grower & sell only to Co-Ops"],
+              icon: GiFruitTree,
+              subtext: [
+                "People who prefer to sell in larger quantities &",
+                "do not want to interact with buyers choose to be an EZH grower.",
+                "Less time commitment with less rewards.",
+              ],
+            },
+          ].map((item, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                index === 1 ? Producer() : Coop();
+              }}
+              className={`w-full hover:cursor-pointer ${
+                index === 1
+                  ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black "
+                  : ""
+              }`}
+            >
+              <div className="flex items-center justify-between w-full hover:text-black hover:italic">
+                <div className="flex flex-col">
+                  <div className="text-2xl  font-light">
+                    {Array.isArray(item.text)
+                      ? item.text.map((line, i) => <div key={i}>{line}</div>)
+                      : item.text}
+                  </div>
+
+                  <div className="text-sm  w-[75%] font-light text-neutral-800">
+                    {Array.isArray(item.subtext)
+                      ? item.subtext.map((line, i) => <div key={i}>{line}</div>)
+                      : item.subtext}
+                  </div>
+                </div>
+                <item.icon className="text-4xl sm:text-7xl" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default StepTwo;

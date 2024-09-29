@@ -65,12 +65,24 @@
     --ring: 240 4.9% 83.9% !important;
   }
 }
+.hideOverflow {
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
+.phone {
+  aspect-ratio: 9/16;
+}
+.phone2 {
+  aspect-ratio: 9/10;
+}
 .PhoneInputCountryIcon,
 .PhoneInputCountrySelect,
 .PhoneInputCountrySelectArrow {
   display: none !important;
 }
-
+.react-select__dropdown-indicator {
+  display: none;
+}
 .PhoneInputInput {
   background-color: inherit;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
@@ -122,14 +134,21 @@
   }
 }
 
-body::-webkit-scrollbar {
-  display: none !important;
-}
 .messagebg {
   background-color: #007aff !important;
 }
+.RespOpt {
+  background: linear-gradient(to bottom, #549ce8, #0f172a) !important;
+}
 .message {
   background-color: #007aff !important;
+  align-self: flex-end !important;
+  position: relative important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+.notMessage {
+  background-color: none !important;
   align-self: flex-end !important;
   position: relative important;
   border-radius: 8px !important;
@@ -177,7 +196,7 @@ body::-webkit-scrollbar {
 }
 .m:hover {
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-  scale: 1.003;
+  scale: 1;
 }
 .m::after {
   content: "";
@@ -187,9 +206,32 @@ body::-webkit-scrollbar {
   transform: translateY(50%) rotate(45deg);
   width: 15px;
   height: 15px;
-  background-color: #007aff;
+  background-color: inherit;
 }
 
+.mnot {
+  position: relative;
+  background-color: #d3d3d3;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+
+.mnot:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  scale: 1;
+}
+
+.mnot::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 15px;
+  transform: translateY(50%) rotate(45deg);
+  width: 15px;
+  height: 15px;
+  background-color: #d3d3d3;
+}
 .sentMessage::before {
   left: auto !important;
   right: -10px !important;
@@ -203,21 +245,54 @@ body::-webkit-scrollbar {
   border-right: none !important;
   border-left: 10px solid #e6f2ff !important;
 }
-
+.zmax {
+  z-index: 9999 !important;
+}
 .z {
   z-index: 100 !important;
 }
 .authlayoutbg {
   background-color: #ced9bb !important;
 }
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 3px;
+}
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
 
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: inherit;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .mi:hover {
   background-color: #ced9bb !important;
 }
 .authlayouttext {
   color: #ced9bb !important;
 }
-
+.h8w8 {
+  height: 2rem;
+  width: 2rem;
+}
+.transition-width {
+  transition-property: width;
+}
 .onboard-left,
 .popover,
 .bg {
@@ -231,12 +306,57 @@ body::-webkit-scrollbar {
 .sheet {
   background-color: #ced9bb !important;
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (display-mode: standalone) and (min-width: 768px) {
+  .pwa-title {
+    display: none;
+  }
+}
+body::-webkit-scrollbar {
+  display: none;
+  scroll-behavior: smooth;
+}
+.fade-in {
+  animation: fadeIn 0.75s ease-in;
+}
+.bg-chat {
+  background-color: #f1efe7;
+}
+.bg-details {
+  background-color: #e7e9f1;
+}
+.d1dbbf {
+  background-color: #d1dbbf;
+}
+.text-d1dbbf {
+  color: #d1dbbf;
+}
+.light {
+  color: #e3eac9 !important;
+}
+.dark {
+  color: #ced9bb !important;
+}
 .cardregister {
   background-color: #e3eac9 !important;
   border-bottom-left-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
 }
+.arrow-icon .arrow-tail {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
+.group:hover .arrow-icon .arrow-tail {
+  opacity: 1;
+}
 .cardauth,
 .buttonsActive {
   background-color: #e3eac9 !important;
@@ -246,4 +366,9 @@ body::-webkit-scrollbar {
 
 .buttonsNotActive {
   opacity: 0.4 !important;
+}
+@media (min-width: 768px) and (min-height: 950px) {
+  .emulator-container {
+    display: block;
+  }
 }

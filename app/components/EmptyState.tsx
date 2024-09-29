@@ -1,5 +1,5 @@
 "use client";
-
+//default emptystate component
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
@@ -19,10 +19,21 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   showShop,
 }) => {
   const pathname = usePathname();
-  const isMessagePage = pathname === "/messenger";
+  const isMessagePage =
+    pathname?.startsWith("/chat") || pathname?.startsWith("/messenger");
+  const isStorePage = pathname?.startsWith("/store");
+  const isFollowingPage = pathname?.startsWith("/dashboard/follow");
   const router = useRouter();
   if (isMessagePage) {
     title = "Select a chat or start a new conversation";
+    subtitle = "";
+  }
+  if (isFollowingPage) {
+    title = "No users found";
+    subtitle = "It looks like you aren't following anyone";
+  }
+  if (isStorePage) {
+    title = "This user doesn't have any listings";
     subtitle = "";
   }
   const isFindPage = pathname === "/find-co-ops-and-producers";
@@ -47,7 +58,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline
             label="Remove all filters"
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push("/market")}
           />
         )}
       </div>
@@ -56,7 +67,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           <Button
             outline
             label="Find Produce"
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push("/market")}
           />
         )}
       </div>

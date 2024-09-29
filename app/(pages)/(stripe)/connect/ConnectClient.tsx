@@ -1,13 +1,13 @@
 "use client";
-
+//stripe client connection handling/ and page for users to connect to stripe.
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import axios from "axios";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import { useState } from "react";
-import Button from "@/app/components/Button";
+import { UserInfo } from "@/next-auth";
 interface UpdateUserProps {
-  user?: any | null;
+  user?: UserInfo;
 }
 
 const ConnectClient: React.FC<UpdateUserProps> = ({ user }) => {

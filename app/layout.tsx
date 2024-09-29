@@ -1,16 +1,36 @@
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import RentModal from "@/app/components/modals/listing-modal";
-import ToasterProvider from "@/providers/ToasterProvider";
-
+import { Toaster } from "./components/ui/sonner";
 import "@/app/globals.css";
 import ClientOnly from "./components/client/ClientOnly";
 import SearchModal from "./components/modals/SearchModal";
 import CartModal from "./components/modals/cart-modal";
-
-export const metadata = {
-  title: "EZHomesteading",
-  description: "",
+import { Metadata } from "next";
+import { Viewport } from "next";
+export const viewport: Viewport = {
+  themeColor: "#ced9bb",
+};
+export const metadata: Metadata = {
+  title:
+    "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
+  description:
+    "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
+  keywords: [
+    "ezhomesteading",
+    "produce near me",
+    "virtual farmer's market",
+    "fresh food",
+    "local food",
+    "organic food",
+  ],
+  openGraph: {
+    title: "EZHomesteading - Fresh, Local, Organic Produce",
+    description:
+      "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
+    url: "https://www.ezhomesteading.com/",
+    type: "website",
+  },
+  manifest: "/manifest.json",
 };
 
 export default async function RootLayout({
@@ -24,12 +44,11 @@ export default async function RootLayout({
       <html lang="en">
         <body>
           <ClientOnly>
-            <ToasterProvider />
-            <RentModal />
             <SearchModal />
             <CartModal />
           </ClientOnly>
           <main>{children}</main>
+          <Toaster theme="dark" />
         </body>
       </html>
     </SessionProvider>

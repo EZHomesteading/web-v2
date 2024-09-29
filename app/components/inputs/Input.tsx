@@ -1,5 +1,6 @@
 "use client";
-import toast from "react-hot-toast";
+//regular text input component with error handling and detecting of what should go in the input.
+
 import { useState } from "react";
 import {
   FieldErrors,
@@ -9,6 +10,7 @@ import {
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
+import { toast } from "sonner";
 
 interface InputProps {
   id: string;
@@ -49,7 +51,7 @@ const Input: React.FC<InputProps> = ({
   // Conditionally add the pattern validation for usernames
   if (isUsername) {
     registerOptions.pattern = {
-      value: /^[a-zA-Z0-9 ]*$/,
+      value: /^(?=.{4,})[a-zA-Z0-9&' ]+$/,
       message: "Username must not contain spaces or special characters",
     };
   }
@@ -112,7 +114,7 @@ const Input: React.FC<InputProps> = ({
           ${errors[id] ? "focus:border-rose-500" : "focus:border-black"} 
           ${
             errors[id]
-              ? toast.error("Highlighted field is invalid or required")
+              ? toast.success("Highlighted field is invalid or required")
               : "focus:border-black"
           } 
         `}
