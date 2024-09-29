@@ -240,6 +240,9 @@ const Onboarding = ({
                   hoverMessage="If you skip these steps users will not be able to purchase products from you."
                 ></HoverButton>
               </div>
+              <div className="flex px-4 pb-4">
+                <Button onClick={() => router.push("/")}>Go Home</Button>
+              </div>
             </div>
             <div className="flex justify-end px-4 pb-4">
               <Button onClick={handleNext}>Next</Button>
