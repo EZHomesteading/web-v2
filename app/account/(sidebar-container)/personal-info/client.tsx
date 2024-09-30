@@ -315,7 +315,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
           title="Profile Image"
           info={image}
           showAvatar={true}
-          onSave={() => {}}
+          onSave={handleSubmit(onSubmit)}
           isEditing={editingCard === "Image"}
           onEditStart={() => setEditingCard("Image")}
           onEditCancel={() => setEditingCard(null)}

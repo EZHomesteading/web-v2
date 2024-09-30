@@ -2,28 +2,26 @@
 //user menu popover component
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
-import { FaStore } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { CiMenuFries, CiSettings, CiShop, CiUser } from "react-icons/ci";
+import { CiMenuFries, CiShop, CiUser } from "react-icons/ci";
 import { usePathname, useRouter } from "next/navigation";
-import { BsBasket } from "react-icons/bs";
 import { GiBarn, GiFruitTree } from "react-icons/gi";
 import { Outfit } from "next/font/google";
-import { GoPeople } from "react-icons/go";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
 import { BsPersonPlus } from "react-icons/bs";
 import {
-  PiChartBarLight,
-  PiChartBarThin,
+  PiBasketThin,
   PiChatCircleThin,
-  PiHouseThin,
+  PiClipboardTextThin,
   PiMapTrifoldThin,
   PiPersonSimpleRunThin,
   PiPlusThin,
+  PiSignOutThin,
   PiStorefrontThin,
   PiTreeThin,
+  PiUserThin,
 } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { navUser } from "@/next-auth";
@@ -31,12 +29,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { IoStorefrontOutline } from "react-icons/io5";
 import Image from "next/image";
-import { IoIosLogOut, IoIosMenu } from "react-icons/io";
+import { IoIosMenu } from "react-icons/io";
 import { UserRole } from "@prisma/client";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
 import Barn from "./icons/barn";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "auto",
@@ -142,14 +141,6 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
     }
   };
   const handleCreateClickSeller = () => {
-    console.log(
-      user?.hasPickedRole,
-      user?.location,
-      user?.location[0]?.address,
-      user?.location[0]?.hours,
-      user?.image,
-      canReceivePayouts
-    );
     if (
       (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
       user?.location &&
@@ -245,12 +236,6 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
             icon={PiPlusThin}
             label="Add Product"
             onClick={() => handleCreateClickSeller()}
-          />,
-          <IconWrapper
-            key="dashboard"
-            icon={PiChartBarThin}
-            label="Dashboard"
-            onClick={() => router.push("/dashboard")}
           />
         );
       } else {
@@ -289,15 +274,6 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
               onClick={() => router.push("/map")}
             />
           );
-        if (icons.length < 5)
-          icons.push(
-            <IconWrapper
-              key="dashboard"
-              icon={PiChartBarThin}
-              label="Dashboard"
-              onClick={() => router.push("/dashboard")}
-            />
-          );
       }
     } else if (user.role === UserRole.CONSUMER) {
       if (isMdOrLarger) {
@@ -325,12 +301,6 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
             icon={PiPlusThin}
             label="Add Product"
             onClick={() => handleCreateClickConsumer()}
-          />,
-          <IconWrapper
-            key="dashboard"
-            icon={PiChartBarThin}
-            label="Dashboard"
-            onClick={() => router.push("/dashboard")}
           />
         );
       } else {
@@ -367,15 +337,6 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
               icon={PiPlusThin}
               label="Add Product"
               onClick={() => handleCreateClickConsumer()}
-            />
-          );
-        if (icons.length < 5)
-          icons.push(
-            <IconWrapper
-              key="dashboard"
-              icon={PiChartBarThin}
-              label="Dashboard"
-              onClick={() => router.push("/dashboard")}
             />
           );
       }
@@ -422,201 +383,166 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
         align="end"
         alignOffset={0}
       >
-        <div>
-          <div>
-            {user?.role === UserRole.COOP ? (
+        {user ? (
+          <>
+            <MenuItem
+              label="Orders"
+              icon={<PiClipboardTextThin className="h-6 w-6" />}
+              onClick={() => router.push("/orders")}
+            />
+            <MenuItem
+              label="Messages"
+              icon={<PiChatCircleThin className="h-6 w-6" />}
+              onClick={() => router.push("/chat")}
+            />
+            <MenuItem
+              label="Market"
+              icon={<PiStorefrontThin className="h-6 w-6" />}
+              onClick={() => router.push("/market")}
+            />
+            <MenuItem
+              label="Map"
+              icon={<PiMapTrifoldThin className="h-6 w-6" />}
+              onClick={() => router.push("/map")}
+            />
+            <MenuItem
+              label="Cart"
+              icon={<PiBasketThin className="h-6 w-6" />}
+              onClick={() => router.push("/cart")}
+            />
+            <MenuItem
+              label="Account"
+              icon={<PiUserThin className="h-6 w-6" />}
+              onClick={() => router.push("/account")}
+            />
+            <div className=" block sm:hidden">
+              <MenuItem
+                label="Home"
+                icon={<GiBarn className="h-6 w-6" />}
+                onClick={() => router.push("/")}
+              />
+            </div>
+            {user?.role === "CONSUMER" && (
               <div>
                 <MenuItem
-                  label="Sell Orders"
-                  icon={<FaStore />}
-                  onClick={() => router.push("/dashboard/orders/seller")}
+                  icon={<PiStorefrontThin className="h8w8" />}
+                  label="Become a Co-Op"
+                  onClick={() => router.push("/auth/become-a-co-op")}
                 />
-              </div>
-            ) : user?.role === "PRODUCER" ? (
-              <div>
                 <MenuItem
-                  label="Sell Orders"
-                  icon={<FaStore />}
-                  onClick={() => router.push("/dashboard/orders/seller")}
+                  icon={<PiTreeThin className="h8w8" />}
+                  label="Become a Producer"
+                  onClick={() => router.push("/auth/become-a-producer")}
                 />
               </div>
-            ) : (
-              <div></div>
             )}
-            {user ? (
-              <>
-                <MenuItem
-                  label="Dashboard"
-                  icon={<PiChartBarLight />}
-                  onClick={() => router.push("/dashboard")}
-                />{" "}
-                <MenuItem
-                  label="Chat"
-                  icon={<PiChatCircleThin />}
-                  onClick={() => router.push("/chat")}
-                />{" "}
-                <MenuItem
-                  label="Market"
-                  icon={<CiShop />}
-                  onClick={() => router.push("/market")}
-                />
-                <MenuItem
-                  label="Map"
-                  icon={<LiaMapMarkedSolid />}
-                  onClick={() => router.push("/map")}
-                />
-                <MenuItem
-                  label="Cart"
-                  icon={<BsBasket />}
-                  onClick={() => router.push("/cart")}
-                />
-                <MenuItem
-                  label="Following"
-                  icon={<GoPeople />}
-                  onClick={() => router.push("/dashboard/following")}
-                />
-                <MenuItem
-                  label="Profile Settings"
-                  icon={<CiSettings />}
-                  onClick={() =>
-                    router.push("/dashboard/account-settings/general")
-                  }
-                />
-                <div className=" block sm:hidden">
-                  <MenuItem
-                    label="Home"
-                    icon={<GiBarn />}
-                    onClick={() => router.push("/")}
-                  />
-                </div>
-                {user?.role === "CONSUMER" && (
-                  <div>
-                    <MenuItem
-                      icon={<PiStorefrontThin />}
-                      label="Become a Co-Op"
-                      onClick={() => router.push("/auth/become-a-co-op")}
-                    />
-                    <MenuItem
-                      icon={<PiTreeThin />}
-                      label="Become a Producer"
-                      onClick={() => router.push("/auth/become-a-producer")}
-                    />
-                  </div>
-                )}
-                <hr />
-                <MenuItem
-                  icon={<IoIosLogOut />}
-                  label="Logout"
-                  onClick={() => signOut()}
-                />
-                {showInstallBtn &&
-                !window.matchMedia("(display-mode: standalone)").matches ? (
-                  <>
-                    <Button
-                      className="w-full"
-                      onClick={() => router.push("/get-ezh-app")}
-                    >
-                      Install EZH App
-                    </Button>{" "}
-                  </>
-                ) : (
-                  <div></div>
-                )}
-              </>
-            ) : (
-              <>
-                <Popover>
-                  <PopoverTrigger>
-                    {" "}
-                    <MenuItem
-                      onClick={() => {}}
-                      label="Sign Up"
-                      icon={<BsPersonPlus />}
-                    ></MenuItem>
-                  </PopoverTrigger>
-
-                  <PopoverContent
-                    className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
+            <hr />
+            <MenuItem
+              icon={<PiSignOutThin className="h-6 w-6" />}
+              label="Sign Out"
+              onClick={() => signOut()}
+            />
+            {showInstallBtn &&
+              !window.matchMedia("(display-mode: standalone)").matches && (
+                <>
+                  <Button
+                    className="w-full"
+                    onClick={() => router.push("/get-ezh-app")}
                   >
-                    <div className="h-full flex flex-col items-center justify-center px-10">
-                      <ul className="w-full max-w-3xl">
-                        {[
-                          {
-                            href: "/auth/register",
-                            text: "Sign Up",
-                            icon: CiUser,
-                          },
-                          {
-                            href: "/auth/register-co-op",
-                            text: ["Become a co-op &", "sell to anyone"],
-                            icon: IoStorefrontOutline,
-                          },
-                          {
-                            href: "/auth/register-producer",
-                            text: ["Become a grower &", "sell only to co-ops"],
-                            icon: GiFruitTree,
-                          },
-                        ].map((item, index) => (
-                          <li
-                            key={item.href}
-                            className={`w-full ${
-                              index === 1
-                                ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
-                                : ""
-                            }`}
-                          >
-                            <Link
-                              href={item.href}
-                              className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
-                            >
-                              <div className="flex flex-col">
-                                {Array.isArray(item.text)
-                                  ? item.text.map((line, i) => (
-                                      <div key={i}>{line}</div>
-                                    ))
-                                  : item.text}
-                              </div>
-                              <item.icon className="text-4xl sm:text-7xl" />
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="pt-10 text-xs text-black text-center">
-                        You can switch your account type to either seller role
-                        at any time
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                    Install EZH App
+                  </Button>{" "}
+                </>
+              )}
+          </>
+        ) : (
+          <>
+            <Sheet>
+              <SheetTrigger className="flex justify-between items-center">
                 <MenuItem
-                  label="Sign In"
-                  icon={<PiPersonSimpleRunThin />}
-                  onClick={() => {
-                    let callbackUrl = window.location.href;
-                    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+                  onClick={() => {}}
+                  label="Sign Up"
+                  icon={<BsPersonPlus className="h-6 w-6" />}
+                ></MenuItem>
+              </SheetTrigger>
 
-                    router.push(
-                      `/auth/login?callbackUrl=${encodedCallbackUrl}`
-                    );
-                  }}
-                />
-                <MenuItem
-                  label="Market"
-                  icon={<CiShop />}
-                  onClick={() => router.push("/market")}
-                />
-                <MenuItem
-                  label="Map"
-                  icon={<LiaMapMarkedSolid />}
-                  onClick={() => router.push("/map")}
-                />{" "}
-                <Button onClick={() => router.push("/get-ezh-app")}>
-                  Install the EZH App
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+              <SheetContent
+                className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
+              >
+                <div className="h-full flex flex-col items-center justify-center px-10">
+                  <ul className="w-full max-w-3xl">
+                    {[
+                      {
+                        href: "/auth/register",
+                        text: "Sign Up",
+                        icon: CiUser,
+                      },
+                      {
+                        href: "/auth/register-co-op",
+                        text: ["Become a co-op &", "sell to anyone"],
+                        icon: IoStorefrontOutline,
+                      },
+                      {
+                        href: "/auth/register-producer",
+                        text: ["Become a grower &", "sell only to co-ops"],
+                        icon: GiFruitTree,
+                      },
+                    ].map((item, index) => (
+                      <li
+                        key={item.href}
+                        className={`w-full ${
+                          index === 1
+                            ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
+                            : ""
+                        }`}
+                      >
+                        <Link
+                          href={item.href}
+                          className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+                        >
+                          <div className="flex flex-col">
+                            {Array.isArray(item.text)
+                              ? item.text.map((line, i) => (
+                                  <div key={i}>{line}</div>
+                                ))
+                              : item.text}
+                          </div>
+                          <item.icon className="text-4xl sm:text-7xl" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="pt-10 text-xs text-black text-center">
+                    You can switch your account type to either seller role at
+                    any time
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <MenuItem
+              label="Sign In"
+              icon={<PiPersonSimpleRunThin />}
+              onClick={() => {
+                let callbackUrl = window.location.href;
+                const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+                router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
+              }}
+            />
+            <MenuItem
+              label="Market"
+              icon={<CiShop />}
+              onClick={() => router.push("/market")}
+            />
+            <MenuItem
+              label="Map"
+              icon={<LiaMapMarkedSolid />}
+              onClick={() => router.push("/map")}
+            />{" "}
+            <Button onClick={() => router.push("/get-ezh-app")}>
+              Install the EZH App
+            </Button>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   );

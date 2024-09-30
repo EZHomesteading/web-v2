@@ -24,24 +24,18 @@ const menuItems = [
     title: "Notification Preferences",
     icon: <PiGearThin className="h-8 w-8" />,
     href: "/account/notification-preferences",
+    showDiv: false,
+  },
+  {
+    title: "Payment Methods",
+    icon: <PiCardholderThin className="h-8 w-8" />,
+    href: "/account/payment-methods",
     showDiv: true,
   },
   {
     title: "Orders",
     icon: <PiClipboardTextThin className="h-8 w-8" />,
-    href: "/account/orders",
-  },
-  {
-    title: "Cart",
-    icon: <PiBasketThin className="h-8 w-8" />,
-    href: "/cart",
-    showDiv: true,
-  },
-  {
-    title: "Payment Methods",
-    icon: <PiCardholderThin className="h-8 w-8" />,
-    href: "/cards",
-    showDiv: true,
+    href: "/orders",
   },
   {
     title: "Following",

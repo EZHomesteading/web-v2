@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PiArrowRightThin } from "react-icons/pi";
+import { PiArrowCircleRightThin, PiArrowRightThin } from "react-icons/pi";
 interface p {
   title: string;
   href: string;
@@ -17,7 +17,7 @@ const MenuCard = ({ title, href, icon, showDiv = false }: p) => {
           <div>{icon}</div>
           <div className="ml-1 font-light">{title}</div>
         </div>
-        <PiArrowRightThin className={`h-8 w-8`} />
+        <PiArrowCircleRightThin className={`h-8 w-8`} />
       </Link>
       {showDiv && <hr className="mb-6 mt-3" />}
     </>

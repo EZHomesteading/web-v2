@@ -128,8 +128,8 @@ const PaymentMethods: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto" ref={containerRef}>
-      <h2 className="text-2xl font-bold mb-4 md:pt-6">Payment Methods</h2>
+    <div className="max-w-3xl" ref={containerRef}>
+      <h2 className="text-2xl font-medium pb-6">Payment Methods</h2>
       <div className="space-y-4 relative">
         <AnimatePresence>
           {cards.map((card, index) => (
