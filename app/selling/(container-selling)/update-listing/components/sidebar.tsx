@@ -1,11 +1,7 @@
 "use client";
 
-import { CgCommunity } from "react-icons/cg";
 import { GiSettingsKnobs } from "react-icons/gi";
-import { HiOutlineDocument } from "react-icons/hi";
-import { MdOutlinePrivacyTip } from "react-icons/md";
 import {
-  PiBasketThin,
   PiBookOpenTextThin,
   PiCardholderThin,
   PiClipboardTextThin,
@@ -19,15 +15,11 @@ import {
   PiUserThin,
 } from "react-icons/pi";
 import { MdDashboard } from "react-icons/md";
-import { RiUserShared2Line } from "react-icons/ri";
-import {
-  TbLayoutSidebarLeftCollapse,
-  TbShoppingCartDollar,
-} from "react-icons/tb";
+import { TbShoppingCartDollar } from "react-icons/tb";
 import { useEffect, useState } from "react";
-import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
+import { usePathname } from "next/navigation";
 interface SidebarProps {
   nav: string;
 }
@@ -36,6 +28,7 @@ interface NavigationItem {
   href: string;
   icon: React.ElementType;
   current: boolean;
+  div: boolean;
 }
 const o = Outfit({
   subsets: ["latin"],
@@ -47,60 +40,64 @@ const conNav: NavigationItem[] = [
     href: "/account/personal-info",
     icon: PiUserThin,
     current: false,
+    div: false,
   },
   {
     name: "Notification Preferences",
     href: "/account/notification-preferences",
     icon: PiGearThin,
     current: false,
-  },
-  {
-    name: "Orders",
-    href: "/account/orders",
-    icon: PiClipboardTextThin,
-    current: false,
-  },
-  {
-    name: "Cart",
-    href: "/cart",
-    icon: PiBasketThin,
-    current: false,
+    div: false,
   },
   {
     name: "Payment Methods",
     href: "/account/payment-methods",
     icon: PiCardholderThin,
     current: false,
+    div: true,
   },
+  {
+    name: "Orders",
+    href: "/orders",
+    icon: PiClipboardTextThin,
+    current: false,
+    div: false,
+  },
+
   {
     name: "Following",
     href: "/account/following",
     icon: PiUsersThreeThin,
     current: false,
+    div: true,
   },
   {
     name: "Privacy Policy",
     href: "/",
     icon: PiLockSimpleThin,
     current: false,
+    div: false,
   },
   {
     name: "Terms of Service",
     href: "/",
     icon: PiSignatureThin,
     current: false,
+    div: false,
   },
   {
     name: "Cookie Policy",
     href: "/cookie-policy",
     icon: PiCookieThin,
     current: false,
+    div: false,
   },
   {
     name: "Community Standards",
     href: "/",
     icon: PiBookOpenTextThin,
     current: false,
+    div: false,
   },
 ];
 const vendorNav: NavigationItem[] = [
@@ -109,36 +106,28 @@ const vendorNav: NavigationItem[] = [
     href: "/dashboard",
     icon: MdDashboard,
     current: false,
+    div: false,
   },
   {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
-    icon: GiSettingsKnobs,
-    current: false,
-  },
-  {
-    name: "My Store",
+    name: "My Listings",
     href: "/dashboard/my-store",
     icon: PiStorefrontThin,
     current: false,
+    div: false,
   },
   {
     name: "Store Settings",
     href: "/dashboard/my-store/settings",
     icon: GiSettingsKnobs,
     current: false,
+    div: false,
   },
   {
     name: "Orders",
     href: "/dashboard/orders/buyer",
     icon: TbShoppingCartDollar,
     current: false,
-  },
-  {
-    name: "Following",
-    href: "/dashboard/following",
-    icon: RiUserShared2Line,
-    current: false,
+    div: false,
   },
 ];
 const Sidebar = ({ nav = "buy" }: SidebarProps) => {
@@ -159,7 +148,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
       JSON.stringify(newCollapsedState)
     );
   };
-
+  const pathname = usePathname();
   const navigationItems = nav === "sell" ? vendorNav : conNav;
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -179,11 +168,12 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
                   <Link
                     href={item.href}
                     className={classNames(
-                      item.current
-                        ? "font-bold"
+                      pathname === item.href
+                        ? "text-white"
                         : "text-gray-401 hover:text-white font-light",
                       "group flex gap-x-4 rounded-md p-2 text-sm leading-6 t",
-                      isCollapsed ? "justify-end" : ""
+                      isCollapsed ? "justify-end" : "items-center",
+                      item.div ? "border-b-[1px] pb-4" : ""
                     )}
                   >
                     <item.icon

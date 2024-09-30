@@ -1,14 +1,15 @@
 import { Outfit } from "next/font/google";
-// import Link from "next/link";
-// import { PiArrowLeftThin } from "react-icons/pi";
 import Navbar from "../components/navbar/Navbar";
 import { getNavUser } from "@/actions/getUser";
 import { navUser } from "@/next-auth";
+import { Viewport } from "next";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
-//notification setting parent element
+export const viewport: Viewport = {
+  themeColor: "#CED9BB",
+};
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
