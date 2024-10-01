@@ -21,7 +21,8 @@ export default auth(async (req) => {
     nextUrl.pathname.startsWith("/info/") ||
     nextUrl.pathname.startsWith("/profile/") ||
     nextUrl.pathname.startsWith("/store/") ||
-    nextUrl.pathname.startsWith("/listings/");
+    nextUrl.pathname.startsWith("/listings/") ||
+    nextUrl.pathname.startsWith("/api/cron");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {

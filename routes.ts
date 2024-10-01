@@ -12,6 +12,7 @@ export const publicRoutes = [
   "/get-ezh-app",
   "/api/user/marker-info",
   "/api/uploadthing",
+  "/api/cron",
 ];
 /**
  * An array of routes that are used for authentication
