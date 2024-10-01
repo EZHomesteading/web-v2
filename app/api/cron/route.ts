@@ -2,23 +2,18 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 
 export async function GET(request: Request) {
-  console.log("API route hit");
-  console.log("Request headers:", request.headers);
-
-  // Verify the request is from your cron service (optional but recommended)
+  // Verify the request is from your cron service
   const apiKey = request.headers.get("x-api-key");
   if (apiKey !== process.env.CRON_API_KEY) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    // Your cron job logic here
-    console.log("Cron job executed!");
     const newConversation = await prisma.conversation.create({
       data: {
         users: {
           connect: [
-            { id: "66f8bf60da8399fd811b9dad" },
+            { id: "user with listing" },
             { id: "66fc429f3f6c8d3180c628f0" },
           ],
         },
