@@ -5,7 +5,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Received request method:", req.method);
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  console.log("API route hit:", req.url);
+  console.log("Method:", req.method);
+  console.log("Headers:", JSON.stringify(req.headers));
   // Allow GET and POST requests
   if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -85,7 +88,9 @@ export default async function handler(
     //   }
     //Perform your task, e.g., update database, send notifications, etc.
 
-    res.status(200).json({ message: "Cron job completed successfully" });
+    res
+      .status(200)
+      .json({ message: "Cron job completed successfully", id: Date.now() });
   } catch (error) {
     console.error("Cron job failed:", error);
     res.status(500).json({ error: "Internal server error" });
