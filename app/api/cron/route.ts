@@ -14,27 +14,40 @@ export default async function handler(
   try {
     // Your daily or monthly task logic here
     console.log("Cron job executed!");
-    // const newMessage = await prisma.message.create({
-    //     include: {
-    //       seen: true,
-    //       sender: true,
-    //     },
-    //     data: {
-    //       body: coopBody,
-    //       messageOrder: "100",
-    //       conversation: {
-    //         connect: { id: newConversation.id },
-    //       },
-    //       sender: {
-    //         connect: { id: pi.userId },
-    //       },
-    //       seen: {
-    //         connect: {
-    //           id: pi.userId,
-    //         },
-    //       },
-    //     },
-    //   });
+    const newConversation = await prisma.conversation.create({
+      data: {
+        users: {
+          connect: [
+            { id: "66f8bf60da8399fd811b9dad" },
+            { id: "66c37bb923e78a6e81664437" },
+          ],
+        },
+      },
+      include: {
+        users: true,
+      },
+    });
+    const newMessage = await prisma.message.create({
+      include: {
+        seen: true,
+        sender: true,
+      },
+      data: {
+        body: "test",
+        messageOrder: "100",
+        conversation: {
+          connect: { id: newConversation.id },
+        },
+        sender: {
+          connect: { id: "66f8bf60da8399fd811b9dad" },
+        },
+        seen: {
+          connect: {
+            id: "66f8bf60da8399fd811b9dad",
+          },
+        },
+      },
+    });
 
     //   try {
     //     if (!seller.subscriptions) {
@@ -65,7 +78,7 @@ export default async function handler(
     //   } catch (error) {
     //     console.error("A users Push subscription has expired.");
     //   }
-    // Perform your task, e.g., update database, send notifications, etc.
+    //Perform your task, e.g., update database, send notifications, etc.
 
     res.status(200).json({ message: "Cron job completed successfully" });
   } catch (error) {
