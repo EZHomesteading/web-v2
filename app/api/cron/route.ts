@@ -5,6 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log("Received request method:", req.method);
   // Allow GET and POST requests
   if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -18,40 +19,40 @@ export default async function handler(
   try {
     // Your daily or monthly task logic here
     console.log("Cron job executed!");
-    const newConversation = await prisma.conversation.create({
-      data: {
-        users: {
-          connect: [
-            { id: "66f8bf60da8399fd811b9dad" },
-            { id: "66c37bb923e78a6e81664437" },
-          ],
-        },
-      },
-      include: {
-        users: true,
-      },
-    });
-    const newMessage = await prisma.message.create({
-      include: {
-        seen: true,
-        sender: true,
-      },
-      data: {
-        body: "test",
-        messageOrder: "100",
-        conversation: {
-          connect: { id: newConversation.id },
-        },
-        sender: {
-          connect: { id: "66f8bf60da8399fd811b9dad" },
-        },
-        seen: {
-          connect: {
-            id: "66f8bf60da8399fd811b9dad",
-          },
-        },
-      },
-    });
+    // const newConversation = await prisma.conversation.create({
+    //   data: {
+    //     users: {
+    //       connect: [
+    //         { id: "66f8bf60da8399fd811b9dad" },
+    //         { id: "66c37bb923e78a6e81664437" },
+    //       ],
+    //     },
+    //   },
+    //   include: {
+    //     users: true,
+    //   },
+    // });
+    // const newMessage = await prisma.message.create({
+    //   include: {
+    //     seen: true,
+    //     sender: true,
+    //   },
+    //   data: {
+    //     body: "test",
+    //     messageOrder: "100",
+    //     conversation: {
+    //       connect: { id: newConversation.id },
+    //     },
+    //     sender: {
+    //       connect: { id: "66f8bf60da8399fd811b9dad" },
+    //     },
+    //     seen: {
+    //       connect: {
+    //         id: "66f8bf60da8399fd811b9dad",
+    //       },
+    //     },
+    //   },
+    // });
 
     //   try {
     //     if (!seller.subscriptions) {
