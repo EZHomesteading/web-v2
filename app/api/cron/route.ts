@@ -1,26 +1,18 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-import webPush, { PushSubscription } from "web-push";
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  res.setHeader("Cache-Control", "no-store, max-age=0");
-  console.log("API route hit:", req.url);
-  console.log("Method:", req.method);
-  console.log("Headers:", JSON.stringify(req.headers));
-  // Allow GET and POST requests
-  if (req.method !== "GET" && req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
+
+export async function GET(request: Request) {
+  console.log("API route hit");
+  console.log("Request headers:", request.headers);
+
   // Verify the request is from your cron service (optional but recommended)
-  const apiKey = req.headers["x-api-key"];
+  const apiKey = request.headers.get("x-api-key");
   if (apiKey !== process.env.CRON_API_KEY) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    // Your daily or monthly task logic here
+    // Your cron job logic here
     console.log("Cron job executed!");
     // const newConversation = await prisma.conversation.create({
     //   data: {
@@ -57,42 +49,23 @@ export default async function handler(
     //   },
     // });
 
-    //   try {
-    //     if (!seller.subscriptions) {
-    //       console.error("A users Push subscription has expired.");
-    //       return;
-    //     }
-    //     const formatrecipients = JSON.parse(seller.subscriptions);
-    //     const send = formatrecipients.map(
-    //       (subscription: PushSubscription) =>
-    //         webPush.sendNotification(
-    //           subscription,
-    //           JSON.stringify({
-    //             title: "You have a new order!",
-    //             body: coopBody,
-    //             id: newConversation.id,
-    //           }),
-    //           {
-    //             vapidDetails: {
-    //               subject: "mailto:ezhomesteading@gmail.com",
-    //               publicKey: process.env
-    //                 .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
-    //               privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
-    //             },
-    //           }
-    //         )
-    //     );
-    //     await Promise.all(send);
-    //   } catch (error) {
-    //     console.error("A users Push subscription has expired.");
-    //   }
-    //Perform your task, e.g., update database, send notifications, etc.
-
-    res
-      .status(200)
-      .json({ message: "Cron job completed successfully", id: Date.now() });
+    return NextResponse.json(
+      { message: "Cron job completed successfully" },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Cron job failed:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
