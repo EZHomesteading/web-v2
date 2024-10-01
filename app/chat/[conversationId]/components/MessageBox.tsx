@@ -112,9 +112,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     return null;
   }
   //declare clsx styling
-  const container = clsx(
-    "flex flex-grow items-start gap-2 py-2 px-4 testcontainer"
-  );
+  const container = clsx("flex flex-grow  items-start mt-4 gap-2 py-2 px-4");
   const body = clsx("flex  flex-col");
   const message = clsx(
     `text-xs md:text-sm w-fit font-light ${outfit.className}`,

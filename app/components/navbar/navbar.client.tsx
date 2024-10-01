@@ -73,6 +73,8 @@ const Navbar = ({
                  md:border-b-[1px] z-10 ${
                    isMarketPage && !isSmallScreen
                      ? "bg-white sticky"
+                     : isChat && !isSmallScreen
+                     ? "sticky"
                      : "!bg-inherit relative"
                  }`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}

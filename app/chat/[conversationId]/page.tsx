@@ -35,7 +35,31 @@ const ChatId = async ({ params }: { params: IParams }) => {
       </div>
     );
   }
-  const order = await GetOrderByConvoId(params.conversationId);
+  let order = await GetOrderByConvoId(params.conversationId);
+  if (!order) {
+    order = {
+      id: "66d764318fd299484b5c914b",
+      userId: "66d764318fd299484b5c914b",
+      listingIds: ["66d764318fd299484b5c914b"],
+      sellerId: "66d764318fd299484b5c914b",
+      pickupDate: new Date(),
+      paymentIntentId: null,
+      quantity: "0",
+      totalPrice: 0,
+      status: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedAt: null,
+      fee: 0,
+      conversationId: null,
+      location: {
+        type: "point",
+        coordinates: [0, 0],
+        address: ["string[]"],
+        hours: { 0: [{ open: 480, close: 900 }] },
+      },
+    };
+  }
   const messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
   const listings = order?.listingIds

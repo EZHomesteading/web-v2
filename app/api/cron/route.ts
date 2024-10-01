@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         users: {
           connect: [
             { id: "66f8bf60da8399fd811b9dad" },
-            { id: "66c37bb923e78a6e81664437" },
+            { id: "66fc429f3f6c8d3180c628f0" },
           ],
         },
       },
@@ -39,11 +39,11 @@ export async function GET(request: Request) {
           connect: { id: newConversation.id },
         },
         sender: {
-          connect: { id: "66f8bf60da8399fd811b9dad" },
+          connect: { id: "66fc429f3f6c8d3180c628f0" },
         },
         seen: {
           connect: {
-            id: "66f8bf60da8399fd811b9dad",
+            id: "66fc429f3f6c8d3180c628f0",
           },
         },
       },
