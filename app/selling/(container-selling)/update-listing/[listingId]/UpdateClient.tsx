@@ -9,6 +9,8 @@ import { Label } from "@/app/components/ui/label";
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/Heading";
 import { Button } from "@/app/components/ui/button";
+import HarvestDatesSelector from "./HarvestDatesSelector";
+
 import { SafeListing } from "@/types";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "@/utils/uploadthing";
@@ -35,7 +37,20 @@ import {
 import UnitSelect, {
   QuantityTypeValue,
 } from "@/app/create/components/UnitSelect";
-
+import { HoverButton } from "@/app/components/ui/hoverButton";
+type Month =
+  | "Jan"
+  | "Feb"
+  | "Mar"
+  | "Apr"
+  | "May"
+  | "Jun"
+  | "Jul"
+  | "Aug"
+  | "Sep"
+  | "Oct"
+  | "Nov"
+  | "Dec";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -49,6 +64,10 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [quantityType, setQuantityType] = useState<QuantityTypeValue>();
   const [certificationChecked, setCertificationChecked] = useState(false);
+  const [harvestDates, setHarvestDates] = useState<Month[]>(
+    (listing.harvestDates as Month[]) || []
+  );
+
   const [checkbox1Checked, setCheckbox1Checked] = useState(false);
   const [checkbox2Checked, setCheckbox2Checked] = useState(false);
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
@@ -145,6 +164,9 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       minOrder: listing?.minOrder,
       sodt: listing?.SODT,
       location: listing?.location,
+      harvestFeatures: listing?.harvestFeatures,
+      harvestDates: listing.harvestDates,
+      projectedStock: listing.projectedStock,
     },
   });
   const [description, setDescription] = useState(listing.description);
@@ -204,6 +226,9 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       imageSrc: watch("imageSrc"),
       description: description,
       location: data.location,
+      harvestFeatures: data.harvestFeatures,
+      harvestDates: harvestDates,
+      projectedStock: data.projectedStock,
       quantityType:
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
@@ -219,8 +244,49 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       })
       .finally(() => {
         setIsLoading(false);
-        router.replace("/dashboard/my-store");
+        router.replace("/selling/my-store");
       });
+  };
+  const handleConvert = () => {
+    if (listing.harvestFeatures) {
+      axios
+        .post("/api/listing/updateListing", {
+          id: listing.id,
+          harvestDates: [],
+          harvestFeatures: false,
+          projectedStock: null,
+          stock: listing.projectedStock,
+        })
+        .then(() => {
+          toast.success("Your Listing was Updated!");
+        })
+        .catch((error) => {
+          toast.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          router.refresh();
+        });
+    } else {
+      axios
+        .post("/api/listing/updateListing", {
+          id: listing.id,
+          harvestDates: [],
+          harvestFeatures: true,
+          projectedStock: listing.stock,
+          stock: 0,
+        })
+        .then(() => {
+          toast.success("Your Listing was Updated!");
+        })
+        .catch((error) => {
+          toast.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          router.refresh();
+        });
+    }
   };
 
   return (
@@ -231,35 +297,95 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
             title="Update Your Listing"
             subtitle={`Modify the details for your ${listing?.title} here`}
           />
+          {listing.harvestFeatures ? (
+            <div onClick={() => handleConvert()}>
+              <HoverButton
+                buttonText={" Convert to Active Listing"}
+                hoverMessage={
+                  "Convert this listing to an active listing with stock equal to your expected quantity per day"
+                }
+              ></HoverButton>
+            </div>
+          ) : (
+            <div onClick={() => handleConvert()}>
+              <HoverButton
+                buttonText={" Convert to Projected Listing"}
+                hoverMessage={
+                  "Convert this listing to a projected listing with an expected quantity per day equal to your current stock "
+                }
+              ></HoverButton>
+            </div>
+          )}
           <Button onClick={handleSubmit(onSubmit)} className="bg-green-500">
             Update
           </Button>
         </div>
 
-        <Card>
-          <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
-            <h1 className="text-lg lg:text-3xl">Stock</h1>
-            <ul>
-              <li>
-                Quantity available for sale given the units you've specified.
-              </li>
-            </ul>
-            <div className="flex justify-end">
-              <Input
-                id="stock"
-                label="Stock"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-              />
-            </div>
+        {listing.harvestFeatures ? (
+          <Card>
+            <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
+              <h1 className="text-lg lg:text-3xl">Expected Quantity Per day</h1>
+              <ul>
+                <li>
+                  Quantity you expect to have for sale each day during the
+                  harvest season, given the units you've specified.
+                </li>
+              </ul>
+              <div className="flex justify-end">
+                <Input
+                  id="projectedStock"
+                  label="Expected Quantity Per Day"
+                  disabled={isLoading}
+                  register={register}
+                  errors={errors}
+                />
+              </div>
 
-            <CardFooter className="flex justify-between m-0 p-0 pt-2">
-              Listings with no stock will not be listed on the market but are
-              visible on your store.
-            </CardFooter>
-          </CardContent>
-        </Card>
+              <CardFooter className="flex justify-between m-0 p-0 pt-2">
+                Listings with no stock will not be listed on the market but are
+                visible on your store.
+              </CardFooter>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
+              <h1 className="text-lg lg:text-3xl">Stock</h1>
+              <ul>
+                <li>
+                  Quantity available for sale given the units you've specified.
+                </li>
+              </ul>
+              <div className="flex justify-end">
+                <Input
+                  id="stock"
+                  label="Stock"
+                  disabled={isLoading}
+                  register={register}
+                  errors={errors}
+                />
+              </div>
+
+              <CardFooter className="flex justify-between m-0 p-0 pt-2">
+                Listings with no stock will not be listed on the market but are
+                visible on your store.
+              </CardFooter>
+            </CardContent>
+          </Card>
+        )}
+        {listing.harvestFeatures && (
+          <Card>
+            <CardContent className="flex flex-col sheet border-none shadow-lg w-full">
+              <HarvestDatesSelector
+                initialDates={(listing.harvestDates as Month[]) || []}
+                onChange={(newDates: Month[]) => {
+                  setHarvestDates(newDates);
+                  setValue("harvestDates", newDates);
+                }}
+              />
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardContent className="flex flex-col sheet  border-none shadow-lg w-full">
             <h2 className="lg:text-3xl text-lg">Shelf Life</h2>

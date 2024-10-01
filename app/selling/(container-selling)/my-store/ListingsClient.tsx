@@ -18,8 +18,22 @@ interface ListingsClientProps {
 }
 
 const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
+  // Function to filter out listings with harvestFeatures set to true
+  function filterOutHarvestFeatures(listings: FinalListing[]): FinalListing[] {
+    return listings.filter((listing) => !listing.harvestFeatures);
+  }
+
+  // Function to return only listings with harvestFeatures set to true
+  function getOnlyHarvestFeatures(listings: FinalListing[]): FinalListing[] {
+    return listings.filter((listing) => listing.harvestFeatures);
+  }
+
+  const activeListings = filterOutHarvestFeatures(listings);
+  const projectedListings = getOnlyHarvestFeatures(listings);
   const router = useRouter();
   const [deletingId, setDeletingId] = useState("");
+  const [listingMap, setListingMap] = useState(activeListings);
+  const [harvest, setHarvest] = useState(false);
   const onDelete = useCallback(
     (id: string) => {
       setDeletingId(id);
@@ -42,7 +56,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
 
   const onEdit = (id: string) => {
     id;
-    router.push(`/dashboard/update-listing/${id}`);
+    router.push(`/selling/update-listing/${id}`);
   };
 
   return (
@@ -56,6 +70,16 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
             title="Products"
             subtitle="Modify your listings from this page"
           />
+          <Button
+            onClick={() => {
+              harvest
+                ? setListingMap(activeListings)
+                : setListingMap(projectedListings);
+              harvest ? setHarvest(false) : setHarvest(true);
+            }}
+          >
+            {harvest ? "Show Active Listings" : "Show Projected Listings"}
+          </Button>
           <Link href="/dashboard/my-store/settings">
             <Button>Store Settings</Button>
           </Link>
@@ -76,7 +100,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
           
         "
         >
-          {listings.map((listing: FinalListing) => (
+          {listingMap.map((listing: FinalListing) => (
             <ListingCard
               review={listing.review}
               key={listing.id}
