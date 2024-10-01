@@ -5,6 +5,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Allow GET and POST requests
+  if (req.method !== "GET" && req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
   // Verify the request is from your cron service (optional but recommended)
   const apiKey = req.headers["x-api-key"];
   if (apiKey !== process.env.CRON_API_KEY) {
