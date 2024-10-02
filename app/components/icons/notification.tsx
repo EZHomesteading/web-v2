@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { PiBellThin } from "react-icons/pi";
+import getHarvestMessages from "@/actions/getHarvestMessages";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -19,9 +20,15 @@ const outfit = Outfit({
 interface Props {
   bOrders: navBuyOrder[] | undefined;
   sOrders: navSellOrder[] | undefined;
+  harvestMessages:
+    | {
+        conversationId: string;
+        lastMessageAt: Date;
+      }[]
+    | null;
 }
 
-const NotificationIcon = ({ bOrders, sOrders }: Props) => {
+const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
   const pathname = usePathname();
   const white = pathname === "/" || pathname?.startsWith("/chat");
   const notifications: {
@@ -65,7 +72,17 @@ const NotificationIcon = ({ bOrders, sOrders }: Props) => {
       }
     });
   }
-
+  if (harvestMessages) {
+    harvestMessages.forEach(
+      (convo: { conversationId: string; lastMessageAt: Date }) => {
+        notifications.push({
+          text: "You have a message regaurding a Projected Harvest Listing",
+          conversationId: convo.conversationId,
+          updatedAt: convo.lastMessageAt,
+        });
+      }
+    );
+  }
   if (notifications.length === 0) {
     return null;
   }

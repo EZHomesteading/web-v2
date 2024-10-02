@@ -1306,6 +1306,30 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     </SheetContent>
                   </Sheet>
                 </div>
+              ) : data.messageOrder === "100" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+                  <div className="flex w-[40%] flex-col">
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Additive Monthly Stock
+                    </button>
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Additive Daily Stock
+                    </button>
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Monthly Stock Maximum
+                    </button>
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Daily Stock Maximum
+                    </button>
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Set as Active Listing
+                    </button>
+                    <button className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300">
+                      Delete Listing
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}

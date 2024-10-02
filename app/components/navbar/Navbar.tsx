@@ -5,6 +5,7 @@ import { UserRole } from "@prisma/client";
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
 import { navUser } from "@/next-auth";
+import getHarvestMessages from "@/actions/getHarvestMessages";
 
 interface p {
   user?: navUser;
@@ -44,7 +45,7 @@ const Navbar = async ({
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
-
+  const harvestMessages = await getHarvestMessages(user?.id);
   return (
     <NavbarClient
       user={user}
@@ -55,6 +56,7 @@ const Navbar = async ({
       isMarketPage={isMarketPage}
       isChat={isChat}
       isHome={isHome}
+      harvestMessages={harvestMessages}
     />
   );
 };
