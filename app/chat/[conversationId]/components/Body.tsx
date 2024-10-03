@@ -44,6 +44,7 @@ import { MdOutlineRateReview } from "react-icons/md";
 
 interface BodyProps {
   initialMessages: FullMessageType[];
+  adminMessages: any[];
   otherUser: {
     id: string;
     name: string;
@@ -66,6 +67,7 @@ const outfit = Outfit({
 const Body: React.FC<BodyProps> = ({
   initialMessages = [],
   otherUser,
+  adminMessages,
   order,
   user,
   conversationId,
@@ -221,6 +223,7 @@ const Body: React.FC<BodyProps> = ({
   if (order?.listingIds?.length === 1) {
     item = "item";
   }
+  console.log(adminMessages);
   return (
     <div className="flex-1 overflow-y-auto">
       {user.id === order.sellerId ? (
@@ -498,6 +501,8 @@ const Body: React.FC<BodyProps> = ({
       <div className="pb-[100px] md:pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
+          messagesLength={messages.length}
+          listing={messages !== adminMessages ? adminMessages[i].listing : null}
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}

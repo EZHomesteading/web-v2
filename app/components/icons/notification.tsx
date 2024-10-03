@@ -9,7 +9,6 @@ import { formatDistanceToNow } from "date-fns";
 import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { PiBellThin } from "react-icons/pi";
-import getHarvestMessages from "@/actions/getHarvestMessages";
 
 const outfit = Outfit({
   subsets: ["latin"],

@@ -197,7 +197,7 @@ model Listing {
   minOrder        Int
   imageSrc        String[]
   review          Boolean?
-  projectHarvest  Boolean?
+  harvestType     String?
   reports         Int?
   shelfLife       Int
   location        Int        @default(0)
