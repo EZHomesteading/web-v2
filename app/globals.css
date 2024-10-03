@@ -306,6 +306,14 @@ button:focus {
 .sheet {
   background-color: #ced9bb !important;
 }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;   
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

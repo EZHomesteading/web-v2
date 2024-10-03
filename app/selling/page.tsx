@@ -3,6 +3,9 @@ import {
   PiChartBarThin,
   PiChatCircleThin,
   PiClipboardTextThin,
+  PiClockCountdownThin,
+  PiHandCoinsThin,
+  PiLightbulbThin,
   PiMoneyThin,
   PiStorefrontThin,
 } from "react-icons/pi";
@@ -12,36 +15,53 @@ import UserInfoCard from "@/app/account/components/user-info-card";
 
 const menuItems = [
   {
-    title: "Store Settings",
-    icon: <CiSettings className="h8w8" />,
-    href: "/selling/my-store/settings",
+    title: "To-Dos",
+    showTitle: true,
+    name: "Today's Obligations",
+    href: "/selling/todays-obligations",
+    icon: <PiClockCountdownThin className="h8w8" />,
+    showDiv: false,
   },
   {
-    title: "My Listings",
-    icon: <PiStorefrontThin className="h8w8" />,
-    href: "/selling/my-store",
-    showDiv: true,
-  },
-  {
-    title: "Orders",
+    name: "Orders",
     icon: <PiClipboardTextThin className="h8w8" />,
     href: "/orders",
   },
   {
-    title: "Messages",
+    name: "Messages",
     icon: <PiChatCircleThin className="h8w8" />,
     href: "/chat",
     showDiv: true,
   },
   {
-    title: "Dashboard",
-    icon: <PiChartBarThin className="h8w8" />,
+    title: "Manage My Store",
+    showTitle: true,
+    name: "Store Settings",
+    icon: <CiSettings className="h8w8" />,
+    href: "/selling/my-store/settings",
+  },
+  {
+    name: "My Listings",
+    icon: <PiStorefrontThin className="h8w8" />,
+    href: "/selling/my-store",
+    showDiv: true,
+  },
+  {
+    title: "Performance",
+    showTitle: true,
+    name: "Earnings",
+    icon: <PiHandCoinsThin className="h8w8" />,
     href: "/selling/dashboard",
   },
   {
-    title: "Payouts",
+    name: "Payouts",
     icon: <PiMoneyThin className="h8w8" />,
     href: "/selling/payouts",
+  },
+  {
+    name: "Review Feedback",
+    icon: <PiLightbulbThin className="h8w8" />,
+    href: "/selling/reviews",
   },
 ];
 
@@ -54,6 +74,8 @@ const SellerHome = () => {
           <MenuCard
             key={index}
             title={item.title}
+            showTitle={item.showTitle}
+            name={item.name}
             icon={item.icon}
             href={item.href}
             showDiv={item.showDiv}

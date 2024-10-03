@@ -131,7 +131,7 @@ const Navbar = ({
       {isSmallScreen && (
         <div
           className={`fixed bottom-0 left-0 right-0 bg-inherit border-t border-gray-200 p-2 z-10 ${
-            isHome ? "!bg-emerald-950/70" : "bg-white"
+            isHome ? "!bg-emerald-950/70" : "bg-inherit"
           } `}
         >
           <UserMenu
