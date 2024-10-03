@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     projectedStock,
     harvestDates,
     harvestFeatures,
+    harvestType,
     reports,
     review,
   } = body;
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
       quantityType,
       projectedStock,
       harvestDates,
+      harvestType,
       harvestFeatures,
       stock,
       shelfLife,

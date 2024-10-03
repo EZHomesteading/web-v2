@@ -20,6 +20,12 @@ interface NavbarProps {
   canReceivePayouts: boolean;
   uniqueUrl: string;
   seller?: boolean;
+  harvestMessages:
+    | {
+        conversationId: string;
+        lastMessageAt: Date;
+      }[]
+    | null;
 }
 
 const Navbar = ({
@@ -32,6 +38,7 @@ const Navbar = ({
   seller = false,
   canReceivePayouts,
   uniqueUrl,
+  harvestMessages,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -56,6 +63,7 @@ const Navbar = ({
             isHome={true}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
+            harvestMessages={harvestMessages}
           />
         </div>{" "}
       </Container>
@@ -100,6 +108,7 @@ const Navbar = ({
                       user={user}
                       canReceivePayouts={canReceivePayouts}
                       uniqueUrl={uniqueUrl}
+                      harvestMessages={harvestMessages}
                     />
                   </div>
                 </div>
@@ -138,6 +147,7 @@ const Navbar = ({
             user={user}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
+            harvestMessages={harvestMessages}
           />
         </div>
       )}
