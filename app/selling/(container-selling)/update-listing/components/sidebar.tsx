@@ -4,10 +4,15 @@ import { GiSettingsKnobs } from "react-icons/gi";
 import {
   PiBookOpenTextThin,
   PiCardholderThin,
+  PiChatCircleThin,
   PiClipboardTextThin,
+  PiClockCountdownThin,
   PiCookieThin,
   PiGearThin,
+  PiHandCoinsThin,
+  PiLightbulbThin,
   PiLockSimpleThin,
+  PiMoneyThin,
   PiSidebarSimpleThin,
   PiSignatureThin,
   PiStorefrontThin,
@@ -20,6 +25,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
 import { usePathname } from "next/navigation";
+import { CiSettings } from "react-icons/ci";
 interface SidebarProps {
   nav: string;
 }
@@ -102,30 +108,58 @@ const conNav: NavigationItem[] = [
 ];
 const vendorNav: NavigationItem[] = [
   {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: MdDashboard,
-    current: false,
-    div: false,
-  },
-  {
-    name: "My Listings",
-    href: "/dashboard/my-store",
-    icon: PiStorefrontThin,
-    current: false,
-    div: false,
-  },
-  {
-    name: "Store Settings",
-    href: "/dashboard/my-store/settings",
-    icon: GiSettingsKnobs,
+    name: "Today's Obligations",
+    href: "/selling/todays-obligations",
+    icon: PiClockCountdownThin,
     current: false,
     div: false,
   },
   {
     name: "Orders",
-    href: "/dashboard/orders/buyer",
-    icon: TbShoppingCartDollar,
+    icon: PiClipboardTextThin,
+    href: "/orders",
+    current: false,
+    div: false,
+  },
+  {
+    name: "Messages",
+    icon: PiChatCircleThin,
+    href: "/chat",
+    div: true,
+    current: false,
+  },
+  {
+    name: "Store Settings",
+    icon: CiSettings,
+    href: "/selling/my-store/settings",
+    current: false,
+    div: false,
+  },
+  {
+    name: "My Listings",
+    icon: PiStorefrontThin,
+    href: "/selling/my-store",
+    div: true,
+    current: false,
+  },
+  {
+    name: "Earnings",
+    icon: PiHandCoinsThin,
+    href: "/selling/dashboard",
+    current: false,
+    div: false,
+  },
+  {
+    name: "Payouts",
+    icon: PiMoneyThin,
+    href: "/selling/payouts",
+    div: false,
+    current: false,
+  },
+  {
+    name: "Review Feedback",
+    icon: PiLightbulbThin,
+    href: "/selling/reviews",
     current: false,
     div: false,
   },
@@ -156,7 +190,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} md:block relative h-full ${
+        className={`hidden ${o.className} sm:block relative h-full ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >

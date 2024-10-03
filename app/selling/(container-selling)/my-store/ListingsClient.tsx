@@ -60,33 +60,30 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
   };
 
   return (
-    <div
-      style={{ height: "100vh", overflow: "auto" }}
-      className="pt-2 lg:pt-12"
-    >
-      <Container style={{ minHeight: "100%" }}>
-        <div className="flex justify-between items-center">
-          <Heading
-            title="Products"
-            subtitle="Modify your listings from this page"
-          />
-          <Button
-            onClick={() => {
-              harvest
-                ? setListingMap(activeListings)
-                : setListingMap(projectedListings);
-              harvest ? setHarvest(false) : setHarvest(true);
-            }}
-          >
-            {harvest ? "Show Active Listings" : "Show Projected Listings"}
-          </Button>
-          <Link href="/dashboard/my-store/settings">
-            <Button>Store Settings</Button>
-          </Link>
-        </div>
+    <div style={{ height: "100vh", overflow: "auto" }} className="">
+      <div className="flex-none ">
+        <Heading
+          title="My Listings"
+          subtitle="Modify your listings from this page"
+        />
+        <Button
+          onClick={() => {
+            harvest
+              ? setListingMap(activeListings)
+              : setListingMap(projectedListings);
+            harvest ? setHarvest(false) : setHarvest(true);
+          }}
+          className="w-full md:w-48 mr-1 mb-1"
+        >
+          {harvest ? "Show Active Listings" : "Show Projected Listings"}
+        </Button>
+        <Link href="/dashboard/my-store/settings" className="md:w-48 w-full ">
+          <Button className="md:w-48 w-full ">Store Settings</Button>
+        </Link>
+      </div>
 
-        <div
-          className="
+      <div
+        className="
           mt-2
           lg:mt-4
           grid 
@@ -99,25 +96,24 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
           gap-8
           
         "
-        >
-          {listingMap.map((listing: FinalListing) => (
-            <ListingCard
-              review={listing.review}
-              key={listing.id}
-              data={listing}
-              actionId={listing.id}
-              onAction={onDelete}
-              disabled={deletingId === listing.id}
-              actionLabel="Delete"
-              secondActionId={listing.id}
-              secondActionLabel="Edit"
-              onSecondAction={onEdit}
-              user={user}
-              storeUser={user as unknown as UserInfo}
-            />
-          ))}
-        </div>
-      </Container>
+      >
+        {listingMap.map((listing: FinalListing) => (
+          <ListingCard
+            review={listing.review}
+            key={listing.id}
+            data={listing}
+            actionId={listing.id}
+            onAction={onDelete}
+            disabled={deletingId === listing.id}
+            actionLabel="Delete"
+            secondActionId={listing.id}
+            secondActionLabel="Edit"
+            onSecondAction={onEdit}
+            user={user}
+            storeUser={user as unknown as UserInfo}
+          />
+        ))}
+      </div>
     </div>
   );
 };
