@@ -14,7 +14,7 @@ import CustomTimeModal2 from "./dateStates";
 import toast from "react-hot-toast";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import CancelModal from "./CancelModal";
-import { Order, UserRole } from "@prisma/client";
+import { Listing, Order, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
 import {
   PiCalendarBlankLight,
@@ -44,6 +44,7 @@ import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { IoStorefront } from "react-icons/io5";
+import HarvestModal from "./HarvestModal";
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -56,6 +57,7 @@ const outfit = Outfit({
 type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
   data: FullMessageType;
+  listing: Listing | null;
   isLast?: boolean;
   convoId: string;
   otherUsersId: string | undefined;
@@ -63,6 +65,7 @@ interface MessageBoxProps {
   otherUserRole: string | undefined;
   user: UserInfo;
   stripeAccountId?: string | null;
+  messagesLength: number;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -70,7 +73,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   isLast,
   user,
   convoId,
+  listing,
   otherUsersId,
+  messagesLength,
   order,
   otherUserRole,
   stripeAccountId,
@@ -81,6 +86,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [dateTime, setDateTime] = useState<Date | string>("");
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [HarvestOpen, setHarvestOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -1230,6 +1236,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
+      <HarvestModal
+        isOpen={HarvestOpen}
+        onClose={() => setHarvestOpen(false)}
+        messageId={data.id}
+        listing={listing}
+        conversationId={convoId}
+        messagesLength={messagesLength}
+      />
       {/* messages body starts here */}
       <div className={container}>
         <div className="pt-2">
@@ -1305,6 +1319,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                       />
                     </SheetContent>
                   </Sheet>
+                </div>
+              ) : data.messageOrder === "100" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+
+                  <button
+                    onClick={() => setHarvestOpen(true)}
+                    className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
+                  >
+                    Projected Harvest Options
+                  </button>
                 </div>
               ) : (
                 <div className={message}>{data.body}</div>

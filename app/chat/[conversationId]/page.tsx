@@ -6,11 +6,11 @@ import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
 import { GetOrderByConvoId } from "@/actions/getOrder";
 import { FullConversationType } from "@/types";
-import { Order, Reviews, User } from "@prisma/client";
+import { Message, Order, Reviews, User } from "@prisma/client";
 import { UserInfo } from "@/next-auth";
 import { getUserWithBuyReviews } from "@/actions/getUser";
 import { redirect } from "next/navigation";
-import { getListingsByIdsChat } from "@/actions/getListings";
+import { getListingById, getListingsByIdsChat } from "@/actions/getListings";
 
 interface IParams {
   conversationId: string;
@@ -35,6 +35,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
       </div>
     );
   }
+
   let order = await GetOrderByConvoId(params.conversationId);
   if (!order) {
     order = {
@@ -60,7 +61,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
       },
     };
   }
-  const messages = await getMessages(params.conversationId);
+  let messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
   const listings = order?.listingIds
     ? await getListingsByIdsChat(order.listingIds)
@@ -74,6 +75,15 @@ const ChatId = async ({ params }: { params: IParams }) => {
       redirect("/chat");
     }
   }
+  const adminMessage: any = await Promise.all(
+    messages.map(async (message: any) => {
+      if (message.listingId) {
+        const listing = await getListingById({ listingId: message.listingId });
+        return { ...message, listing };
+      }
+      return message;
+    })
+  );
   if (!data) {
     const reviewsFinal: Reviews[] = [
       {
@@ -85,6 +95,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
         rating: 0,
       },
     ];
+
     return (
       <div className="lg:pl-80 min-h-[100vh]">
         <div className="h-full flex flex-col">
@@ -97,6 +108,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
               />
               <Body
                 initialMessages={messages}
+                adminMessages={adminMessage}
                 user={currentUser as unknown as UserInfo}
                 order={order as unknown as Order}
                 otherUser={otherUser}
@@ -128,6 +140,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
             />
             <Body
               initialMessages={messages}
+              adminMessages={adminMessage}
               user={currentUser as unknown as UserInfo}
               order={order as unknown as Order}
               otherUser={otherUser}

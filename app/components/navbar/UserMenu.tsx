@@ -47,8 +47,19 @@ interface Props {
   isHome?: boolean;
   canReceivePayouts: boolean;
   uniqueUrl: string;
+  harvestMessages:
+    | {
+        conversationId: string;
+        lastMessageAt: Date;
+      }[]
+    | null;
 }
-const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
+const UserMenu = ({
+  user,
+  canReceivePayouts,
+  uniqueUrl,
+  harvestMessages,
+}: Props) => {
   const pathname = usePathname();
   const router = useRouter();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -224,6 +235,7 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
             key="alerts"
             sOrders={user.sellerOrders}
             bOrders={user.buyerOrders}
+            harvestMessages={harvestMessages}
           />,
           <IconWrapper
             key="market"
@@ -261,6 +273,7 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
                 key="alerts"
                 sOrders={user.sellerOrders}
                 bOrders={user.buyerOrders}
+                harvestMessages={harvestMessages}
               />
             )
           );
@@ -289,6 +302,7 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
             key="alerts"
             sOrders={user.sellerOrders}
             bOrders={user.buyerOrders}
+            harvestMessages={harvestMessages}
           />,
           <IconWrapper
             key="market"
@@ -326,6 +340,7 @@ const UserMenu = ({ user, canReceivePayouts, uniqueUrl }: Props) => {
                 key="alerts"
                 sOrders={user.sellerOrders}
                 bOrders={user.buyerOrders}
+                harvestMessages={harvestMessages}
               />
             )
           );
