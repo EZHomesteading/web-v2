@@ -25,7 +25,13 @@ export async function POST() {
         status: true,
       },
     });
-
+    if (orders.length === 0) {
+      console.log("No orders found matching the criteria");
+      return NextResponse.json(
+        { message: "No orders to process" },
+        { status: 200 }
+      );
+    }
     await Promise.all(
       orders.map(async (order) => {
         if (order.completedAt) {
@@ -84,7 +90,7 @@ export async function POST() {
     );
 
     return NextResponse.json(
-      { message: "Processing completed successfully" },
+      { message: `Successfully processed ${orders.length} orders` },
       { status: 200 }
     );
   } catch (error) {

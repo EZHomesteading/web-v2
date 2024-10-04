@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { withUt } from "uploadthing/tw";
+
 const config = {
   darkMode: ["class"],
   content: [
@@ -18,6 +19,9 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        "md-custom": "700px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

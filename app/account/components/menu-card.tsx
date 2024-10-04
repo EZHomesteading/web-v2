@@ -1,25 +1,39 @@
 import Link from "next/link";
-import { PiArrowRightThin } from "react-icons/pi";
+import { PiArrowCircleRightThin, PiArrowRightThin } from "react-icons/pi";
 interface p {
-  title: string;
+  title?: string;
   href: string;
   icon: React.ReactNode;
   showDiv?: boolean;
+  showTitle?: boolean;
+  name: string;
 }
-const MenuCard = ({ title, href, icon, showDiv = false }: p) => {
+const MenuCard = ({
+  title = "",
+  href,
+  icon,
+  name,
+  showDiv = false,
+  showTitle = false,
+}: p) => {
   return (
     <>
+      {showTitle && (
+        <div className="text-xl pb-3 border-b font-normal ">{title}</div>
+      )}
       <Link
         href={href}
-        className={` flex items-center hover:cursor-pointer hover:text-white justify-between pb-3`}
+        className={` ${
+          showTitle && "pt-3"
+        } flex items-center hover:cursor-pointer hover:text-white justify-between pb-3`}
       >
         <div className="flex items-center">
           <div>{icon}</div>
-          <div className="ml-1 font-light">{title}</div>
+          <div className="ml-1 font-light">{name}</div>
         </div>
-        <PiArrowRightThin className={`h-8 w-8`} />
+        <PiArrowCircleRightThin className={`h-8 w-8`} />
       </Link>
-      {showDiv && <hr className="mb-6 mt-3" />}
+      {showDiv && <div className="mb-3 mt-3" />}
     </>
   );
 };

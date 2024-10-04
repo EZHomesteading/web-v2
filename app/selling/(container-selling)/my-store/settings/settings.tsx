@@ -39,7 +39,6 @@ interface p {
 const StoreSettings = ({ apiKey }: p) => {
   const user = useCurrentUser();
 
-  // const [banner, setBanner] = useState(user?.banner || "");
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
 
@@ -47,17 +46,10 @@ const StoreSettings = ({ apiKey }: p) => {
     const formData = {
       SODT: SODT,
       bio: bio,
-      // banner: banner,
     };
-    axios
-      .post("/api/useractions/update", formData)
-      .then(() => {
-        window.location.replace("/dashboard/my-store");
-        toast.success("Your account details have changed");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+    axios.post("/api/useractions/update", formData).catch((error) => {
+      toast.error(error.message);
+    });
   };
   const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
@@ -133,7 +125,7 @@ const StoreSettings = ({ apiKey }: p) => {
     );
   } else
     return (
-      <div className="flex flex-col mb-8">
+      <div className="flex flex-col mb-8 2xl:w-1/2">
         <h1 className="sr-only">Store Settings</h1>
         <div className="text-2xl font-medium pb-0">Store Settings</div>
         {user?.role && user?.id && (
@@ -147,7 +139,7 @@ const StoreSettings = ({ apiKey }: p) => {
 
         <AccountCard
           title="SODT"
-          info={SODT.toString() || "No SODT Saved"}
+          info={SODT ? `${SODT.toString()} minutes` : "No SODT Saved"}
           onSave={() => {
             onSubmit;
           }}
@@ -177,7 +169,7 @@ const StoreSettings = ({ apiKey }: p) => {
           title="Store Bio"
           info={bio || "No Bio Saved"}
           onSave={() => {
-            onSubmit;
+            onSubmit({ bio });
           }}
           isEditing={editingCard === "bio"}
           onEditStart={() => handleEditStart("bio")}

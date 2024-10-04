@@ -64,6 +64,9 @@ export type FinalListing = {
   SODT: number | null;
   quantityType: string | null;
   shelfLife: number;
+  harvestFeatures: boolean;
+  projectedStock: number;
+  harvestDates: string[];
   createdAt: string;
   location: Location;
   keyWords: string[];

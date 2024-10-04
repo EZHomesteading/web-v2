@@ -79,6 +79,8 @@ const Modal: React.FC<ModalProps> = ({
     transition-all
     max-h-[90vh]
     w-full
+    lg:max-w-6xl
+    md-custom:max-w-3xl
     max-w-lg
     flex
     flex-col

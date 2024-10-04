@@ -20,6 +20,12 @@ interface NavbarProps {
   canReceivePayouts: boolean;
   uniqueUrl: string;
   seller?: boolean;
+  harvestMessages:
+    | {
+        conversationId: string;
+        lastMessageAt: Date;
+      }[]
+    | null;
 }
 
 const Navbar = ({
@@ -32,6 +38,7 @@ const Navbar = ({
   seller = false,
   canReceivePayouts,
   uniqueUrl,
+  harvestMessages,
 }: NavbarProps) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -56,6 +63,7 @@ const Navbar = ({
             isHome={true}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
+            harvestMessages={harvestMessages}
           />
         </div>{" "}
       </Container>
@@ -73,6 +81,8 @@ const Navbar = ({
                  md:border-b-[1px] z-10 ${
                    isMarketPage && !isSmallScreen
                      ? "bg-white sticky"
+                     : isChat && !isSmallScreen
+                     ? "sticky"
                      : "!bg-inherit relative"
                  }`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
@@ -98,6 +108,7 @@ const Navbar = ({
                       user={user}
                       canReceivePayouts={canReceivePayouts}
                       uniqueUrl={uniqueUrl}
+                      harvestMessages={harvestMessages}
                     />
                   </div>
                 </div>
@@ -129,13 +140,14 @@ const Navbar = ({
       {isSmallScreen && (
         <div
           className={`fixed bottom-0 left-0 right-0 bg-inherit border-t border-gray-200 p-2 z-10 ${
-            isHome ? "!bg-emerald-950/70" : "bg-white"
+            isHome ? "!bg-emerald-950/70" : "bg-inherit"
           } `}
         >
           <UserMenu
             user={user}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
+            harvestMessages={harvestMessages}
           />
         </div>
       )}

@@ -1,17 +1,18 @@
 "use client";
 
-import { CgCommunity } from "react-icons/cg";
 import { GiSettingsKnobs } from "react-icons/gi";
-import { HiOutlineDocument } from "react-icons/hi";
-import { MdOutlinePrivacyTip } from "react-icons/md";
 import {
-  PiBasketThin,
   PiBookOpenTextThin,
   PiCardholderThin,
+  PiChatCircleThin,
   PiClipboardTextThin,
+  PiClockCountdownThin,
   PiCookieThin,
   PiGearThin,
+  PiHandCoinsThin,
+  PiLightbulbThin,
   PiLockSimpleThin,
+  PiMoneyThin,
   PiSidebarSimpleThin,
   PiSignatureThin,
   PiStorefrontThin,
@@ -19,15 +20,12 @@ import {
   PiUserThin,
 } from "react-icons/pi";
 import { MdDashboard } from "react-icons/md";
-import { RiUserShared2Line } from "react-icons/ri";
-import {
-  TbLayoutSidebarLeftCollapse,
-  TbShoppingCartDollar,
-} from "react-icons/tb";
+import { TbShoppingCartDollar } from "react-icons/tb";
 import { useEffect, useState } from "react";
-import { TbLayoutSidebarRightCollapse } from "react-icons/tb";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
+import { usePathname } from "next/navigation";
+import { CiSettings } from "react-icons/ci";
 interface SidebarProps {
   nav: string;
 }
@@ -36,6 +34,7 @@ interface NavigationItem {
   href: string;
   icon: React.ElementType;
   current: boolean;
+  div: boolean;
 }
 const o = Outfit({
   subsets: ["latin"],
@@ -47,98 +46,122 @@ const conNav: NavigationItem[] = [
     href: "/account/personal-info",
     icon: PiUserThin,
     current: false,
+    div: false,
   },
   {
     name: "Notification Preferences",
     href: "/account/notification-preferences",
     icon: PiGearThin,
     current: false,
-  },
-  {
-    name: "Orders",
-    href: "/account/orders",
-    icon: PiClipboardTextThin,
-    current: false,
-  },
-  {
-    name: "Cart",
-    href: "/cart",
-    icon: PiBasketThin,
-    current: false,
+    div: false,
   },
   {
     name: "Payment Methods",
     href: "/account/payment-methods",
     icon: PiCardholderThin,
     current: false,
+    div: true,
   },
+  {
+    name: "Orders",
+    href: "/orders",
+    icon: PiClipboardTextThin,
+    current: false,
+    div: false,
+  },
+
   {
     name: "Following",
     href: "/account/following",
     icon: PiUsersThreeThin,
     current: false,
+    div: true,
   },
   {
     name: "Privacy Policy",
     href: "/",
     icon: PiLockSimpleThin,
     current: false,
+    div: false,
   },
   {
     name: "Terms of Service",
     href: "/",
     icon: PiSignatureThin,
     current: false,
+    div: false,
   },
   {
     name: "Cookie Policy",
     href: "/cookie-policy",
     icon: PiCookieThin,
     current: false,
+    div: false,
   },
   {
     name: "Community Standards",
     href: "/",
     icon: PiBookOpenTextThin,
     current: false,
+    div: false,
   },
 ];
 const vendorNav: NavigationItem[] = [
   {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: MdDashboard,
+    name: "Today's Obligations",
+    href: "/selling/todays-obligations",
+    icon: PiClockCountdownThin,
     current: false,
+    div: false,
   },
   {
-    name: "Profile Settings",
-    href: "/dashboard/account-settings/general",
-    icon: GiSettingsKnobs,
+    name: "Orders",
+    icon: PiClipboardTextThin,
+    href: "/orders",
     current: false,
+    div: false,
   },
   {
-    name: "My Store",
-    href: "/dashboard/my-store",
-    icon: PiStorefrontThin,
+    name: "Messages",
+    icon: PiChatCircleThin,
+    href: "/chat",
+    div: true,
     current: false,
   },
   {
     name: "Store Settings",
-    href: "/dashboard/my-store/settings",
-    icon: GiSettingsKnobs,
+    icon: CiSettings,
+    href: "/selling/my-store/settings",
+    current: false,
+    div: false,
+  },
+  {
+    name: "My Listings",
+    icon: PiStorefrontThin,
+    href: "/selling/my-store",
+    div: true,
     current: false,
   },
   {
-    name: "Orders",
-    href: "/dashboard/orders/buyer",
-    icon: TbShoppingCartDollar,
+    name: "Earnings",
+    icon: PiHandCoinsThin,
+    href: "/selling/dashboard",
+    current: false,
+    div: false,
+  },
+  {
+    name: "Payouts",
+    icon: PiMoneyThin,
+    href: "/selling/payouts",
+    div: false,
     current: false,
   },
   {
-    name: "Following",
-    href: "/dashboard/following",
-    icon: RiUserShared2Line,
+    name: "Review Feedback",
+    icon: PiLightbulbThin,
+    href: "/selling/reviews",
     current: false,
+    div: false,
   },
 ];
 const Sidebar = ({ nav = "buy" }: SidebarProps) => {
@@ -159,7 +182,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
       JSON.stringify(newCollapsedState)
     );
   };
-
+  const pathname = usePathname();
   const navigationItems = nav === "sell" ? vendorNav : conNav;
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -167,7 +190,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} md:block relative h-full ${
+        className={`hidden ${o.className} sm:block relative h-full ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >
@@ -179,11 +202,12 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
                   <Link
                     href={item.href}
                     className={classNames(
-                      item.current
-                        ? "font-bold"
+                      pathname === item.href
+                        ? "text-white"
                         : "text-gray-401 hover:text-white font-light",
                       "group flex gap-x-4 rounded-md p-2 text-sm leading-6 t",
-                      isCollapsed ? "justify-end" : ""
+                      isCollapsed ? "justify-end" : "items-center",
+                      item.div ? "border-b-[1px] pb-4" : ""
                     )}
                   >
                     <item.icon

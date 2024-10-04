@@ -14,15 +14,14 @@ const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
         hover:shadow-sm
         hover:cursor-pointer
         font-normal
-        text-lg
+        text-xl
         sm:text-sm
         flex
         items-center
-        justify-between
-        mi"
+        "
     >
-      {label}
-      <div>{icon}</div>
+      <div className="mr-2 ">{icon}</div>
+      <div className="text-lg">{label}</div>
     </div>
   );
 };

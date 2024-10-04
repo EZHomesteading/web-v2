@@ -197,7 +197,7 @@ model Listing {
   minOrder        Int
   imageSrc        String[]
   review          Boolean?
-  projectHarvest  Boolean?
+  harvestType     String?
   reports         Int?
   shelfLife       Int
   location        Int        @default(0)
@@ -291,9 +291,9 @@ model Message {
   image        String?
   createdAt    DateTime @default(now())
   messageOrder String?
-
-  seenIds String[] @db.ObjectId
-  seen    User[]   @relation("Seen", fields: [seenIds], references: [id])
+  listingId    String? @db.ObjectId
+  seenIds      String[] @db.ObjectId
+  seen         User[]   @relation("Seen", fields: [seenIds], references: [id])
 
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
