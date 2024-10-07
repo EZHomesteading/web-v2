@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-function filterCurrentMonthHarvests(harvests: any) {
+function filterHarvests(harvests: any[]) {
   const currentMonth = new Date().toLocaleString("default", { month: "short" });
 
-  return harvests.filter((harvest: any) =>
-    harvest.harvestDates.includes(currentMonth)
+  return harvests.filter(
+    (harvest: any) =>
+      !harvest.harvestDates.includes(currentMonth) &&
+      harvest.harvestType === null
   );
 }
 function pluralizeQuantityType(quantity: number, type: string) {
@@ -74,9 +76,7 @@ export async function GET(request: Request) {
           quantityType: true,
         },
       });
-      const filteredHarvests = filterCurrentMonthHarvests(
-        singleUserHarvestListings
-      );
+      const filteredHarvests = filterHarvests(singleUserHarvestListings);
       if (!filteredHarvests[0]) {
         return;
       }
