@@ -1,6 +1,9 @@
 import prisma from "@/lib/prismadb";
 
 export default async function getHarvestMessages(userId: string | undefined) {
+  if (!userId) {
+    return;
+  }
   try {
     const conversations = await prisma.conversation.findMany({
       where: {
