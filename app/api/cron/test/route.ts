@@ -4,9 +4,7 @@
 //   const currentMonth = new Date().toLocaleString("default", { month: "short" });
 
 //   return harvests.filter(
-//     (harvest: any) =>
-//       !harvest.harvestDates.includes(currentMonth) &&
-//       harvest.harvestType === null
+//     (harvest: any) => !harvest.harvestDates.includes(currentMonth) && !harvest.harvestType
 //   );
 // }
 // function pluralizeQuantityType(quantity: number, type: string) {
@@ -124,7 +122,7 @@
 //         });
 //       });
 
-//       console.log(filteredHarvests);
+//       //console.log(filteredHarvests);
 //     });
 
 //     return NextResponse.json(

@@ -207,7 +207,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           >
             <div className="font-semibold">
               {" "}
-              Quantity available {data.stock}
+              Total quantity in stock {data.stock}
             </div>
 
             <div className="font-light">{data.quantityType}</div>
@@ -217,11 +217,35 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <div
             className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
           >
-            <div className="font-semibold"> Quantity Sold {data.stock}</div>
+            <div className="font-semibold">
+              {" "}
+              Quantity sold but not delivered 9
+            </div>
 
             <div className="font-light">{data.quantityType}</div>
           </div>
         </div>
+        <div className="flex w-full justify-start">
+          <div
+            className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
+          >
+            <div className="font-semibold">
+              {" "}
+              Quantity still available for sale {data.stock - 9}
+            </div>
+
+            <div className="font-light">{data.quantityType}</div>
+          </div>
+        </div>
+        {/* <div className="flex w-full justify-start">
+          <div
+            className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
+          >
+            <div className="font-semibold"> Quantity Delivered 0</div>
+
+            <div className="font-light">{data.quantityType}</div>
+          </div>
+        </div> */}
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
             <div
