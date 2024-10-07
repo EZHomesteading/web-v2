@@ -6,8 +6,9 @@ function filterHarvests(harvests: any[]) {
   return harvests.filter(
     (harvest: any) =>
       (!harvest.harvestDates.includes(currentMonth) &&
-        harvest.harvestType === "addMonthly") ||
-      harvest.harvestType === "maxMonthly"
+        harvest.harvestType !== "addMonthly") ||
+      (!harvest.harvestDates.includes(currentMonth) &&
+        harvest.harvestType !== "maxMonthly")
   );
 }
 
