@@ -1,10 +1,12 @@
 // import { NextResponse } from "next/server";
 // import prisma from "@/lib/prismadb";
-// function filterCurrentMonthHarvests(harvests: any) {
+// function filterHarvests(harvests: any[]) {
 //   const currentMonth = new Date().toLocaleString("default", { month: "short" });
 
-//   return harvests.filter((harvest: any) =>
-//     harvest.harvestDates.includes(currentMonth)
+//   return harvests.filter(
+//     (harvest: any) =>
+//       !harvest.harvestDates.includes(currentMonth) &&
+//       harvest.harvestType === null
 //   );
 // }
 // function pluralizeQuantityType(quantity: number, type: string) {
@@ -40,10 +42,10 @@
 // }
 // export async function GET(request: Request) {
 //   // Verify the request is from your cron service
-//   const apiKey = request.headers.get("x-api-key");
-//   if (apiKey !== process.env.CRON_API_KEY) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
+//   //   const apiKey = request.headers.get("x-api-key");
+//   //   if (apiKey !== process.env.CRON_API_KEY) {
+//   //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//   //   }
 
 //   try {
 //     let usersWithProjHarvest = await prisma.listing.findMany({
@@ -69,14 +71,13 @@
 //           id: true,
 //           userId: true,
 //           title: true,
+//           harvestType: true,
 //           harvestDates: true,
 //           projectedStock: true,
 //           quantityType: true,
 //         },
 //       });
-//       const filteredHarvests = filterCurrentMonthHarvests(
-//         singleUserHarvestListings
-//       );
+//       const filteredHarvests = filterHarvests(singleUserHarvestListings);
 //       if (!filteredHarvests[0]) {
 //         return;
 //       }
