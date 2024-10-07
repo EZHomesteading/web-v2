@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import ListingCard from "@/app/components/listings/ListingCardDash";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { FinalListing } from "@/actions/getListings";
