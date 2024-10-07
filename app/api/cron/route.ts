@@ -5,8 +5,7 @@ function filterHarvests(harvests: any[]) {
 
   return harvests.filter(
     (harvest: any) =>
-      !harvest.harvestDates.includes(currentMonth) &&
-      harvest.harvestType === null
+      !harvest.harvestDates.includes(currentMonth) && !harvest.harvestType
   );
 }
 function pluralizeQuantityType(quantity: number, type: string) {
