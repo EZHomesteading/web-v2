@@ -9,7 +9,7 @@ interface p {
   name: string;
 }
 const MenuCard = ({
-  title = "",
+  title,
   href,
   icon,
   name,
