@@ -51,7 +51,6 @@ const Calendar = ({ location, index }: p) => {
         date: new Date(ex.date), // Ensure dates are parsed
       })) || [],
   });
-  console.log("hours", hours);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [visibleMonth, setVisibleMonth] = useState<Date>(currentDate);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -247,23 +246,14 @@ const Calendar = ({ location, index }: p) => {
   };
 
   const handleSaveChanges = async () => {
-    console.log("Open Time:", openTime);
-    console.log("Close Time:", closeTime);
-
     const openMinutes = convertTimeToMinutes(openTime);
     const closeMinutes = convertTimeToMinutes(closeTime);
 
-    console.log("Open Minutes:", openMinutes);
-    console.log("Close Minutes:", closeMinutes);
-
-    // Get the accurate selected dates from the getSelectionDescription useMemo
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => parseISO(dateString))
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
-
-    console.log("Selected dates for new exceptions:", selectedDates);
 
     const newExceptions: StoreException[] = selectedDates.map((date) => ({
       date: new Date(
@@ -271,8 +261,6 @@ const Calendar = ({ location, index }: p) => {
       ),
       timeSlots: [{ open: openMinutes, close: closeMinutes }],
     }));
-
-    console.log("New Exceptions:", newExceptions);
 
     const updatedHours = {
       ...hours,
@@ -286,8 +274,6 @@ const Calendar = ({ location, index }: p) => {
         ...newExceptions,
       ],
     };
-
-    console.log("Updated Hours:", updatedHours);
 
     setHours(updatedHours);
 
@@ -411,23 +397,16 @@ const Calendar = ({ location, index }: p) => {
   const getSelectionDescription = useMemo(() => {
     if (selectedDaysCount === 0) return "";
 
-    console.log("Selected days object:", selectedDays);
-
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => {
-        console.log("Processing date string:", dateString);
         const parsedDate = parseISO(dateString);
-        console.log("Parsed date:", parsedDate);
         return isValid(parsedDate) ? parsedDate : null;
       })
       .filter((date): date is Date => date !== null)
       .sort((a, b) => a.getTime() - b.getTime());
 
-    console.log("Filtered and sorted selected dates:", selectedDates);
-
     if (selectedDates.length === 0) {
-      console.log("No valid dates found");
       return "Invalid date selection";
     }
 

@@ -23,13 +23,11 @@ export async function POST(request: Request) {
     const { location, locationIndex } = body;
     console.log("Location before post", JSON.stringify(location[0].hours.exceptions, null, 2));
 
-    // Get the current user
     const user = await currentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch the current user data
     const currentUserData = await prisma.user.findUnique({
       where: { id: user.id },
     });
@@ -38,17 +36,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Ensure the location exists
     if (!currentUserData.location) {
       return NextResponse.json({ error: "User has no locations" }, { status: 400 });
     }
 
-    // Ensure the location index is valid
     if (locationIndex < 0 || locationIndex > 2) {
       return NextResponse.json({ error: "Invalid location index" }, { status: 400 });
     }
 
-    // Create a new location object with the updated data
     const updatedLocation: Location = {
         ...currentUserData.location,
         [locationIndex]: {
