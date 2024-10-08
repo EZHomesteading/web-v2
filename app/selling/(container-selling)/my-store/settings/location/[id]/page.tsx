@@ -1,7 +1,7 @@
 import React from "react";
 import { getLocationByIndex } from "@/actions/getUser";
 import { auth } from "@/auth";
-import Client from "./client";
+import Calendar from "../calendar";
 
 interface EditLocationPageProps {
   params: { id: string };
@@ -29,20 +29,5 @@ export default async function EditLocationPage({
   }
 
   const mk = process.env.MAPS_KEY;
-  return (
-    <>
-      {mk ? (
-        <>
-          <Client
-            user={session?.user}
-            location={location}
-            mk={mk}
-            locationIndex={locationIndex}
-          />
-        </>
-      ) : (
-        <></>
-      )}
-    </>
-  );
+  return <>{mk && <Calendar location={location} index={locationIndex} />}</>;
 }
