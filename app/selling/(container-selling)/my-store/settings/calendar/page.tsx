@@ -198,13 +198,13 @@ const StoreHoursEditor: React.FC = () => {
     const firstDayOfMonth = getFirstDayOfMonth(year, month);
 
     const calendarDays: JSX.Element[] = [];
-    const totalCells = 42; // 6 rows * 7 days
+    const totalCells = 42;
 
     for (let i = 0; i < totalCells; i++) {
       const day = i - firstDayOfMonth + 1;
       const isValidDay = day > 0 && day <= daysInMonth;
       const isLastInRow = (i + 1) % 7 === 0;
-      const isLastRow = i >= 35; // Last row always starts at index 35
+      const isLastRow = i >= 35;
       const key = `${year}-${(month + 1).toString().padStart(2, "0")}-${day
         .toString()
         .padStart(2, "0")}`;
@@ -302,9 +302,7 @@ const StoreHoursEditor: React.FC = () => {
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => {
         console.log("Processing date string:", dateString);
-        // Assuming the date string is in the format "YYYY-M-D"
         const [year, month, day] = dateString.split("-").map(Number);
-        // Use the month as-is, no need to subtract 1
         const parsedDate = new Date(year, month, day);
         console.log("Parsed date:", parsedDate);
         return isValid(parsedDate) ? parsedDate : null;
@@ -341,7 +339,6 @@ const StoreHoursEditor: React.FC = () => {
       )}`;
     }
 
-    // Default case: show number of selected days
     return `Modify Hours for ${selectedDaysCount} day${
       selectedDaysCount !== 1 ? "s" : ""
     }`;
