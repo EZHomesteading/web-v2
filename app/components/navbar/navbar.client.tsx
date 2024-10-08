@@ -7,8 +7,6 @@ import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
 import { navUser } from "@/next-auth";
-import { Button } from "../ui/button";
-import Link from "next/link";
 
 interface NavbarProps {
   user?: navUser;
@@ -44,7 +42,7 @@ const Navbar = ({
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 768 && window.innerHeight < 4200);
+      setIsSmallScreen(window.innerWidth < 641);
     };
 
     checkScreenSize();

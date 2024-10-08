@@ -1,17 +1,11 @@
 import React from "react";
-import { LocationObj } from "@prisma/client";
 import { getLocationByIndex } from "@/actions/getUser";
 import { auth } from "@/auth";
+import Client from "./client";
 
 interface EditLocationPageProps {
   params: { id: string };
 }
-
-const locationHeadings = [
-  { text: "Default Location", style: "text-xl mt-2 font-bold" },
-  { text: "Secondary Location", style: "text-xl mt-2 font-semibold" },
-  { text: "Third Location", style: "text-xl mt-2 font-medium" },
-];
 
 export default async function EditLocationPage({
   params,
@@ -34,27 +28,21 @@ export default async function EditLocationPage({
     }
   }
 
-  if (!location) {
-  }
-  const heading = locationHeadings[locationIndex] || {
-    text: "Location",
-    style: "text-xl mt-2 font-bold",
-  };
-
+  const mk = process.env.MAPS_KEY;
   return (
-    <div className="container mx-auto px-4">
-      <h1 className={heading.style}>{heading.text}</h1>
-      <div className="mt-4">
-        <h2 className="text-lg font-semibold">Current Address</h2>
-        <p>{location?.address?.join(", ")}</p>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-semibold">Current Hours</h2>
-      </div>
-    </div>
+    <>
+      {mk ? (
+        <>
+          <Client
+            user={session?.user}
+            location={location}
+            mk={mk}
+            locationIndex={locationIndex}
+          />
+        </>
+      ) : (
+        <></>
+      )}
+    </>
   );
-}
-
-async function fetchLocationByIndex(index: number): Promise<LocationObj> {
-  return {} as LocationObj;
 }

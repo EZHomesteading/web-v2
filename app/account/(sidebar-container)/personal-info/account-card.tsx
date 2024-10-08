@@ -37,7 +37,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
 
   return (
     <div
-      className={`pt-5 transition-opacity duration-300 ${
+      className={`pt-5 transition-opacity duration-300 w-full ${
         isDisabled ? "opacity-50 pointer-events-none" : "opacity-100"
       }`}
     >

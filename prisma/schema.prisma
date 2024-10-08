@@ -37,36 +37,51 @@ enum Notification {
   EMAIL_NEW_PRODUCER_LISTINGS
 }
 
+type notifList {
+  list String[]
+}
+
+type Times {
+  open  Int
+  close Int
+}
+
 type LocationObj {
   type        String
   coordinates Float[]
   address     String[]
-  hours       Json?
+  hours       Hours?
+}
+
+type Hours {
+  monthHours MonthHours[]
+  exceptions StoreException[]
+}
+
+type MonthHours {
+  month Int // 0-11 for Jan to Dec
+  days  DayHours[]
+}
+
+type DayHours {
+  day       Int // 0-6 for Sun to Sat
+  timeSlots TimeSlot[]
+}
+
+type TimeSlot {
+  open  Int // Time in minutes from midnight
+  close Int // Time in minutes from midnight
+}
+
+type StoreException {
+  date      DateTime
+  timeSlots TimeSlot[] // Optional for specific open/close hours on that date
 }
 
 type Location {
   0 LocationObj? @map("0")
   1 LocationObj? @map("1")
   2 LocationObj? @map("2")
-}
-
-type notifList {
-  list String[]
-}
-
-type Hours {
-  0 Times[] @map("0")
-  1 Times[] @map("1")
-  2 Times[] @map("2")
-  3 Times[] @map("3")
-  4 Times[] @map("4")
-  5 Times[] @map("5")
-  6 Times[] @map("6")
-}
-
-type Times {
-  open  Int
-  close Int
 }
 
 model User {
@@ -84,7 +99,7 @@ model User {
   stripeAccountId       String?
   totalPaidOut          Int?
   notifications         Notification[]
-  SODT                  Int? //set out and delivery time for co-ops/producers respectively expressed as an interger
+  SODT                  Int? // set out and delivery time for co-ops/producers respectively expressed as an integer
   bio                   String? // bio for co-ops and producers (should consumer have bios?)
   banner                String? // banner for co-op and producer stores
   createdAt             DateTime               @default(now())
@@ -291,7 +306,7 @@ model Message {
   image        String?
   createdAt    DateTime @default(now())
   messageOrder String?
-  listingId    String? @db.ObjectId
+  listingId    String?  @db.ObjectId
   seenIds      String[] @db.ObjectId
   seen         User[]   @relation("Seen", fields: [seenIds], references: [id])
 
