@@ -2,7 +2,7 @@
 //listing card component, can be mapped over to create multiple cards on same page.
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import CartIcon from "@/app/components/listings/cart-icon";
 import { Button } from "@/app/components/ui/button";
 import { UserInfo } from "@/next-auth";
@@ -30,6 +30,7 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
+import StockCounter from "./StockCounter";
 
 const outfit = Outfit({
   display: "swap",
@@ -56,6 +57,10 @@ interface ListingCardProps {
   storeUser: UserInfo;
   priority?: boolean;
   review?: boolean | null;
+  orderQuantities: {
+    listingId: any;
+    totalQuantity: any;
+  }[];
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -65,6 +70,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   disabled,
   actionLabel,
   actionId,
+  orderQuantities,
   user,
   secondActionId,
   onSecondAction,
@@ -74,7 +80,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [stock, setStock] = useState(data.stock);
 
+  const handleStockUpdate = (newStock: number) => {
+    setStock(newStock);
+    // Here you would typically call an API to update the stock in your backend
+  };
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -83,7 +94,41 @@ const ListingCard: React.FC<ListingCardProps> = ({
     },
     [disabled, onAction, actionId]
   );
+  function pluralizeQuantityType(quantity: number, type: string) {
+    if (quantity === 1) {
+      return type;
+    }
 
+    switch (type.toLowerCase()) {
+      case "lb":
+        return "lbs";
+      case "oz":
+        return "oz";
+      case "pint":
+      case "quart":
+      case "gallon":
+      case "bushel":
+      case "peck":
+      case "crate":
+      case "basket":
+      case "bag":
+      case "box":
+      case "bunch":
+        return type + "s";
+      case "dozen":
+        return "dozen";
+      case "each":
+        return "each";
+      case "none":
+        return "";
+      default:
+        return type;
+    }
+  }
+  const pluralQuan = pluralizeQuantityType(
+    stock,
+    data.quantityType ? data.quantityType : ""
+  );
   const handleCardClick = useCallback(() => {
     if (pathname !== "/dashboard/my-store") {
       router.push(`/listings/${data.id}`);
@@ -98,7 +143,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
     },
     [disabled, onSecondAction, secondActionId]
   );
-
+  function getQuantityForListing(
+    orderQuantities: any,
+    targetListingId: string
+  ) {
+    const listingQuantity = orderQuantities.find(
+      (item: any) => item.listingId === targetListingId
+    );
+    return listingQuantity ? listingQuantity.totalQuantity : 0;
+  }
+  const orderQuantity = getQuantityForListing(orderQuantities, data.id);
   const hasError = !data.location || !data.location.hours || review;
   return (
     <div className="col-span-1 cursor-pointer group">
@@ -163,54 +217,27 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </Popover>
             </div>
           )}
-          <div className="absolute top-3 right-3">
-            {data.stock <= 0 ? (
-              <></>
-            ) : (
-              <CartIcon
-                listingId={data.id}
-                user={user}
-                listingRole={storeUser.role}
-                listingUser={storeUser.id}
-                listingMin={data.minOrder}
-              />
-            )}
-          </div>
         </div>
-        <div className="font-semibold text-lg">
-          {" "}
-          <div className={`${outfit.className} text-lg`}>{data.title}</div>
-          <div
-            className={`font-light text-neutral-500 text-xs ${work.className}`}
-          >
-            {data?.location?.address && (
-              <>
-                {" "}
-                {data?.location?.address[1]}, {data?.location?.address[2]}
-              </>
-            )}
-          </div>
-        </div>
-        {/* <div className="text-sm text-gray-600 ">
-          <ReactStars
-            count={4}
-            size={20}
-            color2={"#000"}
-            value={data.rating.length - 1}
-            half={true}
-            edit={false}
+        <div className="mt-4">
+          <StockCounter
+            listingId={data.id}
+            initialStock={stock}
+            onUpdate={handleStockUpdate}
           />
-        </div> */}
+        </div>
         <div className="flex w-full justify-start">
           <div
             className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
           >
             <div className="font-semibold">
               {" "}
-              Total quantity in stock {data.stock}
+              Total in stock{" "}
+              {stock !== data.stock
+                ? stock + orderQuantity
+                : data.stock + orderQuantity}
             </div>
 
-            <div className="font-light">{data.quantityType}</div>
+            <div className="font-light">{pluralQuan}</div>
           </div>
         </div>
         <div className="flex w-full justify-start">
@@ -219,33 +246,26 @@ const ListingCard: React.FC<ListingCardProps> = ({
           >
             <div className="font-semibold">
               {" "}
-              Quantity sold but not delivered 9
+              Sold: not delivered {orderQuantity}
             </div>
 
-            <div className="font-light">{data.quantityType}</div>
+            <div className="font-light">
+              {pluralizeQuantityType(
+                orderQuantity,
+                data.quantityType ? data.quantityType : ""
+              )}
+            </div>
           </div>
         </div>
         <div className="flex w-full justify-start">
           <div
             className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
           >
-            <div className="font-semibold">
-              {" "}
-              Quantity still available for sale {data.stock - 9}
-            </div>
+            <div className="font-semibold"> Available now {stock}</div>
 
-            <div className="font-light">{data.quantityType}</div>
+            <div className="font-light">{pluralQuan}</div>
           </div>
         </div>
-        {/* <div className="flex w-full justify-start">
-          <div
-            className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
-          >
-            <div className="font-semibold"> Quantity Delivered 0</div>
-
-            <div className="font-light">{data.quantityType}</div>
-          </div>
-        </div> */}
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
             <div
