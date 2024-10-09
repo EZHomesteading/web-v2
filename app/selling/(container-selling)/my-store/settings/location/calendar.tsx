@@ -9,10 +9,6 @@ import TimePicker from "./time-slot";
 import ResponsiveSlidingLayout from "./panel";
 import axios from "axios";
 import { toast } from "sonner";
-interface Exception {
-  date: string;
-  timeSlots: TimeSlot[];
-}
 
 interface TimeSlot {
   open: number;
@@ -187,6 +183,29 @@ const Calendar = ({ location, index }: p) => {
     return `${formattedHours}:${mins.toString().padStart(2, "0")}${period}`;
   };
 
+  const selectAllDaysInMonth = (year: number, month: number) => {
+    const daysInMonth = getDaysInMonth(year, month);
+    const newSelectedDays: { [key: string]: boolean } = { ...selectedDays };
+
+    // Check if all days in the month are already selected
+    let allSelected = true;
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = createDateKey(year, month + 1, day);
+      if (!newSelectedDays[key]) {
+        allSelected = false;
+        break;
+      }
+    }
+
+    // Toggle selection: deselect all if all are already selected, otherwise select all
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = createDateKey(year, month + 1, day);
+      newSelectedDays[key] = !allSelected;
+    }
+
+    setSelectedDays(newSelectedDays);
+  };
+
   const renderCalendarForMonth = (year: number, month: number): JSX.Element => {
     const daysInMonth = getDaysInMonth(year, month);
     const firstDayOfMonth = getFirstDayOfMonth(year, month);
@@ -234,10 +253,13 @@ const Calendar = ({ location, index }: p) => {
     return (
       <div
         key={month}
-        className="mb-8"
         data-month={format(new Date(year, month), "MMMM yyyy")}
+        className="sm:px-1"
       >
-        <div className="text-2xl font-normal mb-4 px-2">
+        <div
+          className="text-2xl font-normal mb-4 px-2 cursor-pointer underline w-fit"
+          onClick={() => selectAllDaysInMonth(year, month)}
+        >
           {format(new Date(year, month), "MMMM yyyy")}
         </div>
         <div className="grid grid-cols-7 w-full gap-px">{calendarDays}</div>
@@ -310,6 +332,7 @@ const Calendar = ({ location, index }: p) => {
           <CustomSwitch isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
         </div>
       </div>
+
       <div>
         <TimePicker
           top={true}

@@ -310,6 +310,27 @@ button:focus {
   display: none;
 }
 
+@keyframes daylightGradient {
+  0% {
+    color: var(--start-color, black);
+  }
+  80% {
+    color: var(--end-color, black);
+  }
+  100% {
+    color: black; /* Fade to black */
+  }
+}
+
+.daylight-animation {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation-timing-function: ease-in-out;
+}
+
+
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

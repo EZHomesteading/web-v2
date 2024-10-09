@@ -121,6 +121,7 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
   hasPickedRole         Boolean?
+  openCloseTemplates    DayHours[]
 }
 
 model Following {
