@@ -74,10 +74,10 @@ const SearchClient: React.FC<ProductSelectProps> = ({
       let results: FormattedProduct[];
 
       if (input === "") {
-        results = getAll().filter((product) => product.cat === subcat);
+        results = getAll().filter((product) => product.cat.includes(subcat));
       } else {
-        results = searchProducts(input).filter(
-          (product) => product.cat === subcat
+        results = searchProducts(input).filter((product) =>
+          product.cat.includes(subcat)
         );
       }
 

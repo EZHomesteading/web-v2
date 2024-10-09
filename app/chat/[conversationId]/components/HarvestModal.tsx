@@ -42,7 +42,6 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
     "Set as Active Listing",
     "Cancel Harvest",
   ];
-
   const explanation: string[] = [
     "Monthly: Incrementally add expected quantity to total stock",
     "Daily: Incrementally add expected quantity to total stock",
@@ -52,12 +51,12 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
     "Remove projected harvest for this month from the listing",
   ];
   console.log(messageId);
-  const additiveMonthly = async () => {
+  const harvestSet = async (harvestType: string) => {
     setIsLoading(true);
     try {
       await axios.post("/api/listing/updateListing", {
         id: listing?.id,
-        harvestType: "addMonthly",
+        harvestType: harvestType,
         stock: listing?.projectedStock,
       });
 
@@ -84,87 +83,98 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
       }
     }
   };
-  const additiveDaily = () => {
-    setIsLoading(true);
-    axios
-      .post("/api/listing/updateListing", {
-        harvestType: "addDaily",
+
+  const activate = async () => {
+    try {
+      axios.post("/api/listing/updateListing", {
+        id: listing?.id,
+        harvestDates: [],
+        harvestFeatures: false,
+        harvestType: null,
+        projectedStock: null,
         stock: listing?.projectedStock,
-      })
-      .then(() => {
-        toast.success("Your Listing was Updated!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        onClose();
       });
-  };
 
-  const monthlyMax = () => {
-    setIsLoading(true);
-    axios
-      .post("/api/listing/updateListing", { harvestType: "maxMonthly" })
-      .then(() => {
-        toast.success("Your Listing was Updated!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        onClose();
-      });
-  };
+      toast.success("Your Listing was Updated!");
 
-  const dailyMax = () => {
-    setIsLoading(true);
-    axios
-      .post("/api/listing/updateListing", { harvestType: "maxDaily" })
-      .then(() => {
-        toast.success("Your Listing was Updated!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
+      if (messagesLength === 1) {
+        await axios.delete(`/api/chat/conversations/${conversationId}`);
+      } else {
+        await axios.delete(`/api/chat/messages/${messageId}`);
+      }
+    } catch (error: any) {
+      toast.error(error);
+    } finally {
+      if (messagesLength === 1) {
         setIsLoading(false);
         onClose();
-      });
+        router.push("/chat");
+        router.refresh();
+      } else {
+        setIsLoading(false);
+        onClose();
+        router.refresh();
+      }
+    }
   };
+  const monthAbbreviations = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-  const activate = () => {
+  function removeCurrentMonth(harvestDates: string[]): string[] {
+    const currentDate = new Date();
+    const currentMonthAbbr = monthAbbreviations[currentDate.getMonth()];
+
+    return harvestDates.filter((month) => month !== currentMonthAbbr);
+  }
+
+  const cancelHarvest = async () => {
+    let newMonths: string[] = [];
+    if (listing?.harvestDates) {
+      newMonths = removeCurrentMonth(listing?.harvestDates);
+    }
+    console.log(newMonths);
     setIsLoading(true);
-    axios
-      .post("/api/listing/updateListing", { harvestType: "addMonthly" })
-      .then(() => {
-        toast.success("Your Listing was Updated!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
+    try {
+      axios.post("/api/listing/updateListing", {
+        id: listing?.id,
+        harvestType: null,
+        harvestDates: newMonths,
+        stock: 0,
+      });
+
+      toast.success("Your Listing was Updated!");
+
+      if (messagesLength === 1) {
+        await axios.delete(`/api/chat/conversations/${conversationId}`);
+      } else {
+        await axios.delete(`/api/chat/messages/${messageId}`);
+      }
+    } catch (error: any) {
+      toast.error(error);
+    } finally {
+      if (messagesLength === 1) {
         setIsLoading(false);
         onClose();
-      });
-  };
-
-  const cancelHarvest = () => {
-    setIsLoading(true);
-    axios
-      .post("/api/listing/updateListing", { harvestType: "addMonthly" })
-      .then(() => {
-        toast.success("Your Listing was Updated!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
+        router.push("/chat");
+        router.refresh();
+      } else {
         setIsLoading(false);
         onClose();
-      });
+        router.refresh();
+      }
+    }
   };
 
   const icons = [
@@ -197,16 +207,16 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
               disabled={isLoading}
               onClick={() => {
                 if (index === 0) {
-                  additiveMonthly();
+                  harvestSet("addMonthly");
                 }
                 if (index === 1) {
-                  additiveDaily();
+                  harvestSet("addDaily");
                 }
                 if (index === 2) {
-                  monthlyMax();
+                  harvestSet("setMonthly");
                 }
                 if (index === 3) {
-                  dailyMax();
+                  harvestSet("setDaily");
                 }
                 if (index === 4) {
                   activate();

@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
+import ListingCard from "@/app/components/listings/ListingCardDash";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 import { FinalListing } from "@/actions/getListings";
@@ -15,9 +15,17 @@ import { UserInfo } from "@/next-auth";
 interface ListingsClientProps {
   listings: FinalListing[];
   user: UserInfo | null;
+  orderQuantities: {
+    listingId: any;
+    totalQuantity: any;
+  }[];
 }
 
-const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
+const ListingsClient: React.FC<ListingsClientProps> = ({
+  listings,
+  user,
+  orderQuantities,
+}) => {
   // Function to filter out listings with harvestFeatures set to true
   function filterOutHarvestFeatures(listings: FinalListing[]): FinalListing[] {
     return listings.filter((listing) => !listing.harvestFeatures);
@@ -99,6 +107,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({ listings, user }) => {
       >
         {listingMap.map((listing: FinalListing) => (
           <ListingCard
+            orderQuantities={orderQuantities}
             review={listing.review}
             key={listing.id}
             data={listing}
