@@ -142,7 +142,37 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const handleTimer = (childTime: Date) => {
     setSelectedTime(childTime);
   };
+  function pluralizeQuantityType(quantity: number, type: string) {
+    if (quantity === 1) {
+      return type;
+    }
 
+    switch (type.toLowerCase()) {
+      case "lb":
+        return "lbs";
+      case "oz":
+        return "oz";
+      case "pint":
+      case "quart":
+      case "gallon":
+      case "bushel":
+      case "peck":
+      case "crate":
+      case "basket":
+      case "bag":
+      case "box":
+      case "bunch":
+        return type + "s";
+      case "dozen":
+        return "dozen";
+      case "each":
+        return "each";
+      case "none":
+        return "";
+      default:
+        return type;
+    }
+  }
   return (
     <>
       <NotifyModal
@@ -176,7 +206,9 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
         <hr />
         <ul className="p-2">
-          {stock} remaining{" "}
+          {stock}{" "}
+          {quantityType ? pluralizeQuantityType(stock, quantityType) : null}{" "}
+          remaining
           <li>
             ${price} per {quantityType}
           </li>
