@@ -24,7 +24,7 @@ interface Props {
         conversationId: string;
         lastMessageAt: Date;
       }[]
-    | null;
+    | undefined;
 }
 
 const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
@@ -75,7 +75,7 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
     harvestMessages.forEach(
       (convo: { conversationId: string; lastMessageAt: Date }) => {
         notifications.push({
-          text: "You have a message regaurding a Projected Harvest Listing",
+          text: "You have a message regarding a Projected Harvest Listing",
           conversationId: convo.conversationId,
           updatedAt: convo.lastMessageAt,
         });
