@@ -73,7 +73,7 @@ const AccountHome = () => {
         {menuItems.map((item, index) => (
           <MenuCard
             key={index}
-            title={item.title}
+            name={item.title}
             icon={item.icon}
             href={item.href}
             showDiv={item.showDiv}

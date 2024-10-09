@@ -5,11 +5,22 @@ import { Button } from "@/app/components/ui/button";
 import OrderCard from "./order-card";
 import { PiListChecksThin } from "react-icons/pi";
 
-const OrderSummary = ({ user, orders }: { user: any; orders: any }) => {
-  type FilterKey =
-    | "pendingDelivery"
-    | "pendingConfirmation"
-    | "pendingResponse";
+const OrderSummary = ({
+  user,
+  orders,
+  newOrders,
+  pendingSetOutConfirmation,
+  pendingResponse,
+  pendingDelivery,
+}: {
+  user: any;
+  orders: any[];
+  newOrders: any;
+  pendingSetOutConfirmation: any;
+  pendingResponse: any;
+  pendingDelivery: any;
+}) => {
+  type FilterKey = "pendingDelivery" | "newOrders" | "pendingResponse";
   const userAction = user?.role === "PRODUCER" ? "Delivery" : "Pickup";
 
   const [selectedFilter, setSelectedFilter] =
@@ -18,32 +29,32 @@ const OrderSummary = ({ user, orders }: { user: any; orders: any }) => {
   const filters: { key: FilterKey; label: string }[] = [
     {
       key: "pendingDelivery",
-      label: `Pending ${userAction} (${orders.length})`,
-    },
-    {
-      key: "pendingConfirmation",
-      label: `Pending ${userAction} Confirmation (${orders.length})`,
+      label: `Pending ${userAction} (${pendingDelivery.length})`,
     },
     {
       key: "pendingResponse",
-      label: `Pending Your Response (${orders.length})`,
+      label: `Pending Your Response (${pendingResponse.length})`,
+    },
+    {
+      key: "newOrders",
+      label: `New Orders (${newOrders.length})`,
     },
   ];
 
   const emptyStateMessages = {
     pendingDelivery: `You do not have any orders pending ${userAction.toLowerCase()}.`,
-    pendingConfirmation: `You do not have any orders pending ${userAction.toLowerCase()} confirmation.`,
+    newOrders: `You do not have new orders.`,
     pendingResponse: "You do not have any orders waiting for your response.",
   };
 
   const filteredOrders = orders.filter((order: any) => {
     switch (selectedFilter) {
       case "pendingDelivery":
-        return order.status === "Pending Delivery";
-      case "pendingConfirmation":
-        return order.status === "Pending Confirmation";
+        return order.status === 10 || order.status === 13;
+      case "newOrders":
+        return order.status === 1;
       case "pendingResponse":
-        return order.status === "Pending Response";
+        return order.status === 6;
       default:
         return true;
     }
@@ -67,7 +78,7 @@ const OrderSummary = ({ user, orders }: { user: any; orders: any }) => {
       </div>
 
       {filteredOrders.length > 0 ? (
-        <div className="bg-[#d8e2c6] rounded-xl h-64 mt-2">
+        <div className="bg-[#d8e2c6] flex gap-x-3 rounded-xl h-64 mt-2 p-3 overflow-x-auto">
           {filteredOrders.map((order: any) => (
             <OrderCard key={order.id} order={order} user={user} />
           ))}

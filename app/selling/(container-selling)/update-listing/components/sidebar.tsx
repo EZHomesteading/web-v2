@@ -1,6 +1,5 @@
 "use client";
 
-import { GiSettingsKnobs } from "react-icons/gi";
 import {
   PiBookOpenTextThin,
   PiCardholderThin,
@@ -19,8 +18,6 @@ import {
   PiUsersThreeThin,
   PiUserThin,
 } from "react-icons/pi";
-import { MdDashboard } from "react-icons/md";
-import { TbShoppingCartDollar } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
@@ -190,7 +187,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} sm:block relative h-full ${
+        className={`hidden ${o.className} sm:block z-50 relative h-full ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >

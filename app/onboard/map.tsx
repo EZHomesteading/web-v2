@@ -1,4 +1,5 @@
 // Map.tsx
+"use client";
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Loading from "@/app/components/secondary-loader";
@@ -9,11 +10,22 @@ import LocationSearchInput from "../components/map/LocationSearchInput";
 interface MapProps {
   mk: string;
   user?: UserInfo;
+  center?: { lat: number; lng: number };
+  showSearchBar?: boolean;
+  h?: number;
+  w?: number;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
 
-const Map = ({ mk, user }: MapProps) => {
+const Map = ({
+  mk,
+  user,
+  showSearchBar = true,
+  center = { lat: 38, lng: -79 },
+  h,
+  w,
+}: MapProps) => {
   const [address, setAddress] = useState("");
   const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
     user?.location?.[0]?.coordinates
@@ -21,7 +33,7 @@ const Map = ({ mk, user }: MapProps) => {
           lat: user.location[0].coordinates[1],
           lng: user.location[0].coordinates[0],
         }
-      : { lat: 38, lng: -79 }
+      : center
   );
   const [zoom, setZoom] = useState(6);
 
@@ -75,22 +87,32 @@ const Map = ({ mk, user }: MapProps) => {
   if (!isLoaded) {
     return <Loading />;
   }
-
+  const mapContainerStyle =
+    h && w
+      ? `h-[${h}px] w-[${w}px] rounded-lg shadow-lg`
+      : h
+      ? `h-[${h}px] w-screen`
+      : w
+      ? `w-[${w}px] h-screen`
+      : "h-screen w-screen";
   return (
     <div className={`relative touch-none`}>
-      <div className="absolute z w-full px-2 top-5">
-        <LocationSearchInput
-          address={address}
-          setAddress={setAddress}
-          onLocationSelect={handleLocationSelect}
-          apiKey={mk}
-        />
-      </div>
+      {showSearchBar && (
+        <div className="absolute z w-full px-2 top-5">
+          <LocationSearchInput
+            address={address}
+            setAddress={setAddress}
+            onLocationSelect={handleLocationSelect}
+            apiKey={mk}
+          />
+        </div>
+      )}
+
       <GoogleMap
         onLoad={(map) => {
           mapRef.current = map;
         }}
-        mapContainerClassName="h-[650px] w-[500px] rounded-lg shadow-lg"
+        mapContainerClassName={mapContainerStyle}
         options={mapOptions}
       >
         <MarkerF position={currentCenter} />
