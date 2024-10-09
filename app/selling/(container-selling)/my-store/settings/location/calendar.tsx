@@ -125,7 +125,7 @@ const Calendar = ({ location, index }: p) => {
   useEffect(() => {
     if (selectedDaysCount === 0) {
       setIsPanelOpen(false);
-    } else if (isDesktop && selectedDaysCount >= 1) {
+    } else if (isDesktop && selectedDaysCount === 1) {
       setIsPanelOpen(true);
     }
   }, [selectedDaysCount, isDesktop, setIsPanelOpen]);
@@ -255,16 +255,17 @@ const Calendar = ({ location, index }: p) => {
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    const newExceptions: StoreException[] = selectedDates.map((date) => ({
-      date: new Date(
-        Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-      ),
-      timeSlots: [{ open: openMinutes, close: closeMinutes }],
-    }));
+    let updatedExceptions;
 
-    const updatedHours = {
-      ...hours,
-      exceptions: [
+    if (isOpen) {
+      const newExceptions: StoreException[] = selectedDates.map((date) => ({
+        date: new Date(
+          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+        ),
+        timeSlots: [{ open: openMinutes, close: closeMinutes }],
+      }));
+
+      updatedExceptions = [
         ...hours.exceptions.filter(
           (exception) =>
             !newExceptions.some((newException) =>
@@ -272,11 +273,30 @@ const Calendar = ({ location, index }: p) => {
             )
         ),
         ...newExceptions,
-      ],
+      ];
+    } else {
+      // If closed, remove exceptions for the selected days
+      updatedExceptions = hours.exceptions.filter(
+        (exception) =>
+          !selectedDates.some((date) =>
+            isSameDay(
+              new Date(
+                Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+              ),
+              exception.date
+            )
+          )
+      );
+    }
+
+    const updatedHours = {
+      ...hours,
+      exceptions: updatedExceptions,
     };
 
     setHours(updatedHours);
 
+    // Update server
     await updateUserHours(updatedHours);
     setSelectedDays({});
     setIsPanelOpen(false);
@@ -295,11 +315,13 @@ const Calendar = ({ location, index }: p) => {
           top={true}
           value={openTime}
           onChange={(time) => setOpenTime(time)}
+          isOpen={isOpen}
         />
         <TimePicker
           top={false}
           value={closeTime}
           onChange={(time) => setCloseTime(time)}
+          isOpen={isOpen}
         />
       </div>
       <div className="flex items-center justify-evenly mt-4 space-x-2 w-full">

@@ -7,6 +7,7 @@ interface TimePickerProps {
   top?: boolean;
   value: string;
   onChange: (time: string) => void;
+  isOpen: boolean;
 }
 
 const outfit = Outfit({
@@ -18,6 +19,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
   top = true,
   value,
   onChange,
+  isOpen,
 }) => {
   const [selectedHour, setSelectedHour] = useState<string>("12");
   const [selectedMinute, setSelectedMinute] = useState<string>("00");
@@ -66,15 +68,19 @@ const TimePicker: React.FC<TimePickerProps> = ({
   };
 
   return (
-    <div className={`${outfit.className} flex flex-col items-center w-full`}>
+    <div
+      className={`${outfit.className} ${
+        !isOpen && " hover:cursor-not-allowed text-neutral-600"
+      } flex flex-col items-center w-full`}
+    >
       {!top && <hr className="border-b my-4 w-full" />}
       <div className="flex items-center justify-evenly w-full mb-4">
         <div>
           <div className="text-2xl pt-2">{top ? "Open" : "Close"}</div>
         </div>
         <input
-          className="text-xl font-medium text-center border border-gray-300 bg-inherit focus:outline-none w-fit rounded-md shadow-md px-2 py-4"
-          value={value}
+          className={` text-xl font-medium text-center border border-gray-300 bg-inherit focus:outline-none w-fit rounded-md shadow-md px-2 py-4`}
+          value={isOpen ? value : "Closed"}
           onChange={handleTimeInputChange}
           size={8}
         />
@@ -84,17 +90,20 @@ const TimePicker: React.FC<TimePickerProps> = ({
           options={generateHours()}
           selectedValue={selectedHour}
           onSelect={handleHourSelect}
+          isOpen={isOpen}
           isHourWheel
         />
         <Wheel
           options={generateMinutes()}
           selectedValue={selectedMinute}
           onSelect={handleMinuteSelect}
+          isOpen={isOpen}
         />
         <Wheel
           options={["AM", "PM"]}
           selectedValue={selectedPeriod}
           onSelect={handlePeriodSelect}
+          isOpen={isOpen}
         />
       </div>
     </div>

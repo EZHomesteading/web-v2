@@ -51,6 +51,7 @@ type LocationObj {
   coordinates Float[]
   address     String[]
   hours       Hours?
+  role        UserRole?
 }
 
 type Hours {
