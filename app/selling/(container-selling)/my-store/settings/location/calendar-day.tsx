@@ -133,13 +133,15 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
               className={`text-[.5rem] sm:text-xs mt-1 overflow-y-auto ${
                 animationSettings.shouldAnimate ? "daylight-animation" : ""
               }`}
-              style={{
-                animation: animationSettings.shouldAnimate
-                  ? `daylightGradient ${animationSettings.duration} linear forwards`
-                  : "none",
-                "--start-color": animationSettings.startColor,
-                "--end-color": animationSettings.endColor,
-              }}
+              style={
+                {
+                  animation: animationSettings.shouldAnimate
+                    ? `daylightGradient ${animationSettings.duration} linear forwards`
+                    : "none",
+                  "--start-color": animationSettings.startColor,
+                  "--end-color": animationSettings.endColor,
+                } as React.CSSProperties
+              }
             >
               {exceptionTimes}
             </div>
