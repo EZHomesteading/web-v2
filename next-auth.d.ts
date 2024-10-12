@@ -29,6 +29,7 @@ export type UserInfo = DefaultSession["user"] & {
   bio?: string;
   banner?: string;
   hasPickedRole?: boolean;
+  openClosedTemplates?:any;
 };
 
 type Times = {

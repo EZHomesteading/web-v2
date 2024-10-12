@@ -1,3 +1,4 @@
+import { Zilla_Slab } from "next/font/google";
 import React, { useMemo } from "react";
 
 interface CalendarDayProps {
@@ -9,7 +10,11 @@ interface CalendarDayProps {
   isSelected: boolean;
   exceptionTimes: string | null;
 }
-
+const z = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
   isLastInRow,
@@ -32,7 +37,6 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
     }
   };
 
-  // Determine animation settings based on the time range
   const animationSettings = useMemo(() => {
     if (!exceptionTimes)
       return {
@@ -64,7 +68,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
       };
 
     const totalMinutesOpen = closeTime - openTime;
-    const maxAnimationDuration = 30; // Maximum animation time in seconds
+    const maxAnimationDuration = 20; // Maximum animation time in seconds
     const animationDuration =
       Math.min((totalMinutesOpen / 60) * 2, maxAnimationDuration) + "s";
 
@@ -117,12 +121,13 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
         ${isLastRow ? "border-b-0" : ""}
         ${isSelected && day !== null ? "bg-emerald-200 border-none" : ""}
         relative
+        
       `}
     >
       {day !== null && (
         <div className="p-2">
           <div
-            className={`text-sm font-light ${
+            className={`text-sm font-light  ${
               isSelected ? "underline" : !exceptionTimes ? "line-through" : ""
             }`}
           >
@@ -130,7 +135,9 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
           </div>
           {exceptionTimes && (
             <div
-              className={`text-[.5rem] sm:text-xs mt-1 overflow-y-auto ${
+              className={`${
+                z.className
+              } text-[.5rem] sm:text-xs !text-black mt-1 overflow-y-auto ${
                 animationSettings.shouldAnimate ? "daylight-animation" : ""
               }`}
               style={

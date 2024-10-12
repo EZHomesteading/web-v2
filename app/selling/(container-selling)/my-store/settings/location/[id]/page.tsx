@@ -29,5 +29,7 @@ export default async function EditLocationPage({
   }
 
   const mk = process.env.MAPS_KEY;
-  return <>{mk && <Calendar location={location} index={locationIndex} />}</>;
+  return (
+    <>{mk && <Calendar location={location} index={locationIndex} mk={mk} />}</>
+  );
 }

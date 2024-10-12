@@ -6,9 +6,18 @@ import TimeSlot from "./time-slot";
 import CalendarDay from "./calendar-day";
 import CustomSwitch from "./custom-calendar-switch";
 import TimePicker from "./time-slot";
-import ResponsiveSlidingLayout from "./panel";
+import { PanelProps } from "./panel";
 import axios from "axios";
 import { toast } from "sonner";
+import StackingPanelLayout from "./panel";
+
+import {
+  DeliveryPickupToggle,
+  DeliveryPickupToggleMode,
+  Mode,
+  ViewEditToggle,
+} from "./delivery-pickup-toggle";
+import { PiGearThin } from "react-icons/pi";
 
 interface TimeSlot {
   open: number;
@@ -37,8 +46,9 @@ interface Hours {
 interface p {
   location: any;
   index: number;
+  mk: string;
 }
-const Calendar = ({ location, index }: p) => {
+const Calendar = ({ location, index, mk }: p) => {
   const [hours, setHours] = useState<Hours>({
     monthHours: [],
     exceptions:
@@ -48,9 +58,11 @@ const Calendar = ({ location, index }: p) => {
       })) || [],
   });
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [visibleMonth, setVisibleMonth] = useState<Date>(currentDate);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([
+    { open: 540, close: 1020 },
+  ]);
+  const [isAppendingHours, setIsAppendingHours] = useState(false);
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [initialSelectionState, setInitialSelectionState] =
     useState<boolean>(false);
@@ -60,7 +72,6 @@ const Calendar = ({ location, index }: p) => {
   const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const daysOfWeek: string[] = [
     "Sun",
@@ -90,11 +101,9 @@ const Calendar = ({ location, index }: p) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const isDesktop = windowDimensions.width > 1023;
-  const isTallMobile = !isDesktop && windowDimensions.height > 1000;
-
+  const panelSide = windowDimensions.width > 1150;
   const mainContentVariants = {
-    open: { width: isDesktop ? "calc(100% - 384px)" : "100%" },
+    open: { width: panelSide ? "calc(100% - 384px)" : "100%" },
     closed: { width: "100%" },
   };
 
@@ -106,7 +115,7 @@ const Calendar = ({ location, index }: p) => {
     mobile: {
       open: {
         y: 0,
-        height: isTallMobile ? "50%" : "100%",
+        height: "336px",
         width: "100%",
       },
       closed: {
@@ -116,15 +125,22 @@ const Calendar = ({ location, index }: p) => {
       },
     },
   };
+  const [panelStack, setPanelStack] = useState<PanelProps[]>([]);
+  const isPanelOpen = panelStack.length > 0;
   const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
     if (selectedDaysCount === 0) {
-      setIsPanelOpen(false);
-    } else if (isDesktop && selectedDaysCount === 1) {
-      setIsPanelOpen(true);
+      setPanelStack([]); // Close all panels
+    } else if (panelSide && selectedDaysCount === 1 && !isPanelOpen) {
+      setPanelStack([
+        {
+          content: renderPanelContent(),
+          onClose: () => setPanelStack([]),
+        },
+      ]);
     }
-  }, [selectedDaysCount, isDesktop, setIsPanelOpen]);
+  }, [selectedDaysCount, panelSide, isPanelOpen]);
 
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate();
@@ -253,14 +269,14 @@ const Calendar = ({ location, index }: p) => {
     return (
       <div
         key={month}
-        data-month={format(new Date(year, month), "MMMM yyyy")}
+        data-month={format(new Date(year, month), "MMM yyyy")}
         className="sm:px-1"
       >
         <div
           className="text-2xl font-normal mb-4 px-2 cursor-pointer underline w-fit"
           onClick={() => selectAllDaysInMonth(year, month)}
         >
-          {format(new Date(year, month), "MMMM yyyy")}
+          {format(new Date(year, month), "MMM yyyy")}
         </div>
         <div className="grid grid-cols-7 w-full gap-px">{calendarDays}</div>
       </div>
@@ -268,46 +284,42 @@ const Calendar = ({ location, index }: p) => {
   };
 
   const handleSaveChanges = async () => {
-    const openMinutes = convertTimeToMinutes(openTime);
-    const closeMinutes = convertTimeToMinutes(closeTime);
-
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => parseISO(dateString))
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    let updatedExceptions;
+    let updatedExceptions = [...hours.exceptions];
 
     if (isOpen) {
-      const newExceptions: StoreException[] = selectedDates.map((date) => ({
-        date: new Date(
-          Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-        ),
-        timeSlots: [{ open: openMinutes, close: closeMinutes }],
-      }));
+      selectedDates.forEach((date) => {
+        const existingExceptionIndex = updatedExceptions.findIndex((ex) =>
+          isSameDay(ex.date, date)
+        );
 
-      updatedExceptions = [
-        ...hours.exceptions.filter(
-          (exception) =>
-            !newExceptions.some((newException) =>
-              isSameDay(newException.date, exception.date)
-            )
-        ),
-        ...newExceptions,
-      ];
+        if (existingExceptionIndex !== -1) {
+          if (isAppendingHours) {
+            updatedExceptions[existingExceptionIndex].timeSlots = [
+              ...(updatedExceptions[existingExceptionIndex].timeSlots || []),
+              ...timeSlots,
+            ];
+          } else {
+            updatedExceptions[existingExceptionIndex].timeSlots = timeSlots;
+          }
+        } else {
+          updatedExceptions.push({
+            date: new Date(
+              Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+            ),
+            timeSlots: timeSlots,
+          });
+        }
+      });
     } else {
-      // If closed, remove exceptions for the selected days
-      updatedExceptions = hours.exceptions.filter(
+      updatedExceptions = updatedExceptions.filter(
         (exception) =>
-          !selectedDates.some((date) =>
-            isSameDay(
-              new Date(
-                Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-              ),
-              exception.date
-            )
-          )
+          !selectedDates.some((date) => isSameDay(date, exception.date))
       );
     }
 
@@ -318,35 +330,59 @@ const Calendar = ({ location, index }: p) => {
 
     setHours(updatedHours);
 
-    // Update server
     await updateUserHours(updatedHours);
     setSelectedDays({});
-    setIsPanelOpen(false);
+    setPanelStack([]);
+    setIsAppendingHours(false);
+    setTimeSlots([{ open: 540, close: 1020 }]);
   };
 
   const renderPanelContent = () => (
     <div className="flex flex-col h-full">
+      {" "}
       <h2 className="text-xl font-normal my-4">{getSelectionDescription}</h2>
       <div className="flex items-center justify-center space-x-2 mb-4">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center">
           <CustomSwitch isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
         </div>
       </div>
-
-      <div>
-        <TimePicker
-          top={true}
-          value={openTime}
-          onChange={(time) => setOpenTime(time)}
-          isOpen={isOpen}
-        />
-        <TimePicker
-          top={false}
-          value={closeTime}
-          onChange={(time) => setCloseTime(time)}
-          isOpen={isOpen}
-        />
-      </div>
+      <Button
+        onClick={() => {
+          setPanelStack((prevStack) => [
+            ...prevStack,
+            {
+              content: renderPanelContent(),
+              onClose: () => setPanelStack((prev) => prev.slice(0, -1)),
+            },
+          ]);
+        }}
+      >
+        Add Another Set of Hours
+      </Button>
+      {timeSlots.map((slot, index) => (
+        <div key={index}>
+          <TimePicker
+            top={true}
+            value={convertMinutesToTimeString(slot.open)}
+            onChange={(time) => {
+              const newTimeSlots = [...timeSlots];
+              newTimeSlots[index].open = convertTimeStringToMinutes(time);
+              setTimeSlots(newTimeSlots);
+            }}
+            isOpen={isOpen}
+          />
+          <TimePicker
+            top={false}
+            value={convertMinutesToTimeString(slot.close)}
+            onChange={(time) => {
+              const newTimeSlots = [...timeSlots];
+              newTimeSlots[index].close = convertTimeStringToMinutes(time);
+              setTimeSlots(newTimeSlots);
+            }}
+            isOpen={isOpen}
+          />
+        </div>
+      ))}
       <div className="flex items-center justify-evenly mt-4 space-x-2 w-full">
         <Button className="w-2/5" onClick={handleSaveChanges}>
           Save Changes
@@ -354,7 +390,11 @@ const Calendar = ({ location, index }: p) => {
         <Button
           className="w-2/5 bg-inherit"
           variant="outline"
-          onClick={() => setIsPanelOpen(false)}
+          onClick={() => {
+            setPanelStack((prevStack) => prevStack.slice(0, -1));
+            setIsAppendingHours(false);
+            setTimeSlots([{ open: 540, close: 1020 }]);
+          }}
         >
           Cancel
         </Button>
@@ -363,7 +403,6 @@ const Calendar = ({ location, index }: p) => {
   );
 
   const renderAllMonths = (): JSX.Element[] => {
-    const year = currentDate.getFullYear();
     const calendarMonths: JSX.Element[] = [];
 
     for (let i = 0; i < 12; i++) {
@@ -376,48 +415,20 @@ const Calendar = ({ location, index }: p) => {
     return calendarMonths;
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (containerRef.current) {
-        const monthElements =
-          containerRef.current.querySelectorAll<HTMLDivElement>("[data-month]");
-        let closestMonth: string | null = null;
-        let minDistance = Infinity;
-
-        monthElements.forEach((monthElement) => {
-          const rect = monthElement.getBoundingClientRect();
-          const distance = Math.abs(rect.top - containerRef.current!.offsetTop);
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestMonth = monthElement.getAttribute("data-month");
-          }
-        });
-
-        if (closestMonth) {
-          const newVisibleMonth = new Date(
-            `${closestMonth} 1, ${currentDate.getFullYear()}`
-          );
-          setVisibleMonth(newVisibleMonth);
-        }
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      container.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
-        container.removeEventListener("mouseup", handleMouseUp);
-      }
-    };
-  }, [currentDate]);
   const [showModifyButton, setShowModifyButton] = useState(false);
   const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [deliveryPickupMode, setDeliveryPickupMode] =
+    useState<DeliveryPickupToggleMode>(DeliveryPickupToggleMode.DELIVERY);
+  const [viewEditMode, setViewEditMode] = useState<Mode>(Mode.VIEW);
+  const handleDeliveryPickupModeChange = (
+    newMode: DeliveryPickupToggleMode
+  ) => {
+    setDeliveryPickupMode(newMode);
+  };
 
+  const handleViewEditModeChange = (newMode: Mode) => {
+    setViewEditMode(newMode);
+  };
   useEffect(() => {
     if (selectedDaysCount > 0 && !isPanelOpen) {
       if (modifyButtonTimerRef.current) {
@@ -481,10 +492,41 @@ const Calendar = ({ location, index }: p) => {
       selectedDaysCount !== 1 ? "s" : ""
     }`;
   }, [selectedDays, selectedDaysCount]);
+  const [isBasePanelOpen, setIsBasePanelOpen] = useState(true);
 
   const renderCalendarContent = () => (
     <div className="flex flex-col h-full select-none">
       <div className="sticky top-0 z-40 w-full sheet">
+        <div className="flex justify-end items-center sm:px-3 pt-2 p-0">
+          <DeliveryPickupToggle
+            panelSide={panelSide}
+            onModeChange={handleDeliveryPickupModeChange}
+            mode={deliveryPickupMode}
+          />
+          <div>
+            <ViewEditToggle
+              panelSide={panelSide}
+              mode={viewEditMode}
+              onModeChange={handleViewEditModeChange}
+            />
+          </div>
+          {/* {!panelSide && !isBasePanelOpen && (
+            <PiGearThin
+              size={25}
+              onClick={() => {
+                setIsBasePanelOpen(true);
+                setPanelStack([
+                  {
+                    content: renderPanelContent(),
+                    onClose: () => setPanelStack([]),
+                  },
+                ]);
+              }}
+            >
+              Open Settings
+            </PiGearThin>
+          )} */}
+        </div>
         <div className="grid grid-cols-7 gap-px w-full border-b border-gray-200">
           {daysOfWeek.map((day) => (
             <div key={day} className="text-center font-bold p-2">
@@ -511,7 +553,16 @@ const Calendar = ({ location, index }: p) => {
         <div className="fixed bottom-[120px] left-1/2 transform -translate-x-1/2 z-50">
           <Button
             className="bg-slate-900 text-white hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg"
-            onClick={() => setIsPanelOpen(true)}
+            onClick={() => {
+              setIsBasePanelOpen(true);
+              setPanelStack([
+                {
+                  content: renderPanelContent(),
+                  onClose: () => setPanelStack([]),
+                },
+              ]);
+              setShowModifyButton(false);
+            }}
           >
             {getSelectionDescription}
           </Button>
@@ -519,20 +570,23 @@ const Calendar = ({ location, index }: p) => {
       )}
     </div>
   );
-  const [openTime, setOpenTime] = useState<string>("09:00 AM");
-  const [closeTime, setCloseTime] = useState<string>("05:00 PM");
 
-  const convertTimeToMinutes = (time: string): number => {
-    const [timeStr, period] = time.split(" ");
-    const [hours, minutes] = timeStr.split(":").map(Number);
+  const convertMinutesToTimeString = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")} ${period}`;
+  };
+
+  const convertTimeStringToMinutes = (timeString: string): number => {
+    const [time, period] = timeString.split(" ");
+    const [hours, minutes] = time.split(":").map(Number);
     let totalMinutes = hours * 60 + minutes;
-
-    if (period === "PM" && hours !== 12) {
-      totalMinutes += 12 * 60;
-    } else if (period === "AM" && hours === 12) {
-      totalMinutes = 0;
-    }
-
+    if (period === "PM" && hours !== 12) totalMinutes += 12 * 60;
+    else if (period === "AM" && hours === 12) totalMinutes = 0;
     return totalMinutes;
   };
 
@@ -560,17 +614,19 @@ const Calendar = ({ location, index }: p) => {
   };
 
   return (
-    <ResponsiveSlidingLayout
-      isPanelOpen={isPanelOpen}
-      onPanelClose={() => setIsPanelOpen(false)}
-      panel={renderPanelContent()}
+    <StackingPanelLayout
+      location={location}
+      index={index}
+      panels={panelStack}
       mainContentVariants={mainContentVariants}
       panelVariants={panelVariants}
-      isDesktop={isDesktop}
-      isTallMobile={isTallMobile}
+      panelSide={panelSide}
+      mk={mk}
+      isBasePanelOpen={isBasePanelOpen}
+      setIsBasePanelOpen={setIsBasePanelOpen}
     >
       {renderCalendarContent()}
-    </ResponsiveSlidingLayout>
+    </StackingPanelLayout>
   );
 };
 

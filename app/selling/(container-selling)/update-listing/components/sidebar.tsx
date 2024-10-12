@@ -187,7 +187,9 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} sm:block z-50 relative h-full ${
+        className={`hidden ${
+          o.className
+        } sm:block z-50 relative h-full select-none ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >

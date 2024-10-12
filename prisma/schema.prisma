@@ -55,8 +55,10 @@ type LocationObj {
 }
 
 type Hours {
-  monthHours MonthHours[]
-  exceptions StoreException[]
+  deliveryHours      MonthHours[]
+  pickupHours        MonthHours[]
+  deliveryExceptions StoreException[]
+  pickupExceptions   StoreException[]
 }
 
 type MonthHours {
@@ -65,7 +67,7 @@ type MonthHours {
 }
 
 type DayHours {
-  day       Int // 0-6 for Sun to Sat
+  day       Int
   timeSlots TimeSlot[]
 }
 
@@ -93,6 +95,7 @@ model User {
   emailVerified DateTime?
   phoneNumber   String?
   location      Location?
+  //location    LocationObj[]
   image         String?
 
   role                  UserRole               @default(CONSUMER)

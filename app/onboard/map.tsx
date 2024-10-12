@@ -35,7 +35,7 @@ const Map = ({
         }
       : center
   );
-  const [zoom, setZoom] = useState(6);
+  const [zoom, setZoom] = useState(12);
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -64,7 +64,7 @@ const Map = ({
     keyboardShortcuts: false,
     clickableIcons: true,
     disableDefaultUI: true,
-    maxZoom: 13,
+    maxZoom: 16,
     scrollwheel: true,
     minZoom: 4,
     gestureHandling: "greedy",

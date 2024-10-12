@@ -5,6 +5,7 @@ import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
 import { Location, Notification, UserRole } from "@prisma/client";
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -46,7 +47,6 @@ export const {
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         (session.user.location as unknown) = token.location as Location;
         session.user.image = token.image as string | undefined;
-        //session.user.hours = token.hours as ExtendedHours;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
@@ -62,6 +62,7 @@ export const {
         session.user.bio = token.bio as string | undefined;
         session.user.banner = token.banner as string | undefined;
         session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
+        session.user.openClosedTemplates = token.openClosedTemplates as unknown as any
       }
       return session;
     },
@@ -93,6 +94,7 @@ export const {
       token.SODT = existingUser.SODT;
       token.bio = existingUser.bio;
       token.banner = existingUser.banner;
+      token.openClosedTemplates = existingUser.openCloseTemplates
       return token;
     },
   },
