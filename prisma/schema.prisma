@@ -51,7 +51,7 @@ type LocationObj {
   coordinates Float[]
   address     String[]
   hours       Hours?
-  role        UserRole?
+  role        UserRole @default(CONSUMER)
 }
 
 type Hours {
@@ -81,24 +81,17 @@ type StoreException {
   timeSlots TimeSlot[] // Optional for specific open/close hours on that date
 }
 
-type Location {
-  0 LocationObj? @map("0")
-  1 LocationObj? @map("1")
-  2 LocationObj? @map("2")
-}
-
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String    @unique
+  email         String        @unique
   firstName     String?
   emailVerified DateTime?
   phoneNumber   String?
-  location      Location?
-  //location    LocationObj[]
+  location      LocationObj[]
   image         String?
 
-  role                  UserRole               @default(CONSUMER)
+  role                  UserRole               @default(PRODUCER)
   password              String?
   stripeAccountId       String?
   totalPaidOut          Int?

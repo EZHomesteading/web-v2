@@ -6,18 +6,15 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from "react-places-autocomplete";
-import { FiMapPin } from "react-icons/fi";
 import Script from "next/script";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import qs from "query-string";
 import { useRouter } from "next/navigation";
-import { BsBasket } from "react-icons/bs";
 import { IoIosSearch } from "react-icons/io";
 import debounce from "debounce";
-import { BiLoaderCircle } from "react-icons/bi";
 import { Outfit } from "next/font/google";
-import { PiBasketThin, PiMapPinThin, PiMapTrifoldThin } from "react-icons/pi";
+import { PiBasketThin, PiMapTrifoldThin } from "react-icons/pi";
 import Fuse from "fuse.js";
 
 type Listing = {

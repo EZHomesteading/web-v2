@@ -1,6 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { format, addMonths, isValid, isSameDay, parseISO } from "date-fns";
+import {
+  format,
+  addMonths,
+  isValid,
+  isSameDay,
+  parseISO,
+  startOfDay,
+} from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import TimeSlot from "./time-slot";
 import CalendarDay from "./calendar-day";
@@ -18,6 +25,7 @@ import {
   ViewEditToggle,
 } from "./delivery-pickup-toggle";
 import { PiGearThin } from "react-icons/pi";
+import { UserRole } from "@prisma/client";
 
 interface TimeSlot {
   open: number;
@@ -40,8 +48,10 @@ interface StoreException {
 }
 
 interface Hours {
-  monthHours: MonthHours[];
-  exceptions: StoreException[];
+  deliveryHours: MonthHours[];
+  pickupHours: MonthHours[];
+  deliveryExceptions: StoreException[];
+  pickupExceptions: StoreException[];
 }
 interface p {
   location: any;
@@ -50,29 +60,160 @@ interface p {
 }
 const Calendar = ({ location, index, mk }: p) => {
   const [hours, setHours] = useState<Hours>({
-    monthHours: [],
-    exceptions:
-      location?.hours?.exceptions?.map((ex: any) => ({
+    deliveryHours: [],
+    pickupHours: [],
+    deliveryExceptions:
+      location?.hours?.deliveryExceptions?.map((ex: any) => ({
         ...ex,
-        date: new Date(ex.date), // Ensure dates are parsed
+        date: new Date(ex.date),
+      })) || [],
+    pickupExceptions:
+      location?.hours?.pickupExceptions?.map((ex: any) => ({
+        ...ex,
+        date: new Date(ex.date),
       })) || [],
   });
+  const [panelStack, setPanelStack] = useState<PanelProps[]>([]);
+  const [showModifyButton, setShowModifyButton] = useState(false);
+  const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [deliveryPickupMode, setDeliveryPickupMode] =
+    useState<DeliveryPickupToggleMode>(() => {
+      if (location?.role === UserRole.COOP) {
+        return DeliveryPickupToggleMode.PICKUP;
+      }
+      return DeliveryPickupToggleMode.DELIVERY;
+    });
+  const [viewEditMode, setViewEditMode] = useState<Mode>(Mode.EDIT);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([
     { open: 540, close: 1020 },
   ]);
   const [isAppendingHours, setIsAppendingHours] = useState(false);
-  const [isSelecting, setIsSelecting] = useState<boolean>(false);
+
   const [initialSelectionState, setInitialSelectionState] =
     useState<boolean>(false);
-  const [selectionMode, setSelectionMode] = useState<
-    "select" | "deselect" | null
-  >(null);
+
   const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [isBasePanelOpen, setIsBasePanelOpen] = useState(true);
+  const [selectionStart, setSelectionStart] = useState<string | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<string | null>(null);
+  const selectedDaysCount = Object.values(selectedDays).filter(Boolean).length;
+  const [isSelecting, setIsSelecting] = useState<boolean>(false);
+  const [selectionMode, setSelectionMode] = useState<
+    "select" | "deselect" | null
+  >(null);
 
+  const handleMouseDown = (day: number | null, month: number, year: number) => {
+    if (day !== null) {
+      const key = createDateKey(year, month + 1, day);
+      const newSelectedState = !selectedDays[key];
+      setSelectedDays((prev) => ({
+        ...prev,
+        [key]: newSelectedState,
+      }));
+      setIsSelecting(true);
+      setSelectionMode(newSelectedState ? "select" : "deselect");
+    }
+  };
+
+  const handleMouseEnter = (
+    day: number | null,
+    month: number,
+    year: number
+  ) => {
+    if (isSelecting && day !== null && selectionMode !== null) {
+      const key = createDateKey(year, month + 1, day);
+      setSelectedDays((prev) => ({
+        ...prev,
+        [key]: selectionMode === "select",
+      }));
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsSelecting(false);
+    setSelectionMode(null);
+  };
+
+  const getSelectionDescription = useMemo(() => {
+    const selectedDates = Object.entries(selectedDays)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([dateString, _]) => parseISO(dateString))
+      .filter((date): date is Date => isValid(date))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    if (selectedDates.length === 0) return "";
+    if (selectedDates.length === 1)
+      return `${
+        viewEditMode === Mode.VIEW ? "View" : "Modify"
+      } Hours for ${format(selectedDates[0], "MMM d")}`;
+
+    const isContiguousRange = selectedDates.every((date, index) => {
+      if (index === 0) return true;
+      const prevDate = selectedDates[index - 1];
+      const diffInDays = Math.round(
+        (date.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return diffInDays === 1;
+    });
+
+    if (isContiguousRange) {
+      const startDate = selectedDates[0];
+      const endDate = selectedDates[selectedDates.length - 1];
+      return `${
+        viewEditMode === Mode.VIEW ? "View" : "Modify"
+      } Hours for ${format(startDate, "MMM d")} - ${format(endDate, "MMM d")}`;
+    }
+
+    return `${viewEditMode === Mode.VIEW ? "View" : "Modify"} Hours for ${
+      selectedDates.length
+    } days`;
+  }, [selectedDays, viewEditMode]);
+
+  useEffect(() => {
+    if (panelStack.length > 0) {
+      const updatedPanelStack = panelStack.map((panel) => ({
+        ...panel,
+        content: renderPanelContent(),
+      }));
+      setPanelStack(updatedPanelStack);
+    }
+  }, [getSelectionDescription]);
+
+  useEffect(() => {
+    const shouldShowModifyButton =
+      selectedDaysCount > 0 && (!isBasePanelOpen || panelStack.length === 0);
+
+    if (shouldShowModifyButton) {
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+      modifyButtonTimerRef.current = setTimeout(() => {
+        setShowModifyButton(true);
+      }, 1);
+    } else {
+      setShowModifyButton(false);
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+    }
+
+    return () => {
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+    };
+  }, [selectedDaysCount, isBasePanelOpen, panelStack.length]);
+
+  const handleClosePanel = () => {
+    setPanelStack((prevStack) => prevStack.slice(0, -1));
+    if (panelStack.length === 1) {
+      setIsBasePanelOpen(false);
+    }
+  };
   const daysOfWeek: string[] = [
     "Sun",
     "Mon",
@@ -82,7 +223,7 @@ const Calendar = ({ location, index, mk }: p) => {
     "Fri",
     "Sat",
   ];
-  const selectedDaysCount = Object.values(selectedDays).filter(Boolean).length;
+
   const [windowDimensions, setWindowDimensions] = useState<{
     width: number;
     height: number;
@@ -125,7 +266,7 @@ const Calendar = ({ location, index, mk }: p) => {
       },
     },
   };
-  const [panelStack, setPanelStack] = useState<PanelProps[]>([]);
+
   const isPanelOpen = panelStack.length > 0;
   const [isOpen, setIsOpen] = useState(true);
 
@@ -156,41 +297,6 @@ const Calendar = ({ location, index, mk }: p) => {
       .padStart(2, "0")}`;
   };
 
-  const handleMouseDown = (day: number | null, month: number, year: number) => {
-    if (day !== null) {
-      const key = createDateKey(year, month + 1, day);
-      const newSelectedState = !selectedDays[key];
-      setSelectedDays((prev) => ({
-        ...prev,
-        [key]: newSelectedState,
-      }));
-      setIsSelecting(true);
-      setSelectionMode(newSelectedState ? "select" : "deselect");
-      setInitialSelectionState(newSelectedState);
-    }
-  };
-
-  const handleMouseEnter = (
-    day: number | null,
-    month: number,
-    year: number
-  ) => {
-    if (isSelecting && day !== null && selectionMode !== null) {
-      const key = createDateKey(year, month + 1, day);
-      const currentState = selectedDays[key];
-      if (currentState !== initialSelectionState) {
-        setSelectedDays((prev) => ({
-          ...prev,
-          [key]: initialSelectionState,
-        }));
-      }
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsSelecting(false);
-    setSelectionMode(null);
-  };
   const convertMinutesToTime = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -203,7 +309,6 @@ const Calendar = ({ location, index, mk }: p) => {
     const daysInMonth = getDaysInMonth(year, month);
     const newSelectedDays: { [key: string]: boolean } = { ...selectedDays };
 
-    // Check if all days in the month are already selected
     let allSelected = true;
     for (let day = 1; day <= daysInMonth; day++) {
       const key = createDateKey(year, month + 1, day);
@@ -213,7 +318,6 @@ const Calendar = ({ location, index, mk }: p) => {
       }
     }
 
-    // Toggle selection: deselect all if all are already selected, otherwise select all
     for (let day = 1; day <= daysInMonth; day++) {
       const key = createDateKey(year, month + 1, day);
       newSelectedDays[key] = !allSelected;
@@ -221,10 +325,23 @@ const Calendar = ({ location, index, mk }: p) => {
 
     setSelectedDays(newSelectedDays);
   };
-
+  const getCurrentHoursAndExceptions = () => {
+    if (deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY) {
+      return {
+        currentHours: hours.deliveryHours,
+        currentExceptions: hours.deliveryExceptions,
+      };
+    } else {
+      return {
+        currentHours: hours.pickupHours,
+        currentExceptions: hours.pickupExceptions,
+      };
+    }
+  };
   const renderCalendarForMonth = (year: number, month: number): JSX.Element => {
     const daysInMonth = getDaysInMonth(year, month);
     const firstDayOfMonth = getFirstDayOfMonth(year, month);
+    const { currentHours, currentExceptions } = getCurrentHoursAndExceptions();
 
     const calendarDays: JSX.Element[] = [];
     const totalCells = 42;
@@ -241,7 +358,7 @@ const Calendar = ({ location, index, mk }: p) => {
         ? new Date(Date.UTC(year, month, day))
         : null;
       const exception = currentDate
-        ? hours.exceptions.find((ex) => isSameDay(ex.date, currentDate))
+        ? currentExceptions.find((ex) => isSameDay(ex.date, currentDate))
         : null;
 
       let exceptionTimes = null;
@@ -284,122 +401,162 @@ const Calendar = ({ location, index, mk }: p) => {
   };
 
   const handleSaveChanges = async () => {
+    console.log("Starting handleSaveChanges");
+    console.log("Selected days:", selectedDays);
+    console.log("Current time slots:", timeSlots);
+
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
-      .map(([dateString, _]) => parseISO(dateString))
+      .map(([dateString, _]) => {
+        const [year, month, day] = dateString.split("-").map(Number);
+        return new Date(Date.UTC(year, month - 1, day));
+      })
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    let updatedExceptions = [...hours.exceptions];
+    console.log("Selected dates:", selectedDates);
 
-    if (isOpen) {
-      selectedDates.forEach((date) => {
-        const existingExceptionIndex = updatedExceptions.findIndex((ex) =>
-          isSameDay(ex.date, date)
-        );
+    const { currentExceptions } = getCurrentHoursAndExceptions();
+    console.log("Current exceptions before update:", currentExceptions);
 
-        if (existingExceptionIndex !== -1) {
-          if (isAppendingHours) {
-            updatedExceptions[existingExceptionIndex].timeSlots = [
-              ...(updatedExceptions[existingExceptionIndex].timeSlots || []),
-              ...timeSlots,
-            ];
-          } else {
-            updatedExceptions[existingExceptionIndex].timeSlots = timeSlots;
-          }
-        } else {
-          updatedExceptions.push({
-            date: new Date(
-              Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-            ),
-            timeSlots: timeSlots,
-          });
-        }
-      });
-    } else {
-      updatedExceptions = updatedExceptions.filter(
-        (exception) =>
-          !selectedDates.some((date) => isSameDay(date, exception.date))
-      );
-    }
+    const exceptionsMap = new Map(
+      currentExceptions.map((exception) => [
+        format(new Date(exception.date), "yyyy-MM-dd"),
+        {
+          ...exception,
+          date: new Date(
+            Date.UTC(
+              exception.date.getUTCFullYear(),
+              exception.date.getUTCMonth(),
+              exception.date.getUTCDate()
+            )
+          ),
+        },
+      ])
+    );
+
+    selectedDates.forEach((date) => {
+      const dateKey = format(date, "yyyy-MM-dd");
+      console.log(`Processing date: ${dateKey}`);
+
+      if (isOpen) {
+        const newException: StoreException = {
+          date,
+          timeSlots: [...timeSlots],
+        };
+        exceptionsMap.set(dateKey, newException);
+        console.log(`Updated/Added exception for ${dateKey}`, newException);
+      } else {
+        exceptionsMap.delete(dateKey);
+        console.log(`Removed exception for ${dateKey}`);
+      }
+    });
+
+    const updatedExceptions = Array.from(exceptionsMap.values());
+    console.log("Updated exceptions after processing:", updatedExceptions);
 
     const updatedHours = {
       ...hours,
-      exceptions: updatedExceptions,
+      [deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY
+        ? "deliveryExceptions"
+        : "pickupExceptions"]: updatedExceptions,
     };
+
+    console.log("Final updated hours:", updatedHours);
 
     setHours(updatedHours);
 
-    await updateUserHours(updatedHours);
+    try {
+      await updateUserHours(updatedHours);
+      console.log("Hours updated successfully");
+      toast.success("Hours updated successfully");
+    } catch (error) {
+      console.error("Error updating hours:", error);
+      toast.error("Failed to update hours");
+    }
+
+    setIsBasePanelOpen(false);
     setSelectedDays({});
     setPanelStack([]);
     setIsAppendingHours(false);
     setTimeSlots([{ open: 540, close: 1020 }]);
+    console.log("Finished handleSaveChanges");
   };
 
   const renderPanelContent = () => (
-    <div className="flex flex-col h-full">
-      {" "}
-      <h2 className="text-xl font-normal my-4">{getSelectionDescription}</h2>
-      <div className="flex items-center justify-center space-x-2 mb-4">
-        <div className="flex justify-center">
-          <CustomSwitch isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
-        </div>
+    <>
+      <div className="flex flex-col h-full">
+        <h2 className="text-xl font-normal my-4">{getSelectionDescription}</h2>
+        {viewEditMode === Mode.VIEW ? (
+          <></>
+        ) : (
+          <>
+            {" "}
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="flex justify-center">
+                <CustomSwitch
+                  isOpen={isOpen}
+                  onToggle={() => setIsOpen(!isOpen)}
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                setPanelStack((prevStack) => [
+                  ...prevStack,
+                  {
+                    content: renderPanelContent(),
+                    onClose: () => setPanelStack((prev) => prev.slice(0, -1)),
+                  },
+                ]);
+              }}
+            >
+              Add Another Set of Hours
+            </Button>
+            {timeSlots.map((slot, index) => (
+              <div key={index}>
+                <TimePicker
+                  top={true}
+                  value={convertMinutesToTimeString(slot.open)}
+                  onChange={(time) => {
+                    const newTimeSlots = [...timeSlots];
+                    newTimeSlots[index].open = convertTimeStringToMinutes(time);
+                    setTimeSlots(newTimeSlots);
+                  }}
+                  isOpen={isOpen}
+                />
+                <TimePicker
+                  top={false}
+                  value={convertMinutesToTimeString(slot.close)}
+                  onChange={(time) => {
+                    const newTimeSlots = [...timeSlots];
+                    newTimeSlots[index].close =
+                      convertTimeStringToMinutes(time);
+                    setTimeSlots(newTimeSlots);
+                  }}
+                  isOpen={isOpen}
+                />
+              </div>
+            ))}
+            <div className="flex items-center justify-evenly mt-4 space-x-2 w-full">
+              <Button className="w-2/5" onClick={handleSaveChanges}>
+                Save Changes
+              </Button>
+              <Button
+                className="w-2/5 bg-inherit"
+                variant="outline"
+                onClick={() => {
+                  setPanelStack((prevStack) => prevStack.slice(0, -1));
+                  setIsAppendingHours(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </>
+        )}
       </div>
-      <Button
-        onClick={() => {
-          setPanelStack((prevStack) => [
-            ...prevStack,
-            {
-              content: renderPanelContent(),
-              onClose: () => setPanelStack((prev) => prev.slice(0, -1)),
-            },
-          ]);
-        }}
-      >
-        Add Another Set of Hours
-      </Button>
-      {timeSlots.map((slot, index) => (
-        <div key={index}>
-          <TimePicker
-            top={true}
-            value={convertMinutesToTimeString(slot.open)}
-            onChange={(time) => {
-              const newTimeSlots = [...timeSlots];
-              newTimeSlots[index].open = convertTimeStringToMinutes(time);
-              setTimeSlots(newTimeSlots);
-            }}
-            isOpen={isOpen}
-          />
-          <TimePicker
-            top={false}
-            value={convertMinutesToTimeString(slot.close)}
-            onChange={(time) => {
-              const newTimeSlots = [...timeSlots];
-              newTimeSlots[index].close = convertTimeStringToMinutes(time);
-              setTimeSlots(newTimeSlots);
-            }}
-            isOpen={isOpen}
-          />
-        </div>
-      ))}
-      <div className="flex items-center justify-evenly mt-4 space-x-2 w-full">
-        <Button className="w-2/5" onClick={handleSaveChanges}>
-          Save Changes
-        </Button>
-        <Button
-          className="w-2/5 bg-inherit"
-          variant="outline"
-          onClick={() => {
-            setPanelStack((prevStack) => prevStack.slice(0, -1));
-            setIsAppendingHours(false);
-            setTimeSlots([{ open: 540, close: 1020 }]);
-          }}
-        >
-          Cancel
-        </Button>
-      </div>
-    </div>
+    </>
   );
 
   const renderAllMonths = (): JSX.Element[] => {
@@ -415,11 +572,6 @@ const Calendar = ({ location, index, mk }: p) => {
     return calendarMonths;
   };
 
-  const [showModifyButton, setShowModifyButton] = useState(false);
-  const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [deliveryPickupMode, setDeliveryPickupMode] =
-    useState<DeliveryPickupToggleMode>(DeliveryPickupToggleMode.DELIVERY);
-  const [viewEditMode, setViewEditMode] = useState<Mode>(Mode.VIEW);
   const handleDeliveryPickupModeChange = (
     newMode: DeliveryPickupToggleMode
   ) => {
@@ -430,7 +582,7 @@ const Calendar = ({ location, index, mk }: p) => {
     setViewEditMode(newMode);
   };
   useEffect(() => {
-    if (selectedDaysCount > 0 && !isPanelOpen) {
+    if (selectedDaysCount > 0 && !isBasePanelOpen) {
       if (modifyButtonTimerRef.current) {
         clearTimeout(modifyButtonTimerRef.current);
       }
@@ -450,54 +602,11 @@ const Calendar = ({ location, index, mk }: p) => {
       }
     };
   }, [selectedDaysCount, isPanelOpen]);
-  const getSelectionDescription = useMemo(() => {
-    if (selectedDaysCount === 0) return "";
-
-    const selectedDates = Object.entries(selectedDays)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([dateString, _]) => {
-        const parsedDate = parseISO(dateString);
-        return isValid(parsedDate) ? parsedDate : null;
-      })
-      .filter((date): date is Date => date !== null)
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    if (selectedDates.length === 0) {
-      return "Invalid date selection";
-    }
-
-    if (selectedDates.length === 1) {
-      return `Modify Hours for ${format(selectedDates[0], "MMM d")}`;
-    }
-
-    const isContiguousRange = selectedDates.every((date, index) => {
-      if (index === 0) return true;
-      const prevDate = selectedDates[index - 1];
-      const diffInDays = Math.round(
-        (date.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return diffInDays === 1;
-    });
-
-    if (isContiguousRange) {
-      const startDate = selectedDates[0];
-      const endDate = selectedDates[selectedDates.length - 1];
-      return `Modify Hours for ${format(startDate, "MMM d")} - ${format(
-        endDate,
-        "MMM d"
-      )}`;
-    }
-
-    return `Modify Hours for ${selectedDaysCount} day${
-      selectedDaysCount !== 1 ? "s" : ""
-    }`;
-  }, [selectedDays, selectedDaysCount]);
-  const [isBasePanelOpen, setIsBasePanelOpen] = useState(true);
 
   const renderCalendarContent = () => (
     <div className="flex flex-col h-full select-none">
       <div className="sticky top-0 z-40 w-full sheet">
-        <div className="flex justify-end items-center sm:px-3 pt-2 p-0">
+        <div className="flex justify-end items-center gap-px sm:px-3 pt-2 px-0">
           <DeliveryPickupToggle
             panelSide={panelSide}
             onModeChange={handleDeliveryPickupModeChange}
@@ -510,9 +619,8 @@ const Calendar = ({ location, index, mk }: p) => {
               onModeChange={handleViewEditModeChange}
             />
           </div>
-          {/* {!panelSide && !isBasePanelOpen && (
-            <PiGearThin
-              size={25}
+          {!isBasePanelOpen && (
+            <Button
               onClick={() => {
                 setIsBasePanelOpen(true);
                 setPanelStack([
@@ -522,10 +630,13 @@ const Calendar = ({ location, index, mk }: p) => {
                   },
                 ]);
               }}
+              variant="outline"
+              className="relative select-none hover:bg-inherit rounded-full flex items-center justify-start bg-inherit ml-1 text-xs mr-2 sm:text-sm px-2 sm:px-4"
             >
-              Open Settings
-            </PiGearThin>
-          )} */}
+              Settings <div className="border-r h-full pl-1" />
+              <PiGearThin className="h-5 w-5 sm:h-6 sm:w-6 pl-1" />
+            </Button>
+          )}
         </div>
         <div className="grid grid-cols-7 gap-px w-full border-b border-gray-200">
           {daysOfWeek.map((day) => (

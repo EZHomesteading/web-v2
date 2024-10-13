@@ -42,14 +42,19 @@ const DeliveryPickupToggle = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="relative select-none hover:bg-inherit rounded-full mr-2 flex items-center justify-start bg-inherit"
+          className="relative select-none hover:bg-inherit rounded-full mr-1 text-xs sm:text-sm flex items-center justify-start bg-inherit px-2 sm:px-4"
         >
-          {mode === DeliveryPickupToggleMode.DELIVERY ? (
-            <PiCarProfileThin className="h-8 w-8 pr-1" />
-          ) : (
-            <PiHouseLineThin className="h-6 w-6 pr-1" />
+          {panelSide && (
+            <>
+              {mode === DeliveryPickupToggleMode.DELIVERY ? (
+                <PiCarProfileThin className="h-8 w-8 pr-1" />
+              ) : (
+                <PiHouseLineThin className="h-6 w-6 pr-1" />
+              )}
+              <div className="border-l h-full pr-1" />
+            </>
           )}
-          <div className="border-l h-full pr-1" />
+
           {mode === DeliveryPickupToggleMode.DELIVERY
             ? "Delivery"
             : "Pickup & Dropoff"}
@@ -137,14 +142,19 @@ const ViewEditToggle = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="relative select-none hover:bg-inherit rounded-full flex items-center justify-start bg-inherit"
+          className="relative select-none hover:bg-inherit rounded-full flex items-center justify-start bg-inherit text-xs sm:text-sm px-2 sm:py-4"
         >
-          {mode === Mode.VIEW ? (
-            <PiEyeThin className="h-8 w-8 pr-1" />
-          ) : (
-            <PiPencilSimpleLineThin className="h-6 w-6 pr-1" />
+          {panelSide && (
+            <>
+              {mode === Mode.VIEW ? (
+                <PiEyeThin className="h-8 w-8 pr-1" />
+              ) : (
+                <PiPencilSimpleLineThin className="h-6 w-6 pr-1" />
+              )}
+              <div className="border-l h-full pr-1" />
+            </>
           )}
-          <div className="border-l h-full pr-1" />
+
           {mode === Mode.VIEW ? "View Mode" : "Edit Mode"}
           <div className="border-r h-full pl-1" />
           <RiArrowDownSLine className="h-6 w-6 pl-1" />

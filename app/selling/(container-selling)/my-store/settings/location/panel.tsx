@@ -4,7 +4,10 @@ import { X } from "lucide-react";
 import { LocationSelector } from "./location-selector";
 import { Button } from "@/app/components/ui/button";
 import Map from "@/app/onboard/map";
-import { PiCalendarBlankThin, PiCalendarPlusThin } from "react-icons/pi";
+import { PiCalendarBlankThin } from "react-icons/pi";
+import axios from "axios";
+import { UserRole } from "@prisma/client";
+import { useRouter } from "next/navigation";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -35,6 +38,84 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   isBasePanelOpen,
   setIsBasePanelOpen,
 }) => {
+  const [address, setAddress] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
+  const router = useRouter();
+  const handleAddressChange = (field: string, value: string) => {
+    setAddress((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const getLatLngFromAddress = async (address: string) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${mk}&loading=async&libraries=places`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        console.log("lat", lat, "lng", lng);
+        return { lat, lng };
+      } else {
+        throw new Error("Geocoding failed");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
+
+  const handleSaveAddress = async () => {
+    const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
+    const geoResult = await getLatLngFromAddress(fullAddress);
+
+    if (geoResult) {
+      try {
+        const dataToSend = {
+          location: [
+            {
+              ...location,
+              address: [
+                address.street,
+                address.city,
+                address.state,
+                address.zip,
+              ],
+              coordinates: [geoResult.lng, geoResult.lat],
+              type: "Point",
+              role: location.role,
+              hours: location.hours,
+            },
+          ],
+          locationIndex: index,
+        };
+
+        console.log("Data being sent:", JSON.stringify(dataToSend, null, 2));
+
+        const response = await axios.post(
+          "/api/useractions/update/location-hours",
+          dataToSend
+        );
+
+        if (response.status === 200) {
+          setShowEditAddres(false);
+          router.refresh();
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error updating address:", error.response?.data);
+        } else {
+          console.error("Error updating address:", error);
+        }
+      }
+    } else {
+      console.error("Geocoding failed");
+    }
+  };
   const getPanelStyle = (index: number): MotionStyle => {
     const darkenColor = (color: string, amount: number): string => {
       const hex = color.replace("#", "");
@@ -106,6 +187,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                         <input
                           type="text"
                           className="w-full rounded-t-xl border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                          onChange={(e) =>
+                            handleAddressChange("street", e.target.value)
+                          }
                         />
                         <div className="absolute top-1 left-3 text-neutral-500 font-light">
                           Street
@@ -115,6 +199,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                         <input
                           type="text"
                           className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                          onChange={(e) =>
+                            handleAddressChange("city", e.target.value)
+                          }
                         />
                         <div className="absolute top-1 left-3 text-neutral-500 font-light">
                           City
@@ -124,6 +211,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                         <input
                           type="text"
                           className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                          onChange={(e) =>
+                            handleAddressChange("state", e.target.value)
+                          }
                         />
                         <div className="absolute top-1 left-3 text-neutral-500 font-light">
                           State
@@ -133,6 +223,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                         <input
                           type="text"
                           className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                          onChange={(e) =>
+                            handleAddressChange("zip", e.target.value)
+                          }
                         />
                         <div className="absolute top-1 left-3 text-neutral-500 font-light">
                           Zip Code
@@ -141,9 +234,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                     </div>
                     <Button
                       className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
-                      onClick={() => {
-                        setShowEditAddres(true);
-                      }}
+                      onClick={handleSaveAddress}
                     >
                       Save Changes
                     </Button>

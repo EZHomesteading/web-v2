@@ -101,7 +101,7 @@ type navUser = {
   cart?: nav;
   location: Location;
 };
-type Location = { 0?: LocationObj; 1?: LocationObj; 2?: LocationObj };
+type Location = LocationObj[]
 type CartGroup = {
   expiry?: date;
   cartIndex?: number;
