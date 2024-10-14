@@ -15,7 +15,7 @@ import {
   CalendarDay,
 } from "./helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
-import { MonthHours, StoreException, TimeSlot, UserRole } from "@prisma/client";
+import { MonthHours, UserRole } from "@prisma/client";
 import {
   checkOverlap,
   convertMinutesToTimeString,
@@ -24,7 +24,15 @@ import {
   daysOfWeek,
   updateUserHours,
 } from "./helper-functions-calendar";
+type TimeSlot = {
+  open: number;
+  close: number;
+};
 
+type StoreException = {
+  date: Date;
+  timeSlots?: TimeSlot[];
+};
 export interface Hours {
   deliveryHours: MonthHours[];
   pickupHours: MonthHours[];
@@ -415,13 +423,13 @@ const Calendar = ({ location, index, mk }: p) => {
             onModeChange={handleDeliveryPickupModeChange}
             mode={deliveryPickupMode}
           />
-          <div>
+          {/* <div>
             <ViewEditToggle
               panelSide={panelSide}
               mode={viewEditMode}
               onModeChange={handleViewEditModeChange}
             />
-          </div>
+          </div> */}
 
           <Button
             onClick={() => {
@@ -631,15 +639,11 @@ const Calendar = ({ location, index, mk }: p) => {
     selectedDates.forEach((date) => {
       const dateKey = format(date, "yyyy-MM-dd");
 
-      if (isOpen) {
-        const newException: StoreException = {
-          date,
-          timeSlots: allTimeSlots.flat(),
-        };
-        exceptionsMap.set(dateKey, newException);
-      } else {
-        exceptionsMap.delete(dateKey);
-      }
+      const newException: StoreException = {
+        date,
+        timeSlots: isOpen ? allTimeSlots.flat() : undefined,
+      };
+      exceptionsMap.set(dateKey, newException);
     });
 
     const updatedExceptions = Array.from(exceptionsMap.values());

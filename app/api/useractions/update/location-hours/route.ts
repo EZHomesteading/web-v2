@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { Prisma, UserRole } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export async function POST(request: Request) {
+  console.log("API route hit: /api/useractions/update/location-hours");
   try {
     const body = await request.json();
     console.log("Received body:", JSON.stringify(body, null, 2));
@@ -15,51 +16,56 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const currentUserData = await prisma.user.findUnique({
-      where: { id: user.id },
+    const cleanLocation = (loc: any) => {
+      const { 
+        type, coordinates, address, hours, role,
+        ancestorOrigins, href, origin, protocol, host, 
+        hostname, port, pathname, search, hash, 
+        ...rest
+      } = loc;
+      return { type, coordinates, address, hours, role, ...rest };
+    };
+
+    let updatedLocation;
+
+    console.log(`Attempting to update or create location at index: ${locationIndex}`);
+    const existingLocation = await prisma.location.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'asc' },
+      skip: locationIndex,
     });
 
-    if (!currentUserData) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Initialize locations array if it doesn't exist
-    let userLocations = currentUserData.location || [];
-    if (!Array.isArray(userLocations)) {
-      userLocations = [];
-    }
-
-    // If locationIndex is provided and valid, update existing location
-    // Otherwise, add a new location
-    if (locationIndex !== undefined && locationIndex >= 0 && locationIndex < userLocations.length) {
-      userLocations[locationIndex] = { ...userLocations[locationIndex], ...location[0] };
+    if (existingLocation) {
+      console.log("Updating existing location");
+      updatedLocation = await prisma.location.update({
+        where: { id: existingLocation.id },
+        data: cleanLocation(location[0]),
+      });
     } else {
-      userLocations.push(location[0]);
+      console.log("Creating new location");
+      updatedLocation = await prisma.location.create({
+        data: {
+          ...cleanLocation(location[0]),
+          userId: user.id,
+          isDefault: await prisma.location.count({ where: { userId: user.id } }) === 0,
+        },
+      });
     }
 
-    console.log("Updated locations:", JSON.stringify(userLocations, null, 2));
+    console.log("Location updated or created:", updatedLocation);
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.user.findUnique({
       where: { id: user.id },
-      data: {
-        location: userLocations,
-      },
+      include: { locations: true },
     });
 
+    console.log("Sending response:", JSON.stringify(updatedUser, null, 2));
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error("Error updating user location:", error);
+    console.error("Detailed error in API route:", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       console.error("Prisma error:", error.message);
     }
-    return NextResponse.json({ error: "Internal server error", details: "error.message" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error", details: (error instanceof Error ? error.message : 'Unknown error') }, { status: 500 });
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '1mb',
-    },
-  },
-};

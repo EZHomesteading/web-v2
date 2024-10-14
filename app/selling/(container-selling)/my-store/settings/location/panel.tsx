@@ -211,7 +211,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                   <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
                     {!enterManually ? (
                       <>
-                        <div className="relative">
+                        {/* <div className="relative">
                           <LocationSearchInput
                             className="w-full rounded-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
                             apiKey={mk}
@@ -225,7 +225,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                           <div className="absolute top-1 left-3 text-neutral-500 font-light">
                             Address
                           </div>
-                        </div>
+                        </div> */}
                         <Button
                           className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
                           onClick={handleSaveAddress}

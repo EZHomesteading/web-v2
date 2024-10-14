@@ -4,7 +4,7 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Location, Notification, UserRole } from "@prisma/client";
+import {  Notification, TimeSlot, UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -26,7 +26,7 @@ export const {
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+        return false; 
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
@@ -45,7 +45,6 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        (session.user.location as unknown) = token.location as Location;
         session.user.image = token.image as string | undefined;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
@@ -77,7 +76,6 @@ export const {
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber;
-      token.location = existingUser.location;
       token.image = existingUser.image;
       token.hasPickedRole = existingUser.hasPickedRole
       token.url = existingUser.url;

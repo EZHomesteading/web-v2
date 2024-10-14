@@ -52,6 +52,7 @@ type LocationObj {
   address     String[]
   hours       Hours?
   role        UserRole @default(CONSUMER)
+  isDefault   Boolean? @default(false)
 }
 
 type Hours {
@@ -62,8 +63,13 @@ type Hours {
 }
 
 type MonthHours {
-  month Int // 0-11 for Jan to Dec
+  month Int
   days  DayHours[]
+}
+
+type OpenCloseTemplates {
+  title     String
+  timeSlots TimeSlot[]
 }
 
 type DayHours {
@@ -72,23 +78,38 @@ type DayHours {
 }
 
 type TimeSlot {
-  open  Int // Time in minutes from midnight
-  close Int // Time in minutes from midnight
+  open  Int
+  close Int
 }
 
 type StoreException {
   date      DateTime
-  timeSlots TimeSlot[] // Optional for specific open/close hours on that date
+  timeSlots TimeSlot[]
+}
+
+model Location {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  listings    Listing[]
+  type        String
+  coordinates Float[]
+  address     String[]
+  hours       Hours?
+  role        UserRole  @default(CONSUMER)
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model User {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String        @unique
+  email         String     @unique
   firstName     String?
   emailVerified DateTime?
   phoneNumber   String?
-  location      LocationObj[]
+  locations     Location[]
   image         String?
 
   role                  UserRole               @default(PRODUCER)
@@ -117,7 +138,7 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
   hasPickedRole         Boolean?
-  openCloseTemplates    DayHours[]
+  openCloseTemplates    OpenCloseTemplates[]
 }
 
 model Following {
@@ -213,7 +234,8 @@ model Listing {
   harvestType     String?
   reports         Int?
   shelfLife       Int
-  location        Int        @default(0)
+  locationId      String     @db.ObjectId
+  location        Location   @relation(fields: [locationId], references: [id])
   rating          Int[]
   userId          String     @db.ObjectId
   createdAt       DateTime   @default(now())
