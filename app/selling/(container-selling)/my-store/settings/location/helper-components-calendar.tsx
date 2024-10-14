@@ -11,6 +11,7 @@ import { TimeSlot } from "@prisma/client";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { CiCirclePlus } from "react-icons/ci";
 import {
   PiCarProfileThin,
   PiEyeThin,
@@ -282,15 +283,22 @@ const LocationSelector = ({
   const formatAddress = (address: string[]): string => {
     return address.join(", ");
   };
-  console.log("address", address);
-  const activeAddress = address.length > 0 ? address[0] : "Select Location";
+  let activeAddress;
+  activeAddress = address ? address[0] : "New Location";
 
   const menuItems = locations.map((location: Location, idx: number) => (
     <DropdownMenuRadioItem
       key={idx}
       value={idx.toString()}
-      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] p-4`}
+      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
     >
+      <div
+        className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
+          idx === index ? "bg-black" : "bg-white"
+        }`}
+      >
+        <div className="rounded-full border bg-white p-1"></div>
+      </div>{" "}
       {formatAddress(location.address)}
     </DropdownMenuRadioItem>
   ));
@@ -298,10 +306,11 @@ const LocationSelector = ({
   if (locations.length < 3) {
     menuItems.push(
       <DropdownMenuRadioItem
-        key="add-new"
-        value="add-new"
-        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] p-4`}
+        key={locations.length.toString()}
+        value={locations.length.toString()}
+        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
       >
+        <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
         Add New Location & Hours
       </DropdownMenuRadioItem>
     );

@@ -597,7 +597,10 @@ const Calendar = ({ location, index, mk }: p) => {
       toast.error("Time slots overlap. Please adjust the hours.");
       return;
     }
-
+    if (index > 2) {
+      toast.error("You may only have up to three locations");
+      return;
+    }
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => {

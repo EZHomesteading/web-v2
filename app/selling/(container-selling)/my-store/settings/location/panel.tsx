@@ -7,7 +7,15 @@ import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
-import { LocationSelector } from "./helper-components-calendar";
+import { LocationSelector, o } from "./helper-components-calendar";
+import { useCurrentRole } from "@/hooks/user/use-current-role";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -72,12 +80,21 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       return null;
     }
   };
+  const userRole = useCurrentRole();
 
   const handleSaveAddress = async () => {
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
 
     const newGeoResult = await getLatLngFromAddress(fullAddress);
     setGeoResult(newGeoResult);
+    let hours = null;
+    let role = userRole;
+    let text = "New store location added";
+    if (location) {
+      hours = location?.hours;
+      role = location?.role;
+      text = "Your store location has been updated";
+    }
     if (newGeoResult) {
       try {
         const dataToSend = {
@@ -92,8 +109,8 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               ],
               coordinates: [newGeoResult.lng, newGeoResult.lat],
               type: "Point",
-              role: location.role,
-              hours: location.hours,
+              role: role,
+              hours: hours,
             },
           ],
           locationIndex: index,
@@ -107,6 +124,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
         if (response.status === 200) {
           setShowEditAddress(false);
           router.refresh();
+          toast.success(text);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -161,9 +179,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     return baseStyle;
   };
   const [showEditAddress, setShowEditAddress] = React.useState(false);
-  const [a, b] = useState("");
+
   const [enterManually, setEnterManually] = useState(false);
-  console.log("location index address", location?.address);
+  const [a, b] = useState("");
   const basePanel: PanelProps = {
     content: (
       <div className="flex justify-center w-full">
@@ -308,17 +326,45 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             </div>
           </div>
           <div className="mt-5">
-            <Map
-              center={{
-                lat: geoResult?.lat || location?.coordinates[1],
-                lng: geoResult?.lng || location?.coordinates[0],
-              }}
-              mk={mk}
-              showSearchBar={false}
-              w={400}
-              h={600}
-            />
+            {(geoResult || location) && (
+              <Map
+                center={{
+                  lat: geoResult?.lat || location?.coordinates[1],
+                  lng: geoResult?.lng || location?.coordinates[0],
+                }}
+                mk={mk}
+                showSearchBar={false}
+                w={400}
+                h={350}
+              />
+            )}
           </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
+                <div className="text-md sm:text-xl font-light">
+                  Delete Location
+                </div>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent
+              className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
+            >
+              <div className="text-2xl">Are you sure?</div>
+              <div className="text-sm">
+                Once a location is deleted, all listings with its location will
+                also be lost. Please move any listings you do not want to lose
+                to a different locaiton.
+              </div>
+              <div className="flex items-center justify-between w-full">
+                <Button className="bg-red-500/80 text-white">Delete</Button>
+                <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                  {" "}
+                  Cancel
+                </AlertDialogCancel>
+              </div>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     ),

@@ -1,7 +1,6 @@
-// Map.tsx
 "use client";
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Loading from "@/app/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
 import { UserInfo } from "@/next-auth";
@@ -17,6 +16,13 @@ interface MapProps {
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
+
+const customSvgMarker = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="98" fill="rgba(42, 157, 244, 0.3)" stroke="rgba(42, 157, 244, 0.6)" stroke-width="2" />
+
+</svg>
+`;
 
 const Map = ({
   mk,
@@ -35,7 +41,7 @@ const Map = ({
         }
       : center
   );
-  const [zoom, setZoom] = useState(12);
+  const [zoom, setZoom] = useState(14);
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -48,9 +54,25 @@ const Map = ({
   const handleLocationSelect = useCallback(
     (latLng: google.maps.LatLngLiteral) => {
       setCurrentCenter(latLng);
-      setZoom(15);
+      setZoom(14);
     },
     []
+  );
+
+  const getApproximatePosition = useCallback(
+    (position: google.maps.LatLngLiteral) => {
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = Math.random() * 0.005; // Adjust this value to control the maximum distance
+      const lat = position.lat + radius * Math.cos(angle);
+      const lng = position.lng + radius * Math.sin(angle);
+      return { lat, lng };
+    },
+    []
+  );
+
+  const approximatePosition = useMemo(
+    () => getApproximatePosition(currentCenter),
+    [currentCenter, getApproximatePosition]
   );
 
   const mapOptions: google.maps.MapOptions = {
@@ -62,12 +84,19 @@ const Map = ({
     mapTypeControl: false,
     fullscreenControl: false,
     keyboardShortcuts: false,
-    clickableIcons: true,
+    clickableIcons: false,
     disableDefaultUI: true,
-    maxZoom: 16,
+    maxZoom: 15,
     scrollwheel: true,
-    minZoom: 4,
+    minZoom: 12,
     gestureHandling: "greedy",
+    styles: [
+      {
+        featureType: "all",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+    ],
   };
 
   useEffect(() => {
@@ -87,6 +116,7 @@ const Map = ({
   if (!isLoaded) {
     return <Loading />;
   }
+
   const mapContainerStyle =
     h && w
       ? `h-[${h}px] w-[${w}px] rounded-lg shadow-lg`
@@ -95,6 +125,7 @@ const Map = ({
       : w
       ? `w-[${w}px] h-screen`
       : "h-screen w-screen";
+
   return (
     <div className={`relative touch-none`}>
       {showSearchBar && (
@@ -107,7 +138,7 @@ const Map = ({
           />
         </div>
       )}
-
+      <div>This is how your location will appear to buyers.</div>
       <GoogleMap
         onLoad={(map) => {
           mapRef.current = map;
@@ -115,7 +146,16 @@ const Map = ({
         mapContainerClassName={mapContainerStyle}
         options={mapOptions}
       >
-        <MarkerF position={currentCenter} />
+        <MarkerF
+          position={approximatePosition}
+          icon={{
+            url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+              customSvgMarker
+            )}`,
+            scaledSize: new google.maps.Size(200, 200),
+            anchor: new google.maps.Point(100, 100),
+          }}
+        />
       </GoogleMap>
     </div>
   );
