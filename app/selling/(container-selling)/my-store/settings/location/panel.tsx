@@ -1,13 +1,13 @@
 import React, { ReactNode, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
-import { LocationSelector } from "./location-selector";
 import { Button } from "@/app/components/ui/button";
 import Map from "@/app/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
-import { UserRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import LocationSearchInput from "@/app/components/map/LocationSearchInput";
+import { LocationSelector } from "./helper-components";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -18,25 +18,25 @@ interface StackingPanelLayoutProps {
   panels: PanelProps[];
   panelSide: boolean;
   mainContentVariants: any;
-  panelVariants: any;
   location: any;
   index: number;
   mk: string;
   isBasePanelOpen: boolean;
   setIsBasePanelOpen: (isOpen: boolean) => void;
+  onPanelClose: () => void;
 }
 
 const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   children,
   panels,
   panelSide,
-  panelVariants,
   mainContentVariants,
   location,
   index,
   mk,
   isBasePanelOpen,
   setIsBasePanelOpen,
+  onPanelClose,
 }) => {
   const [address, setAddress] = useState({
     street: "",
@@ -68,6 +68,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       return null;
     }
   };
+  const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
 
   const handleSaveAddress = async () => {
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
@@ -102,7 +103,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
         );
 
         if (response.status === 200) {
-          setShowEditAddres(false);
+          setShowEditAddress(false);
           router.refresh();
         }
       } catch (error) {
@@ -132,9 +133,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     const baseStyle: MotionStyle = {
       position: index === 0 ? "relative" : "absolute",
       width: "384px",
-      height: "100%",
+      height: "120%",
       zIndex: 50 + index,
-      top: index === 0 ? 0 : `${index * 40}px`,
+      top: index === 0 ? 0 : `${index * 2}px`,
       right: 0,
       backgroundColor: `${darkenColor(
         baseColor,
@@ -157,129 +158,172 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
     return baseStyle;
   };
-  const [showEditAddres, setShowEditAddres] = React.useState(false);
-
-  const allPanels = [
-    {
-      content: (
-        <div className="flex justify-center w-full">
-          <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
-            {!panelSide && (
-              <Button
-                onClick={() => {
-                  setIsBasePanelOpen(false);
-                }}
-                className="w-full mb-2 border py-8 justify-between flex relative"
-              >
-                <div className="text-md sm:text-xl font-light">
-                  View Calendar & Edit Hours
-                </div>
-                <PiCalendarBlankThin size={40} className="absolute right-1" />
-              </Button>
-            )}
-            <div className="flex flex-col justify-between">
-              <div>
-                <LocationSelector index={index} />
-                {showEditAddres ? (
-                  <>
-                    <div className="border w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="w-full rounded-t-xl border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                          onChange={(e) =>
-                            handleAddressChange("street", e.target.value)
-                          }
-                        />
-                        <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                          Street
+  const [showEditAddress, setShowEditAddress] = React.useState(false);
+  const [a, b] = useState("");
+  const [enterManually, setEnterManually] = useState(false);
+  const basePanel: PanelProps = {
+    content: (
+      <div className="flex justify-center w-full">
+        <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
+          {!panelSide && (
+            <Button
+              onClick={() => {
+                setIsBasePanelOpen(false);
+              }}
+              className="w-full my-2 border py-8 justify-between flex relative"
+            >
+              <div className="text-md sm:text-xl font-light">
+                View Calendar & Edit Hours
+              </div>
+              <PiCalendarBlankThin size={40} className="absolute right-1" />
+            </Button>
+          )}
+          <div className="flex flex-col justify-between">
+            <div>
+              <LocationSelector index={index} panelSide={panelSide} />
+              {showEditAddress ? (
+                <>
+                  <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
+                    {!enterManually ? (
+                      <>
+                        <div className="relative">
+                          <LocationSearchInput
+                            className="w-full rounded-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                            apiKey={mk}
+                            address={a}
+                            onLocationSelect={() => {
+                              setAddress(address);
+                            }}
+                            setAddress={b}
+                            showIcon={false}
+                          />
+                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                            Address
+                          </div>
                         </div>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                          onChange={(e) =>
-                            handleAddressChange("city", e.target.value)
-                          }
-                        />
-                        <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                          City
+                        <Button
+                          className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
+                          onClick={handleSaveAddress}
+                        >
+                          Save Changes
+                        </Button>
+                        <Button
+                          className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
+                          variant={`outline`}
+                          onClick={() => {
+                            setEnterManually(true);
+                          }}
+                        >
+                          Enter Manually
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            className="w-full border-x border-t bg-inherit rounded-t-xl text-2xl px-3 pb-5 pt-7 font-bold"
+                            onChange={(e) =>
+                              handleAddressChange("street", e.target.value)
+                            }
+                          />
+                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                            Street
+                          </div>
                         </div>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                          onChange={(e) =>
-                            handleAddressChange("state", e.target.value)
-                          }
-                        />
-                        <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                          State
+                        <div className="relative">
+                          <input
+                            type="text"
+                            className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                            onChange={(e) =>
+                              handleAddressChange("city", e.target.value)
+                            }
+                          />
+                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                            City
+                          </div>
                         </div>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                          onChange={(e) =>
-                            handleAddressChange("zip", e.target.value)
-                          }
-                        />
-                        <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                          Zip Code
+                        <div className="relative">
+                          <input
+                            type="text"
+                            className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                            onChange={(e) =>
+                              handleAddressChange("state", e.target.value)
+                            }
+                          />
+                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                            State
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
-                      onClick={handleSaveAddress}
-                    >
-                      Save Changes
-                    </Button>
-                    <Button
-                      className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
-                      variant={`outline`}
-                      onClick={() => {
-                        setShowEditAddres(false);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
+                        <div className="relative">
+                          <input
+                            type="text"
+                            className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                            onChange={(e) =>
+                              handleAddressChange("zip", e.target.value)
+                            }
+                          />
+                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                            Zip Code
+                          </div>
+                        </div>
+                        <Button
+                          className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
+                          onClick={handleSaveAddress}
+                        >
+                          Save Changes
+                        </Button>
+                      </>
+                    )}
+                  </div>
                   <Button
-                    className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md select-none"
+                    className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
                     variant={`outline`}
                     onClick={() => {
-                      setShowEditAddres(true);
+                      setEnterManually(false);
+                      setShowEditAddress(false);
                     }}
                   >
-                    Edit Address
+                    Cancel
                   </Button>
-                )}
-              </div>
-            </div>
-            <div className="mt-5">
-              <Map
-                center={{
-                  lat: location?.coordinates[1],
-                  lng: location?.coordinates[0],
-                }}
-                mk={mk}
-                showSearchBar={false}
-                w={400}
-                h={600}
-              />
+                </>
+              ) : (
+                <Button
+                  className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md select-none"
+                  variant={`outline`}
+                  onClick={() => {
+                    setShowEditAddress(true);
+                  }}
+                >
+                  Edit Address
+                </Button>
+              )}
             </div>
           </div>
+          <div className="mt-5">
+            <Map
+              center={{
+                lat: location?.coordinates[1],
+                lng: location?.coordinates[0],
+              }}
+              mk={mk}
+              showSearchBar={false}
+              w={400}
+              h={600}
+            />
+          </div>
         </div>
-      ),
-      onClose: () => setIsBasePanelOpen(false),
+      </div>
+    ),
+    onClose: () => {
+      if (!panelSide) {
+        setIsBasePanelOpen(false);
+      }
+      onPanelClose();
     },
-    ...panels,
-  ];
+  };
+
+  const allPanels = [basePanel, ...panels];
 
   return (
     <div className="flex flex-row sheet min-h-screen overflow-hidden">
@@ -314,7 +358,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 exit={panelSide ? { x: 384, y: index } : { y: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                <div className="p-6 relative">
+                <div className={`px-6 relative`}>
                   {index > 0 && (
                     <button
                       onClick={panel.onClose}

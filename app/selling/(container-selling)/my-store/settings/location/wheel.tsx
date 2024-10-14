@@ -38,19 +38,21 @@ const Wheel: React.FC<WheelProps> = ({
       }
 
       scrollTimeout.current = setTimeout(() => {
-        const { scrollTop } = wheelRef.current!;
-        const totalHeight = options.length * ITEM_HEIGHT;
+        if (wheelRef.current) {
+          const scrollTop = wheelRef.current.scrollTop;
+          const totalHeight = options.length * ITEM_HEIGHT;
 
-        let adjustedScrollTop = scrollTop % totalHeight;
-        if (adjustedScrollTop < 0) {
-          adjustedScrollTop += totalHeight;
+          let adjustedScrollTop = scrollTop % totalHeight;
+          if (adjustedScrollTop < 0) {
+            adjustedScrollTop += totalHeight;
+          }
+
+          const rawIndex = adjustedScrollTop / ITEM_HEIGHT;
+          const index = Math.round(rawIndex) % options.length;
+
+          wheelRef.current.scrollTop = index * ITEM_HEIGHT;
+          onSelect(options[index]);
         }
-
-        const rawIndex = adjustedScrollTop / ITEM_HEIGHT;
-        const index = Math.round(rawIndex) % options.length;
-
-        wheelRef.current!.scrollTop = index * ITEM_HEIGHT;
-        onSelect(options[index]);
         isScrolling.current = false;
       }, 100);
     }
@@ -136,6 +138,7 @@ const Wheel: React.FC<WheelProps> = ({
           } p-1 text-gray-500 hover:text-gray-700 focus:outline-none`}
           onClick={() => navigateOption(-1)}
           aria-label="Previous option"
+          disabled={!isOpen}
         >
           <ChevronUp size={16} />
         </button>
@@ -145,6 +148,7 @@ const Wheel: React.FC<WheelProps> = ({
           }`}
           onClick={() => navigateOption(1)}
           aria-label="Next option"
+          disabled={!isOpen}
         >
           <ChevronDown size={16} />
         </button>
