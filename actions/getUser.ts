@@ -14,11 +14,6 @@ interface Params {
 interface IStoreParams {
   url?: string;
 }
-type LocationObject = {
-  "0": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
-  "1": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
-  "2": { type: string; coordinates: number[]; address: string[]; hours: any; } | null;
-};
 
 interface GetLocationByIndexParams {
   userId: string;
@@ -455,7 +450,20 @@ interface GetUserLocationParams {
   userId: string;
   index: number;
 }
+const getUserLocations = async ({ userId }:{userId:string}): Promise<Location[] | null> => {
+  try {
+    const locations = await prisma.location.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
+    return locations;
+  } catch (error) {
+    console.error("Error fetching user location:", error);
+    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+  }
+};
 const getUserLocation = async ({ userId, index }: GetUserLocationParams): Promise<Location | null> => {
   try {
     const location = await prisma.location.findFirst({
@@ -802,7 +810,8 @@ export {
   getNavUser,
   getRoleGate,
   getRole,
-  getLocationByIndex
+  getLocationByIndex,
+  getUserLocations
 };
 
 export type StoreUser = {

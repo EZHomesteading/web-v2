@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log("Received body:", JSON.stringify(body, null, 2));
 
-    const { location, locationIndex } = body;
+    const { location, locationId } = body;
 
     const user = await currentUser();
     if (!user) {
@@ -28,17 +28,17 @@ export async function POST(request: Request) {
 
     let updatedLocation;
 
-    console.log(`Attempting to update or create location at index: ${locationIndex}`);
+    console.log(`Attempting to update or create location at index: ${locationId}`);
     const existingLocation = await prisma.location.findFirst({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'asc' },
-      skip: locationIndex,
+
+      where: { id : locationId}
     });
+
 
     if (existingLocation) {
       console.log("Updating existing location");
       updatedLocation = await prisma.location.update({
-        where: { id: existingLocation.id },
+        where: { id: locationId },
         data: cleanLocation(location[0]),
       });
     } else {

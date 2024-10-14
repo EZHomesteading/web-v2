@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import { TimeSlot } from "@prisma/client";
+import { Hours, Location, TimeSlot } from "@prisma/client";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -260,25 +260,19 @@ const ViewEditToggle = ({
 };
 
 interface LocationSelectorProps {
-  index: number;
+  id: string;
   panelSide: boolean;
   address: any;
+  locations: Location[];
 }
-interface Location {
-  address: string[];
-  coordinates: number[];
-  type: string;
-  role: string;
-  hours: any;
-}
+
 const LocationSelector = ({
-  index,
+  id,
   panelSide,
   address,
+  locations,
 }: LocationSelectorProps) => {
   const router = useRouter();
-  const user = useCurrentUser();
-  const locations = user?.location || [];
 
   const formatAddress = (address: string[]): string => {
     return address.join(", ");
@@ -289,12 +283,12 @@ const LocationSelector = ({
   const menuItems = locations.map((location: Location, idx: number) => (
     <DropdownMenuRadioItem
       key={idx}
-      value={idx.toString()}
+      value={location.id}
       className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
     >
       <div
         className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
-          idx === index ? "bg-black" : "bg-white"
+          location?.id === id ? "bg-black" : "bg-white"
         }`}
       >
         <div className="rounded-full border bg-white p-1"></div>
@@ -339,7 +333,7 @@ const LocationSelector = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-[326px] w-full">
         <DropdownMenuRadioGroup
-          value={index.toString()}
+          value={id}
           onValueChange={(value) => {
             if (value === "add-new") {
               router.push("/selling/my-store/settings/location/new");

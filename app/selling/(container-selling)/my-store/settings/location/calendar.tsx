@@ -15,7 +15,7 @@ import {
   CalendarDay,
 } from "./helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
-import { MonthHours, UserRole } from "@prisma/client";
+import { Location, MonthHours, UserRole } from "@prisma/client";
 import {
   checkOverlap,
   convertMinutesToTimeString,
@@ -40,11 +40,12 @@ export interface Hours {
   pickupExceptions: StoreException[];
 }
 interface p {
-  location: any;
-  index: number;
+  location: Location;
+  id: string;
   mk: string;
+  locations: Location[];
 }
-const Calendar = ({ location, index, mk }: p) => {
+const Calendar = ({ location, id, mk, locations }: p) => {
   const [hours, setHours] = useState<Hours>({
     deliveryHours: [],
     pickupHours: [],
@@ -605,9 +606,8 @@ const Calendar = ({ location, index, mk }: p) => {
       toast.error("Time slots overlap. Please adjust the hours.");
       return;
     }
-    if (index > 2) {
-      toast.error("You may only have up to three locations");
-      return;
+    if (locations.length > 2) {
+      toast.error("You may only have up to 3 locations");
     }
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
@@ -658,7 +658,7 @@ const Calendar = ({ location, index, mk }: p) => {
     setHours(updatedHours);
 
     try {
-      await updateUserHours(updatedHours, index);
+      await updateUserHours(updatedHours, id);
       toast.success("Hours updated successfully");
     } catch (error) {
       console.error("Error updating hours:", error);
@@ -675,7 +675,7 @@ const Calendar = ({ location, index, mk }: p) => {
   return (
     <StackingPanelLayout
       location={location}
-      index={index}
+      id={id}
       panels={panelStack.map((panel, index) => ({
         ...panel,
         content: renderPanelContent(index),
@@ -693,6 +693,7 @@ const Calendar = ({ location, index, mk }: p) => {
       isBasePanelOpen={isBasePanelOpen}
       setIsBasePanelOpen={setIsBasePanelOpen}
       onPanelClose={handleClosePanel}
+      locations={locations}
     >
       {renderCalendarContent()}
     </StackingPanelLayout>

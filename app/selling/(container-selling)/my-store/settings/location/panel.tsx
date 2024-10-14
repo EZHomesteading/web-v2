@@ -16,6 +16,7 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
+import { Location } from "@prisma/client";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -27,11 +28,12 @@ interface StackingPanelLayoutProps {
   panelSide: boolean;
   mainContentVariants: any;
   location: any;
-  index: number;
+  id: string;
   mk: string;
   isBasePanelOpen: boolean;
   setIsBasePanelOpen: (isOpen: boolean) => void;
   onPanelClose: () => void;
+  locations: Location[];
 }
 
 const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
@@ -40,11 +42,12 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   panelSide,
   mainContentVariants,
   location,
-  index,
+  id,
   mk,
   isBasePanelOpen,
   setIsBasePanelOpen,
   onPanelClose,
+  locations,
 }) => {
   const [address, setAddress] = useState({
     street: "",
@@ -113,7 +116,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               hours: hours,
             },
           ],
-          locationIndex: index,
+          locationId: id,
         };
 
         const response = await axios.post(
@@ -202,9 +205,10 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           <div className="flex flex-col justify-between">
             <div>
               <LocationSelector
-                index={index}
+                id={id}
                 panelSide={panelSide}
                 address={location?.address}
+                locations={locations}
               />
               {showEditAddress ? (
                 <>
