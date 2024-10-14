@@ -13,7 +13,7 @@ import {
   ViewEditToggle,
   CustomSwitch,
   CalendarDay,
-} from "./helper-components";
+} from "./helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import { MonthHours, StoreException, TimeSlot, UserRole } from "@prisma/client";
 import {
@@ -23,7 +23,7 @@ import {
   createDateKey,
   daysOfWeek,
   updateUserHours,
-} from "./helper-functions";
+} from "./helper-functions-calendar";
 
 export interface Hours {
   deliveryHours: MonthHours[];
@@ -267,8 +267,6 @@ const Calendar = ({ location, index, mk }: p) => {
     for (let i = 0; i < totalCells; i++) {
       const day = i - firstDayOfMonth + 1;
       const isValidDay = day > 0 && day <= daysInMonth;
-      const isLastInRow = (i + 1) % 7 === 0;
-      const isLastRow = i >= 35;
       const key = isValidDay ? createDateKey(year, month + 1, day) : "";
       const isSelected = isValidDay && !!selectedDays[key];
 
@@ -282,8 +280,6 @@ const Calendar = ({ location, index, mk }: p) => {
         <CalendarDay
           key={`${month}-${i}`}
           day={isValidDay ? day : null}
-          isLastInRow={isLastInRow}
-          isLastRow={isLastRow}
           onMouseDown={() => handleMouseDown(day, month, year)}
           onMouseEnter={() => handleMouseEnter(day, month, year)}
           isSelected={isSelected}
@@ -387,7 +383,6 @@ const Calendar = ({ location, index, mk }: p) => {
               variant="outline"
               onClick={() => {
                 setPanelStack((prevStack) => prevStack.slice(0, -1));
-                setAllTimeSlots((prev) => prev.slice(0, -1));
               }}
             >
               Cancel
@@ -413,7 +408,7 @@ const Calendar = ({ location, index, mk }: p) => {
 
   const renderCalendarContent = () => (
     <div className="flex flex-col h-full select-none">
-      <div className="sticky top-0 z-40 w-full sheet">
+      <div className="sticky top-0 z-40 w-full ">
         <div className="flex justify-end items-center gap-px sm:px-3 pt-2 px-0">
           <DeliveryPickupToggle
             panelSide={panelSide}

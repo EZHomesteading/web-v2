@@ -7,7 +7,7 @@ import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import LocationSearchInput from "@/app/components/map/LocationSearchInput";
-import { LocationSelector } from "./helper-components";
+import { LocationSelector } from "./helper-components-calendar";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -45,6 +45,11 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     zip: "",
   });
   const router = useRouter();
+  const [geoResult, setGeoResult] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
   const handleAddressChange = (field: string, value: string) => {
     setAddress((prev) => ({ ...prev, [field]: value }));
   };
@@ -58,7 +63,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       const response = await axios.get(url);
       if (response.data.status === "OK") {
         const { lat, lng } = response.data.results[0].geometry.location;
-        console.log("lat", lat, "lng", lng);
         return { lat, lng };
       } else {
         throw new Error("Geocoding failed");
@@ -68,13 +72,13 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       return null;
     }
   };
-  const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
 
   const handleSaveAddress = async () => {
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
-    const geoResult = await getLatLngFromAddress(fullAddress);
 
-    if (geoResult) {
+    const newGeoResult = await getLatLngFromAddress(fullAddress);
+    setGeoResult(newGeoResult);
+    if (newGeoResult) {
       try {
         const dataToSend = {
           location: [
@@ -86,7 +90,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 address.state,
                 address.zip,
               ],
-              coordinates: [geoResult.lng, geoResult.lat],
+              coordinates: [newGeoResult.lng, newGeoResult.lat],
               type: "Point",
               role: location.role,
               hours: location.hours,
@@ -94,8 +98,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           ],
           locationIndex: index,
         };
-
-        console.log("Data being sent:", JSON.stringify(dataToSend, null, 2));
 
         const response = await axios.post(
           "/api/useractions/update/location-hours",
@@ -161,6 +163,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const [showEditAddress, setShowEditAddress] = React.useState(false);
   const [a, b] = useState("");
   const [enterManually, setEnterManually] = useState(false);
+  console.log("location index address", location?.address);
   const basePanel: PanelProps = {
     content: (
       <div className="flex justify-center w-full">
@@ -180,7 +183,11 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           )}
           <div className="flex flex-col justify-between">
             <div>
-              <LocationSelector index={index} panelSide={panelSide} />
+              <LocationSelector
+                index={index}
+                panelSide={panelSide}
+                address={location?.address}
+              />
               {showEditAddress ? (
                 <>
                   <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
@@ -303,8 +310,8 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           <div className="mt-5">
             <Map
               center={{
-                lat: location?.coordinates[1],
-                lng: location?.coordinates[0],
+                lat: geoResult?.lat || location?.coordinates[1],
+                lng: geoResult?.lng || location?.coordinates[0],
               }}
               mk={mk}
               showSearchBar={false}

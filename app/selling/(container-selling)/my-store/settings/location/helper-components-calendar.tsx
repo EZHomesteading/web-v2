@@ -261,62 +261,58 @@ const ViewEditToggle = ({
 interface LocationSelectorProps {
   index: number;
   panelSide: boolean;
+  address: any;
 }
-
-const LocationSelector = ({ index, panelSide }: LocationSelectorProps) => {
+interface Location {
+  address: string[];
+  coordinates: number[];
+  type: string;
+  role: string;
+  hours: any;
+}
+const LocationSelector = ({
+  index,
+  panelSide,
+  address,
+}: LocationSelectorProps) => {
   const router = useRouter();
   const user = useCurrentUser();
-  const locations = user?.location || {};
+  const locations = user?.location || [];
 
-  const formatAddress = (address: string | string[] | undefined) => {
-    if (Array.isArray(address)) {
-      return address.join(", ");
-    }
-    return address || "Address not available";
+  const formatAddress = (address: string[]): string => {
+    return address.join(", ");
   };
+  console.log("address", address);
+  const activeAddress = address.length > 0 ? address[0] : "Select Location";
 
-  const activeLocation = locations[index as keyof typeof locations];
-  const activeAddress = activeLocation
-    ? formatAddress(activeLocation.address)
-    : "Select Location";
+  const menuItems = locations.map((location: Location, idx: number) => (
+    <DropdownMenuRadioItem
+      key={idx}
+      value={idx.toString()}
+      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] p-4`}
+    >
+      {formatAddress(location.address)}
+    </DropdownMenuRadioItem>
+  ));
 
-  const menuItems = [];
-  let hasAvailableSlot = false;
-
-  ([0, 1, 2] as const).forEach((key) => {
-    const location = locations[key];
-    if (location) {
-      menuItems.push(
-        <DropdownMenuRadioItem
-          key={key}
-          value={key.toString()}
-          className="hover:cursor-pointer w-full"
-        >
-          {formatAddress(location.address)}
-        </DropdownMenuRadioItem>
-      );
-    } else {
-      hasAvailableSlot = true;
-    }
-  });
-
-  if (hasAvailableSlot) {
+  if (locations.length < 3) {
     menuItems.push(
       <DropdownMenuRadioItem
         key="add-new"
         value="add-new"
-        className="hover:cursor-pointer w-full"
+        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] p-4`}
       >
         Add New Location & Hours
       </DropdownMenuRadioItem>
     );
   }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         asChild
         className={`w-full bg-inherit flex items-center justify-start py-8 shadow-md ${
-          panelSide && "mt-6"
+          panelSide ? "mt-6" : ""
         }`}
       >
         <Button
@@ -326,18 +322,21 @@ const LocationSelector = ({ index, panelSide }: LocationSelectorProps) => {
           <div className="truncate max-w-[87%] text-start select-none text-xl">
             {activeAddress}
           </div>
-
           <RiArrowDownSLine
             className="absolute bottom-[-1] right-0"
             size={50}
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={`w-full ${o.className}`}>
+      <DropdownMenuContent className="min-w-[326px] w-full">
         <DropdownMenuRadioGroup
           value={index.toString()}
           onValueChange={(value) => {
-            router.push(`/selling/my-store/settings/location/${value}`);
+            if (value === "add-new") {
+              router.push("/selling/my-store/settings/location/new");
+            } else {
+              router.push(`/selling/my-store/settings/location/${value}`);
+            }
           }}
           className="w-full"
         >
@@ -347,11 +346,8 @@ const LocationSelector = ({ index, panelSide }: LocationSelectorProps) => {
     </DropdownMenu>
   );
 };
-
 interface CalendarDayProps {
   day: number | null;
-  isLastInRow: boolean;
-  isLastRow: boolean;
   onMouseDown: (day: number | null) => void;
   onMouseEnter: (day: number | null) => void;
   isSelected: boolean;
@@ -366,8 +362,7 @@ const z = Zilla_Slab({
 
 const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
-  isLastInRow,
-  isLastRow,
+
   onMouseDown,
   onMouseEnter,
   isSelected,
@@ -436,8 +431,6 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
       onMouseEnter={handleMouseEnter}
       className={`
         ${day !== null ? "border border-gray-200 h-36 cursor-pointer" : "h-12"}
-        ${isLastInRow ? "border-r-0" : ""}
-        ${isLastRow ? "border-b-0" : ""}
         ${isSelected && day !== null ? "bg-emerald-200/80 border " : ""}
         relative
       `}
@@ -460,7 +453,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
               key={index}
               className={`${
                 z.className
-              } text-[.5rem] sm:text-xs !text-black mt-1 overflow-y-auto ${
+              } text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto ${
                 animationSettings.shouldAnimate ? "daylight-animation" : ""
               }`}
               style={

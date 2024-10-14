@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Wheel from "./wheel";
-import { o } from "./helper-components";
+import { o } from "./helper-components-calendar";
 
 interface TimePickerProps {
   top?: boolean;
