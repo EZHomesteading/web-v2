@@ -52,7 +52,7 @@ interface Props {
         conversationId: string;
         lastMessageAt: Date;
       }[]
-    | null;
+    | undefined;
 }
 const UserMenu = ({
   user,
