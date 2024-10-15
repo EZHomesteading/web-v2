@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
-import { o } from "../selling/(container-selling)/my-store/settings/location/helper-components-calendar";
+import { o } from "@/app/selling/(container-selling)/calendar/(components)/helper-components-calendar";
 
 interface EmptyStateProps {
   title?: string;

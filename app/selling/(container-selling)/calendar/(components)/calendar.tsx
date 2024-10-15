@@ -2,18 +2,18 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { format, addMonths, isValid, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/app/components/ui/button";
-import TimePicker from "./time-slot";
-import { PanelProps } from "./panel";
+import TimePicker from "@/app/selling/(container-selling)/calendar/(components)/time-slot";
 import { toast } from "sonner";
-import StackingPanelLayout from "./panel";
+import StackingPanelLayout, {
+  PanelProps,
+} from "@/app/selling/(container-selling)/calendar/(components)/panel";
 import {
   DeliveryPickupToggle,
   DeliveryPickupToggleMode,
   Mode,
-  ViewEditToggle,
   CustomSwitch,
   CalendarDay,
-} from "./helper-components-calendar";
+} from "@/app/selling/(container-selling)/calendar/(components)/helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import { Location, MonthHours, UserRole } from "@prisma/client";
 import {
@@ -23,7 +23,8 @@ import {
   createDateKey,
   daysOfWeek,
   updateUserHours,
-} from "./helper-functions-calendar";
+} from "@/app/selling/(container-selling)/calendar/(components)/helper-functions-calendar";
+
 type TimeSlot = {
   open: number;
   close: number;

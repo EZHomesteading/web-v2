@@ -288,7 +288,9 @@ const LocationSelector = ({
     >
       <div
         className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
-          location?.id === id ? "bg-black" : "bg-white"
+          location?.id === id || (!id && location.isDefault)
+            ? "bg-black"
+            : "bg-white"
         }`}
       >
         <div className="rounded-full border bg-white p-1"></div>
@@ -336,9 +338,9 @@ const LocationSelector = ({
           value={id}
           onValueChange={(value) => {
             if (value === "add-new") {
-              router.push("/selling/my-store/settings/location/new");
+              router.push("/selling/calendar/new");
             } else {
-              router.push(`/selling/my-store/settings/location/${value}`);
+              router.push(`/selling/calendar/${value}`);
             }
           }}
           className="w-full"

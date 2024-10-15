@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Hours } from "./calendar";
+import { Hours } from "./(components)/calendar";
 import { TimeSlot } from "@prisma/client";
 
 const convertMinutesToTimeString = (minutes: number): string => {

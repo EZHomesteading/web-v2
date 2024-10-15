@@ -25,7 +25,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
               {address}
             </p>
           </div>
-          <Link href={`/selling/my-store/settings/location/${id}`}>
+          <Link href={`/selling/calendar/${id}`}>
             <button
               className="font-extralight text-xs border p-1 rounded-md w-[50px]"
               // disabled={isDisabled}
