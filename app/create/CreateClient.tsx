@@ -23,7 +23,7 @@ import StepFive from "./step5";
 import StepSix from "./step6";
 import { Label } from "../components/ui/label";
 import Help from "./components/help";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -31,12 +31,13 @@ const outfit = Outfit({
 });
 
 interface Props {
+  location: Location | null;
   canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
 }
 
-const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
+const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -613,11 +614,6 @@ const CreateClient = ({ user, index, canReceivePayouts }: Props) => {
             handleProjectHarvestCheckboxChange
           }
           setValue={setValue}
-          harvestDates={harvestDates}
-          setHarvestDates={(newDates: string[]) => {
-            setHarvestDates(newDates);
-            setValue("harvestDates", newDates);
-          }}
         />
       )}
       {step === 4 && (

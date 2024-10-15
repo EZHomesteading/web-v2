@@ -11,6 +11,7 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import Link from "next/link";
+import { Location } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -24,25 +25,27 @@ interface LocationObj {
   hours?: any;
 }
 
-interface UserLocation {
-  [key: number]: LocationObj | null;
-}
-
 interface Props {
+  location: Location | null;
   user: UserInfo;
   apiKey: string;
-  updateFormData: (data: Partial<{ location: UserLocation }>) => void;
+  updateFormData: (data: Partial<{ location: Location }>) => void;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
 
-const StepFive: React.FC<Props> = ({ updateFormData, apiKey, user }) => {
+const StepFive: React.FC<Props> = ({
+  updateFormData,
+  apiKey,
+  user,
+  location,
+}) => {
   const [address, setAddress] = useState("");
   const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    user?.location?.[0]?.coordinates
+    location?.coordinates
       ? {
-          lat: user.location[0].coordinates[1],
-          lng: user.location[0].coordinates[0],
+          lat: location.coordinates[1],
+          lng: location.coordinates[0],
         }
       : { lat: 38, lng: -79 }
   );
@@ -132,12 +135,7 @@ const StepFive: React.FC<Props> = ({ updateFormData, apiKey, user }) => {
         ),
         hours: null,
       };
-
-      const updatedLocation: UserLocation = {
-        0: locationObj,
-      };
-
-      updateFormData({ location: updatedLocation });
+      updateFormData({ location: locationObj });
       setAddress(selectedAddress);
       handleLocationSelect(latLng);
     } catch (error) {
@@ -158,7 +156,7 @@ const StepFive: React.FC<Props> = ({ updateFormData, apiKey, user }) => {
         Add your First Selling Location. Users can have up to Three Selling
         Locations
       </h1>
-      {user.location && user?.location[0] ? (
+      {location ? (
         <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
           You have already added a default location, you can change this in{" "}
           <Link className="underline" href={"/dashboard/my-store/settings"}>

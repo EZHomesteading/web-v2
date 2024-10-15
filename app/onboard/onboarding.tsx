@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { UserInfo } from "@/next-auth";
-import { ExtendedHours } from "@/next-auth";
+//import { ExtendedHours } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
 import { Progress } from "@/app/components/ui/progress";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import StepTen from "./step10";
 import StepEleven from "./step11";
 import { Session } from "next-auth";
 import { HoverButton } from "../components/ui/hoverButton";
+import { Location } from "@prisma/client";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -32,18 +33,19 @@ interface Props {
   apiKey: string;
   canReceivePayouts: boolean | null;
   session: Session;
+  location: Location | null;
 }
 
 interface LocationObj {
   type: string;
   coordinates: number[];
   address: string[];
-  hours?: ExtendedHours;
+  hours?: any;
 }
 
-interface UserLocation {
-  [key: number]: LocationObj | null;
-}
+// interface UserLocation {
+//   [key: number]: LocationObj | null;
+// }
 
 const Onboarding = ({
   user: initialUser,
@@ -51,15 +53,17 @@ const Onboarding = ({
   apiKey,
   canReceivePayouts,
   session,
+  location,
 }: Props) => {
   const router = useRouter();
+  const [openMonths, setOpenMonths] = useState<string[]>([]);
+
   const [step, setStep] = useState(index);
   const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
-    hours?: ExtendedHours;
     image?: string;
     bio?: string;
-    location?: UserLocation;
+    location?: LocationObj;
   }>({});
 
   const [progress, setProgress] = useState(0);
@@ -70,22 +74,8 @@ const Onboarding = ({
   const handleNext = async () => {
     try {
       if (step === 5) {
-        const existingLocations: UserLocation =
-          (user.location as UserLocation) || {};
-        const updatedLocations: UserLocation = {
-          0: {
-            ...formData.location?.[0],
-            hours:
-              formData.location?.[0]?.hours ||
-              existingLocations[0]?.hours ||
-              null,
-          } as LocationObj,
-          ...Object.fromEntries(
-            Object.entries(existingLocations)
-              .filter(([key, value]) => key !== "0" && value !== null)
-              .map(([key, value]) => [Number(key), value])
-          ),
-        };
+        const existingLocations: Location = (location as Location) || {};
+        const updatedLocations: Location = formData.location as Location;
         if (formData.location) {
           const response = await axios.post("/api/useractions/update", {
             location: updatedLocations,
@@ -107,15 +97,15 @@ const Onboarding = ({
           const response = await axios.post("/api/useractions/update", {
             location: {
               0: {
-                coordinates: formData?.location[0]
-                  ? formData?.location[0].coordinates
-                  : user?.location?.[0] && user?.location?.[0].coordinates,
-                address: formData?.location[0]
-                  ? formData?.location[0].address
-                  : user?.location?.[0] && user?.location?.[0].address,
-                hours: formData?.location[0]
-                  ? formData?.location[0].hours
-                  : user?.location?.[0] && user?.location?.[0].hours,
+                coordinates: formData?.location
+                  ? formData?.location.coordinates
+                  : location && location?.coordinates,
+                address: formData?.location
+                  ? formData?.location.address
+                  : location && location?.address,
+                hours: formData?.location
+                  ? formData?.location.hours
+                  : location && location?.hours,
                 type: "Point",
               },
             },
@@ -157,7 +147,7 @@ const Onboarding = ({
     }
   };
   const handlePrevious = () => {
-    if (step === 5 && user?.location === null) {
+    if (step === 5 && location === null) {
       setStep(3);
       setProgress(22);
     } else {
@@ -192,6 +182,7 @@ const Onboarding = ({
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
         {step === 1 && (
           <StepOne
+            location={location}
             session={session}
             canReceivePayouts={canReceivePayouts}
             stepHandler={stepHandler}
@@ -202,6 +193,7 @@ const Onboarding = ({
         {step === 4 && apiKey && <StepFour />}
         {step === 5 && (
           <StepFive
+            location={location}
             user={user}
             apiKey={apiKey}
             updateFormData={updateFormData}
@@ -209,9 +201,11 @@ const Onboarding = ({
         )}
         {step === 6 && (
           <StepSix
+            location={location}
             user={user}
-            formData={formData.location}
+            formData={formData.location?.address}
             updateFormData={updateFormData}
+            setOpenMonths={setOpenMonths}
           />
         )}
         {step === 7 && <StepSeven />}
