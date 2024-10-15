@@ -6,8 +6,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
-import { Hours, Location, TimeSlot } from "@prisma/client";
+import { Location, TimeSlot } from "@prisma/client";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -337,10 +336,10 @@ const LocationSelector = ({
         <DropdownMenuRadioGroup
           value={id}
           onValueChange={(value) => {
-            if (value === "add-new") {
-              router.push("/selling/calendar/new");
+            if (value === "new") {
+              router.push("/selling/availability-calendar/new");
             } else {
-              router.push(`/selling/calendar/${value}`);
+              router.push(`/selling/availability-calendar/${value}`);
             }
           }}
           className="w-full"

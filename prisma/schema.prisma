@@ -28,7 +28,7 @@ enum OrderStatus {
   SELLER_ACCEPTED // if the seller accepts to buyers proposed time, this allows for the conversation to go back and forth
   SELLER_RESCHEDULED // if the buyer proposes a new time, seller rejects it, this allows for the conversation to go back and forth
 
-  SCHEDULING_EXPIRED // If the back-and-forth goes on too long without agreement
+  // SCHEDULING_EXPIRED // If the back-and-forth goes on too long without agreement
 
   // Fulfillment states
   SELLER_PREPARING // seller is preparing the order for pickup 
@@ -108,10 +108,8 @@ type LocationObj {
 }
 
 type Hours {
-  deliveryHours      MonthlyHours[]
-  pickupHours        MonthlyHours[]
-  deliveryExceptions HoursException[]
-  pickupExceptions   HoursException[]
+  delivery Availability[]
+  pickup   Availability[]
 }
 
 type MonthlyHours {
@@ -135,7 +133,7 @@ type TimeSlot {
   capacity Int?
 }
 
-type HoursException {
+type Availability {
   date      DateTime
   timeSlots TimeSlot[]
 }
@@ -289,7 +287,7 @@ model Listing {
   reports         Int?
   shelfLife       Int
   locationId      String     @db.ObjectId
-  location        Location   @relation(fields: [locationId], references: [id])
+  location        Location?  @relation(fields: [locationId], references: [id])
   rating          Int[]
   userId          String     @db.ObjectId
   createdAt       DateTime   @default(now())

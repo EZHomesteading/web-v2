@@ -26,7 +26,7 @@ interface StackingPanelLayoutProps {
   panels: PanelProps[];
   panelSide: boolean;
   mainContentVariants: any;
-  location: any;
+  location: Location;
   id: string;
   mk: string;
   isBasePanelOpen: boolean;
@@ -85,6 +85,8 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const userRole = useCurrentRole();
 
   const handleSaveAddress = async () => {
+    // if (locations.length >= 3) {
+    // }
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
     const newGeoResult = await getLatLngFromAddress(fullAddress);
     setGeoResult(newGeoResult);
@@ -97,6 +99,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       text = "Your store location has been updated";
     }
     if (newGeoResult) {
+      console.log("location id", id);
       try {
         const dataToSend = {
           location: [
@@ -114,7 +117,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               hours: hours,
             },
           ],
-          locationId: id,
+          locationId: location.id,
         };
 
         const response = await axios.post(
@@ -181,7 +184,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   };
   const [showEditAddress, setShowEditAddress] = React.useState(false);
 
-  const [enterManually, setEnterManually] = useState(false);
+  const [enterManually, setEnterManually] = useState(true);
   const [a, b] = useState("");
   const handleDeleteLocation = async () => {
     try {

@@ -2,6 +2,7 @@
 
 import {
   PiBookOpenTextThin,
+  PiCalendarCheckThin,
   PiCardholderThin,
   PiChatCircleThin,
   PiClipboardTextThin,
@@ -129,6 +130,13 @@ const vendorNav: NavigationItem[] = [
     name: "Store Settings",
     icon: CiSettings,
     href: "/selling/my-store/settings",
+    current: false,
+    div: false,
+  },
+  {
+    name: "Availability Calendar",
+    icon: PiCalendarCheckThin,
+    href: "/selling/calendar",
     current: false,
     div: false,
   },

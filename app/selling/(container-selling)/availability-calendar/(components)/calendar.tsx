@@ -2,18 +2,18 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { format, addMonths, isValid, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/app/components/ui/button";
-import TimePicker from "@/app/selling/(container-selling)/calendar/(components)/time-slot";
+import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
 import { toast } from "sonner";
 import StackingPanelLayout, {
   PanelProps,
-} from "@/app/selling/(container-selling)/calendar/(components)/panel";
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/panel";
 import {
   DeliveryPickupToggle,
   DeliveryPickupToggleMode,
   Mode,
   CustomSwitch,
   CalendarDay,
-} from "@/app/selling/(container-selling)/calendar/(components)/helper-components-calendar";
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import { Location, MonthHours, UserRole } from "@prisma/client";
 import {
@@ -23,7 +23,7 @@ import {
   createDateKey,
   daysOfWeek,
   updateUserHours,
-} from "@/app/selling/(container-selling)/calendar/(components)/helper-functions-calendar";
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 
 type TimeSlot = {
   open: number;
@@ -607,7 +607,7 @@ const Calendar = ({ location, id, mk, locations }: p) => {
       toast.error("Time slots overlap. Please adjust the hours.");
       return;
     }
-    if (locations.length > 2) {
+    if (locations.length > 3) {
       toast.error("You may only have up to 3 locations");
     }
     const selectedDates = Object.entries(selectedDays)

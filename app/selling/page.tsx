@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  PiCalendarCheckThin,
   PiChartBarThin,
   PiChatCircleThin,
   PiClipboardTextThin,
@@ -39,6 +40,11 @@ const menuItems = [
     name: "Store Settings",
     icon: <CiSettings className="h8w8" />,
     href: "/selling/my-store/settings",
+  },
+  {
+    name: "Availability Calendar",
+    icon: <PiCalendarCheckThin className="h8w8" />,
+    href: "/selling/availability-calendar",
   },
   {
     name: "My Listings",

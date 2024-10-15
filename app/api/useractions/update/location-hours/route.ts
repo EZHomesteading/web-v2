@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     let updatedLocation;
 
     const existingLocation = await prisma.location.findFirst({
+      
       where: { id : locationId}
     });
 
