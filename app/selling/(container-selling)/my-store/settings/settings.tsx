@@ -2,7 +2,6 @@
 //settings page
 import { Button } from "@/app/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
 import { useState } from "react";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
@@ -27,7 +26,6 @@ import { CiCircleInfo } from "react-icons/ci";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import HoursLocationContainer from "./location-hours-container";
 import AccountCard from "@/app/account/(sidebar-container)/personal-info/account-card";
-import Input from "@/app/account/(sidebar-container)/personal-info/input";
 
 const outfit = Outfit({
   display: "swap",

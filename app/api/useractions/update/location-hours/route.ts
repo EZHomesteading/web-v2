@@ -4,7 +4,6 @@ import prisma from "@/lib/prismadb";
 import { Prisma } from "@prisma/client";
 
 export async function POST(request: Request) {
-  console.log("API route hit: /api/useractions/update/location-hours");
   try {
     const body = await request.json();
     console.log("Received body:", JSON.stringify(body, null, 2));
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
 
     const cleanLocation = (loc: any) => {
       const { 
-        type, coordinates, address, hours, role,
+        type, coordinates, address, hours, role, id,
         ancestorOrigins, href, origin, protocol, host, 
         hostname, port, pathname, search, hash, 
         ...rest
@@ -28,9 +27,7 @@ export async function POST(request: Request) {
 
     let updatedLocation;
 
-    console.log(`Attempting to update or create location at index: ${locationId}`);
     const existingLocation = await prisma.location.findFirst({
-
       where: { id : locationId}
     });
 

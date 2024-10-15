@@ -87,7 +87,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const handleSaveAddress = async () => {
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
-
     const newGeoResult = await getLatLngFromAddress(fullAddress);
     setGeoResult(newGeoResult);
     let hours = null;
@@ -185,6 +184,23 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const [enterManually, setEnterManually] = useState(false);
   const [a, b] = useState("");
+  const handleDeleteLocation = async () => {
+    try {
+      const response = await axios.delete(
+        "/api/useractions/locations-hours/delete-location",
+        {
+          data: { locationId: id },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Store Location deleted");
+        router.replace("/selling/my-store/settings");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const basePanel: PanelProps = {
     content: (
       <div className="flex justify-center w-full">
@@ -344,7 +360,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             )}
           </div>
           <AlertDialog>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger asChild onClick={handleDeleteLocation}>
               <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
                 <div className="text-md sm:text-xl font-light">
                   Delete Location
