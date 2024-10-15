@@ -29,7 +29,7 @@ interface Props {
   location: Location | null;
   user: UserInfo;
   apiKey: string;
-  updateFormData: (data: Partial<{ location: Location }>) => void;
+  updateFormData: (data: Partial<{ location: LocationObj }>) => void;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
