@@ -122,7 +122,7 @@ const StoreSettings = ({ apiKey, locations = [], user }: p) => {
     );
   } else
     return (
-      <div className="flex flex-col mb-8 2xl:w-1/2 px-2">
+      <div className="flex flex-col mb-8 2xl:w-1/2 px-1 md:p-2 lg:p-4 xl:p-6">
         <h1 className="sr-only">Store Settings</h1>
         <div className="text-2xl font-medium pb-0">Store Settings</div>
         {user?.role && user?.id && (

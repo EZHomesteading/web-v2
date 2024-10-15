@@ -14,6 +14,61 @@ enum UserRole {
   PRODUCER
 }
 
+enum OrderStatus {
+  // Initial states
+  PENDING // equivalent of our old order status = 0
+  PAYMENT_FAILED
+  PAID // this will likely not get hit because the order is submitted and new time is proposed in same action, only here in case schema changes
+
+  // Scheduling states
+  BUYER_PROPOSED_TIME // order is placed with a pick up / delivery time
+  BUYER_ACCEPTED_NEW_TIME // if the seller proposes a new time, buyer accepted it, this allows for the conversation to go back and forth
+  BUYER_RESCHEDULED // if the seller proposes a new time, buyer rejects it, this allows for the conversation to go back and forth
+
+  SELLER_ACCEPTED // if the seller accepts to buyers proposed time, this allows for the conversation to go back and forth
+  SELLER_RESCHEDULED // if the buyer proposes a new time, seller rejects it, this allows for the conversation to go back and forth
+
+  SCHEDULING_EXPIRED // If the back-and-forth goes on too long without agreement
+
+  // Fulfillment states
+  SELLER_PREPARING // seller is preparing the order for pickup 
+  SELLER_PREPARING_EXPIRED // seller took longer than SODT to get order ready??
+
+  IN_TRANSIT
+  DELIVERED
+  DELIVERY_CONFIRMED
+
+  READY_FOR_PICKUP
+  PICKED_UP
+
+  // Final states
+  COMPLETED
+  CANCELED
+  REFUNDED
+
+  // Issue states
+  DISPUTED
+  DISPUTE_UNDER_REVIEW
+
+  DISPUTE_IN_SELLER_FAVOR
+  DISPUTE_IN_BUYER_FAVOR
+
+  ADMIN_RESOLVED_DISPUTE
+  BUYER_RESOLVED_DISPUTE
+  SELLER_RESOLVED_DISPUTE
+
+  DISPUTEE_RESPONDED
+  DISPUTER_RESPONDED
+
+  BUYER_NO_SHOW // If the buyer doesn't show up for pickup
+  SELLER_NO_SHOW // If the seller doesn't make the order available at the agreed time
+}
+
+type OrderHistory {
+  status OrderStatus
+  date   DateTime    @default(now())
+}
+
 enum DisputeReason {
   NO_DELIVERY
   SPOILED
@@ -92,6 +147,7 @@ model Location {
   userId      String    @db.ObjectId
   user        User      @relation(fields: [userId], references: [id])
   listings    Listing[]
+  orders      Order[]
   type        String
   coordinates Float[]
   address     String[]
@@ -253,9 +309,9 @@ model Cart {
   quantity  Int       @default(1)
   pickup    DateTime?
   price     Float
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  // fee       Fees[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   @@unique([userId, listingId])
 }
@@ -266,27 +322,37 @@ model TransactionHistory {
   totalPrice Float
 }
 
+type Fees {
+  site     Float?
+  delivery Float?
+  other    Float[]
+}
+
 model Order {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String      @db.ObjectId
-  listingIds      String[]
-  sellerId        String      @db.ObjectId
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+
+  listingIds String[]
+  sellerId   String   @db.ObjectId
+
   pickupDate      DateTime
   paymentIntentId String?
   quantity        String
   totalPrice      Float
-  status          Int         @default(0)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  completedAt     DateTime?
-  fee             Float
-  location        LocationObj
-  conversationId  String?     @db.ObjectId
-  payments        Payment[]
+  status          OrderStatus @default(PENDING)
 
-  dispute Dispute?
-  buyer   User?    @relation(name: "buyer", fields: [userId], references: [id])
-  seller  User?    @relation(name: "seller", fields: [sellerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fee            Fees
+  conversationId String?        @db.ObjectId
+  payments       Payment[]
+  history        OrderHistory[]
+  dispute        Dispute?
+  buyer          User?          @relation(name: "buyer", fields: [userId], references: [id])
+  seller         User?          @relation(name: "seller", fields: [sellerId], references: [id])
+  Location       Location?      @relation(fields: [locationId], references: [id])
+  locationId     String?        @db.ObjectId
 }
 
 model Payment {
@@ -343,7 +409,7 @@ model Dispute {
   userId      String        @db.ObjectId
   email       String
   phone       String
-  status      Int           @default(0)
+  status      OrderStatus   @default(DISPUTED)
   images      String[]
   reason      DisputeReason
   explanation String

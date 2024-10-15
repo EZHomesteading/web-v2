@@ -4,6 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
+import { o } from "../selling/(container-selling)/my-store/settings/location/helper-components-calendar";
 
 interface EmptyStateProps {
   title?: string;
@@ -26,7 +27,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   const router = useRouter();
   if (isMessagePage) {
     title = "Select a chat or start a new conversation";
-    subtitle = "";
+    subtitle = "New conversations begin when an order is placed";
   }
   if (isFollowingPage) {
     title = "No users found";
@@ -43,14 +44,14 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   }
   return (
     <div
-      className="
+      className={`${o.className}
         h-[60vh]
         flex 
         flex-col 
         gap-2 
         justify-center 
         items-center 
-      "
+      `}
     >
       <Heading center title={title} subtitle={subtitle} />
       <div className="w-48 mt-4">
