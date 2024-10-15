@@ -2,6 +2,7 @@
 
 import {
   PiBookOpenTextThin,
+  PiCalendarCheckThin,
   PiCardholderThin,
   PiChatCircleThin,
   PiClipboardTextThin,
@@ -133,6 +134,13 @@ const vendorNav: NavigationItem[] = [
     div: false,
   },
   {
+    name: "Availability Calendar",
+    icon: PiCalendarCheckThin,
+    href: "/selling/calendar",
+    current: false,
+    div: false,
+  },
+  {
     name: "My Listings",
     icon: PiStorefrontThin,
     href: "/selling/my-store",
@@ -187,7 +195,9 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
   return (
     <>
       <div
-        className={`hidden ${o.className} sm:block z-50 relative h-full ${
+        className={`hidden ${
+          o.className
+        } sm:block z-50 relative h-full select-none ${
           isCollapsed ? "w-[2.8rem]" : "w-64"
         } transition-width duration-300`}
       >

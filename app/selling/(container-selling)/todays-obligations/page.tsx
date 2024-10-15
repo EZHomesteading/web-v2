@@ -1,4 +1,3 @@
-import { Button } from "@/app/components/ui/button";
 import VerificationStatus from "./verification-status";
 import { currentUser } from "@/lib/auth";
 import { PrismaClient, UserRole } from "@prisma/client";
@@ -49,7 +48,7 @@ const TodaysObligationsPage = async () => {
     (order) => order.status === 2 || order.status === 5
   );
   return (
-    <>
+    <div className="px:1 md:p-2 lg:p-4 xl:p-6">
       <h1 className="text-2xl font-medium pb-0">Today's Obligations</h1>
       <VerificationStatus />
       <div className="flex justify-between">
@@ -67,7 +66,7 @@ const TodaysObligationsPage = async () => {
         pendingResponse={pendingResponse}
         pendingDelivery={pendingDelivery}
       />
-    </>
+    </div>
   );
 };
 export default TodaysObligationsPage;

@@ -4,7 +4,8 @@ import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getAccountByUserId } from "./data/account";
-import { Location, Notification, UserRole } from "@prisma/client";
+import {  Notification, TimeSlot, UserRole } from "@prisma/client";
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -25,7 +26,7 @@ export const {
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+        return false; 
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
@@ -44,9 +45,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
-        (session.user.location as unknown) = token.location as Location;
         session.user.image = token.image as string | undefined;
-        //session.user.hours = token.hours as ExtendedHours;
         session.user.stripeAccountId = token.stripeAccountId as
           | string
           | undefined;
@@ -62,6 +61,7 @@ export const {
         session.user.bio = token.bio as string | undefined;
         session.user.banner = token.banner as string | undefined;
         session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
+        session.user.openClosedTemplates = token.openClosedTemplates as unknown as any
       }
       return session;
     },
@@ -76,7 +76,6 @@ export const {
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber;
-      token.location = existingUser.location;
       token.image = existingUser.image;
       token.hasPickedRole = existingUser.hasPickedRole
       token.url = existingUser.url;
@@ -93,6 +92,7 @@ export const {
       token.SODT = existingUser.SODT;
       token.bio = existingUser.bio;
       token.banner = existingUser.banner;
+      token.openClosedTemplates = existingUser.openCloseTemplates
       return token;
     },
   },

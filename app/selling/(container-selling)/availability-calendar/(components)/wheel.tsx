@@ -6,6 +6,7 @@ interface WheelProps {
   selectedValue: string;
   onSelect: (value: string) => void;
   isHourWheel?: boolean;
+  isOpen: boolean;
 }
 
 const ITEM_HEIGHT = 40;
@@ -15,6 +16,7 @@ const Wheel: React.FC<WheelProps> = ({
   selectedValue,
   onSelect,
   isHourWheel = false,
+  isOpen,
 }) => {
   const wheelRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -36,19 +38,21 @@ const Wheel: React.FC<WheelProps> = ({
       }
 
       scrollTimeout.current = setTimeout(() => {
-        const { scrollTop } = wheelRef.current!;
-        const totalHeight = options.length * ITEM_HEIGHT;
+        if (wheelRef.current) {
+          const scrollTop = wheelRef.current.scrollTop;
+          const totalHeight = options.length * ITEM_HEIGHT;
 
-        let adjustedScrollTop = scrollTop % totalHeight;
-        if (adjustedScrollTop < 0) {
-          adjustedScrollTop += totalHeight;
+          let adjustedScrollTop = scrollTop % totalHeight;
+          if (adjustedScrollTop < 0) {
+            adjustedScrollTop += totalHeight;
+          }
+
+          const rawIndex = adjustedScrollTop / ITEM_HEIGHT;
+          const index = Math.round(rawIndex) % options.length;
+
+          wheelRef.current.scrollTop = index * ITEM_HEIGHT;
+          onSelect(options[index]);
         }
-
-        const rawIndex = adjustedScrollTop / ITEM_HEIGHT;
-        const index = Math.round(rawIndex) % options.length;
-
-        wheelRef.current!.scrollTop = index * ITEM_HEIGHT;
-        onSelect(options[index]);
         isScrolling.current = false;
       }, 100);
     }
@@ -81,7 +85,9 @@ const Wheel: React.FC<WheelProps> = ({
       return (
         <div
           key={`${option}-${index}`}
-          className="flex items-center justify-center text-xl text-black transition-all duration-200"
+          className={`flex items-center justify-center text-xl text-black transition-all duration-200 ${
+            !isOpen && " hover:cursor-not-allowed text-neutral-600"
+          }`}
           style={{
             transform: `rotateX(${rotateX}deg) scale(${scale})`,
             opacity: opacity,
@@ -107,7 +113,9 @@ const Wheel: React.FC<WheelProps> = ({
       onKeyDown={handleKeyDown}
     >
       <div
-        className="absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide"
+        className={`${
+          !isOpen && " hover:cursor-not-allowed text-neutral-600"
+        } absolute inset-0 flex flex-col items-center overflow-y-auto scrollbar-hide`}
         ref={wheelRef}
         onScroll={handleScroll}
         style={{
@@ -125,16 +133,22 @@ const Wheel: React.FC<WheelProps> = ({
       </div>
       <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center">
         <button
-          className="p-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+          className={`${
+            !isOpen && " hover:cursor-not-allowed text-neutral-600"
+          } p-1 text-gray-500 hover:text-gray-700 focus:outline-none`}
           onClick={() => navigateOption(-1)}
           aria-label="Previous option"
+          disabled={!isOpen}
         >
           <ChevronUp size={16} />
         </button>
         <button
-          className="p-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+          className={`p-1 text-gray-500 hover:text-gray-700 focus:outline-none ${
+            !isOpen && " hover:cursor-not-allowed text-neutral-600"
+          }`}
           onClick={() => navigateOption(1)}
           aria-label="Next option"
+          disabled={!isOpen}
         >
           <ChevronDown size={16} />
         </button>

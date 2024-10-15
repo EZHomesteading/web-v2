@@ -1,4 +1,4 @@
-// LocationSearchInput.tsx
+import React from "react";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import PlacesAutocomplete, {
   Suggestion,
@@ -11,6 +11,8 @@ interface LocationSearchInputProps {
   setAddress: React.Dispatch<React.SetStateAction<string>>;
   onLocationSelect: (latLng: google.maps.LatLngLiteral) => void;
   apiKey: string;
+  className?: string;
+  showIcon?: boolean;
 }
 
 const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
@@ -18,6 +20,8 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   setAddress,
   onLocationSelect,
   apiKey,
+  className,
+  showIcon = true,
 }) => {
   const handleChange = (address: string) => {
     setAddress(address);
@@ -43,12 +47,16 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
         <div>
           <div style={{ position: "relative" }}>
-            <LiaMapMarkedSolid className="absolute top-3 left-3" size="3rem" />
+            {showIcon && (
+              <LiaMapMarkedSolid
+                className="absolute top-3 left-3"
+                size="3rem"
+              />
+            )}
             <input
               {...getInputProps({
-                placeholder: "Search by address, city, zip, and state",
-                className:
-                  "peer w-full p-4 pt-6 font-light border-2 rounded-full transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-16",
+                placeholder: "",
+                className: ` ${className || ""}`.trim(),
               })}
             />
 

@@ -1,7 +1,6 @@
 import { Outfit } from "next/font/google";
 import Navbar from "../components/navbar/Navbar";
-import { getNavUser } from "@/actions/getUser";
-import { navUser } from "@/next-auth";
+import { getNavUser, NavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 const outfit = Outfit({
   subsets: ["latin"],
@@ -15,7 +14,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className={`${outfit.className} `}>
       <div className={`sheet min-h-screen w-full ${outfit.className} `}>
-        <Navbar user={user as unknown as navUser} />
+        <Navbar user={user as unknown as NavUser} />
         {children}
       </div>
     </div>

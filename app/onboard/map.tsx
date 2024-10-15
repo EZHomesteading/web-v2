@@ -1,41 +1,44 @@
-// Map.tsx
 "use client";
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Loading from "@/app/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
-import { UserInfo } from "@/next-auth";
 import LocationSearchInput from "../components/map/LocationSearchInput";
 
 interface MapProps {
   mk: string;
-  user?: UserInfo;
   center?: { lat: number; lng: number };
   showSearchBar?: boolean;
   h?: number;
   w?: number;
+  z?: number;
+  maxZ?: number;
+  minZ?: number;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
 
+const customSvgMarker = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="48" fill="rgba(42, 157, 244, 0.3)" stroke="rgba(42, 157, 244, 0.6)" stroke-width="2" />
+
+</svg>
+`;
+
 const Map = ({
   mk,
-  user,
   showSearchBar = true,
   center = { lat: 38, lng: -79 },
   h,
   w,
+  z = 14,
+  minZ = 12,
+  maxZ = 15,
 }: MapProps) => {
   const [address, setAddress] = useState("");
-  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    user?.location?.[0]?.coordinates
-      ? {
-          lat: user.location[0].coordinates[1],
-          lng: user.location[0].coordinates[0],
-        }
-      : center
-  );
-  const [zoom, setZoom] = useState(6);
+  const [currentCenter, setCurrentCenter] =
+    useState<google.maps.LatLngLiteral>(center);
+  const [zoom, setZoom] = useState(z);
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -48,9 +51,25 @@ const Map = ({
   const handleLocationSelect = useCallback(
     (latLng: google.maps.LatLngLiteral) => {
       setCurrentCenter(latLng);
-      setZoom(15);
+      setZoom(14);
     },
     []
+  );
+
+  const getApproximatePosition = useCallback(
+    (position: google.maps.LatLngLiteral) => {
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = Math.random() * 0.005; // Adjust this value to control the maximum distance
+      const lat = position.lat + radius * Math.cos(angle);
+      const lng = position.lng + radius * Math.sin(angle);
+      return { lat, lng };
+    },
+    []
+  );
+
+  const approximatePosition = useMemo(
+    () => getApproximatePosition(currentCenter),
+    [currentCenter, getApproximatePosition]
   );
 
   const mapOptions: google.maps.MapOptions = {
@@ -62,12 +81,19 @@ const Map = ({
     mapTypeControl: false,
     fullscreenControl: false,
     keyboardShortcuts: false,
-    clickableIcons: true,
+    clickableIcons: false,
     disableDefaultUI: true,
-    maxZoom: 13,
+    maxZoom: maxZ,
     scrollwheel: true,
-    minZoom: 4,
+    minZoom: minZ,
     gestureHandling: "greedy",
+    styles: [
+      {
+        featureType: "all",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+    ],
   };
 
   useEffect(() => {
@@ -87,6 +113,7 @@ const Map = ({
   if (!isLoaded) {
     return <Loading />;
   }
+
   const mapContainerStyle =
     h && w
       ? `h-[${h}px] w-[${w}px] rounded-lg shadow-lg`
@@ -95,6 +122,7 @@ const Map = ({
       : w
       ? `w-[${w}px] h-screen`
       : "h-screen w-screen";
+
   return (
     <div className={`relative touch-none`}>
       {showSearchBar && (
@@ -107,7 +135,7 @@ const Map = ({
           />
         </div>
       )}
-
+      <div>This is how your location will appear to buyers.</div>
       <GoogleMap
         onLoad={(map) => {
           mapRef.current = map;
@@ -115,7 +143,16 @@ const Map = ({
         mapContainerClassName={mapContainerStyle}
         options={mapOptions}
       >
-        <MarkerF position={currentCenter} />
+        <MarkerF
+          position={approximatePosition}
+          icon={{
+            url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+              customSvgMarker
+            )}`,
+            scaledSize: new google.maps.Size(200, 200),
+            anchor: new google.maps.Point(100, 100),
+          }}
+        />
       </GoogleMap>
     </div>
   );

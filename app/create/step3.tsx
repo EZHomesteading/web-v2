@@ -159,7 +159,9 @@ const StepThree: React.FC<StepThreeProps> = ({
                 {...commonInputProps}
                 id={!projectHarvest ? "projectedStock" : "stock"}
                 label={
-                  !projectHarvest ? "Expected Quantity Per Day" : "Quantity"
+                  !projectHarvest
+                    ? "Estimated Seasonal Yield For Market"
+                    : "Quantity"
                 }
                 type="number"
                 maxlength={6}

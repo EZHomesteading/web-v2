@@ -22,15 +22,15 @@ const Avatar: React.FC<AvatarProps> = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <div className="relative">
+        <div className="relative select-none">
           <div
-            className={`relative inline-block rounded-full overflow-hidden h-${h} w-${h} md:h-${h2} md:w-${h2}`}
+            className={`relative inline-block rounded-full overflow-hidden h-${h} w-${h} md:h-${h2} md:w-${h2} `}
           >
             <Image
               fill
               src={image || "/images/website-images/placeholder.jpg"}
               alt="Avatar"
-              className="object-cover"
+              className="object-cover select-none"
             />
           </div>
         </div>
