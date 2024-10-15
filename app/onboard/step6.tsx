@@ -2,11 +2,14 @@ import { useState } from "react";
 import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
 import { Prisma } from "@prisma/client";
 import { ExtendedHours } from "@/next-auth";
-
+import { FieldValues, UseFormSetValue } from "react-hook-form";
 interface p {
   user: any;
   updateFormData: (newData: Partial<{ location: any }>) => void;
   formData: UserLocation | undefined;
+  setValue: UseFormSetValue<FieldValues>;
+  harvestDates: string[];
+  setOpenMonths: (newDates: string[]) => void;
 }
 interface LocationObj {
   type: string;
@@ -31,6 +34,33 @@ const StepSix = ({ user, updateFormData, formData }: p) => {
     console.log(updatedLocation);
     updateFormData({ location: { 0: updatedLocation } });
   };
+  const [openMonths, setOpenMonths] = useState<string[]>([]);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const toggleMonth = (month: string) => {
+    setOpenMonths((prevDates) => {
+      const newDates = prevDates.includes(month)
+        ? prevDates.filter((date) => date !== month)
+        : [...prevDates, month];
+      setValue("harvestDates", newDates);
+      console.log(newDates);
+      return newDates;
+    });
+  };
+
   return (
     <div className="h-full ">
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
