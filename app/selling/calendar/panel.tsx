@@ -6,7 +6,6 @@ import Map from "@/app/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import LocationSearchInput from "@/app/components/map/LocationSearchInput";
 import { LocationSelector, o } from "./helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";

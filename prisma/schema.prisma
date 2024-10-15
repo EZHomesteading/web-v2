@@ -71,6 +71,8 @@ type OrderHistory {
 
 enum DisputeReason {
   NO_DELIVERY
+  SCHEDULING_EXPIRED
+  SELLER_PREPARING_EXPIRED
   SPOILED
   OTHER
 }
@@ -96,11 +98,6 @@ type notifList {
   list String[]
 }
 
-type Times {
-  open  Int
-  close Int
-}
-
 type LocationObj {
   type        String
   coordinates Float[]
@@ -111,13 +108,13 @@ type LocationObj {
 }
 
 type Hours {
-  deliveryHours      MonthHours[]
-  pickupHours        MonthHours[]
-  deliveryExceptions StoreException[]
-  pickupExceptions   StoreException[]
+  deliveryHours      MonthlyHours[]
+  pickupHours        MonthlyHours[]
+  deliveryExceptions HoursException[]
+  pickupExceptions   HoursException[]
 }
 
-type MonthHours {
+type MonthlyHours {
   month Int
   days  DayHours[]
 }
@@ -133,11 +130,12 @@ type DayHours {
 }
 
 type TimeSlot {
-  open  Int
-  close Int
+  open     Int
+  close    Int
+  capacity Int?
 }
 
-type StoreException {
+type HoursException {
   date      DateTime
   timeSlots TimeSlot[]
 }
