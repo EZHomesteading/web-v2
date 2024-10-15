@@ -356,11 +356,14 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 showSearchBar={false}
                 w={400}
                 h={350}
+                z={14}
+                maxZ={14}
+                minZ={14}
               />
             )}
           </div>
           <AlertDialog>
-            <AlertDialogTrigger asChild onClick={handleDeleteLocation}>
+            <AlertDialogTrigger asChild>
               <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
                 <div className="text-md sm:text-xl font-light">
                   Delete Location
@@ -377,7 +380,12 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 to a different locaiton.
               </div>
               <div className="flex items-center justify-between w-full">
-                <Button className="bg-red-500/80 text-white">Delete</Button>
+                <Button
+                  className="bg-red-500/80 text-white"
+                  onClick={handleDeleteLocation}
+                >
+                  Delete
+                </Button>
                 <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                   {" "}
                   Cancel

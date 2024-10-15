@@ -3,45 +3,42 @@ import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Loading from "@/app/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
-import { UserInfo } from "@/next-auth";
 import LocationSearchInput from "../components/map/LocationSearchInput";
 
 interface MapProps {
   mk: string;
-  user?: UserInfo;
   center?: { lat: number; lng: number };
   showSearchBar?: boolean;
   h?: number;
   w?: number;
+  z?: number;
+  maxZ?: number;
+  minZ?: number;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
 
 const customSvgMarker = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <circle cx="100" cy="100" r="98" fill="rgba(42, 157, 244, 0.3)" stroke="rgba(42, 157, 244, 0.6)" stroke-width="2" />
+  <circle cx="100" cy="100" r="48" fill="rgba(42, 157, 244, 0.3)" stroke="rgba(42, 157, 244, 0.6)" stroke-width="2" />
 
 </svg>
 `;
 
 const Map = ({
   mk,
-  user,
   showSearchBar = true,
   center = { lat: 38, lng: -79 },
   h,
   w,
+  z = 14,
+  minZ = 12,
+  maxZ = 15,
 }: MapProps) => {
   const [address, setAddress] = useState("");
-  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    user?.location?.[0]?.coordinates
-      ? {
-          lat: user.location[0].coordinates[1],
-          lng: user.location[0].coordinates[0],
-        }
-      : center
-  );
-  const [zoom, setZoom] = useState(14);
+  const [currentCenter, setCurrentCenter] =
+    useState<google.maps.LatLngLiteral>(center);
+  const [zoom, setZoom] = useState(z);
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -86,9 +83,9 @@ const Map = ({
     keyboardShortcuts: false,
     clickableIcons: false,
     disableDefaultUI: true,
-    maxZoom: 15,
+    maxZoom: maxZ,
     scrollwheel: true,
-    minZoom: 12,
+    minZoom: minZ,
     gestureHandling: "greedy",
     styles: [
       {

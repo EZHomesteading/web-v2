@@ -1,17 +1,16 @@
 import Link from "next/link";
 
 interface AccountCardProps {
-  locationIndex: number;
+  id: string;
   locationHeading: string;
   address: string;
 }
 
 const AccountCard: React.FC<AccountCardProps> = ({
-  locationIndex,
+  id,
   locationHeading,
   address,
 }) => {
-  console.log(locationIndex);
   return (
     <>
       <div
@@ -26,7 +25,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
               {address}
             </p>
           </div>
-          <Link href={`/selling/my-store/settings/location/${locationIndex}`}>
+          <Link href={`/selling/my-store/settings/location/${id}`}>
             <button
               className="font-extralight text-xs border p-1 rounded-md w-[50px]"
               // disabled={isDisabled}

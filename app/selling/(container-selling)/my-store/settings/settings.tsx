@@ -6,7 +6,7 @@ import { useState } from "react";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import Link from "next/link";
 
 import {
@@ -26,6 +26,7 @@ import { CiCircleInfo } from "react-icons/ci";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import HoursLocationContainer from "./location-hours-container";
 import AccountCard from "@/app/account/(sidebar-container)/personal-info/account-card";
+import { UserInfo } from "@/next-auth";
 
 const outfit = Outfit({
   display: "swap",
@@ -33,14 +34,14 @@ const outfit = Outfit({
 });
 interface p {
   apiKey: string;
+  locations: Location[];
+  user?: UserInfo;
 }
-const StoreSettings = ({ apiKey }: p) => {
-  const user = useCurrentUser();
-
+const StoreSettings = ({ apiKey, locations = [], user }: p) => {
   const [SODT, setSODT] = useState(user?.SODT || 0);
   const [bio, setBio] = useState(user?.bio);
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async () => {
     const formData = {
       SODT: SODT,
       bio: bio,
@@ -49,9 +50,7 @@ const StoreSettings = ({ apiKey }: p) => {
       toast.error(error.message);
     });
   };
-  const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
-  const [image, setImage] = useState<string | undefined>(user?.image);
   const handleEditStart = (cardName: string) => {
     setEditingCard(cardName);
   };
@@ -128,7 +127,7 @@ const StoreSettings = ({ apiKey }: p) => {
         <div className="text-2xl font-medium pb-0">Store Settings</div>
         {user?.role && user?.id && (
           <HoursLocationContainer
-            location={user?.location}
+            locations={locations}
             apiKey={apiKey}
             role={user?.role}
             id={user.id}
