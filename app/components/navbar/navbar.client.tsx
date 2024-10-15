@@ -23,7 +23,7 @@ interface NavbarProps {
         conversationId: string;
         lastMessageAt: Date;
       }[]
-    | null;
+    | undefined;
 }
 
 const Navbar = ({
