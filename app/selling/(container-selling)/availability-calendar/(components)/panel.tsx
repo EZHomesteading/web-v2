@@ -1,11 +1,11 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import Map from "@/app/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LocationSelector, o } from "./helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";
@@ -26,8 +26,8 @@ interface StackingPanelLayoutProps {
   panels: PanelProps[];
   panelSide: boolean;
   mainContentVariants: any;
-  location: Location;
-  id: string;
+  location?: Location;
+  id?: string;
   mk: string;
   isBasePanelOpen: boolean;
   setIsBasePanelOpen: (isOpen: boolean) => void;
@@ -85,8 +85,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const userRole = useCurrentRole();
 
   const handleSaveAddress = async () => {
-    // if (locations.length >= 3) {
-    // }
+    if (locations.length >= 3) {
+      toast.error("Sellers are restricted to three locations for now");
+    }
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
     const newGeoResult = await getLatLngFromAddress(fullAddress);
     setGeoResult(newGeoResult);
@@ -99,7 +100,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       text = "Your store location has been updated";
     }
     if (newGeoResult) {
-      console.log("location id", id);
       try {
         const dataToSend = {
           location: [
@@ -117,7 +117,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               hours: hours,
             },
           ],
-          locationId: location.id,
+          locationId: location?.id || "",
         };
 
         const response = await axios.post(
@@ -182,7 +182,15 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
     return baseStyle;
   };
-  const [showEditAddress, setShowEditAddress] = React.useState(false);
+
+  const [showEditAddress, setShowEditAddress] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/selling/availability-calendar/new-location") {
+      setShowEditAddress(true);
+    }
+  }, [pathname]);
 
   const [enterManually, setEnterManually] = useState(true);
   const [a, b] = useState("");
@@ -191,12 +199,12 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       const response = await axios.delete(
         "/api/useractions/locations-hours/delete-location",
         {
-          data: { locationId: id },
+          data: { locationId: location?.id || "" },
         }
       );
       if (response.status === 200) {
         toast.success("Store Location deleted");
-        router.replace("/selling/my-store/settings");
+        router.replace("/selling/availability-calendar");
       }
     } catch (error) {
       console.error(error);
@@ -227,6 +235,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 panelSide={panelSide}
                 address={location?.address}
                 locations={locations}
+                pathname={pathname}
               />
               {showEditAddress ? (
                 <>
@@ -364,37 +373,39 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               />
             )}
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
-                <div className="text-md sm:text-xl font-light">
-                  Delete Location
-                </div>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent
-              className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
-            >
-              <div className="text-2xl">Are you sure?</div>
-              <div className="text-sm">
-                Once a location is deleted, all listings with its location will
-                also be lost. Please move any listings you do not want to lose
-                to a different locaiton.
-              </div>
-              <div className="flex items-center justify-between w-full">
-                <Button
-                  className="bg-red-500/80 text-white"
-                  onClick={handleDeleteLocation}
-                >
-                  Delete
+          {pathname !== "/selling/availability-calendar/new-location" && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
+                  <div className="text-md sm:text-xl font-light">
+                    Delete Location
+                  </div>
                 </Button>
-                <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                  {" "}
-                  Cancel
-                </AlertDialogCancel>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
+              </AlertDialogTrigger>
+              <AlertDialogContent
+                className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
+              >
+                <div className="text-2xl">Are you sure?</div>
+                <div className="text-sm">
+                  Once a location is deleted, all listings with its location
+                  will also be lost. Please move any listings you do not want to
+                  lose to a different locaiton.
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <Button
+                    className="bg-red-500/80 text-white"
+                    onClick={handleDeleteLocation}
+                  >
+                    Delete
+                  </Button>
+                  <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                    {" "}
+                    Cancel
+                  </AlertDialogCancel>
+                </div>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
     ),

@@ -1,7 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
-import { ExtendedHours } from "@/next-auth";
 import { Location } from "@prisma/client";
 
 interface p {
@@ -33,7 +32,7 @@ const getLocationByIndex = async ({ userId, index }: GetLocationByIndexParams) =
         locations:true
       }
     });
-
+    console.log("user with locations")
     if (!user || !user.locations) {
       return null;
     }
@@ -456,6 +455,9 @@ const getUserLocations = async ({ userId }:{userId:string}): Promise<Location[] 
       where: {
         userId: userId,
       },
+      include:{
+        user:true,
+      }
     });
 
     return locations;
@@ -674,7 +676,7 @@ const getNavUser = async (): Promise<NavUser | null> => {
             listingId: true,
           },
         },
-        locations: true, // Changed from location to locations
+        locations: true, 
         buyerOrders: {
           select: {
             id: true,

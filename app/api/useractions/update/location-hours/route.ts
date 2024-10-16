@@ -27,13 +27,7 @@ export async function POST(request: Request) {
 
     let updatedLocation;
 
-    const existingLocation = await prisma.location.findFirst({
-      
-      where: { id : locationId}
-    });
-
-
-    if (existingLocation) {
+    if (location?.id) {
       console.log("Updating existing location");
       updatedLocation = await prisma.location.update({
         where: { id: locationId },
