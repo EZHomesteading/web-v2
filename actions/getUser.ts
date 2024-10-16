@@ -35,7 +35,7 @@ const getLocationByIndex = async ({
         locations: true,
       },
     });
-
+    console.log("userwithLocations", user);
     if (!user || !user.locations) {
       return null;
     }

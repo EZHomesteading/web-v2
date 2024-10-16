@@ -208,11 +208,24 @@ const Onboarding = ({
             setOpenMonths={setOpenMonths}
           />
         )}
-        {step === 7 && <StepSeven />}
+        {step === 7 && (
+          <StepSeven
+            location={location}
+            user={user}
+            formData={formData.location?.address}
+            updateFormData={updateFormData}
+            setOpenMonths={setOpenMonths}
+          />
+        )}
         {step === 8 && (
           <StepEight
-            userImage={formData.image || user?.image}
+            location={location}
+            user={user}
+            formData={formData.location?.address}
             updateFormData={updateFormData}
+            setOpenMonths={setOpenMonths}
+            // userImage={formData.image || user?.image}
+            // updateFormData={updateFormData}
           />
         )}
         {step === 9 && (
