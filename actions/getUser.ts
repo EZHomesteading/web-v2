@@ -35,7 +35,9 @@ const getLocationByIndex = async ({
         locations: true,
       },
     });
+
     console.log("userwithLocations", user);
+
     if (!user || !user.locations) {
       return null;
     }
@@ -469,6 +471,9 @@ const getUserLocations = async ({
       where: {
         userId: userId,
       },
+      include:{
+        user:true,
+      }
     });
 
     return locations;
@@ -696,7 +701,7 @@ const getNavUser = async (): Promise<NavUser | null> => {
             listingId: true,
           },
         },
-        locations: true, // Changed from location to locations
+        locations: true, 
         buyerOrders: {
           select: {
             id: true,

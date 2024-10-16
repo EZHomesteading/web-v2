@@ -112,11 +112,6 @@ type Hours {
   pickup   Availability[]
 }
 
-type MonthlyHours {
-  month Int
-  days  DayHours[]
-}
-
 type OpenCloseTemplates {
   title     String
   timeSlots TimeSlot[]

@@ -45,22 +45,21 @@ const DeliveryPickupToggle = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="relative select-none hover:bg-inherit rounded-full mr-1 text-xs sm:text-sm flex items-center justify-start bg-inherit px-2 sm:px-4"
+          className="relative select-none hover:bg-inherit rounded-full text-xs sm:text-sm flex items-center justify-start bg-inherit px-2 sm:px-4"
         >
-          {panelSide && (
-            <>
-              {mode === DeliveryPickupToggleMode.DELIVERY ? (
-                <PiCarProfileThin className="h-8 w-8 pr-1" />
-              ) : (
-                <PiHouseLineThin className="h-6 w-6 pr-1" />
-              )}
-              <div className="border-l h-full pr-1" />
-            </>
+          {mode === DeliveryPickupToggleMode.DELIVERY ? (
+            <PiCarProfileThin className="h-8 w-8 pr-1" />
+          ) : (
+            <PiHouseLineThin className="h-6 w-6 pr-1" />
           )}
 
-          {mode === DeliveryPickupToggleMode.DELIVERY
-            ? "Delivery"
-            : "Pickup & Dropoff"}
+          {panelSide && (
+            <>
+              {mode === DeliveryPickupToggleMode.DELIVERY
+                ? "Delivery"
+                : "Pickup & Dropoff"}
+            </>
+          )}
           <div className="border-r h-full pl-1" />
           <RiArrowDownSLine className="h-6 w-6 pl-1" />
         </Button>
@@ -123,7 +122,116 @@ const DeliveryPickupToggle = ({
     </DropdownMenu>
   );
 };
+interface LocationSelectorProps {
+  id?: string;
+  panelSide: boolean;
+  address: any;
+  locations: Location[];
+  pathname: string | null;
+  inPanel?: boolean;
+}
 
+const LocationSelector = ({
+  id,
+  panelSide,
+  address,
+  locations,
+  pathname,
+  inPanel = true,
+}: LocationSelectorProps) => {
+  const router = useRouter();
+
+  const formatAddress = (address: string[]): string => {
+    return address.join(", ");
+  };
+  let activeAddress;
+  activeAddress = address ? address[0] : "New Location";
+  console.log(pathname);
+  const menuItems = locations.map((location: Location, idx: number) => (
+    <DropdownMenuRadioItem
+      key={idx}
+      value={location.id}
+      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+    >
+      <div
+        className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
+          location?.id === id ||
+          (!id &&
+            location.isDefault &&
+            pathname !== "/selling/availability-calendar/new-location")
+            ? "bg-black"
+            : "bg-white"
+        }`}
+      >
+        <div className="rounded-full border bg-white p-1"></div>
+      </div>{" "}
+      {formatAddress(location.address)}
+    </DropdownMenuRadioItem>
+  ));
+
+  if (locations.length < 3) {
+    menuItems.push(
+      <DropdownMenuRadioItem
+        key={`new`}
+        value={`new`}
+        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+      >
+        <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
+        Add New Location & Hours
+      </DropdownMenuRadioItem>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        asChild
+        className={`${
+          inPanel
+            ? "w-full bg-inherit flex items-center justify-start py-8 shadow-md mt-6 rounded-xl"
+            : "rounded-full bg-inherit "
+        } `}
+      >
+        <Button
+          variant="outline"
+          className={`relative select-none hover:bg-inherit ${
+            inPanel ? "rounded-md" : "rounded-full"
+          } mr-1 text-xs sm:text-sm flex items-center justify-start bg-inherit px-2 sm:px-4`}
+        >
+          <div
+            className={`truncate max-w-[87%] text-start select-none ${
+              inPanel ? "text-xl" : "text-sm"
+            }`}
+          >
+            {activeAddress}
+          </div>
+          {!inPanel && <div className="border-r h-full pl-1" />}
+
+          <RiArrowDownSLine
+            className={`${
+              inPanel ? "absolute right-0 top-3 h-10 w-10" : "h-6 w-6"
+            } `}
+          />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-[326px] w-full">
+        <DropdownMenuRadioGroup
+          value={id}
+          onValueChange={(value) => {
+            if (value === "new") {
+              router.push("/selling/availability-calendar/new-location");
+            } else {
+              router.push(`/selling/availability-calendar/${value}`);
+            }
+          }}
+          className="w-full"
+        >
+          {menuItems}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 interface CustomSwitchProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -258,98 +366,6 @@ const ViewEditToggle = ({
   );
 };
 
-interface LocationSelectorProps {
-  id: string;
-  panelSide: boolean;
-  address: any;
-  locations: Location[];
-}
-
-const LocationSelector = ({
-  id,
-  panelSide,
-  address,
-  locations,
-}: LocationSelectorProps) => {
-  const router = useRouter();
-
-  const formatAddress = (address: string[]): string => {
-    return address.join(", ");
-  };
-  let activeAddress;
-  activeAddress = address ? address[0] : "New Location";
-
-  const menuItems = locations.map((location: Location, idx: number) => (
-    <DropdownMenuRadioItem
-      key={idx}
-      value={location.id}
-      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
-    >
-      <div
-        className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
-          location?.id === id || (!id && location.isDefault)
-            ? "bg-black"
-            : "bg-white"
-        }`}
-      >
-        <div className="rounded-full border bg-white p-1"></div>
-      </div>{" "}
-      {formatAddress(location.address)}
-    </DropdownMenuRadioItem>
-  ));
-
-  if (locations.length < 3) {
-    menuItems.push(
-      <DropdownMenuRadioItem
-        key={locations.length.toString()}
-        value={locations.length.toString()}
-        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
-      >
-        <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
-        Add New Location & Hours
-      </DropdownMenuRadioItem>
-    );
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        asChild
-        className={`w-full bg-inherit flex items-center justify-start py-8 shadow-md ${
-          panelSide ? "mt-6" : ""
-        }`}
-      >
-        <Button
-          variant="outline"
-          className="w-full relative select-none hover:bg-inherit"
-        >
-          <div className="truncate max-w-[87%] text-start select-none text-xl">
-            {activeAddress}
-          </div>
-          <RiArrowDownSLine
-            className="absolute bottom-[-1] right-0"
-            size={50}
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-[326px] w-full">
-        <DropdownMenuRadioGroup
-          value={id}
-          onValueChange={(value) => {
-            if (value === "new") {
-              router.push("/selling/availability-calendar/new");
-            } else {
-              router.push(`/selling/availability-calendar/${value}`);
-            }
-          }}
-          className="w-full"
-        >
-          {menuItems}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
 interface CalendarDayProps {
   day: number | null;
   onMouseDown: (day: number | null) => void;
