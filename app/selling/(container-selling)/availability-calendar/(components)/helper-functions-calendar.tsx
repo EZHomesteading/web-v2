@@ -27,7 +27,7 @@ const createDateKey = (year: number, month: number, day: number): string => {
     .padStart(2, "0")}`;
 };
 
-const updateUserHours = async (updatedHours: Hours, id: string) => {
+const updateUserHours = async (updatedHours: Hours) => {
   try {
     await axios.post("/api/useractions/update/location-hours", {
       location: [
@@ -36,7 +36,6 @@ const updateUserHours = async (updatedHours: Hours, id: string) => {
           hours: updatedHours,
         },
       ],
-      locationId: id,
     });
   } catch (error) {
     console.error("Error updating hours:", error);

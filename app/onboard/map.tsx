@@ -7,7 +7,7 @@ import LocationSearchInput from "../components/map/LocationSearchInput";
 
 interface MapProps {
   mk: string;
-  center?: { lat: number; lng: number };
+  center?: { lat?: number; lng?: number };
   showSearchBar?: boolean;
   h?: number;
   w?: number;
@@ -28,7 +28,7 @@ const customSvgMarker = `
 const Map = ({
   mk,
   showSearchBar = true,
-  center = { lat: 38, lng: -79 },
+  center,
   h,
   w,
   z = 14,
@@ -36,8 +36,9 @@ const Map = ({
   maxZ = 15,
 }: MapProps) => {
   const [address, setAddress] = useState("");
-  const [currentCenter, setCurrentCenter] =
-    useState<google.maps.LatLngLiteral>(center);
+  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
+    center || { lat: 38, lng: -79 }
+  );
   const [zoom, setZoom] = useState(z);
 
   const mapRef = useRef<google.maps.Map | null>(null);

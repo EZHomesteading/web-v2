@@ -13,6 +13,7 @@ import {
   Mode,
   CustomSwitch,
   CalendarDay,
+  LocationSelector,
 } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import { Location, MonthHours, UserRole } from "@prisma/client";
@@ -24,6 +25,8 @@ import {
   daysOfWeek,
   updateUserHours,
 } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import { usePathname } from "next/navigation";
+import { RiArrowDownSLine } from "react-icons/ri";
 
 type TimeSlot = {
   open: number;
@@ -41,8 +44,8 @@ export interface Hours {
   pickupExceptions: StoreException[];
 }
 interface p {
-  location: Location;
-  id: string;
+  location?: Location;
+  id?: string;
   mk: string;
   locations: Location[];
 }
@@ -415,24 +418,28 @@ const Calendar = ({ location, id, mk, locations }: p) => {
 
     return calendarMonths;
   };
+  const pathname = usePathname();
 
   const renderCalendarContent = () => (
-    <div className="flex flex-col h-full select-none">
-      <div className="sticky top-0 z-40 w-full ">
-        <div className="flex justify-end items-center gap-px sm:px-3 pt-2 px-0">
+    <>
+      <div className="sticky top-0 z-40 w-full">
+        <div
+          className="flex justify-start sm:justify-end items-center gap-px sm:px-3 pt-2 px-1 overflow-x-auto scrollbar-hide gap-x-1 flex-nowrap"
+          style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}
+        >
+          <LocationSelector
+            id={id}
+            panelSide={panelSide}
+            address={location?.address}
+            locations={locations}
+            pathname={pathname}
+            inPanel={false}
+          />
           <DeliveryPickupToggle
             panelSide={panelSide}
             onModeChange={handleDeliveryPickupModeChange}
             mode={deliveryPickupMode}
           />
-          {/* <div>
-            <ViewEditToggle
-              panelSide={panelSide}
-              mode={viewEditMode}
-              onModeChange={handleViewEditModeChange}
-            />
-          </div> */}
-
           <Button
             onClick={() => {
               setIsBasePanelOpen(!isBasePanelOpen);
@@ -441,27 +448,32 @@ const Calendar = ({ location, id, mk, locations }: p) => {
             variant="outline"
             className="relative select-none hover:bg-inherit rounded-full flex items-center justify-start bg-inherit ml-1 text-xs mr-2 sm:text-sm px-2 sm:px-4"
           >
-            Settings <div className="border-r h-full pl-1" />
-            <PiGearThin className="h-5 w-5 sm:h-6 sm:w-6 pl-1" />
+            {panelSide && (
+              <>
+                Settings{" "}
+                <div className={`border-r h-full ${panelSide && "pl-1"}`} />
+              </>
+            )}
+
+            <PiGearThin
+              className={`h-5 w-5 sm:h-6 sm:w-6 ${panelSide && "pl-1"}`}
+            />
+            {!panelSide && (
+              <>
+                <div className="border-r h-full pl-1" />
+                <RiArrowDownSLine className="h-6 w-6 pl-1" />
+              </>
+            )}
           </Button>
         </div>
-        <div className="grid grid-cols-7 gap-px w-full border-b border-gray-200">
+        <div className="grid grid-cols-7 gap-px w-full border-b border-gray-200 select-none">
           {daysOfWeek.map((day) => (
-            <div
-              key={day}
-              className="text-center font-bold p-2"
-              // onClick={() => {
-              //   const currentMonth = currentDate.getMonth();
-              //   const currentYear = currentDate.getFullYear();
-              //   selectAllDaysOfWeekInMonth(index, currentYear, currentMonth);
-              // }}
-            >
+            <div key={day} className="text-center font-bold p-2">
               {day}
             </div>
           ))}
         </div>
       </div>
-
       <div
         className="flex-grow overflow-y-auto"
         ref={containerRef}
@@ -494,7 +506,7 @@ const Calendar = ({ location, id, mk, locations }: p) => {
           </Button>
         </div>
       )}
-    </div>
+    </>
   );
 
   const handleDeliveryPickupModeChange = (
@@ -659,7 +671,7 @@ const Calendar = ({ location, id, mk, locations }: p) => {
     setHours(updatedHours);
 
     try {
-      await updateUserHours(updatedHours, id);
+      await updateUserHours(updatedHours);
       toast.success("Hours updated successfully");
     } catch (error) {
       console.error("Error updating hours:", error);
