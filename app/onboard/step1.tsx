@@ -3,7 +3,7 @@ import { Outfit } from "next/font/google";
 import FinTab from "./fintab";
 import { Session } from "next-auth";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -12,11 +12,17 @@ const outfit = Outfit({
   display: "swap",
 });
 interface Props {
+  location: Location | null;
   session: Session;
   canReceivePayouts: boolean | null;
   stepHandler: (arg0: number) => void;
 }
-const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
+const StepOne = ({
+  session,
+  canReceivePayouts,
+  stepHandler,
+  location,
+}: Props) => {
   const router = useRouter();
   const consumerUpdate = async () => {
     try {
@@ -51,13 +57,12 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
               )}
               {session &&
                 session.user &&
-                session.user.location &&
-                session.user.location[0] &&
-                session.user.location[0].address &&
-                session.user.location[0].address[2] !== undefined && (
+                location &&
+                location.address &&
+                location.address[2] !== undefined && (
                   <>
                     <div className="bg-black w-[6px] h-[6px] rounded-full "></div>{" "}
-                    {session.user.location[0].address[1]}
+                    {location.address[1]}
                   </>
                 )}
               <div></div>
@@ -94,8 +99,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                     <FinTab label="Role has been selected" />
                   </>
                 )}
-                {session?.user?.location &&
-                session?.user?.location[0]?.address ? (
+                {location && location.address ? (
                   <FinTab label="You already set a Primary Selling Location" />
                 ) : (
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">
@@ -111,8 +115,7 @@ const StepOne = ({ session, canReceivePayouts, stepHandler }: Props) => {
                     <div className="my-5 border border-b-[1px]"></div>
                   </div>
                 )}
-                {session?.user?.location &&
-                session?.user?.location[0]?.hours ? (
+                {location && location.hours ? (
                   <FinTab label="You already set a Hours for your Primary Selling Location" />
                 ) : (
                   <div className="md:w-[75%] lg:w-[50%] xl:w-[40%] 2xl:w-[55%]">

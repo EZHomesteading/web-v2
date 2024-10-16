@@ -19,8 +19,11 @@ interface GetLocationByIndexParams {
   index: 0 | 1 | 2;
 }
 
-const getLocationByIndex = async ({ userId, index }: GetLocationByIndexParams) => {
-   if (!userId) {
+const getLocationByIndex = async ({
+  userId,
+  index,
+}: GetLocationByIndexParams) => {
+  if (!userId) {
     throw new Error("User ID is required");
   }
   try {
@@ -28,11 +31,13 @@ const getLocationByIndex = async ({ userId, index }: GetLocationByIndexParams) =
       where: {
         id: userId,
       },
-      include:{
-        locations:true
-      }
+      include: {
+        locations: true,
+      },
     });
-    console.log("user with locations")
+
+    console.log("userwithLocations", user);
+
     if (!user || !user.locations) {
       return null;
     }
@@ -57,7 +62,9 @@ interface VendorLocation {
 interface GetVendorsParams {
   role: UserRole;
 }
-const getVendors = async ({ role }: GetVendorsParams): Promise<VendorLocation[]> => {
+const getVendors = async ({
+  role,
+}: GetVendorsParams): Promise<VendorLocation[]> => {
   const session = await authCache();
   try {
     const users = await prisma.user.findMany({
@@ -77,10 +84,13 @@ const getVendors = async ({ role }: GetVendorsParams): Promise<VendorLocation[]>
     });
 
     const filteredUsers = users
-      .filter((user): user is typeof user & { locations: [{ coordinates: number[] }] } =>
-        user.locations.length > 0 && 
-        Array.isArray(user.locations[0].coordinates) &&
-        user.locations[0].coordinates.length === 2
+      .filter(
+        (
+          user
+        ): user is typeof user & { locations: [{ coordinates: number[] }] } =>
+          user.locations.length > 0 &&
+          Array.isArray(user.locations[0].coordinates) &&
+          user.locations[0].coordinates.length === 2
       )
       .map((user) => ({
         id: user.id,
@@ -397,7 +407,9 @@ const getFavCardUser = async (params: Params): Promise<FavCardUser | null> => {
     };
   } catch (error) {
     console.error("Error fetching favorite card user:", error);
-    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
   }
 };
 
@@ -449,7 +461,11 @@ interface GetUserLocationParams {
   userId: string;
   index: number;
 }
-const getUserLocations = async ({ userId }:{userId:string}): Promise<Location[] | null> => {
+const getUserLocations = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<Location[] | null> => {
   try {
     const locations = await prisma.location.findMany({
       where: {
@@ -463,17 +479,22 @@ const getUserLocations = async ({ userId }:{userId:string}): Promise<Location[] 
     return locations;
   } catch (error) {
     console.error("Error fetching user location:", error);
-    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
   }
 };
-const getUserLocation = async ({ userId, index }: GetUserLocationParams): Promise<Location | null> => {
+const getUserLocation = async ({
+  userId,
+  index,
+}: GetUserLocationParams): Promise<Location | null> => {
   try {
     const location = await prisma.location.findFirst({
       where: {
         userId: userId,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: "asc",
       },
       skip: index,
       take: 1,
@@ -482,7 +503,9 @@ const getUserLocation = async ({ userId, index }: GetUserLocationParams): Promis
     return location;
   } catch (error) {
     console.error("Error fetching user location:", error);
-    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
   }
 };
 function filterListingsByLocation(listings: FinalListingShop[]) {
@@ -498,7 +521,6 @@ function filterListingsByLocation(listings: FinalListingShop[]) {
 //       listing.location.hours !== "null"
 //   );
 // }
-
 
 // Update the getUserStore function
 const getUserStore = async (
@@ -566,29 +588,32 @@ const getUserStore = async (
       })
     );
 
-    const safeListings = await Promise.all(user.listings.map(async (listing) => {
-      const location = await getUserLocation({
-        userId: user.id,
-        index: listing.location
-      });
-      return {
-        ...listing,
-        location,
-        quantityType: listing.quantityType || '', // Provide default empty string if null
-        minOrder: listing.minOrder || 0, // Provide default 0 if null
-        createdAt: listing.createdAt.toISOString(), // Convert Date to string
-        user: {
-          id: user.id,
-          name: user.name,
-          role: user.role,
-        },
-      } as FinalListingShop; // Type assertion to FinalListingShop
-    }));
+    const safeListings = await Promise.all(
+      user.listings.map(async (listing) => {
+        const location = await getUserLocation({
+          userId: user.id,
+          index: listing.location,
+        });
+        return {
+          ...listing,
+          location,
+          quantityType: listing.quantityType || "", // Provide default empty string if null
+          minOrder: listing.minOrder || 0, // Provide default 0 if null
+          createdAt: listing.createdAt.toISOString(), // Convert Date to string
+          user: {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+          },
+        } as FinalListingShop; // Type assertion to FinalListingShop
+      })
+    );
 
-    let resolvedSafeListings = safeListings.filter(listing => 
-      listing.location !== null && 
-      listing.location.hours !== undefined && 
-      listing.location.hours !== null
+    let resolvedSafeListings = safeListings.filter(
+      (listing) =>
+        listing.location !== null &&
+        listing.location.hours !== undefined &&
+        listing.location.hours !== null
     );
 
     return {
@@ -638,14 +663,14 @@ export interface NavUser {
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    seller: { name: string; } | null; // Changed to allow null
+    seller: { name: string } | null; // Changed to allow null
   }[];
   sellerOrders: {
     id: string;
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    buyer: { name: string; } | null; // Changed to allow null
+    buyer: { name: string } | null; // Changed to allow null
   }[];
 }
 
@@ -742,7 +767,9 @@ const getNavUser = async (): Promise<NavUser | null> => {
         }
       });
 
-      updatedCart = (await Promise.all(cartItemsPromises)).filter(item => item !== null);
+      updatedCart = (await Promise.all(cartItemsPromises)).filter(
+        (item) => item !== null
+      );
     }
 
     const navUser: NavUser = {
@@ -753,7 +780,9 @@ const getNavUser = async (): Promise<NavUser | null> => {
     return navUser;
   } catch (error) {
     console.error("Error in getNavUser:", error);
-    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
   }
 };
 
@@ -813,7 +842,7 @@ export {
   getRoleGate,
   getRole,
   getLocationByIndex,
-  getUserLocations
+  getUserLocations,
 };
 
 export type StoreUser = {
@@ -863,4 +892,3 @@ interface Cart {
     };
   };
 }
-
