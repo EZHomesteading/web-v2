@@ -29,7 +29,7 @@ export type UserInfo = DefaultSession["user"] & {
   bio?: string;
   banner?: string;
   hasPickedRole?: boolean;
-  openClosedTemplates?:DayHours[];
+  openClosedTemplates?: DayHours[];
 };
 
 type navBuyOrder = {
@@ -86,7 +86,14 @@ type CartGroups = {
 type UserWithCart = UserInfo & {
   cart: Cart;
 };
-
+type LocationObj = {
+  type: string;
+  coordinates: float[];
+  address: string[];
+  hours: Hours?;
+  role: UserRole;
+  isDefault: boolean?;
+};
 declare module "next-auth" {
   interface Session {
     user: UserInfo;

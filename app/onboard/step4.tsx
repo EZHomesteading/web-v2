@@ -1,45 +1,111 @@
-import Link from "next/link";
-import { Outfit } from "next/font/google";
-import SubToggle from "../chat/components/notificationButton";
+import { Dispatch, SetStateAction, useState, useCallback } from "react";
+import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
+import { Location, Prisma } from "@prisma/client";
+import { LocationObj } from "@/next-auth";
+interface p {
+  location?: LocationObj;
+  user: any;
+  updateFormData: (newData: Partial<{ location: any }>) => void;
+  formData: string[] | undefined;
+  setOpenMonths: Dispatch<SetStateAction<string[]>>;
+}
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+const StepFour = ({
+  user,
+  updateFormData,
+  // setOpenMonths,
+  formData,
+  location,
+}: p) => {
+  const [newLocation, setNewLocation] = useState(user?.location?.[0] || null);
+  const [openMonths, setOpenMonths] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
-const StepFour = () => {
+  const handleHoursChange = (newHours: any) => {
+    let updatedLocation = { ...location, hours: newHours };
+    setNewLocation(updatedLocation);
+    updateFormData({ location: { 0: updatedLocation } });
+  };
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const toggleMonth = useCallback((month: string) => {
+    setOpenMonths((prevMonths) => {
+      const newMonths = prevMonths.includes(month)
+        ? prevMonths.filter((m) => m !== month)
+        : [...prevMonths, month];
+      return newMonths;
+    });
+  }, []);
+
+  const handleMouseDown = (month: string) => {
+    setIsDragging(true);
+    toggleMonth(month);
+  };
+
+  const handleMouseEnter = (month: string) => {
+    if (isDragging) {
+      toggleMonth(month);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Notification Settings
+        Set Up Your Store Hours for{" "}
+        {formData && formData[0]
+          ? `${formData[0]}`
+          : user.locations
+          ? user.locations[1].address[1]
+          : "no location set"}
       </div>
-      <div className="h-full flex flex-col items-center sm:pt-[10%] pt-[30%] px-10">
+      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
+        Select the Months you will be open.
+      </div>
+      <div className="text-center text-2xl">
+        You can change your schedule day-to-day in settings later on.
+      </div>
+      <div className="text-center text-2xl">
+        Even if you are only open for one day out of a month, include that month
+        in your selection.
+      </div>
+      <div className="flex flex-col items-center sm:mt-[3%] mt-[3%]">
         <div
-          className={`w-full max-w-2xl flex flex-col items-start text-start ${outfit.className}`}
+          className="grid grid-cols-3 gap-2"
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
         >
-          <div className="text-3xl sm:text-6xl ">Chat Notifications</div>
-          <div className="text-xs sm:text-base mt-2 font-extralight">
-            Allow us to send notifications for chats you receive from buyers. If
-            you are on a apple device you will be required to install our app if
-            you want to receive push notifications. directions for this can be
-            found{" "}
-            <Link className="underline" href={"/get-ezh-app"}>
-              HERE
-            </Link>
-            <div className="flex flex-row justify-center mt-5 text-xs sm:text-sm gap-x-1 sm:gap-x-3">
-              {" "}
-              <div>
-                {" "}
-                Enable/Disable Notifications for this device? This can be
-                changed any time by clicking the bell in the{" "}
-                <Link className="underline" href={"/chat"}>
-                  CHAT PAGE
-                </Link>{" "}
-                or by clicking the bell here.
-              </div>
-              <SubToggle></SubToggle>
-            </div>
-          </div>
+          {months.map((month) => (
+            <button
+              key={month}
+              onMouseDown={() => handleMouseDown(month)}
+              onMouseEnter={() => handleMouseEnter(month)}
+              className={`p-10 text-sm border-[2px] rounded ${
+                openMonths.includes(month)
+                  ? "bg-black text-white"
+                  : "bg-white text-black"
+              }`}
+            >
+              {month}
+            </button>
+          ))}
         </div>
       </div>
     </div>

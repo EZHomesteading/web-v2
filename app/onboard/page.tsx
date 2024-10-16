@@ -3,7 +3,7 @@ import Onboarding from "./onboarding";
 import { Viewport } from "next";
 import authCache from "@/auth-cache";
 import Stripe from "stripe";
-import { getLocationByIndex } from "@/actions/getUser";
+import { getLocationByIndex, getUserLocations } from "@/actions/getUser";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
@@ -16,9 +16,8 @@ const Page = async () => {
   if (!session?.user.id) {
     return;
   }
-  const location = await getLocationByIndex({
+  const locations = await getUserLocations({
     userId: session?.user.id,
-    index: 0,
   });
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -74,7 +73,7 @@ const Page = async () => {
     <div>
       {session?.user && (
         <Onboarding
-          location={location}
+          locations={locations}
           index={index}
           user={session?.user}
           apiKey={apiKey}

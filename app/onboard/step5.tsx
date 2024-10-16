@@ -1,249 +1,106 @@
-import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
-import { useState, useEffect, useRef, useCallback } from "react";
-import Loading from "@/app/components/secondary-loader";
-import { Libraries } from "@googlemaps/js-api-loader";
-import { UserInfo } from "@/next-auth";
-import { Outfit } from "next/font/google";
-import PlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng,
-  Suggestion,
-} from "react-places-autocomplete";
-import { LiaMapMarkedSolid } from "react-icons/lia";
-import Link from "next/link";
-import { Location } from "@prisma/client";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-interface LocationObj {
-  type: string;
-  coordinates: number[];
-  address: string[];
-  hours?: any;
+import { Dispatch, SetStateAction, useState, useCallback } from "react";
+import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
+import { Location, Prisma } from "@prisma/client";
+import { LocationObj } from "@/next-auth";
+interface p {
+  location?: LocationObj;
+  user: any;
+  updateFormData: (newData: Partial<{ location: any }>) => void;
+  formData: string[] | undefined;
+  setOpenMonths: Dispatch<SetStateAction<string[]>>;
 }
 
-interface Props {
-  location: Location | null;
-  user: UserInfo;
-  apiKey: string;
-  updateFormData: (data: Partial<{ location: LocationObj }>) => void;
-}
-
-const libraries: Libraries = ["places", "drawing", "geometry"];
-
-const StepFive: React.FC<Props> = ({
-  updateFormData,
-  apiKey,
+const StepSix = ({
   user,
+  updateFormData,
+  // setOpenMonths,
+  formData,
   location,
-}) => {
-  const [address, setAddress] = useState("");
-  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    location?.coordinates
-      ? {
-          lat: location.coordinates[1],
-          lng: location.coordinates[0],
-        }
-      : { lat: 38, lng: -79 }
-  );
-  const [zoom, setZoom] = useState(6);
+}: p) => {
+  const [newLocation, setNewLocation] = useState(user?.location?.[0] || null);
+  const [openDays, setOpenDays] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const mapRef = useRef<google.maps.Map | null>(null);
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: apiKey,
-    libraries: libraries,
-    version: "3.58",
-  });
-
-  const handleLocationSelect = useCallback(
-    (latLng: google.maps.LatLngLiteral) => {
-      setCurrentCenter(latLng);
-      setZoom(15);
-    },
-    []
-  );
-
-  const mapOptions: google.maps.MapOptions = {
-    center: currentCenter,
-    zoom: zoom,
-    mapId: "86bd900426b98c0a",
-    zoomControl: false,
-    streetViewControl: false,
-    mapTypeControl: false,
-    fullscreenControl: false,
-    keyboardShortcuts: false,
-    clickableIcons: true,
-    disableDefaultUI: true,
-    maxZoom: 13,
-    scrollwheel: true,
-    minZoom: 4,
-    gestureHandling: "greedy",
+  const handleDaysChange = (newDays: any) => {
+    let updatedLocation = { ...location, hours: newDays };
+    setNewLocation(updatedLocation);
+    updateFormData({ location: { 0: updatedLocation } });
   };
 
-  useEffect(() => {
-    const disableDefaultTouchBehavior = (event: TouchEvent) => {
-      event.preventDefault();
-    };
+  const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
-    window.addEventListener("touchmove", disableDefaultTouchBehavior, {
-      passive: false,
+  const toggleMonth = useCallback((days: string) => {
+    setOpenDays((prevDays) => {
+      const newDays = prevDays.includes(days)
+        ? prevDays.filter((d) => d !== days)
+        : [...prevDays, days];
+      return newDays;
     });
-
-    return () => {
-      window.removeEventListener("touchmove", disableDefaultTouchBehavior);
-    };
   }, []);
 
-  const handleChange = (address: string) => {
-    setAddress(address);
+  const handleMouseDown = (days: string) => {
+    setIsDragging(true);
+    toggleMonth(days);
   };
 
-  const handleSelect = async (selectedAddress: string) => {
-    try {
-      const results = await geocodeByAddress(selectedAddress);
-      const latLng = await getLatLng(results[0]);
-
-      const addressComponents = results[0].address_components;
-      const street = [
-        addressComponents.find((component) =>
-          component.types.includes("street_number")
-        )?.long_name,
-        addressComponents.find((component) => component.types.includes("route"))
-          ?.long_name,
-      ]
-        .filter((part): part is string => !!part)
-        .join(" ");
-      const city = addressComponents.find((component) =>
-        component.types.includes("locality")
-      )?.long_name;
-      const state = addressComponents.find((component) =>
-        component.types.includes("administrative_area_level_1")
-      )?.short_name;
-      const zip = addressComponents.find((component) =>
-        component.types.includes("postal_code")
-      )?.long_name;
-
-      const locationObj: LocationObj = {
-        type: "Point",
-        coordinates: [latLng.lng, latLng.lat],
-        address: [street, city, state, zip].filter(
-          (part): part is string => !!part
-        ),
-        hours: null,
-      };
-      updateFormData({ location: locationObj });
-      setAddress(selectedAddress);
-      handleLocationSelect(latLng);
-    } catch (error) {
-      console.error("Error selecting address:", error);
+  const handleMouseEnter = (days: string) => {
+    if (isDragging) {
+      toggleMonth(days);
     }
   };
 
-  if (!isLoaded) {
-    return <Loading />;
-  }
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="h-full">
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Location Setup
+        Set Up Your Store Hours for{" "}
+        {formData && formData[0]
+          ? `${formData[0]}`
+          : user.locations
+          ? user.locations[1].address[1]
+          : "no location set"}
       </div>
-      <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
-        Add your First Selling Location. Users can have up to Three Selling
-        Locations
-      </h1>
-      {location ? (
-        <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
-          You have already added a default location, you can change this in{" "}
-          <Link className="underline" href={"/dashboard/my-store/settings"}>
-            My store Settings
-          </Link>
-        </h1>
-      ) : (
-        <div className={`relative touch-none`}>
-          <div className="absolute z w-full px-2 top-5">
-            <PlacesAutocomplete
-              value={address}
-              onChange={handleChange}
-              onSelect={handleSelect}
+      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
+        Select Days of the week that will have the same hours.
+      </div>
+      <div className="text-center text-2xl">
+        For days with different hours you will be able to select those later.
+      </div>
+      <div className="flex flex-col items-center sm:mt-[2%] mt-[2%]">
+        <div
+          className="grid grid-cols-1 gap-2"
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          {weekDays.map((day) => (
+            <button
+              key={day}
+              onMouseDown={() => handleMouseDown(day)}
+              onMouseEnter={() => handleMouseEnter(day)}
+              className={`p-2 px-20  border-[2px] text-2xl rounded ${
+                openDays.includes(day)
+                  ? "bg-black text-white"
+                  : "bg-white text-black"
+              }`}
             >
-              {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-                <div>
-                  <div style={{ position: "relative" }}>
-                    <LiaMapMarkedSolid
-                      className="absolute top-3 left-3"
-                      size="3rem"
-                    />
-                    <input
-                      {...getInputProps({
-                        placeholder: "Search by address, city, zip, and state",
-                        className:
-                          "peer w-full p-4 pt-6 font-light border-2 rounded-full transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-16",
-                      })}
-                    />
-
-                    <div
-                      className="autocomplete-dropdown-container"
-                      style={{
-                        position: "absolute",
-                        top: "105%",
-                        left: 0,
-                        right: 0,
-                        zIndex: 1000,
-                      }}
-                    >
-                      {suggestions
-                        .slice(0, 3)
-                        .map((suggestion: Suggestion, index: number) => {
-                          const className = suggestion.active
-                            ? "suggestion-item--active bg-green-100"
-                            : "suggestion-item bg-white";
-                          const style = {
-                            backgroundColor: suggestion.active
-                              ? "#fafafa"
-                              : "#ffffff",
-                            cursor: "pointer",
-                            padding: ".5rem",
-                            fontSize: "1rem",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          };
-                          return (
-                            <div
-                              {...getSuggestionItemProps(suggestion, {
-                                className,
-                                style,
-                              })}
-                              key={suggestion.id || index}
-                            >
-                              <span>{suggestion.description}</span>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </PlacesAutocomplete>
-          </div>
-          <GoogleMap
-            onLoad={(map) => {
-              mapRef.current = map;
-            }}
-            mapContainerClassName="sm:h-[550px] sm:w-[400px] h-[400px] w-[300px] rounded-lg shadow-lg"
-            options={mapOptions}
-          >
-            <MarkerF position={currentCenter} />
-          </GoogleMap>
+              {day}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default StepFive;
+export default StepSix;

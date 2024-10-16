@@ -2,7 +2,7 @@
 //onboarding page
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { UserInfo } from "@/next-auth";
+import { LocationObj, UserInfo } from "@/next-auth";
 //import { ExtendedHours } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
 import { Progress } from "@/app/components/ui/progress";
@@ -16,12 +16,11 @@ import StepFive from "./step5";
 import StepSix from "./step6";
 import StepSeven from "./step7";
 import StepEight from "./step8";
-import StepNine from "./step9";
-import StepTen from "./step10";
-import StepEleven from "./step11";
+
 import { Session } from "next-auth";
 import { HoverButton } from "../components/ui/hoverButton";
-import { Location } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
+import { toast } from "sonner";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -33,19 +32,8 @@ interface Props {
   apiKey: string;
   canReceivePayouts: boolean | null;
   session: Session;
-  location: Location | null;
+  locations: Location[] | null;
 }
-
-interface LocationObj {
-  type: string;
-  coordinates: number[];
-  address: string[];
-  hours?: any;
-}
-
-// interface UserLocation {
-//   [key: number]: LocationObj | null;
-// }
 
 const Onboarding = ({
   user: initialUser,
@@ -53,7 +41,7 @@ const Onboarding = ({
   apiKey,
   canReceivePayouts,
   session,
-  location,
+  locations,
 }: Props) => {
   const router = useRouter();
   const [openMonths, setOpenMonths] = useState<string[]>([]);
@@ -61,6 +49,7 @@ const Onboarding = ({
   const [step, setStep] = useState(index);
   const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
+    role?: UserRole;
     image?: string;
     bio?: string;
     location?: LocationObj;
@@ -73,58 +62,68 @@ const Onboarding = ({
 
   const handleNext = async () => {
     try {
-      if (step === 5) {
-        const existingLocations: Location = (location as Location) || {};
-        const updatedLocations: Location = formData.location as Location;
+      if (step === 3) {
+        const existingLocations: Location[] = (locations as Location[]) || {};
+        const updatedLocation: Location = formData.location as Location;
+
         if (formData.location) {
-          const response = await axios.post("/api/useractions/update", {
-            location: updatedLocations,
-          });
+          if (locations && locations.length >= 3) {
+            toast.error("Sellers are restricted to three locations for now");
+          }
+          const response = await axios.post(
+            "/api/useractions/update/location-hours",
+            {
+              location: [updatedLocation],
+            }
+          );
 
           setUser((prevUser) => ({
             ...prevUser,
-            location: response.data.location || updatedLocations,
+            location: response.data.location || updatedLocation,
           }));
 
           setFormData((prevData) => ({
             ...prevData,
-            location: response.data.location || updatedLocations,
+            location: response.data.location || updatedLocation,
           }));
         }
-      } else if (step === 6) {
+      } else if (step === 6 || step === 7 || step === 8) {
         console.log(formData.location);
-        if (formData.location) {
-          const response = await axios.post("/api/useractions/update", {
-            location: {
-              0: {
-                coordinates: formData?.location
-                  ? formData?.location.coordinates
-                  : location && location?.coordinates,
-                address: formData?.location
-                  ? formData?.location.address
-                  : location && location?.address,
-                hours: formData?.location
-                  ? formData?.location.hours
-                  : location && location?.hours,
-                type: "Point",
-              },
-            },
-          });
-          setUser((prevUser) => ({
-            ...prevUser,
-            location: response.data.location || formData.location,
-          }));
-        }
+        // if (formData.location) {
+        //   const response = await axios.post(
+        //     "/api/useractions/update/location-hours",
+        //     {
+        //       location: {
+        //         0: {
+        //           coordinates: formData?.location
+        //             ? formData?.location.coordinates
+        //             : location && location?.coordinates,
+        //           address: formData?.location
+        //             ? formData?.location.address
+        //             : location && location?.address,
+        //           hours: formData?.location
+        //             ? formData?.location.hours
+        //             : location && location?.hours,
+        //           type: "Point",
+        //         },
+        //       },
+        //     }
+        //   );
+        //   setUser((prevUser) => ({
+        //     ...prevUser,
+        //     location: response.data.location || formData.location,
+        //   }));
+        //}
       } else if (step === 8) {
-        if (formData.image) {
-          const response = await axios.post("/api/useractions/update", {
-            image: formData.image,
-          });
-          setUser((prevUser) => ({
-            ...prevUser,
-            image: response.data.image || formData.image,
-          }));
-        }
+        // if (formData.image) {
+        //   const response = await axios.post("/api/useractions/update", {
+        //     image: formData.image,
+        //   });
+        //   setUser((prevUser) => ({
+        //     ...prevUser,
+        //     image: response.data.image || formData.image,
+        //   }));
+        // }
       } else if (step === 9) {
         if (formData.bio) {
           const response = await axios.post("/api/useractions/update", {
@@ -180,28 +179,37 @@ const Onboarding = ({
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
-        {step === 1 && (
-          <StepOne
-            location={location}
-            session={session}
-            canReceivePayouts={canReceivePayouts}
-            stepHandler={stepHandler}
-          />
-        )}
-        {step === 2 && <StepTwo user={user} />}
-        {step === 3 && <StepThree />}
-        {step === 4 && apiKey && <StepFour />}
-        {step === 5 && (
-          <StepFive
-            location={location}
-            user={user}
+        {step === 1 && <StepOne />}
+        {step === 2 && <StepTwo user={user} updateFormData={updateFormData} />}
+        {step === 3 && (
+          <StepThree
+            location={formData.location}
+            role={formData.role}
             apiKey={apiKey}
             updateFormData={updateFormData}
           />
         )}
+        {step === 4 && apiKey && (
+          <StepFour
+            location={formData.location}
+            user={user}
+            formData={formData.location?.address}
+            updateFormData={updateFormData}
+            setOpenMonths={setOpenMonths}
+          />
+        )}
+        {step === 5 && (
+          <StepFive
+            location={formData.location}
+            user={user}
+            formData={formData.location?.address}
+            updateFormData={updateFormData}
+            setOpenMonths={setOpenMonths}
+          />
+        )}
         {step === 6 && (
           <StepSix
-            location={location}
+            location={formData.location}
             user={user}
             formData={formData.location?.address}
             updateFormData={updateFormData}
@@ -210,29 +218,22 @@ const Onboarding = ({
         )}
         {step === 7 && (
           <StepSeven
-            location={location}
-            user={user}
-            formData={formData.location?.address}
-            updateFormData={updateFormData}
-            setOpenMonths={setOpenMonths}
+          // location={formData.location}
+          // user={user}
+          // formData={formData.location?.address}
+          // updateFormData={updateFormData}
+          // setOpenMonths={setOpenMonths}
           />
         )}
         {step === 8 && (
           <StepEight
-            location={location}
-            user={user}
-            formData={formData.location?.address}
-            updateFormData={updateFormData}
-            setOpenMonths={setOpenMonths}
-            // userImage={formData.image || user?.image}
-            // updateFormData={updateFormData}
+          // location={formData.location}
+          // user={user}
+          // formData={formData.location?.address}
+          // updateFormData={updateFormData}
+          // setOpenMonths={setOpenMonths}
           />
         )}
-        {step === 9 && (
-          <StepNine userBio={user?.bio} updateFormData={updateFormData} />
-        )}
-        {step === 10 && <StepTen />}
-        {step === 11 && <StepEleven user={user} />}
       </div>
       <div>
         <div className="w-full absolute top-0 left-0 z-50">
