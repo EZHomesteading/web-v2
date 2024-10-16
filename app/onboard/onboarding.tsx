@@ -46,7 +46,7 @@ const Onboarding = ({
   const router = useRouter();
   const [openMonths, setOpenMonths] = useState<string[]>([]);
 
-  const [step, setStep] = useState(index);
+  const [step, setStep] = useState(locations ? 2 : index);
   const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
     role?: UserRole;
@@ -179,7 +179,7 @@ const Onboarding = ({
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
-        {step === 1 && <StepOne />}
+        {step === 1 && <StepOne user={user} />}
         {step === 2 && <StepTwo user={user} updateFormData={updateFormData} />}
         {step === 3 && (
           <StepThree
