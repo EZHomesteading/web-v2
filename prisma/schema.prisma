@@ -151,7 +151,7 @@ model User {
   firstName     String?
   emailVerified DateTime?
   phoneNumber   String?
-  locations     Location[]
+  locations     Location[] 
   image         String?
 
   role                  UserRole               @default(PRODUCER)
