@@ -1,45 +1,47 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { Prisma } from "@prisma/client";
+import { Hours, Prisma, UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     console.log("Received body:", JSON.stringify(body, null, 2));
 
-    const { location, locationId } = body;
-
+    const { locationId, hours,coordinates,address,role,isDefault } = body as {
+      hours?: Hours;
+      locationId?: string;
+      type?: string;
+      coordinates?: number[];
+      address?: string[];
+      role?: UserRole;
+      isDefault?: boolean;
+    };
     const user = await currentUser();
-    if (!user) {
+    if (!user || !user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const cleanLocation = (loc: any) => {
-      const { 
-        type, coordinates, address, hours, role, id,
-        ancestorOrigins, href, origin, protocol, host, 
-        hostname, port, pathname, search, hash, 
-        ...rest
-      } = loc;
-      return { type, coordinates, address, hours, role, ...rest };
-    };
-
     let updatedLocation;
 
-    if (location?.id) {
-      console.log("Updating existing location");
+    if (locationId) {
+      console.log("Updating hours for existing location");
       updatedLocation = await prisma.location.update({
         where: { id: locationId },
-        data: cleanLocation(location[0]),
+        data: {
+          hours: hours
+        },
       });
     } else {
-      console.log("Creating new location");
+      const locationCount = await prisma.location.count({ where: { userId: user.id } });
       updatedLocation = await prisma.location.create({
         data: {
-          ...cleanLocation(location[0]),
           userId: user.id,
-          isDefault: await prisma.location.count({ where: { userId: user.id } }) === 0,
+          type: "Point",
+          coordinates: coordinates,
+          address: address,
+          role: role || UserRole.PRODUCER,
+          isDefault: locationCount === 0 || isDefault ,
         },
       });
     }

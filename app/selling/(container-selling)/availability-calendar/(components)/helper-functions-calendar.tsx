@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Hours } from "./(components)/calendar";
+import { Hours } from "@prisma/client";
 import { TimeSlot } from "@prisma/client";
 
 const convertMinutesToTimeString = (minutes: number): string => {
@@ -27,15 +27,11 @@ const createDateKey = (year: number, month: number, day: number): string => {
     .padStart(2, "0")}`;
 };
 
-const updateUserHours = async (updatedHours: Hours) => {
+const updateUserHours = async (updatedHours: Hours, locationId?: string) => {
   try {
     await axios.post("/api/useractions/update/location-hours", {
-      location: [
-        {
-          ...location,
-          hours: updatedHours,
-        },
-      ],
+      locationId: locationId,
+      hours: updatedHours,
     });
   } catch (error) {
     console.error("Error updating hours:", error);

@@ -638,14 +638,14 @@ export interface NavUser {
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    seller: { name: string; } | null; // Changed to allow null
+    seller: { name: string; } | null; 
   }[];
   sellerOrders: {
     id: string;
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    buyer: { name: string; } | null; // Changed to allow null
+    buyer: { name: string; } | null; 
   }[];
 }
 

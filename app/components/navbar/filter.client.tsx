@@ -12,7 +12,6 @@ import { GiFruitTree, GiFruiting } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { BsPersonWalking } from "react-icons/bs";
-import { navUser } from "@/next-auth";
 import {
   Select,
   SelectContent,
@@ -23,14 +22,14 @@ import {
 } from "../ui/select";
 
 interface Props {
-  user?: navUser;
+  role?: UserRole;
 }
 
 const outfit = Outfit({
   subsets: ["latin-ext"],
   display: "block",
 });
-const Filters = ({ user }: Props) => {
+const Filters = ({ role }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   let r = searchParams?.get("radius");
@@ -143,8 +142,8 @@ const Filters = ({ user }: Props) => {
         )}
 
         <>
-          {!user ||
-            (user.role !== UserRole.CONSUMER && (
+          {!role ||
+            (role !== UserRole.CONSUMER && (
               <>
                 <div className="w-full flex items-center gap-x-2 text-lg xl:text-[1rem] 2xl:text-xl font-medium">
                   <Switch

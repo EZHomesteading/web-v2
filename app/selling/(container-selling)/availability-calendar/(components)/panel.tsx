@@ -117,7 +117,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               hours: hours,
             },
           ],
-          locationId: location?.id || "",
+          locationId: location?.id,
         };
 
         const response = await axios.post(
@@ -152,7 +152,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     };
 
     const baseColor = "#ced9bb";
-    const darkenAmount = 10;
+    const darkenAmount = 50;
 
     const baseStyle: MotionStyle = {
       position: index === 0 ? "relative" : "absolute",
@@ -196,15 +196,16 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const [a, b] = useState("");
   const handleDeleteLocation = async () => {
     try {
+      console.log("location id", location?.id);
       const response = await axios.delete(
-        "/api/useractions/locations-hours/delete-location",
+        "/api/useractions/update/location-hours/delete-location",
         {
-          data: { locationId: location?.id || "" },
+          data: { locationId: location?.id },
         }
       );
       if (response.status === 200) {
         toast.success("Store Location deleted");
-        router.replace("/selling/availability-calendar");
+        window.location.replace("/selling/availability-calendar");
       }
     } catch (error) {
       console.error(error);
@@ -213,7 +214,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const basePanel: PanelProps = {
     content: (
-      <div className="flex justify-center w-full">
+      <div className={`${o.className} flex justify-center w-full`}>
         <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
           {!panelSide && (
             <Button

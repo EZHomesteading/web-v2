@@ -117,20 +117,15 @@ type OpenCloseTemplates {
   timeSlots TimeSlot[]
 }
 
-type DayHours {
-  day       Int
-  timeSlots TimeSlot[]
-}
-
 type TimeSlot {
-  open     Int
-  close    Int
-  capacity Int?
+  open  Int
+  close Int
 }
 
 type Availability {
   date      DateTime
   timeSlots TimeSlot[]
+  capacity  Int?
 }
 
 model Location {

@@ -1,189 +1,388 @@
 "use client";
-//user menu popover component
+
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { UserRole } from "@prisma/client";
+import Image from "next/image";
+import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
-import { signOut } from "next-auth/react";
-import { CiMenuFries, CiShop, CiUser } from "react-icons/ci";
-import { usePathname, useRouter } from "next/navigation";
-import { GiBarn, GiFruitTree } from "react-icons/gi";
-import { Outfit } from "next/font/google";
-import { LiaMapMarkedSolid } from "react-icons/lia";
 import NotificationIcon from "../icons/notification";
 import CartIcon from "@/app/components/icons/cart-icon";
-import { BsPersonPlus } from "react-icons/bs";
-import {
-  PiBasketThin,
-  PiChatCircleThin,
-  PiClipboardTextThin,
-  PiMapTrifoldThin,
-  PiPersonSimpleRunThin,
-  PiPlusThin,
-  PiSignOutThin,
-  PiStorefrontThin,
-  PiTreeThin,
-  PiUserThin,
-} from "react-icons/pi";
 import { Button } from "../ui/button";
-import { navUser } from "@/next-auth";
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { IoStorefrontOutline } from "react-icons/io5";
-import Image from "next/image";
-import { IoIosMenu } from "react-icons/io";
-import { UserRole } from "@prisma/client";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import { NavUser } from "@/actions/getUser";
+import { iconMap } from "./icon-map";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
-import Barn from "./icons/barn";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "auto",
-  style: "normal",
-  weight: ["100"],
-});
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { IconType } from "react-icons";
+
+type MenuIconItem = IconItem | ComponentItem;
+
+type IconItem = {
+  key: string;
+  icon: IconType;
+  label: string;
+  onClick: () => void;
+};
+
+type ComponentItem = {
+  key: string;
+  component: React.ReactNode;
+};
+
 interface Props {
-  user?: navUser;
-  isHome?: boolean;
+  user?: NavUser;
   canReceivePayouts: boolean;
   uniqueUrl: string;
-  harvestMessages:
-    | {
-        conversationId: string;
-        lastMessageAt: Date;
-      }[]
-    | undefined;
+  harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
 }
-const UserMenu = ({
+
+const UserMenu: React.FC<Props> = ({
   user,
   canReceivePayouts,
   uniqueUrl,
   harvestMessages,
-}: Props) => {
-  const pathname = usePathname();
+}) => {
   const router = useRouter();
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
-  const [about, setAbout] = useState(false);
+  const isMdOrLarger = useMediaQuery("(min-width: 640px)");
+
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
       setShowInstallBtn(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => {
+    return () =>
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt
       );
-    };
   }, []);
-  const isMdOrLarger = useMediaQuery("(min-width: 640px)");
-  // const toggleAbout = () => {
-  //   setAbout((prevState) => !prevState);
-  // };
-  const handleCreateClickConsumer = async () => {
-    try {
-      const [stripeResponse, userUpdateResponse] = await Promise.all([
-        fetch(
-          `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: user?.id }),
-          }
-        ),
-        axios.post("/api/useractions/update", {
-          role: UserRole.PRODUCER,
-          hasPickedRole: false,
-          url: uniqueUrl,
-        }),
-      ]);
 
-      // Check if the response is ok before trying to parse JSON
-      if (!stripeResponse.ok) {
-        const textResponse = await stripeResponse.text();
-        console.error("Stripe API error response:", textResponse);
-        throw new Error(`HTTP error! status: ${stripeResponse.status}`);
-      }
-
-      let stripeData;
+  const handleCreateClick = async () => {
+    if (user?.role === UserRole.CONSUMER) {
       try {
-        stripeData = await stripeResponse.json();
-      } catch (jsonError) {
-        console.error("Error parsing Stripe response:", jsonError);
-        const textResponse = await stripeResponse.text();
-        console.error("Raw Stripe response:", textResponse);
-        throw new Error("Invalid JSON in Stripe response");
-      }
+        const [stripeResponse, userUpdateResponse] = await Promise.all([
+          fetch(
+            `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId: user?.id }),
+            }
+          ),
+          axios.post("/api/useractions/update", {
+            role: UserRole.PRODUCER,
+            hasPickedRole: false,
+            url: uniqueUrl,
+          }),
+        ]);
 
-      console.log("Stripe connected account created:", stripeData);
-      if (stripeData && stripeData.stripeAccountId) {
-        console.log("Stripe Account ID:", stripeData.stripeAccountId);
-      }
+        if (!stripeResponse.ok) {
+          throw new Error(`HTTP error! status: ${stripeResponse.status}`);
+        }
 
-      console.log("User role updated successfully:", userUpdateResponse.data);
-    } catch (error) {
-      console.error("Error in consumer API calls:", error);
-      if (error instanceof Error) {
-        console.error("Error message:", error.message);
+        const stripeData = await stripeResponse.json();
+        console.log("Stripe connected account created:", stripeData);
+        console.log("User role updated successfully:", userUpdateResponse.data);
+      } catch (error) {
+        console.error("Error in consumer API calls:", error);
+        toast.warning(
+          "Some account setup steps failed. Please contact support."
+        );
       }
-      // Log the full error object for debugging
-      console.error("Full error object:", error);
-
-      toast.warning("Some account setup steps failed. Please contact support.");
     }
+
     if (
-      (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
-      user?.location &&
-      user?.location[0]?.address &&
-      user?.location[0]?.hours &&
+      (user?.hasPickedRole || user?.hasPickedRole === null) &&
+      user?.locations?.[0]?.address &&
+      user?.locations?.[0]?.hours &&
       user?.image &&
-      canReceivePayouts === true
+      canReceivePayouts
     ) {
       router.push("/create");
     } else {
       router.push("/onboard");
     }
   };
-  const handleCreateClickSeller = () => {
-    if (
-      (user?.hasPickedRole === true || user?.hasPickedRole === null) &&
-      user?.location &&
-      user?.location[0]?.address &&
-      user?.location[0]?.hours &&
-      user?.image &&
-      canReceivePayouts === true
-    ) {
-      router.push("/create");
-    } else {
-      router.push("/onboard");
-    }
-  };
+
   const hasNotifications =
     (user?.sellerOrders?.length ?? 0) > 0 ||
     (user?.buyerOrders?.length ?? 0) > 0;
-
   const isCartEmpty = (user?.cart?.length ?? 0) === 0;
-  const IconWrapper: React.FC<{
-    icon: any;
-    label: string;
-    onClick: () => void;
-  }> = ({ icon: Icon, label, onClick }) => (
+
+  const renderIcons = () => {
+    const icons: MenuIconItem[] = [
+      {
+        key: "home",
+        icon: iconMap.Barn,
+        label: "Home",
+        onClick: () => router.push("/"),
+      },
+      {
+        key: "map",
+        icon: iconMap.PiMapTrifoldThin,
+        label: "Map",
+        onClick: () => router.push("/map"),
+      },
+      {
+        key: "market",
+        icon: iconMap.PiStorefrontThin,
+        label: "Market",
+        onClick: () => router.push("/market"),
+      },
+      {
+        key: "create",
+        icon: iconMap.PiPlusThin,
+        label: "Add Product",
+        onClick: handleCreateClick,
+      },
+    ];
+
+    if (user) {
+      if (!isCartEmpty) {
+        icons.push({
+          key: "cart",
+          component: <CartIcon key="cart" cart={user.cart} />,
+        });
+      }
+      if (hasNotifications) {
+        icons.push({
+          key: "alerts",
+          component: (
+            <NotificationIcon
+              key="alerts"
+              sOrders={user.sellerOrders}
+              bOrders={user.buyerOrders}
+              harvestMessages={harvestMessages}
+            />
+          ),
+        });
+      }
+    }
+
+    return icons
+      .filter(
+        (icon) => "component" in icon || (user ? true : icon.key !== "create")
+      )
+      .slice(0, isMdOrLarger ? 6 : 5)
+      .map((icon) => {
+        if ("component" in icon) {
+          return icon.component;
+        } else {
+          return (
+            <IconWrapper
+              key={icon.key}
+              icon={icon.icon}
+              label={icon.label}
+              onClick={icon.onClick}
+            />
+          );
+        }
+      });
+  };
+
+  return (
+    <>
+      <Popover>
+        <div className="flex flex-row items-center justify-evenly sm:justify-end p-2 min-w-screen gap-x-3 md:gap-x-4">
+          {renderIcons()}
+          <MenuIcon image={user?.image} />
+        </div>
+        <PopoverContent
+          className={`${o.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] sm:w-80 md:w-48 text-sm`}
+          align="end"
+          alignOffset={0}
+        >
+          {user ? (
+            <>
+              <MenuItem
+                label="Orders"
+                icon={<iconMap.PiClipboardTextThin className="h-6 w-6" />}
+                onClick={() => router.push("/orders")}
+              />
+              <MenuItem
+                label="Messages"
+                icon={<iconMap.PiChatCircleThin className="h-6 w-6" />}
+                onClick={() => router.push("/chat")}
+              />
+              <MenuItem
+                label="Market"
+                icon={<iconMap.PiStorefrontThin className="h-6 w-6" />}
+                onClick={() => router.push("/market")}
+              />
+              <MenuItem
+                label="Map"
+                icon={<iconMap.PiMapTrifoldThin className="h-6 w-6" />}
+                onClick={() => router.push("/map")}
+              />
+              <MenuItem
+                label="Cart"
+                icon={<iconMap.PiBasketThin className="h-6 w-6" />}
+                onClick={() => router.push("/cart")}
+              />
+              <MenuItem
+                label="Account"
+                icon={<iconMap.PiUserThin className="h-6 w-6" />}
+                onClick={() => router.push("/account")}
+              />
+              <MenuItem
+                label="Switch to Selling"
+                icon={<iconMap.PiTreeThin className="h-6 w-6" />}
+                onClick={() => router.push("/selling")}
+              />
+              <div className="block sm:hidden">
+                <MenuItem
+                  label="Home"
+                  icon={<iconMap.GiBarn className="h-6 w-6" />}
+                  onClick={() => router.push("/")}
+                />
+              </div>
+              {user?.role === "CONSUMER" && (
+                <div>
+                  <MenuItem
+                    icon={<iconMap.PiStorefrontThin className="h-8 w-8" />}
+                    label="Become a Co-Op"
+                    onClick={() => router.push("/auth/become-a-co-op")}
+                  />
+                  <MenuItem
+                    icon={<iconMap.PiTreeThin className="h-8 w-8" />}
+                    label="Become a Producer"
+                    onClick={() => router.push("/auth/become-a-producer")}
+                  />
+                </div>
+              )}
+              <hr />
+              <MenuItem
+                icon={<iconMap.PiSignOutThin className="h-6 w-6" />}
+                label="Sign Out"
+                onClick={() => signOut()}
+              />
+              {showInstallBtn &&
+                !window.matchMedia("(display-mode: standalone)").matches && (
+                  <Button
+                    className="w-full"
+                    onClick={() => router.push("/get-ezh-app")}
+                  >
+                    Install EZH App
+                  </Button>
+                )}
+            </>
+          ) : (
+            <>
+              <Sheet>
+                <SheetTrigger className="flex justify-between items-center">
+                  <MenuItem
+                    onClick={() => {}}
+                    label="Sign Up"
+                    icon={<iconMap.BsPersonPlus className="h-6 w-6" />}
+                  />
+                </SheetTrigger>
+                <SheetContent
+                  className={`${o.className} min-h-screen w-screen d1dbbf text-black`}
+                >
+                  <div className="h-full flex flex-col items-center justify-center px-10">
+                    <ul className="w-full max-w-3xl">
+                      {[
+                        {
+                          href: "/auth/register",
+                          text: "Sign Up",
+                          icon: iconMap.CiUser,
+                        },
+                        {
+                          href: "/auth/register-co-op",
+                          text: ["Become a co-op &", "sell to anyone"],
+                          icon: iconMap.IoStorefrontOutline,
+                        },
+                        {
+                          href: "/auth/register-producer",
+                          text: ["Become a grower &", "sell only to co-ops"],
+                          icon: iconMap.GiFruitTree,
+                        },
+                      ].map((item, index) => (
+                        <li
+                          key={item.href}
+                          className={`w-full ${
+                            index === 1
+                              ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
+                              : ""
+                          }`}
+                        >
+                          <Link
+                            href={item.href}
+                            className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+                          >
+                            <div className="flex flex-col">
+                              {Array.isArray(item.text)
+                                ? item.text.map((line, i) => (
+                                    <div key={i}>{line}</div>
+                                  ))
+                                : item.text}
+                            </div>
+                            <item.icon className="text-4xl sm:text-7xl" />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="pt-10 text-xs text-black text-center">
+                      You can switch your account type to either seller role at
+                      any time
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+              <MenuItem
+                label="Sign In"
+                icon={<iconMap.PiPersonSimpleRunThin />}
+                onClick={() => {
+                  let callbackUrl = window.location.href;
+                  const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+                  router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
+                }}
+              />
+              <MenuItem
+                label="Market"
+                icon={<iconMap.CiShop />}
+                onClick={() => router.push("/market")}
+              />
+              <MenuItem
+                label="Map"
+                icon={<iconMap.LiaMapMarkedSolid />}
+                onClick={() => router.push("/map")}
+              />
+              <Button onClick={() => router.push("/get-ezh-app")}>
+                Install the EZH App
+              </Button>
+            </>
+          )}
+        </PopoverContent>
+      </Popover>
+    </>
+  );
+};
+
+const IconWrapper: React.FC<{
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}> = ({ icon: Icon, label, onClick }) => {
+  const pathname = usePathname();
+  return (
     <div
-      className="flex flex-col  pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer"
+      className="flex flex-col pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer"
       onClick={onClick}
     >
       <Icon
         className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
       />
       <div
-        className={`text-xs ${outfit.className} ${
+        className={`text-xs ${o.className} ${
           pathname === "/" ? "text-white" : "text-black"
         }`}
       >
@@ -191,195 +390,29 @@ const UserMenu = ({
       </div>
     </div>
   );
-  const renderIcons = () => {
-    const icons = [];
-
-    if (!user) {
-      icons.push(
-        <IconWrapper
-          key="home"
-          icon={Barn}
-          label="Home"
-          onClick={() => router.push("/")}
-        />,
-        <IconWrapper
-          key="map"
-          icon={PiMapTrifoldThin}
-          label="Map"
-          onClick={() => router.push("/map")}
-        />,
-        <IconWrapper
-          key="market"
-          icon={PiStorefrontThin}
-          label="Market"
-          onClick={() => router.push("/market")}
-        />,
-        <IconWrapper
-          key="create"
-          icon={PiPlusThin}
-          label="Add Product"
-          onClick={() => router.push("/create")}
-        />
-      );
-    } else if (user.role === UserRole.PRODUCER || user.role === UserRole.COOP) {
-      if (isMdOrLarger) {
-        icons.push(
-          <CartIcon key="cart" cart={user.cart} />,
-          <IconWrapper
-            key="map"
-            icon={PiMapTrifoldThin}
-            label="Map"
-            onClick={() => router.push("/map")}
-          />,
-          <NotificationIcon
-            key="alerts"
-            sOrders={user.sellerOrders}
-            bOrders={user.buyerOrders}
-            harvestMessages={harvestMessages}
-          />,
-          <IconWrapper
-            key="market"
-            icon={PiStorefrontThin}
-            label="Market"
-            onClick={() => router.push("/market")}
-          />,
-          <IconWrapper
-            key="create"
-            icon={PiPlusThin}
-            label="Add Product"
-            onClick={() => handleCreateClickSeller()}
-          />
-        );
-      } else {
-        icons.push(
-          <IconWrapper
-            key="create"
-            icon={PiPlusThin}
-            label="Add Product"
-            onClick={() => handleCreateClickSeller()}
-          />,
-          <IconWrapper
-            key="market"
-            icon={PiStorefrontThin}
-            label="Market"
-            onClick={() => router.push("/market")}
-          />
-        );
-        if (!isCartEmpty || hasNotifications) {
-          icons.push(
-            !isCartEmpty && <CartIcon key="cart" cart={user.cart} />,
-            hasNotifications && (
-              <NotificationIcon
-                key="alerts"
-                sOrders={user.sellerOrders}
-                bOrders={user.buyerOrders}
-                harvestMessages={harvestMessages}
-              />
-            )
-          );
-        }
-        if (icons.length < 5)
-          icons.push(
-            <IconWrapper
-              key="map"
-              icon={PiMapTrifoldThin}
-              label="Map"
-              onClick={() => router.push("/map")}
-            />
-          );
-      }
-    } else if (user.role === UserRole.CONSUMER) {
-      if (isMdOrLarger) {
-        icons.push(
-          <CartIcon key="cart" cart={user.cart} />,
-          <IconWrapper
-            key="map"
-            icon={PiMapTrifoldThin}
-            label="Map"
-            onClick={() => router.push("/map")}
-          />,
-          <NotificationIcon
-            key="alerts"
-            sOrders={user.sellerOrders}
-            bOrders={user.buyerOrders}
-            harvestMessages={harvestMessages}
-          />,
-          <IconWrapper
-            key="market"
-            icon={PiStorefrontThin}
-            label="Market"
-            onClick={() => router.push("/market")}
-          />,
-          <IconWrapper
-            key="create"
-            icon={PiPlusThin}
-            label="Add Product"
-            onClick={() => handleCreateClickConsumer()}
-          />
-        );
-      } else {
-        icons.push(
-          <IconWrapper
-            key="map"
-            icon={PiMapTrifoldThin}
-            label="Map"
-            onClick={() => router.push("/map")}
-          />,
-          <IconWrapper
-            key="market"
-            icon={PiStorefrontThin}
-            label="Market"
-            onClick={() => router.push("/market")}
-          />
-        );
-        if (!isCartEmpty || hasNotifications) {
-          icons.push(
-            !isCartEmpty && <CartIcon key="cart" cart={user.cart} />,
-            hasNotifications && (
-              <NotificationIcon
-                key="alerts"
-                sOrders={user.sellerOrders}
-                bOrders={user.buyerOrders}
-                harvestMessages={harvestMessages}
-              />
-            )
-          );
-        }
-        if (icons.length < 5)
-          icons.push(
-            <IconWrapper
-              key="create"
-              icon={PiPlusThin}
-              label="Add Product"
-              onClick={() => handleCreateClickConsumer()}
-            />
-          );
-      }
-    }
-
-    icons.push(<MenuIcon key="menu" user={user} />);
-
-    return icons.filter(Boolean).slice(0, 7);
-  };
-
-  const MenuIcon: React.FC<{ user?: navUser }> = ({ user }) => (
+};
+interface p {
+  image: string | null | undefined;
+}
+const MenuIcon = ({ image }: p) => {
+  const pathname = usePathname();
+  return (
     <>
       <PopoverTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
         <IconWrapper
-          key="menu"
-          icon={CiMenuFries}
+          icon={iconMap.CiMenuFries}
           label="Menu"
           onClick={() => {}}
         />
       </PopoverTrigger>
       <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
-        <IoIosMenu
+        <iconMap.IoIosMenu
           className={`w-8 h-8 mr-1 ${
             pathname === "/" ? "text-white" : "text-black"
           }`}
         />
         <Image
-          src={user?.image || placeholder}
+          src={image || placeholder}
           alt="Profile Image"
           height={25}
           width={25}
@@ -388,191 +421,16 @@ const UserMenu = ({
       </PopoverTrigger>
     </>
   );
-  return (
-    <Popover>
-      <div className="flex flex-row items-center justify-evenly sm:justify-end pt-2 min-w-screen gap-x-3 md:gap-x-4">
-        {renderIcons()}
-      </div>
-      <PopoverContent
-        className={`${outfit.className} mb-1 w-screen h-fit sm:w-80 md:w-48 text-sm sm:mt-[.85rem] p-0`}
-        align="end"
-        alignOffset={0}
-      >
-        {user ? (
-          <>
-            <MenuItem
-              label="Orders"
-              icon={<PiClipboardTextThin className="h-6 w-6" />}
-              onClick={() => router.push("/orders")}
-            />
-            <MenuItem
-              label="Messages"
-              icon={<PiChatCircleThin className="h-6 w-6" />}
-              onClick={() => router.push("/chat")}
-            />
-            <MenuItem
-              label="Market"
-              icon={<PiStorefrontThin className="h-6 w-6" />}
-              onClick={() => router.push("/market")}
-            />
-            <MenuItem
-              label="Map"
-              icon={<PiMapTrifoldThin className="h-6 w-6" />}
-              onClick={() => router.push("/map")}
-            />
-            <MenuItem
-              label="Cart"
-              icon={<PiBasketThin className="h-6 w-6" />}
-              onClick={() => router.push("/cart")}
-            />
-            <MenuItem
-              label="Account"
-              icon={<PiUserThin className="h-6 w-6" />}
-              onClick={() => router.push("/account")}
-            />
-            <div className=" block sm:hidden">
-              <MenuItem
-                label="Home"
-                icon={<GiBarn className="h-6 w-6" />}
-                onClick={() => router.push("/")}
-              />
-            </div>
-            {user?.role === "CONSUMER" && (
-              <div>
-                <MenuItem
-                  icon={<PiStorefrontThin className="h8w8" />}
-                  label="Become a Co-Op"
-                  onClick={() => router.push("/auth/become-a-co-op")}
-                />
-                <MenuItem
-                  icon={<PiTreeThin className="h8w8" />}
-                  label="Become a Producer"
-                  onClick={() => router.push("/auth/become-a-producer")}
-                />
-              </div>
-            )}
-            <hr />
-            <MenuItem
-              icon={<PiSignOutThin className="h-6 w-6" />}
-              label="Sign Out"
-              onClick={() => signOut()}
-            />
-            {showInstallBtn &&
-              !window.matchMedia("(display-mode: standalone)").matches && (
-                <>
-                  <Button
-                    className="w-full"
-                    onClick={() => router.push("/get-ezh-app")}
-                  >
-                    Install EZH App
-                  </Button>{" "}
-                </>
-              )}
-          </>
-        ) : (
-          <>
-            <Sheet>
-              <SheetTrigger className="flex justify-between items-center">
-                <MenuItem
-                  onClick={() => {}}
-                  label="Sign Up"
-                  icon={<BsPersonPlus className="h-6 w-6" />}
-                ></MenuItem>
-              </SheetTrigger>
-
-              <SheetContent
-                className={`${outfit.className} min-h-screen w-screen d1dbbf text-black  `}
-              >
-                <div className="h-full flex flex-col items-center justify-center px-10">
-                  <ul className="w-full max-w-3xl">
-                    {[
-                      {
-                        href: "/auth/register",
-                        text: "Sign Up",
-                        icon: CiUser,
-                      },
-                      {
-                        href: "/auth/register-co-op",
-                        text: ["Become a co-op &", "sell to anyone"],
-                        icon: IoStorefrontOutline,
-                      },
-                      {
-                        href: "/auth/register-producer",
-                        text: ["Become a grower &", "sell only to co-ops"],
-                        icon: GiFruitTree,
-                      },
-                    ].map((item, index) => (
-                      <li
-                        key={item.href}
-                        className={`w-full ${
-                          index === 1
-                            ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
-                            : ""
-                        }`}
-                      >
-                        <Link
-                          href={item.href}
-                          className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
-                        >
-                          <div className="flex flex-col">
-                            {Array.isArray(item.text)
-                              ? item.text.map((line, i) => (
-                                  <div key={i}>{line}</div>
-                                ))
-                              : item.text}
-                          </div>
-                          <item.icon className="text-4xl sm:text-7xl" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="pt-10 text-xs text-black text-center">
-                    You can switch your account type to either seller role at
-                    any time
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-            <MenuItem
-              label="Sign In"
-              icon={<PiPersonSimpleRunThin />}
-              onClick={() => {
-                let callbackUrl = window.location.href;
-                const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-                router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
-              }}
-            />
-            <MenuItem
-              label="Market"
-              icon={<CiShop />}
-              onClick={() => router.push("/market")}
-            />
-            <MenuItem
-              label="Map"
-              icon={<LiaMapMarkedSolid />}
-              onClick={() => router.push("/map")}
-            />{" "}
-            <Button onClick={() => router.push("/get-ezh-app")}>
-              Install the EZH App
-            </Button>
-          </>
-        )}
-      </PopoverContent>
-    </Popover>
-  );
 };
 
-export default UserMenu;
-
-const useMediaQuery = (query: any) => {
+const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
     setMatches(mediaQuery.matches);
 
-    const handler = (event: any) => setMatches(event.matches);
+    const handler = (event: MediaQueryListEvent) => setMatches(event.matches);
     mediaQuery.addEventListener("change", handler);
 
     return () => mediaQuery.removeEventListener("change", handler);
@@ -580,3 +438,5 @@ const useMediaQuery = (query: any) => {
 
   return matches;
 };
+
+export default UserMenu;
