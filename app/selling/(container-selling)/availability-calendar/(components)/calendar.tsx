@@ -42,7 +42,6 @@ interface p {
   locations: Location[];
 }
 const Calendar = ({ location, id, mk, locations }: p) => {
-  console.log(location?.hours?.pickup);
   const [hours, setHours] = useState<Hours>({
     delivery:
       location?.hours?.delivery?.map((ex: any) => ({

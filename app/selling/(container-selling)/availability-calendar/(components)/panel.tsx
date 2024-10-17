@@ -126,9 +126,18 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
         );
 
         if (response.status === 200) {
-          setShowEditAddress(false);
-          router.refresh();
-          toast.success(text);
+          const newLocation = response.data.locations?.[0];
+          const locationId = newLocation?.id;
+          console.log(locationId);
+          if (locationId) {
+            setShowEditAddress(false);
+            window.location.replace(
+              `/selling/availability-calendar/${locationId}`
+            );
+            toast.success(text);
+          } else {
+            throw new Error("Location ID not found in the response");
+          }
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
