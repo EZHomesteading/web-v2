@@ -1,31 +1,24 @@
-import { Dispatch, SetStateAction, useState, useCallback } from "react";
-import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
-import { Location, Prisma } from "@prisma/client";
+import { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-interface p {
+import { UserRole } from "@prisma/client";
+
+interface StepFourProps {
   location?: LocationObj;
   user: any;
-  updateFormData: (newData: Partial<{ location: any }>) => void;
+  updateFormData: (newData: Partial<{ selectedMonths: number[] }>) => void;
   formData: string[] | undefined;
-  setOpenMonths: Dispatch<SetStateAction<string[]>>;
+  selectedMonths: number[] | undefined;
 }
 
 const StepFour = ({
   user,
   updateFormData,
-  // setOpenMonths,
   formData,
   location,
-}: p) => {
-  const [newLocation, setNewLocation] = useState(user?.location?.[0] || null);
-  const [openMonths, setOpenMonths] = useState<string[]>([]);
+  selectedMonths,
+}: StepFourProps) => {
+  const [openMonths, setOpenMonths] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-
-  const handleHoursChange = (newHours: any) => {
-    let updatedLocation = { ...location, hours: newHours };
-    setNewLocation(updatedLocation);
-    updateFormData({ location: { 0: updatedLocation } });
-  };
 
   const months = [
     "Jan",
@@ -42,23 +35,30 @@ const StepFour = ({
     "Dec",
   ];
 
-  const toggleMonth = useCallback((month: string) => {
+  // Initialize openMonths with selectedMonths when the component mounts
+  useEffect(() => {
+    if (selectedMonths && selectedMonths.length > 0) {
+      setOpenMonths(selectedMonths);
+    }
+  }, [selectedMonths]);
+
+  const toggleMonth = useCallback((monthIndex: number) => {
     setOpenMonths((prevMonths) => {
-      const newMonths = prevMonths.includes(month)
-        ? prevMonths.filter((m) => m !== month)
-        : [...prevMonths, month];
+      const newMonths = prevMonths.includes(monthIndex)
+        ? prevMonths.filter((m) => m !== monthIndex)
+        : [...prevMonths, monthIndex];
       return newMonths;
     });
   }, []);
 
-  const handleMouseDown = (month: string) => {
+  const handleMouseDown = (monthIndex: number) => {
     setIsDragging(true);
-    toggleMonth(month);
+    toggleMonth(monthIndex);
   };
 
-  const handleMouseEnter = (month: string) => {
+  const handleMouseEnter = (monthIndex: number) => {
     if (isDragging) {
-      toggleMonth(month);
+      toggleMonth(monthIndex);
     }
   };
 
@@ -66,15 +66,17 @@ const StepFour = ({
     setIsDragging(false);
   };
 
+  useEffect(() => {
+    updateFormData({
+      selectedMonths: openMonths,
+    });
+  }, [openMonths, updateFormData]);
+
   return (
     <div className="h-full">
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Your Store Hours for{" "}
-        {formData && formData[0]
-          ? `${formData[0]}`
-          : user.locations
-          ? user.locations[1].address[1]
-          : "no location set"}
+        Set Up Your Store Months for{" "}
+        {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
       <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
         Select the Months you will be open.
@@ -92,13 +94,13 @@ const StepFour = ({
           onMouseLeave={handleMouseUp}
           onMouseUp={handleMouseUp}
         >
-          {months.map((month) => (
+          {months.map((month, index) => (
             <button
               key={month}
-              onMouseDown={() => handleMouseDown(month)}
-              onMouseEnter={() => handleMouseEnter(month)}
+              onMouseDown={() => handleMouseDown(index)}
+              onMouseEnter={() => handleMouseEnter(index)}
               className={`p-10 text-sm border-[2px] rounded ${
-                openMonths.includes(month)
+                openMonths.includes(index)
                   ? "bg-black text-white"
                   : "bg-white text-black"
               }`}

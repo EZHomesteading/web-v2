@@ -1,33 +1,28 @@
-import { Dispatch, SetStateAction, useState, useCallback } from "react";
-import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
-import { Location, Prisma } from "@prisma/client";
+import React, { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-interface p {
+import { Button } from "@/app/components/ui/button";
+
+interface StepFiveProps {
   location?: LocationObj;
   user: any;
-  updateFormData: (newData: Partial<{ location: any }>) => void;
+  updateFormData: (newData: { location: LocationObj }) => void;
   formData: string[] | undefined;
-  setOpenMonths: Dispatch<SetStateAction<string[]>>;
+  onComplete: (selectedDays: string[]) => void;
+  onCompleteHours: () => void;
 }
 
-const StepSix = ({
+const StepFive: React.FC<StepFiveProps> = ({
   user,
   updateFormData,
-  // setOpenMonths,
   formData,
   location,
-}: p) => {
-  const [newLocation, setNewLocation] = useState(user?.location?.[0] || null);
-  const [openDays, setOpenDays] = useState<string[]>([]);
+  onComplete,
+  onCompleteHours,
+}) => {
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleDaysChange = (newDays: any) => {
-    let updatedLocation = { ...location, hours: newDays };
-    setNewLocation(updatedLocation);
-    updateFormData({ location: { 0: updatedLocation } });
-  };
-
-  const weekDays = [
+  const fullWeekDays = [
     "Sunday",
     "Monday",
     "Tuesday",
@@ -37,23 +32,39 @@ const StepSix = ({
     "Saturday",
   ];
 
-  const toggleMonth = useCallback((days: string) => {
-    setOpenDays((prevDays) => {
-      const newDays = prevDays.includes(days)
-        ? prevDays.filter((d) => d !== days)
-        : [...prevDays, days];
-      return newDays;
+  const [weekDays, setWeekDays] = useState<string[]>(fullWeekDays);
+
+  useEffect(() => {
+    if (location?.hours?.pickup) {
+      const setupDays = location.hours.pickup.map((day) => {
+        const date = new Date(day.date);
+        // Use UTC methods to avoid timezone issues
+        return fullWeekDays[date.getUTCDay()];
+      });
+      setWeekDays(fullWeekDays.filter((day) => !setupDays.includes(day)));
+    } else {
+      setWeekDays(fullWeekDays);
+    }
+  }, [location]);
+
+  const toggleDay = useCallback((day: string) => {
+    setSelectedDays((prevDays) => {
+      if (prevDays.includes(day)) {
+        return prevDays.filter((d) => d !== day);
+      } else {
+        return [...prevDays, day];
+      }
     });
   }, []);
 
-  const handleMouseDown = (days: string) => {
+  const handleMouseDown = (day: string) => {
     setIsDragging(true);
-    toggleMonth(days);
+    toggleDay(day);
   };
 
-  const handleMouseEnter = (days: string) => {
+  const handleMouseEnter = (day: string) => {
     if (isDragging) {
-      toggleMonth(days);
+      toggleDay(day);
     }
   };
 
@@ -61,46 +72,48 @@ const StepSix = ({
     setIsDragging(false);
   };
 
+  const handleNext = () => {
+    if (selectedDays.length === 0) {
+      alert("Please select at least one day.");
+      return;
+    }
+    onComplete(selectedDays);
+  };
+
   return (
-    <div className="h-full">
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Your Store Hours for{" "}
-        {formData && formData[0]
-          ? `${formData[0]}`
-          : user.locations
-          ? user.locations[1].address[1]
-          : "no location set"}
+    <div className="h-full p-8">
+      <div className="text-center text-4xl mb-8">
+        Select Days for{" "}
+        {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
-      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
-        Select Days of the week that will have the same hours.
+      <div
+        className="grid grid-cols-1 gap-2"
+        onMouseLeave={handleMouseUp}
+        onMouseUp={handleMouseUp}
+      >
+        {weekDays.map((day) => (
+          <button
+            key={day}
+            onMouseDown={() => handleMouseDown(day)}
+            onMouseEnter={() => handleMouseEnter(day)}
+            className={`p-2 px-20 border-[2px] text-2xl rounded ${
+              selectedDays.includes(day)
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {day}
+          </button>
+        ))}
       </div>
-      <div className="text-center text-2xl">
-        For days with different hours you will be able to select those later.
-      </div>
-      <div className="flex flex-col items-center sm:mt-[2%] mt-[2%]">
-        <div
-          className="grid grid-cols-1 gap-2"
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          {weekDays.map((day) => (
-            <button
-              key={day}
-              onMouseDown={() => handleMouseDown(day)}
-              onMouseEnter={() => handleMouseEnter(day)}
-              className={`p-2 px-20  border-[2px] text-2xl rounded ${
-                openDays.includes(day)
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {day}
-            </button>
-          ))}
-        </div>
-      </div>
+      <Button onClick={handleNext} className="w-full mt-8 mb-4">
+        Set Hours for Selected Days
+      </Button>
+      <Button onClick={onCompleteHours} className="w-full">
+        I Am Finished Setting Hours
+      </Button>
     </div>
   );
 };
 
-export default StepSix;
+export default StepFive;
