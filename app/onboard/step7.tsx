@@ -340,7 +340,7 @@ const StepSeven: React.FC<StepSevenProps> = ({
                 key={month}
                 onMouseDown={() => handleMouseDown(index)}
                 onMouseEnter={() => handleMouseEnter(index)}
-                className={`p-3 text-sm border-[2px] rounded-md ${
+                className={`p-5 text-sm border-[2px] rounded-md ${
                   openMonths.includes(index)
                     ? "bg-black text-white"
                     : "bg-white text-black"
