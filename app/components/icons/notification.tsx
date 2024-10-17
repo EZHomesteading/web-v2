@@ -17,8 +17,8 @@ const outfit = Outfit({
 });
 
 interface Props {
-  bOrders: navBuyOrder[] | undefined;
-  sOrders: navSellOrder[] | undefined;
+  bOrders?: navBuyOrder[];
+  sOrders?: navSellOrder[];
   harvestMessages:
     | {
         conversationId: string;
@@ -41,13 +41,13 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
       const statusText = getStatusText(
         order.status,
         false,
-        order.seller?.name,
-        order.buyer?.name
+        order.seller?.name || "(Deleted User)",
+        order.buyer?.name || "(Deleted User)"
       );
       if (statusText !== "") {
         notifications.push({
           text: statusText,
-          conversationId: order.conversationId,
+          conversationId: order.conversationId || "",
           updatedAt: order.updatedAt,
         });
       }
@@ -59,13 +59,13 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
       const statusText = getStatusText(
         order.status,
         true,
-        order.seller?.name,
-        order.buyer?.name
+        order.seller?.name || "(Deleted User)",
+        order.buyer?.name || "(Deleted User)"
       );
       if (statusText !== "") {
         notifications.push({
           text: statusText,
-          conversationId: order.conversationId,
+          conversationId: order.conversationId || "",
           updatedAt: order.updatedAt,
         });
       }

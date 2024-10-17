@@ -52,7 +52,7 @@ const Navbar = ({
   }, []);
 
   const renderHomeNav = () => (
-    <div className="absolute w-full z-[10] bg-emerald-950/70">
+    <div className="absolute w-full z-[10] bg-emerald-950/70 select-none">
       <Container>
         <div className="sm:flex sm:justify-between sm:items-center">
           <Logo />
