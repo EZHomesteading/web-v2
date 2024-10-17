@@ -32,30 +32,30 @@ export type UserInfo = DefaultSession["user"] & {
   openClosedTemplates?: DayHours[];
 };
 
-type navBuyOrder = {
-  id: string;
-  conversationId: string;
-  status: number;
-  updatedAt: Date;
-  buyer: {
-    name: string;
-  };
-  seller: {
-    name: string;
-  };
-};
-
 type navSellOrder = {
   id: string;
-  conversationId: string;
+  conversationId: string | null;
   status: number;
   updatedAt: Date;
   seller: {
     name: string;
-  };
+  } | null;
   buyer: {
     name: string;
-  };
+  } | null;
+};
+
+type navBuyOrder = {
+  id: string;
+  conversationId: string | null;
+  status: number;
+  updatedAt: Date;
+  seller: {
+    name: string;
+  } | null;
+  buyer: {
+    name: string;
+  } | null;
 };
 
 type navListing = {

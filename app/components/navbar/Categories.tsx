@@ -27,11 +27,11 @@ import { FaAppleAlt } from "react-icons/fa";
 
 import Container from "../Container";
 import Filters from "./filter.client";
-import { navUser } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
 import { IoFishOutline } from "react-icons/io5";
 import { MdOutlineSolarPower } from "react-icons/md";
+import { UserRole } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -139,10 +139,10 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
 };
 
 interface Props {
-  user?: navUser;
+  role?: UserRole;
 }
 
-const Categories = ({ user }: Props) => {
+const Categories = ({ role }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -192,19 +192,6 @@ const Categories = ({ user }: Props) => {
     },
     [router, category, searchParams]
   );
-
-  const handleBackToMain = useCallback(() => {
-    const currentParams = searchParams ? qs.parse(searchParams.toString()) : {};
-    const updatedParams = {
-      ...currentParams,
-      cat: undefined,
-      subcat: undefined,
-    };
-    setCategory(null);
-    setSubcategory(null);
-    setShowSubcategories(false);
-    router.push(`/market?${qs.stringify(updatedParams)}`, { scroll: false });
-  }, [router, searchParams]);
 
   const renderCategories = () => {
     const mainCategories = (
@@ -262,17 +249,12 @@ const Categories = ({ user }: Props) => {
   const marketPathName = "/market";
   const isMarket = pathname === marketPathName;
 
-  const fadeVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  };
-
   return (
     <Container>
       {isMarket ? (
         <div className="flex items-center justify-center">
           <div className="pt-2">
-            <Filters user={user} />
+            <Filters role={role} />
           </div>
           <div className="w-full p-0">
             <AnimatePresence mode="wait">

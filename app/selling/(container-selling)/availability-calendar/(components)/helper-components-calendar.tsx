@@ -371,7 +371,7 @@ interface CalendarDayProps {
   onMouseDown: (day: number | null) => void;
   onMouseEnter: (day: number | null) => void;
   isSelected: boolean;
-  timeSlots: TimeSlot[];
+  timeSlots?: TimeSlot[];
 }
 
 const z = Zilla_Slab({
@@ -382,7 +382,6 @@ const z = Zilla_Slab({
 
 const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
-
   onMouseDown,
   onMouseEnter,
   isSelected,
@@ -411,40 +410,6 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
       .padStart(2, "0")} ${period}`;
   };
 
-  const animationSettings = useMemo(() => {
-    if (timeSlots.length === 0) {
-      return {
-        shouldAnimate: false,
-        startColor: "black",
-        endColor: "black",
-        duration: "5s",
-      };
-    }
-
-    const { open, close } = timeSlots[0];
-    const totalMinutesOpen = close - open;
-    const maxAnimationDuration = 20; // Maximum animation time in seconds
-    const animationDuration =
-      Math.min((totalMinutesOpen / 60) * 2, maxAnimationDuration) + "s";
-
-    const getColorForTime = (time: number) => {
-      if (time < 6 * 60) return "black";
-      if (time < 8 * 60) return "#FF8C00";
-      if (time < 12 * 60) return "#FFFF00";
-      if (time < 16 * 60) return "#FFD700";
-      if (time < 18 * 60) return "#FFA500";
-      if (time < 20 * 60) return "#FF4500";
-      return "black";
-    };
-
-    return {
-      shouldAnimate: true,
-      startColor: getColorForTime(open),
-      endColor: getColorForTime(close),
-      duration: animationDuration,
-    };
-  }, [timeSlots]);
-
   return (
     <div
       onMouseDown={handleMouseDown}
@@ -461,30 +426,17 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
             className={`text-sm font-light ${
               isSelected
                 ? "underline"
-                : timeSlots.length === 0
+                : timeSlots?.length === 0
                 ? "line-through"
                 : ""
             }`}
           >
             {day}
           </div>
-          {timeSlots.map((slot, index) => (
+          {timeSlots?.map((slot, index) => (
             <div
               key={index}
-              className={`${
-                z.className
-              } text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto ${
-                animationSettings.shouldAnimate ? "daylight-animation" : ""
-              }`}
-              style={
-                {
-                  animation: animationSettings.shouldAnimate
-                    ? `daylightGradient ${animationSettings.duration} linear forwards`
-                    : "none",
-                  "--start-color": animationSettings.startColor,
-                  "--end-color": animationSettings.endColor,
-                } as React.CSSProperties
-              }
+              className={`${z.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
             >
               {`${convertMinutesToTimeString(
                 slot.open

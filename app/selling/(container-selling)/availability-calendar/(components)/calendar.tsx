@@ -14,9 +14,16 @@ import {
   CustomSwitch,
   CalendarDay,
   LocationSelector,
+  o,
 } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
-import { Location, MonthHours, UserRole } from "@prisma/client";
+import {
+  Availability,
+  Hours,
+  Location,
+  TimeSlot,
+  UserRole,
+} from "@prisma/client";
 import {
   checkOverlap,
   convertMinutesToTimeString,
@@ -28,21 +35,6 @@ import {
 import { usePathname } from "next/navigation";
 import { RiArrowDownSLine } from "react-icons/ri";
 
-type TimeSlot = {
-  open: number;
-  close: number;
-};
-
-type StoreException = {
-  date: Date;
-  timeSlots?: TimeSlot[];
-};
-export interface Hours {
-  deliveryHours: MonthHours[];
-  pickupHours: MonthHours[];
-  deliveryExceptions: StoreException[];
-  pickupExceptions: StoreException[];
-}
 interface p {
   location?: Location;
   id?: string;
@@ -51,19 +43,18 @@ interface p {
 }
 const Calendar = ({ location, id, mk, locations }: p) => {
   const [hours, setHours] = useState<Hours>({
-    deliveryHours: [],
-    pickupHours: [],
-    deliveryExceptions:
-      location?.hours?.deliveryExceptions?.map((ex: any) => ({
+    delivery:
+      location?.hours?.delivery?.map((ex: any) => ({
         ...ex,
         date: new Date(ex.date),
       })) || [],
-    pickupExceptions:
-      location?.hours?.pickupExceptions?.map((ex: any) => ({
+    pickup:
+      location?.hours?.pickup?.map((ex: any) => ({
         ...ex,
         date: new Date(ex.date),
       })) || [],
   });
+
   const [panelStack, setPanelStack] = useState<PanelProps[]>([]);
   const isPanelOpen = panelStack.length > 0;
   const [isOpen, setIsOpen] = useState(true);
@@ -211,16 +202,14 @@ const Calendar = ({ location, id, mk, locations }: p) => {
     setSelectedDays(newSelectedDays);
   };
 
-  const getCurrentHoursAndExceptions = () => {
+  const getCurrentHours = () => {
     if (deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY) {
       return {
-        currentHours: hours.deliveryHours,
-        currentExceptions: hours.deliveryExceptions,
+        currentHours: hours.delivery,
       };
     } else {
       return {
-        currentHours: hours.pickupHours,
-        currentExceptions: hours.pickupExceptions,
+        currentHours: hours.pickup,
       };
     }
   };
@@ -254,28 +243,9 @@ const Calendar = ({ location, id, mk, locations }: p) => {
   const renderCalendarForMonth = (year: number, month: number): JSX.Element => {
     const daysInMonth = getDaysInMonth(year, month);
     const firstDayOfMonth = getFirstDayOfMonth(year, month);
-    const { currentHours, currentExceptions } = getCurrentHoursAndExceptions();
-
+    const { currentHours } = getCurrentHours();
     const calendarDays: JSX.Element[] = [];
     const totalCells = 42;
-
-    const mergeHoursAndExceptions = (date: Date) => {
-      const month = date.getMonth();
-      const day = date.getDate();
-
-      const monthHours = currentHours.find((mh) => mh.month === month);
-      const dayHours = monthHours?.days.find((dh) => dh.day === day);
-
-      const exception = currentExceptions.find((ex) =>
-        isSameDay(ex.date, date)
-      );
-
-      if (exception && exception.timeSlots) {
-        return exception.timeSlots;
-      }
-
-      return dayHours?.timeSlots || [];
-    };
 
     for (let i = 0; i < totalCells; i++) {
       const day = i - firstDayOfMonth + 1;
@@ -283,11 +253,14 @@ const Calendar = ({ location, id, mk, locations }: p) => {
       const key = isValidDay ? createDateKey(year, month + 1, day) : "";
       const isSelected = isValidDay && !!selectedDays[key];
 
-      const currentDate = isValidDay
-        ? new Date(Date.UTC(year, month, day))
-        : null;
-
-      const timeSlots = currentDate ? mergeHoursAndExceptions(currentDate) : [];
+      let timeSlots: TimeSlot[] = [];
+      if (isValidDay) {
+        const currentDate = parseISO(key);
+        const matchingHours = currentHours?.find((hourSet) =>
+          isSameDay(parseISO(hourSet.date.toISOString()), currentDate)
+        );
+        timeSlots = matchingHours?.timeSlots || [];
+      }
 
       calendarDays.push(
         <CalendarDay
@@ -317,7 +290,6 @@ const Calendar = ({ location, id, mk, locations }: p) => {
       </div>
     );
   };
-
   const renderPanelContent = (panelIndex: number) => (
     <div className="flex flex-col h-full">
       <h2 className="text-xl font-normal my-4">{getSelectionDescription}</h2>
@@ -422,7 +394,7 @@ const Calendar = ({ location, id, mk, locations }: p) => {
 
   const renderCalendarContent = () => (
     <>
-      <div className="sticky top-0 z-40 w-full">
+      <div className={`sticky top-0 z-40 w-full ${o.className}`}>
         <div
           className="flex justify-start sm:justify-end items-center gap-px sm:px-3 pt-2 px-1 overflow-x-auto scrollbar-hide gap-x-1 flex-nowrap"
           style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}
@@ -619,32 +591,18 @@ const Calendar = ({ location, id, mk, locations }: p) => {
       toast.error("Time slots overlap. Please adjust the hours.");
       return;
     }
-    if (locations.length > 3) {
-      toast.error("You may only have up to 3 locations");
-    }
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
-      .map(([dateString, _]) => {
-        const [year, month, day] = dateString.split("-").map(Number);
-        return new Date(Date.UTC(year, month - 1, day));
-      })
+      .map(([dateString, _]) => parseISO(dateString))
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
-
-    const { currentExceptions } = getCurrentHoursAndExceptions();
-
-    const exceptionsMap = new Map(
-      currentExceptions.map((exception) => [
-        format(new Date(exception.date), "yyyy-MM-dd"),
+    const { currentHours } = getCurrentHours();
+    const currentSetsMap = new Map(
+      currentHours?.map((currentSet: any) => [
+        format(parseISO(currentSet.date.toISOString()), "yyyy-MM-dd"),
         {
-          ...exception,
-          date: new Date(
-            Date.UTC(
-              exception.date.getUTCFullYear(),
-              exception.date.getUTCMonth(),
-              exception.date.getUTCDate()
-            )
-          ),
+          ...currentSet,
+          date: parseISO(currentSet.date.toISOString()),
         },
       ])
     );
@@ -652,26 +610,27 @@ const Calendar = ({ location, id, mk, locations }: p) => {
     selectedDates.forEach((date) => {
       const dateKey = format(date, "yyyy-MM-dd");
 
-      const newException: StoreException = {
+      const newException: Availability = {
         date,
-        timeSlots: isOpen ? allTimeSlots.flat() : undefined,
+        timeSlots: isOpen ? allTimeSlots.flat() : [],
+        capacity: 0,
       };
-      exceptionsMap.set(dateKey, newException);
+      currentSetsMap.set(dateKey, newException);
     });
 
-    const updatedExceptions = Array.from(exceptionsMap.values());
+    const updateHours = Array.from(currentSetsMap.values());
 
     const updatedHours = {
       ...hours,
       [deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY
-        ? "deliveryExceptions"
-        : "pickupExceptions"]: updatedExceptions,
+        ? "delivery"
+        : "pickup"]: updateHours,
     };
 
     setHours(updatedHours);
 
     try {
-      await updateUserHours(updatedHours);
+      await updateUserHours(updatedHours, location?.id);
       toast.success("Hours updated successfully");
     } catch (error) {
       console.error("Error updating hours:", error);

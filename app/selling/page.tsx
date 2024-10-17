@@ -13,7 +13,6 @@ import {
 import MenuCard from "@/app/account/components/menu-card";
 import { CiSettings } from "react-icons/ci";
 import UserInfoCard from "@/app/account/components/user-info-card";
-
 const menuItems = [
   {
     title: "To-Dos",
@@ -73,7 +72,7 @@ const menuItems = [
 
 const SellerHome = () => {
   return (
-    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-0 md:pt-12 pb-24 md:pb-0">
+    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-0 md:pt-12 pb-24 md:pb-0 select-none">
       <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
         <UserInfoCard sellerNav={true} />
         {menuItems.map((item, index) => (
