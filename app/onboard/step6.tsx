@@ -1,112 +1,153 @@
-import { Dispatch, SetStateAction, useState, useCallback } from "react";
-import SliderSelection from "@/app/selling/(container-selling)/my-store/settings/slider-selection";
-import { Location, Prisma } from "@prisma/client";
-interface p {
-  location: Location | null;
+import React, { useState } from "react";
+import { LocationObj } from "@/next-auth";
+import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
+import { Button } from "@/app/components/ui/button";
+import { toast } from "sonner";
+import {
+  checkOverlap,
+  convertMinutesToTimeString,
+  convertTimeStringToMinutes,
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+
+interface StepSixProps {
   user: any;
-  updateFormData: (newData: Partial<{ location: any }>) => void;
+  updateFormData: (newData: { location: LocationObj }) => void;
   formData: string[] | undefined;
-  setOpenMonths: Dispatch<SetStateAction<string[]>>;
+  location?: LocationObj;
+  selectedDays: string[];
+  onComplete: () => void;
+  onBack: () => void;
 }
 
-const StepSix = ({
+const StepSix: React.FC<StepSixProps> = ({
   user,
   updateFormData,
-  // setOpenMonths,
   formData,
   location,
-}: p) => {
-  const [newLocation, setNewLocation] = useState(user?.location?.[0] || null);
-  const [openMonths, setOpenMonths] = useState<string[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
+  selectedDays,
+  onComplete,
+  onBack,
+}) => {
+  const [timeSlots, setTimeSlots] = useState([{ open: 540, close: 1020 }]);
 
-  const handleHoursChange = (newHours: any) => {
-    let updatedLocation = { ...location, hours: newHours };
-    setNewLocation(updatedLocation);
-    updateFormData({ location: { 0: updatedLocation } });
-  };
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+  const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
   ];
 
-  const toggleMonth = useCallback((month: string) => {
-    setOpenMonths((prevMonths) => {
-      const newMonths = prevMonths.includes(month)
-        ? prevMonths.filter((m) => m !== month)
-        : [...prevMonths, month];
-      return newMonths;
+  const handleTimeSlotChange = (
+    slotIndex: number,
+    isOpenTime: boolean,
+    newTime: string
+  ) => {
+    setTimeSlots((prevSlots) => {
+      const newSlots = [...prevSlots];
+      const minutes = convertTimeStringToMinutes(newTime);
+      newSlots[slotIndex] = {
+        ...newSlots[slotIndex],
+        [isOpenTime ? "open" : "close"]: minutes,
+      };
+      return newSlots;
     });
-  }, []);
-
-  const handleMouseDown = (month: string) => {
-    setIsDragging(true);
-    toggleMonth(month);
   };
 
-  const handleMouseEnter = (month: string) => {
-    if (isDragging) {
-      toggleMonth(month);
+  const handleSaveChanges = () => {
+    if (checkOverlap([timeSlots])) {
+      toast.error("Time slots overlap. Please adjust the hours.");
+      return;
     }
-  };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
+    if (!location) {
+      toast.error("Location data is missing.");
+      return;
+    }
+
+    const updatedPickup = selectedDays.map((day) => {
+      // Find the index of the day in the weekDays array
+      const dayIndex = weekDays.indexOf(day);
+      // Create a date for the next occurrence of this day
+      const date = new Date();
+      date.setDate(date.getDate() + ((dayIndex + 7 - date.getDay()) % 7));
+      // Set the time to midnight to avoid timezone issues
+      date.setHours(0, 0, 0, 0);
+
+      return {
+        date: date,
+        timeSlots: timeSlots,
+        capacity: null,
+      };
+    });
+
+    const existingPickup = location.hours?.pickup || [];
+    const newPickup = existingPickup.filter(
+      (pickup) =>
+        !selectedDays.includes(weekDays[new Date(pickup.date).getUTCDay()])
+    );
+    newPickup.push(...updatedPickup);
+
+    const updatedLocation: LocationObj = {
+      ...location,
+      hours: {
+        pickup: newPickup,
+        delivery: location.hours?.delivery || [],
+      },
+    };
+
+    updateFormData({ location: updatedLocation });
+    toast.success("Store hours updated successfully");
+    onComplete();
   };
 
   return (
-    <div className="h-full">
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Your Store Hours for{" "}
-        {formData && formData[0]
-          ? `${formData[0]}`
-          : user.locations
-          ? user.locations[1].address[1]
-          : "no location set"}
+    <div className="h-full p-8">
+      <div className="text-center text-4xl mb-8">
+        Set Hours for Selected Days
       </div>
-      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
-        Select the Months you will be open.
-      </div>
-      <div className="text-center text-2xl">
-        You can change your schedule day-to-day in settings later on.
-      </div>
-      <div className="text-center text-2xl">
-        Even if you are only open for one day out of a month, include that month
-        in your selection.
-      </div>
-      <div className="flex flex-col items-center sm:mt-[3%] mt-[3%]">
-        <div
-          className="grid grid-cols-3 gap-2"
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          {months.map((month) => (
-            <button
-              key={month}
-              onMouseDown={() => handleMouseDown(month)}
-              onMouseEnter={() => handleMouseEnter(month)}
-              className={`p-10 text-sm border-[2px] rounded ${
-                openMonths.includes(month)
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {month}
-            </button>
-          ))}
+      <div className="mb-4">Selected Days: {selectedDays.join(", ")}</div>
+      {timeSlots.map((slot, index) => (
+        <div key={index} className="mb-4">
+          <TimePicker
+            top={true}
+            value={convertMinutesToTimeString(slot.open)}
+            onChange={(time) => handleTimeSlotChange(index, true, time)}
+            isOpen={true}
+          />
+          <TimePicker
+            top={false}
+            value={convertMinutesToTimeString(slot.close)}
+            onChange={(time) => handleTimeSlotChange(index, false, time)}
+            isOpen={true}
+          />
         </div>
-      </div>
+      ))}
+      <Button
+        onClick={() => {
+          if (timeSlots.length >= 3) {
+            toast.error(
+              "You can only add up to three sets of hours for a day."
+            );
+            return;
+          }
+          if (checkOverlap([timeSlots])) {
+            toast.error(
+              "Cannot add another set of hours because existing time slots overlap."
+            );
+            return;
+          }
+          setTimeSlots((prev) => [...prev, { open: 540, close: 1020 }]);
+        }}
+        className="w-full mb-4"
+      >
+        Add Another Set of Hours
+      </Button>
+      <Button onClick={handleSaveChanges} className="w-full mb-4">
+        Save Changes
+      </Button>
     </div>
   );
 };

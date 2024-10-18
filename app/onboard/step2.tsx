@@ -1,4 +1,5 @@
 import { UserInfo } from "@/next-auth";
+import { UserRole } from "@prisma/client";
 import axios from "axios";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
@@ -12,29 +13,42 @@ const outfit = Outfit({
 });
 interface p {
   user: UserInfo;
+  updateFormData: (data: Partial<{ role: UserRole }>) => void;
 }
 
-const StepTwo = ({ user }: p) => {
+const StepTwo = ({ user, updateFormData }: p) => {
   const Producer = async () => {
-    try {
-      await axios.post("/api/useractions/update", {
-        role: "PRODUCER",
-        hasPickedRole: null,
-      });
-    } catch (error) {
-    } finally {
-      toast.success("Role Updated to Grower");
+    updateFormData({ role: "PRODUCER" });
+    if ((user.role = "CONSUMER") || (user.role = "PRODUCER")) {
+      try {
+        await axios.post("/api/useractions/update", {
+          role: "PRODUCER",
+          hasPickedRole: null,
+        });
+      } catch (error) {
+      } finally {
+        toast.success("Role Updated to Grower");
+        updateFormData({ role: "PRODUCER" });
+      }
     }
   };
   const Coop = async () => {
-    try {
-      await axios.post("/api/useractions/update", {
-        role: "COOP",
-        hasPickedRole: null,
-      });
-    } catch (error) {
-    } finally {
-      toast.success("Role Updated to Co-op");
+    updateFormData({ role: "COOP" });
+    if (
+      (user.role = "CONSUMER") ||
+      (user.role = "PRODUCER") ||
+      (user.role = "COOP")
+    ) {
+      try {
+        await axios.post("/api/useractions/update", {
+          role: "COOP",
+          hasPickedRole: null,
+        });
+      } catch (error) {
+      } finally {
+        toast.success("Role Updated to Co-op");
+        updateFormData({ role: "COOP" });
+      }
     }
   };
   return (
