@@ -44,7 +44,18 @@ type navSellOrder = {
     name: string;
   } | null;
 };
-
+export type LocationEZH = {
+  id: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  role: UserRole;
+  type: string;
+  coordinates: number[];
+  address: string[];
+  hours: Hours | null;
+  isDefault: boolean;
+} | null;
 type navBuyOrder = {
   id: string;
   conversationId: string | null;

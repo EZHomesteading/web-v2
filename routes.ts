@@ -7,6 +7,7 @@
 export const publicRoutes = [
   "/",
   "/market",
+  "/test",
   "/api/webhook/stripe",
   "/map",
   "/get-ezh-app",

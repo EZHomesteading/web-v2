@@ -276,8 +276,8 @@ model Listing {
   harvestType     String?
   reports         Int?
   shelfLife       Int
-  locationId      String     @db.ObjectId
-  location        Location?  @relation(fields: [locationId], references: [id])
+  locationId      String?    @db.ObjectId
+  location        Location?  @relation(fields: [locationId], references: [id], onDelete: SetNull)
   rating          Int[]
   userId          String     @db.ObjectId
   createdAt       DateTime   @default(now())
