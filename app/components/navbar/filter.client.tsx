@@ -32,10 +32,16 @@ const outfit = Outfit({
 const Filters = ({ role }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  let r = searchParams?.get("radius");
 
-  const [radius, setRadius] = useState(0);
+  // Get radius in miles from searchParams, fallback to 10 miles if not set.
+  let r = searchParams?.get("radius") || "10";
+  const [radius, setRadius] = useState(parseInt(r, 10));
+  const [listingCount, setListingCount] = useState(0);
+  const [loading, setLoading] = useState(false); // Loading state
+
+  // Get latitude and longitude from searchParams.
   const lat = searchParams?.get("lat");
+  const lng = searchParams?.get("lng");
 
   const rMi = r ? Math.round(parseFloat(r) * 0.621371 * 10) / 10 : 0;
   const [p, setP] = useState(searchParams?.get("p") === "true");
@@ -56,43 +62,64 @@ const Filters = ({ role }: Props) => {
     setRa(searchParams?.get("ra") || "");
     setPr(searchParams?.get("pr") || "");
   }, [searchParams]);
+
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const minLoadingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (radius > 0 && lat && lng) {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+
+      debounceTimeout.current = setTimeout(() => {
+        const fetchListingsCount = async () => {
+          setLoading(true);
+
+          try {
+            const radiusInMeters = radius * 1609.34;
+
+            const res = await fetch(
+              `/api/get/market/count?lat=${lat}&lng=${lng}&radius=${radiusInMeters}`
+            );
+            const data = await res.json();
+            setListingCount(data.count);
+
+            minLoadingTimeout.current = setTimeout(() => {
+              setLoading(false);
+            }, 500);
+          } catch (error) {
+            console.error("Failed to fetch listings count:", error);
+            setLoading(false);
+          }
+        };
+
+        fetchListingsCount();
+      }, 500);
+    }
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      if (minLoadingTimeout.current) {
+        clearTimeout(minLoadingTimeout.current);
+      }
+    };
+  }, [radius, lat, lng]);
+
   const handleSeeListings = () => {
     const params = new URLSearchParams(searchParams?.toString());
-    const rKm = (radius / 0.621371).toFixed(1);
-    params.set("radius", rKm);
-    if (rMi === 0) {
-      params.delete("radius");
-    }
-    if (p) {
-      params.set("p", "t");
-    } else {
-      params.delete("p");
-    }
-    if (ra) {
-      params.set("ra", ra);
-    }
-    if (pr) {
-      params.set("pr", pr);
-    }
-    if (l) {
-      params.delete("lat");
-      params.delete("lng");
+    const radiusInMeters = (radius * 1609.34).toFixed(1);
+    params.set("radius", radiusInMeters);
+
+    if (radius === 0) {
       params.delete("radius");
     }
 
-    if (c) {
-      params.set("c", "t");
-    } else {
-      params.delete("c");
-    }
-
-    if (s) {
-      params.set("s", "f");
-    } else {
-      params.delete("s");
-    }
     router.push(`/market?${params.toString()}`);
   };
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -229,7 +256,17 @@ const Filters = ({ role }: Props) => {
           }`}
           disabled={isDropdownOpen}
         >
-          See Listings
+          {loading ? (
+            <span className="flex items-center justify-center h-[28px]">
+              <div className="loading-dots">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
+            </span>
+          ) : (
+            `See ${listingCount} Listings`
+          )}
         </SheetTrigger>
         <SheetTrigger
           onClick={() => router.push("/market")}

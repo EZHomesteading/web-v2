@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const lat = parseFloat(searchParams.get('lat') || '0');
     const lng = parseFloat(searchParams.get('lng') || '0');
-    const radius = parseInt(searchParams.get('radius') || '10000'); 
+    const radius = parseInt(searchParams.get('radius') || '10000');
 
     const geoQuery = {
       coordinates: {
@@ -26,28 +26,17 @@ export async function GET(req: NextRequest) {
     const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id address').lean().exec();
 
     if (!nearbyLocations || nearbyLocations.length === 0) {
-      return NextResponse.json({ message: 'No nearby locations found' }, { status: 404 });
+      return NextResponse.json({ count: 0 }, { status: 404 });
     }
     const locationIds = nearbyLocations.map((location) => location._id as string);
 
-    const listings = await prisma.listing.findMany({
+    const listingsCount = await prisma.listing.count({
       where: {
         locationId: { in: locationIds }
-      },
-      select:{
-        title:true,
-        imageSrc:true,
-        price:true,
-        rating:true,
-        quantityType:true,
-        location: {
-          select: {address:true},
-         
-        }
       }
     });
-    
-    return NextResponse.json(listings);
+
+    return NextResponse.json({ count: listingsCount });
   } catch (error) {
     return NextResponse.json({ message: 'Internal server error', error: String(error) }, { status: 500 });
   } finally {
