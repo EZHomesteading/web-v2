@@ -52,24 +52,28 @@ const StepTwo = ({ user, updateFormData }: p) => {
     }
   };
   return (
-    <div className={`${outfit.className} h-screen w-screen text-black  `}>
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Select a Role
-      </div>
-      <div className="h-full flex flex-col items-center sm:pt-[10%] pt-[30%] px-10">
+    <div className={`${outfit.className}`}>
+      <div className="h-full flex flex-col items-center sm:pt-[10%] pt-[10%] px-10">
+        <div className="text-center text-4xl">
+          Select Role For This Selling Location
+        </div>
+        <div className="text-center py-[1%] sm:py-[1%] text-2xl">
+          This will also affect your account, Users with one or more Co-Op
+          Locations will be able to purchase from Growers.
+        </div>
         <ul className="w-full max-w-3xl">
           {[
             {
-              text: ["Become a Co-Op & sell to anyone"],
+              text: ["Set Location as a Co-Op & sell to anyone"],
               icon: IoStorefrontOutline,
               subtext: [
                 "People who already have farmer's market stands &",
-                "are looking to expand their cataloug generally choose to be a Co-op.",
+                "are looking to expand their catalog generally choose to be a Co-op.",
                 "A co-op is a greater time commitment but the rewards are better as well.",
               ],
             },
             {
-              text: ["Become a grower & sell only to Co-Ops"],
+              text: ["Set Location as a grower & sell only to Co-Ops"],
               icon: GiFruitTree,
               subtext: [
                 "People who prefer to sell in larger quantities &",

@@ -1,70 +1,64 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-import { Button } from "@/app/components/ui/button";
+import { UserRole } from "@prisma/client";
 
-interface StepFiveProps {
+interface StepFourProps {
   location?: LocationObj;
   user: any;
-  updateFormData: (newData: { location: LocationObj }) => void;
+  updateFormData: (newData: Partial<{ selectedMonths: number[] }>) => void;
   formData: string[] | undefined;
-  onComplete: (selectedDays: string[]) => void;
-  onCompleteHours: () => void;
+  selectedMonths: number[] | undefined;
 }
 
-const StepFive: React.FC<StepFiveProps> = ({
+const StepFive = ({
   user,
   updateFormData,
   formData,
   location,
-  onComplete,
-  onCompleteHours,
-}) => {
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  selectedMonths,
+}: StepFourProps) => {
+  const [openMonths, setOpenMonths] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  const fullWeekDays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
-  const [weekDays, setWeekDays] = useState<string[]>(fullWeekDays);
-
+  // Initialize openMonths with selectedMonths when the component mounts
   useEffect(() => {
-    if (location?.hours?.pickup) {
-      const setupDays = location.hours.pickup.map((day) => {
-        const date = new Date(day.date);
-        // Use UTC methods to avoid timezone issues
-        return fullWeekDays[date.getUTCDay()];
-      });
-      setWeekDays(fullWeekDays.filter((day) => !setupDays.includes(day)));
-    } else {
-      setWeekDays(fullWeekDays);
+    if (selectedMonths && selectedMonths.length > 0) {
+      setOpenMonths(selectedMonths);
     }
-  }, [location]);
+  }, [selectedMonths]);
 
-  const toggleDay = useCallback((day: string) => {
-    setSelectedDays((prevDays) => {
-      if (prevDays.includes(day)) {
-        return prevDays.filter((d) => d !== day);
-      } else {
-        return [...prevDays, day];
-      }
+  const toggleMonth = useCallback((monthIndex: number) => {
+    setOpenMonths((prevMonths) => {
+      const newMonths = prevMonths.includes(monthIndex)
+        ? prevMonths.filter((m) => m !== monthIndex)
+        : [...prevMonths, monthIndex];
+      return newMonths;
     });
   }, []);
 
-  const handleMouseDown = (day: string) => {
+  const handleMouseDown = (monthIndex: number) => {
     setIsDragging(true);
-    toggleDay(day);
+    toggleMonth(monthIndex);
   };
 
-  const handleMouseEnter = (day: string) => {
+  const handleMouseEnter = (monthIndex: number) => {
     if (isDragging) {
-      toggleDay(day);
+      toggleMonth(monthIndex);
     }
   };
 
@@ -72,46 +66,50 @@ const StepFive: React.FC<StepFiveProps> = ({
     setIsDragging(false);
   };
 
-  const handleNext = () => {
-    if (selectedDays.length === 0) {
-      alert("Please select at least one day.");
-      return;
-    }
-    onComplete(selectedDays);
-  };
+  useEffect(() => {
+    updateFormData({
+      selectedMonths: openMonths,
+    });
+  }, [openMonths, updateFormData]);
 
   return (
-    <div className="h-full p-8">
-      <div className="text-center text-4xl mb-8">
-        Select Days for{" "}
+    <div className="h-full">
+      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
+        Set Up Your Store Months for{" "}
         {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
-      <div
-        className="grid grid-cols-1 gap-2"
-        onMouseLeave={handleMouseUp}
-        onMouseUp={handleMouseUp}
-      >
-        {weekDays.map((day) => (
-          <button
-            key={day}
-            onMouseDown={() => handleMouseDown(day)}
-            onMouseEnter={() => handleMouseEnter(day)}
-            className={`p-2 px-20 border-[2px] text-2xl rounded ${
-              selectedDays.includes(day)
-                ? "bg-black text-white"
-                : "bg-white text-black"
-            }`}
-          >
-            {day}
-          </button>
-        ))}
+      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
+        Select the Months you will be open.
       </div>
-      <Button onClick={handleNext} className="w-full mt-8 mb-4">
-        Set Hours for Selected Days
-      </Button>
-      <Button onClick={onCompleteHours} className="w-full">
-        I Am Finished Setting Hours
-      </Button>
+      <div className="text-center text-2xl">
+        You can change your schedule day-to-day in settings later on.
+      </div>
+      <div className="text-center text-2xl">
+        Even if you are only open for one day out of a month, include that month
+        in your selection.
+      </div>
+      <div className="flex flex-col items-center sm:mt-[3%] mt-[3%]">
+        <div
+          className="grid grid-cols-3 gap-2"
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          {months.map((month, index) => (
+            <button
+              key={month}
+              onMouseDown={() => handleMouseDown(index)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              className={`p-10 text-sm border-[2px] rounded ${
+                openMonths.includes(index)
+                  ? "bg-black text-white"
+                  : "bg-white text-black"
+              }`}
+            >
+              {month}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

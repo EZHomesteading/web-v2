@@ -1,36 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
 import { Button } from "@/app/components/ui/button";
-import { toast } from "sonner";
-import {
-  checkOverlap,
-  convertMinutesToTimeString,
-  convertTimeStringToMinutes,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 
-interface StepSixProps {
+interface StepFiveProps {
+  location?: LocationObj;
   user: any;
   updateFormData: (newData: { location: LocationObj }) => void;
   formData: string[] | undefined;
-  location?: LocationObj;
-  selectedDays: string[];
-  onComplete: () => void;
-  onBack: () => void;
+  onComplete: (selectedDays: string[]) => void;
+  onCompleteHours: () => void;
 }
 
-const StepSix: React.FC<StepSixProps> = ({
+const StepFive: React.FC<StepFiveProps> = ({
   user,
   updateFormData,
   formData,
   location,
-  selectedDays,
   onComplete,
-  onBack,
+  onCompleteHours,
 }) => {
-  const [timeSlots, setTimeSlots] = useState([{ open: 540, close: 1020 }]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const weekDays = [
+  const fullWeekDays = [
     "Sunday",
     "Monday",
     "Tuesday",
@@ -40,116 +32,100 @@ const StepSix: React.FC<StepSixProps> = ({
     "Saturday",
   ];
 
-  const handleTimeSlotChange = (
-    slotIndex: number,
-    isOpenTime: boolean,
-    newTime: string
-  ) => {
-    setTimeSlots((prevSlots) => {
-      const newSlots = [...prevSlots];
-      const minutes = convertTimeStringToMinutes(newTime);
-      newSlots[slotIndex] = {
-        ...newSlots[slotIndex],
-        [isOpenTime ? "open" : "close"]: minutes,
-      };
-      return newSlots;
+  const [weekDays, setWeekDays] = useState<string[]>(fullWeekDays);
+
+  useEffect(() => {
+    if (location?.hours?.pickup) {
+      const setupDays = location.hours.pickup.map((day) => {
+        const date = new Date(day.date);
+        // Use UTC methods to avoid timezone issues
+        return fullWeekDays[date.getUTCDay()];
+      });
+      setWeekDays(fullWeekDays.filter((day) => !setupDays.includes(day)));
+    } else {
+      setWeekDays(fullWeekDays);
+    }
+  }, [location]);
+
+  const toggleDay = useCallback((day: string) => {
+    setSelectedDays((prevDays) => {
+      if (prevDays.includes(day)) {
+        return prevDays.filter((d) => d !== day);
+      } else {
+        return [...prevDays, day];
+      }
     });
+  }, []);
+
+  const handleMouseDown = (day: string) => {
+    setIsDragging(true);
+    toggleDay(day);
   };
 
-  const handleSaveChanges = () => {
-    if (checkOverlap([timeSlots])) {
-      toast.error("Time slots overlap. Please adjust the hours.");
+  const handleMouseEnter = (day: string) => {
+    if (isDragging) {
+      toggleDay(day);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleNext = () => {
+    if (selectedDays.length === 0) {
+      alert("Please select at least one day.");
       return;
     }
-
-    if (!location) {
-      toast.error("Location data is missing.");
-      return;
-    }
-
-    const updatedPickup = selectedDays.map((day) => {
-      // Find the index of the day in the weekDays array
-      const dayIndex = weekDays.indexOf(day);
-      // Create a date for the next occurrence of this day
-      const date = new Date();
-      date.setDate(date.getDate() + ((dayIndex + 7 - date.getDay()) % 7));
-      // Set the time to midnight to avoid timezone issues
-      date.setHours(0, 0, 0, 0);
-
-      return {
-        date: date,
-        timeSlots: timeSlots,
-        capacity: null,
-      };
-    });
-
-    const existingPickup = location.hours?.pickup || [];
-    const newPickup = existingPickup.filter(
-      (pickup) =>
-        !selectedDays.includes(weekDays[new Date(pickup.date).getUTCDay()])
-    );
-    newPickup.push(...updatedPickup);
-
-    const updatedLocation: LocationObj = {
-      ...location,
-      hours: {
-        pickup: newPickup,
-        delivery: location.hours?.delivery || [],
-      },
-    };
-
-    updateFormData({ location: updatedLocation });
-    toast.success("Store hours updated successfully");
-    onComplete();
+    onComplete(selectedDays);
   };
 
   return (
-    <div className="h-full p-8">
-      <div className="text-center text-4xl mb-8">
-        Set Hours for Selected Days
+    <div className="h-full w-full p-8 flex flex-col  items-center">
+      <div className=" mb-4 text-center items-center  pt-[2%] sm:pt-[5%] text-4xl">
+        Select Days for{" "}
+        {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
-      <div className="mb-4">Selected Days: {selectedDays.join(", ")}</div>
-      {timeSlots.map((slot, index) => (
-        <div key={index} className="mb-4">
-          <TimePicker
-            top={true}
-            value={convertMinutesToTimeString(slot.open)}
-            onChange={(time) => handleTimeSlotChange(index, true, time)}
-            isOpen={true}
-          />
-          <TimePicker
-            top={false}
-            value={convertMinutesToTimeString(slot.close)}
-            onChange={(time) => handleTimeSlotChange(index, false, time)}
-            isOpen={true}
-          />
+      {weekDays.length < 7 ? (
+        <div className="text-center py-[1%] sm:py-[1%] text-2xl">
+          Would you like to set up Hours for any other days of the week?
         </div>
-      ))}
-      <Button
-        onClick={() => {
-          if (timeSlots.length >= 3) {
-            toast.error(
-              "You can only add up to three sets of hours for a day."
-            );
-            return;
-          }
-          if (checkOverlap([timeSlots])) {
-            toast.error(
-              "Cannot add another set of hours because existing time slots overlap."
-            );
-            return;
-          }
-          setTimeSlots((prev) => [...prev, { open: 540, close: 1020 }]);
-        }}
-        className="w-full mb-4"
+      ) : (
+        <div className="text-center py-[1%] sm:py-[1%] text-2xl">
+          Select the days of the week that will have the same hours
+        </div>
+      )}
+
+      <div
+        className="grid grid-cols-1 gap-2"
+        onMouseLeave={handleMouseUp}
+        onMouseUp={handleMouseUp}
       >
-        Add Another Set of Hours
+        {weekDays.map((day) => (
+          <button
+            key={day}
+            onMouseDown={() => handleMouseDown(day)}
+            onMouseEnter={() => handleMouseEnter(day)}
+            className={`p-2 px-20 border-[2px] text-2xl rounded ${
+              selectedDays.includes(day)
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {day}
+          </button>
+        ))}
+      </div>
+      <Button onClick={handleNext} className=" mt-8 px-12 mb-4">
+        Set Hours for Selected Days
       </Button>
-      <Button onClick={handleSaveChanges} className="w-full mb-4">
-        Save Changes
-      </Button>
+      {weekDays.length === 7 ? null : (
+        <Button onClick={onCompleteHours} className="px-12">
+          I Am Finished Setting Hours
+        </Button>
+      )}
     </div>
   );
 };
 
-export default StepSix;
+export default StepFive;
