@@ -33,7 +33,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
-
+  const [prevHours, setPrevHours] = useState<any>();
   const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
     locationId?: string;
@@ -104,7 +104,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const handleNext = async () => {
     try {
       if (step === 3 && !formData.locationId) {
-        if (locations?.length === 3) {
+        if (locations && locations?.length > 3) {
           toast.error(
             "You already have the maximum number of locations. Sending you to Add a Product page."
           );
@@ -188,15 +188,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     newType: "both" | "delivery" | "pickup"
   ) => {
     try {
-      const updatedHours: Hours = {
-        delivery:
-          newType === "delivery"
-            ? hours.delivery
-            : formData.hours?.pickup || [],
-        pickup:
-          newType === "pickup" ? hours.pickup : formData.hours?.pickup || [],
-      };
-
       const response = await axios.post(
         "/api/useractions/update/location-hours",
         {
@@ -205,7 +196,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
               address: formData.location?.address,
               coordinates: formData.location?.coordinates,
               role: formData.role,
-              hours: updatedHours,
+              hours: hours,
             },
           ],
           locationId: formData.locationId,
@@ -220,10 +211,10 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         setFormData((prevData) => ({
           ...prevData,
           fulfillmentStyle: newType === "delivery" ? "pickup" : "delivery",
-          hours: updatedHours,
+          hours: hours,
           selectedMonths: [],
         }));
-
+        setPrevHours(hours);
         setStep(5);
       } else {
         toast.error("Failed to update location hours. Please try again.");
@@ -233,16 +224,29 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       toast.error("An error occurred while saving your data.");
     }
   };
-  const handleFinish = async (newHours: Hours) => {
+
+  const handleFinish = async (newHours: Hours, type: string) => {
+    console.log(newHours, prevHours);
     try {
-      // Merge new hours with existing hours
-      const updatedHours = {
-        delivery: [
-          ...(formData.hours?.delivery || []),
-          ...(newHours.delivery || []),
-        ],
-        pickup: [...(formData.hours?.pickup || []), ...(newHours.pickup || [])],
-      };
+      let updatedHours: Hours;
+
+      if (type === "both") {
+        updatedHours = {
+          delivery: [...(newHours.delivery || [])],
+          pickup: [...(newHours.pickup || [])],
+        };
+      } else {
+        updatedHours = {
+          delivery:
+            type === "delivery"
+              ? [...(newHours.delivery || [])]
+              : [...(prevHours?.delivery || [])],
+          pickup:
+            type === "pickup"
+              ? [...(newHours.pickup || [])]
+              : [...(prevHours?.pickup || [])],
+        };
+      }
 
       const response = await axios.post(
         "/api/useractions/update/location-hours",
@@ -271,6 +275,36 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       toast.error("An error occurred while saving your data.");
     }
   };
+
+  // const handleFinishBoth = async (newHours: Hours) => {
+  //   try {
+  //     const response = await axios.post(
+  //       "/api/useractions/update/location-hours",
+  //       {
+  //         location: [
+  //           {
+  //             address: formData.location?.address,
+  //             coordinates: formData.location?.coordinates,
+  //             role: formData.role,
+  //             hours: newHours,
+  //           },
+  //         ],
+  //         locationId: formData.locationId,
+  //         isDefault: null,
+  //       }
+  //     );
+
+  //     if (response.data) {
+  //       toast.success("Location hours updated successfully!");
+  //       router.push("/create");
+  //     } else {
+  //       toast.error("Failed to update location hours. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating location hours:", error);
+  //     toast.error("An error occurred while saving your data.");
+  //   }
+  // };
   useEffect(() => {
     setProgress(step * 14.28); // 100 / 7 steps
   }, [step]);
@@ -315,6 +349,8 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             formData={formData.location?.address}
             onComplete={handleStep6Complete}
             onCompleteHours={handleCompleteHours}
+            selectedDays={selectedDays}
+            setSelectedDays={setSelectedDays}
           />
         )}
         {step === 7 && (

@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { LocationObj } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
 
@@ -9,6 +15,8 @@ interface StepFiveProps {
   formData: string[] | undefined;
   onComplete: (selectedDays: string[]) => void;
   onCompleteHours: () => void;
+  selectedDays: string[];
+  setSelectedDays: Dispatch<SetStateAction<string[]>>;
 }
 
 const StepFive: React.FC<StepFiveProps> = ({
@@ -18,8 +26,9 @@ const StepFive: React.FC<StepFiveProps> = ({
   location,
   onComplete,
   onCompleteHours,
+  selectedDays,
+  setSelectedDays,
 }) => {
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
   const fullWeekDays = [
@@ -35,13 +44,8 @@ const StepFive: React.FC<StepFiveProps> = ({
   const [weekDays, setWeekDays] = useState<string[]>(fullWeekDays);
 
   useEffect(() => {
-    if (location?.hours?.pickup) {
-      const setupDays = location.hours.pickup.map((day) => {
-        const date = new Date(day.date);
-        // Use UTC methods to avoid timezone issues
-        return fullWeekDays[date.getUTCDay()];
-      });
-      setWeekDays(fullWeekDays.filter((day) => !setupDays.includes(day)));
+    if (selectedDays.length !== 0) {
+      setWeekDays(fullWeekDays.filter((day) => !selectedDays.includes(day)));
     } else {
       setWeekDays(fullWeekDays);
     }

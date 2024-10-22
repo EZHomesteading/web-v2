@@ -16,7 +16,8 @@ interface StepSevenProps {
   selectedMonths: number[] | undefined;
   onDayChange: (selectedDays: string[]) => void;
   locationId?: string;
-  onFinish: (hours: Hours) => void;
+  onFinish: (hours: Hours, type: string) => void;
+
   fulfillmentStyle?: string;
 }
 
@@ -126,26 +127,26 @@ const StepEight: React.FC<StepSevenProps> = ({
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const generateHoursData = useCallback(() => {
-    if (!selectedMonths || !location?.hours) {
-      console.error("Missing required data for generating hours");
-      return null;
-    }
+  const generateHoursData = useCallback(
+    (type: string) => {
+      if (!selectedMonths || !location?.hours) {
+        console.error("Missing required data for generating hours");
+        return null;
+      }
 
-    const hours: Hours = {
-      delivery: [],
-      pickup: [],
-    };
+      const hours: Hours = {
+        delivery: [],
+        pickup: [],
+      };
 
-    const currentYear = new Date().getFullYear();
-    selectedMonths.forEach((monthIndex) => {
-      const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, monthIndex, day);
-        const dayOfWeek = date.getDay();
+      const currentYear = new Date().getFullYear();
+      selectedMonths.forEach((monthIndex) => {
+        const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(currentYear, monthIndex, day);
+          const dayOfWeek = date.getDay();
 
-        const generateSlots = (type: "pickup" | "delivery") => {
-          const schedules = location.hours?.[type] || [];
+          const schedules = location.hours?.pickup || [];
           const daySchedule = schedules.find(
             (schedule) =>
               weekDays[dayOfWeek] ===
@@ -153,67 +154,54 @@ const StepEight: React.FC<StepSevenProps> = ({
           );
 
           if (daySchedule && daySchedule.timeSlots.length > 0) {
-            hours[type].push({
+            const timeSlots = daySchedule.timeSlots.map((slot) => ({
+              open: slot.open,
+              close: slot.close,
+            }));
+
+            const dailySchedule = {
               date,
-              timeSlots: daySchedule.timeSlots.map((slot) => ({
-                open: slot.open,
-                close: slot.close,
-              })),
+              timeSlots,
               capacity: 0,
-            });
-          } else {
-            console.warn(
-              `No ${type} schedule found for ${
-                weekDays[dayOfWeek]
-              }, ${date.toISOString()}`
-            );
+            };
+
+            // If fulfillment style is delivery, add to delivery array
+            // If pickup or both, add to pickup array
+            if (type === "delivery") {
+              hours.delivery.push(dailySchedule);
+            } else if (type === "pickup") {
+              hours.pickup.push(dailySchedule);
+            } else if (type === "both") {
+              hours.pickup.push(dailySchedule);
+              hours.delivery.push(dailySchedule);
+            }
           }
-        };
-
-        if (fulfillmentStyle === "pickup") {
-          generateSlots("pickup");
         }
-        if (fulfillmentStyle === "delivery") {
-          generateSlots("delivery");
-        }
-        if (fulfillmentStyle === "both") {
-          generateSlots("pickup");
-        }
-      }
-    });
+      });
 
-    return hours;
-  }, [selectedMonths, location?.hours, weekDays, fulfillmentStyle]);
-
+      return hours;
+    },
+    [selectedMonths, location?.hours, weekDays, fulfillmentStyle]
+  );
   const handleFinish = () => {
-    const hoursData = generateHoursData();
+    const hoursData = generateHoursData(fulfillmentStyle ?? "pickup");
     if (hoursData) {
-      updateFormData({ selectedMonths, hours: hoursData });
-      onFinish(hoursData);
+      onFinish(hoursData, fulfillmentStyle ?? "pickup");
     }
   };
 
   const handleFinishBoth = (type: "both" | "delivery" | "pickup") => {
-    const hoursData = generateHoursData();
+    const hoursData = generateHoursData(type);
     if (hoursData) {
       if (type === "both") {
         updateFormData({
           selectedMonths,
-          hours: { delivery: hoursData.pickup, pickup: hoursData.pickup },
+          hours: hoursData,
         });
-        const bothHours = {
-          delivery: hoursData.pickup,
-          pickup: hoursData.pickup,
-        };
-        onFinish(bothHours);
+        onFinish(hoursData, type);
       } else {
-        const updatedHours: Hours = {
-          delivery: type === "delivery" ? hoursData.pickup : [],
-          pickup: type === "pickup" ? hoursData.pickup : [],
-        };
-
-        updateFormData({ selectedMonths, hours: updatedHours });
-        resetHoursData(updatedHours, type);
+        updateFormData({ selectedMonths, hours: hoursData });
+        resetHoursData(hoursData, type);
       }
     }
   };
