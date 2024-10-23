@@ -17,6 +17,7 @@ import { Session } from "next-auth";
 import { HoverButton } from "../components/ui/hoverButton";
 import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
+import StepNine from "./step9";
 
 interface Props {
   user: UserInfo;
@@ -32,6 +33,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   // console.log("locations", locations);
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [prevHours, setPrevHours] = useState<any>();
   const [user, setUser] = useState<UserInfo>(initialUser);
@@ -137,10 +139,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         }
         setStep((prevStep) => prevStep - 1);
         return;
-      } else if (step === 8) {
-        // Final step, redirect to create page
-        router.push("/create");
-        return;
       }
       console.log(formData.location);
       setStep((prevStep) => prevStep + 1);
@@ -160,7 +158,11 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     setProgress((prevProgress) => prevProgress - 14.28); // 100 / 7 steps
   };
   const handleStep6Complete = (days: string[]) => {
+    setSelectedDays([]);
     setSelectedDays(days);
+    setPrevSelectedDays((prevdays) => {
+      return [...prevdays, ...days];
+    });
     setIsEdit(false);
     setStep(7);
   };
@@ -180,6 +182,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     if (isEdit === true) {
       setStep(8);
     } else {
+      setSelectedDays([]);
       setStep(6);
     }
   };
@@ -207,11 +210,24 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       if (response.data) {
         toast.success("Location hours updated successfully!");
         setSelectedDays([]);
+        setPrevSelectedDays([]);
         setIsEdit(false);
         setFormData((prevData) => ({
           ...prevData,
+          location: prevData.location
+            ? {
+                ...prevData.location,
+                hours: {
+                  delivery: [],
+                  pickup: [],
+                },
+              }
+            : undefined,
           fulfillmentStyle: newType === "delivery" ? "pickup" : "delivery",
-          hours: hours,
+          hours: {
+            delivery: [],
+            pickup: [],
+          },
           selectedMonths: [],
         }));
         setPrevHours(hours);
@@ -266,7 +282,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
 
       if (response.data) {
         toast.success("Location hours updated successfully!");
-        router.push("/create");
+        setStep(9);
       } else {
         toast.error("Failed to update location hours. Please try again.");
       }
@@ -275,36 +291,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       toast.error("An error occurred while saving your data.");
     }
   };
-
-  // const handleFinishBoth = async (newHours: Hours) => {
-  //   try {
-  //     const response = await axios.post(
-  //       "/api/useractions/update/location-hours",
-  //       {
-  //         location: [
-  //           {
-  //             address: formData.location?.address,
-  //             coordinates: formData.location?.coordinates,
-  //             role: formData.role,
-  //             hours: newHours,
-  //           },
-  //         ],
-  //         locationId: formData.locationId,
-  //         isDefault: null,
-  //       }
-  //     );
-
-  //     if (response.data) {
-  //       toast.success("Location hours updated successfully!");
-  //       router.push("/create");
-  //     } else {
-  //       toast.error("Failed to update location hours. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating location hours:", error);
-  //     toast.error("An error occurred while saving your data.");
-  //   }
-  // };
   useEffect(() => {
     setProgress(step * 14.28); // 100 / 7 steps
   }, [step]);
@@ -335,6 +321,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         {step === 5 && (
           <StepFive
             location={formData.location}
+            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
             user={user}
             formData={formData.location?.address}
             updateFormData={updateFormDataMonths}
@@ -345,12 +332,14 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           <StepSix
             location={formData.location}
             user={user}
+            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
             updateFormData={updateFormData}
             formData={formData.location?.address}
             onComplete={handleStep6Complete}
             onCompleteHours={handleCompleteHours}
             selectedDays={selectedDays}
             setSelectedDays={setSelectedDays}
+            prevSelectedDays={prevSelectedDays}
           />
         )}
         {step === 7 && (
@@ -366,6 +355,19 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         )}
         {step === 8 && (
           <StepEight
+            onDayChange={handleStep8Change}
+            location={formData.location}
+            formData={formData.location?.address}
+            updateFormData={updateFormDataMonths}
+            fulfillmentStyle={formData.fulfillmentStyle}
+            selectedMonths={formData.selectedMonths}
+            locationId={formData.locationId}
+            onFinish={handleFinish}
+            resetHoursData={resetHoursData}
+          />
+        )}
+        {step === 9 && (
+          <StepNine
             onDayChange={handleStep8Change}
             location={formData.location}
             formData={formData.location?.address}

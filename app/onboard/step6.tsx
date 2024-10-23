@@ -16,7 +16,9 @@ interface StepFiveProps {
   onComplete: (selectedDays: string[]) => void;
   onCompleteHours: () => void;
   selectedDays: string[];
+  prevSelectedDays: string[];
   setSelectedDays: Dispatch<SetStateAction<string[]>>;
+  fulfillmentStyle: string;
 }
 
 const StepFive: React.FC<StepFiveProps> = ({
@@ -28,6 +30,8 @@ const StepFive: React.FC<StepFiveProps> = ({
   onCompleteHours,
   selectedDays,
   setSelectedDays,
+  fulfillmentStyle,
+  prevSelectedDays,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -44,8 +48,10 @@ const StepFive: React.FC<StepFiveProps> = ({
   const [weekDays, setWeekDays] = useState<string[]>(fullWeekDays);
 
   useEffect(() => {
-    if (selectedDays.length !== 0) {
-      setWeekDays(fullWeekDays.filter((day) => !selectedDays.includes(day)));
+    if (prevSelectedDays.length !== 0) {
+      setWeekDays(
+        fullWeekDays.filter((day) => !prevSelectedDays.includes(day))
+      );
     } else {
       setWeekDays(fullWeekDays);
     }
@@ -87,7 +93,16 @@ const StepFive: React.FC<StepFiveProps> = ({
   return (
     <div className="h-full w-full p-8 flex flex-col  items-center">
       <div className=" mb-4 text-center items-center  pt-[2%] sm:pt-[5%] text-4xl">
-        Select Days for{" "}
+        Select Days you will have{" "}
+        {fulfillmentStyle === "delivery"
+          ? "Delivery available from"
+          : fulfillmentStyle === "pickup"
+          ? "allow Pickups from"
+          : fulfillmentStyle === "bothone"
+          ? "Delivery available from"
+          : fulfillmentStyle === "both"
+          ? "Delivery and allow Pickups from"
+          : null}{" "}
         {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
       {weekDays.length < 7 ? (

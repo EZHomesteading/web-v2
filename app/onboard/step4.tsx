@@ -16,7 +16,12 @@ const StepFour: React.FC<StepFiveProps> = ({
   location,
 }) => {
   const [selectedOption, setSelectedOption] = useState("");
-  const options = ["Delivery Only", "Pickup Only", " Pickups and Deliveries"];
+  const options = [
+    "Delivery Only",
+    "Pickup Only",
+    "Set Delivery Hours And then Set Pickup Hours",
+    "Set the same Hours for Deliveries and Pickups",
+  ];
   const setFulfillmentStyle = (index: number) => {
     switch (index) {
       case 0:
@@ -26,11 +31,15 @@ const StepFour: React.FC<StepFiveProps> = ({
         updateFormData({ fulfillmentStyle: "pickup" });
         break;
       case 2:
+        updateFormData({ fulfillmentStyle: "bothone" });
+        break;
+      case 3:
         updateFormData({ fulfillmentStyle: "both" });
         break;
       default:
         console.log("Invalid index");
     }
+    console.log();
   };
   return (
     <div className="h-full w-full p-8 flex flex-col  items-center">

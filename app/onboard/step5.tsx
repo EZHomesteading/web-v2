@@ -8,6 +8,7 @@ interface StepFourProps {
   updateFormData: (newData: Partial<{ selectedMonths: number[] }>) => void;
   formData: string[] | undefined;
   selectedMonths: number[] | undefined;
+  fulfillmentStyle: string;
 }
 
 const StepFive = ({
@@ -16,6 +17,7 @@ const StepFive = ({
   formData,
   location,
   selectedMonths,
+  fulfillmentStyle,
 }: StepFourProps) => {
   const [openMonths, setOpenMonths] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -75,7 +77,16 @@ const StepFive = ({
   return (
     <div className="h-full">
       <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Your Store Months for{" "}
+        Set Up Months you will be{" "}
+        {fulfillmentStyle === "delivery"
+          ? "Delivering from"
+          : fulfillmentStyle === "pickup"
+          ? "allowing Pickups at"
+          : fulfillmentStyle === "bothone"
+          ? "Delivering from"
+          : fulfillmentStyle === "both"
+          ? "Delivering from and allowing Pickups at"
+          : null}{" "}
         {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
       <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
