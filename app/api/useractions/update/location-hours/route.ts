@@ -6,7 +6,7 @@ import { Prisma, UserRole } from "@prisma/client";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log("Received body:", JSON.stringify(body, null, 2));
+    //console.log("Received body:", JSON.stringify(body, null, 2));
 
     const { address, coordinates, role, hours } = body.location[0] || {};
 
@@ -27,13 +27,15 @@ export async function POST(request: Request) {
     const { locationId, isDefault } = body;
 
     if (locationId) {
-      console.log("Updating hours for existing location");
+      //console.log("Updating hours for existing location");
       updatedLocation = await prisma.location.update({
         where: { id: locationId },
         data: { hours },
       });
     } else {
-      const locationCount = await prisma.location.count({ where: { userId: user.id } });
+      const locationCount = await prisma.location.count({
+        where: { userId: user.id },
+      });
 
       updatedLocation = await prisma.location.create({
         data: {
@@ -47,11 +49,9 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log("Location updated or created:", updatedLocation);
+    //console.log("Location updated or created:", updatedLocation);
 
-  
-
-    console.log("Sending response:", JSON.stringify(updatedLocation, null, 2));
+    //console.log("Sending response:", JSON.stringify(updatedLocation, null, 2));
     return NextResponse.json(updatedLocation);
   } catch (error) {
     console.error("Detailed error in API route:", error);
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       console.error("Prisma error:", error.message);
     }
     return NextResponse.json(
-      { error: "Internal server error", details: error|| "Unknown error" },
+      { error: "Internal server error", details: error || "Unknown error" },
       { status: 500 }
     );
   }

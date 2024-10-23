@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { LocationObj } from "@/next-auth";
 import { Hours } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 interface StepSevenProps {
   location?: LocationObj;
@@ -20,16 +21,14 @@ interface StepSevenProps {
   fulfillmentStyle?: string;
 }
 
-const StepEight: React.FC<StepSevenProps> = ({
+const StepNine: React.FC<StepSevenProps> = ({
   location,
   formData,
   updateFormData,
   selectedMonths,
   onDayChange,
   locationId,
-  onFinish,
   fulfillmentStyle,
-  resetHoursData,
 }) => {
   const weekDays = [
     "Sunday",
@@ -41,7 +40,7 @@ const StepEight: React.FC<StepSevenProps> = ({
     "Saturday",
   ];
   const [openMonths, setOpenMonths] = useState<number[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
+  const router = useRouter();
   const [fontSize, setFontSize] = useState(16);
   const [svgScale, setSvgScale] = useState(1);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -67,30 +66,6 @@ const StepEight: React.FC<StepSevenProps> = ({
       setOpenMonths(selectedMonths);
     }
   }, [selectedMonths]);
-
-  const toggleMonth = useCallback((monthIndex: number) => {
-    setOpenMonths((prevMonths) => {
-      const newMonths = prevMonths.includes(monthIndex)
-        ? prevMonths.filter((m) => m !== monthIndex)
-        : [...prevMonths, monthIndex];
-      return newMonths;
-    });
-  }, []);
-
-  const handleMouseDown = (monthIndex: number) => {
-    setIsDragging(true);
-    toggleMonth(monthIndex);
-  };
-
-  const handleMouseEnter = (monthIndex: number) => {
-    if (isDragging) {
-      toggleMonth(monthIndex);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
 
   useEffect(() => {
     updateFormData({
@@ -126,116 +101,7 @@ const StepEight: React.FC<StepSevenProps> = ({
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const generateHoursData = useCallback(
-    (type: string) => {
-      if (!selectedMonths || !location?.hours) {
-        console.error("Missing required data for generating hours");
-        return null;
-      }
 
-      const hours: Hours = {
-        delivery: [],
-        pickup: [],
-      };
-
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-
-      selectedMonths.forEach((monthIndex) => {
-        // Determine which year to use for this month
-        const monthToProcess = new Date(currentYear, monthIndex, 1);
-        const useNextYear = monthToProcess < currentDate;
-        const yearToUse = useNextYear ? currentYear + 1 : currentYear;
-
-        const daysInMonth = new Date(yearToUse, monthIndex + 1, 0).getDate();
-
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dateToCheck = new Date(yearToUse, monthIndex, day);
-          const currentDayDate = new Date(currentYear, monthIndex, day);
-
-          // For current month, add both current and next year schedules for remaining days
-          if (monthIndex === currentDate.getMonth()) {
-            if (currentDayDate < currentDate) {
-              // Past days in current month - only add next year
-              addScheduleForDate(new Date(currentYear + 1, monthIndex, day));
-            } else {
-              // Remaining days in current month - add both years
-              addScheduleForDate(new Date(currentYear, monthIndex, day));
-              addScheduleForDate(new Date(currentYear + 1, monthIndex, day));
-            }
-          } else if (useNextYear) {
-            // Past months - only add next year
-            addScheduleForDate(dateToCheck);
-          } else {
-            // Future months - only add current year
-            addScheduleForDate(dateToCheck);
-          }
-        }
-      });
-
-      // Helper function to add schedule for a specific date
-      function addScheduleForDate(date: Date) {
-        const dayOfWeek = date.getDay();
-        const schedules = location?.hours?.pickup || [];
-        const daySchedule = schedules.find(
-          (schedule) =>
-            weekDays[dayOfWeek] ===
-            schedule.date.toLocaleString("en-US", { weekday: "long" })
-        );
-
-        if (daySchedule && daySchedule.timeSlots.length > 0) {
-          const timeSlots = daySchedule.timeSlots.map((slot) => ({
-            open: slot.open,
-            close: slot.close,
-          }));
-
-          const dailySchedule = {
-            date,
-            timeSlots,
-            capacity: 0,
-          };
-
-          if (type === "delivery") {
-            hours.delivery.push(dailySchedule);
-          } else if (type === "pickup") {
-            hours.pickup.push(dailySchedule);
-          } else if (type === "both") {
-            hours.pickup.push(dailySchedule);
-            hours.delivery.push(dailySchedule);
-          }
-        }
-      }
-
-      // Sort the arrays by date to ensure chronological order
-      hours.delivery.sort((a, b) => a.date.getTime() - b.date.getTime());
-      hours.pickup.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-      return hours;
-    },
-    [selectedMonths, location?.hours, weekDays, fulfillmentStyle]
-  );
-  const handleFinish = () => {
-    const hoursData = generateHoursData(fulfillmentStyle ?? "pickup");
-    if (hoursData) {
-      onFinish(hoursData, fulfillmentStyle ?? "pickup");
-    }
-  };
-
-  const handleFinishBoth = (type: "both" | "delivery" | "pickup") => {
-    const hoursData = generateHoursData(type);
-    if (hoursData) {
-      if (type === "both") {
-        updateFormData({
-          selectedMonths,
-          hours: hoursData,
-        });
-        onFinish(hoursData, type);
-      } else {
-        updateFormData({ selectedMonths, hours: hoursData });
-        resetHoursData(hoursData, type);
-      }
-    }
-  };
   const renderWeeklyScheduleGraph = () => {
     const viewBoxWidth = 700;
     const viewBoxHeight = 450;
@@ -439,21 +305,13 @@ const StepEight: React.FC<StepSevenProps> = ({
       <h2 className="text-xl font-semibold mt-4  text-center">
         Months you will have this schedule for.
       </h2>
-      <h2 className="text-xl font-semibold text-center">
-        Click a Month to add or remove it from your schedule.
-      </h2>
+
       <div className=" rounded-lg px-0 sm:px-8 pt-6 pb-8  mb-10">
         <div className="flex flex-col items-center ">
-          <div
-            className="grid grid-cols-4 gap-2"
-            onMouseLeave={handleMouseUp}
-            onMouseUp={handleMouseUp}
-          >
+          <div className="grid grid-cols-4 gap-2">
             {months.map((month, index) => (
-              <button
+              <div
                 key={month}
-                onMouseDown={() => handleMouseDown(index)}
-                onMouseEnter={() => handleMouseEnter(index)}
                 className={`p-6 text-sm border-[2px] rounded-md ${
                   openMonths.includes(index)
                     ? "bg-black text-white"
@@ -461,7 +319,7 @@ const StepEight: React.FC<StepSevenProps> = ({
                 }`}
               >
                 {month}
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -477,37 +335,25 @@ const StepEight: React.FC<StepSevenProps> = ({
           {renderWeeklyScheduleGraph()}
         </div>
 
-        {fulfillmentStyle === "both" ? (
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={() => handleFinishBoth("both")}
-              className="px-4 py-2 bg-green-500  text-white rounded hover:bg-green-600"
-            >
-              Save hours for Both Delivery and Pickup
-            </button>
-          </div>
-        ) : fulfillmentStyle === "bothone" ? (
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={() => handleFinishBoth("delivery")}
-              className="px-4 py-2 mt-4 bg-green-500 text-white rounded hover:bg-green-600 mr-2"
-            >
-              Save these hours for Delivery and set diffenent Pickup hours
-            </button>
-          </div>
-        ) : (
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={handleFinish}
-              className="px-4 py-2 bg-green-500  text-white rounded hover:bg-green-600"
-            >
-              Save Hours
-            </button>
-          </div>
-        )}
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={() =>
+              router.push(`/selling/availability-calendar/${locationId}`)
+            }
+            className="px-4 mr-2 py-2 bg-green-500  text-white rounded hover:bg-green-600"
+          >
+            Set Vacation days on Full Calendar
+          </button>
+          <button
+            onClick={() => router.push(`/create`)}
+            className="px-4 py-2 bg-green-500  text-white rounded hover:bg-green-600"
+          >
+            Create a Listing
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default StepEight;
+export default StepNine;
