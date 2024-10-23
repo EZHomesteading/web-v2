@@ -5,8 +5,11 @@ import { Button } from "@/app/components/ui/button";
 import Map from "@/app/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
-import { usePathname, useRouter } from "next/navigation";
-import { LocationSelector, o } from "./helper-components-calendar";
+import { usePathname } from "next/navigation";
+import {
+  LocationSelector,
+  o,
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";
 import {
@@ -54,7 +57,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     state: "",
     zip: "",
   });
-  const router = useRouter();
   const [geoResult, setGeoResult] = useState<{
     lat: number;
     lng: number;
@@ -85,8 +87,9 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const userRole = useCurrentRole();
 
   const handleSaveAddress = async () => {
-    if (locations.length >= 3) {
+    if (locations.length === 3) {
       toast.error("Sellers are restricted to three locations for now");
+      return;
     }
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
     const newGeoResult = await getLatLngFromAddress(fullAddress);

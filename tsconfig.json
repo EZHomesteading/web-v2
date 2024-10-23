@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "noErrorTruncation": true,
-    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,7 +22,11 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "allowJs": true
+    "allowSyntheticDefaultImports": true,
+    "noErrorTruncation": true,
+    "types": ["node", "mongodb"],
+    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
