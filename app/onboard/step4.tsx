@@ -1,114 +1,79 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-import { UserRole } from "@prisma/client";
+import { Button } from "@/app/components/ui/button";
 
-interface StepFourProps {
+interface StepFiveProps {
   location?: LocationObj;
   user: any;
-  updateFormData: (newData: Partial<{ selectedMonths: number[] }>) => void;
+  updateFormData: (newData: Partial<{ fulfillmentStyle: string }>) => void;
   formData: string[] | undefined;
-  selectedMonths: number[] | undefined;
 }
 
-const StepFour = ({
+const StepFour: React.FC<StepFiveProps> = ({
   user,
   updateFormData,
   formData,
   location,
-  selectedMonths,
-}: StepFourProps) => {
-  const [openMonths, setOpenMonths] = useState<number[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+}) => {
+  const [selectedOption, setSelectedOption] = useState("");
+  const options = [
+    "Delivery Only",
+    "Pickup Only",
+    "Set Delivery Hours And then Set Pickup Hours",
+    "Set the same Hours for Deliveries and Pickups",
   ];
-
-  // Initialize openMonths with selectedMonths when the component mounts
-  useEffect(() => {
-    if (selectedMonths && selectedMonths.length > 0) {
-      setOpenMonths(selectedMonths);
+  const setFulfillmentStyle = (index: number) => {
+    switch (index) {
+      case 0:
+        updateFormData({ fulfillmentStyle: "delivery" });
+        break;
+      case 1:
+        updateFormData({ fulfillmentStyle: "pickup" });
+        break;
+      case 2:
+        updateFormData({ fulfillmentStyle: "bothone" });
+        break;
+      case 3:
+        updateFormData({ fulfillmentStyle: "both" });
+        break;
+      default:
+        console.log("Invalid index");
     }
-  }, [selectedMonths]);
-
-  const toggleMonth = useCallback((monthIndex: number) => {
-    setOpenMonths((prevMonths) => {
-      const newMonths = prevMonths.includes(monthIndex)
-        ? prevMonths.filter((m) => m !== monthIndex)
-        : [...prevMonths, monthIndex];
-      return newMonths;
-    });
-  }, []);
-
-  const handleMouseDown = (monthIndex: number) => {
-    setIsDragging(true);
-    toggleMonth(monthIndex);
+    console.log();
   };
-
-  const handleMouseEnter = (monthIndex: number) => {
-    if (isDragging) {
-      toggleMonth(monthIndex);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    updateFormData({
-      selectedMonths: openMonths,
-    });
-  }, [openMonths, updateFormData]);
-
   return (
-    <div className="h-full">
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Your Store Months for{" "}
+    <div className="h-full w-full p-8 flex flex-col  items-center">
+      <div className=" mb-4 text-center items-center  pt-[2%] sm:pt-[5%] text-4xl">
+        Select Order Fulfilment style for{" "}
         {formData?.[0] || location?.address?.[0] || "Your Location"}
       </div>
-      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
-        Select the Months you will be open.
+
+      <div className="text-center py-[1%] sm:py-[1%] text-2xl">
+        Select Whether this location will be Delivery only, Pickup only, or
+        Both.
       </div>
-      <div className="text-center text-2xl">
-        You can change your schedule day-to-day in settings later on.
+      <div className="text-center py-[1%] sm:py-[1%] text-2xl">
+        We are working on DoorDash integration. In the future, locations With
+        delivery enabled will be able to outsource deliveries to DoorDash
       </div>
-      <div className="text-center text-2xl">
-        Even if you are only open for one day out of a month, include that month
-        in your selection.
-      </div>
-      <div className="flex flex-col items-center sm:mt-[3%] mt-[3%]">
-        <div
-          className="grid grid-cols-3 gap-2"
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          {months.map((month, index) => (
-            <button
-              key={month}
-              onMouseDown={() => handleMouseDown(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              className={`p-10 text-sm border-[2px] rounded ${
-                openMonths.includes(index)
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {month}
-            </button>
-          ))}
-        </div>
+
+      <div className="grid grid-cols-1 gap-2">
+        {options.map((option, index) => (
+          <button
+            key={option}
+            onClick={() => {
+              setSelectedOption(option);
+              setFulfillmentStyle(index);
+            }}
+            className={`p-2 px-20 border-[2px] text-2xl rounded ${
+              selectedOption.includes(option)
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
   );

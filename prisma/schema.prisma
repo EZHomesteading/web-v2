@@ -330,7 +330,7 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  fee            Fees
+  fee            Fees?
   conversationId String?        @db.ObjectId
   payments       Payment[]
   history        OrderHistory[]

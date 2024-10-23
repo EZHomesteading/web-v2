@@ -12,10 +12,12 @@ import StepFour from "./step4";
 import StepFive from "./step5";
 import StepSix from "./step6";
 import StepSeven from "./step7";
+import StepEight from "./step8";
 import { Session } from "next-auth";
 import { HoverButton } from "../components/ui/hoverButton";
-import { Location, UserRole } from "@prisma/client";
+import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
+import StepNine from "./step9";
 
 interface Props {
   user: UserInfo;
@@ -31,14 +33,18 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   // console.log("locations", locations);
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
+  const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [prevHours, setPrevHours] = useState<any>();
   const [user, setUser] = useState<UserInfo>(initialUser);
   const [formData, setFormData] = useState<{
     locationId?: string;
     role?: UserRole;
     image?: string;
     bio?: string;
+    fulfillmentStyle?: string;
     location?: LocationObj;
+    hours?: Hours;
     selectedMonths?: number[];
   }>({});
   const [progress, setProgress] = useState(0);
@@ -88,10 +94,25 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     },
     []
   );
-
+  const updateFulfillmentData = useCallback(
+    (newData: Partial<{ fulfillmentStyle: string }>) => {
+      setFormData((prevData) => ({
+        ...prevData,
+        ...newData,
+      }));
+    },
+    []
+  );
   const handleNext = async () => {
     try {
       if (step === 3 && !formData.locationId) {
+        if (locations && locations?.length > 3) {
+          toast.error(
+            "You already have the maximum number of locations. Sending you to Add a Product page."
+          );
+          router.push("/create");
+          return;
+        }
         if (formData.location) {
           const response = await axios.post(
             "/api/useractions/update/location-hours",
@@ -99,7 +120,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
               location: [formData.location],
             }
           );
-          console.log("LULULULULU", response.data.id);
           setFormData({
             locationId: response.data.id,
             location: formData.location,
@@ -109,7 +129,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             location: response.data || formData.location,
           }));
         }
-      } else if (step === 6 && formData.locationId) {
+      } else if (step === 7 && formData.locationId) {
         // Save the updated hours
         if (formData.location?.hours) {
           setUser((prevUser) => ({
@@ -118,10 +138,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           }));
         }
         setStep((prevStep) => prevStep - 1);
-        return;
-      } else if (step === 7) {
-        // Final step, redirect to create page
-        router.push("/create");
         return;
       }
       console.log(formData.location);
@@ -134,33 +150,147 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   };
 
   const handlePrevious = () => {
-    if (step === 7) {
-      setStep(5);
+    if (step === 8) {
+      setStep(6);
       return;
     }
     setStep((prevStep) => prevStep - 1);
     setProgress((prevProgress) => prevProgress - 14.28); // 100 / 7 steps
   };
-  const handleStep5Complete = (days: string[]) => {
-    console.log(days);
-    console.log(formData.selectedMonths);
-    console.log(formData.location);
+  const handleStep6Complete = (days: string[]) => {
+    setSelectedDays([]);
     setSelectedDays(days);
-    setStep(6);
-  };
-  const handleCompleteHours = () => {
-    console.log(formData.selectedMonths);
-    console.log(formData.location);
+    setPrevSelectedDays((prevdays) => {
+      return [...prevdays, ...days];
+    });
+    setIsEdit(false);
     setStep(7);
   };
-  const handleStep6Back = () => {
-    setStep(5);
+  const handleStep8Change = (days: string[]) => {
+    setSelectedDays(days);
+    setIsEdit(true);
+    setStep(7);
+  };
+  const handleCompleteHours = () => {
+    setStep(8);
+  };
+  const handleStep7Back = () => {
+    setStep(6);
   };
 
-  const handleStep6Complete = () => {
-    setStep(5);
+  const handleStep7Complete = () => {
+    if (isEdit === true) {
+      setStep(8);
+    } else {
+      setSelectedDays([]);
+      setStep(6);
+    }
+  };
+  const resetHoursData = async (
+    hours: Hours,
+    newType: "both" | "delivery" | "pickup"
+  ) => {
+    try {
+      const response = await axios.post(
+        "/api/useractions/update/location-hours",
+        {
+          location: [
+            {
+              address: formData.location?.address,
+              coordinates: formData.location?.coordinates,
+              role: formData.role,
+              hours: hours,
+            },
+          ],
+          locationId: formData.locationId,
+          isDefault: null,
+        }
+      );
+
+      if (response.data) {
+        toast.success("Location hours updated successfully!");
+        setSelectedDays([]);
+        setPrevSelectedDays([]);
+        setIsEdit(false);
+        setFormData((prevData) => ({
+          ...prevData,
+          location: prevData.location
+            ? {
+                ...prevData.location,
+                hours: {
+                  delivery: [],
+                  pickup: [],
+                },
+              }
+            : undefined,
+          fulfillmentStyle: newType === "delivery" ? "pickup" : "delivery",
+          hours: {
+            delivery: [],
+            pickup: [],
+          },
+          selectedMonths: [],
+        }));
+        setPrevHours(hours);
+        setStep(5);
+      } else {
+        toast.error("Failed to update location hours. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating location hours:", error);
+      toast.error("An error occurred while saving your data.");
+    }
   };
 
+  const handleFinish = async (newHours: Hours, type: string) => {
+    console.log(newHours, prevHours);
+    try {
+      let updatedHours: Hours;
+
+      if (type === "both") {
+        updatedHours = {
+          delivery: [...(newHours.delivery || [])],
+          pickup: [...(newHours.pickup || [])],
+        };
+      } else {
+        updatedHours = {
+          delivery:
+            type === "delivery"
+              ? [...(newHours.delivery || [])]
+              : [...(prevHours?.delivery || [])],
+          pickup:
+            type === "pickup"
+              ? [...(newHours.pickup || [])]
+              : [...(prevHours?.pickup || [])],
+        };
+      }
+
+      const response = await axios.post(
+        "/api/useractions/update/location-hours",
+        {
+          location: [
+            {
+              address: formData.location?.address,
+              coordinates: formData.location?.coordinates,
+              role: formData.role,
+              hours: updatedHours,
+            },
+          ],
+          locationId: formData.locationId,
+          isDefault: null,
+        }
+      );
+
+      if (response.data) {
+        toast.success("Location hours updated successfully!");
+        setStep(9);
+      } else {
+        toast.error("Failed to update location hours. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating location hours:", error);
+      toast.error("An error occurred while saving your data.");
+    }
+  };
   useEffect(() => {
     setProgress(step * 14.28); // 100 / 7 steps
   }, [step]);
@@ -185,37 +315,68 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             location={formData.location}
             user={user}
             formData={formData.location?.address}
-            updateFormData={updateFormDataMonths}
-            selectedMonths={formData.selectedMonths}
+            updateFormData={updateFulfillmentData}
           />
         )}
         {step === 5 && (
           <StepFive
             location={formData.location}
+            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
             user={user}
-            updateFormData={updateFormData}
             formData={formData.location?.address}
-            onComplete={handleStep5Complete}
-            onCompleteHours={handleCompleteHours}
+            updateFormData={updateFormDataMonths}
+            selectedMonths={formData.selectedMonths}
           />
         )}
         {step === 6 && (
           <StepSix
+            location={formData.location}
+            user={user}
+            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
+            updateFormData={updateFormData}
+            formData={formData.location?.address}
+            onComplete={handleStep6Complete}
+            onCompleteHours={handleCompleteHours}
+            selectedDays={selectedDays}
+            setSelectedDays={setSelectedDays}
+            prevSelectedDays={prevSelectedDays}
+          />
+        )}
+        {step === 7 && (
+          <StepSeven
             user={user}
             updateFormData={updateFormData}
             formData={formData.location?.address}
             location={formData.location}
             selectedDays={selectedDays}
-            onComplete={handleStep6Complete}
-            onBack={handleStep6Back}
+            onComplete={handleStep7Complete}
+            onBack={handleStep7Back}
           />
         )}
-        {step === 7 && (
-          <StepSeven
+        {step === 8 && (
+          <StepEight
+            onDayChange={handleStep8Change}
             location={formData.location}
             formData={formData.location?.address}
             updateFormData={updateFormDataMonths}
+            fulfillmentStyle={formData.fulfillmentStyle}
             selectedMonths={formData.selectedMonths}
+            locationId={formData.locationId}
+            onFinish={handleFinish}
+            resetHoursData={resetHoursData}
+          />
+        )}
+        {step === 9 && (
+          <StepNine
+            onDayChange={handleStep8Change}
+            location={formData.location}
+            formData={formData.location?.address}
+            updateFormData={updateFormDataMonths}
+            fulfillmentStyle={formData.fulfillmentStyle}
+            selectedMonths={formData.selectedMonths}
+            locationId={formData.locationId}
+            onFinish={handleFinish}
+            resetHoursData={resetHoursData}
           />
         )}
       </div>
@@ -242,8 +403,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
               </div>
             </div>
           )}
-          {step < 5 && <Button onClick={handleNext}>Next</Button>}
-          {step === 7 && <Button onClick={handleNext}>Finish</Button>}
+          {step < 6 && <Button onClick={handleNext}>Next</Button>}
         </div>
       </div>
     </div>
