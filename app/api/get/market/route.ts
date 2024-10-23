@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const lat = parseFloat(searchParams.get('lat') || '0');
     const lng = parseFloat(searchParams.get('lng') || '0');
     const radius = parseInt(searchParams.get('radius') || '10000'); 
+    const q = searchParams.get('q')
 
     const geoQuery = {
       coordinates: {
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
       }
     };
 
-    const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id address').lean().exec();
+    const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id').lean().exec();
 
     if (!nearbyLocations || nearbyLocations.length === 0) {
       return NextResponse.json({ message: 'No nearby locations found' }, { status: 404 });

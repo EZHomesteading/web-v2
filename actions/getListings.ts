@@ -240,7 +240,6 @@ const GetListingsMarket = async (
     }
 
     let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
-    console.log(Listings)
     // Shuffle the listings
     function shuffle(array: any) {
       let currentIndex = array.length;
