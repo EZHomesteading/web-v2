@@ -38,9 +38,9 @@ interface StepThreeProps {
   inputProps: InputProps;
   projectHarvest: boolean;
   setValue: UseFormSetValue<FieldValues>;
-  harvestDates: string[];
+  //harvestDates: string[];
   title: string;
-  setHarvestDates: (newDates: string[]) => void;
+  //setHarvestDates: (newDates: string[]) => void;
 }
 
 const StepThree: React.FC<StepThreeProps> = ({

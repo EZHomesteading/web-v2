@@ -8,6 +8,7 @@ export const viewport: Viewport = {
   themeColor: "rgb(255,255,255)",
 };
 
+
 const Page = async ({
   params,
   searchParams,
@@ -17,6 +18,7 @@ const Page = async ({
 }) => {
   const user = await currentUser();
   const id = searchParams?.id;
+
   let index = 1;
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -35,8 +37,10 @@ const Page = async ({
       return null;
     }
   }
+
   const locations = await getUserLocations({ userId: user?.id });
   const defaultLocation = locations?.find((loc) => loc.id === id);
+
   return (
     <div>
       {user ? (
@@ -45,6 +49,7 @@ const Page = async ({
             canReceivePayouts={canReceivePayouts}
             index={index}
             user={user}
+            locations={locations}
           />
           <CreatePopup />
         </>
@@ -53,6 +58,4 @@ const Page = async ({
       )}
     </div>
   );
-};
-
-export default Page;
+}

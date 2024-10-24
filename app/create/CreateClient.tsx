@@ -5,14 +5,14 @@ import { UserInfo } from "@/next-auth";
 import StepOne from "./step1";
 import { Button } from "@/app/components/ui/button";
 import { Category, InputProps, SubCategory } from "./create.types";
-import { Progress } from "../components/ui/progress";
+import { Progress } from "./../components/ui/progress";
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Outfit } from "next/font/google";
 import { QuantityTypeValue } from "./components/UnitSelect";
-import { Card, CardContent, CardHeader } from "../components/ui/card";
+import { Card, CardContent, CardHeader } from "./../components/ui/card";
 import { addDays, format } from "date-fns";
 import StepTwo from "./step2";
 import StepThree from "./step3";
@@ -20,7 +20,7 @@ import { CommonInputProps } from "./create.types";
 import StepFour from "./step4";
 import StepFive from "./step5";
 import StepSix from "./step6";
-import { Label } from "../components/ui/label";
+import { Label } from "./../components/ui/label";
 import Help from "./components/help";
 import { Location } from "@prisma/client";
 
@@ -30,13 +30,13 @@ const outfit = Outfit({
 });
 
 interface Props {
-  location: Location | null;
+  locations: Location[] | null;
   canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
 }
 
-const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
+const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -292,9 +292,9 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
       setQuantityType(undefined);
       if (
         (user.hasPickedRole === true || user.hasPickedRole === null) &&
-        user?.location &&
-        user?.location[0]?.address &&
-        user?.location[0]?.hours &&
+        locations &&
+        locations[0]?.address &&
+        locations[0]?.hours &&
         user?.image &&
         user?.bio &&
         canReceivePayouts === true
@@ -402,7 +402,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
       ],
       7: [
         {
-          condition: () => user?.location?.[0] === null,
+          condition: () => locations?.[0] === null,
           message: "Please Set a default location in your store settings",
         },
       ],
@@ -413,7 +413,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
       if (checkField(error.condition(), error.message)) return;
     }
 
-    if (step === 7 || (step === 6 && user?.location === null)) {
+    if (step === 7 || (step === 6 && locations === null)) {
       handleSubmit(onSubmit)();
     } else {
       setStep(step + 1);
@@ -496,7 +496,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
     }
   };
   {
-    if (user?.location && user.location[0] === null) {
+    if (locations && locations[0] === null) {
       setValue("location", 0);
     }
   }
@@ -570,7 +570,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
 
   return (
     <div className={`min-h-screen ${outfit.className}`}>
-      {step === 1 && (
+      {step === 2 && (
         <StepOne
           step={step}
           subCategory={subCategory}
@@ -579,7 +579,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
           setCategory={setCategory}
         />
       )}
-      {step === 2 && (
+      {step === 3 && (
         <StepTwo
           setReview={setReview}
           title={title}
@@ -598,7 +598,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
           onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
         />
       )}
-      {step === 3 && (
+      {step === 4 && (
         <StepThree
           title={formTitle}
           quantityType={quantityType}
@@ -615,7 +615,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
           setValue={setValue}
         />
       )}
-      {step === 4 && (
+      {step === 5 && (
         <StepFour
           nonPerishable={nonPerishable}
           handleNonPerishableCheckboxChange={handleNonPerishableCheckboxChange}
@@ -627,7 +627,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
           expiryDate={expiryDate}
         />
       )}
-      {step === 5 && (
+      {step === 6 && (
         <StepFive
           checkbox1Checked={checkbox1Checked}
           checkbox2Checked={checkbox2Checked}
@@ -646,7 +646,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
           Back
         </Button>
       )}
-      {step === 7 && user?.location && user?.location[0] !== null && (
+      {step === 7 && locations && locations[0] !== null && (
         <>
           <Button
             onClick={handleNext}
@@ -676,7 +676,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
       <div className="w-full absolute top-0 left-0 z-50">
         <Progress value={progress} className="h-[6px] bg-gray-200" />
       </div>
-      {step === 6 && (
+      {step === 7 && (
         <StepSix
           imageSrc={imageSrc}
           setImageSrc={setImageSrc}
@@ -687,18 +687,18 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
         />
       )}
       <Help step={step} role={user?.role} />
-      {step === 7 && user?.location && user?.location[0] !== null && (
+      {step === 1 && locations && locations[0] !== null && (
         <div className="w-full flex items-center justify-center px-2">
           <div className="min-h-screen fade-in pt-[10%] flex flex-col items-center w-full">
             <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
               Select a Selling Location
             </Label>
 
-            {user.location === null ||
-            user.location === undefined ||
-            ((user.location[0] === null || user.location[0] === undefined) &&
-              (user.location[1] === null || user.location[1] === undefined) &&
-              (user.location[2] === null || user.location[2] === undefined)) ? (
+            {locations === null ||
+            locations === undefined ||
+            ((locations[0] === null || locations[0] === undefined) &&
+              (locations[1] === null || locations[1] === undefined) &&
+              (locations[2] === null || locations[2] === undefined)) ? (
               <Card
                 className={""}
                 onClick={() => {
@@ -718,7 +718,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
               </Card>
             ) : (
               <div className="flex flex-col justify-evenly gap-2 pt-4 w-full max-w-md">
-                {user.location[0] !== null && (
+                {locations[0] !== null && (
                   <Card
                     className={
                       clicked
@@ -726,7 +726,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                         : "shadow-sm hover:cursor-pointer"
                     }
                     onClick={() => {
-                      if (user.location) {
+                      if (locations) {
                         setClicked(true);
                         setClicked1(false);
                         setClicked2(false);
@@ -743,9 +743,8 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                       <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                         <ul>
                           <li className={`${outfit.className}`}></li>{" "}
-                          {user.location &&
-                          user?.location[0]?.address.length === 4 ? (
-                            <li className="text-xs">{`${user?.location[0]?.address[0]}, ${user?.location[0]?.address[1]}, ${user?.location[0]?.address[2]}, ${user?.location[0]?.address[3]}`}</li>
+                          {locations && locations[0]?.address.length === 4 ? (
+                            <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
                           ) : (
                             <li>Full Address not available</li>
                           )}
@@ -754,7 +753,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                     </CardContent>
                   </Card>
                 )}
-                {user.location[1] !== null && (
+                {locations[1] !== null && (
                   <Card
                     className={
                       clicked1
@@ -762,7 +761,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                         : "shadow-sm hover:cursor-pointer"
                     }
                     onClick={() => {
-                      if (user.location) {
+                      if (locations) {
                         setClicked1(true);
                         setClicked(false);
                         setClicked2(false);
@@ -776,9 +775,8 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
                             <li className={`${outfit.className}`}></li>{" "}
-                            {user.location &&
-                            user?.location[1]?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location[1]?.address[0]}, ${user?.location[1]?.address[1]}, ${user?.location[1]?.address[2]}, ${user?.location[1]?.address[3]}`}</li>
+                            {locations && locations[1]?.address.length === 4 ? (
+                              <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
                             ) : (
                               <li>Full Address not available</li>
                             )}
@@ -788,7 +786,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                     </CardContent>
                   </Card>
                 )}
-                {user.location[2] !== null && (
+                {locations[2] !== null && (
                   <Card
                     className={
                       clicked2
@@ -796,7 +794,7 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                         : "shadow-sm hover:cursor-pointer"
                     }
                     onClick={() => {
-                      if (user.location) {
+                      if (locations) {
                         setClicked2(true);
                         setClicked1(false);
                         setClicked(false);
@@ -810,9 +808,8 @@ const CreateClient = ({ user, index, canReceivePayouts, location }: Props) => {
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
                             <li className={`${outfit.className}`}></li>{" "}
-                            {user.location &&
-                            user?.location[2]?.address.length === 4 ? (
-                              <li className="text-xs">{`${user?.location[2]?.address[0]}, ${user?.location[2]?.address[1]}, ${user?.location[2]?.address[2]}, ${user?.location[2]?.address[3]}`}</li>
+                            {locations && locations[2]?.address.length === 4 ? (
+                              <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
                             ) : (
                               <li>Full Address not available</li>
                             )}
