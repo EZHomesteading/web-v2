@@ -64,7 +64,7 @@ const UserMenu: React.FC<Props> = ({
         handleBeforeInstallPrompt
       );
   }, []);
-
+  console.log("locations", user?.locations);
   const handleCreateClick = async () => {
     if (user?.role === UserRole.CONSUMER) {
       try {
@@ -102,9 +102,9 @@ const UserMenu: React.FC<Props> = ({
     if (
       (user?.hasPickedRole || user?.hasPickedRole === null) &&
       user?.locations?.[0]?.address &&
-      user?.locations?.[0]?.hours &&
-      user?.image &&
-      canReceivePayouts
+      user?.locations?.[0]?.hours
+      //user?.image &&
+      //canReceivePayouts
     ) {
       router.push("/create");
     } else {
