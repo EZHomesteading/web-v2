@@ -7,6 +7,7 @@ import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { PiBasketThin } from "react-icons/pi";
+import { CartItem } from "@/actions/getCart";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -16,20 +17,20 @@ const zilla = Zilla_Slab({
   display: "swap",
   weight: ["300"],
 });
-interface CartItem {
-  id: string;
-  quantity: number;
-  listing: {
-    imageSrc: string;
-    title: string;
-    quantity: number;
-    quantityType: string;
-    user: {
-      id: string;
-      name: string;
-    };
-  };
-}
+// interface CartItem {
+//   id: string;
+//   quantity: number;
+//   listing: {
+//     imageSrc: string;
+//     title: string;
+//     stock: number;
+//     quantityType: string;
+//     user: {
+//       id: string;
+//       name: string;
+//     };
+//   };
+// }
 
 interface c {
   cart: CartItem[];
@@ -183,7 +184,9 @@ const CartIcon = ({ cart }: c) => {
                   <div className="flex flex-row justify-between w-full">
                     <h4 className={`${zilla.className} text-sm font-light`}>
                       {getQuantityWording(
-                        item.listing.quantityType,
+                        item.listing.quantityType
+                          ? item.listing.quantityType
+                          : "",
                         item.quantity,
                         item.listing.title
                       )}

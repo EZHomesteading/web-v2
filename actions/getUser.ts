@@ -2,6 +2,7 @@ import prisma from "@/lib/prismadb";
 import { UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { Location } from "@prisma/client";
+import { CartItem } from "./getCart";
 
 interface p {
   role: UserRole;
@@ -471,9 +472,9 @@ const getUserLocations = async ({
       where: {
         userId: userId,
       },
-      include:{
-        user:true,
-      }
+      include: {
+        user: true,
+      },
     });
 
     return locations;
@@ -654,7 +655,7 @@ export interface NavUser {
   name: string;
   email: string;
   image: string | null;
-  cart: Cart[];
+  cart: CartItem[];
   locations: Location[];
   stripeAccountId: string | null;
   hasPickedRole: boolean | null;
@@ -663,14 +664,16 @@ export interface NavUser {
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    seller: { name: string; } | null; 
+    seller: { name: string } | null;
+    buyer: { name: string } | null;
   }[];
   sellerOrders: {
     id: string;
     conversationId: string | null;
     status: number;
     updatedAt: Date;
-    buyer: { name: string; } | null; 
+    buyer: { name: string } | null;
+    seller: { name: string } | null;
   }[];
 }
 
@@ -701,7 +704,7 @@ const getNavUser = async (): Promise<NavUser | null> => {
             listingId: true,
           },
         },
-        locations: true, 
+        locations: true,
         buyerOrders: {
           select: {
             id: true,
@@ -774,7 +777,7 @@ const getNavUser = async (): Promise<NavUser | null> => {
 
     const navUser: NavUser = {
       ...user,
-      cart: updatedCart as Cart[],
+      cart: updatedCart as unknown as CartItem[],
     };
 
     return navUser;

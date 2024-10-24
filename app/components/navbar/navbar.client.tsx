@@ -6,10 +6,11 @@ import Container from "../Container";
 import Logo from "@/app/components/navbar/Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/app/components/listings/search-listings";
-import { navUser } from "@/next-auth";
+
+import { NavUser } from "@/actions/getUser";
 
 interface NavbarProps {
-  user?: navUser;
+  user?: NavUser;
   apiKey?: string;
   isDashboard?: boolean;
   isMarketPage?: boolean;
@@ -58,7 +59,6 @@ const Navbar = ({
           <Logo />
           <UserMenu
             user={user}
-            isHome={true}
             canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
             harvestMessages={harvestMessages}
@@ -121,7 +121,7 @@ const Navbar = ({
                           {apiKey && <FindListingsComponent apiKey={apiKey} />}
                         </div>
                       </div>
-                      <Categories user={user} />
+                      <Categories />
                     </div>
                   </div>
                 )}
@@ -130,7 +130,7 @@ const Navbar = ({
           </div>
           {!isSmallScreen && isMarketPage && (
             <div className="container mx-auto mt-4">
-              <Categories user={user} />
+              <Categories />
             </div>
           )}
         </>

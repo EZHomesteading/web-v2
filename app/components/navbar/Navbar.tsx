@@ -1,14 +1,15 @@
 //default navbar parent element
 
 import NavbarClient from "@/app/components/navbar/navbar.client";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
-import { navUser } from "@/next-auth";
+
 import getHarvestMessages from "@/actions/getHarvestMessages";
+import { getUserLocations, NavUser } from "@/actions/getUser";
 
 interface p {
-  user?: navUser;
+  user?: NavUser;
   isDashboard?: boolean;
   isMarketPage?: boolean;
   isChat?: boolean;
@@ -45,6 +46,13 @@ const Navbar = async ({
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
+  // let locations =[]
+  // if (user && user.id) {
+  //   locations = await getUserLocations({
+  //     userId: user?.id,
+  //   });
+  // }
+
   const harvestMessages = await getHarvestMessages(user?.id);
   return (
     <NavbarClient

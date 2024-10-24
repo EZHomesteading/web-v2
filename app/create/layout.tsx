@@ -1,6 +1,6 @@
 // server side layour for chat page
 import type { Viewport } from "next";
-import { UserInfo, navUser } from "@/next-auth";
+//import { UserInfo, navUser } from "@/next-auth";
 
 export const viewport: Viewport = {
   themeColor: "#fff",

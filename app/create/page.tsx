@@ -5,12 +5,19 @@ import CreatePopup from "../(home)/info-modals/create-info-modal";
 import prisma from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import Stripe from "stripe";
+import { getUserLocations } from "@/actions/getUser";
 export const viewport: Viewport = {
   themeColor: "rgb(255,255,255)",
 };
-
-const Page = async () => {
+interface CreatePageProps {
+  params: { locationId: string };
+}
+export default async function Page({ params }: CreatePageProps) {
+  console.log(params);
   const user = await currentUser();
+  if (!user || !user.id) {
+    return;
+  }
   let index = 1;
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -30,6 +37,9 @@ const Page = async () => {
     }
   }
 
+  const locations = await getUserLocations({
+    userId: user?.id,
+  });
   return (
     <div>
       {user ? (
@@ -38,6 +48,7 @@ const Page = async () => {
             canReceivePayouts={canReceivePayouts}
             index={index}
             user={user}
+            locations={locations}
           />
           <CreatePopup />
         </>
@@ -46,6 +57,4 @@ const Page = async () => {
       )}
     </div>
   );
-};
-
-export default Page;
+}
