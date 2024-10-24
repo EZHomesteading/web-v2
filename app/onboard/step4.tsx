@@ -7,7 +7,7 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import OnboardHeader from "./header.onboard";
+import OnboardContainer from "./onboard.container";
 
 interface StepFiveProps {
   location?: LocationObj;
@@ -19,8 +19,7 @@ interface StepFiveProps {
 
 const StepFour: React.FC<StepFiveProps> = ({
   updateFormData,
-  formData,
-  location,
+
   fStyle = "",
 }) => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -84,64 +83,54 @@ const StepFour: React.FC<StepFiveProps> = ({
   };
 
   return (
-    <div
-      className={`${o.className} flex flex-col justify-start pt-2 sm:pt-[5%] h-full w-full `}
+    <OnboardContainer
+      title="Set Location Mode"
+      descriptions={[
+        " How would you like to fufill orders",
+        "Fine-tune your daily schedule later in settings",
+      ]}
     >
-      <div className="flex flex-col items-center w-full ">
-        <div className="w-full max-w-[306.88px] sm:max-w-[402.88px] mt-4 mb-6">
-          <div className="font-medium text-xl flex items-center gap-2">
-            Set Location Mode
-          </div>
-          <div className="text-sm text-gray-500 flex items-center font-normal">
-            How would you like to fufill orders
-          </div>
-          <div className="text-sm text-gray-500 flex items-center font-normal">
-            Fine-tune your daily schedule later in settings
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols- gap-2">
-          {options.map((option, index) => (
-            <button
-              key={option.label}
-              onClick={() => {
-                setSelectedOption(option.label);
-                changeStyle(index);
-                setIndex(index);
-              }}
-              className={`${
-                o.className
-              } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
-                selectedOption.includes(option.label)
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              <div className="flex items-center space-x-2">
-                {option.icon}
-                <span className="text-md sm:text-lg font-semibold">
-                  {option.label}
-                </span>
-              </div>
-              {Array.isArray(option.description) ? (
-                option.description.map((line, idx) => (
-                  <p
-                    key={idx}
-                    className={` ${
-                      selectedOption.includes(option.label) && " text-white"
-                    } mt-2 text-sm text-neutral-600 `}
-                  >
-                    {line}
-                  </p>
-                ))
-              ) : (
-                <p className="mt-2 text-sm">{option.description}</p>
-              )}
-            </button>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols- gap-2">
+        {options.map((option, index) => (
+          <button
+            key={option.label}
+            onClick={() => {
+              setSelectedOption(option.label);
+              changeStyle(index);
+              setIndex(index);
+            }}
+            className={`${
+              o.className
+            } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
+              selectedOption.includes(option.label)
+                ? "bg-black text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              {option.icon}
+              <span className="text-md sm:text-lg font-semibold">
+                {option.label}
+              </span>
+            </div>
+            {Array.isArray(option.description) ? (
+              option.description.map((line, idx) => (
+                <p
+                  key={idx}
+                  className={` ${
+                    selectedOption.includes(option.label) && " text-white"
+                  } mt-2 text-sm text-neutral-600 `}
+                >
+                  {line}
+                </p>
+              ))
+            ) : (
+              <p className="mt-2 text-sm">{option.description}</p>
+            )}
+          </button>
+        ))}
       </div>
-    </div>
+    </OnboardContainer>
   );
 };
 

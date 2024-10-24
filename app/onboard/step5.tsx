@@ -9,6 +9,7 @@ import {
   PiGearThin,
 } from "react-icons/pi";
 import OnboardHeader from "./header.onboard";
+import OnboardContainer from "./onboard.container";
 
 interface StepFourProps {
   location?: LocationObj;
@@ -82,46 +83,36 @@ const StepFive = ({
   }, [openMonths, updateFormData]);
 
   return (
-    <div
-      className={`${o.className} flex flex-col justify-start pt-2 sm:pt-[5%] h-full w-full `}
+    <OnboardContainer
+      title="Select all months you plan to operate"
+      descriptions={[
+        "Select a month if you'll be open any day during it",
+        "Fine-tune your daily schedule later in settings",
+      ]}
     >
-      <div className="flex flex-col items-center w-full ">
-        <div className="w-full max-w-[306.88px] sm:max-w-[402.88px] mt-4 mb-6">
-          <div className="font-medium text-xl flex items-center gap-2">
-            Select all months you plan to operate
-          </div>
-          <div className="text-sm text-gray-500 flex items-center font-normal">
-            Select a month if you'll be open any day during it{" "}
-          </div>
-          <div className="text-sm text-gray-500 flex items-center font-normal">
-            Fine-tune your daily schedule later in settings
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center h-[400px] sm:h-[530px]">
-          <div
-            className="grid grid-cols-3 gap-2"
-            onMouseLeave={handleMouseUp}
-            onMouseUp={handleMouseUp}
-          >
-            {months.map((month, index) => (
-              <button
-                key={month}
-                onMouseDown={() => handleMouseDown(index)}
-                onMouseEnter={() => handleMouseEnter(index)}
-                className={`p-8 sm:p-12 rounded-xl border-[1px] shadow-md ${
-                  openMonths.includes(index)
-                    ? "bg-black text-white shadow-sm"
-                    : "bg-white text-black"
-                }`}
-              >
-                {month}
-              </button>
-            ))}
-          </div>
+      <div className="flex flex-col items-center h-[400px] sm:h-[530px]">
+        <div
+          className="grid grid-cols-3 gap-2"
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+        >
+          {months.map((month, index) => (
+            <button
+              key={month}
+              onMouseDown={() => handleMouseDown(index)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              className={`p-8 sm:p-12 rounded-xl border-[1px] shadow-md ${
+                openMonths.includes(index)
+                  ? "bg-black text-white shadow-sm"
+                  : "bg-white text-black"
+              }`}
+            >
+              {month}
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+    </OnboardContainer>
   );
 };
 

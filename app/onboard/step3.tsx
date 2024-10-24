@@ -13,6 +13,7 @@ import { LiaMapMarkedSolid } from "react-icons/lia";
 import { UserRole } from "@prisma/client";
 import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { PiMapPinLineThin } from "react-icons/pi";
+import OnboardContainer from "./onboard.container";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -144,17 +145,14 @@ const StepThree: React.FC<Props> = ({
   }
 
   return (
-    <div
-      className={`${o.className} flex flex-col items-center justify-center h-full`}
+    <OnboardContainer
+      title="Add your First Selling Location"
+      descriptions={[
+        "Sellers can have up to three selling locations",
+        "You may change the address at any time",
+        "This is how buyers will see your location on the map",
+      ]}
     >
-      <h1 className={`text-center text-2xl`}>
-        Add your First Selling Location
-        <div className="text-sm mb-2 ">
-          {" "}
-          Users can have up to three selling locations
-        </div>
-      </h1>
-
       <div className={`relative touch-none`}>
         <div className="absolute z w-full px-2 top-5">
           <PlacesAutocomplete
@@ -251,7 +249,7 @@ const StepThree: React.FC<Props> = ({
           )}
         </GoogleMap>
       </div>
-    </div>
+    </OnboardContainer>
   );
 };
 

@@ -298,11 +298,12 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
 
   return (
     <>
-      <div className="flex-grow overflow-hidden mt-[3%]">
+      <div className="flex-grow overflow-hidden min-h-screen pt-[8%]">
         {step === 1 && <StepOne user={user} />}
         {step === 2 && (
           <StepTwo user={user} updateFormData={updateFormDataRole} />
         )}
+
         {step === 3 && (
           <StepThree
             location={formData.location}
@@ -383,11 +384,14 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           />
         )}
       </div>
+
       <div>
         <div className="w-full fixed top-0 left-0 z-50">
           <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
+
           <OnboardHeader
             street={formData?.location?.address[0]}
+            step={step}
             formDataStreet={formData?.location?.address[0]}
             fulfillmentStyle={formData?.fulfillmentStyle}
           />

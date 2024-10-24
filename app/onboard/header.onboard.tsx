@@ -5,19 +5,25 @@ interface p {
   fulfillmentStyle?: string;
   street?: string;
   formDataStreet?: string;
+  step: number;
 }
 
-const OnboardHeader = ({ fulfillmentStyle, street, formDataStreet }: p) => {
+const OnboardHeader = ({
+  fulfillmentStyle,
+  street,
+  formDataStreet,
+  step,
+}: p) => {
   const [isAtTop, setIsAtTop] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
       const position = window.scrollY;
-      setIsAtTop(position < 10); // You can adjust this threshold
+      setIsAtTop(position < 10);
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Check initial position
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
