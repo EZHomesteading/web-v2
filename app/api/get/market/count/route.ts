@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
         }
       }
     };
-
-    const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id address').lean().exec();
-
+    
+    const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id').lean().exec();
+console.log(nearbyLocations)
     if (!nearbyLocations || nearbyLocations.length === 0) {
       return NextResponse.json({ count: 0 }, { status: 404 });
     }
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
         locationId: { in: locationIds }
       }
     });
-
+    console.log(listingsCount)
     return NextResponse.json({ count: listingsCount });
   } catch (error) {
     return NextResponse.json({ message: 'Internal server error', error: String(error) }, { status: 500 });

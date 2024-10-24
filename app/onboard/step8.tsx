@@ -14,9 +14,7 @@ interface StepSevenProps {
   ) => void;
   selectedMonths: number[] | undefined;
   onDayChange: (selectedDays: string[]) => void;
-  locationId?: string;
   onFinish: (hours: Hours, type: string) => void;
-
   fulfillmentStyle?: string;
 }
 
@@ -26,7 +24,6 @@ const StepEight: React.FC<StepSevenProps> = ({
   updateFormData,
   selectedMonths,
   onDayChange,
-  locationId,
   onFinish,
   fulfillmentStyle,
   resetHoursData,

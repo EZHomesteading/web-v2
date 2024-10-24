@@ -8,6 +8,9 @@ import {
   convertMinutesToTimeString,
   convertTimeStringToMinutes,
 } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import OnboardHeader from "./header.onboard";
+import OnboardContainer from "./onboard.container";
 
 interface StepSixProps {
   user: any;
@@ -15,7 +18,7 @@ interface StepSixProps {
   formData: string[] | undefined;
   location?: LocationObj;
   selectedDays: string[];
-
+  fulfillmentStyle?: string;
   onComplete: () => void;
   onBack: () => void;
 }
@@ -27,7 +30,7 @@ const StepSeven: React.FC<StepSixProps> = ({
   location,
   selectedDays,
   onComplete,
-
+  fulfillmentStyle,
   onBack,
 }) => {
   const [timeSlots, setTimeSlots] = useState([{ open: 540, close: 1020 }]);
@@ -106,11 +109,13 @@ const StepSeven: React.FC<StepSixProps> = ({
   };
 
   return (
-    <div className="h-full w-full p-8 flex flex-col  items-center">
-      <div className="mb-4 text-center items-center  pt-[2%]  text-4xl">
-        Set Hours for Selected Days
-      </div>
-      <div className="mb-4">Selected Days: {selectedDays.join(", ")}</div>
+    <OnboardContainer
+      title="Set Open & Close Hours for"
+      descriptions={[
+        `${selectedDays.join(", ")}`,
+        "Fine-tune your daily schedule later in settings",
+      ]}
+    >
       {timeSlots.map((slot, index) => (
         <div key={index} className="mb-4">
           <TimePicker
@@ -146,7 +151,7 @@ const StepSeven: React.FC<StepSixProps> = ({
       <Button onClick={handleSaveChanges} className="px-12 mb-4">
         Save Changes
       </Button>
-    </div>
+    </OnboardContainer>
   );
 };
 

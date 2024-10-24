@@ -1,6 +1,5 @@
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { Label } from "@/app/components/ui/label";
-import Heading from "@/app/components/Heading";
 
 interface StepFourProps {
   checkbox1Checked: boolean;

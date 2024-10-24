@@ -2,15 +2,21 @@ import { currentUser } from "@/lib/auth";
 import CreateClient from "./CreateClient";
 import type { Viewport } from "next";
 import CreatePopup from "../(home)/info-modals/create-info-modal";
-import prisma from "@/lib/prisma";
-import { UserRole } from "@prisma/client";
 import Stripe from "stripe";
+import { getUserLocations } from "@/actions/getUser";
 export const viewport: Viewport = {
   themeColor: "rgb(255,255,255)",
 };
 
-const Page = async () => {
+const Page = async ({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) => {
   const user = await currentUser();
+  const id = searchParams?.id;
   let index = 1;
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -29,7 +35,8 @@ const Page = async () => {
       return null;
     }
   }
-
+  const locations = await getUserLocations({ userId: user?.id });
+  const defaultLocation = locations?.find((loc) => loc.id === id);
   return (
     <div>
       {user ? (

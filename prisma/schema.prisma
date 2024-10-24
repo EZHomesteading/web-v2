@@ -129,19 +129,20 @@ type Availability {
 }
 
 model Location {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
-  listings    Listing[]
-  orders      Order[]
-  type        String
-  coordinates Float[]
-  address     String[]
-  hours       Hours?
-  role        UserRole  @default(CONSUMER)
-  isDefault   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @db.ObjectId
+  user                User      @relation(fields: [userId], references: [id])
+  listings            Listing[]
+  orders              Order[]
+  type                String
+  coordinates         Float[]
+  address             String[]
+  hours               Hours?
+  role                UserRole  @default(CONSUMER)
+  isDefault           Boolean   @default(false)
+  showPreciseLocation Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 model User {

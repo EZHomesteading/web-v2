@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import axios from "axios";
 
 interface Props {
   role?: UserRole;
@@ -79,11 +80,12 @@ const Filters = ({ role }: Props) => {
           try {
             const radiusInMeters = radius * 1609.34;
 
-            const res = await fetch(
+            const res = await axios.get(
               `/api/get/market/count?lat=${lat}&lng=${lng}&radius=${radiusInMeters}`
             );
-            const data = await res.json();
-            setListingCount(data.count);
+            const data = await res;
+            console.log(data);
+            // setListingCount(data.count);
 
             minLoadingTimeout.current = setTimeout(() => {
               setLoading(false);
