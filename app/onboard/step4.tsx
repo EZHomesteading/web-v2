@@ -1,79 +1,145 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-import { Button } from "@/app/components/ui/button";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import {
+  PiArrowsCounterClockwiseThin,
+  PiCalendarBlankThin,
+  PiCarProfileThin,
+  PiStorefrontThin,
+} from "react-icons/pi";
+import OnboardHeader from "./header.onboard";
 
 interface StepFiveProps {
   location?: LocationObj;
   user: any;
   updateFormData: (newData: Partial<{ fulfillmentStyle: string }>) => void;
   formData: string[] | undefined;
+  fStyle?: string;
 }
 
 const StepFour: React.FC<StepFiveProps> = ({
-  user,
   updateFormData,
   formData,
   location,
+  fStyle = "",
 }) => {
   const [selectedOption, setSelectedOption] = useState("");
+  const [index, setIndex] = useState<number>();
   const options = [
-    "Delivery Only",
-    "Pickup Only",
-    "Set Delivery Hours And then Set Pickup Hours",
-    "Set the same Hours for Deliveries and Pickups",
+    {
+      label: "Unique Delivery & Pickup Hours",
+      icon: <PiCalendarBlankThin size={24} />,
+      description: [
+        "Deliver or pickup depending on date and time",
+        "Most common and recommended option",
+      ],
+    },
+    {
+      label: "Pickup Only",
+      icon: <PiStorefrontThin size={24} />,
+      description: [
+        "All purchases and sales happen at this location",
+        "Best for sellers who never want to deliver",
+      ],
+    },
+    {
+      label: "Delivery Only",
+      icon: <PiCarProfileThin size={24} />,
+      description: [
+        "All purchases and sales handled via delivery",
+        "Best for sellers who don't want visitors at this address",
+      ],
+    },
+
+    {
+      label: "Set the Same Hours for Both",
+      icon: <PiArrowsCounterClockwiseThin size={24} />,
+      description: [
+        "Use identical hours for delivery and pickup.",
+        "Best for locations able to manage deliveries and on-site orders at the same times",
+      ],
+    },
   ];
-  const setFulfillmentStyle = (index: number) => {
+  const [fulfillmentStyle, setFulfillmentStyle] = useState<string>(fStyle);
+  const changeStyle = (index: number) => {
+    let style: string = fulfillmentStyle;
     switch (index) {
       case 0:
-        updateFormData({ fulfillmentStyle: "delivery" });
+        style = "???";
         break;
       case 1:
-        updateFormData({ fulfillmentStyle: "pickup" });
+        style = "pickup";
         break;
       case 2:
-        updateFormData({ fulfillmentStyle: "bothone" });
+        style = "delivery";
         break;
       case 3:
-        updateFormData({ fulfillmentStyle: "both" });
+        style = "both";
         break;
       default:
         console.log("Invalid index");
     }
-    console.log();
+    setFulfillmentStyle(style);
+    updateFormData({ fulfillmentStyle: style });
   };
+
   return (
-    <div className="h-full w-full p-8 flex flex-col  items-center">
-      <div className=" mb-4 text-center items-center  pt-[2%] sm:pt-[5%] text-4xl">
-        Select Order Fulfilment style for{" "}
-        {formData?.[0] || location?.address?.[0] || "Your Location"}
-      </div>
+    <div
+      className={`${o.className} flex flex-col justify-start pt-2 sm:pt-[5%] h-full w-full `}
+    >
+      <div className="flex flex-col items-center w-full ">
+        <div className="w-full max-w-[306.88px] sm:max-w-[402.88px] mt-4 mb-6">
+          <div className="font-medium text-xl flex items-center gap-2">
+            Set Location Mode
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            How would you like to fufill orders
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            Fine-tune your daily schedule later in settings
+          </div>
+        </div>
 
-      <div className="text-center py-[1%] sm:py-[1%] text-2xl">
-        Select Whether this location will be Delivery only, Pickup only, or
-        Both.
-      </div>
-      <div className="text-center py-[1%] sm:py-[1%] text-2xl">
-        We are working on DoorDash integration. In the future, locations With
-        delivery enabled will be able to outsource deliveries to DoorDash
-      </div>
-
-      <div className="grid grid-cols-1 gap-2">
-        {options.map((option, index) => (
-          <button
-            key={option}
-            onClick={() => {
-              setSelectedOption(option);
-              setFulfillmentStyle(index);
-            }}
-            className={`p-2 px-20 border-[2px] text-2xl rounded ${
-              selectedOption.includes(option)
-                ? "bg-black text-white"
-                : "bg-white text-black"
-            }`}
-          >
-            {option}
-          </button>
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols- gap-2">
+          {options.map((option, index) => (
+            <button
+              key={option.label}
+              onClick={() => {
+                setSelectedOption(option.label);
+                changeStyle(index);
+                setIndex(index);
+              }}
+              className={`${
+                o.className
+              } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
+                selectedOption.includes(option.label)
+                  ? "bg-black text-white"
+                  : "bg-white text-black"
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                {option.icon}
+                <span className="text-md sm:text-lg font-semibold">
+                  {option.label}
+                </span>
+              </div>
+              {Array.isArray(option.description) ? (
+                option.description.map((line, idx) => (
+                  <p
+                    key={idx}
+                    className={` ${
+                      selectedOption.includes(option.label) && " text-white"
+                    } mt-2 text-sm text-neutral-600 `}
+                  >
+                    {line}
+                  </p>
+                ))
+              ) : (
+                <p className="mt-2 text-sm">{option.description}</p>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

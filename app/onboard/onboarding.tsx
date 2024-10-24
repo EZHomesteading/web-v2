@@ -5,19 +5,19 @@ import { LocationObj, UserInfo } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
 import { Progress } from "@/app/components/ui/progress";
 import { useRouter } from "next/navigation";
-import StepOne from "./step1";
-import StepTwo from "./step2";
-import StepThree from "./step3";
-import StepFour from "./step4";
-import StepFive from "./step5";
-import StepSix from "./step6";
-import StepSeven from "./step7";
-import StepEight from "./step8";
-import { Session } from "next-auth";
-import { HoverButton } from "../components/ui/hoverButton";
+import StepOne from "@/app/onboard/step1";
+import StepTwo from "@/app/onboard/step2";
+import StepThree from "@/app/onboard/step3";
+import StepFour from "@/app/onboard/step4";
+import { StepFive } from "@/app/onboard/step5";
+import StepSix from "@/app/onboard/step6";
+import StepSeven from "@/app/onboard/step7";
+import StepEight from "@/app/onboard/step8";
+import { HoverButton } from "@/app/components/ui/hoverButton";
 import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
-import StepNine from "./step9";
+import StepNine from "@/app/onboard/step9";
+import OnboardHeader from "./header.onboard";
 
 interface Props {
   user: UserInfo;
@@ -30,8 +30,8 @@ interface Props {
 
 const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const router = useRouter();
-  // console.log("locations", locations);
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
+  //
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -103,6 +103,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     },
     []
   );
+
   const handleNext = async () => {
     try {
       if (step === 3 && !formData.locationId) {
@@ -296,8 +297,8 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   }, [step]);
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-grow overflow-y-auto !overflow-x-hidden mt-10 md:mt-0">
+    <>
+      <div className="flex-grow overflow-hidden mt-[3%]">
         {step === 1 && <StepOne user={user} />}
         {step === 2 && (
           <StepTwo user={user} updateFormData={updateFormDataRole} />
@@ -315,13 +316,14 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             location={formData.location}
             user={user}
             formData={formData.location?.address}
+            fStyle={formData.fulfillmentStyle ?? ""}
             updateFormData={updateFulfillmentData}
           />
         )}
         {step === 5 && (
           <StepFive
             location={formData.location}
-            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
+            fulfillmentStyle={formData.fulfillmentStyle ?? ""}
             user={user}
             formData={formData.location?.address}
             updateFormData={updateFormDataMonths}
@@ -332,7 +334,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           <StepSix
             location={formData.location}
             user={user}
-            fulfillmentStyle={formData.fulfillmentStyle ?? "pickup"}
+            fulfillmentStyle={formData.fulfillmentStyle ?? ""}
             updateFormData={updateFormData}
             formData={formData.location?.address}
             onComplete={handleStep6Complete}
@@ -351,6 +353,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             selectedDays={selectedDays}
             onComplete={handleStep7Complete}
             onBack={handleStep7Back}
+            fulfillmentStyle={formData?.fulfillmentStyle}
           />
         )}
         {step === 8 && (
@@ -381,9 +384,15 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         )}
       </div>
       <div>
-        <div className="w-full absolute top-0 left-0 z-50">
+        <div className="w-full fixed top-0 left-0 z-50">
           <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
+          <OnboardHeader
+            street={formData?.location?.address[0]}
+            formDataStreet={formData?.location?.address[0]}
+            fulfillmentStyle={formData?.fulfillmentStyle}
+          />
         </div>
+
         <div className="flex justify-between px-4 pb-4">
           {step > 1 && (
             <Button onClick={handlePrevious} variant="outline">
@@ -406,7 +415,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           {step < 6 && <Button onClick={handleNext}>Next</Button>}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

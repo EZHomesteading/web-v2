@@ -1,6 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { LocationObj } from "@/next-auth";
-import { UserRole } from "@prisma/client";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import {
+  PiCalendarBlankThin,
+  PiCalendarCheckThin,
+  PiCalendarPlusThin,
+  PiCalendarThin,
+  PiGearThin,
+} from "react-icons/pi";
+import OnboardHeader from "./header.onboard";
 
 interface StepFourProps {
   location?: LocationObj;
@@ -12,7 +20,6 @@ interface StepFourProps {
 }
 
 const StepFive = ({
-  user,
   updateFormData,
   formData,
   location,
@@ -75,54 +82,61 @@ const StepFive = ({
   }, [openMonths, updateFormData]);
 
   return (
-    <div className="h-full">
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Set Up Months you will be{" "}
-        {fulfillmentStyle === "delivery"
-          ? "Delivering from"
-          : fulfillmentStyle === "pickup"
-          ? "allowing Pickups at"
-          : fulfillmentStyle === "bothone"
-          ? "Delivering from"
-          : fulfillmentStyle === "both"
-          ? "Delivering from and allowing Pickups at"
-          : null}{" "}
-        {formData?.[0] || location?.address?.[0] || "Your Location"}
-      </div>
-      <div className="text-center pt-[1%] sm:pt-[1%] text-2xl">
-        Select the Months you will be open.
-      </div>
-      <div className="text-center text-2xl">
-        You can change your schedule day-to-day in settings later on.
-      </div>
-      <div className="text-center text-2xl">
-        Even if you are only open for one day out of a month, include that month
-        in your selection.
-      </div>
-      <div className="flex flex-col items-center sm:mt-[3%] mt-[3%]">
-        <div
-          className="grid grid-cols-3 gap-2"
-          onMouseLeave={handleMouseUp}
-          onMouseUp={handleMouseUp}
-        >
-          {months.map((month, index) => (
-            <button
-              key={month}
-              onMouseDown={() => handleMouseDown(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              className={`p-10 text-sm border-[2px] rounded ${
-                openMonths.includes(index)
-                  ? "bg-black text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {month}
-            </button>
-          ))}
+    <div
+      className={`${o.className} flex flex-col justify-start pt-2 sm:pt-[5%] h-full w-full `}
+    >
+      <div className="flex flex-col items-center w-full ">
+        <div className="w-full max-w-[306.88px] sm:max-w-[402.88px] mt-4 mb-6">
+          <div className="font-medium text-xl flex items-center gap-2">
+            Select all months you plan to operate
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            Select a month if you'll be open any day during it{" "}
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            Fine-tune your daily schedule later in settings
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center h-[400px] sm:h-[530px]">
+          <div
+            className="grid grid-cols-3 gap-2"
+            onMouseLeave={handleMouseUp}
+            onMouseUp={handleMouseUp}
+          >
+            {months.map((month, index) => (
+              <button
+                key={month}
+                onMouseDown={() => handleMouseDown(index)}
+                onMouseEnter={() => handleMouseEnter(index)}
+                className={`p-8 sm:p-12 rounded-xl border-[1px] shadow-md ${
+                  openMonths.includes(index)
+                    ? "bg-black text-white shadow-sm"
+                    : "bg-white text-black"
+                }`}
+              >
+                {month}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default StepFive;
+const getFulfillmentText = (fulfillmentStyle?: string) => {
+  switch (fulfillmentStyle) {
+    case "delivery":
+      return "Delivery Only";
+    case "pickup":
+      return "Pickup Only";
+    case "bothone":
+      return "???";
+    case "both":
+      return "Same Hours for Both";
+    default:
+      return "";
+  }
+};
+export { StepFive, getFulfillmentText };

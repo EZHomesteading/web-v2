@@ -7,6 +7,9 @@ import React, {
 } from "react";
 import { LocationObj } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { getFulfillmentText } from "./step5";
+import OnboardHeader from "./header.onboard";
 
 interface StepFiveProps {
   location?: LocationObj;
@@ -56,7 +59,7 @@ const StepFive: React.FC<StepFiveProps> = ({
       setWeekDays(fullWeekDays);
     }
   }, [location]);
-
+  console.log("selected days on step 6", selectedDays);
   const toggleDay = useCallback((day: string) => {
     setSelectedDays((prevDays) => {
       if (prevDays.includes(day)) {
@@ -91,58 +94,72 @@ const StepFive: React.FC<StepFiveProps> = ({
   };
 
   return (
-    <div className="h-full w-full p-8 flex flex-col  items-center">
-      <div className=" mb-4 text-center items-center  pt-[2%] sm:pt-[5%] text-4xl">
-        Select Days you will have{" "}
-        {fulfillmentStyle === "delivery"
-          ? "Delivery available from"
-          : fulfillmentStyle === "pickup"
-          ? "allow Pickups from"
-          : fulfillmentStyle === "bothone"
-          ? "Delivery available from"
-          : fulfillmentStyle === "both"
-          ? "Delivery and allow Pickups from"
-          : null}{" "}
-        {formData?.[0] || location?.address?.[0] || "Your Location"}
-      </div>
-      {weekDays.length < 7 ? (
-        <div className="text-center py-[1%] sm:py-[1%] text-2xl">
-          Would you like to set up Hours for any other days of the week?
-        </div>
-      ) : (
-        <div className="text-center py-[1%] sm:py-[1%] text-2xl">
-          Select the days of the week that will have the same hours
-        </div>
-      )}
+    <div
+      className={`${o.className} flex flex-col justify-start pt-2 sm:pt-[5%] h-full w-full `}
+    >
+      <div className="flex flex-col items-center w-full ">
+        <div className="w-full max-w-[306.88px] sm:max-w-[402.88px] mt-4 mb-6">
+          <div className="font-medium text-xl flex items-center gap-2">
+            Select Days with the Same Hours
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            You'll return here to set hours for additional days until your
+            schedule is complete
+          </div>
+          <div className="text-sm text-gray-500 flex items-center font-normal">
+            Fine-tune your daily schedule later in settings
+          </div>
 
-      <div
-        className="grid grid-cols-1 gap-2"
-        onMouseLeave={handleMouseUp}
-        onMouseUp={handleMouseUp}
-      >
-        {weekDays.map((day) => (
-          <button
-            key={day}
-            onMouseDown={() => handleMouseDown(day)}
-            onMouseEnter={() => handleMouseEnter(day)}
-            className={`p-2 px-20 border-[2px] text-2xl rounded ${
-              selectedDays.includes(day)
-                ? "bg-black text-white"
-                : "bg-white text-black"
-            }`}
+          <div
+            className="grid grid-cols-1 gap-2 mt-6"
+            onMouseLeave={handleMouseUp}
+            onMouseUp={handleMouseUp}
           >
-            {day}
-          </button>
-        ))}
+            {weekDays.map((day) => (
+              <button
+                key={day}
+                onMouseDown={() => handleMouseDown(day)}
+                onMouseEnter={() => handleMouseEnter(day)}
+                className={`p-2 px-20 border-[1px] text-2xl rounded-md shadow-sm ${
+                  selectedDays.includes(day)
+                    ? "bg-black text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 space-y-2">
+            <div
+              className={`transition-all duration-500 ${
+                selectedDays.length > 0
+                  ? "opacity-100 h-12"
+                  : "opacity-0 h-0 overflow-hidden"
+              }`}
+            >
+              <Button onClick={handleNext} className="h-12 w-full">
+                Set Hours for Selected Days
+              </Button>
+            </div>
+
+            <div
+              className={`transition-all duration-500 ${
+                weekDays.length !== 7
+                  ? "opacity-100 h-12"
+                  : "opacity-0 h-0 overflow-hidden"
+              }`}
+            >
+              <Button
+                onClick={onCompleteHours}
+                className="h-12 w-full bg-green-200/40 text-black border"
+              >
+                Complete Setup
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-      <Button onClick={handleNext} className=" mt-8 px-12 mb-4">
-        Set Hours for Selected Days
-      </Button>
-      {weekDays.length === 7 ? null : (
-        <Button onClick={onCompleteHours} className="px-12">
-          I Am Finished Setting Hours
-        </Button>
-      )}
     </div>
   );
 };
