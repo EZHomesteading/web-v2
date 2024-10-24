@@ -42,9 +42,11 @@ const OnboardHeader = ({
         <div className="pr-2 w-1/2 overflow-hidden">
           <div className="truncate">{formDataStreet || street || ""}</div>
         </div>
-        <div className="border-l pl-2 w-1/2">
-          {getFulfillmentText(fulfillmentStyle)}
-        </div>
+        {fulfillmentStyle && (
+          <div className="border-l pl-2 w-1/2">
+            {getFulfillmentText(fulfillmentStyle)}
+          </div>
+        )}
       </div>
     </div>
   );

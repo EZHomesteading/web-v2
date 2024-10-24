@@ -106,8 +106,9 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
 
   const handleNext = async () => {
     try {
-      if (step === 3 && !formData.locationId) {
-        if (locations && locations?.length > 3) {
+      // 3 not 1000
+      if (step === 1000 && !formData.locationId) {
+        if (locations && locations?.length < 3) {
           toast.error(
             "You already have the maximum number of locations. Sending you to Add a Product page."
           );
@@ -125,7 +126,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             locationId: response.data.id,
             location: formData.location,
           });
-          setUser((prevUser) => ({
+          setUser((prevUser: any) => ({
             ...prevUser,
             location: response.data || formData.location,
           }));
@@ -133,7 +134,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       } else if (step === 7 && formData.locationId) {
         // Save the updated hours
         if (formData.location?.hours) {
-          setUser((prevUser) => ({
+          setUser((prevUser: any) => ({
             ...prevUser,
             location: formData.location,
           }));
@@ -298,8 +299,8 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
 
   return (
     <>
-      <div className="flex-grow overflow-hidden min-h-screen pt-[8%]">
-        {step === 1 && <StepOne user={user} />}
+      <div className="flex-grow overflow-hidden min-h-[92vh] pt-[8%]">
+        {step === 1 && <StepOne />}
         {step === 2 && (
           <StepTwo user={user} updateFormData={updateFormDataRole} />
         )}
@@ -365,7 +366,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             updateFormData={updateFormDataMonths}
             fulfillmentStyle={formData.fulfillmentStyle}
             selectedMonths={formData.selectedMonths}
-            locationId={formData.locationId}
             onFinish={handleFinish}
             resetHoursData={resetHoursData}
           />
@@ -388,13 +388,14 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       <div>
         <div className="w-full fixed top-0 left-0 z-50">
           <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
-
-          <OnboardHeader
-            street={formData?.location?.address[0]}
-            step={step}
-            formDataStreet={formData?.location?.address[0]}
-            fulfillmentStyle={formData?.fulfillmentStyle}
-          />
+          {step > 0 && formData.location && (
+            <OnboardHeader
+              street={formData?.location?.address[0]}
+              step={step}
+              formDataStreet={formData?.location?.address[0]}
+              fulfillmentStyle={formData?.fulfillmentStyle}
+            />
+          )}
         </div>
 
         <div className="flex justify-between px-4 pb-4">

@@ -20,13 +20,7 @@ interface StepFourProps {
   fulfillmentStyle: string;
 }
 
-const StepFive = ({
-  updateFormData,
-  formData,
-  location,
-  selectedMonths,
-  fulfillmentStyle,
-}: StepFourProps) => {
+const StepFive = ({ updateFormData, selectedMonths }: StepFourProps) => {
   const [openMonths, setOpenMonths] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -123,7 +117,7 @@ const getFulfillmentText = (fulfillmentStyle?: string) => {
     case "pickup":
       return "Pickup Only";
     case "bothone":
-      return "???";
+      return "Unique Hours for Both";
     case "both":
       return "Same Hours for Both";
     default:

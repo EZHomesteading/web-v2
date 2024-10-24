@@ -20,17 +20,19 @@ const StepTwo = ({ user, updateFormData }: p) => {
       icon: <IoStorefrontOutline size={24} />,
       description: [
         "Sell directly to anyone",
-        "Recommended for market stand owners looking to expand",
+        "Recommended for market stand owners looking to expand by sourcing goods from producers and reselling",
         "Greater time commitment but greater rewards",
+        "Co-ops traditionally handle orders on-site",
       ],
     },
     {
       label: "Grower Location",
       icon: <GiFruitTree size={24} />,
       description: [
-        "Sell in larger quantities only to Co-Ops",
+        "Sell in larger quantities only to Co-ops",
         "Ideal for bulk sellers preferring minimal buyer interaction",
-        " Lower time commitment with moderate returns", // can be rephrased
+        "Lower time commitment with less returns because there's less burden", // reword later
+        "Growers traditionally deliver to Co-ops",
       ],
     },
   ];
@@ -44,8 +46,10 @@ const StepTwo = ({ user, updateFormData }: p) => {
           hasPickedRole: null,
         });
       } catch (error) {
+        toast.error(
+          "There was an error trying to update your location role, please try again."
+        );
       } finally {
-        toast.success("Role Updated to Grower");
         updateFormData({ role: "PRODUCER" });
       }
     }
@@ -63,8 +67,10 @@ const StepTwo = ({ user, updateFormData }: p) => {
           hasPickedRole: null,
         });
       } catch (error) {
+        toast.error(
+          "There was an error trying to update your location role, please try again."
+        );
       } finally {
-        toast.success("Role Updated to Co-op");
         updateFormData({ role: "COOP" });
       }
     }
@@ -73,8 +79,8 @@ const StepTwo = ({ user, updateFormData }: p) => {
     <OnboardContainer
       title="Select Role For This Selling Location"
       descriptions={[
-        "Users with atleast one Co-Op location can purchase from Growers",
-        "You may change location types at any time",
+        "If you have one Co-Op location, you can purchase from Growers",
+        "You may change this location type at any time",
       ]}
     >
       <div className="grid grid-cols-1 sm:grid-cols- gap-2">

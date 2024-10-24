@@ -64,7 +64,7 @@ const StepFour: React.FC<StepFiveProps> = ({
     let style: string = fulfillmentStyle;
     switch (index) {
       case 0:
-        style = "???";
+        style = "bothone";
         break;
       case 1:
         style = "pickup";
@@ -86,11 +86,11 @@ const StepFour: React.FC<StepFiveProps> = ({
     <OnboardContainer
       title="Set Location Mode"
       descriptions={[
-        " How would you like to fufill orders",
+        "How would you like to fufill orders?",
         "Fine-tune your daily schedule later in settings",
       ]}
     >
-      <div className="grid grid-cols-1 sm:grid-cols- gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {options.map((option, index) => (
           <button
             key={option.label}
@@ -101,7 +101,7 @@ const StepFour: React.FC<StepFiveProps> = ({
             }}
             className={`${
               o.className
-            } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
+            } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:min-w-[402.88px] rounded-xl min-h-[134px]  border transition ${
               selectedOption.includes(option.label)
                 ? "bg-black text-white"
                 : "bg-white text-black"

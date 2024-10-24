@@ -33,7 +33,7 @@ const OnboardContainer = ({
 }: SectionLayoutProps) => {
   return (
     <div
-      className={`${o.className} flex flex-col justify-start h-full w-full ${className}`}
+      className={`${o.className} flex flex-col justify-start h-full w-full ${className} !select-none`}
     >
       <div className="flex flex-col items-center w-full">
         <div
