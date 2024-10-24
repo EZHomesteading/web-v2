@@ -14,7 +14,6 @@ import { Outfit } from "next/font/google";
 import { QuantityTypeValue } from "./components/UnitSelect";
 import { Card, CardContent, CardHeader } from "./../components/ui/card";
 import { addDays, format } from "date-fns";
-import debounce from "debounce";
 import StepTwo from "./step2";
 import StepThree from "./step3";
 import { CommonInputProps } from "./create.types";
@@ -23,7 +22,7 @@ import StepFive from "./step5";
 import StepSix from "./step6";
 import { Label } from "./../components/ui/label";
 import Help from "./components/help";
-import { Location, UserRole } from "@prisma/client";
+import { Location } from "@prisma/client";
 
 const outfit = Outfit({
   subsets: ["latin"],

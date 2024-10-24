@@ -2,58 +2,16 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import { Prisma, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
-import { Listing } from "./getCart";
+import { LocationEZH } from "@/next-auth";
 
 // Interface for defining the search parameters
 type sort = "htl" | "lth" | "1" | "2" | "3" | "4" | "5";
-type Listing1 = {
-  user: {
-    id: string;
-    name: string;
-    role: UserRole;
-  };
-  id: string;
-  rating: number[];
-  location: number;
-  createdAt: Date;
-  keyWords: string[];
-  price: number;
-  title: string;
-  subCategory: string;
-  stock: number;
-  quantityType: string;
-  minOrder: number | null;
-  imageSrc: string[];
-  review: boolean | null;
-};
-type Listing2 = {
-  user: {
-    id: string;
-  };
-  id: string;
-  location: number;
-  rating: number[];
-  SODT: number | null;
-  createdAt: Date;
-  keyWords: string[];
-  userId: string;
-  price: number;
-  title: string;
-  subCategory: string;
-  stock: number;
-  quantityType: string;
-  minOrder: number | null;
-  imageSrc: string[];
-  shelfLife: number;
-};
-export type Location = {
-  type: string;
-  coordinates: number[];
-  address: string[];
-  hours: Prisma.JsonValue;
-};
+
+
+// Main function to fetch listings based on search parameters
+
 export type FinalListing = {
   id: string;
   title: string;
@@ -67,8 +25,8 @@ export type FinalListing = {
   harvestFeatures: boolean;
   projectedStock: number;
   harvestDates: string[];
-  createdAt: string;
-  location: Location;
+  createdAt: Date;
+  location: LocationEZH;
   keyWords: string[];
   imageSrc: string[];
   userId: string;
@@ -80,7 +38,6 @@ export type FinalListing = {
     SODT: number | null;
     name: string;
     role: UserRole;
-    //hours: JsonValue;
   };
 };
 export type FinalListing1 = {
@@ -90,8 +47,8 @@ export type FinalListing1 = {
   stock: number;
   rating: number[];
   quantityType: string | null;
-  createdAt: string;
-  location: Location;
+  createdAt: Date;
+  location: LocationEZH;
   keyWords: string[];
   imageSrc: string[];
   subCategory: string;
@@ -103,101 +60,8 @@ export type FinalListing1 = {
     role: UserRole;
   };
 };
-// Main function to fetch listings based on search parameters
-const getUserLocation = async (listing: Listing) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: listing.user.id,
-      },
-      select: {
-        location: { select: { [listing.location]: true } },
-      },
-    });
 
-    if (!user) {
-      return null;
-    }
-    if (!user.location) {
-      return null;
-    }
-    return user.location[listing.location];
-  } catch (error: any) {
-    throw new Error(error);
-  }
-};
-const getUserLocation1 = async (listing: Listing1) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: listing.user.id,
-      },
-      select: {
-        location: { select: { [listing.location]: true } },
-      },
-    });
 
-    if (!user) {
-      return null;
-    }
-    if (!user.location) {
-      return null;
-    }
-    return user.location[listing.location];
-  } catch (error: any) {
-    throw new Error(error);
-  }
-};
-const getUserLocation2 = async (listing: Listing2) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: listing.user.id,
-      },
-      select: {
-        location: { select: { [listing.location]: true } },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-    if (!user.location) {
-      return null;
-    }
-    return user.location[listing.location];
-  } catch (error: any) {
-    throw new Error(error);
-  }
-};
-function filterListingsByLocation(listings: FinalListing[]) {
-  return listings.filter(
-    (listing: FinalListing) =>
-      listing.location !== undefined && listing.location !== null
-  );
-}
-function filternullhours(listings: FinalListing[]) {
-  return listings.filter(
-    (listing: FinalListing) =>
-      listing.location.hours !== undefined &&
-      listing.location.hours !== null &&
-      !listing.review
-  );
-}
-function filternullhours1(listings: FinalListing1[]) {
-  return listings.filter(
-    (listing: FinalListing1) =>
-      listing.location.hours !== undefined &&
-      listing.location.hours !== null &&
-      !listing.review
-  );
-}
-function filterListingsByLocation1(listings: FinalListing1[]) {
-  return listings.filter(
-    (listing: FinalListing1) =>
-      listing.location !== undefined && listing.location !== null
-  );
-}
 export async function getListingsByIdsChat(listingIds: string[]) {
   try {
     const listings = await prisma.listing.findMany({
@@ -228,6 +92,8 @@ export async function getListingsByIdsChat(listingIds: string[]) {
     return [];
   }
 }
+
+// Main function to fetch listings based on search parameters
 const GetListingsMarket = async (
   params: IListingsParams,
   page: number,
@@ -244,7 +110,9 @@ const GetListingsMarket = async (
     if (cat) {
       query.category = cat;
     }
-    let listings: Listing1[] = [];
+    query.location = { isNot: null };
+
+    let listings: FinalListing1[] = [];
     const listingSelect = {
       id: true,
       title: true,
@@ -259,7 +127,20 @@ const GetListingsMarket = async (
       rating: true,
       stock: true,
       description: true,
-      location: true,
+      location: {
+        select: {
+          id: true,
+          userId: true,
+          type: true,
+          coordinates: true,
+          address: true,
+          role: true,
+          isDefault: true,
+          createdAt: true,
+          updatedAt: true,
+          hours: true,
+        },
+      },
       review: true,
       user: {
         select: {
@@ -272,20 +153,16 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-
+      console.log("entered case 1")
       listings = await prisma.listing.findMany({
         where: {
           user: {
             role: UserRole.COOP,
           },
-
           ...query,
-
           stock: s === "f" ? { lt: 1 } : { gt: 0 }, // Filter by stock availability
         },
         select: listingSelect,
-        //SODT: true,
-
         orderBy: {
           createdAt: "desc",
         },
@@ -297,6 +174,7 @@ const GetListingsMarket = async (
     ) {
       // Case 2: If the user is a cooperative, producer, or admin
       if (c === "t" && p === "t") {
+        console.log("entered case 2")
         // Fetch listings from coops and producers
         listings = await prisma.listing.findMany({
           where: {
@@ -315,6 +193,7 @@ const GetListingsMarket = async (
         });
       } else if (c === "t") {
         // Case 3: Fetch listings from cooperatives only
+        console.log("entered case 3")
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -329,6 +208,7 @@ const GetListingsMarket = async (
           },
         });
       } else if (p === "t") {
+        console.log("entered case 4")
         // Case 4: Fetch listings from producers only
         listings = await prisma.listing.findMany({
           where: {
@@ -345,6 +225,7 @@ const GetListingsMarket = async (
         });
       } else {
         // Case 5: Fetch all listings
+        console.log("entered case 5")
         listings = await prisma.listing.findMany({
           where: {
             ...query,
@@ -358,29 +239,13 @@ const GetListingsMarket = async (
       }
     }
 
-    const listerine = listings.map(async (listing) => {
-      const location = (await getUserLocation1(listing)) as unknown as Location;
-
-      return {
-        ...listing,
-        location,
-        createdAt: listing.createdAt.toISOString(),
-      };
-    });
     let Listings: FinalListing1[] = listings as unknown as FinalListing1[];
-    Listings = await Promise.all(listerine);
-    Listings = await Promise.all(filterListingsByLocation1(Listings));
-    Listings = await Promise.all(filternullhours1(Listings));
+    // Shuffle the listings
     function shuffle(array: any) {
       let currentIndex = array.length;
-
-      // While there remain elements to shuffle...
       while (currentIndex != 0) {
-        // Pick a remaining element...
         let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
-
-        // And swap it with the current element.
         [array[currentIndex], array[randomIndex]] = [
           array[randomIndex],
           array[currentIndex],
@@ -388,8 +253,8 @@ const GetListingsMarket = async (
       }
     }
     shuffle(Listings);
-    // If location parameters are provided, filter listings by distance
 
+    // If location parameters are provided, filter listings by distance
     if (lat && lng && radius) {
       const userLocation = {
         latitude: parseFloat(lat),
@@ -450,7 +315,6 @@ const GetListingsMarket = async (
         });
       }
       function showOnlyNumber(arr: FinalListing1[], targetLength: number) {
-        // First, filter the array to include only items with matching length
         const filteredArr = arr.filter(
           (item) => item.rating.length === targetLength
         );
@@ -504,6 +368,7 @@ const GetListingsMarket = async (
     const safeListings = paginatedListings.map((Listing) => {
       return {
         ...Listing,
+        createdAt: Listing.createdAt.toISOString(),
       };
     });
     return { listings: safeListings, totalItems };

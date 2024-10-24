@@ -11,6 +11,9 @@ import PlacesAutocomplete, {
 } from "react-places-autocomplete";
 import { LiaMapMarkedSolid } from "react-icons/lia";
 import { UserRole } from "@prisma/client";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { PiMapPinLineThin } from "react-icons/pi";
+import OnboardContainer from "./onboard.container";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -142,15 +145,14 @@ const StepThree: React.FC<Props> = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div className="text-center pt-[2%] sm:pt-[5%] text-4xl">
-        Location Setup
-      </div>
-      <h1 className={`${outfit.className} text-xl sm:text-2xl mb-5`}>
-        Add your First Selling Location. Users can have up to Three Selling
-        Locations
-      </h1>
-
+    <OnboardContainer
+      title="Add your First Selling Location"
+      descriptions={[
+        "Sellers can have up to three selling locations",
+        "You may change the address at any time",
+        "This is how buyers will see your location on the map",
+      ]}
+    >
       <div className={`relative touch-none`}>
         <div className="absolute z w-full px-2 top-5">
           <PlacesAutocomplete
@@ -161,10 +163,18 @@ const StepThree: React.FC<Props> = ({
             {({ getInputProps, suggestions, getSuggestionItemProps }) => (
               <div>
                 <div style={{ position: "relative" }}>
-                  <LiaMapMarkedSolid
-                    className="absolute top-3 left-3"
-                    size="3rem"
-                  />
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth="0"
+                    viewBox="0 0 256 256"
+                    height="40px"
+                    width="40px"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute left-3 bottom-1/2 transform translate-y-1/2"
+                  >
+                    <path d="M124,99.77V176a4,4,0,0,0,8,0V99.77a36,36,0,1,0-8,0ZM128,36a28,28,0,1,1-28,28A28,28,0,0,1,128,36ZM236,176c0,12.46-11.73,23.83-33,32-20.09,7.73-46.72,12-75,12s-54.89-4.25-75-12c-21.29-8.19-33-19.56-33-32,0-18.55,25.81-34.22,67.37-40.88A4,4,0,1,1,88.63,143C52.93,148.74,28,162.3,28,176c0,17.39,40.18,36,100,36s100-18.61,100-36c0-13.7-24.93-27.26-60.63-33a4,4,0,1,1,1.26-7.89C210.19,141.78,236,157.45,236,176Z"></path>
+                  </svg>
                   <input
                     {...getInputProps({
                       placeholder: "Search by address, city, zip, and state",
@@ -225,11 +235,28 @@ const StepThree: React.FC<Props> = ({
           mapContainerClassName="sm:h-[550px] sm:w-[400px] h-[400px] w-[300px] rounded-lg shadow-lg"
           options={mapOptions}
         >
-          <MarkerF position={currentCenter} />
+          {currentCenter.lat !== 38 && (
+            <MarkerF
+              position={currentCenter}
+              icon={{
+                url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+                  customSvgMarker
+                )}`,
+                scaledSize: new google.maps.Size(200, 200),
+                anchor: new google.maps.Point(100, 100),
+              }}
+            />
+          )}
         </GoogleMap>
       </div>
-    </div>
+    </OnboardContainer>
   );
 };
 
 export default StepThree;
+const customSvgMarker = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="48" fill="rgba(42, 157, 244, 0.3)" stroke="rgba(42, 157, 244, 0.6)" stroke-width="2" />
+
+</svg>
+`;

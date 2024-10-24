@@ -15,13 +15,11 @@ import {
   GiCarrot,
   GiCoconuts,
   GiHerbsBundle,
-  GiBeanstalk,
   GiWoodCabin,
   GiCupcake,
   GiHoneypot,
   GiSlicedBread,
   GiWaterBottle,
-  GiAxeSword,
   GiCampfire,
   GiCookingPot,
   GiMilkCarton,
@@ -31,7 +29,6 @@ import {
   GiPig,
   GiFishCorpse,
   GiButterToast,
-  GiCheeseWedge,
 } from "react-icons/gi";
 import { FaTools } from "react-icons/fa";
 import { IoFastFoodOutline } from "react-icons/io5";
