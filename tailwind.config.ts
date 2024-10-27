@@ -20,7 +20,11 @@ const config = {
     },
     extend: {
       screens: {
-        "md-custom": "700px",
+        'h-[600px]': { 'raw': '(min-height: 600px)' },
+        'h-[700px]': { 'raw': '(min-height: 700px)' },
+        'h-[800px]': { 'raw': '(min-height: 800px)' },
+        'h-[900px]': { 'raw': '(min-height: 900px)' },
+        'h-[1000px]': { 'raw': '(min-height: 1000px)' },
       },
       colors: {
         border: "hsl(var(--border))",
@@ -71,10 +75,16 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fadeIn": {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",        
+        "fadeIn": 'fadeIn 0.5s ease-in-out forwards',
+
       },
     },
   },

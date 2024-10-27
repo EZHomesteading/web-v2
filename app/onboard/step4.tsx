@@ -7,7 +7,7 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import OnboardContainer from "./onboard.container";
+import OnboardContainer, { zillaFont } from "./onboard.container";
 
 interface StepFiveProps {
   location?: LocationObj;
@@ -119,7 +119,7 @@ const StepFour: React.FC<StepFiveProps> = ({
                   key={idx}
                   className={` ${
                     selectedOption.includes(option.label) && " text-white"
-                  } mt-2 text-sm text-neutral-600 `}
+                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
                 >
                   {line}
                 </p>

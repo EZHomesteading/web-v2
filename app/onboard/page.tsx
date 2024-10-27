@@ -4,6 +4,10 @@ import { Viewport } from "next";
 import authCache from "@/auth-cache";
 import Stripe from "stripe";
 import { getLocationByIndex, getUserLocations } from "@/actions/getUser";
+import Link from "next/link";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "../components/outfit.font";
+import { LocationEZH } from "next-auth";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
@@ -23,66 +27,63 @@ const Page = async () => {
   if (!apiKey) {
     return;
   }
-  // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  //   apiVersion: "2023-10-16",
-  // });
-  // async function checkPayoutCapability(stripeAccountId: string) {
-  //   try {
-  //     const account = await stripe.accounts.retrieve(stripeAccountId);
-  //     return account.capabilities?.transfers === "active";
-  //   } catch (error) {
-  //     console.error("Error checking payout capability:", error);
-  //     return null;
-  //   }
-  // }
-
-  // let stripeAccountId = session?.user.stripeAccountId;
-  // let canReceivePayouts = false;
-
-  // if (
-  //   !stripeAccountId &&
-  //   (session?.user.role === "PRODUCER" || session?.user.role === "COOP")
-  // ) {
-  //   try {
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ userId: session?.user?.id }),
-  //       }
-  //     );
-  //     if (!response.ok) {
-  //       throw new Error("Failed to create Stripe account");
-  //     }
-  //     const data = await response.json();
-  //     stripeAccountId = data.stripeAccountId;
-  //   } catch (error) {
-  //     console.error("Error creating Stripe account:", error);
-  //   }
-  // }
-
-  // if (stripeAccountId) {
-  //   canReceivePayouts = (await checkPayoutCapability(stripeAccountId)) || false;
-  // }
-
+  const getLocationTitle = (location: LocationEZH, index: number) => {
+    if (location?.isDefault) return "Edit Default Location";
+    if (index === 1) return "Edit Second Location";
+    if (index === 2) return "Edit Third Location";
+    return "Edit Other Location";
+  };
   let index = 1;
 
+  const sortedLocations = locations
+    ? [...locations].sort((a, b) => {
+        if (a.isDefault) return -1;
+        if (b.isDefault) return 1;
+        return 0;
+      })
+    : [];
+
   return (
-    <div>
-      {session?.user && (
-        <Onboarding
-          locations={locations}
-          index={index}
-          user={session?.user}
-          apiKey={apiKey}
-          // canReceivePayouts={canReceivePayouts}
-          // session={session}
-        />
+    <>
+      {locations && Array.isArray(locations) && locations?.length !== 1000 ? (
+        // > 3
+        <>
+          {session?.user && (
+            <Onboarding
+              locations={sortedLocations}
+              index={index}
+              user={session?.user}
+              apiKey={apiKey}
+            />
+          )}
+        </>
+      ) : (
+        <div
+          className={`${outfitFont.className} flex flex-col items-center justify-center h-screen gap-y-2`}
+        >
+          You have reached the maximum of 3 selling locations
+          <Link
+            key={index}
+            className={` border-[1px] font-semibold rounded-xl w-[300px] h-[100px] shadow-md flex flex-col items-center justify-center`}
+            href={`/`}
+          >
+            Go to Home
+          </Link>
+          {sortedLocations?.map((location, index) => (
+            <Link
+              key={index}
+              className={` border-[1px] rounded-xl w-[300px] h-[100px] shadow-md flex flex-col items-center justify-center`}
+              href={`/selling/availability-calendar/${location.id}`}
+            >
+              <span className="font-semibold">
+                {getLocationTitle(location, index)}
+              </span>
+              {location?.address[0]}
+            </Link>
+          ))}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
