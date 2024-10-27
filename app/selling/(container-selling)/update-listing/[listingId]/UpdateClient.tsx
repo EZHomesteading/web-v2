@@ -36,7 +36,7 @@ import {
 } from "@/app/components/ui/select";
 import UnitSelect, {
   QuantityTypeValue,
-} from "@/app/create/components/UnitSelect";
+} from "@/app/create/[locationId]/components/UnitSelect";
 import { HoverButton } from "@/app/components/ui/hoverButton";
 type Month =
   | "Jan"

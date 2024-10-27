@@ -5,7 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import Map from "@/app/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LocationSelector,
   o,
@@ -51,6 +51,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   onPanelClose,
   locations,
 }) => {
+  const router = useRouter();
   const [address, setAddress] = useState({
     street: "",
     city: "",
@@ -419,6 +420,15 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               </AlertDialogContent>
             </AlertDialog>
           )}
+          <Button
+            className="w-full px-5 py-7 mt-48 text-2xl font-extralight bg-inherit shadow-md select-none"
+            variant={`outline`}
+            onClick={() => {
+              router.push(`/create?id=${location?.id}`);
+            }}
+          >
+            Create Listing using this Adress
+          </Button>
         </div>
       </div>
     ),

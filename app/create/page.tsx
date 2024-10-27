@@ -4,6 +4,7 @@ import type { Viewport } from "next";
 import CreatePopup from "../(home)/info-modals/create-info-modal";
 import Stripe from "stripe";
 import { getUserLocations } from "@/actions/getUser";
+import { Location } from "@prisma/client";
 export const viewport: Viewport = {
   themeColor: "rgb(255,255,255)",
 };
@@ -15,7 +16,6 @@ const Page = async ({
 }) => {
   const user = await currentUser();
   const id = searchParams?.id;
-  console.log("id in search params on create", id);
   let index = 1;
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -38,15 +38,23 @@ const Page = async ({
   }
 
   const locations = await getUserLocations({ userId: user?.id });
-  const paramsLocation = locations?.find((loc) => loc.id === id);
+  let defaultId = "";
+  if (searchParams) {
+    let defaultLocation = locations?.find((loc) => loc.id === searchParams.id);
+    if (defaultLocation) {
+      defaultId = defaultLocation.id;
+    }
+  }
   return (
     <div>
       {user ? (
         <>
           <CreateClient
+            defaultId={defaultId}
             canReceivePayouts={canReceivePayouts}
             index={index}
             user={user}
+            locations={locations}
           />
           <CreatePopup />
         </>
@@ -56,5 +64,4 @@ const Page = async ({
     </div>
   );
 };
-
 export default Page;

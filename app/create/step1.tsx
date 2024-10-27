@@ -9,8 +9,8 @@ import {
 } from "react-icons/gi";
 import { LuBeef } from "react-icons/lu";
 import { CiApple, CiHome } from "react-icons/ci";
-import { Button } from "../components/ui/button";
-import { Label } from "../components/ui/label";
+import { Button } from "@/app/components/ui/button";
+import { Label } from "@/app/components/ui/label";
 import {
   GiCarrot,
   GiCoconuts,
@@ -260,7 +260,7 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   subCategory,
   setSubCategory,
 }) => {
-  if (step !== 1) return null;
+  if (step !== 2) return null;
 
   return (
     <div className="flex justify-center items-start min-h-screen w-full">

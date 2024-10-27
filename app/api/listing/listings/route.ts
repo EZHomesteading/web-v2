@@ -1,110 +1,134 @@
-//creates listing
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  const user = await currentUser();
-  if (!user) {
-    return NextResponse.error();
-  }
+  try {
+    const user = await currentUser();
 
-  const body = await request.json();
-
-  const {
-    keyWords,
-    title,
-    SODT,
-    description,
-    imageSrc,
-    category,
-    quantityType,
-    stock,
-    shelfLife,
-    minOrder,
-    location,
-    harvestDates,
-    projectedStock,
-    harvestFeatures,
-    price,
-    subCategory,
-    rating,
-    review,
-    reports,
-  } = body;
-
-  Object.keys(body).forEach((value: any) => {
-    if (!body[value]) {
-      NextResponse.error();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-  });
-  if (review !== null && harvestFeatures !== true) {
-    const listing = await prisma.listing.create({
-      data: {
-        keyWords,
-        title,
-        description,
-        SODT,
-        imageSrc,
-        category,
-        quantityType,
-        stock,
-        shelfLife,
-        subCategory,
-        price,
-        minOrder,
-        location,
-        rating,
-        review,
-        reports,
-        userId: user.id!,
+
+    const body = await request.json();
+
+    // Validate locationId first since it's required
+    if (!body.locationId) {
+      return NextResponse.json(
+        { error: "Location is required" },
+        { status: 400 }
+      );
+    }
+
+    const {
+      keyWords,
+      title,
+      SODT,
+      description,
+      imageSrc,
+      category,
+      quantityType,
+      stock,
+      shelfLife,
+      minOrder,
+      harvestDates,
+      projectedStock,
+      harvestFeatures,
+      price,
+      subCategory,
+      rating,
+      review,
+      reports,
+      locationId,
+    } = body;
+
+    // Validate required fields
+    const requiredFields = [
+      "title",
+      "category",
+      "stock",
+      "price",
+      "description",
+      "shelfLife",
+      "subCategory",
+      "minOrder",
+      "locationId",
+    ];
+
+    for (const field of requiredFields) {
+      if (!body[field]) {
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Create listing data
+    const listingData = {
+      keyWords,
+      title,
+      SODT,
+      description,
+      imageSrc,
+      category,
+      quantityType,
+      stock,
+      shelfLife,
+      minOrder,
+      price,
+      subCategory,
+      rating,
+      // Connect both user and location using Prisma relations
+      user: {
+        connect: {
+          id: user.id,
+        },
+      },
+      location: {
+        connect: {
+          id: locationId,
+        },
+      },
+      // Optional fields
+      ...(review !== undefined && { review }),
+      ...(reports !== undefined && { reports }),
+      ...(harvestDates?.length > 0 && { harvestDates }),
+      ...(projectedStock !== undefined && { projectedStock }),
+      ...(harvestFeatures !== undefined && { harvestFeatures }),
+    };
+
+    // Verify the location exists before creating the listing
+    const locationExists = await prisma.location.findUnique({
+      where: {
+        id: locationId,
       },
     });
-    return NextResponse.json(listing);
-  } else if (harvestFeatures !== true) {
+
+    if (!locationExists) {
+      return NextResponse.json(
+        { error: "Invalid location ID" },
+        { status: 400 }
+      );
+    }
+
     const listing = await prisma.listing.create({
-      data: {
-        keyWords,
-        title,
-        description,
-        SODT,
-        imageSrc,
-        category,
-        quantityType,
-        stock,
-        shelfLife,
-        subCategory,
-        price,
-        minOrder,
-        location,
-        rating,
-        userId: user.id!,
+      data: listingData,
+      include: {
+        user: true,
+        location: true,
       },
     });
+
     return NextResponse.json(listing);
-  } else {
-    const listing = await prisma.listing.create({
-      data: {
-        keyWords,
-        title,
-        description,
-        SODT,
-        imageSrc,
-        category,
-        quantityType,
-        harvestDates,
-        projectedStock,
-        harvestFeatures,
-        stock,
-        shelfLife,
-        subCategory,
-        price,
-        minOrder,
-        location,
-        rating,
-        userId: user.id!,
+  } catch (error) {
+    console.error("Error creating listing:", error);
+    return NextResponse.json(
+      {
+        error: "Error creating listing",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-    });
-    return NextResponse.json(listing);
+      { status: 500 }
+    );
   }
 }
