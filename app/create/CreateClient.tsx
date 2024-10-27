@@ -30,13 +30,20 @@ const outfit = Outfit({
 });
 
 interface Props {
+  defaultId: string;
   locations: Location[] | null;
   canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
 }
 
-const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
+const CreateClient = ({
+  user,
+  index,
+  canReceivePayouts,
+  locations,
+  defaultId,
+}: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -77,7 +84,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
       sodt: usersodt,
       category: "",
       subCategory: "",
-      location: null,
+      locationId: "",
       stock: "",
       projectedStock: "",
       quantityType: "",
@@ -98,6 +105,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
     setImageSrc([]); // Clear the imageSrc array
     setValue("imageSrc", []); // Clear the imageSrc in the form state
   };
+  console.log(locations?.length);
   const handleCheckboxChange = (checked: boolean, index: number) => {
     setRating((prevRating) => {
       let newRating = [...prevRating];
@@ -143,6 +151,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
     });
   };
   const [review, setReview] = useState(false);
+  const formLocation = watch("locationId");
   const subcat = watch("subCategory");
   const formTitle = watch("title");
   const shelfLifeDays = watch("shelfLifeDays");
@@ -238,7 +247,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
           : data.quantityType,
-      location: data.location || 0,
+      locationId: data.locationId,
       review: review === true ? true : null,
       reports: review === true ? 1 : null,
     };
@@ -254,7 +263,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
       [
         "category",
         "subCategory",
-        "location",
+        "locationId",
         "stock",
         "quantityType",
         "imageSrc",
@@ -294,12 +303,9 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
         (user.hasPickedRole === true || user.hasPickedRole === null) &&
         locations &&
         locations[0]?.address &&
-        locations[0]?.hours &&
-        user?.image &&
-        user?.bio &&
-        canReceivePayouts === true
+        locations[0]?.hours
       ) {
-        router.push("/dashboard/my-store");
+        router.push("/selling/my-store");
       } else {
         router.push("/onboard");
       }
@@ -325,20 +331,65 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
     });
   };
 
-  const checkField = (condition: boolean, errorMessage: string): boolean => {
+  const checkField = (
+    condition: boolean | undefined,
+    errorMessage: string
+  ): boolean => {
     if (condition) {
       showError(errorMessage);
       return true;
     }
     return false;
   };
+  useEffect(() => {
+    if (defaultId != "") {
+      locations?.map((location, index) => {
+        if (location.id === defaultId) {
+          console.log("Found default location at index:", index);
+
+          switch (index) {
+            case 0:
+              setClicked(true);
+              setClicked1(false);
+              setClicked2(false);
+              setValue("locationId", defaultId);
+              break;
+            case 1:
+              setClicked(false);
+              setClicked1(true);
+              setClicked2(false);
+              setValue("locationId", defaultId);
+              break;
+            case 2:
+              setClicked(false);
+              setClicked1(false);
+              setClicked2(true);
+              setValue("locationId", defaultId);
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    }
+  }, []);
   const handleNext = async () => {
     const errors = {
       1: [
+        {
+          condition: () => locations?.[0] === null,
+          message: "Please Set a default location in your store settings",
+        },
+        {
+          condition: () => formLocation === null || "" || undefined,
+          message: "Please Set a location",
+        },
+      ],
+      2: [
         { condition: () => category === "", message: "Set a category!" },
         { condition: () => subCategory === "", message: "Set a Subcategory!" },
       ],
-      2: [
+      3: [
         {
           condition: () => title === "",
           message: "Let us know what produce you have!",
@@ -348,7 +399,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
           message: "Please write a brief description",
         },
       ],
-      3: [
+      4: [
         {
           condition: () => !quantityType,
           message: "Please enter a unit for your listing",
@@ -378,7 +429,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
           message: "Please enter a minimum order greater than 0",
         },
       ],
-      4: [
+      5: [
         {
           condition: () =>
             shelfLifeDays <= 0 &&
@@ -388,22 +439,16 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
           message: "Shelf life must be at least 1 day",
         },
       ],
-      5: [
+      6: [
         {
           condition: () => !certificationChecked,
           message: "You must certify that the above information is accurate.",
         },
       ],
-      6: [
+      7: [
         {
           condition: () => Array.isArray(imageSrc) && imageSrc.length === 0,
           message: "Please upload at least one photo",
-        },
-      ],
-      7: [
-        {
-          condition: () => locations?.[0] === null,
-          message: "Please Set a default location in your store settings",
         },
       ],
     };
@@ -495,11 +540,11 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
       }
     }
   };
-  {
-    if (locations && locations[0] === null) {
-      setValue("location", 0);
-    }
-  }
+  // {
+  //   if (locations && locations[0] === null) {
+  //     setValue("locationId", null);
+  //   }
+  // }
   function filterAndAppendWords(inputString: string) {
     // List of common words to filter out
     const commonWords = new Set([
@@ -665,7 +710,15 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
           Next
         </Button>
       )}
-      {step === 1 && category && (
+      {step === 1 && (
+        <Button
+          onClick={handleNext}
+          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
+        >
+          Next
+        </Button>
+      )}
+      {step === 2 && category && (
         <Button
           onClick={handleNext}
           className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
@@ -718,7 +771,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
               </Card>
             ) : (
               <div className="flex flex-col justify-evenly gap-2 pt-4 w-full max-w-md">
-                {locations[0] !== null && (
+                {locations.length >= 1 && (
                   <Card
                     className={
                       clicked
@@ -730,7 +783,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                         setClicked(true);
                         setClicked1(false);
                         setClicked2(false);
-                        setValue("location", 0);
+                        setValue("locationId", locations[0].id);
                       }
                     }}
                   >
@@ -753,7 +806,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                     </CardContent>
                   </Card>
                 )}
-                {locations[1] !== null && (
+                {locations.length >= 2 && (
                   <Card
                     className={
                       clicked1
@@ -765,7 +818,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                         setClicked1(true);
                         setClicked(false);
                         setClicked2(false);
-                        setValue("location", 1);
+                        setValue("locationId", locations[1].id);
                       }
                     }}
                   >
@@ -786,7 +839,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                     </CardContent>
                   </Card>
                 )}
-                {locations[2] !== null && (
+                {locations.length === 3 && (
                   <Card
                     className={
                       clicked2
@@ -798,7 +851,7 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                         setClicked2(true);
                         setClicked1(false);
                         setClicked(false);
-                        setValue("location", 2);
+                        setValue("locationId", locations[2].id);
                       }
                     }}
                   >
@@ -814,6 +867,31 @@ const CreateClient = ({ user, index, canReceivePayouts, locations }: Props) => {
                               <li>Full Address not available</li>
                             )}
                           </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                {locations.length < 3 && (
+                  <Card
+                    className={
+                      clicked2
+                        ? "bg-black text-white shadow-sm"
+                        : "shadow-sm hover:cursor-pointer"
+                    }
+                    onClick={() => {
+                      router.push("/onboard");
+                    }}
+                  >
+                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                      <div className="text-start">
+                        <div className="text-xl ">
+                          Create a{" "}
+                          {locations.length === 1
+                            ? "Second Location?"
+                            : locations.length === 2
+                            ? "Third Location?"
+                            : "Location"}{" "}
                         </div>
                       </div>
                     </CardContent>

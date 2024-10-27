@@ -345,7 +345,7 @@ const StepNine: React.FC<StepSevenProps> = ({
             Set Vacation days on Full Calendar
           </button>
           <button
-            onClick={() => router.push(`/create`)}
+            onClick={() => router.push(`/create?id=${locationId}`)}
             className="px-4 py-2 bg-green-500  text-white rounded hover:bg-green-600"
           >
             Create a Listing

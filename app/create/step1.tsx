@@ -260,7 +260,7 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   subCategory,
   setSubCategory,
 }) => {
-  if (step !== 1) return null;
+  if (step !== 2) return null;
 
   return (
     <div className="flex justify-center items-start min-h-screen w-full">
