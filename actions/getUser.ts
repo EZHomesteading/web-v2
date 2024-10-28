@@ -57,7 +57,7 @@ const getLocationByIndex = async ({
 };
 interface VendorLocation {
     id:string
-    coordinates:{lat:number, lng:number}
+    coordinates:number[]
 }
 
 interface GetVendorsParams {

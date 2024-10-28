@@ -21,15 +21,12 @@ import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
 
 interface MapUser {
-  coordinates: { lat: number; lng: number };
+  coordinates: number[];
   id: string;
 }
 
 interface Info {
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  coordinates: number[];
   id: string;
 }
 
@@ -141,8 +138,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     ?.map((coop: MapUser) => {
       return {
         coordinates: {
-          lat: coop.coordinates.lat,
-          lng: coop.coordinates.lng,
+          lat: coop.coordinates[1],
+          lng: coop.coordinates[0],
         },
         id: coop.id,
       };
@@ -153,8 +150,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     ?.map((producer: MapUser) => {
       return {
         coordinates: {
-          lat: producer.coordinates.lat,
-          lng: producer.coordinates.lng,
+          lat: producer.coordinates[1],
+          lng: producer.coordinates[0],
         },
         id: producer.id,
       };
@@ -318,8 +315,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
 
     const filteredCoops = coopInfo.filter((coop: Info) => {
       const coopLatLng = new google.maps.LatLng(
-        coop.coordinates.lat,
-        coop.coordinates.lng
+        coop.coordinates[1],
+        coop.coordinates[0]
       );
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
@@ -327,8 +324,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
 
     const filteredProducers = coopInfo.filter((producer: Info) => {
       const coopLatLng = new google.maps.LatLng(
-        producer.coordinates.lat,
-        producer.coordinates.lng
+        producer.coordinates[1],
+        producer.coordinates[0]
       );
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
@@ -342,8 +339,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
   const resetMap = () => {
     handleCenterChanged();
     handleZoomChanged();
-    setFilteredCoops(coops);
-    setFilteredProducers(producers);
+    setFilteredCoops(coopInfo);
+    setFilteredProducers(producerInfo);
     setShowCoops(true);
     setShowProducers(user?.role === UserRole.COOP ? true : false);
     setDrawnShape(null);
