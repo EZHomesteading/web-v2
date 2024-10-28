@@ -56,49 +56,34 @@ const getLocationByIndex = async ({
   }
 };
 interface VendorLocation {
-  id: string;
-  location: number[];
+    id:string
+    coordinates:{lat:number, lng:number}
+    user:{id:string}
 }
 
 interface GetVendorsParams {
   role: UserRole;
 }
-const getVendors = async ({
+const getVendorLocsMap = async ({
   role,
 }: GetVendorsParams): Promise<VendorLocation[]> => {
   const session = await authCache();
   try {
-    const users = await prisma.user.findMany({
+    const vendorLocs = await prisma.location.findMany({
       where: {
         role: role,
-        NOT: session?.user?.email ? { email: session.user.email } : {},
       },
-      include: {
-        locations: {
-          where: { isDefault: true },
-          select: {
-            coordinates: true,
-          },
-          take: 1,
-        },
-      },
+      select:{
+        id:true,
+        coordinates:true,
+        user:{
+          select:{
+            id:true
+          }
+        }
+      }
     });
-
-    const filteredUsers = users
-      .filter(
-        (
-          user
-        ): user is typeof user & { locations: [{ coordinates: number[] }] } =>
-          user.locations.length > 0 &&
-          Array.isArray(user.locations[0].coordinates) &&
-          user.locations[0].coordinates.length === 2
-      )
-      .map((user) => ({
-        id: user.id,
-        location: user.locations[0].coordinates,
-      }));
-
-    return filteredUsers;
+    return vendorLocs;
   } catch (error) {
     console.error("Error fetching vendors:", error);
     return [];
@@ -832,7 +817,7 @@ const getRole = async (params: Params) => {
 
 export {
   getFavCardUser,
-  getVendors,
+  getVendorLocsMap,
   getUsers,
   getUserWithSellOrders,
   getUserWithOrders,

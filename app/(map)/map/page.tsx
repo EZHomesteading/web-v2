@@ -1,13 +1,10 @@
 //map routes server side page layout
-import { getVendors } from "@/actions/getUser";
+import { getVendorLocsMap, NavUser } from "@/actions/getUser";
 import authCache from "@/auth-cache";
 import Map from "@/app/(map)/map/map";
 import { UserRole } from "@prisma/client";
 import Container from "@/app/components/Container";
-import Logo from "@/app/components/navbar/Logo";
-import UserMenu from "@/app/components/navbar/UserMenu";
 import type { Viewport } from "next";
-import { navUser } from "@/next-auth";
 import MapPopup from "@/app/(home)/info-modals/map-info-modal";
 import Navbar from "@/app/components/navbar/Navbar";
 
@@ -19,15 +16,12 @@ const MapPage = async () => {
   const session = await authCache();
   const user = session?.user;
 
-  let producers: {
-    location: number[];
-    id: string;
-  }[] = [];
+  let producers: any = [];
 
-  let coops = await getVendors({ role: UserRole.COOP });
+  let coops = await getVendorLocsMap({ role: UserRole.COOP });
   // Fetch producers only if the user has a role of PRODUCER or COOP
   if (user?.role === UserRole.PRODUCER || user?.role === UserRole.COOP) {
-    producers = await getVendors({ role: UserRole.PRODUCER });
+    producers = await getVendorLocsMap({ role: UserRole.PRODUCER });
   }
   const defaultLocation = { lat: 44.58, lng: -103.46 };
   const initialLocation = session?.user.location
@@ -43,7 +37,7 @@ const MapPage = async () => {
     <div className="h-sreen overflow-hidden touch-none">
       <div className="relative w-full z-10 shadow-sm">
         <Container>
-          <Navbar user={user as unknown as navUser} />
+          <Navbar user={user as unknown as NavUser} />
         </Container>
       </div>
       <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
@@ -52,7 +46,7 @@ const MapPage = async () => {
           coops={coops}
           producers={producers}
           mk={map_api_key}
-          userRole={session?.user.role}
+          user={user}
         />
       </div>
       <MapPopup />

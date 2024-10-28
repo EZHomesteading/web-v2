@@ -17,13 +17,16 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/app/components/ui/switch";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
+import { UserInfo } from "next-auth";
+import { UserRole } from "@prisma/client";
 
 interface MapUser {
-  location: number[];
+  coordinates: { lat: number; lng: number };
   id: string;
+  user: {
+    id: string;
+  };
 }
-[];
 
 interface Info {
   coordinates: {
@@ -43,16 +46,10 @@ interface MapProps {
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
-  userRole: string | undefined;
+  user?: UserInfo;
 }
 const libraries: Libraries = ["drawing", "geometry"];
-const VendorsMap = ({
-  coops,
-  producers,
-  coordinates,
-  mk,
-  userRole,
-}: MapProps) => {
+const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
   const [currentCenter, setCurrentCenter] = useState(coordinates);
   const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
@@ -99,7 +96,7 @@ const VendorsMap = ({
   ) => {
     try {
       const response = await fetch(
-        `/api/useractions/user/marker-info?id=${id}`
+        `/api/useractions/user/marker-info?id=${user?.id}`
       );
       const markerData = await response.json();
       setSelectedMarker({
@@ -142,44 +139,45 @@ const VendorsMap = ({
       map.panTo(markerPosition);
     }
   }, [selectedMarker]);
-  const coopInfo = coops
-    ?.map((coop: MapUser) => {
-      const coordinates = coop.location;
-      return {
-        coordinates: {
-          lat: coordinates[1],
-          lng: coordinates[0],
-        },
-        id: coop.id,
-      };
-    })
-    .filter(Boolean);
-  const producerInfo = producers
-    ?.map((producer: MapUser) => {
-      return {
-        coordinates: {
-          lat: producer.location[1],
-          lng: producer.location[0],
-        },
-        id: producer.id,
-      };
-    })
-    .filter(Boolean);
+
+  // const coopInfo = coops
+  //   ?.map((coop: MapUser) => {
+  //     const coordinates = coop.location;
+  //     return {
+  //       coordinates: {
+  //         lat: coordinates[1],
+  //         lng: coordinates[0],
+  //       },
+  //       id: coop.id,
+  //     };
+  //   })
+  //   .filter(Boolean);
+
+  // const producerInfo = producers
+  //   ?.map((producer: MapUser) => {
+  //     return {
+  //       coordinates: {
+  //         lat: producer.location[1],
+  //         lng: producer.location[0],
+  //       },
+  //       id: producer.id,
+  //     };
+  //   })
+  //   .filter(Boolean);
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
   // State variables for drawing functionality
-  const [filteredCoops, setFilteredCoops] = useState(coopInfo);
-  const [filteredProducers, setFilteredProducers] = useState(producerInfo);
+  const [filteredCoops, setFilteredCoops] = useState(coops);
+  const [filteredProducers, setFilteredProducers] = useState(coops);
   const [showCoops, setShowCoops] = useState(true);
   const [showProducers, setShowProducers] = useState(
-    userRole === "COOP" ? true : false
+    user?.role === UserRole.CONSUMER ? true : false
   );
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
-  const user = useCurrentUser();
   useEffect(() => {
     const disableDefaultTouchBehavior = (event: TouchEvent) => {
       event.preventDefault();
@@ -322,7 +320,7 @@ const VendorsMap = ({
       paths: polygonPath,
     });
 
-    const filteredCoops = coopInfo.filter((coop: Info) => {
+    const filteredCoops = coops.filter((coop: Info) => {
       const coopLatLng = new google.maps.LatLng(
         coop.coordinates.lat,
         coop.coordinates.lng
@@ -330,7 +328,7 @@ const VendorsMap = ({
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
     });
-    const filteredProducers = producerInfo.filter((producer: Info) => {
+    const filteredProducers = producers.filter((producer: Info) => {
       const coopLatLng = new google.maps.LatLng(
         producer.coordinates.lat,
         producer.coordinates.lng
@@ -346,10 +344,10 @@ const VendorsMap = ({
   const resetMap = () => {
     handleCenterChanged();
     handleZoomChanged();
-    setFilteredCoops(coopInfo);
-    setFilteredProducers(producerInfo);
+    setFilteredCoops(coops);
+    setFilteredProducers(producers);
     setShowCoops(true);
-    setShowProducers(userRole === "COOP" ? true : false);
+    setShowProducers(user?.role === UserRole.COOP ? true : false);
     setDrawnShape(null);
   };
 
@@ -397,7 +395,7 @@ const VendorsMap = ({
         </PopoverContent>
       </Popover>
       <div>
-        {user && user.role !== "CONSUMER" && (
+        {user && user?.role !== "CONSUMER" && (
           <div className="absolute top-1 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center gap-x-2 text-xl  font-medium mb-2 whitespace-nowrap">
