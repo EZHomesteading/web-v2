@@ -30,7 +30,7 @@ const StepSeven: React.FC<StepSixProps> = ({
 }) => {
   const [timeSlots, setTimeSlots] = useState([{ open: 360, close: 1080 }]);
   const containerRef = useRef<HTMLDivElement>(null);
-
+  const [activeTab, setActiveTab] = useState<number>(0);
   const handleAddTimeSlot = () => {
     if (checkOverlap([timeSlots])) {
       toast.error(
@@ -69,18 +69,44 @@ const StepSeven: React.FC<StepSixProps> = ({
         behavior: "smooth",
       });
     }, 100);
+    setActiveTab(timeSlots.length);
   };
-  const getTitle = (index: number) => {
-    if (index === 0) return "First Hours Set";
-    if (index === 1) return "Second Hours Set";
-    if (index === 2) return "Fourth Hours Set";
-    return "You shouldn't be able to have this many hours sets";
-  };
+  const handleTabClick = (index: number) => setActiveTab(index);
+
   const handleDeleteSlot = (indexToDelete: number) => {
     setTimeSlots((prevSlots) =>
       prevSlots.filter((_, index) => index !== indexToDelete)
     );
+    if (activeTab === indexToDelete) setActiveTab(0);
   };
+
+  const getTabTitles = () => {
+    return timeSlots.map((_, index) => {
+      const suffix = index === 0 ? "st" : index === 1 ? "nd" : "rd";
+
+      return {
+        title: (
+          <>
+            {index === activeTab ? (
+              `${getTitle(activeTab)} Hours Set`
+            ) : (
+              <>
+                {index + 1}
+                <sup>{suffix}</sup>
+              </>
+            )}
+          </>
+        ),
+      };
+    });
+  };
+
+  const getTitle = (index: number) => {
+    if (index === 0) return "First";
+    else if (index === 1) return "Second";
+    else return "Third";
+  };
+
   const weekDays = [
     "Sunday",
     "Monday",
@@ -163,52 +189,65 @@ const StepSeven: React.FC<StepSixProps> = ({
           "Fine-tune your daily schedule later in settings",
         ]}
       >
-        {timeSlots.map((slot, index) => (
-          <div
-            key={index}
-            className={`absolute left-1/2 transform -translate-x-1/2 bg-white 
+        {timeSlots.map((slot, index) =>
+          activeTab === index ? (
+            <div
+              key={index}
+              className={`absolute left-1/2 transform -translate-x-1/2 bg-white 
             ${index > 0 ? "animate-fadeIn" : ""}
             ${index === timeSlots.length - 1 ? "z-50" : "z-40"}`}
-          >
-            <div className="flex justify-between w-72 items-center border-b mb-3 text-2xl">
-              <div className=" font-semibold">{getTitle(index)}</div>
-              <div>
-                {index !== 0 && (
-                  <PiTrashThin
-                    className=" text-red-500 hover:cursor-pointer"
-                    onClick={() => handleDeleteSlot(index)}
-                  />
-                )}
-              </div>
-            </div>
-            <TimePicker
-              top={true}
-              value={convertMinutesToTimeString(slot.open)}
-              onChange={(time) => handleTimeSlotChange(index, true, time)}
-              isOpen={true}
-            />
-            <TimePicker
-              top={false}
-              value={convertMinutesToTimeString(slot.close)}
-              onChange={(time) => handleTimeSlotChange(index, false, time)}
-              isOpen={true}
-            />
-            {timeSlots.length >= 3 ? null : (
-              <Button
-                onClick={handleAddTimeSlot}
-                className="h-12 w-full bg-slate-500/60 border mt-2"
-              >
-                Add Another Set of Hours
-              </Button>
-            )}
-            <Button
-              onClick={handleSaveChanges}
-              className="bg-slate-500/60 h-12 my-2 w-full border mb-10"
             >
-              Save Changes
-            </Button>
-          </div>
-        ))}
+              <div className="flex justify-start items-center mb-3 text-lg relative">
+                {getTabTitles().map((tab, index) => (
+                  <button
+                    key={index}
+                    className={`px-3  ${
+                      activeTab === index ? "font-semibold border-b" : ""
+                    }`}
+                    onClick={() => handleTabClick(index)}
+                  >
+                    {tab.title}
+                  </button>
+                ))}
+
+                <div>
+                  {index !== 0 && (
+                    <PiTrashThin
+                      className=" text-red-500 hover:cursor-pointer absolute top-1/2 transform -translate-y-1/2 right-0"
+                      onClick={() => handleDeleteSlot(index)}
+                    />
+                  )}
+                </div>
+              </div>
+              <TimePicker
+                top={true}
+                value={convertMinutesToTimeString(slot.open)}
+                onChange={(time) => handleTimeSlotChange(index, true, time)}
+                isOpen={true}
+              />
+              <TimePicker
+                top={false}
+                value={convertMinutesToTimeString(slot.close)}
+                onChange={(time) => handleTimeSlotChange(index, false, time)}
+                isOpen={true}
+              />
+              {timeSlots.length >= 3 ? null : (
+                <Button
+                  onClick={handleAddTimeSlot}
+                  className="h-12 w-full bg-slate-500/60 border mt-2"
+                >
+                  Add Another Set of Hours
+                </Button>
+              )}
+              <Button
+                onClick={handleSaveChanges}
+                className="bg-slate-500/60 h-12 my-2 w-full border mb-10"
+              >
+                Save Changes
+              </Button>
+            </div>
+          ) : null
+        )}
       </OnboardContainer>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { LocationObj } from "next-auth";
+
 interface p {
   location?: LocationObj;
   handleDayClick?: any;
@@ -10,7 +11,9 @@ interface p {
   viewBoxWidth?: number;
   viewBoxHeight?: number;
   title?: string;
+  editHours?: boolean;
 }
+
 const WeelkyScheduleChart = ({
   location,
   title = "Weekly Schedule",
@@ -21,6 +24,7 @@ const WeelkyScheduleChart = ({
   barColor = "#fff",
   viewBoxHeight = 450,
   viewBoxWidth = 700,
+  editHours = true,
 }: p) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,10 +96,11 @@ const WeelkyScheduleChart = ({
         {/* gradient for inside */}
         <defs>
           <linearGradient id="bgGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="30%" stopColor="#fff" />
+            <stop offset="30%" stopColor="#f4f4f5" />{" "}
+            {/*#cbd5e1 #94a3b8 #64748b #475569 */}
             <stop offset="49%" stopColor="#d9b759" />
             <stop offset="51%" stopColor="#d9b759" />
-            <stop offset="85%" stopColor="#fff" />
+            <stop offset="80%" stopColor="#f4f4f5" /> {/**/}
           </linearGradient>
           <filter id="dropShadow" height="130%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
@@ -253,21 +258,21 @@ const WeelkyScheduleChart = ({
                   ry={6}
                   filter="url(#dropShadow)"
                   onClick={() => handleDayClick(dayName)}
-                  style={{ cursor: "pointer" }}
                 />
-
-                <rect
-                  x={padding + dayIndex * dayWidth + 4}
-                  y={startY}
-                  width={dayWidth - 8}
-                  height={height}
-                  fill="transparent"
-                  rx={6}
-                  ry={6}
-                  className="hover:fill-black hover:opacity-50"
-                  onClick={() => handleDayClick(dayName)}
-                  style={{ cursor: "pointer" }}
-                />
+                {editHours && (
+                  <rect
+                    x={padding + dayIndex * dayWidth + 4}
+                    y={startY}
+                    width={dayWidth - 8}
+                    height={height}
+                    fill="transparent"
+                    rx={6}
+                    ry={6}
+                    className="hover:fill-black hover:opacity-50"
+                    onClick={() => handleDayClick(dayName)}
+                    style={{ cursor: "pointer" }}
+                  />
+                )}
               </g>
             );
           });

@@ -31,7 +31,8 @@ interface Props {
 
 const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const router = useRouter();
-  const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
+  // locations?.length !== 0 ? 2 : index
+  const [step, setStep] = useState(7);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -385,15 +386,10 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           )}
           {step === 9 && (
             <StepNine
-              onDayChange={handleStep8Change}
               location={formData.location}
-              formData={formData.location?.address}
               updateFormData={updateFormDataMonths}
-              fulfillmentStyle={formData.fulfillmentStyle}
               selectedMonths={formData.selectedMonths}
               locationId={formData.locationId}
-              onFinish={handleFinish}
-              resetHoursData={resetHoursData}
             />
           )}
         </div>
@@ -402,7 +398,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           className={`fixed bottom-0 left-0 w-full bg-white lg:bg-transparent border-t lg:border-none z`}
         >
           <div className={`flex justify-between px-4 py-2 ${o.className} `}>
-            {step > 1 && (
+            {step > 1 && step < 9 && (
               <Button onClick={handlePrevious} variant="outline">
                 Back
               </Button>

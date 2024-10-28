@@ -44,7 +44,6 @@ interface MapProps {
 const libraries: Libraries = ["drawing", "geometry"];
 
 const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
-  console.log("coops sent to map", coops);
   const [currentCenter, setCurrentCenter] = useState(coordinates);
   const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
@@ -86,7 +85,6 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     minZoom: 4,
     gestureHandling: "greedy",
   };
-  console.log("selected marker", selectedMarker);
   const handleMarkerClick = async (
     coordinate: { lat: number; lng: number },
     id: string

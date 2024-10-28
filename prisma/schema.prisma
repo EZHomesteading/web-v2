@@ -18,17 +18,17 @@ enum OrderStatus {
   // Initial states
   PENDING // equivalent of our old order status = 0
   PAYMENT_FAILED
-  PAID // this will likely not get hit because the order is submitted and new time is proposed in same action, only here in case schema changes
 
   // Scheduling states
   BUYER_PROPOSED_TIME // order is placed with a pick up / delivery time
   BUYER_ACCEPTED_NEW_TIME // if the seller proposes a new time, buyer accepted it, this allows for the conversation to go back and forth
   BUYER_RESCHEDULED // if the seller proposes a new time, buyer rejects it, this allows for the conversation to go back and forth
-
   SELLER_ACCEPTED // if the seller accepts to buyers proposed time, this allows for the conversation to go back and forth
   SELLER_RESCHEDULED // if the buyer proposes a new time, seller rejects it, this allows for the conversation to go back and forth
 
-  // SCHEDULING_EXPIRED // If the back-and-forth goes on too long without agreement
+  // In the event they agree on a time, but the buyer never pays for it
+  SCHEDULE_CONFIRMED
+  SCHEDULE_CONFIRMED_PAID
 
   // Fulfillment states
   SELLER_PREPARING // seller is preparing the order for pickup 
@@ -322,6 +322,11 @@ type Fees {
   other    Float[]
 }
 
+type OrderLoc {
+  address     String[]
+  coordinates Float[]
+}
+
 model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
@@ -345,8 +350,10 @@ model Order {
   dispute        Dispute?
   buyer          User?          @relation(name: "buyer", fields: [userId], references: [id])
   seller         User?          @relation(name: "seller", fields: [sellerId], references: [id])
-  Location       Location?      @relation(fields: [locationId], references: [id])
-  locationId     String?        @db.ObjectId
+
+  purchaseLoc OrderLoc?
+  Location    Location? @relation(fields: [locationId], references: [id])
+  locationId  String?   @db.ObjectId
 }
 
 model Payment {
