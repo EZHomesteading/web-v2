@@ -2,13 +2,12 @@
 import prisma from "@/lib/prismadb";
 import haversine from "haversine-distance";
 import Fuse from "fuse.js";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 import { LocationEZH } from "@/next-auth";
 
 // Interface for defining the search parameters
 type sort = "htl" | "lth" | "1" | "2" | "3" | "4" | "5";
-
 
 // Main function to fetch listings based on search parameters
 
@@ -18,15 +17,15 @@ export type FinalListing = {
   price: number;
   stock: number;
   rating: number[];
-  reports: number;
+  reports: number | null;
   SODT: number | null;
   quantityType: string | null;
   shelfLife: number;
-  harvestFeatures: boolean;
-  projectedStock: number;
+  harvestFeatures: boolean | null;
+  projectedStock: number | null;
   harvestDates: string[];
   createdAt: Date;
-  location: LocationEZH;
+  location: Location | null;
   keyWords: string[];
   imageSrc: string[];
   userId: string;
@@ -60,7 +59,6 @@ export type FinalListing1 = {
     role: UserRole;
   };
 };
-
 
 export async function getListingsByIdsChat(listingIds: string[]) {
   try {
@@ -153,7 +151,7 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-      console.log("entered case 1")
+      console.log("entered case 1");
       listings = await prisma.listing.findMany({
         where: {
           user: {
@@ -174,7 +172,7 @@ const GetListingsMarket = async (
     ) {
       // Case 2: If the user is a cooperative, producer, or admin
       if (c === "t" && p === "t") {
-        console.log("entered case 2")
+        console.log("entered case 2");
         // Fetch listings from coops and producers
         listings = await prisma.listing.findMany({
           where: {
@@ -193,7 +191,7 @@ const GetListingsMarket = async (
         });
       } else if (c === "t") {
         // Case 3: Fetch listings from cooperatives only
-        console.log("entered case 3")
+        console.log("entered case 3");
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -208,7 +206,7 @@ const GetListingsMarket = async (
           },
         });
       } else if (p === "t") {
-        console.log("entered case 4")
+        console.log("entered case 4");
         // Case 4: Fetch listings from producers only
         listings = await prisma.listing.findMany({
           where: {
@@ -225,7 +223,7 @@ const GetListingsMarket = async (
         });
       } else {
         // Case 5: Fetch all listings
-        console.log("entered case 5")
+        console.log("entered case 5");
         listings = await prisma.listing.findMany({
           where: {
             ...query,
@@ -400,28 +398,29 @@ const GetListingsByIds = async (params: Params) => {
             SODT: true,
           },
         },
+        location: true,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
-    const safeListings = listings.map(async (listing) => {
-      const location = (await getUserLocation(listing)) as unknown as Location;
-      const Listing: FinalListing = listing as unknown as FinalListing;
-      Listing.location = location;
-      return {
-        ...Listing,
-        createdAt: listing.createdAt.toISOString(),
-      };
-    });
-    let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await Promise.all(
-      filterListingsByLocation(resolvedSafeListings)
-    );
-    resolvedSafeListings = await Promise.all(
-      filternullhours(resolvedSafeListings)
-    );
-    return { listings: resolvedSafeListings };
+    // const safeListings = listings.map(async (listing) => {
+    //   const location = (await getUserLocation(listing)) as unknown as Location;
+    //   const Listing: FinalListing = listing as unknown as FinalListing;
+    //   Listing.location = location;
+    //   return {
+    //     ...Listing,
+    //     createdAt: listing.createdAt.toISOString(),
+    //   };
+    // });
+    // let resolvedSafeListings = await Promise.all(safeListings);
+    // resolvedSafeListings = await Promise.all(
+    //   filterListingsByLocation(resolvedSafeListings)
+    // );
+    // resolvedSafeListings = await Promise.all(
+    //   filternullhours(resolvedSafeListings)
+    // );
+    return { listings: listings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -451,6 +450,7 @@ const getListingById = async (params: IParams) => {
             SODT: true,
           },
         },
+        location: true,
       },
     });
 
@@ -458,19 +458,20 @@ const getListingById = async (params: IParams) => {
       return null;
     }
 
-    const location = (await getUserLocation(listing)) as unknown as Location;
-    const Listing: FinalListing = listing as unknown as FinalListing;
-    return {
-      ...Listing,
-      location,
-      createdAt: listing.createdAt.toString(),
-      user: {
-        ...listing.user,
-        createdAt: listing.user.createdAt.toString(),
-        updatedAt: listing.user.updatedAt.toString(),
-        emailVerified: listing.user.emailVerified?.toString() || null,
-      },
-    };
+    // const location = (await getUserLocation(listing)) as unknown as Location;
+    // const Listing: FinalListing = listing as unknown as FinalListing;
+    // return {
+    //   ...Listing,
+    //   location,
+    //   createdAt: listing.createdAt.toString(),
+    //   user: {
+    //     ...listing.user,
+    //     createdAt: listing.user.createdAt.toString(),
+    //     updatedAt: listing.user.updatedAt.toString(),
+    //     emailVerified: listing.user.emailVerified?.toString() || null,
+    //   },
+    // };
+    return { listing: listing };
   } catch (error: any) {
     console.error(error);
     throw new Error(error);
@@ -496,9 +497,9 @@ const getListingByIdUpdate = async (params: IParams) => {
             role: true,
             url: true,
             SODT: true,
-            location: true,
           },
         },
+        location: true,
       },
     });
 
@@ -535,20 +536,23 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { id: true } } },
+      include: {
+        user: { select: { id: true, name: true, SODT: true, role: true } },
+        location: true,
+      },
     });
-    const safeListings = listings.map(async (listing: any) => {
-      const location = (await getUserLocation2(listing)) as unknown as Location;
-      const Listing = listing as unknown as FinalListing;
-      return {
-        ...Listing,
-        location,
-        createdAt: listing.createdAt.toISOString(),
-      };
-    });
-    let resolvedSafeListings = await Promise.all(safeListings);
+    // const safeListings = listings.map(async (listing: any) => {
+    //   const location = (await getUserLocation2(listing)) as unknown as Location;
+    //   const Listing = listing as unknown as FinalListing;
+    //   return {
+    //     ...Listing,
+    //     location,
+    //     createdAt: listing.createdAt.toISOString(),
+    //   };
+    // });
+    // let resolvedSafeListings = await Promise.all(safeListings);
 
-    return { listings: resolvedSafeListings };
+    return { listings: listings };
   } catch (error: any) {
     throw new Error(error);
   }
@@ -572,26 +576,26 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: { user: { select: { id: true } } },
+      include: { user: { select: { id: true } }, location: true },
     });
 
-    const safeListings = listings.map(async (listing: any) => {
-      const location = (await getUserLocation2(listing)) as unknown as Location;
-      const Listing: FinalListing = listing as unknown as FinalListing;
-      return {
-        ...Listing,
-        location,
-        createdAt: listing.createdAt.toISOString(),
-      };
-    });
-    let resolvedSafeListings = await Promise.all(safeListings);
-    resolvedSafeListings = await Promise.all(
-      filterListingsByLocation(resolvedSafeListings)
-    );
-    resolvedSafeListings = await Promise.all(
-      filternullhours(resolvedSafeListings)
-    );
-    return { listings: resolvedSafeListings };
+    // const safeListings = listings.map(async (listing: any) => {
+    //   const location = (await getUserLocation2(listing)) as unknown as Location;
+    //   const Listing: FinalListing = listing as unknown as FinalListing;
+    //   return {
+    //     ...Listing,
+    //     location,
+    //     createdAt: listing.createdAt.toISOString(),
+    //   };
+    // });
+    // let resolvedSafeListings = await Promise.all(safeListings);
+    // resolvedSafeListings = await Promise.all(
+    //   filterListingsByLocation(resolvedSafeListings)
+    // );
+    // resolvedSafeListings = await Promise.all(
+    //   filternullhours(resolvedSafeListings)
+    // );
+    return { listings: listings };
   } catch (error: any) {
     throw new Error(error);
   }

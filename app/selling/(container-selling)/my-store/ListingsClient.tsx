@@ -13,6 +13,7 @@ import { FinalListing } from "@/actions/getListings";
 import { UserInfo } from "@/next-auth";
 
 interface ListingsClientProps {
+  canReceivePayouts: boolean;
   listings: FinalListing[];
   user: UserInfo | null;
   orderQuantities: {
@@ -25,6 +26,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
   listings,
   user,
   orderQuantities,
+  canReceivePayouts,
 }) => {
   // Function to filter out listings with harvestFeatures set to true
   function filterOutHarvestFeatures(listings: FinalListing[]): FinalListing[] {
@@ -107,6 +109,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
       >
         {listingMap.map((listing: FinalListing) => (
           <ListingCard
+            canReceivePayouts={canReceivePayouts}
             orderQuantities={orderQuantities}
             review={listing.review}
             key={listing.id}
