@@ -58,7 +58,6 @@ const getLocationByIndex = async ({
 interface VendorLocation {
     id:string
     coordinates:{lat:number, lng:number}
-    user:{id:string}
 }
 
 interface GetVendorsParams {
@@ -76,11 +75,6 @@ const getVendorLocsMap = async ({
       select:{
         id:true,
         coordinates:true,
-        user:{
-          select:{
-            id:true
-          }
-        }
       }
     });
     return vendorLocs;
@@ -89,8 +83,6 @@ const getVendorLocsMap = async ({
     return [];
   }
 };
-
-export default getVendors;
 
 const getUsers = async () => {
   const session = await authCache();

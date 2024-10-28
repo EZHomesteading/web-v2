@@ -23,9 +23,6 @@ import { UserRole } from "@prisma/client";
 interface MapUser {
   coordinates: { lat: number; lng: number };
   id: string;
-  user: {
-    id: string;
-  };
 }
 
 interface Info {
@@ -96,18 +93,18 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
   ) => {
     try {
       const response = await fetch(
-        `/api/useractions/user/marker-info?id=${user?.id}`
+        `/api/useractions/user/marker-info?id=${id}`
       );
       const markerData = await response.json();
       setSelectedMarker({
         ...coordinate,
-        name: markerData.name,
+        name: markerData.user.name,
         images: markerData.listings.flatMap(
           (listing: { imageSrc: string[] }) => listing.imageSrc
         ),
-        image: markerData.image,
-        firstName: markerData.firstName,
-        id: markerData.id,
+        image: markerData.user.image,
+        firstName: markerData.user.firstName,
+        id: markerData.location.id,
         url: markerData.url,
       });
 
@@ -140,36 +137,35 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     }
   }, [selectedMarker]);
 
-  // const coopInfo = coops
-  //   ?.map((coop: MapUser) => {
-  //     const coordinates = coop.location;
-  //     return {
-  //       coordinates: {
-  //         lat: coordinates[1],
-  //         lng: coordinates[0],
-  //       },
-  //       id: coop.id,
-  //     };
-  //   })
-  //   .filter(Boolean);
+  const coopInfo = coops
+    ?.map((coop: MapUser) => {
+      return {
+        coordinates: {
+          lat: coop.coordinates.lat,
+          lng: coop.coordinates.lng,
+        },
+        id: coop.id,
+      };
+    })
+    .filter(Boolean);
 
-  // const producerInfo = producers
-  //   ?.map((producer: MapUser) => {
-  //     return {
-  //       coordinates: {
-  //         lat: producer.location[1],
-  //         lng: producer.location[0],
-  //       },
-  //       id: producer.id,
-  //     };
-  //   })
-  //   .filter(Boolean);
+  const producerInfo = producers
+    ?.map((producer: MapUser) => {
+      return {
+        coordinates: {
+          lat: producer.coordinates.lat,
+          lng: producer.coordinates.lng,
+        },
+        id: producer.id,
+      };
+    })
+    .filter(Boolean);
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
   // State variables for drawing functionality
-  const [filteredCoops, setFilteredCoops] = useState(coops);
-  const [filteredProducers, setFilteredProducers] = useState(coops);
+  const [filteredCoops, setFilteredCoops] = useState(coopInfo);
+  const [filteredProducers, setFilteredProducers] = useState(producerInfo);
   const [showCoops, setShowCoops] = useState(true);
   const [showProducers, setShowProducers] = useState(
     user?.role === UserRole.CONSUMER ? true : false
@@ -320,7 +316,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
       paths: polygonPath,
     });
 
-    const filteredCoops = coops.filter((coop: Info) => {
+    const filteredCoops = coopInfo.filter((coop: Info) => {
       const coopLatLng = new google.maps.LatLng(
         coop.coordinates.lat,
         coop.coordinates.lng
@@ -328,7 +324,8 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
     });
-    const filteredProducers = producers.filter((producer: Info) => {
+
+    const filteredProducers = coopInfo.filter((producer: Info) => {
       const coopLatLng = new google.maps.LatLng(
         producer.coordinates.lat,
         producer.coordinates.lng
@@ -336,6 +333,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
     });
+
     setFilteredCoops(filteredCoops);
     setFilteredProducers(filteredProducers);
     stopDrawing();
