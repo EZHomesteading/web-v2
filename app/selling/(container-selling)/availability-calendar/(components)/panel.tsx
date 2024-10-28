@@ -256,12 +256,54 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 locations={locations}
                 pathname={pathname}
               />
-              {showEditAddress ? (
-                <>
-                  <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
-                    {!enterManually ? (
-                      <>
-                        {/* <div className="relative">
+            </div>
+          </div>
+
+          {location?.id && (
+            <>
+              {!location?.isDefault && userId && (
+                <SetDefaultButton
+                  street={location?.address[0]}
+                  userId={userId}
+                  locationId={location?.id}
+                  className="w-full my-2 border py-8 justify-center text-center flex relative hover:bg-white bg-inherit text-black text-md sm:text-xl font-light"
+                  title="Set as Default Location"
+                />
+              )}
+
+              <Link href={`/create?id=${location?.id}`}>
+                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black hover:bg-white">
+                  <div className="text-md sm:text-xl font-light">
+                    Create Listing at This Location
+                  </div>
+                </Button>
+              </Link>
+            </>
+          )}
+
+          <div className="mt-5">
+            {(geoResult || location) && (
+              <Map
+                center={{
+                  lat: geoResult?.lat || location?.coordinates[1],
+                  lng: geoResult?.lng || location?.coordinates[0],
+                }}
+                mk={mk}
+                showSearchBar={false}
+                w={400}
+                h={350}
+                z={14}
+                maxZ={14}
+                minZ={14}
+              />
+            )}
+          </div>
+          {showEditAddress ? (
+            <>
+              <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
+                {!enterManually ? (
+                  <>
+                    {/* <div className="relative">
                           <LocationSearchInput
                             className="w-full rounded-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
                             apiKey={mk}
@@ -276,126 +318,102 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                             Address
                           </div>
                         </div> */}
-                        <Button
-                          className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
-                          onClick={handleSaveAddress}
-                        >
-                          Save Changes
-                        </Button>
-                        <Button
-                          className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
-                          variant={`outline`}
-                          onClick={() => {
-                            setEnterManually(true);
-                          }}
-                        >
-                          Enter Manually
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            className="w-full border-x border-t bg-inherit rounded-t-xl text-2xl px-3 pb-5 pt-7 font-bold"
-                            onChange={(e) =>
-                              handleAddressChange("street", e.target.value)
-                            }
-                          />
-                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                            Street
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                            onChange={(e) =>
-                              handleAddressChange("city", e.target.value)
-                            }
-                          />
-                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                            City
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                            onChange={(e) =>
-                              handleAddressChange("state", e.target.value)
-                            }
-                          />
-                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                            State
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
-                            onChange={(e) =>
-                              handleAddressChange("zip", e.target.value)
-                            }
-                          />
-                          <div className="absolute top-1 left-3 text-neutral-500 font-light">
-                            Zip Code
-                          </div>
-                        </div>
-                        <Button
-                          className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
-                          onClick={handleSaveAddress}
-                        >
-                          Save Changes
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                  <Button
-                    className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
-                    variant={`outline`}
-                    onClick={() => {
-                      setEnterManually(false);
-                      setShowEditAddress(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  className="w-full px-5 py-7 mt-2 text-md sm:text-xl font-light bg-inherit shadow-md select-none"
-                  variant={`outline`}
-                  onClick={() => {
-                    setShowEditAddress(true);
-                  }}
-                >
-                  Edit Address
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {location?.id && (
-            <>
-              {!location?.isDefault && userId && (
-                <SetDefaultButton
-                  street={location?.address[0]}
-                  userId={userId}
-                  locationId={location?.id}
-                  className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light"
-                  title="Set as Default Location"
-                />
-              )}
-
-              <Link href={`/create?id=${location?.id}`}>
-                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black">
-                  <div className="text-md sm:text-xl font-light">
-                    Create Listing at This Location
-                  </div>
-                </Button>
-              </Link>
+                    <Button
+                      className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
+                      onClick={handleSaveAddress}
+                    >
+                      Save Changes
+                    </Button>
+                    <Button
+                      className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
+                      variant={`outline`}
+                      onClick={() => {
+                        setEnterManually(true);
+                      }}
+                    >
+                      Enter Manually
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full border-x border-t bg-inherit rounded-t-xl text-2xl px-3 pb-5 pt-7 font-bold"
+                        onChange={(e) =>
+                          handleAddressChange("street", e.target.value)
+                        }
+                      />
+                      <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                        Street
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        onChange={(e) =>
+                          handleAddressChange("city", e.target.value)
+                        }
+                      />
+                      <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                        City
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        onChange={(e) =>
+                          handleAddressChange("state", e.target.value)
+                        }
+                      />
+                      <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                        State
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        onChange={(e) =>
+                          handleAddressChange("zip", e.target.value)
+                        }
+                      />
+                      <div className="absolute top-1 left-3 text-neutral-500 font-light">
+                        Zip Code
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
+                      onClick={handleSaveAddress}
+                    >
+                      Save Changes
+                    </Button>
+                  </>
+                )}
+              </div>
+              <Button
+                className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
+                variant={`outline`}
+                onClick={() => {
+                  setEnterManually(false);
+                  setShowEditAddress(false);
+                }}
+              >
+                Cancel
+              </Button>
             </>
+          ) : (
+            <Button
+              className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light"
+              variant={`outline`}
+              onClick={() => {
+                setShowEditAddress(true);
+              }}
+            >
+              Edit Address
+            </Button>
           )}
           {pathname !== "/selling/availability-calendar/new-location" && (
             <AlertDialog>
@@ -432,23 +450,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               </AlertDialogContent>
             </AlertDialog>
           )}
-          <div className="mt-5">
-            {(geoResult || location) && (
-              <Map
-                center={{
-                  lat: geoResult?.lat || location?.coordinates[1],
-                  lng: geoResult?.lng || location?.coordinates[0],
-                }}
-                mk={mk}
-                showSearchBar={false}
-                w={400}
-                h={350}
-                z={14}
-                maxZ={14}
-                minZ={14}
-              />
-            )}
-          </div>
         </div>
       </div>
     ),
