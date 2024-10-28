@@ -1,5 +1,5 @@
 import prisma from "@/lib/prismadb";
-import { UserRole } from "@prisma/client";
+import { Hours, UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { Location } from "@prisma/client";
 import { CartItem } from "./getCart";
@@ -56,8 +56,8 @@ const getLocationByIndex = async ({
   }
 };
 interface VendorLocation {
-    id:string
-    coordinates:number[]
+  id: string;
+  coordinates: number[];
 }
 
 interface GetVendorsParams {
@@ -72,10 +72,10 @@ const getVendorLocsMap = async ({
       where: {
         role: role,
       },
-      select:{
-        id:true,
-        coordinates:true,
-      }
+      select: {
+        id: true,
+        coordinates: true,
+      },
     });
     return vendorLocs;
   } catch (error) {
@@ -568,10 +568,7 @@ const getUserStore = async (
 
     const safeListings = await Promise.all(
       user.listings.map(async (listing) => {
-        const location = await getUserLocation({
-          userId: user.id,
-          index: listing.location,
-        });
+        const location = listing.location;
         return {
           ...listing,
           location,
@@ -639,7 +636,7 @@ export interface NavUser {
   buyerOrders: {
     id: string;
     conversationId: string | null;
-    status: number;
+    status: string;
     updatedAt: Date;
     seller: { name: string } | null;
     buyer: { name: string } | null;
@@ -647,7 +644,7 @@ export interface NavUser {
   sellerOrders: {
     id: string;
     conversationId: string | null;
-    status: number;
+    status: string;
     updatedAt: Date;
     buyer: { name: string } | null;
     seller: { name: string } | null;
@@ -693,6 +690,11 @@ const getNavUser = async (): Promise<NavUser | null> => {
                 name: true,
               },
             },
+            buyer: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
         stripeAccountId: true,
@@ -703,6 +705,11 @@ const getNavUser = async (): Promise<NavUser | null> => {
             status: true,
             updatedAt: true,
             buyer: {
+              select: {
+                name: true,
+              },
+            },
+            seller: {
               select: {
                 name: true,
               },
@@ -833,7 +840,7 @@ export type StoreUser = {
   bio: string | null;
   createdAt: Date;
   role: string;
-  hours: ExtendedHours | undefined | null;
+  hours: Hours | undefined | null;
   listings: {
     imageSrc: string;
     title: string;
