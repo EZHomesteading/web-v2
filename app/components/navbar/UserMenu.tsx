@@ -50,7 +50,8 @@ const UserMenu: React.FC<Props> = ({
   const router = useRouter();
   const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
-
+  const pathname = usePathname();
+  const selling = pathname?.startsWith("/selling");
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -64,7 +65,6 @@ const UserMenu: React.FC<Props> = ({
         handleBeforeInstallPrompt
       );
   }, []);
-  console.log("locations", user?.locations);
   const handleCreateClick = async () => {
     if (user?.role === UserRole.CONSUMER) {
       try {
@@ -140,7 +140,7 @@ const UserMenu: React.FC<Props> = ({
       {
         key: "create",
         icon: iconMap.PiPlusThin,
-        label: "Add Product",
+        label: "Create",
         onClick: handleCreateClick,
       },
     ];
@@ -196,74 +196,103 @@ const UserMenu: React.FC<Props> = ({
           <MenuIcon image={user?.image} />
         </div>
         <PopoverContent
-          className={`${o.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] sm:w-80 md:w-48 text-sm`}
+          className={`${o.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
           align="end"
           alignOffset={0}
         >
           {user ? (
             <>
-              <MenuItem
-                label="Orders"
-                icon={<iconMap.PiClipboardTextThin className="h-6 w-6" />}
-                onClick={() => router.push("/orders")}
-              />
-              <MenuItem
-                label="Messages"
-                icon={<iconMap.PiChatCircleThin className="h-6 w-6" />}
-                onClick={() => router.push("/chat")}
-              />
-              <MenuItem
-                label="Market"
-                icon={<iconMap.PiStorefrontThin className="h-6 w-6" />}
-                onClick={() => router.push("/market")}
-              />
-              <MenuItem
-                label="Map"
-                icon={<iconMap.PiMapTrifoldThin className="h-6 w-6" />}
-                onClick={() => router.push("/map")}
-              />
-              <MenuItem
-                label="Cart"
-                icon={<iconMap.PiBasketThin className="h-6 w-6" />}
-                onClick={() => router.push("/cart")}
-              />
-              <MenuItem
-                label="Account"
-                icon={<iconMap.PiUserThin className="h-6 w-6" />}
-                onClick={() => router.push("/account")}
-              />
-              <MenuItem
-                label="Switch to Selling"
-                icon={<iconMap.PiTreeThin className="h-6 w-6" />}
-                onClick={() => router.push("/selling")}
-              />
+              {selling ? (
+                <>
+                  <MenuItem
+                    label="Today's Obligations"
+                    onClick={() => router.push("/selling/todays-obligations")}
+                  />
+                </>
+              ) : (
+                <>
+                  <MenuItem
+                    label="Market"
+                    onClick={() => router.push("/market")}
+                  />
+                  <MenuItem label="Map" onClick={() => router.push("/map")} />
+                </>
+              )}
+              <MenuItem label="Messages" onClick={() => router.push("/chat")} />
+
+              {selling ? (
+                <>
+                  <MenuItem
+                    label="Sale Orders"
+                    onClick={() =>
+                      router.push("/orders?type=sales&status=active")
+                    }
+                  />
+                  <div className={`border-t w-full my-2`} />
+                  <MenuItem
+                    label="My Listings"
+                    onClick={() => router.push("selling/my-store")}
+                  />
+                  <MenuItem
+                    label="Create New Listing"
+                    onClick={() => router.push("/create")}
+                  />
+                  <div className={`border-t w-full my-2`} />
+                  <MenuItem
+                    label="Store Settings"
+                    onClick={() => router.push("/selling/my-store/settings")}
+                  />
+                  <MenuItem
+                    label="Locations & Hours"
+                    onClick={() =>
+                      router.push("/selling/availability-calendar")
+                    }
+                  />
+                  <div className={`border-t w-full my-2`} />
+                  <MenuItem
+                    label="Switch to Buying"
+                    onClick={() => router.push("/account")}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className={`border-t w-full my-2`} />
+                  <MenuItem
+                    label="Purchase Orders"
+                    onClick={() =>
+                      router.push("/orders?type=purchases&status=active")
+                    }
+                  />
+                  <MenuItem label="Cart" onClick={() => router.push("/cart")} />
+                  <MenuItem
+                    label="Account"
+                    onClick={() => router.push("/account")}
+                  />
+                  <div className={`border-t w-full my-2`} />
+                  <MenuItem
+                    label="Switch to Selling"
+                    onClick={() => router.push("/selling")}
+                  />
+                </>
+              )}
+
               <div className="block sm:hidden">
-                <MenuItem
-                  label="Home"
-                  icon={<iconMap.GiBarn className="h-6 w-6" />}
-                  onClick={() => router.push("/")}
-                />
+                <MenuItem label="Home" onClick={() => router.push("/")} />
               </div>
               {user?.role === "CONSUMER" && (
                 <div>
                   <MenuItem
-                    icon={<iconMap.PiStorefrontThin className="h-8 w-8" />}
                     label="Become a Co-Op"
                     onClick={() => router.push("/auth/become-a-co-op")}
                   />
                   <MenuItem
-                    icon={<iconMap.PiTreeThin className="h-8 w-8" />}
                     label="Become a Producer"
                     onClick={() => router.push("/auth/become-a-producer")}
                   />
                 </div>
               )}
-              <hr />
-              <MenuItem
-                icon={<iconMap.PiSignOutThin className="h-6 w-6" />}
-                label="Sign Out"
-                onClick={() => signOut()}
-              />
+              <div className={`border-t my-2`} />
+              <MenuItem label="Sign Out" onClick={() => signOut()} />
               {showInstallBtn &&
                 !window.matchMedia("(display-mode: standalone)").matches && (
                   <Button
@@ -278,11 +307,7 @@ const UserMenu: React.FC<Props> = ({
             <>
               <Sheet>
                 <SheetTrigger className="flex justify-between items-center">
-                  <MenuItem
-                    onClick={() => {}}
-                    label="Sign Up"
-                    icon={<iconMap.BsPersonPlus className="h-6 w-6" />}
-                  />
+                  <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
                   className={`${o.className} min-h-screen w-screen d1dbbf text-black`}
@@ -339,23 +364,14 @@ const UserMenu: React.FC<Props> = ({
               </Sheet>
               <MenuItem
                 label="Sign In"
-                icon={<iconMap.PiPersonSimpleRunThin />}
                 onClick={() => {
                   let callbackUrl = window.location.href;
                   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
                   router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
                 }}
               />
-              <MenuItem
-                label="Market"
-                icon={<iconMap.CiShop />}
-                onClick={() => router.push("/market")}
-              />
-              <MenuItem
-                label="Map"
-                icon={<iconMap.LiaMapMarkedSolid />}
-                onClick={() => router.push("/map")}
-              />
+              <MenuItem label="Market" onClick={() => router.push("/market")} />
+              <MenuItem label="Map" onClick={() => router.push("/map")} />
               <Button onClick={() => router.push("/get-ezh-app")}>
                 Install the EZH App
               </Button>
@@ -374,7 +390,7 @@ const IconWrapper: React.FC<{
 }> = ({ icon: Icon, label, onClick }) => {
   const pathname = usePathname();
   return (
-    <div
+    <button
       className="flex flex-col pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer"
       onClick={onClick}
     >
@@ -388,7 +404,7 @@ const IconWrapper: React.FC<{
       >
         {label}
       </div>
-    </div>
+    </button>
   );
 };
 interface p {

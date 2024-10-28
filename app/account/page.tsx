@@ -1,6 +1,4 @@
-import React from "react";
 import {
-  PiBasketThin,
   PiBookOpenTextThin,
   PiCardholderThin,
   PiClipboardTextThin,
@@ -16,50 +14,53 @@ import UserInfoCard from "./components/user-info-card";
 
 const menuItems = [
   {
-    title: "Personal Info",
+    title: "Account Settings",
+    name: "Personal Info",
     icon: <PiUserThin className="h-8 w-8" />,
     href: "/account/personal-info",
   },
   {
-    title: "Notification Preferences",
+    name: "Notification Preferences",
     icon: <PiGearThin className="h-8 w-8" />,
     href: "/account/notification-preferences",
     showDiv: false,
   },
   {
-    title: "Payment Methods",
+    name: "Payment Methods",
     icon: <PiCardholderThin className="h-8 w-8" />,
     href: "/account/payment-methods",
     showDiv: true,
   },
   {
-    title: "Orders",
+    title: "Activity",
+    name: "Orders",
     icon: <PiClipboardTextThin className="h-8 w-8" />,
     href: "/orders",
   },
   {
-    title: "Following",
+    name: "Following",
     icon: <PiUsersThreeThin className="h-8 w-8" />,
     href: "/account/following",
     showDiv: true,
   },
   {
-    title: "Privacy Policy",
+    title: "Policies",
+    name: "Privacy Policy",
     icon: <PiLockSimpleThin className="h8w8" />,
     href: "/",
   },
   {
-    title: "Terms of Service",
+    name: "Terms of Service",
     icon: <PiSignatureThin className="h8w8" />,
     href: "/",
   },
   {
-    title: "Cookie Policy",
+    name: "Cookie Policy",
     icon: <PiCookieThin className="h8w8" />,
     href: "/cookie-policy",
   },
   {
-    title: "Community Standards",
+    name: "Community Standards",
     icon: <PiBookOpenTextThin className="h8w8" />,
     href: "/",
   },
@@ -73,10 +74,11 @@ const AccountHome = () => {
         {menuItems.map((item, index) => (
           <MenuCard
             key={index}
-            name={item.title}
+            name={item.name}
             icon={item.icon}
             href={item.href}
             showDiv={item.showDiv}
+            title={item.title}
           />
         ))}
       </div>

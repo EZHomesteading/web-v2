@@ -31,8 +31,7 @@ interface Props {
 
 const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const router = useRouter();
-  const [step, setStep] = useState(9);
-  //locations?.length !== 0 ? 2 : index
+  const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);

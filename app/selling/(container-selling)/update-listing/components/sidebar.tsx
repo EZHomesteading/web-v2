@@ -136,7 +136,7 @@ const vendorNav: NavigationItem[] = [
   {
     name: "Availability Calendar",
     icon: PiCalendarCheckThin,
-    href: "/selling/calendar",
+    href: "/selling/availability-calendar",
     current: false,
     div: false,
   },

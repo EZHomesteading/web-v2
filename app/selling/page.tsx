@@ -16,7 +16,6 @@ import UserInfoCard from "@/app/account/components/user-info-card";
 const menuItems = [
   {
     title: "To-Dos",
-    showTitle: true,
     name: "Today's Obligations",
     href: "/selling/todays-obligations",
     icon: <PiClockCountdownThin className="h8w8" />,
@@ -35,7 +34,6 @@ const menuItems = [
   },
   {
     title: "Manage My Store",
-    showTitle: true,
     name: "Store Settings",
     icon: <CiSettings className="h8w8" />,
     href: "/selling/my-store/settings",
@@ -53,7 +51,6 @@ const menuItems = [
   },
   {
     title: "Performance",
-    showTitle: true,
     name: "Earnings",
     icon: <PiHandCoinsThin className="h8w8" />,
     href: "/selling/dashboard",
@@ -79,7 +76,6 @@ const SellerHome = () => {
           <MenuCard
             key={index}
             title={item.title}
-            showTitle={item.showTitle}
             name={item.name}
             icon={item.icon}
             href={item.href}

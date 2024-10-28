@@ -4,28 +4,24 @@ interface p {
   location?: LocationObj;
   handleDayClick?: any;
   showSubTitle?: boolean;
-  fSize?: number;
-  svgRefProp?: number;
   bgColor?: string;
   fontColors?: string;
   barColor?: string;
   viewBoxWidth?: number;
   viewBoxHeight?: number;
+  title?: string;
 }
 const WeelkyScheduleChart = ({
   location,
+  title = "Weekly Schedule",
   handleDayClick,
   showSubTitle = false,
-  fSize = 16,
-  svgRefProp = 1,
   bgColor = "#fff",
   fontColors = "#000",
   barColor = "#fff",
   viewBoxHeight = 450,
   viewBoxWidth = 700,
 }: p) => {
-  const [fontSize, setFontSize] = useState(fSize);
-  const [svgScale, setSvgScale] = useState(svgRefProp);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -58,28 +54,19 @@ const WeelkyScheduleChart = ({
         const containerWidth = containerRef.current.clientWidth;
         const containerHeight = containerRef.current.clientHeight;
 
-        // Calculate the scaling factors for both width and height
         const scaleX = containerWidth / viewBoxWidth;
         const scaleY = containerHeight / viewBoxHeight;
 
-        // Use the smaller scale to maintain aspect ratio
         const scale = Math.min(scaleX, scaleY);
 
-        // Calculate the new dimensions
         const scaledWidth = viewBoxWidth * scale;
         const scaledHeight = viewBoxHeight * scale;
 
-        // Apply the new dimensions directly to the SVG
         if (svgRef.current) {
           svgRef.current.style.width = `${scaledWidth}px`;
           svgRef.current.style.height = `${scaledHeight}px`;
-          // Remove the transform scale that was causing the issue
           svgRef.current.style.transform = "none";
         }
-
-        // Set font size, but don't let it go below 16px
-        const calculatedFontSize = Math.max(16, 48 * scale);
-        setFontSize(calculatedFontSize);
       }
     };
 
@@ -154,7 +141,7 @@ const WeelkyScheduleChart = ({
           fontSize={titleFontSize}
           fontWeight="medium"
         >
-          Weekly Schedule
+          {title}
         </text>
         {showSubTitle && (
           <text

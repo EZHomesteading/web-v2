@@ -5,26 +5,18 @@ interface p {
   href: string;
   icon: React.ReactNode;
   showDiv?: boolean;
-  showTitle?: boolean;
   name: string;
 }
-const MenuCard = ({
-  title = "",
-  href,
-  icon,
-  name,
-  showDiv = false,
-  showTitle = false,
-}: p) => {
+const MenuCard = ({ title = "", href, icon, name, showDiv = false }: p) => {
   return (
     <>
-      {showTitle && (
+      {title && (
         <div className="text-xl pb-3 border-b font-normal ">{title}</div>
       )}
       <Link
         href={href}
         className={` ${
-          showTitle && "pt-3"
+          title && "pt-3"
         } flex items-center hover:cursor-pointer hover:text-white justify-between pb-3`}
       >
         <div className="flex items-center">

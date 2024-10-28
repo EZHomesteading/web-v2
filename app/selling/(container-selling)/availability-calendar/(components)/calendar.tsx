@@ -40,8 +40,9 @@ interface p {
   id?: string;
   mk: string;
   locations: Location[];
+  userId?: string;
 }
-const Calendar = ({ location, id, mk, locations }: p) => {
+const Calendar = ({ location, id, mk, locations, userId }: p) => {
   const [hours, setHours] = useState<Hours>({
     delivery:
       location?.hours?.delivery?.map((ex: any) => ({
@@ -487,10 +488,6 @@ const Calendar = ({ location, id, mk, locations }: p) => {
     setDeliveryPickupMode(newMode);
   };
 
-  const handleViewEditModeChange = (newMode: Mode) => {
-    setViewEditMode(newMode);
-  };
-
   useEffect(() => {
     if (selectedDaysCount > 0 && !isBasePanelOpen) {
       if (modifyButtonTimerRef.current) {
@@ -666,6 +663,7 @@ const Calendar = ({ location, id, mk, locations }: p) => {
       setIsBasePanelOpen={setIsBasePanelOpen}
       onPanelClose={handleClosePanel}
       locations={locations}
+      userId={userId}
     >
       {renderCalendarContent()}
     </StackingPanelLayout>
