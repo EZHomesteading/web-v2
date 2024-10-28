@@ -54,7 +54,6 @@ interface ListingCardProps {
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
   user: UserInfo | null;
-  canReceivePayouts: boolean;
   storeUser: UserInfo;
   priority?: boolean;
   review?: boolean | null;
@@ -72,7 +71,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   actionLabel,
   actionId,
   orderQuantities,
-  canReceivePayouts,
   user,
   secondActionId,
   onSecondAction,
@@ -83,7 +81,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const [stock, setStock] = useState(data.stock);
-  const [paymentInfoDecline, setPaymentInfoDecline] = useState(false);
   const handleStockUpdate = (newStock: number) => {
     setStock(newStock);
     // Here you would typically call an API to update the stock in your backend
@@ -132,7 +129,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     data.quantityType ? data.quantityType : ""
   );
   const handleCardClick = useCallback(() => {
-    if (pathname !== "/dashboard/my-store" && canReceivePayouts === true) {
+    if (pathname !== "/dashboard/my-store") {
       router.push(`/listings/${data.id}`);
     }
   }, [router, data.id, pathname]);
@@ -159,18 +156,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const orderQuantity = getQuantityForListing(orderQuantities, data.id);
   const hasError = !data.location || !data.location.hours || review;
   return (
-    <div
-      className={`col-span-1 ${
-        canReceivePayouts === true ? "cursor-pointer" : ""
-      } group`}
-    >
+    <div className={"col-span-1 cursor-pointer group"}>
       <div className="flex flex-col w-full relative">
         <div
-          onClick={(e) => {
-            if (canReceivePayouts === false) {
-              e.preventDefault();
-              return;
-            }
+          onClick={() => {
             handleCardClick();
           }}
           className="w-full relative overflow-hidden rounded-xl"
@@ -229,45 +218,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   </div>
                 </PopoverContent>
               </Popover>
-            </div>
-          )}
-          {canReceivePayouts === false && paymentInfoDecline === false ? (
-            <div className="absolute inset-0 bg-black bg-opacity-90 text-white flex  flex-col justify-center sm:justify-start sm:pl-[10%] sm:pr-[10%]">
-              <div className="mt-10">{data.title}</div>
-              <div className="mt-2">
-                Listing not visible until payment information is added to your
-                account.
-              </div>
-              <div className="mt-2">Add payment info now?</div>
-              <div className="flex justify-center items-center gap-4 mt-4">
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPaymentInfoDecline(true);
-                  }}
-                >
-                  No
-                </Button>
-              </div>
-              <div className="mt-2">
-                Payment info will only be required once
-              </div>
-            </div>
-          ) : (
-            <div className="absolute inset-0 bg-black bg-opacity-90 text-white flex  flex-col justify-center sm:justify-start sm:pl-[10%] sm:pr-[10%]">
-              <div className="mt-10">{data.title}</div>
-
-              <Button className="mt-2">
-                Add payment info: needed only once
-              </Button>
-              <Button className="mt-2">No</Button>
             </div>
           )}
         </div>
