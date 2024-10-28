@@ -1,28 +1,34 @@
+import { Button } from "../ui/button";
+
 //menu item button component
 interface MenuItemProps {
   onClick: () => void;
   label: string;
-  icon: React.ReactNode;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ onClick, label, icon }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ onClick, label }) => {
   return (
-    <div
+    <Button
       onClick={onClick}
-      className="
+      className={`
         p-2
-        hover:shadow-sm
         hover:cursor-pointer
-        font-normal
-        text-xl
-        sm:text-sm
-        flex
+        font-light
+         w-full
+        text-black
+        shadow-none
+        text-xs
+        justify-between
         items-center
-        "
+        bg-inherit
+        flex
+        hover:bg-neutral-700/20
+        
+        rounded-none
+       `}
     >
-      <div className="mr-2 ">{icon}</div>
-      <div className="text-lg">{label}</div>
-    </div>
+      <div className="text-[1rem]">{label}</div>
+    </Button>
   );
 };
 

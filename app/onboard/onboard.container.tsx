@@ -1,25 +1,22 @@
 import React from "react";
 import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { Zilla_Slab } from "next/font/google";
 interface SectionLayoutProps {
-  /** Main title of the section */
   title?: string;
-  /** Array of description lines to be displayed below the title */
   descriptions?: string[];
-  /** Main content of the section */
-  children: React.ReactNode;
-  /** Additional classes for the outer container */
+  children?: React.ReactNode;
   className?: string;
-  /** Override the default max-width for different layouts */
   maxWidth?: string;
-  /** Additional classes for the inner container */
   containerClassName?: string;
-  /** Optional subtitle below the main title */
   subtitle?: string;
-  /** Optional right-aligned content next to the title */
   titleRight?: React.ReactNode;
-  /** Whether to center the title */
   centerTitle?: boolean;
 }
+export const zillaFont = Zilla_Slab({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300"],
+});
 const OnboardContainer = ({
   title,
   descriptions = [],
@@ -33,9 +30,9 @@ const OnboardContainer = ({
 }: SectionLayoutProps) => {
   return (
     <div
-      className={`${o.className} flex flex-col justify-start h-full w-full ${className} !select-none`}
+      className={`${o.className} flex flex-col justify-start h-full w-full ${className} !select-none mb-6`}
     >
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col items-center w-full ">
         <div
           className={`w-full max-w-[306.88px] ${maxWidth} ${containerClassName}`}
         >
@@ -44,11 +41,11 @@ const OnboardContainer = ({
               {title}
             </div>
           )}
-          <div className="mb-6">
+          <div className="mb-3">
             {descriptions.map((description, index) => (
               <div
                 key={index}
-                className={`text-sm text-gray-500 flex items-center font-normal `}
+                className={`${zillaFont.className} text-sm text-gray-500 flex items-center font-normal `}
               >
                 {description}
               </div>

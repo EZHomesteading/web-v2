@@ -15,11 +15,11 @@ interface Props {
   handleInfoWindowClose: () => void;
 }
 
-const InfoWindowCarousel = ({ images, handleInfoWindowClose }: Props) => {
+const InfoWindowCarousel = ({ images = [], handleInfoWindowClose }: Props) => {
   return (
     <Carousel className="relative w-80">
       <CarouselContent className="rounded-t-md">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <CarouselItem key={index}>
             <Card>
               <CardContent className="flex items-center justify-center relative aspect-video rounded-t-md">

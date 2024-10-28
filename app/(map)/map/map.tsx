@@ -4,7 +4,6 @@ import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
 import Loading from "@/app/components/secondary-loader";
 import InfoWindowCarousel from "./info-window-carousel";
-import { Outfit } from "next/font/google";
 import Avatar from "@/app/components/Avatar";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
@@ -17,15 +16,16 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/app/components/ui/switch";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
+import { UserInfo } from "next-auth";
+import { UserRole } from "@prisma/client";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface MapUser {
-  location: number[];
+  coordinates: [number, number];
   id: string;
 }
-[];
 
-interface Info {
+interface LocationInfo {
   coordinates: {
     lat: number;
     lng: number;
@@ -33,37 +33,31 @@ interface Info {
   id: string;
 }
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-
 interface MapProps {
   coops: MapUser[];
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
-  userRole: string | undefined;
+  user?: UserInfo;
 }
+
 const libraries: Libraries = ["drawing", "geometry"];
-const VendorsMap = ({
-  coops,
-  producers,
-  coordinates,
-  mk,
-  userRole,
-}: MapProps) => {
+
+const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
+  console.log("coops sent to map", coops);
   const [currentCenter, setCurrentCenter] = useState(coordinates);
   const [zoom, setZoom] = useState(11);
   const [selectedMarker, setSelectedMarker] = useState<{
-    lat: number;
-    lng: number;
-    name: string;
-    image: string;
-    firstName: string;
-    id: string;
-    images: string[];
-    url: string;
+    coordinates: { lat: number; lng: number };
+    listings: {
+      images: string[];
+    };
+    user: {
+      name: string;
+      firstName: string;
+      url: string;
+      image: string;
+    };
   } | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const infoWindowRef = useRef<HTMLDivElement | null>(null);
@@ -92,7 +86,7 @@ const VendorsMap = ({
     minZoom: 4,
     gestureHandling: "greedy",
   };
-
+  console.log("selected marker", selectedMarker);
   const handleMarkerClick = async (
     coordinate: { lat: number; lng: number },
     id: string
@@ -103,17 +97,17 @@ const VendorsMap = ({
       );
       const markerData = await response.json();
       setSelectedMarker({
-        ...coordinate,
-        name: markerData.name,
-        images: markerData.listings.flatMap(
-          (listing: { imageSrc: string[] }) => listing.imageSrc
-        ),
-        image: markerData.image,
-        firstName: markerData.firstName,
-        id: markerData.id,
-        url: markerData.url,
+        coordinates: coordinate,
+        listings: {
+          images: markerData.listings.images,
+        },
+        user: {
+          name: markerData.user.name,
+          firstName: markerData.user.firstName,
+          url: markerData.user.url,
+          image: markerData.user.image,
+        },
       });
-
       setCurrentCenter(coordinate);
       setZoom(13);
     } catch (error) {
@@ -136,50 +130,43 @@ const VendorsMap = ({
     if (selectedMarker && mapRef.current) {
       const map = mapRef.current;
       const markerPosition = new google.maps.LatLng(
-        selectedMarker.lat,
-        selectedMarker.lng
+        selectedMarker.coordinates.lat,
+        selectedMarker.coordinates.lng
       );
       map.panTo(markerPosition);
     }
   }, [selectedMarker]);
-  const coopInfo = coops
-    ?.map((coop: MapUser) => {
-      const coordinates = coop.location;
-      return {
-        coordinates: {
-          lat: coordinates[1],
-          lng: coordinates[0],
-        },
-        id: coop.id,
-      };
-    })
-    .filter(Boolean);
-  const producerInfo = producers
-    ?.map((producer: MapUser) => {
-      return {
-        coordinates: {
-          lat: producer.location[1],
-          lng: producer.location[0],
-        },
-        id: producer.id,
-      };
-    })
-    .filter(Boolean);
+
+  const coopInfo: LocationInfo[] = coops.map((coop: MapUser) => ({
+    coordinates: {
+      lat: coop.coordinates[1],
+      lng: coop.coordinates[0],
+    },
+    id: coop.id,
+  }));
+  console.log("coop info", coopInfo);
+  const producerInfo: LocationInfo[] = producers.map((producer: MapUser) => ({
+    coordinates: {
+      lat: producer.coordinates[1],
+      lng: producer.coordinates[0],
+    },
+    id: producer.id,
+  }));
   const [drawnShape, setDrawnShape] = useState<google.maps.LatLng[] | null>(
     null
   );
   // State variables for drawing functionality
-  const [filteredCoops, setFilteredCoops] = useState(coopInfo);
-  const [filteredProducers, setFilteredProducers] = useState(producerInfo);
+  const [filteredCoops, setFilteredCoops] = useState<LocationInfo[]>(coopInfo);
+  const [filteredProducers, setFilteredProducers] =
+    useState<LocationInfo[]>(producerInfo);
   const [showCoops, setShowCoops] = useState(true);
   const [showProducers, setShowProducers] = useState(
-    userRole === "COOP" ? true : false
+    user?.role === UserRole.CONSUMER ? true : false
   );
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDrawingEnabled, setIsDrawingEnabled] = useState(false);
   const [polylinePath, setPolylinePath] = useState<google.maps.LatLng[]>([]);
   const polylineRef = useRef<google.maps.Polyline | null>(null);
-  const user = useCurrentUser();
   useEffect(() => {
     const disableDefaultTouchBehavior = (event: TouchEvent) => {
       event.preventDefault();
@@ -322,7 +309,7 @@ const VendorsMap = ({
       paths: polygonPath,
     });
 
-    const filteredCoops = coopInfo.filter((coop: Info) => {
+    const filteredCoops = coopInfo.filter((coop: LocationInfo) => {
       const coopLatLng = new google.maps.LatLng(
         coop.coordinates.lat,
         coop.coordinates.lng
@@ -330,7 +317,8 @@ const VendorsMap = ({
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
     });
-    const filteredProducers = producerInfo.filter((producer: Info) => {
+
+    const filteredProducers = coopInfo.filter((producer: LocationInfo) => {
       const coopLatLng = new google.maps.LatLng(
         producer.coordinates.lat,
         producer.coordinates.lng
@@ -338,6 +326,7 @@ const VendorsMap = ({
 
       return google.maps.geometry.poly.containsLocation(coopLatLng, polygon);
     });
+
     setFilteredCoops(filteredCoops);
     setFilteredProducers(filteredProducers);
     stopDrawing();
@@ -349,23 +338,23 @@ const VendorsMap = ({
     setFilteredCoops(coopInfo);
     setFilteredProducers(producerInfo);
     setShowCoops(true);
-    setShowProducers(userRole === "COOP" ? true : false);
+    setShowProducers(user?.role === UserRole.COOP ? true : false);
     setDrawnShape(null);
   };
-
+  console.log("filter coops", filteredCoops);
   return (
     <div
       className={`relative touch-none ${isDrawingEnabled ? "opacity-80 " : ""}`}
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfit.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${o.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool
         </PopoverTrigger>
         <PopoverContent className=" bg-slate-800 text-white mt-1 ml-1 rounded-md z">
-          <ul className={`${outfit.className} p-2 rounded-md text-xs`}>
+          <ul className={`${o.className} p-2 rounded-md text-xs`}>
             <li className="flex flex-row">
               - Click
               <button className="ml-1 text-xs bg-teal-600 hover:bg-teal-900 flex flex-row items-center rounded-md px-1 ">
@@ -397,7 +386,7 @@ const VendorsMap = ({
         </PopoverContent>
       </Popover>
       <div>
-        {user && user.role !== "CONSUMER" && (
+        {user && user?.role !== "CONSUMER" && (
           <div className="absolute top-1 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5">
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center gap-x-2 text-xl  font-medium mb-2 whitespace-nowrap">
@@ -479,7 +468,7 @@ const VendorsMap = ({
           >
             {(clusterer) => (
               <>
-                {filteredCoops.map((coop: Info, index: number) => (
+                {filteredCoops.map((coop: LocationInfo, index: number) => (
                   <MarkerF
                     key={`coop-${index}`}
                     position={coop.coordinates}
@@ -513,21 +502,23 @@ const VendorsMap = ({
           >
             {(clusterer) => (
               <>
-                {filteredProducers.map((producer: Info, index: number) => (
-                  <MarkerF
-                    key={`producer-${index}`}
-                    position={producer.coordinates}
-                    icon={{
-                      url: "https://utfs.io/f/ec4f6766-4c18-4752-a3b2-6030aed3cb33-os33pn.png",
-                      scaledSize: new window.google.maps.Size(28, 28),
-                      anchor: new window.google.maps.Point(25, 22),
-                    }}
-                    clusterer={clusterer}
-                    onClick={() =>
-                      handleMarkerClick(producer.coordinates, producer.id)
-                    }
-                  />
-                ))}
+                {filteredProducers.map(
+                  (producer: LocationInfo, index: number) => (
+                    <MarkerF
+                      key={`producer-${index}`}
+                      position={producer.coordinates}
+                      icon={{
+                        url: "https://utfs.io/f/ec4f6766-4c18-4752-a3b2-6030aed3cb33-os33pn.png",
+                        scaledSize: new window.google.maps.Size(28, 28),
+                        anchor: new window.google.maps.Point(25, 22),
+                      }}
+                      clusterer={clusterer}
+                      onClick={() =>
+                        handleMarkerClick(producer.coordinates, producer.id)
+                      }
+                    />
+                  )
+                )}
               </>
             )}
           </MarkerClusterer>
@@ -542,20 +533,20 @@ const VendorsMap = ({
           <div className="flex items-start flex-col bg-slate-200 rounded-lg">
             <InfoWindowCarousel
               handleInfoWindowClose={handleInfoWindowClose}
-              images={selectedMarker.images}
+              images={selectedMarker.listings.images}
             />
             <header className="flex flex-row p-1 relative w-full">
-              <Avatar image={selectedMarker.image} />
+              <Avatar image={selectedMarker.user.image} />
               <ul className="flex flex-col ml-1 pl-1">
-                <h1 className={`${outfit.className} text-sm `}>
-                  {selectedMarker.name}
+                <h1 className={`${o.className} text-sm `}>
+                  {selectedMarker.user.name}
                 </h1>
-                <p className={`${outfit.className} text-xs text-gray-600`}>
-                  {selectedMarker.firstName}
+                <p className={`${o.className} text-xs text-gray-600`}>
+                  {selectedMarker.user.firstName}
                 </p>
               </ul>
               <Link
-                href={`/store/${selectedMarker.url}`}
+                href={`/store/${selectedMarker.user.url}`}
                 className="absolute right-1 top-1"
               >
                 <Button>Go to Store</Button>

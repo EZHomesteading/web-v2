@@ -10,24 +10,23 @@ export const viewport: Viewport = {
 };
 
 const Page = async ({
-  params,
   searchParams,
 }: {
-  params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
   const user = await currentUser();
   const id = searchParams?.id;
-
   let index = 1;
+
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
   });
+
   const canReceivePayouts =
     (user?.stripeAccountId
       ? await checkPayoutCapability(user?.stripeAccountId)
       : false) || false;
-  console.log(user?.hasPickedRole);
+
   async function checkPayoutCapability(stripeAccountId: string) {
     try {
       const account = await stripe.accounts.retrieve(stripeAccountId);
@@ -37,6 +36,7 @@ const Page = async ({
       return null;
     }
   }
+
   const locations = await getUserLocations({ userId: user?.id });
   let defaultId = "";
   if (searchParams) {

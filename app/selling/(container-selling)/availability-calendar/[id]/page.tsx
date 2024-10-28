@@ -46,6 +46,7 @@ export default async function EditLocationPage({
           id={locationId}
           mk={mk}
           locations={locations}
+          userId={session?.user?.id}
         />
       )}
     </>

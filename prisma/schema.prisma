@@ -128,9 +128,15 @@ type Availability {
   capacity  Int?
 }
 
+type fullName {
+  first String?
+  last  String?
+}
+
 model Location {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId
   userId              String    @db.ObjectId
+  displayName         String?
   user                User      @relation(fields: [userId], references: [id])
   listings            Listing[]
   orders              Order[]
@@ -146,10 +152,11 @@ model Location {
 }
 
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
   name          String
   email         String     @unique
-  firstName     String?
+  fullName      fullName?
   emailVerified DateTime?
   phoneNumber   String?
   locations     Location[]

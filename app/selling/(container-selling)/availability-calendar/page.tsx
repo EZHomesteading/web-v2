@@ -3,6 +3,7 @@ import { getUserLocations } from "@/actions/getUser";
 import { auth } from "@/auth";
 import Calendar from "./(components)/calendar";
 import { Location } from "@prisma/client";
+import SelectDefaultLoc from "./(components)/select-default-loc";
 
 interface EditLocationPageProps {
   params: { id: string };
@@ -29,7 +30,9 @@ export default async function EditLocationPage({
   }
 
   const location = locations.find((loc) => loc.isDefault === true);
-
+  if (locations.length > 0 && !location) {
+    return <SelectDefaultLoc locations={locations} user={session?.user} />;
+  }
   if (!location || location.userId !== userId) {
     return (
       <div className="flex w-full h-2/3 items-center justify-center">
@@ -47,6 +50,7 @@ export default async function EditLocationPage({
           id={locationId}
           mk={mk}
           locations={locations}
+          userId={session?.user?.id}
         />
       )}
     </>

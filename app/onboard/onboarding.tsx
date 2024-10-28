@@ -18,6 +18,7 @@ import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
 import StepNine from "@/app/onboard/step9";
 import OnboardHeader from "./header.onboard";
+import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface Props {
   user: UserInfo;
@@ -31,7 +32,6 @@ interface Props {
 const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const router = useRouter();
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
-  //
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -107,7 +107,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const handleNext = async () => {
     try {
       // 3 not 1000
-      if (step === 1000 && !formData.locationId) {
+      if (step === 3 && !formData.locationId) {
         if (locations && locations?.length < 3) {
           toast.error(
             "You already have the maximum number of locations. Sending you to Add a Product page."
@@ -299,96 +299,11 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
 
   return (
     <>
-      <div className="flex-grow overflow-hidden min-h-[92vh] pt-[8%]">
-        {step === 1 && <StepOne />}
-        {step === 2 && (
-          <StepTwo user={user} updateFormData={updateFormDataRole} />
-        )}
-
-        {step === 3 && (
-          <StepThree
-            location={formData.location}
-            role={formData.role}
-            apiKey={apiKey}
-            updateFormData={updateFormData}
-          />
-        )}
-        {step === 4 && (
-          <StepFour
-            location={formData.location}
-            user={user}
-            formData={formData.location?.address}
-            fStyle={formData.fulfillmentStyle ?? ""}
-            updateFormData={updateFulfillmentData}
-          />
-        )}
-        {step === 5 && (
-          <StepFive
-            location={formData.location}
-            fulfillmentStyle={formData.fulfillmentStyle ?? ""}
-            user={user}
-            formData={formData.location?.address}
-            updateFormData={updateFormDataMonths}
-            selectedMonths={formData.selectedMonths}
-          />
-        )}
-        {step === 6 && (
-          <StepSix
-            location={formData.location}
-            user={user}
-            fulfillmentStyle={formData.fulfillmentStyle ?? ""}
-            updateFormData={updateFormData}
-            formData={formData.location?.address}
-            onComplete={handleStep6Complete}
-            onCompleteHours={handleCompleteHours}
-            selectedDays={selectedDays}
-            setSelectedDays={setSelectedDays}
-            prevSelectedDays={prevSelectedDays}
-          />
-        )}
-        {step === 7 && (
-          <StepSeven
-            user={user}
-            updateFormData={updateFormData}
-            formData={formData.location?.address}
-            location={formData.location}
-            selectedDays={selectedDays}
-            onComplete={handleStep7Complete}
-            onBack={handleStep7Back}
-            fulfillmentStyle={formData?.fulfillmentStyle}
-          />
-        )}
-        {step === 8 && (
-          <StepEight
-            onDayChange={handleStep8Change}
-            location={formData.location}
-            formData={formData.location?.address}
-            updateFormData={updateFormDataMonths}
-            fulfillmentStyle={formData.fulfillmentStyle}
-            selectedMonths={formData.selectedMonths}
-            onFinish={handleFinish}
-            resetHoursData={resetHoursData}
-          />
-        )}
-        {step === 9 && (
-          <StepNine
-            onDayChange={handleStep8Change}
-            location={formData.location}
-            formData={formData.location?.address}
-            updateFormData={updateFormDataMonths}
-            fulfillmentStyle={formData.fulfillmentStyle}
-            selectedMonths={formData.selectedMonths}
-            locationId={formData.locationId}
-            onFinish={handleFinish}
-            resetHoursData={resetHoursData}
-          />
-        )}
-      </div>
-
-      <div>
-        <div className="w-full fixed top-0 left-0 z-50">
+      <div className="flex flex-col min-h-screen">
+        {/* header */}
+        <div className="w-full fixed top-0 left-0 zmax">
           <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
-          {step > 0 && formData.location && (
+          {step > 0 && (
             <OnboardHeader
               street={formData?.location?.address[0]}
               step={step}
@@ -397,27 +312,116 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
             />
           )}
         </div>
-
-        <div className="flex justify-between px-4 pb-4">
-          {step > 1 && (
-            <Button onClick={handlePrevious} variant="outline">
-              Back
-            </Button>
+        {/* main  */}
+        <div className={`flex-grow py-[4.5rem]`}>
+          {step === 1 && <StepOne />}
+          {step === 2 && (
+            <StepTwo user={user} updateFormData={updateFormDataRole} />
           )}
-          {step === 1 && (
-            <div className="flex">
-              <div onClick={() => router.push("/create")}>
-                <HoverButton
-                  buttonText="Skip for now"
-                  hoverMessage="If you skip these steps users will not be able to purchase products from you."
-                />
-              </div>
-              <div className="ml-4">
-                <Button onClick={() => router.push("/")}>Go Home</Button>
-              </div>
-            </div>
+          {step === 3 && (
+            <StepThree
+              location={formData.location}
+              role={formData.role}
+              apiKey={apiKey}
+              updateFormData={updateFormData}
+            />
           )}
-          {step < 6 && <Button onClick={handleNext}>Next</Button>}
+          {step === 4 && (
+            <StepFour
+              location={formData.location}
+              user={user}
+              formData={formData.location?.address}
+              fStyle={formData.fulfillmentStyle ?? ""}
+              updateFormData={updateFulfillmentData}
+            />
+          )}
+          {step === 5 && (
+            <StepFive
+              location={formData.location}
+              fulfillmentStyle={formData.fulfillmentStyle ?? ""}
+              user={user}
+              formData={formData.location?.address}
+              updateFormData={updateFormDataMonths}
+              selectedMonths={formData.selectedMonths}
+            />
+          )}
+          {step === 6 && (
+            <StepSix
+              location={formData.location}
+              user={user}
+              fulfillmentStyle={formData.fulfillmentStyle ?? ""}
+              updateFormData={updateFormData}
+              formData={formData.location?.address}
+              onComplete={handleStep6Complete}
+              onCompleteHours={handleCompleteHours}
+              selectedDays={selectedDays}
+              setSelectedDays={setSelectedDays}
+              prevSelectedDays={prevSelectedDays}
+            />
+          )}
+          {step === 7 && (
+            <StepSeven
+              user={user}
+              updateFormData={updateFormData}
+              formData={formData.location?.address}
+              location={formData.location}
+              selectedDays={selectedDays}
+              onComplete={handleStep7Complete}
+              onBack={handleStep7Back}
+              fulfillmentStyle={formData?.fulfillmentStyle}
+            />
+          )}
+          {step === 8 && (
+            <StepEight
+              onDayChange={handleStep8Change}
+              location={formData.location}
+              formData={formData.location?.address}
+              updateFormData={updateFormDataMonths}
+              fulfillmentStyle={formData.fulfillmentStyle}
+              selectedMonths={formData.selectedMonths}
+              onFinish={handleFinish}
+              resetHoursData={resetHoursData}
+            />
+          )}
+          {step === 9 && (
+            <StepNine
+              onDayChange={handleStep8Change}
+              location={formData.location}
+              formData={formData.location?.address}
+              updateFormData={updateFormDataMonths}
+              fulfillmentStyle={formData.fulfillmentStyle}
+              selectedMonths={formData.selectedMonths}
+              locationId={formData.locationId}
+              onFinish={handleFinish}
+              resetHoursData={resetHoursData}
+            />
+          )}
+        </div>
+        {/* footer */}
+        <div
+          className={`fixed bottom-0 left-0 w-full bg-white lg:bg-transparent border-t lg:border-none z`}
+        >
+          <div className={`flex justify-between px-4 py-2 ${o.className} `}>
+            {step > 1 && (
+              <Button onClick={handlePrevious} variant="outline">
+                Back
+              </Button>
+            )}
+            {step === 1 && (
+              <div className="flex">
+                <div onClick={() => router.push("/create")}>
+                  <HoverButton
+                    buttonText="Skip for now"
+                    hoverMessage="If you skip these steps users will not be able to purchase products from you."
+                  />
+                </div>
+                <div className="ml-4">
+                  <Button onClick={() => router.push("/")}>Go Home</Button>
+                </div>
+              </div>
+            )}
+            {step < 6 && <Button onClick={handleNext}>Next</Button>}
+          </div>
         </div>
       </div>
     </>

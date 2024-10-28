@@ -19,6 +19,9 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import { Location } from "@prisma/client";
+import Link from "next/link";
+import setDefault from "./set-default-button";
+import SetDefaultButton from "./set-default-button";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -36,6 +39,7 @@ interface StackingPanelLayoutProps {
   setIsBasePanelOpen: (isOpen: boolean) => void;
   onPanelClose: () => void;
   locations: Location[];
+  userId?: string;
 }
 
 const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
@@ -50,6 +54,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   setIsBasePanelOpen,
   onPanelClose,
   locations,
+  userId,
 }) => {
   const router = useRouter();
   const [address, setAddress] = useState({
@@ -359,7 +364,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 </>
               ) : (
                 <Button
-                  className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md select-none"
+                  className="w-full px-5 py-7 mt-2 text-md sm:text-xl font-light bg-inherit shadow-md select-none"
                   variant={`outline`}
                   onClick={() => {
                     setShowEditAddress(true);
@@ -370,6 +375,63 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               )}
             </div>
           </div>
+
+          {location?.id && (
+            <>
+              {!location?.isDefault && userId && (
+                <SetDefaultButton
+                  street={location?.address[0]}
+                  userId={userId}
+                  locationId={location?.id}
+                  className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light"
+                  title="Set as Default Location"
+                />
+              )}
+
+              <Link href={`/create?id=${location?.id}`}>
+                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black">
+                  <div className="text-md sm:text-xl font-light">
+                    Create Listing at This Location
+                  </div>
+                </Button>
+              </Link>
+            </>
+          )}
+          {pathname !== "/selling/availability-calendar/new-location" && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
+                  <div className="text-md sm:text-xl font-light">
+                    Delete Location
+                  </div>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent
+                className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
+              >
+                <>
+                  <div className="text-2xl">Are you sure?</div>
+                  <div className="text-sm">
+                    Once a location is deleted, all listings with its location
+                    will also be lost. Please move any listings you do not want
+                    to lose to a different locaiton.
+                  </div>
+                  <div className="flex items-center justify-between w-full">
+                    <Button
+                      className="bg-red-500/80 text-white"
+                      onClick={handleDeleteLocation}
+                    >
+                      Delete
+                    </Button>
+                    <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                      {" "}
+                      Cancel
+                    </AlertDialogCancel>
+                  </div>
+                </>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           <div className="mt-5">
             {(geoResult || location) && (
               <Map
@@ -387,48 +449,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               />
             )}
           </div>
-          {pathname !== "/selling/availability-calendar/new-location" && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-red-500/80">
-                  <div className="text-md sm:text-xl font-light">
-                    Delete Location
-                  </div>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent
-                className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
-              >
-                <div className="text-2xl">Are you sure?</div>
-                <div className="text-sm">
-                  Once a location is deleted, all listings with its location
-                  will also be lost. Please move any listings you do not want to
-                  lose to a different locaiton.
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <Button
-                    className="bg-red-500/80 text-white"
-                    onClick={handleDeleteLocation}
-                  >
-                    Delete
-                  </Button>
-                  <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                    {" "}
-                    Cancel
-                  </AlertDialogCancel>
-                </div>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-          <Button
-            className="w-full px-5 py-7 mt-48 text-2xl font-extralight bg-inherit shadow-md select-none"
-            variant={`outline`}
-            onClick={() => {
-              router.push(`/create?id=${location?.id}`);
-            }}
-          >
-            Create Listing using this Adress
-          </Button>
         </div>
       </div>
     ),

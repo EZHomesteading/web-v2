@@ -6,36 +6,41 @@ export async function GET(request: Request) {
   const id = searchParams.get("id");
 
   try {
-    const user = await prisma.user.findUnique({
+    const locVendor= await prisma.location.findUnique({
       where: { id: id as string },
       select: {
-        name: true,
-        firstName: true,
-        image: true,
-        url: true,
         listings: {
-          select: {
-            imageSrc: true,
+            select: {
+             imageSrc: true,
+            },
+            take: 5,
           },
-          take: 5,
-        },
+        user:{
+          select:{
+            name: true,
+            firstName: true,
+            image: true,
+            url: true,
+            
+          }
+        }
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!locVendor) {
+      return NextResponse.json({ error: "Location not found" }, { status: 404 });
     }
 
-    const allImageSrcs = user.listings.flatMap((listing) => listing.imageSrc);
+    const allImageSrcs = locVendor.listings.flatMap((location) => location.imageSrc);
 
     const uniqueImageSrcs = [...new Set(allImageSrcs)].slice(0, 3);
 
-    const modifiedUser = {
-      ...user,
+    const modifiedLoc = {
+      ...locVendor,
       listings: uniqueImageSrcs.map((imageSrc) => ({ imageSrc })),
     };
-
-    return NextResponse.json(modifiedUser);
+    console.log(modifiedLoc)
+    return NextResponse.json(modifiedLoc);
   } catch (error) {
     console.error("Error fetching marker info:", error);
     return NextResponse.json(

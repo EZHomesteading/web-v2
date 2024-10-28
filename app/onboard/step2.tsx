@@ -6,7 +6,8 @@ import { IoStorefrontOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { useState } from "react";
-import OnboardContainer from "./onboard.container";
+import OnboardContainer, { zillaFont } from "./onboard.container";
+import { PiPlantThin, PiStorefrontThin } from "react-icons/pi";
 
 interface p {
   user: UserInfo;
@@ -17,7 +18,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
   const options = [
     {
       label: "Co-Op Location",
-      icon: <IoStorefrontOutline size={24} />,
+      icon: <PiStorefrontThin size={24} />,
       description: [
         "Sell directly to anyone",
         "Recommended for market stand owners looking to expand by sourcing goods from producers and reselling",
@@ -27,7 +28,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
     },
     {
       label: "Grower Location",
-      icon: <GiFruitTree size={24} />,
+      icon: <PiPlantThin size={24} />,
       description: [
         "Sell in larger quantities only to Co-ops",
         "Ideal for bulk sellers preferring minimal buyer interaction",
@@ -93,7 +94,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
             }}
             className={`${
               o.className
-            } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
+            } flex flex-col shadow-md items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
               selectedIndex === index
                 ? "bg-black text-white"
                 : "bg-white text-black"
@@ -111,7 +112,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
                   key={idx}
                   className={` ${
                     selectedIndex === index && " text-white"
-                  } mt-2 text-sm text-neutral-600 `}
+                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
                 >
                   {line}
                 </p>
