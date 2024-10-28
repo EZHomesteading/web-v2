@@ -1,12 +1,11 @@
 import { Outfit } from "next/font/google";
 import { BsBank } from "react-icons/bs";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Button } from "@/app/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const StepOne = () => {
+  const router = useRouter();
   return (
     <div className="flex-1 flex items-center justify-center px-6 sm:px-20 mt-16 mb-20">
       <div className="w-full max-w-2xl">
@@ -27,6 +26,14 @@ const StepOne = () => {
           payouts. The information you provide here is required by government
           regulation to protect yourself and others against fraud.
         </p>
+        <Button
+          className="mt-4"
+          onClick={() =>
+            router.push("https://support.stripe.com/topics/payouts")
+          }
+        >
+          More Info
+        </Button>
       </div>
     </div>
   );
