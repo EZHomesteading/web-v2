@@ -36,9 +36,10 @@ export async function GET(request: Request) {
     const uniqueImageSrcs = [...new Set(allImageSrcs)].slice(0, 3);
 
     const modifiedLoc = {
-      ...location,
+      ...locVendor,
       listings: uniqueImageSrcs.map((imageSrc) => ({ imageSrc })),
     };
+    console.log(modifiedLoc)
     return NextResponse.json(modifiedLoc);
   } catch (error) {
     console.error("Error fetching marker info:", error);
