@@ -755,7 +755,7 @@ const CreateClient = ({
               <Card
                 className={""}
                 onClick={() => {
-                  router.replace("/dashboard/my-store/settings");
+                  router.replace("/onboard");
                 }}
               >
                 <CardContent>
