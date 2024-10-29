@@ -1,6 +1,6 @@
 "use client";
 //homepage displayed if user role is COOP
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
 import StripeButton from "./stripe-onboard";

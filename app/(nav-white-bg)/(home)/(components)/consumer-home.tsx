@@ -8,7 +8,7 @@ import FindListingsComponent from "@/components/listings/search-listings";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 interface Props {
   user: UserInfo;
 }
