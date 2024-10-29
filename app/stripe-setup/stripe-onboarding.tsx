@@ -5,15 +5,16 @@ import {
   ConnectComponentsProvider,
 } from "@stripe/react-connect-js";
 import { loadConnectAndInitialize } from "@stripe/connect-js/pure";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import axios from "axios";
 import Loader from "@/app/components/secondary-loader";
 import { UserInfo } from "next-auth";
 
 interface Props {
   user?: UserInfo;
+  setFinish: Dispatch<SetStateAction<boolean>>;
 }
-const AccountOnboardingUI = ({ user }: Props) => {
+const AccountOnboardingUI = ({ user, setFinish }: Props) => {
   const body = user?.stripeAccountId;
 
   const [stripeConnectInstance, setStripeConnectInstance] = useState<
@@ -54,6 +55,7 @@ const AccountOnboardingUI = ({ user }: Props) => {
       <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
         <ConnectAccountOnboarding
           onExit={() => {
+            setFinish(true);
             console.log("The account has exited onboarding");
           }}
           fullTermsOfServiceUrl="https://ezhomesteading.vercel.app/tos"

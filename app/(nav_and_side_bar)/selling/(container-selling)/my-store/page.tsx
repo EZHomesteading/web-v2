@@ -91,7 +91,7 @@ const PropertiesPage = async () => {
   if (stripeAccountId) {
     canReceivePayouts = (await checkPayoutCapability(stripeAccountId)) || false;
   }
-  console.log(canReceivePayouts);
+
   if (listings.listings.length === 0) {
     return (
       <ClientOnly>
