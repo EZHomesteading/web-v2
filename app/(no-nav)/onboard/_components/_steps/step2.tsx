@@ -43,7 +43,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
       try {
         await axios.post("/api/useractions/update", {
           role: "PRODUCER",
-          hasPickedRole: null,
+          hasPickedRole: true,
         });
       } catch (error) {
         toast.error(
@@ -64,7 +64,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
       try {
         await axios.post("/api/useractions/update", {
           role: "COOP",
-          hasPickedRole: null,
+          hasPickedRole: true,
         });
       } catch (error) {
         toast.error(

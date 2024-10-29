@@ -404,7 +404,10 @@ interface p {
 const MenuIcon = ({ image }: p) => {
   return (
     <>
-      <PopoverTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
+      <PopoverTrigger
+        asChild
+        className="flex flex-col items-center sm:hidden hover:cursor-pointer"
+      >
         <IconWrapper
           icon={iconMap.CiMenuFries}
           label="Menu"

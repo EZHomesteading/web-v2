@@ -42,23 +42,36 @@ export async function POST(request: Request) {
       locationId,
     } = body;
 
-    // Validate required fields
+    // Validate required fields with proper type checking
     const requiredFields = [
-      "title",
-      "category",
-      "stock",
-      "price",
-      "description",
-      "shelfLife",
-      "subCategory",
-      "minOrder",
-      "locationId",
+      { key: "title", type: "string" },
+      { key: "category", type: "string" },
+      { key: "stock", type: "number" },
+      { key: "price", type: "number" },
+      { key: "description", type: "string" },
+      { key: "shelfLife", type: "number" },
+      { key: "subCategory", type: "string" },
+      { key: "minOrder", type: "number" },
+      { key: "locationId", type: "string" },
     ];
 
     for (const field of requiredFields) {
-      if (!body[field]) {
+      const value = body[field.key];
+      if (value === undefined || value === null) {
         return NextResponse.json(
-          { error: `Missing required field: ${field}` },
+          { error: `Missing required field: ${field.key}` },
+          { status: 400 }
+        );
+      }
+
+      // Type validation
+      if (typeof value !== field.type) {
+        return NextResponse.json(
+          {
+            error: `Invalid type for field ${field.key}. Expected ${
+              field.type
+            }, got ${typeof value}`,
+          },
           { status: 400 }
         );
       }
