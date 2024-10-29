@@ -14,7 +14,7 @@ interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
   listingId: string;
-  reports: number;
+  reports: number | null;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({

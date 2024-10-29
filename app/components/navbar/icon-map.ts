@@ -17,7 +17,7 @@ import {
 } from "react-icons/pi";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { IoIosMenu } from "react-icons/io";
-import Barn from "./icons/barn";
+import Barn from "@/public/icons/barn"
 
 export const iconMap = {
   CiMenuFries,
@@ -39,5 +39,5 @@ export const iconMap = {
   PiUserThin,
   IoStorefrontOutline,
   IoIosMenu,
-  Barn,
+  Barn
 };

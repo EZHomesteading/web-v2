@@ -1,14 +1,8 @@
-import { UserInfo } from "@/next-auth";
 import { FieldErrors, FieldValues, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 
 export type Category = 'unprocessed-produce' | 'homemade' | 'durables' | 'dairy-meat' | '';
 export type SubCategory = string;
 export type QuantityTypeValue = string | undefined;
-
-export interface CreateListingProps {
-  user: UserInfo;
-  index: number;
-}
 
 export interface StepProps {
   step: number;

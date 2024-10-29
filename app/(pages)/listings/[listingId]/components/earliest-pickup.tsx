@@ -1,18 +1,12 @@
 "use client";
 //element and funciton to pull ealiest possible pick up time (need to add based on coops/producers, setout/delivery times.)
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
-import { ExtendedHours } from "@/next-auth";
-import { Outfit } from "next/font/google";
 import { useEffect, useState } from "react";
 import { ValidTime } from "./CustomTimeModal2";
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
+import { Availability } from "@prisma/client";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 interface Props {
-  hours: ExtendedHours;
+  hours: Availability;
   onSetTime: (childTime: ValidTime) => void;
   role: string;
   sodtarr: (number | null)[];
@@ -24,7 +18,7 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
     null
   );
   useEffect(() => {
-    calculateEarliestPickupTime();
+    // calculateEarliestPickupTime();
     if (sodtarr[1] === null && sodtarr[0] === null) {
     } else if (
       sodtarr[1] !== null &&
@@ -41,93 +35,93 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
     }
   }, []);
 
-  const calculateEarliestPickupTime = () => {
-    const now = new Date();
-    const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
-    const currentMin = now.getHours() * 60 + now.getMinutes();
-    let nextAvailableTime = null;
+  // const calculateEarliestPickupTime = () => {
+  //   const now = new Date();
+  //   const currentDayIndex = (now.getDay() + 6) % 7; // Convert Sunday-Saturday to Monday-Sunday
+  //   const currentMin = now.getHours() * 60 + now.getMinutes();
+  //   let nextAvailableTime = null;
 
-    for (let i = 0; i < 7; i++) {
-      const newHoursIndex = ((currentDayIndex + i) % 7) as keyof ExtendedHours;
-      const newHours = hours[newHoursIndex];
+  //   for (let i = 0; i < 7; i++) {
+  //     const newHoursIndex = ((currentDayIndex + i) % 7) as keyof ExtendedHours;
+  //     const newHours = hours[newHoursIndex];
 
-      if (newHours === null || (newHours && newHours.length === 0)) {
-        continue; // Skip to the next day if the seller is closed or has no hours
-      }
+  //     if (newHours === null || (newHours && newHours.length === 0)) {
+  //       continue; // Skip to the next day if the seller is closed or has no hours
+  //     }
 
-      let foundSlot = false;
+  //     let foundSlot = false;
 
-      if (i === 0) {
-        // Check if the buyer is buying on the same day as the seller's hours
-        let foundSlotOnSameDay = false;
+  //     if (i === 0) {
+  //       // Check if the buyer is buying on the same day as the seller's hours
+  //       let foundSlotOnSameDay = false;
 
-        for (const hourSlot of newHours) {
-          const openTime = hourSlot.open;
-          const closeTime = hourSlot.close;
+  //       for (const hourSlot of newHours) {
+  //         const openTime = hourSlot.open;
+  //         const closeTime = hourSlot.close;
 
-          if (currentMin < openTime) {
-            // If the buyer is buying before the seller's current open slot
-            if (openTime - currentMin >= 30) {
-              // If the time difference is 30 minutes or more, set the pickup time to the seller's opening time
-              nextAvailableTime = new Date(now);
-              nextAvailableTime.setHours(
-                Math.floor(openTime / 60),
-                openTime % 60,
-                0,
-                0
-              );
-              foundSlotOnSameDay = true;
-              break;
-            }
-          } else if (currentMin >= openTime && currentMin + sodt < closeTime) {
-            // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
-            nextAvailableTime = new Date(now);
-            const futureMin = currentMin + sodt;
-            const futureHours = Math.floor(futureMin / 60);
-            const futureMinutes = futureMin % 60;
-            nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
-            foundSlotOnSameDay = true;
-            break;
-          }
-        }
+  //         if (currentMin < openTime) {
+  //           // If the buyer is buying before the seller's current open slot
+  //           if (openTime - currentMin >= 30) {
+  //             // If the time difference is 30 minutes or more, set the pickup time to the seller's opening time
+  //             nextAvailableTime = new Date(now);
+  //             nextAvailableTime.setHours(
+  //               Math.floor(openTime / 60),
+  //               openTime % 60,
+  //               0,
+  //               0
+  //             );
+  //             foundSlotOnSameDay = true;
+  //             break;
+  //           }
+  //         } else if (currentMin >= openTime && currentMin + sodt < closeTime) {
+  //           // If the buyer is buying within the seller's current open slot and the current time plus buffer time is before the closing time
+  //           nextAvailableTime = new Date(now);
+  //           const futureMin = currentMin + sodt;
+  //           const futureHours = Math.floor(futureMin / 60);
+  //           const futureMinutes = futureMin % 60;
+  //           nextAvailableTime.setHours(futureHours, futureMinutes, 0, 0); // Set the pickup time to the current time plus 40 minutes (30 minutes + 10 minutes buffer)
+  //           foundSlotOnSameDay = true;
+  //           break;
+  //         }
+  //       }
 
-        if (foundSlotOnSameDay) {
-          foundSlot = true;
-          break;
-        }
-      } else {
-        // Set the pickup time to the seller's opening time on the next available day
-        const openTime = newHours[0].open;
-        nextAvailableTime = new Date(now);
-        nextAvailableTime.setDate(now.getDate() + i);
-        nextAvailableTime.setHours(
-          Math.floor(openTime / 60),
-          openTime % 60,
-          0,
-          0
-        );
-        foundSlot = true;
-        break;
-      }
+  //       if (foundSlotOnSameDay) {
+  //         foundSlot = true;
+  //         break;
+  //       }
+  //     } else {
+  //       // Set the pickup time to the seller's opening time on the next available day
+  //       const openTime = newHours[0].open;
+  //       nextAvailableTime = new Date(now);
+  //       nextAvailableTime.setDate(now.getDate() + i);
+  //       nextAvailableTime.setHours(
+  //         Math.floor(openTime / 60),
+  //         openTime % 60,
+  //         0,
+  //         0
+  //       );
+  //       foundSlot = true;
+  //       break;
+  //     }
 
-      if (foundSlot) {
-        break;
-      }
-    }
+  //     if (foundSlot) {
+  //       break;
+  //     }
+  //   }
 
-    if (!nextAvailableTime) {
-      return null;
-    }
+  //   if (!nextAvailableTime) {
+  //     return null;
+  //   }
 
-    const formattedEarliestTime = formatPickupTime({
-      pickupTime: nextAvailableTime,
-    });
-    setEarliestPickupTime(formattedEarliestTime);
+  //   const formattedEarliestTime = formatPickupTime({
+  //     pickupTime: nextAvailableTime,
+  //   });
+  //   setEarliestPickupTime(formattedEarliestTime);
 
-    return nextAvailableTime;
-  };
+  //   return nextAvailableTime;
+  // };
   useEffect(() => {
-    const nextAvailableTime = calculateEarliestPickupTime();
+    // const nextAvailableTime = calculateEarliestPickupTime();
     setNextAvailableTime(nextAvailableTime);
   }, []);
 
@@ -168,13 +162,13 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   };
   if (Object.values(hours).every((dayHours) => dayHours === null)) {
     return (
-      <Card className="bg-inherit border-none cursor-not-allowed opacity-50">
-        <CardHeader
-          className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
-        >
+      <Card
+        className={`bg-inherit border-none cursor-not-allowed opacity-50 ${o.className}`}
+      >
+        <CardHeader className={`text-2xl 2xl:text-3xl pb-0 mb-0 `}>
           Earliest pickup not available
         </CardHeader>
-        <CardContent className={`${outfit.className}`}>
+        <CardContent>
           {role === "PRODUCER"
             ? `This Producer has not provided their hours. Please contact them for more
                   information.`

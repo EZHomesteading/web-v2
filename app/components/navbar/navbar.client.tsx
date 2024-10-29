@@ -12,13 +12,12 @@ import { NavUser } from "@/actions/getUser";
 interface NavbarProps {
   user?: NavUser;
   apiKey?: string;
-  isDashboard?: boolean;
   isMarketPage?: boolean;
   isChat?: boolean;
   isHome?: boolean;
   canReceivePayouts: boolean;
   uniqueUrl: string;
-  seller?: boolean;
+  // seller?: boolean;
   harvestMessages:
     | {
         conversationId: string;
@@ -30,11 +29,10 @@ interface NavbarProps {
 const Navbar = ({
   user,
   apiKey,
-  isDashboard = false,
   isMarketPage = false,
   isChat = false,
   isHome = false,
-  seller = false,
+  // seller = false,
   canReceivePayouts,
   uniqueUrl,
   harvestMessages,

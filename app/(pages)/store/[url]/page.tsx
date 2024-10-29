@@ -6,7 +6,7 @@ import { getFollows } from "@/actions/getFollow";
 import { StoreData, getUserStore } from "@/actions/getUser";
 import SessionStorageManager from "@/app/components/sessionStorageManager";
 import { getUserwithCart } from "@/actions/getUser";
-import { ExtendedHours, UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 
 interface StorePageProps {
   params: {
@@ -20,7 +20,6 @@ const DynamicStorePage = dynamic(
     ssr: true,
   }
 );
-
 const StorePage = async ({ params }: StorePageProps) => {
   const { url } = params;
   const store = await getUserStore({ url: url });
@@ -32,11 +31,7 @@ const StorePage = async ({ params }: StorePageProps) => {
         <SessionStorageManager />
       </ClientOnly>
       <DynamicStorePage
-        store={
-          store as unknown as (StoreData | null) & {
-            user: { hours: ExtendedHours };
-          }
-        }
+        store={store}
         user={user as unknown as UserInfo}
         following={following}
         emptyState={

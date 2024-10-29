@@ -223,12 +223,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
       },
     });
 
-    if (user) {
-      user.firstName = user.firstName ?? "";
-      return user;
-    }
-
-    return null;
+    return user;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -237,7 +232,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
 interface User {
   id: string;
   name: string;
-  firstName: string | null;
+  fullName:{ first: string | null; } | null
   image: string | null;
   url: string | null;
   createdAt: Date;
@@ -245,7 +240,7 @@ interface User {
 interface User1 {
   id: string;
   name: string;
-  firstName: string | null;
+  fullName:{ first: string | null; } | null
   image: string | null;
   createdAt: Date;
 }
@@ -259,7 +254,7 @@ interface Review {
   rating: number;
 }
 
-type ReviewerData = Pick<User, "id" | "name" | "firstName" | "image" | "url">;
+type ReviewerData = Pick<User, "id" | "name" | "fullName" | "image" | "url">;
 
 export type ReviewWithReviewer = Review & {
   reviewer: ReviewerData | null;
@@ -269,7 +264,7 @@ const getUserWithBuyReviews = async (
   params: Params
 ): Promise<{
   user: User;
-  reviews: ReviewWithReviewer[];
+  reviews: any;
 } | null> => {
   try {
     const { userId } = params;
@@ -279,7 +274,9 @@ const getUserWithBuyReviews = async (
       select: {
         id: true,
         name: true,
-        firstName: true,
+        fullName: {
+          select: {first:true}
+        },
         image: true,
         url: true,
         createdAt: true,
@@ -300,7 +297,11 @@ const getUserWithBuyReviews = async (
           select: {
             id: true,
             name: true,
-            firstName: true,
+           fullName:{
+            select:{
+              first:true
+            }
+           } ,
             image: true,
             url: true,
           },
@@ -433,7 +434,7 @@ export type StoreData = {
   user: User1 & {
     listings: FinalListingShop[];
   };
-  reviews: ReviewWithReviewer[];
+  reviews:any[];
 };
 interface GetUserLocationParams {
   userId: string;
@@ -516,7 +517,11 @@ const getUserStore = async (
       select: {
         id: true,
         name: true,
-        firstName: true,
+        fullName:{
+          select:{
+            first:true,
+          }
+        },
         image: true,
         bio: true,
         createdAt: true,
@@ -557,7 +562,11 @@ const getUserStore = async (
           select: {
             id: true,
             name: true,
-            firstName: true,
+           fullName:{
+            select:{
+              first:true,
+            }
+           },
             image: true,
             url: true,
           },
@@ -623,7 +632,8 @@ const getUserwithCart = async () => {
 
 export interface NavUser {
   id: string;
-  firstName: string | null;
+  fullName:
+    { first: string | null; } | null
   url: string | null;
   role: UserRole;
   name: string;
@@ -664,7 +674,11 @@ const getNavUser = async (): Promise<NavUser | null> => {
       },
       select: {
         id: true,
-        firstName: true,
+        fullName:{
+          select:{
+            first:true
+          }
+        },
         hasPickedRole: true,
         role: true,
         name: true,

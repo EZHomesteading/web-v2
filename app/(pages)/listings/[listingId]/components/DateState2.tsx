@@ -5,7 +5,6 @@ import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { SheetTrigger } from "@/app/components/ui/sheet";
 import { useState } from "react";
 import "react-datetime-picker/dist/DateTimePicker.css";
-import { Outfit } from "next/font/google";
 import CustomTimeModal2, { ValidTime } from "./CustomTimeModal2";
 import { Button } from "../../../../components/ui/button";
 import axios from "axios";
@@ -14,15 +13,8 @@ import { toast } from "sonner";
 import SoonExpiryModal from "./soonExpiryModal";
 import { addDays, format } from "date-fns";
 import { FinalListing } from "@/actions/getListings";
-import { Location } from "@/actions/getCart";
-import { Order } from "@prisma/client";
-import { ExtendedHours } from "@/next-auth";
-
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Availability, Location, Order } from "@prisma/client";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface StatusProps {
   onSetTime: (childTime: Date) => void;
@@ -40,7 +32,7 @@ interface Body {
   quantity: string;
   totalPrice: number;
   status: number;
-  location: Location;
+  location: Location | null;
 }
 const DateState2 = ({
   listing,
@@ -153,7 +145,7 @@ const DateState2 = ({
       <CustomTimeModal2
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        hours={listing.location.hours as unknown as ExtendedHours}
+        hours={listing?.location?.hours as unknown as Availability}
         onSetTime={handleTimer}
       />
       <SheetTrigger className="w-full">
@@ -175,7 +167,7 @@ const DateState2 = ({
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         sellerRole={listing.user.role}
-        hours={listing.location.hours as unknown as ExtendedHours}
+        hours={listing?.location?.hours as unknown as Availability}
         onSetTime={handleTimer}
         sodt={sodt}
       >
@@ -183,11 +175,11 @@ const DateState2 = ({
           <SheetTrigger className="h-full w-full">
             <Card className="bg-inherit border-none">
               <CardHeader
-                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfit.className}`}
+                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${o.className}`}
               >
                 Set a custom pickup time{" "}
               </CardHeader>
-              <CardContent className={`${outfit.className} mt-2`}>
+              <CardContent className={`${o.className} mt-2`}>
                 Not in a rush? Feel free to set a pick up anytime within the
                 freshness window of your cart items and this co-op&apos;s open
                 hours.
