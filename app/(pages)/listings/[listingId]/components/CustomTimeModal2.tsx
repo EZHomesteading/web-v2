@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 
 import Modal from "@/app/components/modals/chatmodals/Modal";
 
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import {
   Popover,
   PopoverTrigger,
@@ -15,24 +14,18 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/app/components/ui/calendar";
 import { Separator } from "@/app/components/ui/separator";
-import { ExtendedHours } from "@/next-auth";
-import { Outfit, Zilla_Slab } from "next/font/google";
 import { IoStorefrontOutline } from "react-icons/io5";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
+import { Availability } from "@prisma/client";
+import {
+  o,
+  z,
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-const zilla = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500"],
-});
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
-  hours: ExtendedHours;
+  hours: Availability;
   onSetTime: (childTime: ValidTime) => void;
 }
 export type ValidTime = { pickupTime: Date };
@@ -69,45 +62,45 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
     else return 30;
   };
   // Function to build an array of available time options
-  const buildArray = async () => {
-    // Early return if date is undefined
-    if (date === undefined || hours === null) {
-      return;
-    }
-    const currentMin = now.getHours() * 60 + now.getMinutes();
-    const newHoursIndex = (date.getDay() + 6) % 7;
-    const newHours = hours[newHoursIndex as keyof ExtendedHours];
-    if (newHours === null || newHours === undefined || newHours.length === 0) {
-      return; //early return if co-op is closed, hours are undefined, or hours array is empty
-    }
-    const resultantArray = [];
-    const roundedMin = roundNumber(currentMin);
-    if (date.getDate() < now.getDate()) {
-      return;
-    }
-    // If the selected date is today and the current time is past the opening time
-    if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
-      // Add time options from the current rounded time to the closing time
-      for (let i = roundedMin; i <= newHours[0].close; i += 30) {
-        const time = formatTime(i);
-        resultantArray.push(time);
-      }
-      setOptions(resultantArray);
-      return;
-    }
+  // const buildArray = async () => {
+  //   // Early return if date is undefined
+  //   if (date === undefined || hours === null) {
+  //     return;
+  //   }
+  //   const currentMin = now.getHours() * 60 + now.getMinutes();
+  //   const newHoursIndex = (date.getDay() + 6) % 7;
+  //   const newHours = hours[newHoursIndex as keyof ExtendedHours];
+  //   if (newHours === null || newHours === undefined || newHours.length === 0) {
+  //     return; //early return if co-op is closed, hours are undefined, or hours array is empty
+  //   }
+  //   const resultantArray = [];
+  //   const roundedMin = roundNumber(currentMin);
+  //   if (date.getDate() < now.getDate()) {
+  //     return;
+  //   }
+  //   // If the selected date is today and the current time is past the opening time
+  //   if (date.getDate() === now.getDate() && currentMin > newHours[0].open) {
+  //     // Add time options from the current rounded time to the closing time
+  //     for (let i = roundedMin; i <= newHours[0].close; i += 30) {
+  //       const time = formatTime(i);
+  //       resultantArray.push(time);
+  //     }
+  //     setOptions(resultantArray);
+  //     return;
+  //   }
 
-    // Add time options from the opening time to the closing time
-    for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
-      const time = formatTime(i);
-      resultantArray.push(time);
-    }
-    setOptions(resultantArray);
-  };
+  //   // Add time options from the opening time to the closing time
+  //   for (let i = newHours[0].open; i <= newHours[0].close; i += 30) {
+  //     const time = formatTime(i);
+  //     resultantArray.push(time);
+  //   }
+  //   setOptions(resultantArray);
+  // };
 
   // useEffect hook to rebuild the options array whenever the date changes
   useEffect(() => {
     setOptions([]);
-    buildArray();
+    // buildArray();
   }, [date]);
 
   // Function to insert a time string into a datetime object
@@ -149,7 +142,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className={`${outfit.className} font-semibold text-xl mb-1`}>
+      <h1 className={`${o.className} font-semibold text-xl mb-1`}>
         Pick a Date & Time
       </h1>
       <div>
@@ -158,30 +151,30 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${zilla.className} bg-neutral-100 shadow-md mb-1`}
+                className={`${z.className} bg-neutral-100 shadow-md mb-1`}
               >
                 <IoStorefrontOutline className="mr-2 h-4 w-4" />
                 <span>View Farm Hours</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${o.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
-              <HoursDisplay coOpHours={hours} />
+              {/* <HoursDisplay coOpHours={hours} /> */}
             </PopoverContent>
           </Popover>
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${zilla.className} bg-neutral-100 shadow-md mb-2`}
+                className={`${z.className} bg-neutral-100 shadow-md mb-2`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {date ? format(date, "PPP") : <span>Set Pickup Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${o.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
               <Calendar
                 mode="single"
@@ -209,20 +202,20 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
                   if (selectedDate < today) {
                     return (
-                      <div className={`${zilla.className} text-sm`}>
+                      <div className={`${z.className} text-sm`}>
                         Date has passed
                       </div>
                     );
                   } else if (!options.length) {
                     return (
-                      <div className={`${zilla.className} text-sm`}>
+                      <div className={`${z.className} text-sm`}>
                         Closed on {format(date, "EEEE")}
                       </div>
                     );
                   } else {
                     return (
                       <h4
-                        className={`${outfit.className} mb-4 text- font-medium leading-none`}
+                        className={`${o.className} mb-4 text- font-medium leading-none`}
                       >
                         Select a Time
                       </h4>
@@ -234,7 +227,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                   <div key={option} className="hover:bg-slate">
                     <div onClick={onClose}>
                       <div
-                        className={`${zilla.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
+                        className={`${z.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
                         onClick={() => {
                           setTime(option);
                           onClose;

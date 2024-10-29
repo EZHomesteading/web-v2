@@ -1,20 +1,13 @@
 "use client";
-import { IoMdNotificationsOutline } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { getStatusText } from "@/app/components/icons/notification-order-status";
 import Link from "next/link";
-import { Outfit } from "next/font/google";
-import { navBuyOrder, navSellOrder } from "@/next-auth";
 import { formatDistanceToNow } from "date-fns";
 import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { PiBellThin } from "react-icons/pi";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["200"],
-});
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { navBuyOrder, navSellOrder } from "order-types";
 
 interface Props {
   bOrders?: navBuyOrder[];
@@ -96,13 +89,13 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
             }`}
           />
           <div
-            className={`${outfit.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
+            className={`${o.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
           >
             {notifications.length}
           </div>
 
           <div
-            className={`text-xs pb-2 font-thin sm:pb-0 ${outfit.className} ${
+            className={`text-xs pb-2 font-thin sm:pb-0 ${o.className} ${
               white ? "text-white" : "text-black"
             }`}
           >
@@ -117,7 +110,7 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
               href={`/chat/${notification.conversationId}`}
             >
               <SheetTrigger
-                className={`${outfit.className} border-neutral-200 border-b-[1px] min-w-full`}
+                className={`${o.className} border-neutral-200 border-b-[1px] min-w-full`}
               >
                 <div className="relative">
                   <div className="flex justify-start items-center text-start text-white bg-slate-500 pl-2 py-3">

@@ -4,10 +4,7 @@ import { o } from "@/app/selling/(container-selling)/availability-calendar/(comp
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-interface p {
-  isChat?: boolean;
-}
-const Logo = ({ isChat = false }: p) => {
+const Logo = () => {
   const pathname = usePathname();
   const white = pathname === "/";
   const href = pathname?.startsWith("/selling")

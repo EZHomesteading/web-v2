@@ -2,8 +2,7 @@ import { Outfit } from "next/font/google";
 // import Link from "next/link";
 // import { PiArrowLeftThin } from "react-icons/pi";
 import Navbar from "../components/navbar/Navbar";
-import { getNavUser } from "@/actions/getUser";
-import { navUser } from "@/next-auth";
+import { getNavUser, NavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,7 +20,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       <div
         className={`pt-1 sm:pt-0 sheet min-h-screen w-full ${outfit.className} `}
       >
-        <Navbar user={user as unknown as navUser} />
+        <Navbar user={user as unknown as NavUser} />
         {children}
       </div>
     </div>

@@ -1,15 +1,12 @@
 "use client";
 //listing information component, displays user selling and follow button
-import { UserInfo } from "@/next-auth";
 import { useRouter } from "next/navigation";
-import FollowButton from "../follow/followButton";
-import Avatar from "../Avatar";
-import { Outfit } from "next/font/google";
+import FollowButton from "@/app/components/follow/followButton";
+import Avatar from "@/app/components/Avatar";
 import Link from "next/link";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { UserInfo } from "next-auth";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+
 interface ListingInfoProps {
   description: string;
   followUserId: string;
@@ -43,7 +40,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             items-center
           "
       >
-        <span style={{ marginRight: "5px" }} className={`${outfit.className}`}>
+        <span style={{ marginRight: "5px" }} className={`${o.className}`}>
           Sold by
         </span>
         <span

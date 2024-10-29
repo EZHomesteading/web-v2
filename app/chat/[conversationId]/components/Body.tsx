@@ -7,7 +7,6 @@ import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
 import { find } from "lodash";
 import { $Enums, Order, Reviews } from "@prisma/client";
-import { ExtendedHours, UserInfo } from "@/next-auth";
 import { format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 import { Outfit } from "next/font/google";
@@ -41,6 +40,7 @@ import {
 import { PiGavel } from "react-icons/pi";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { MdOutlineRateReview } from "react-icons/md";
+import { UserInfo } from "next-auth";
 
 interface BodyProps {
   initialMessages: FullMessageType[];

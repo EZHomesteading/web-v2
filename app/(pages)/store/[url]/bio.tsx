@@ -6,16 +6,10 @@ import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { UserInfo } from "@/next-auth";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
-import { Outfit } from "next/font/google";
-
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-  style: "normal",
-});
+import { UserInfo } from "next-auth";
 
 interface Props {
   reviews?: ReviewWithReviewer[];
@@ -63,9 +57,7 @@ const Bio = ({ user, reviews }: Props) => {
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
             <Avatar image={user?.image} />
-            <div
-              className={`${outfit.className} weight-100 flex flex-col ml-2`}
-            >
+            <div className={`${o.className} weight-100 flex flex-col ml-2`}>
               <div className="flex flex-col items-start gap-x-2">
                 <div className="font-bold text-xl lg:text-2xl">
                   {user?.name}
@@ -89,10 +81,10 @@ const Bio = ({ user, reviews }: Props) => {
           </div>
           {user?.bio && (
             <>
-              {!user?.firstName ? (
+              {!user?.fullName?.first ? (
                 <>Bio</>
               ) : (
-                <h1>{user?.firstName}&apos;s Bio</h1>
+                <h1>{user?.fullName?.first}&apos;s Bio</h1>
               )}
               <Card>
                 <CardContent className="py-2">{user?.bio}</CardContent>
@@ -100,9 +92,7 @@ const Bio = ({ user, reviews }: Props) => {
             </>
           )}
           {total === 0 ? (
-            <div
-              className={`${outfit.className} flex justify-center text-2xl mt-5`}
-            >
+            <div className={`${o.className} flex justify-center text-2xl mt-5`}>
               No reviews found
             </div>
           ) : (

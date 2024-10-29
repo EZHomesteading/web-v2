@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PiArrowCircleRightThin, PiArrowRightThin } from "react-icons/pi";
+import { PiArrowCircleRightThin } from "react-icons/pi";
 interface p {
   title?: string;
   href: string;

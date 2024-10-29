@@ -9,8 +9,8 @@ import ListingReservation from "@/app/(pages)/listings/[listingId]/components/Li
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { FinalListing } from "@/actions/getListings";
-import { UserInfo } from "@/next-auth";
 import { User } from "@prisma/client";
+import { UserInfo } from "next-auth";
 
 interface ListingClientProps {
   listing: FinalListing & { description: string };
@@ -41,7 +41,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
     listingRole,
     listingUser,
   });
-  const [isLoading, setIsLoading] = useState(false);
   //adjusting listings shelflife to be accurate. and be in date format.
   const adjustedListing = {
     ...listing,
@@ -82,7 +81,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
-              disabled={isLoading}
               sodt={[listing.SODT, listing.user.SODT]}
               rating={listing.rating}
             />

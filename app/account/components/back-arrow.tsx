@@ -2,7 +2,8 @@ import Link from "next/link";
 import { PiArrowLeftThin } from "react-icons/pi";
 
 const BackArrow = ({ nav }: { nav: string }) => {
-  const link = nav === "sell" ? "/selling" : "/account";
+  let link = "/account";
+  if (nav === "sell") link = "/selling";
   return (
     <div className="absolute md:hidden  h-12 w-12 top-0 left-3">
       <Link href={link} className="hover:cursor-pointer">

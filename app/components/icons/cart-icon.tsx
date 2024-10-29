@@ -1,40 +1,20 @@
-import { BsBasket } from "react-icons/bs";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
-import { Outfit, Zilla_Slab } from "next/font/google";
 import { PiBasketThin } from "react-icons/pi";
 import { CartItem } from "@/actions/getCart";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-const zilla = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300"],
-});
-// interface CartItem {
-//   id: string;
-//   quantity: number;
-//   listing: {
-//     imageSrc: string;
-//     title: string;
-//     stock: number;
-//     quantityType: string;
-//     user: {
-//       id: string;
-//       name: string;
-//     };
-//   };
-// }
+import {
+  o,
+  z,
+} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface c {
   cart: CartItem[];
 }
+
 const getQuantityWording = (
   quantityType: string,
   quantity: number,
@@ -117,7 +97,7 @@ const CartIcon = ({ cart }: c) => {
   //   return null;
   // }
   return (
-    <div className={`${outfit.className}`}>
+    <div className={`${o.className}`}>
       <Sheet>
         <SheetTrigger className="flex pb-4 sm:pb-2 flex-col items-center">
           <div className="relative">
@@ -129,7 +109,7 @@ const CartIcon = ({ cart }: c) => {
             </div>
           </div>
           <div
-            className={` text-xs font-thin ${outfit.className} ${
+            className={` text-xs font-thin ${o.className} ${
               white ? "text-white" : "text-black"
             }`}
           >
@@ -138,7 +118,7 @@ const CartIcon = ({ cart }: c) => {
         </SheetTrigger>
 
         <SheetContent
-          className={`${outfit.className} bg px-4 py-4 min-h-screen overflow-y-auto`}
+          className={`${o.className} bg px-4 py-4 min-h-screen overflow-y-auto`}
         >
           <SheetHeader className="text-3xl mb-3 font-bold">
             <div className=" flex flex-row justify-start text-nowrap">
@@ -182,7 +162,7 @@ const CartIcon = ({ cart }: c) => {
                     className="w-16 h-16 object-cover rounded-xl"
                   />
                   <div className="flex flex-row justify-between w-full">
-                    <h4 className={`${zilla.className} text-sm font-light`}>
+                    <h4 className={`${z.className} text-sm font-light`}>
                       {getQuantityWording(
                         item.listing.quantityType
                           ? item.listing.quantityType

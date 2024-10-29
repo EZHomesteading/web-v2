@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { FieldErrors, UseFormRegister, RegisterOptions } from "react-hook-form";
 import { FormValues } from "./types";
 import { BiDollar } from "react-icons/bi";

@@ -3,7 +3,7 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import { Location } from "@/actions/getListings";
+import { Location } from "@prisma/client";
 
 interface MapProps {
   location: Location | null;

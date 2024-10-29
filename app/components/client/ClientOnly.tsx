@@ -1,6 +1,6 @@
 "use client";
 //set items as client only components
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface ClientOnlyProps {
   children: React.ReactNode; // Child components to be rendered conditionally

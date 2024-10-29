@@ -7,12 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/app/components/ui/dropdown-menu";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { LogoutButton } from "@/app/components/auth/login/logout-button";
 
 export const UserButton = () => {
-  const user = useCurrentUser();
-
   return (
     <DropdownMenu>
       <DropdownMenuContent className="w-40" align="end">

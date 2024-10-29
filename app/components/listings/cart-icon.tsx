@@ -1,8 +1,7 @@
 "use client";
 //cart icon component, handles toggler cart
-import { BiBasket } from "react-icons/bi";
 import useCart from "@/hooks/listing/use-cart";
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
   listingId: string;

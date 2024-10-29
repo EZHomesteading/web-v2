@@ -3,24 +3,17 @@
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
 import ClientOnly from "@/app/components/client/ClientOnly";
-import OpenStatus from "@/app/(pages)/store/[url]/hours-status";
 import Avatar from "@/app/components/Avatar";
-import { Outfit } from "next/font/google";
 import Bio from "./bio";
 import FollowButton from "@/app/components/follow/followButton";
 import { FinalListingShop, StoreData } from "@/actions/getUser";
-import { ExtendedHours, UserInfo } from "@/next-auth";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-  style: "normal",
-});
+import { UserInfo } from "next-auth";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface StorePageProps {
-  store: (StoreData | null) & { user: { hours: ExtendedHours } };
+  store: any;
   user?: UserInfo;
   emptyState: React.ReactNode;
   following:
@@ -55,16 +48,11 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
               <Avatar image={``} />
             )}
 
-            <div
-              className={`${outfit.className} weight-100 flex flex-col ml-2`}
-            >
+            <div className={`${o.className} weight-100 flex flex-col ml-2`}>
               <div className="flex flex-row items-center gap-x-2">
                 <div className="font-bold text-2xl lg:text-4xl">
                   {store?.user?.name}
                 </div>
-                {store?.user?.hours && (
-                  <OpenStatus hours={store?.user?.hours} />
-                )}
               </div>
 
               <div>{store?.user?.firstName}</div>

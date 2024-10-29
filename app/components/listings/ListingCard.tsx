@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import CartIcon from "@/app/components/listings/cart-icon";
 import { Button } from "@/app/components/ui/button";
-import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
 import {
@@ -30,13 +29,8 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
-
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-  weight: ["200"],
-});
-
+import { UserInfo } from "next-auth";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 const work = Work_Sans({
   display: "block",
   subsets: ["latin"],
@@ -179,7 +173,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
         <div className="font-semibold text-lg">
           {" "}
-          <div className={`${outfit.className} text-lg`}>{data.title}</div>
+          <div className={`${o.className} text-lg`}>{data.title}</div>
           <div
             className={`font-light text-neutral-500 text-xs ${work.className}`}
           >

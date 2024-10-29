@@ -12,7 +12,7 @@ import {
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import Cancel from "@/app/components/icons/cancel-svg";
 import Link from "next/link";
-import { CiCircleInfo, CiSquarePlus } from "react-icons/ci";
+import { CiCircleInfo } from "react-icons/ci";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import Image from "next/image";

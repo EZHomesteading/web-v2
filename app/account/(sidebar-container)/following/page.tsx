@@ -2,12 +2,9 @@
 import EmptyState from "@/app/components/EmptyState";
 import ClientOnly from "@/app/components/client/ClientOnly";
 import FavoritesClient from "./FavoritesClient";
-import authCache from "@/auth-cache";
 import { getFollows } from "@/actions/getFollow";
-import { UserInfo } from "@/next-auth";
 
 const ListingPage = async () => {
-  const session = await authCache();
   const followarr = await getFollows();
   const follows = followarr?.follows;
   if (!follows) {

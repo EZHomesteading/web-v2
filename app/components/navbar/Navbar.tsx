@@ -1,12 +1,12 @@
 //default navbar parent element
 
 import NavbarClient from "@/app/components/navbar/navbar.client";
-import { Location, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
 
 import getHarvestMessages from "@/actions/getHarvestMessages";
-import { getUserLocations, NavUser } from "@/actions/getUser";
+import { NavUser } from "@/actions/getUser";
 
 interface p {
   user?: NavUser;
@@ -60,7 +60,7 @@ const Navbar = async ({
       apiKey={apiKey}
       canReceivePayouts={canReceivePayouts}
       uniqueUrl={uniqueUrl}
-      isDashboard={isDashboard}
+      // isDashboard={isDashboard}
       isMarketPage={isMarketPage}
       isChat={isChat}
       isHome={isHome}

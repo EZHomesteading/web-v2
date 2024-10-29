@@ -9,13 +9,8 @@ import {
   CardFooter,
 } from "@/app/components/ui/card";
 import { Progress } from "@/app/components/ui/progress";
-import { Outfit } from "next/font/google";
 import AnimatedResultBar from "./progress-bar.animated";
-import DashboardSVG from "@/app/components/navbar/icons/dashboard.svg";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface Option {
   text: string;
@@ -158,9 +153,7 @@ const RoleSuitabilityTest: React.FC = () => {
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
-    <Card
-      className={`${outfit.className} w-full max-w-2xl mx-auto border-none`}
-    >
+    <Card className={`${o.className} w-full max-w-2xl mx-auto border-none`}>
       <CardHeader>
         {!showingResult && (
           <CardTitle>EZ Homesteading Role Suitability Test</CardTitle>

@@ -3,7 +3,6 @@ import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import FollowCard from "@/app/components/follow/FollowCard";
 import { getFavCardUser } from "@/actions/getUser";
-import { UserInfo } from "@/next-auth";
 
 interface FavoritesClientProps {
   follows: string[];
