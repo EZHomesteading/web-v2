@@ -157,6 +157,7 @@ model User {
   name          String
   email         String     @unique
   fullName      fullName?
+  // firstName     String?
   emailVerified DateTime?
   phoneNumber   String?
   locations     Location[]

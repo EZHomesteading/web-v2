@@ -1,10 +1,11 @@
+
+
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
-import { getAccountByUserId } from "./data/account";
-import {  Notification, TimeSlot, UserRole } from "@prisma/client";
+import {  fullName, Notification,  UserRole } from "@prisma/client";
 
 export const {
   handlers: { GET, POST },
@@ -21,17 +22,7 @@ export const {
       if (account?.provider !== "credentials") return true;
       return true;
     },
-    async authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; 
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
-      return true;
-    },
+  
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
@@ -41,7 +32,7 @@ export const {
       }
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.firstName = (token.firstName as string) ?? "";
+        session.user.fullName = token.fullName as fullName
         session.user.name = token.name;
         session.user.email = token.email ?? "";
         session.user.phoneNumber = token.phoneNumber as string | undefined;
@@ -56,7 +47,7 @@ export const {
         session.user.seenMessageIds = token.seenMessageIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
-        session.user.notifications = token.notifications as Notification;
+        session.user.notifications = token.notifications as Notification[];
         session.user.SODT = token.SODT as number | undefined;
         session.user.bio = token.bio as string | undefined;
         session.user.banner = token.banner as string | undefined;
@@ -69,29 +60,28 @@ export const {
       if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
-      const existingAccount = await getAccountByUserId(existingUser.id);
       token.id = existingUser.id;
-      token.firstName = existingUser.firstName;
+      token.fullName = existingUser.fullName ?? {first:"", last:""}
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
-      token.phoneNumber = existingUser.phoneNumber;
+      token.phoneNumber = existingUser.phoneNumber ?? "";
       token.image = existingUser.image;
-      token.hasPickedRole = existingUser.hasPickedRole
-      token.url = existingUser.url;
+      token.hasPickedRole = existingUser.hasPickedRole ?? false
+      token.url = existingUser.url ?? "";
       token.role = existingUser.role;
       token.password = existingUser.password;
-      token.stripeAccountId = existingUser.stripeAccountId;
+      token.stripeAccountId = existingUser.stripeAccountId ?? "";
       token.createdAt = existingUser.createdAt;
       token.updatedAt = existingUser.updatedAt;
       token.conversationIds = existingUser.conversationIds;
       token.seenMessageIds = existingUser.seenMessageIds;
-      token.subscriptions = existingUser.subscriptions;
-      token.totalPaidOut = existingUser.totalPaidOut;
+      token.subscriptions = existingUser.subscriptions ?? "";
+      token.totalPaidOut = existingUser.totalPaidOut ?? 0;
       token.notifications = existingUser.notifications;
-      token.SODT = existingUser.SODT;
-      token.bio = existingUser.bio;
-      token.banner = existingUser.banner;
+      token.SODT = existingUser.SODT ?? 0;
+      token.bio = existingUser.bio ?? "";
+      token.banner = existingUser.banner ?? "";
       token.openClosedTemplates = existingUser.openCloseTemplates
       return token;
     },
