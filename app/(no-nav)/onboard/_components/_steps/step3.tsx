@@ -7,9 +7,9 @@ import PlacesAutocomplete, {
   getLatLng,
   Suggestion,
 } from "react-places-autocomplete";
-import { Location, UserRole } from "@prisma/client";
-import OnboardContainer from "../../onboard.container";
+import { UserRole } from "@prisma/client";
 import { LocationObj } from "location-types";
+import OnboardContainer from "@/app/onboard/onboard.container";
 
 interface Props {
   role?: UserRole;

@@ -1,14 +1,14 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import {
   PiArrowsCounterClockwiseThin,
   PiCalendarBlankThin,
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import OnboardContainer, { zillaFont } from "../../onboard.container";
-import { Location } from "@prisma/client";
 import { outfitFont } from "@/components/outfit.font";
 import { LocationObj } from "location-types";
+import OnboardContainer from "@/app/onboard/onboard.container";
+import { z } from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface StepFiveProps {
   location?: LocationObj;
@@ -120,7 +120,7 @@ const StepFour: React.FC<StepFiveProps> = ({
                   key={idx}
                   className={` ${
                     selectedOption.includes(option.label) && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
+                  } mt-2 text-sm text-neutral-600 ${z.className} `}
                 >
                   {line}
                 </p>

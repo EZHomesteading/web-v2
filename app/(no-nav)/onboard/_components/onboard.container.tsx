@@ -1,6 +1,6 @@
 import React from "react";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { Zilla_Slab } from "next/font/google";
+import { outfitFont, zillaFont } from "@/components/outfit.font";
 interface SectionLayoutProps {
   title?: string;
   descriptions?: string[];
@@ -12,11 +12,7 @@ interface SectionLayoutProps {
   titleRight?: React.ReactNode;
   centerTitle?: boolean;
 }
-export const zillaFont = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300"],
-});
+
 const OnboardContainer = ({
   title,
   descriptions = [],
@@ -30,7 +26,7 @@ const OnboardContainer = ({
 }: SectionLayoutProps) => {
   return (
     <div
-      className={`${o.className} flex flex-col justify-start h-full w-full ${className} !select-none mb-6`}
+      className={`${outfitFont.className} flex flex-col justify-start h-full w-full ${className} !select-none mb-6`}
     >
       <div className="flex flex-col items-center w-full ">
         <div

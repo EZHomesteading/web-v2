@@ -8,7 +8,7 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import PaymentComponent from "../payment-component";
+import PaymentComponent from "./payment-component";
 import axios from "axios";
 import { Outfit } from "next/font/google";
 import { JsonValue } from "@prisma/client/runtime/library";

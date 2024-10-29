@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import OnboardContainer from "../../onboard.container";
 import { LocationObj } from "location-types";
+import OnboardContainer from "@/app/onboard/onboard.container";
 
 interface StepFourProps {
   location?: LocationObj;

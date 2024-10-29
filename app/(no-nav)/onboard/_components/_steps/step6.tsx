@@ -6,9 +6,9 @@ import React, {
   SetStateAction,
 } from "react";
 import { Button } from "@/components/ui/button";
-import OnboardContainer from "../../onboard.container";
 import { Location } from "@prisma/client";
 import { LocationObj } from "location-types";
+import OnboardContainer from "@/app/onboard/onboard.container";
 
 interface StepFiveProps {
   location?: LocationObj;

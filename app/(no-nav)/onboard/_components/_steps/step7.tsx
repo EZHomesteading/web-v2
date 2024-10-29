@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-import OnboardContainer from "../../onboard.container";
 import { PiTrashThin } from "react-icons/pi";
-import { Location } from "@prisma/client";
 import {
   checkOverlap,
   convertMinutesToTimeString,
@@ -12,6 +9,7 @@ import {
 } from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import TimePicker from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/time-slot";
 import { LocationObj } from "location-types";
+import OnboardContainer from "@/app/onboard/onboard.container";
 
 interface StepSixProps {
   user: any;

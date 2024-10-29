@@ -6,15 +6,9 @@ interface p {
   fulfillmentStyle?: string;
   street?: string;
   formDataStreet?: string;
-  step: number;
 }
 
-const OnboardHeader = ({
-  fulfillmentStyle,
-  street,
-  formDataStreet,
-  step,
-}: p) => {
+const OnboardHeader = ({ fulfillmentStyle, street, formDataStreet }: p) => {
   const [isAtTop, setIsAtTop] = useState(true);
 
   useEffect(() => {

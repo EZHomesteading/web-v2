@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { LocationObj, UserInfo } from "@/next-auth";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
@@ -18,7 +17,9 @@ import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
 import StepNine from "@/app/(no-nav)/onboard/_components/_steps/step9";
 import OnboardHeader from "./header.onboard";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { UserInfo } from "next-auth";
+import { LocationObj } from "location-types";
+import { outfitFont } from "@/components/outfit.font";
 
 interface Props {
   user: UserInfo;
@@ -307,7 +308,6 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           {step > 0 && (
             <OnboardHeader
               street={formData?.location?.address[0]}
-              step={step}
               formDataStreet={formData?.location?.address[0]}
               fulfillmentStyle={formData?.fulfillmentStyle}
             />
@@ -397,7 +397,9 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         <div
           className={`fixed bottom-0 left-0 w-full bg-white lg:bg-transparent border-t lg:border-none z`}
         >
-          <div className={`flex justify-between px-4 py-2 ${o.className} `}>
+          <div
+            className={`flex justify-between px-4 py-2 ${outfitFont.className} `}
+          >
             {step > 1 && step < 9 && (
               <Button onClick={handlePrevious} variant="outline">
                 Back

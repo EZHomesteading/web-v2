@@ -3,7 +3,7 @@ import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Loading from "@/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
-import LocationSearchInput from "../../components/map/LocationSearchInput";
+import LocationSearchInput from "@/components/map/LocationSearchInput";
 
 interface MapProps {
   mk: string;
@@ -28,7 +28,7 @@ const customSvgMarker = `
 const Map = ({
   mk,
   showSearchBar = true,
-  center,
+  center = { lat: 38, lng: -79 },
   h,
   w,
   z = 14,
@@ -36,9 +36,8 @@ const Map = ({
   maxZ = 15,
 }: MapProps) => {
   const [address, setAddress] = useState("");
-  const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
-    center || { lat: 38, lng: -79 }
-  );
+  const [currentCenter, setCurrentCenter] =
+    useState<google.maps.LatLngLiteral>(center);
   const [zoom, setZoom] = useState(z);
 
   const mapRef = useRef<google.maps.Map | null>(null);

@@ -1,13 +1,12 @@
-import { UserInfo } from "@/next-auth";
 import { UserRole } from "@prisma/client";
 import axios from "axios";
-import { GiFruitTree } from "react-icons/gi";
-import { IoStorefrontOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { useState } from "react";
-import OnboardContainer, { zillaFont } from "../../onboard.container";
 import { PiPlantThin, PiStorefrontThin } from "react-icons/pi";
+import { UserInfo } from "next-auth";
+import OnboardContainer from "@/app/onboard/onboard.container";
+import { outfitFont } from "@/components/outfit.font";
+import { z } from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface p {
   user: UserInfo;
@@ -93,7 +92,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
               setSelectedIndex(index);
             }}
             className={`${
-              o.className
+              outfitFont.className
             } flex flex-col shadow-md items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
               selectedIndex === index
                 ? "bg-black text-white"
@@ -112,7 +111,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
                   key={idx}
                   className={` ${
                     selectedIndex === index && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
+                  } mt-2 text-sm text-neutral-600 ${z.className} `}
                 >
                   {line}
                 </p>
