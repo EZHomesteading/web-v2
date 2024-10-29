@@ -1,0 +1,7 @@
+This layout is specifically for pages that do not have a navbar and generally have a white background,
+it differs from no_nav_auth_layout, which has a different color background and an image in the bottom 
+left corner on larger screens
+
+http://localhost:3000/onboard
+http://localhost:3000/create
+http://localhost:3000/project-harvest
