@@ -1,9 +1,8 @@
 declare module "order-types" {
-
   type navSellOrder = {
     id: string;
     conversationId: string | null;
-    status: number;
+    status: string;
     updatedAt: Date;
     seller: {
       name: string;
@@ -16,7 +15,7 @@ declare module "order-types" {
   type navBuyOrder = {
     id: string;
     conversationId: string | null;
-    status: number;
+    status: string;
     updatedAt: Date;
     seller: {
       name: string;
@@ -25,8 +24,4 @@ declare module "order-types" {
       name: string;
     } | null;
   };
-  
- 
 }
-
-
