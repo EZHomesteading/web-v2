@@ -31,8 +31,7 @@ interface Props {
 
 const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   const router = useRouter();
-  // locations?.length !== 0 ? 2 : index
-  const [step, setStep] = useState(7);
+  const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [prevSelectedDays, setPrevSelectedDays] = useState<string[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -109,7 +108,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     try {
       // 3 not 1000
       if (step === 3 && !formData.locationId) {
-        if (locations && locations?.length < 3) {
+        if (locations && locations?.length > 3) {
           toast.error(
             "You already have the maximum number of locations. Sending you to Add a Product page."
           );

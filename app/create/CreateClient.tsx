@@ -216,7 +216,6 @@ const CreateClient = ({
   };
 
   //geocoding from autocompleted adress inputs
-
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -230,28 +229,28 @@ const CreateClient = ({
       keyWords: tags,
       title: title,
       SODT: parseInt(data.sodt),
-      minOrder: parseInt(data.minOrder),
       description: description,
-      category: category,
-      subCategory: subCategory,
-      projectedStock:
-        projectHarvest === false ? parseInt(data.projectedStock) : null,
-      harvestFeatures: projectHarvest === false ? true : null,
-      harvestDates: projectHarvest === false ? data.harvestDates : [],
-      rating: rating,
-      price: formattedPrice,
       imageSrc: imageSrc,
-      stock: projectHarvest === false ? 0 : parseInt(data.stock, 10),
-      shelfLife: shelfLife,
+      category: category,
       quantityType:
         data.quantityType === "none" || data.quantityType === "each"
           ? ""
           : data.quantityType,
-      locationId: data.locationId,
+      stock: projectHarvest === false ? 0 : parseInt(data.stock, 10),
+      shelfLife: shelfLife,
+      minOrder: parseInt(data.minOrder),
+      harvestDates: projectHarvest === false ? data.harvestDates : [],
+      projectedStock:
+        projectHarvest === false ? parseInt(data.projectedStock) : null,
+      harvestFeatures: projectHarvest === false ? true : null,
+      price: formattedPrice,
+      subCategory: subCategory,
+      rating: rating,
       review: review === true ? true : null,
       reports: review === true ? 1 : null,
+      locationId: data.locationId,
     };
-    console.log(formData);
+    console.log("FORMDATA", formData);
     try {
       const listingResponse = await axios.post(
         "/api/listing/listings",

@@ -414,7 +414,10 @@ const MenuIcon = ({ image }: p) => {
   const pathname = usePathname();
   return (
     <>
-      <PopoverTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
+      <PopoverTrigger
+        asChild
+        className="flex flex-col items-center sm:hidden hover:cursor-pointer"
+      >
         <IconWrapper
           icon={iconMap.CiMenuFries}
           label="Menu"
