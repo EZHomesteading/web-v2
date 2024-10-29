@@ -8,16 +8,16 @@ import { FullMessageType } from "@/types";
 import { find } from "lodash";
 import { $Enums, Order, Reviews } from "@prisma/client";
 import { format } from "date-fns";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Outfit } from "next/font/google";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { SheetCartC, SheetContentF } from "@/app/components/ui/review-sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SheetCartC, SheetContentF } from "@/components/ui/review-sheet";
 
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/app/components/ui/popover";
+} from "@/components/ui/popover";
 import Image from "next/image";
 import {
   IoMapOutline,

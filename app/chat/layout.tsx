@@ -1,6 +1,6 @@
 // server side layour for chat page
 import ConversationList from "./components/ConversationList";
-import Navbar from "../components/navbar/Navbar";
+import Navbar from "../../components/navbar/Navbar";
 import { getConversations } from "@/actions/chat/getChat";
 import type { Viewport } from "next";
 import { getNavUser, NavUser } from "@/actions/getUser";
@@ -18,7 +18,7 @@ export default async function ConversationsLayout({
   const navUser = await getNavUser();
   return (
     <div className="min-h-screen bg-chat">
-      <Navbar isChat={true} user={navUser as unknown as NavUser} />
+      <Navbar user={navUser as unknown as NavUser} />
 
       <ConversationList
         title="Messages"

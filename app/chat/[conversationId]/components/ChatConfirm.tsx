@@ -1,8 +1,8 @@
 "use client";
 //modal to confirm that user wants to delete that chat, should only be able to delete if messages are at a finalised state such as completed or cancelled.
 import { Dialog } from "@headlessui/react";
-import Modal from "@/app/components/modals/chatmodals/Modal";
-import Button from "@/app/components/modals/chatmodals/Button";
+import Modal from "@/components/modals/chatmodals/Modal";
+import Button from "@/components/modals/chatmodals/Button";
 
 // type SubmitFunction = () => Promise<void>;
 interface ConfirmModalProps {

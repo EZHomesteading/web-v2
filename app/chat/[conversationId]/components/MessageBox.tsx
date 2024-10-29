@@ -2,7 +2,7 @@
 // message box, handles all styling, logic for messages, and logic for available actions for the entire automated message system.
 //THIS COMPONENT IS ESSENTIALLY A TEXT BASED RPG
 import clsx from "clsx";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import Image from "next/image";
 import React, { useState } from "react";
@@ -27,17 +27,17 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
 import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover-msg";
+} from "@/components/ui/popover-msg";
 import Form from "./Form";
-import Avatar from "@/app/components/Avatar";
+import Avatar from "@/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";

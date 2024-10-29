@@ -3,7 +3,7 @@ import { getConversationById } from "@/actions/chat/getChat";
 import { getMessages } from "@/actions/chat/getChat";
 import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
-import EmptyState from "@/app/components/EmptyState";
+import EmptyState from "@/components/EmptyState";
 import { GetOrderByConvoId } from "@/actions/getOrder";
 import { FullConversationType } from "@/types";
 import { Order, OrderStatus, Reviews } from "@prisma/client";
