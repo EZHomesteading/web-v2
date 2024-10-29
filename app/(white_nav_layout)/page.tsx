@@ -20,7 +20,6 @@ const HomePage = async () => {
     (user?.stripeAccountId
       ? await checkPayoutCapability(user?.stripeAccountId)
       : false) || false;
-  //console.log(user?.hasPickedRole);
   async function checkPayoutCapability(stripeAccountId: string) {
     try {
       const account = await stripe.accounts.retrieve(stripeAccountId);
@@ -30,7 +29,6 @@ const HomePage = async () => {
       return null;
     }
   }
-  console.log("bean", canReceivePayouts);
   if (user && (user.name || user.role === UserRole.CONSUMER) && !user.url) {
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);

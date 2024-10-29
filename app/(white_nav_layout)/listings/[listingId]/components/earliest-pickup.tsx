@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { ValidTime } from "./CustomTimeModal2";
 import { Availability, Hours } from "@prisma/client";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 interface Props {
   hours: Hours;
   onSetTime: (childTime: ValidTime) => void;

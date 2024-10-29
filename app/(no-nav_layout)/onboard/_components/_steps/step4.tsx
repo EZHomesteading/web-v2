@@ -7,7 +7,7 @@ import {
 } from "react-icons/pi";
 import { outfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
-import OnboardContainer from "@/app/onboard/onboard.container";
+import OnboardContainer from "../onboard.container";
 import { z } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface StepFiveProps {

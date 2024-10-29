@@ -117,7 +117,7 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
           </div>
         </div>
       ) : (
-        <div>
+        <div className=" px-5">
           {" "}
           <div className="flex-none ">
             <Heading

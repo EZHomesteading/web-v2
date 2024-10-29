@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
-import { outfitFont } from "./outfit.font";
+import { outfitFont } from "./fonts";
 
 interface EmptyStateProps {
   title?: string;

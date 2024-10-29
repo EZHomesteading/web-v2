@@ -16,7 +16,6 @@ import debounce from "debounce";
 import { Outfit } from "next/font/google";
 import { PiBasketThin, PiMapTrifoldThin } from "react-icons/pi";
 import Fuse from "fuse.js";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { outfitFont } from "../fonts";
 
 type Listing = {

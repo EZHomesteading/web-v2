@@ -7,9 +7,9 @@ import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
 
-import { ValidTime } from "@/app/(nav-white-bg)/listings/[listingId]/components/CustomTimeModal2";
+import { ValidTime } from "@/app/(white_nav_layout)/listings/[listingId]/components/CustomTimeModal2";
 import { Hours } from "@prisma/client";
-import EarliestPickup from "@/app/(nav-white-bg)/listings/[listingId]/components/earliest-pickup";
+import EarliestPickup from "@/app/(white_nav_layout)/listings/[listingId]/components/earliest-pickup";
 
 const outfit = Outfit({
   style: ["normal"],

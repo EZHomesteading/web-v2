@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import CreateClient from "./CreateClient";
+import CreateClient from "./components/CreateClient";
 import type { Viewport } from "next";
 import CreatePopup from "../../(white_nav_layout)/info-modals/create-info-modal";
 import Stripe from "stripe";

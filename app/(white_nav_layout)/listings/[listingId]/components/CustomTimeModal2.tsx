@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { IoStorefrontOutline } from "react-icons/io5";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Availability } from "@prisma/client";
-import { outfitFont, zillaFont } from "@/components/outfit.font";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 interface CustomTimeProps {
   isOpen?: boolean;

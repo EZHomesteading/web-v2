@@ -10,7 +10,7 @@ import { User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
-import { outfitFont, zillaFont } from "@/components/outfit.font";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 interface ListingReservationProps {
   listingId: string;

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
 import { Location } from "@prisma/client";
-import { outfitFont } from "../outfit.font";
+import { outfitFont } from "../fonts";
 
 interface ListingHeadProps {
   title: string;

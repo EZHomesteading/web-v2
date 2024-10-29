@@ -18,10 +18,11 @@ import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
 import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
+import { NavUser } from "@/actions/getUser";
 
 interface MapUser {
-  coordinates: [number, number];
+  coordinates: number[];
   id: string;
 }
 
@@ -38,7 +39,7 @@ interface MapProps {
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
-  user?: UserInfo;
+  user?: NavUser | null;
 }
 
 const libraries: Libraries = ["drawing", "geometry"];
