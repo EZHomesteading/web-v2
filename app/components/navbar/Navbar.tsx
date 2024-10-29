@@ -10,21 +10,13 @@ import { NavUser } from "@/actions/getUser";
 
 interface p {
   user?: NavUser;
-  isDashboard?: boolean;
+  bg?: string;
   isMarketPage?: boolean;
-  isChat?: boolean;
-  isHome?: boolean;
 }
 
 const apiKey = process.env.MAPS_KEY as string;
 
-const Navbar = async ({
-  user,
-  isChat,
-  isDashboard,
-  isMarketPage,
-  isHome,
-}: p) => {
+const Navbar = async ({ user, bg = "bg-inherit", isMarketPage = false }: p) => {
   let uniqueUrl = "";
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
@@ -55,21 +47,22 @@ const Navbar = async ({
 
   const harvestMessages = await getHarvestMessages(user?.id);
   return (
-    <NavbarClient
-      user={user}
-      apiKey={apiKey}
-      canReceivePayouts={canReceivePayouts}
-      uniqueUrl={uniqueUrl}
-      // isDashboard={isDashboard}
-      isMarketPage={isMarketPage}
-      isChat={isChat}
-      isHome={isHome}
-      harvestMessages={harvestMessages}
-    />
+    <>
+      <NavbarClient
+        user={user}
+        apiKey={apiKey}
+        canReceivePayouts={canReceivePayouts}
+        isMarketPage={isMarketPage}
+        uniqueUrl={uniqueUrl}
+        harvestMessages={harvestMessages}
+        bg={bg}
+      />
+    </>
   );
 };
 
 export default Navbar;
+
 async function generateUniqueUrl(displayName: string): Promise<string> {
   let url = convertToUrl(displayName);
   let uniqueUrl = url;

@@ -8,8 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
-import NotificationIcon from "../icons/notification";
-import CartIcon from "@/app/components/icons/cart-icon";
+import NotificationIcon from "./icons/notification";
+import CartIcon from "./icons/cart-icon";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { NavUser } from "@/actions/getUser";
@@ -310,7 +310,7 @@ const UserMenu: React.FC<Props> = ({
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
-                  className={`${o.className} min-h-screen w-screen d1dbbf text-black`}
+                  className={`${o.className} min-h-screen w-screen d1dbbf `}
                 >
                   <div className="h-full flex flex-col items-center justify-center px-10">
                     <ul className="w-full max-w-3xl">
@@ -355,7 +355,7 @@ const UserMenu: React.FC<Props> = ({
                         </li>
                       ))}
                     </ul>
-                    <div className="pt-10 text-xs text-black text-center">
+                    <div className="pt-10 text-xs  text-center">
                       You can switch your account type to either seller role at
                       any time
                     </div>
@@ -388,22 +388,13 @@ const IconWrapper: React.FC<{
   label: string;
   onClick: () => void;
 }> = ({ icon: Icon, label, onClick }) => {
-  const pathname = usePathname();
   return (
     <button
       className="flex flex-col pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer"
       onClick={onClick}
     >
-      <Icon
-        className={`h-8 w-8 ${pathname === "/" ? "text-white" : "text-black"}`}
-      />
-      <div
-        className={`text-xs ${o.className} ${
-          pathname === "/" ? "text-white" : "text-black"
-        }`}
-      >
-        {label}
-      </div>
+      <Icon className={`h-8 w-8  `} />
+      <div className={`text-xs ${o.className} `}>{label}</div>
     </button>
   );
 };
@@ -411,7 +402,6 @@ interface p {
   image: string | null | undefined;
 }
 const MenuIcon = ({ image }: p) => {
-  const pathname = usePathname();
   return (
     <>
       <PopoverTrigger className="flex flex-col items-center sm:hidden hover:cursor-pointer">
@@ -422,11 +412,7 @@ const MenuIcon = ({ image }: p) => {
         />
       </PopoverTrigger>
       <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
-        <iconMap.IoIosMenu
-          className={`w-8 h-8 mr-1 ${
-            pathname === "/" ? "text-white" : "text-black"
-          }`}
-        />
+        <iconMap.IoIosMenu className={`w-8 h-8 mr-1 `} />
         <Image
           src={image || placeholder}
           alt="Profile Image"

@@ -1,5 +1,5 @@
 //server layout for login form
-import { LoginForm } from "@/app/components/auth/login/login-form";
+import { LoginForm } from "@/app/auth/(components)/login/login-form";
 export const metadata = {
   title: "EZHomesteading Login",
   description: "Login to your EZHomesteading Account",

@@ -17,7 +17,7 @@ interface NavbarProps {
   isHome?: boolean;
   canReceivePayouts: boolean;
   uniqueUrl: string;
-  // seller?: boolean;
+  bg: string;
   harvestMessages:
     | {
         conversationId: string;
@@ -29,10 +29,8 @@ interface NavbarProps {
 const Navbar = ({
   user,
   apiKey,
-  isMarketPage = false,
-  isChat = false,
-  isHome = false,
-  // seller = false,
+  isMarketPage,
+  bg,
   canReceivePayouts,
   uniqueUrl,
   harvestMessages,
@@ -51,7 +49,7 @@ const Navbar = ({
   }, []);
 
   const renderHomeNav = () => (
-    <div className="absolute w-full z-[10] bg-emerald-950/70 select-none">
+    <div className={`absolute w-full z-[10] ${bg} select-none !text-black`}>
       <Container>
         <div className="sm:flex sm:justify-between sm:items-center">
           <Logo />
@@ -68,19 +66,13 @@ const Navbar = ({
 
   return (
     <>
-      {isHome && !isSmallScreen ? (
+      {!isSmallScreen ? (
         renderHomeNav()
       ) : (
         <>
           <div
-            className={` top-0 left-0 right-0 sm:py-2 
-                 md:border-b-[1px] z-10 ${
-                   isMarketPage && !isSmallScreen
-                     ? "bg-white sticky"
-                     : isChat && !isSmallScreen
-                     ? "sticky"
-                     : "!bg-inherit relative"
-                 }`}
+            className={`top-0 left-0 right-0 sm:py-2 md:border-b-[1px] z-10 
+            ${isSmallScreen ? "relative" : `sticky ${bg}`}`}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
@@ -135,9 +127,7 @@ const Navbar = ({
       )}
       {isSmallScreen && (
         <div
-          className={`fixed bottom-0 left-0 right-0 bg-inherit border-t border-gray-200 p-2 z-10 ${
-            isHome ? "!bg-emerald-950/70" : "bg-inherit"
-          } `}
+          className={`fixed bottom-0 left-0 right-0 border-t border-gray-200 p-2 z-10 ${bg}`}
         >
           <UserMenu
             user={user}

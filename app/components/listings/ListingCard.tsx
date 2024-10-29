@@ -46,7 +46,7 @@ interface ListingCardProps {
   secondActionId?: string;
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
-  user: UserInfo | null;
+  user?: UserInfo;
   storeUser: UserInfo;
   priority?: boolean;
   review?: boolean | null;

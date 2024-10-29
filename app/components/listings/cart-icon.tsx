@@ -5,7 +5,7 @@ import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
   listingId: string;
-  user: UserInfo | null;
+  user?: UserInfo;
   listingRole: string;
   listingUser: string | undefined;
   listingMin: number | null;

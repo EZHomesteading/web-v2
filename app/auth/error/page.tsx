@@ -1,5 +1,5 @@
 //server layout for auth error
-import { ErrorCard } from "@/app/components/auth/error-card";
+import { ErrorCard } from "@/app/auth/(components)/error-card";
 
 const AuthErrorPage = () => {
   return <ErrorCard />;

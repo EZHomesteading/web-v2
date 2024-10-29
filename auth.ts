@@ -66,7 +66,7 @@ export const {
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber ?? "";
-      token.image = existingUser.image;
+      token.image = existingUser.image ?? "";
       token.hasPickedRole = existingUser.hasPickedRole ?? false
       token.url = existingUser.url ?? "";
       token.role = existingUser.role;

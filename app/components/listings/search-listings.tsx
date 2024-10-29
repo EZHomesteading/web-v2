@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import PlacesAutocomplete, {
   Suggestion,
   geocodeByAddress,
@@ -16,6 +16,8 @@ import debounce from "debounce";
 import { Outfit } from "next/font/google";
 import { PiBasketThin, PiMapTrifoldThin } from "react-icons/pi";
 import Fuse from "fuse.js";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "../outfit.font";
 
 type Listing = {
   title: string;
@@ -25,11 +27,6 @@ type Listing = {
 interface p {
   apiKey: string;
 }
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const getLatLngFromAddress = async (address: string) => {
   const apiKey = process.env.MAPS_KEY as string;
@@ -339,7 +336,7 @@ const SearchLocation = ({ apiKey }: p) => {
   };
   return (
     <div
-      className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfit.className}`}
+      className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfitFont.className}`}
     >
       <PlacesAutocomplete
         value={address}

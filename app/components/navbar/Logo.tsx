@@ -17,11 +17,7 @@ const Logo = () => {
       className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 hidden sm:block`}
     >
       <Link href={href}>
-        <h1
-          className={`${o.className} font-light hover:text-green-800 ${
-            white ? "text-white" : "text-black"
-          }`}
-        >
+        <h1 className={`${o.className} font-light hover:text-green-800`}>
           EZ Homesteading
         </h1>
       </Link>

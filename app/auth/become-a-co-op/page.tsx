@@ -1,5 +1,5 @@
 //server layout for coop conversion
-import { BecomeCoop } from "@/app/components/auth/become/become-co-op-form";
+import { BecomeCoop } from "@/app/auth/(components)/become/become-co-op-form";
 import { currentUser } from "@/lib/auth";
 import { createStripeConnectedAccount } from "@/actions/auth/createconnectedaccount";
 import axios from "axios";

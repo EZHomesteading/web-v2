@@ -1,4 +1,4 @@
-import InfoTemplate from "@/app/info/info-template";
+import InfoTemplate from "@/app/info/(components)/info-template";
 const minOrder = () => {
   return (
     <InfoTemplate

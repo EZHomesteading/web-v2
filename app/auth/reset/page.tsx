@@ -1,5 +1,5 @@
 //server layout for reset password
-import { ResetForm } from "@/app/components/auth/reset-form";
+import { ResetForm } from "@/app/auth/(components)/reset-form";
 
 const ResetPage = () => {
   return <ResetForm />;

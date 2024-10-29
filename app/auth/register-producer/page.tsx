@@ -1,5 +1,5 @@
 //server layout for coop registration
-import { ProducerRegisterForm } from "@/app/components/auth/register/producer-register-form";
+import { ProducerRegisterForm } from "@/app/auth/(components)/register/producer-register-form";
 export const metadata = {
   title: "EZH Producer Registration",
   description:

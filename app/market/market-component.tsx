@@ -11,12 +11,12 @@ import SessionStorageManager from "@/app/components/sessionStorageManager";
 // import { useEffect, useState } from "react";
 // import qs from "query-string";
 import { FinalListing } from "@/actions/getListings";
-import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
+import { UserInfo } from "next-auth";
 
 interface ShopProps {
   listings: FinalListing[];
-  user: UserInfo;
+  user?: UserInfo;
   emptyState: React.ReactNode;
   totalPages: number;
   prevPage: number;
@@ -38,63 +38,10 @@ const Shop = ({
   pageNumbers,
   currentPage,
 }: ShopProps) => {
-  // const router = useRouter();
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [showPopup, setShowPopup] = useState(false);
-
-  // useEffect(() => {
-  //   const getLocation = () => {
-  //     if (navigator.geolocation) {
-  //       navigator.geolocation.getCurrentPosition(
-  //         (position) => {
-  //           const lat = position.coords.latitude;
-  //           const lng = position.coords.longitude;
-  //           const radius = 20; // Set the default radius to 20 (adjust as needed)
-
-  //           const query = {
-  //             lat: lat.toString(),
-  //             lng: lng.toString(),
-  //             radius: radius.toString(),
-  //           };
-
-  //           const url = qs.stringifyUrl(
-  //             {
-  //               url: "/market",
-  //               query,
-  //             },
-  //             { skipNull: true }
-  //           );
-
-  //           router.push(url);
-  //           setIsLoading(false);
-  //         },
-  //         (error) => {
-  //           console.error("Error getting location: ", error);
-  //           setShowPopup(true);
-  //           setIsLoading(false);
-  //         }
-  //       );
-  //     } else {
-  //       console.error("Geolocation is not supported by this browser.");
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   getLocation();
-  // }, []);
   return (
     <ClientOnly>
       <SessionStorageManager />
       <Container>
-        {/* {showPopup && <LocationPermissionPopup />} */}
-        {/* {isLoading ? (
-          <div className="pt-2 md:pt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <SkeletonCard key={index} />
-            ))}
-          </div>
-        ) : (
-          <> */}
         {emptyState || (
           <div className="pt-[140px] pb-[90px] sm:pb-0 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
             {listings.map((listing: FinalListing, index) => (
@@ -110,9 +57,7 @@ const Shop = ({
         )}
         {totalPages > 1 && (
           <>
-            {isPageOutOfRange ? (
-              <></>
-            ) : (
+            {isPageOutOfRange && (
               <div
                 className={`flex justify-center items-end my-4 ${outfit.className}`}
               >
@@ -135,8 +80,6 @@ const Shop = ({
             )}
           </>
         )}
-        {/* </>
-        )} */}
       </Container>
     </ClientOnly>
   );

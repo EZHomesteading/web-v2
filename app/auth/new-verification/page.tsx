@@ -1,5 +1,5 @@
 //server layout for new user
-import { NewVerificationForm } from "@/app/components/auth/new-verification-form";
+import { NewVerificationForm } from "@/app/auth/(components)/new-verification-form";
 
 const NewVerificationPage = () => {
   return <NewVerificationForm />;

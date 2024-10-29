@@ -77,7 +77,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [paymentInfoDecline, setPaymentInfoDecline] = useState(false);
   const handleStockUpdate = (newStock: number) => {
     setStock(newStock);
-    // Here you would typically call an API to update the stock in your backend
   };
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {

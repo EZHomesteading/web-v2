@@ -1,7 +1,7 @@
 "use client";
 //info pages parent component
 import Select from "react-select";
-import useInfoPages from "@/app/info/use-info-pages";
+import useInfoPages from "@/app/info/(components)/use-info-pages";
 
 export type InfoPageValue = {
   label: string;
