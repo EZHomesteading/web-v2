@@ -6,20 +6,16 @@ import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/app/components/EmptyState";
 import { GetOrderByConvoId } from "@/actions/getOrder";
 import { FullConversationType } from "@/types";
-import { Message, Order, Reviews, User } from "@prisma/client";
-import { UserInfo } from "@/next-auth";
+import { Order, OrderStatus, Reviews } from "@prisma/client";
 import { getUserWithBuyReviews } from "@/actions/getUser";
 import { redirect } from "next/navigation";
 import { getListingById, getListingsByIdsChat } from "@/actions/getListings";
+import { UserInfo } from "next-auth";
 
 interface IParams {
   conversationId: string;
   userIds: string;
 }
-interface ReviewWithReviewer extends Reviews {
-  reviewer: User | null;
-}
-
 const ChatId = async ({ params }: { params: IParams }) => {
   const conversationData = await getConversationById(params.conversationId);
   const data = await getUserWithBuyReviews({
@@ -37,30 +33,31 @@ const ChatId = async ({ params }: { params: IParams }) => {
   }
 
   let order = await GetOrderByConvoId(params.conversationId);
-  if (!order) {
-    order = {
-      id: "66d764318fd299484b5c914b",
-      userId: "66d764318fd299484b5c914b",
-      listingIds: ["66d764318fd299484b5c914b"],
-      sellerId: "66d764318fd299484b5c914b",
-      pickupDate: new Date(),
-      paymentIntentId: null,
-      quantity: "0",
-      totalPrice: 0,
-      status: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      completedAt: null,
-      fee: 0,
-      conversationId: null,
-      location: {
-        type: "point",
-        coordinates: [0, 0],
-        address: ["string[]"],
-        hours: { 0: [{ open: 480, close: 900 }] },
-      },
-    };
-  }
+  // if (!order) {
+  //   order = {
+  //     id: "66d764318fd299484b5c914b",
+  //     userId: "66d764318fd299484b5c914b",
+  //     listingIds: ["66d764318fd299484b5c914b"],
+  //     sellerId: "66d764318fd299484b5c914b",
+  //     pickupDate: new Date(),
+  //     paymentIntentId: null,
+  //     quantity: "0",
+  //     totalPrice: 0,
+  //     status: OrderStatus.PENDING,
+  //     createdAt: new Date(),
+  //     updatedAt: new Date(),
+  //     fee: {
+  //       site: 0,
+  //       delivery: 0,
+  //       other: [0],
+  //     },
+  //     conversationId: null,
+  //     purchaseLoc: {
+  //       coordinates: [0, 0],
+  //       address: ["string[]"],
+  //     },
+  //   };
+  // }
   let messages = await getMessages(params.conversationId);
   const { currentUser, otherUser, ...conversation } = conversationData;
   const listings = order?.listingIds

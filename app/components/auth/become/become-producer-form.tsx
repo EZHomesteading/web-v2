@@ -1,7 +1,7 @@
 "use client";
 //become producer auth form
 import * as z from "zod";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,77 +20,29 @@ import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { useRouter } from "next/navigation";
-import { UserInfo } from "@/next-auth";
-import axios from "axios";
 import { UserRole } from "@prisma/client";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import { UserInfo } from "next-auth";
+
 interface BecomeProducerProps {
   user?: UserInfo;
   createStripeConnectedAccount: () => Promise<any>;
 }
+
 export const BecomeProducer = ({
   user,
   createStripeConnectedAccount,
 }: BecomeProducerProps) => {
-  const [address, setAddress] = useState<string>("");
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">(
-    "sellAndSource"
-  );
-  const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.MAPS_KEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
-
-  const handleAddressParsed = async (parsedAddress: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  }) => {
-    const { street, city, state, zip } = parsedAddress;
-
-    const latLng = await getLatLngFromAddress(
-      `${parsedAddress.street}, ${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.zip}`
-    );
-
-    if (latLng) {
-      form.setValue("location", {
-        0: {
-          type: "Point",
-          coordinates: [latLng.lng, latLng.lat],
-          address: [street, city, state, zip],
-          hours: null,
-        },
-        1: null,
-        2: null,
-      });
-    }
-  };
 
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
-      firstName: user?.firstName || "",
+      firstName: user?.fullName?.first || "",
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",

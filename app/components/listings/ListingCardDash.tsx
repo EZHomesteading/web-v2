@@ -3,9 +3,7 @@
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import CartIcon from "@/app/components/listings/cart-icon";
 import { Button } from "@/app/components/ui/button";
-import { UserInfo } from "@/next-auth";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
 import {
@@ -24,19 +22,12 @@ import {
   CarouselItem,
 } from "@/app/components/ui/carousel";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { FinalListing } from "@/actions/getListings";
-import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import StockCounter from "./StockCounter";
-
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-  weight: ["200"],
-});
+import { UserInfo } from "next-auth";
 
 const work = Work_Sans({
   display: "block",

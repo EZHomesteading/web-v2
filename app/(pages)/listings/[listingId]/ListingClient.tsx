@@ -9,8 +9,8 @@ import ListingReservation from "@/app/(pages)/listings/[listingId]/components/Li
 import ListingMap from "@/app/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { FinalListing } from "@/actions/getListings";
-import { UserInfo } from "@/next-auth";
 import { User } from "@prisma/client";
+import { UserInfo } from "next-auth";
 
 interface ListingClientProps {
   listing: FinalListing & { description: string };

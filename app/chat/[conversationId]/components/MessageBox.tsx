@@ -10,7 +10,6 @@ import { format } from "date-fns";
 import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
-import CustomTimeModal2 from "./dateStates";
 import toast from "react-hot-toast";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import CancelModal from "./CancelModal";
@@ -31,7 +30,6 @@ import {
 } from "@/app/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
 import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
-import { ExtendedHours, UserInfo } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
 import {
   Popover,
@@ -44,7 +42,9 @@ import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { IoStorefront } from "react-icons/io5";
+
 import HarvestModal from "./HarvestModal";
+import { UserInfo } from "next-auth";
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -359,7 +359,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const onSubmit = async (trynum: (message: string) => Promise<void>) => {
     let message = "";
     if (trynum === tryone) {
-      message = `Yes, That time works, Your order will be ready at that time. at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}.`;
+      message = `Yes, That time works, Your order will be ready at that time. at ${order?.purchaseLoc?.address[0]}, ${order?.purchaseLoc?.address[1]}, ${order?.purchaseLoc?.address[2]}. ${order?.purchaseLoc?.address[3]}.`;
     } else if (trynum === trytwo) {
       message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
     } else if (trynum === tryfour) {
@@ -408,7 +408,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: `Your order is ready to be picked up at ${order.location.address[0]}, ${order.location.address[1]}, ${order.location.address[2]}. ${order.location.address[3]}!`,
+        message: `Your order is ready to be picked up at ${order?.purchaseLoc?.address[0]}, ${order?.purchaseLoc?.address[1]}, ${order?.purchaseLoc?.address[2]}. ${order?.purchaseLoc?.address[3]}!`,
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
@@ -457,15 +457,15 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     setValidTime(date);
   };
 
-  const anyhours: ExtendedHours = {
-    0: [{ open: 0, close: 1439 }],
-    1: [{ open: 0, close: 1439 }],
-    2: [{ open: 0, close: 1439 }],
-    3: [{ open: 0, close: 1439 }],
-    4: [{ open: 0, close: 1439 }],
-    5: [{ open: 0, close: 1439 }],
-    6: [{ open: 0, close: 1439 }],
-  };
+  // const anyhours: ExtendedHours = {
+  //   0: [{ open: 0, close: 1439 }],
+  //   1: [{ open: 0, close: 1439 }],
+  //   2: [{ open: 0, close: 1439 }],
+  //   3: [{ open: 0, close: 1439 }],
+  //   4: [{ open: 0, close: 1439 }],
+  //   5: [{ open: 0, close: 1439 }],
+  //   6: [{ open: 0, close: 1439 }],
+  // };
   //Seller receives Order
   const resp1 = (
     <div className="flex flex-col  items-start  md:text-xl gap-0  py-1">
@@ -1193,7 +1193,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   return (
     <div>
-      {user.id === order.sellerId ? (
+      {/* {user.id === order.sellerId ? (
         <CustomTimeModal2
           isOpen={customTimeOpen}
           onClose={() => setCustomTimeOpen(false)}
@@ -1209,7 +1209,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
           onSetTime={handleTime}
           isSeller={false}
         />
-      )}
+      )} */}
       <CancelModal
         isOpen={cancelOpen}
         onClose={() => setCancelOpen(false)}
@@ -1229,10 +1229,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       />
       <ChatConfirmModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        // onOpenChange={setIsModalOpen}
         modalMessage={modalMessage}
-        currentSubmitFunction={currentSubmitFunction}
-        setIsLoading={setIsLoading}
+        // currentSubmitFunction={currentSubmitFunction}
+        // setIsLoading={setIsLoading}
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
@@ -1314,9 +1314,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     </SheetTrigger>
 
                     <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                      <HoursDisplay
-                        coOpHours={order.location.hours as ExtendedHours}
-                      />
+                      {/* <HoursDisplay
+                        coOpHours={order.location.hours}
+                      /> */}
                     </SheetContent>
                   </Sheet>
                 </div>

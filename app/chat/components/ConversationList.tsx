@@ -13,13 +13,9 @@ import {
   sendPushSubscriptionToServer,
 } from "@/actions/chat/pushService";
 import axios from "axios";
-import { UserInfo } from "@/next-auth";
-import useOtherUser from "@/hooks/messenger/useOtherUser";
-import { Outfit } from "next/font/google";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { UserInfo } from "next-auth";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+
 interface ConversationListProps {
   initialItems: FullConversationType[];
   title?: string;
@@ -73,7 +69,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       >
         <div className="px-5">
           <div className="flex  mb-4 items-center justify-between">
-            <div className={`${outfit.className} text-2xl font-medium`}>
+            <div className={`${o.className} text-2xl font-medium`}>
               Messages
             </div>
             <SubToggle />

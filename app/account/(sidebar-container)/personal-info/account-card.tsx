@@ -1,6 +1,5 @@
 import Avatar from "@/app/components/Avatar";
 import { Button } from "@/app/components/ui/button";
-import React from "react";
 
 interface AccountCardProps {
   title: string;

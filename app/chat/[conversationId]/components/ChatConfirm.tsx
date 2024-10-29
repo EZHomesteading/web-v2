@@ -1,29 +1,26 @@
 "use client";
 //modal to confirm that user wants to delete that chat, should only be able to delete if messages are at a finalised state such as completed or cancelled.
-import React, { useCallback, useState } from "react";
-
 import { Dialog } from "@headlessui/react";
-import { FiAlertTriangle } from "react-icons/fi";
 import Modal from "@/app/components/modals/chatmodals/Modal";
 import Button from "@/app/components/modals/chatmodals/Button";
 
-type SubmitFunction = () => Promise<void>;
+// type SubmitFunction = () => Promise<void>;
 interface ConfirmModalProps {
   open: boolean;
-  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+  // onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   modalMessage: string;
-  currentSubmitFunction: SubmitFunction | null;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  // currentSubmitFunction: SubmitFunction | null;
+  // setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
 const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
   open,
-  onOpenChange,
-  setIsLoading,
+  // onOpenChange,
+  // setIsLoading,
   modalMessage,
-  currentSubmitFunction,
+  // currentSubmitFunction,
   onCancel,
   onConfirm,
 }) => {

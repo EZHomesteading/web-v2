@@ -1,7 +1,7 @@
 "use client";
 //producer register form with location handling
 import * as z from "zod";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
@@ -20,7 +20,6 @@ import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { register } from "@/actions/auth/register-vendor";
-import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
 

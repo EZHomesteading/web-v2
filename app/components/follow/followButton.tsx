@@ -1,17 +1,11 @@
 "use client";
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 //follow button component
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { RiUserFollowLine } from "react-icons/ri";
 import { RiUserUnfollowLine } from "react-icons/ri";
-import { Outfit } from "next/font/google";
 import { toast } from "sonner";
-
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-  weight: ["300"],
-});
 
 interface FollowButtonProps {
   followUserId: string;
@@ -61,7 +55,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleFollow}
-        className={`${outfit.className} bg-slate-300  text-xl 
+        className={`${o.className} bg-slate-300  text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
         <RiUserFollowLine size={24} />
@@ -84,7 +78,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleUnfollow}
-        className={`${outfit.className} bg-slate-300   text-xl 
+        className={`${o.className} bg-slate-300   text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
         <RiUserUnfollowLine size={24} />

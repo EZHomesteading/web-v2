@@ -27,7 +27,6 @@ interface ListingReservationProps {
   listingId: string;
   user?: User | null;
   product: FinalListing & { description: string };
-  disabled?: boolean;
   toggleCart: (e: any, quantity: number) => Promise<void>;
   sodt: (number | null)[];
   rating: number[];
@@ -35,7 +34,6 @@ interface ListingReservationProps {
 
 const ListingReservation: React.FC<ListingReservationProps> = ({
   product,
-  disabled,
   listingId,
   user,
   toggleCart,
@@ -315,7 +313,6 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
                 onSetTime={handleTimer}
                 quantity={quantity}
                 quantityType={quantityType}
-                disabled={disabled}
                 listing={product}
                 user={user?.name}
               />

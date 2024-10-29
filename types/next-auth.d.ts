@@ -1,17 +1,18 @@
-// types/next-auth.d.ts
 
 import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { UserRole, Notification, fullName } from "@prisma/client";
 
-/** Extend default User object */
 declare module "next-auth" {
   interface UserInfo extends DefaultUser {
     id: string;
+    name:string;
+    email:string
     phoneNumber?: string;
     fullName?: fullName
     stripeAccountId?: string;
     url: string;
+    image?:string
     createdAt?: Date;
     updatedAt?: Date;
     conversationIds: string[];
@@ -26,19 +27,20 @@ declare module "next-auth" {
     openClosedTemplates?: any;
     role: UserRole;
   }
-
-  /** Extend default Session object */
+  
   interface Session {
-    user: User;
+    user: UserInfo;
   }
 }
 
-/** Extend JWT interface */
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     phoneNumber?: string;
+    name:string
+    email:string
     fullName?: fullName
+    image?:string
     stripeAccountId?: string;
     url: string;
     createdAt?: Date;

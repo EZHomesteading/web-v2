@@ -1,17 +1,10 @@
 "use client";
 //listing image and image carousel component
 import Image from "next/image";
-import Heading from "../Heading";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
-import { Location } from "@/actions/getListings";
-import { JsonObject } from "@prisma/client/runtime/library";
-import { Outfit } from "next/font/google";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { Location } from "@prisma/client";
 
 interface ListingHeadProps {
   title: string;
@@ -77,7 +70,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
       <div className="mt-2">
         <div className={"text-start"}>
-          <div className={`${outfit.className} text-xl sm:text-2xl font-bold`}>
+          <div className={`${o.className} text-xl sm:text-2xl font-bold`}>
             {title}
           </div>
           <div className="font-light text-neutral-500 mt-0 md:text-xs text-[.7rem]">

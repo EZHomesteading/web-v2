@@ -19,11 +19,10 @@ import { Button } from "@/app/components/ui/button";
 import { FormError } from "@/app/components/form-error";
 import { FormSuccess } from "@/app/components/form-success";
 import { useRouter } from "next/navigation";
-import { UserInfo } from "@/next-auth";
-import axios from "axios";
 import { UserRole } from "@prisma/client";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import { UserInfo } from "next-auth";
 
 interface BecomeCoopProps {
   user?: UserInfo;
@@ -33,36 +32,15 @@ export const BecomeCoop = ({
   user,
   createStripeConnectedAccount,
 }: BecomeCoopProps) => {
-  const [address, setAddress] = useState<string>("");
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<"sell" | "sellAndSource">("sell");
-  const getLatLngFromAddress = async (address: string) => {
-    const apiKey = process.env.MAPS_KEY;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
 
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
-      firstName: user?.firstName || "",
+      firstName: user?.fullName?.first || "",
       email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       name: user?.name || "",

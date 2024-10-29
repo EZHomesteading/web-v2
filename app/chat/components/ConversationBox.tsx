@@ -8,9 +8,9 @@ import { pusherClient } from "@/lib/pusher";
 import Avatar from "@/app/components/Avatar";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
 import { FullConversationType, FullMessageType } from "@/types";
-import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
-import { IoAddCircle, IoNotificationsCircle } from "react-icons/io5";
+import { IoNotificationsCircle } from "react-icons/io5";
+import { UserInfo } from "next-auth";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -79,7 +79,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   }, [conversation.messages]);
 
   const userEmail = useMemo(() => user?.email, [user?.email]);
-  const isOwn = user?.firstName === lastMessage?.sender?.firstName;
+  const isOwn = user?.fullName?.first === lastMessage?.sender?.fullName?.first;
   const notOwn = !isOwn;
 
   const hasSeen = useMemo(() => {
