@@ -1,12 +1,12 @@
 //dashboard parent element
 import { Outfit } from "next/font/google";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 import { getUserWithOrders } from "@/actions/getUser";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
-import Avatar from "@/app/components/Avatar";
+import { Button } from "@/components/ui/button";
+import Avatar from "@/components/Avatar";
 import prisma from "@/lib/prisma";
 import Overview from "../update-listing/components/overview";
 import DashPopover from "../update-listing/components/dashboard-popover";

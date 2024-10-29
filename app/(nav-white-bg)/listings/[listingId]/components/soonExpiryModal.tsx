@@ -1,8 +1,8 @@
 "use client";
 
 import { FinalListing } from "@/actions/getListings";
-import Modal from "@/app/components/modals/chatmodals/Modal";
-import { Button } from "@/app/components/ui/button";
+import Modal from "@/components/modals/chatmodals/Modal";
+import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { addDays, format } from "date-fns";
 import { useRouter } from "next/navigation";

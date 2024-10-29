@@ -6,10 +6,10 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import LocationSearchInput from "@/app/components/map/LocationSearchInputSettings";
+import LocationSearchInput from "@/components/map/LocationSearchInputSettings";
 import AccountCard from "./account-card";
 import Input from "./input";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { UploadButton } from "@/utils/uploadthing";
 import { FormValues, AddressFields } from "./types";
 import {
@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
   AlertDialogAction,
   AlertDialogCancel,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 interface PageProps {
   apiKey: string;

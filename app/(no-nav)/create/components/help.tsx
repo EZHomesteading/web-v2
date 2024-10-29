@@ -1,7 +1,7 @@
 //help button handler
-import Heading from "@/app/components/Heading";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import Heading from "@/components/Heading";
+import { Card, CardContent } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import titleHelp from "@/public/images/website-images/apple.jpg";

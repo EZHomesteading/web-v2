@@ -1,7 +1,7 @@
 //market server side layout with search parameters for grabbing data
 import dynamic from "next/dynamic";
-import EmptyState from "@/app/components/EmptyState";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import EmptyState from "@/components/EmptyState";
+import ClientOnly from "@/components/client/ClientOnly";
 import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getUserwithCart } from "@/actions/getUser";
 import { UserInfo } from "next-auth";

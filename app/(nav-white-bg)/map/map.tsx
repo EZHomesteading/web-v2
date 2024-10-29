@@ -2,20 +2,20 @@
 //this file contains all mapping functionality
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
-import Loading from "@/app/components/secondary-loader";
+import Loading from "@/components/secondary-loader";
 import InfoWindowCarousel from "./info-window-carousel";
-import Avatar from "@/app/components/Avatar";
+import Avatar from "@/components/Avatar";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { CiCircleQuestion, CiEdit } from "react-icons/ci";
 import { MdOutlineEditOff } from "react-icons/md";
 import { CiBookmarkRemove } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
-import { Popover, PopoverTrigger } from "@/app/components/ui/popover";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
-import { Switch } from "@/app/components/ui/switch";
+import { Switch } from "@/components/ui/switch";
 import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
 import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";

@@ -5,7 +5,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import OnboardContainer from "../../onboard.container";
 import { Location } from "@prisma/client";
 import { LocationObj } from "location-types";

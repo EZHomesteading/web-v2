@@ -1,7 +1,7 @@
 "use client";
 //login card parent element
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Social } from "@/app/(no_nav_auth)/auth/(components)/social";
 import { BackButton } from "@/app/(no_nav_auth)/auth/(components)/back-button";
 import Image from "next/image";

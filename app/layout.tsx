@@ -1,10 +1,10 @@
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
-import { Toaster } from "./components/ui/sonner";
+import { Toaster } from "../components/ui/sonner";
 import "@/app/globals.css";
-import ClientOnly from "./components/client/ClientOnly";
-import SearchModal from "./components/modals/SearchModal";
-import CartModal from "./components/modals/cart-modal";
+import ClientOnly from "../components/client/ClientOnly";
+import SearchModal from "../components/modals/SearchModal";
+import CartModal from "../components/modals/cart-modal";
 import { Metadata } from "next";
 import { Viewport } from "next";
 export const viewport: Viewport = {

@@ -1,8 +1,8 @@
 "use client";
 //parent element for date picker and handling of datepicker related data to be sent to the cart parent element.
-import { SheetCartC, SheetContentC } from "@/app/components/ui/sheet-cart";
-import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
-import { SheetTrigger } from "@/app/components/ui/sheet";
+import { SheetCartC, SheetContentC } from "@/components/ui/sheet-cart";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";

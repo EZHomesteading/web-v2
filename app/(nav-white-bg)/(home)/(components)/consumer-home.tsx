@@ -1,7 +1,7 @@
 //homepage displayed if user role is CONSUMER or none.
 import Link from "next/link";
 import { Outfit } from "next/font/google";
-import FindListingsComponent from "@/app/components/listings/search-listings";
+import FindListingsComponent from "@/components/listings/search-listings";
 // import Image from "next/image";
 // import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
 // import consumer from "@/public/images/website-images/ezhconsumer.webp";

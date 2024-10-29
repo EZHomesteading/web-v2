@@ -1,6 +1,6 @@
 //update listing parent lement
 import { FinalListing, getListingByIdUpdate } from "@/actions/getListings";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import ClientOnly from "@/components/client/ClientOnly";
 import UpdateClient from "./UpdateClient";
 import { SafeListing } from "@/types";
 

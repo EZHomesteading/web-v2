@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import { CartGroup2, ValidTime } from "../client";

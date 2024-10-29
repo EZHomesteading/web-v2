@@ -1,13 +1,13 @@
 import { currentUser } from "@/lib/auth";
 import { getUserWithSellOrders } from "@/actions/getUser";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import { getUserById } from "@/actions/getUser";
 import { SafeListing } from "@/types";
 import { FinalListing, GetListingsByIds } from "@/actions/getListings";
 import { getStatusText } from "../../update-listing/components/order-status";
 import { UserRole } from "@prisma/client";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Fragment } from "react";

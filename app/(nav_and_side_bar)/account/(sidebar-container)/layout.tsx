@@ -1,6 +1,6 @@
 import Sidebar from "../../selling/(container-selling)/update-listing/components/sidebar";
 import BackArrow from "../../_components/back-arrow";
-import { outfitFont } from "@/app/components/outfit.font";
+import { outfitFont } from "@/components/outfit.font";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (

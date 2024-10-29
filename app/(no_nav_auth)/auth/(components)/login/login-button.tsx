@@ -1,11 +1,7 @@
 "use client";
 //login button
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/app/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { LoginForm } from "@/app/(no_nav_auth)/auth/(components)/login/login-form";
 
 interface LoginButtonProps {

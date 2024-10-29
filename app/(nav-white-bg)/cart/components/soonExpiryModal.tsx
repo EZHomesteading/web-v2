@@ -1,7 +1,7 @@
 "use client";
 
-import Modal from "@/app/components/modals/chatmodals/Modal";
-import { Button } from "@/app/components/ui/button";
+import Modal from "@/components/modals/chatmodals/Modal";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { AdjustedListings } from "./order-create";
 import { Outfit } from "next/font/google";

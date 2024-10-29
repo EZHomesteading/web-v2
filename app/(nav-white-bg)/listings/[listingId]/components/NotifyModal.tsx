@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
-import Modal from "@/app/components/modals/chatmodals/Modal";
-import Button from "@/app/components/modals/chatmodals/Button";
+import Modal from "@/components/modals/chatmodals/Modal";
+import Button from "@/components/modals/chatmodals/Button";
 import { toast } from "sonner";
 
 interface ConfirmModalProps {

@@ -1,10 +1,10 @@
 //homepage displayed if user role is ADMIN
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import getReports from "@/actions/getReports";
 import getDisputesLite from "@/actions/getDisputes";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/app/components/outfit.font";
+import { outfitFont } from "@/components/outfit.font";
 
 interface Props {
   user: UserInfo;

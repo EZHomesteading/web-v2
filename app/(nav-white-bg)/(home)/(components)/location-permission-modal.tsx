@@ -1,7 +1,7 @@
 "use client";
 import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
 import Draggable from "react-draggable";

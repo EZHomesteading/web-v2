@@ -1,6 +1,6 @@
 //display followers parent element
-import EmptyState from "@/app/components/EmptyState";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import EmptyState from "@/components/EmptyState";
+import ClientOnly from "@/components/client/ClientOnly";
 
 import FavoritesClient from "./FavoritesClient";
 import { getFollowers, getFollows } from "@/actions/getFollow";

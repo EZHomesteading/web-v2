@@ -1,8 +1,8 @@
 //display followers page
 
-import Heading from "@/app/components/Heading";
-import Container from "@/app/components/Container";
-import FollowCard from "@/app/components/follow/FollowCard";
+import Heading from "@/components/Heading";
+import Container from "@/components/Container";
+import FollowCard from "@/components/follow/FollowCard";
 import { getFavCardUser } from "@/actions/getUser";
 interface FavoritesClientProps {
   followarr: {

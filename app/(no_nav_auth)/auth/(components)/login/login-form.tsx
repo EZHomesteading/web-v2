@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 
 import { LoginSchema } from "@/schemas";
-import { Input } from "@/app/components/ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,11 +16,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/components/ui/form";
-import { Button } from "@/app/components/ui/button";
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { CardWrapper } from "./card-wrapper-login";
-import { FormError } from "@/app/components/form-error";
-import { FormSuccess } from "@/app/components/form-success";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/auth/login";
 
 export const LoginForm = () => {

@@ -1,7 +1,7 @@
 "use client";
 
-import Avatar from "@/app/components/Avatar";
-import { Button } from "@/app/components/ui/button";
+import Avatar from "@/components/Avatar";
+import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import Link from "next/link";
 interface p {

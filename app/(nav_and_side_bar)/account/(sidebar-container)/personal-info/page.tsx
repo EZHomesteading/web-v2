@@ -1,6 +1,6 @@
 //display followers parent element
 
-import ClientOnly from "@/app/components/client/ClientOnly";
+import ClientOnly from "@/components/client/ClientOnly";
 
 import Page from "./client";
 

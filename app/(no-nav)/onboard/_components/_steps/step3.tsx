@@ -1,6 +1,6 @@
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback } from "react";
-import Loading from "@/app/components/secondary-loader";
+import Loading from "@/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
 import PlacesAutocomplete, {
   geocodeByAddress,

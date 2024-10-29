@@ -1,6 +1,6 @@
 //get navbar for home page and pass it the current user
 import { getNavUser, NavUser } from "@/actions/getUser";
-import Navbar from "@/app/components/navbar/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import type { Viewport } from "next";
 
 export const viewport: Viewport = {

@@ -9,7 +9,7 @@ import Image from "next/image";
 // import consumer from "@/public/images/website-images/ezhconsumer.webp";
 // import producer from "@/public/images/website-images/ezhproducer.webp";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import { useRouter } from "next/navigation";
 import qs from "query-string";
 

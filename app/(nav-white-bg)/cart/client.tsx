@@ -21,7 +21,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover";
+} from "@/components/ui/popover";
 import { CartItem } from "@/actions/getCart";
 import { FinalListing } from "@/actions/getListings";
 import DateState from "./components/dateStates";

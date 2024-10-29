@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { BsBucket } from "react-icons/bs";
-import { Label } from "@/app/components/ui/label";
+import { Label } from "@/components/ui/label";
 import { CiImageOn } from "react-icons/ci";
 import { SimpleUploadButton } from "../image-upload-button";
 

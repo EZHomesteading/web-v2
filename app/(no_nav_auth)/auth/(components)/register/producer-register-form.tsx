@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserRole } from "@prisma/client";
 import { RegisterVendorSchema } from "@/schemas";
-import { Input } from "@/app/components/ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -14,11 +14,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/components/ui/form";
+} from "@/components/ui/form";
 import { CardWrapper } from "@/app/(no_nav_auth)/auth/(components)/login/card-wrapper-login";
-import { Button } from "@/app/components/ui/button";
-import { FormError } from "@/app/components/form-error";
-import { FormSuccess } from "@/app/components/form-success";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
 import { register } from "@/actions/auth/register-vendor";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";

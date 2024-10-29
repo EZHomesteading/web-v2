@@ -1,6 +1,6 @@
 //display followijng parent element
-import EmptyState from "@/app/components/EmptyState";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import EmptyState from "@/components/EmptyState";
+import ClientOnly from "@/components/client/ClientOnly";
 import FavoritesClient from "./FavoritesClient";
 import { getFollows } from "@/actions/getFollow";
 

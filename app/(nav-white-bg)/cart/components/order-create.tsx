@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 

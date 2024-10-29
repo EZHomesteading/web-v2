@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Hours, Location } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import WeelkyScheduleChart from "../../weekly-schedule-chart";
+import WeelkyScheduleChart from "../weekly-schedule-chart";
 import OnboardContainer from "../../onboard.container";
-import { Button } from "../../../../components/ui/button";
-import { outfitFont } from "@/app/components/outfit.font";
+import { Button } from "../../../../../components/ui/button";
+import { outfitFont } from "@/components/outfit.font";
 import { LocationObj } from "location-types";
 
 interface StepSevenProps {

@@ -1,7 +1,7 @@
 "use client";
 
-import SearchModal from "@/app/components/modals/SearchModal";
-import CartModal from "@/app/components/modals/cart-modal";
+import SearchModal from "@/components/modals/SearchModal";
+import CartModal from "@/components/modals/cart-modal";
 const ModalsProvider = () => {
   return (
     <>

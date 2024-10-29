@@ -2,20 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 
-import Modal from "@/app/components/modals/chatmodals/Modal";
+import Modal from "@/components/modals/chatmodals/Modal";
 
 import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/app/components/ui/popover";
-import { Button } from "@/app/components/ui/button";
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { Calendar } from "@/app/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { Separator } from "@/app/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { CartGroup } from "@/next-auth";
 import { ExtendedHours } from "@/next-auth";
 import { Outfit, Zilla_Slab } from "next/font/google";

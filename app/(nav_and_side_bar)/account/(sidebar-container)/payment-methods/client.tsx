@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X } from "lucide-react";
-import Modal from "@/app/components/modals/chatmodals/Modal";
+import Modal from "@/components/modals/chatmodals/Modal";
 import Input from "./input";
 import { useForm } from "react-hook-form";
 import { FormValues } from "./input";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 interface StripeCard {
   id: string;
   brand: string;

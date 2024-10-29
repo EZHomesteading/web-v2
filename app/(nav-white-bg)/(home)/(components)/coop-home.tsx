@@ -4,7 +4,7 @@ import { UserInfo } from "@/next-auth";
 import { Outfit } from "next/font/google";
 import Link from "next/link";
 import StripeButton from "./stripe-onboard";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { useRouter } from "next/navigation";

@@ -4,11 +4,11 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
 
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Label } from "@/app/components/ui/label";
-import { Checkbox } from "@/app/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 
 const Notification: { [key: string]: string } = {

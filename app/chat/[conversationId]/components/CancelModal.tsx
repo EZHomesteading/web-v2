@@ -5,8 +5,8 @@ import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Modal from "@/app/components/modals/chatmodals/Modal";
-import Button from "@/app/components/modals/chatmodals/Button";
+import Modal from "@/components/modals/chatmodals/Modal";
+import Button from "@/components/modals/chatmodals/Button";
 import { toast } from "react-hot-toast";
 import { Order } from "@prisma/client";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { format, addMonths, isValid, isSameDay, parseISO } from "date-fns";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
 import { toast } from "sonner";
 import StackingPanelLayout, {

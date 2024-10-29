@@ -2,7 +2,7 @@
 
 import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Draggable from "react-draggable";
 import { useRouter } from "next/navigation";
@@ -25,13 +25,13 @@ const CreatePopup = () => {
       localStorage.setItem("hasVisitedCreatePage", "true");
     }
   }, []);
-  const router = useRouter()
+  const router = useRouter();
   const handleContinue = () => {
-    setShowPopup(false)
-    localStorage.removeItem("hasVisitedMapPage")
-    router.push("/map")
-  }
-  const handleDrag = (e:any, data:any) => {
+    setShowPopup(false);
+    localStorage.removeItem("hasVisitedMapPage");
+    router.push("/map");
+  };
+  const handleDrag = (e: any, data: any) => {
     setPosition({ x: data.x, y: 0 });
     const newOpacity = Math.max(0, 1 - data.x / 200);
     setOpacity(newOpacity);
@@ -75,9 +75,18 @@ const CreatePopup = () => {
         <h2 className="text-2xl font-bold mb-4">Welcome to Listing on EZH</h2>
         <p className="mb-4">Here's some key info to listing your goods:</p>
         <ul className="list-disc list-inside mb-4">
-            <li>If you don't see the name of your listing, you can propose a new title</li>
-            <li>Listings are tied to one of up to three of your locations & the corresponding hours.</li>
-            <li>Each section has help articles if you're ever confused about the how or why.</li>
+          <li>
+            If you don't see the name of your listing, you can propose a new
+            title
+          </li>
+          <li>
+            Listings are tied to one of up to three of your locations & the
+            corresponding hours.
+          </li>
+          <li>
+            Each section has help articles if you're ever confused about the how
+            or why.
+          </li>
         </ul>
         <Button
           className="bg-blue-500 text-white hover:bg-blue-600"

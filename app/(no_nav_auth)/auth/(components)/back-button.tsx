@@ -2,7 +2,7 @@
 //back button component for auth
 import Link from "next/link";
 
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface BackButtonProps {
   href: string;

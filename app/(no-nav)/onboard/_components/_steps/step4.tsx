@@ -7,7 +7,7 @@ import {
 } from "react-icons/pi";
 import OnboardContainer, { zillaFont } from "../../onboard.container";
 import { Location } from "@prisma/client";
-import { outfitFont } from "@/app/components/outfit.font";
+import { outfitFont } from "@/components/outfit.font";
 import { LocationObj } from "location-types";
 
 interface StepFiveProps {

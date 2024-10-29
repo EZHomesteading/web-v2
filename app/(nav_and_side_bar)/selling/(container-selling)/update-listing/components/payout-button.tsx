@@ -1,7 +1,7 @@
 "use client";
 //payout button component
 import axios from "axios";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 interface p {

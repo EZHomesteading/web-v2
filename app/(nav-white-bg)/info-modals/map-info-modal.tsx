@@ -2,7 +2,7 @@
 
 import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Draggable from "react-draggable";
 import { useRouter } from "next/navigation";
@@ -25,13 +25,13 @@ const MapPopup = () => {
       localStorage.setItem("hasVisitedMapPage", "true");
     }
   }, []);
-  const router = useRouter()
+  const router = useRouter();
   const handleContinue = () => {
-    setShowPopup(false)
-    localStorage.removeItem("hasVisitedDashboard")
-    router.push("/dashboard")
-  }
-  const handleDrag = (e:any, data:any) => {
+    setShowPopup(false);
+    localStorage.removeItem("hasVisitedDashboard");
+    router.push("/dashboard");
+  };
+  const handleDrag = (e: any, data: any) => {
     setPosition({ x: data.x, y: 0 });
     const newOpacity = Math.max(0, 1 - data.x / 200);
     setOpacity(newOpacity);
@@ -75,23 +75,31 @@ const MapPopup = () => {
         <h2 className="text-2xl font-bold mb-4">Welcome to the EZH Map</h2>
         <p className="mb-4">Here's how it works:</p>
         <ul className="list-disc list-inside mb-4">
-            <li>Blue markers are Co-ops & green markers are producers</li>
-            <li>Click on a marker to see their rating, items in stock, and to go to their store</li>
-            <li>Click start drawing to free-hand outline an area, vendors not inside your shape will be hidden</li>
-           
+          <li>Blue markers are Co-ops & green markers are producers</li>
+          <li>
+            Click on a marker to see their rating, items in stock, and to go to
+            their store
+          </li>
+          <li>
+            Click start drawing to free-hand outline an area, vendors not inside
+            your shape will be hidden
+          </li>
         </ul>
         <div className="grid grid-cols-2 gap-x-4">
-        <Button
-          className="bg-blue-500 text-white hover:bg-blue-600 col-span-1"
-          onClick={handleContinue}
-        >
-          Restart Walkthrough
-        </Button><Button
-          className="bg-blue-500 text-white hover:bg-blue-600 col-span-1"
-          onClick={handleClose}
-        >
-I've Got It!        </Button>
-      </div></div>
+          <Button
+            className="bg-blue-500 text-white hover:bg-blue-600 col-span-1"
+            onClick={handleContinue}
+          >
+            Restart Walkthrough
+          </Button>
+          <Button
+            className="bg-blue-500 text-white hover:bg-blue-600 col-span-1"
+            onClick={handleClose}
+          >
+            I've Got It!{" "}
+          </Button>
+        </div>
+      </div>
     </Draggable>
   );
 };

@@ -1,4 +1,4 @@
-import { outfitFont } from "@/app/components/outfit.font";
+import { outfitFont } from "@/components/outfit.font";
 
 const StepOne = () => {
   return (

@@ -1,11 +1,11 @@
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { Location, TimeSlot } from "@prisma/client";
 import axios from "axios";
 import { Outfit, Zilla_Slab } from "next/font/google";

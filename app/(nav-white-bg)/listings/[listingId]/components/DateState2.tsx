@@ -1,12 +1,12 @@
 "use client";
 //  modified date picker layout for buy now button. skips cart page altogether.
-import { SheetCartC, SheetContentC } from "@/app/components/ui/reservePicker";
-import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
-import { SheetTrigger } from "@/app/components/ui/sheet";
+import { SheetCartC, SheetContentC } from "@/components/ui/reservePicker";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import CustomTimeModal2, { ValidTime } from "./CustomTimeModal2";
-import { Button } from "../../../../components/ui/button";
+import { Button } from "../../../../../components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

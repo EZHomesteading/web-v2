@@ -1,10 +1,10 @@
 //listing page server side layout, getting users and their carts to display toggle cart options.
 import { getListingById } from "@/actions/getListings";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import ClientOnly from "@/components/client/ClientOnly";
 import ListingClient from "./ListingClient";
 import { getUserwithCart } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
-import SessionStorageManager from "@/app/components/sessionStorageManager";
+import SessionStorageManager from "@/components/sessionStorageManager";
 import { FinalListing } from "@/actions/getListings";
 interface IParams {
   listingId?: string;

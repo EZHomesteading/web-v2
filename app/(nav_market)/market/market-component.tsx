@@ -1,10 +1,10 @@
 //render market product cards on server, with toggle cart buttons
 "use client";
-import Container from "@/app/components/Container";
-import ListingCard from "@/app/components/listings/ListingCard";
-import ClientOnly from "@/app/components/client/ClientOnly";
+import Container from "@/components/Container";
+import ListingCard from "@/components/listings/ListingCard";
+import ClientOnly from "@/components/client/ClientOnly";
 import Link from "next/link";
-import SessionStorageManager from "@/app/components/sessionStorageManager";
+import SessionStorageManager from "@/components/sessionStorageManager";
 // import LocationPermissionPopup from "@/app/(home)/location-permission-modal";
 // import { SkeletonCard } from "./skeleton-card";
 // import { useRouter } from "next/navigation";

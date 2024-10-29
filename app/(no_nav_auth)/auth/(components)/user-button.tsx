@@ -6,7 +6,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/app/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { LogoutButton } from "@/app/(no_nav_auth)/auth/(components)/login/logout-button";
 
 export const UserButton = () => {

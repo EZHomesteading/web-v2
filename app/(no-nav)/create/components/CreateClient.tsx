@@ -3,7 +3,7 @@
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { UserInfo } from "@/next-auth";
 import StepOne from "./components/steps/step1";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Category, InputProps, SubCategory } from "../../types/create.types";
 import { Progress } from "./ui/progress";
 import axios from "axios";

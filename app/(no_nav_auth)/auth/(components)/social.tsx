@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { z } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 

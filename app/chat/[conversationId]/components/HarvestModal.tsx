@@ -8,8 +8,8 @@ import {
   BiCheckCircle,
   BiClinic,
 } from "react-icons/bi";
-import Modal from "@/app/components/modals/chatmodals/HarvestModal";
-import Button from "@/app/components/modals/chatmodals/Button";
+import Modal from "@/components/modals/chatmodals/HarvestModal";
+import Button from "@/components/modals/chatmodals/Button";
 import axios from "axios";
 import { toast } from "sonner";
 import { Listing } from "@prisma/client";

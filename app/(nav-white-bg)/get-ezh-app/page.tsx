@@ -1,12 +1,12 @@
 "use client";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FaAndroid } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaLinux } from "react-icons/fa";
 import PWAInstall from "@/app/(nav-white-bg)/get-ezh-app/pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../../components/navbar/Navbar";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import {
   o,

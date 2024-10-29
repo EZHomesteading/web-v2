@@ -1,6 +1,6 @@
 "use client";
 //settings page
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
 import { FieldValues, SubmitHandler } from "react-hook-form";
@@ -16,10 +16,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/components/ui/select";
+} from "@/components/ui/select";
 import Image from "next/image";
 import { Outfit } from "next/font/google";
-import { Textarea } from "@/app/components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import { CiCircleInfo } from "react-icons/ci";

@@ -3,10 +3,10 @@ import { getVendorLocsMap, NavUser } from "@/actions/getUser";
 import authCache from "@/auth-cache";
 import Map from "@/app/(nav-white-bg)/map/map";
 import { UserRole } from "@prisma/client";
-import Container from "@/app/components/Container";
+import Container from "@/components/Container";
 import type { Viewport } from "next";
 import MapPopup from "@/app/(nav-white-bg)/info-modals/map-info-modal";
-import Navbar from "@/app/components/navbar/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 
 export const viewport: Viewport = {
   themeColor: "white",

@@ -2,12 +2,12 @@
 //homepage displayed if user role is PRODUCER
 import { Outfit } from "next/font/google";
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/app/components/outfit.font";
+import { outfitFont } from "@/components/outfit.font";
 
 interface Props {
   user: UserInfo;

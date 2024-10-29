@@ -5,7 +5,7 @@ import {
   registerPushNotifications,
   unregisterPushNotifications,
 } from "@/actions/chat/pushService";
-import Loading from "@/app/components/secondary-loader";
+import Loading from "@/components/secondary-loader";
 import { BellOff, BellRing } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

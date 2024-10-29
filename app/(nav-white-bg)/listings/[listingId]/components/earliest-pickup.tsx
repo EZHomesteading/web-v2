@@ -1,6 +1,6 @@
 "use client";
 //element and funciton to pull ealiest possible pick up time (need to add based on coops/producers, setout/delivery times.)
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { ValidTime } from "./CustomTimeModal2";
 import { Availability } from "@prisma/client";

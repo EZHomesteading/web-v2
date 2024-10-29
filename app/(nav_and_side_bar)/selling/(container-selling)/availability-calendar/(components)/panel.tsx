@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Map from "@/app/(no-nav)/onboard/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
@@ -17,7 +17,7 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import { Location } from "@prisma/client";
 import Link from "next/link";
 import setDefault from "./set-default-button";

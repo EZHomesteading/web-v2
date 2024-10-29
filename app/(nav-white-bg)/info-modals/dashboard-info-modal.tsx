@@ -2,7 +2,7 @@
 
 import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Draggable from "react-draggable";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ const DashboardPopup = () => {
     }
   }, []);
 
-  const handleDrag = (e:any, data:any) => {
+  const handleDrag = (e: any, data: any) => {
     setPosition({ x: data.x, y: 0 });
     const newOpacity = Math.max(0, 1 - data.x / 200);
     setOpacity(newOpacity);
@@ -39,12 +39,12 @@ const DashboardPopup = () => {
   const handleClose = () => {
     setShowPopup(false);
   };
-const router = useRouter()
+  const router = useRouter();
   const handleContinue = () => {
-    setShowPopup(false)
-    localStorage.removeItem("hasVisitedMessagePage")
-    router.push("/chat")
-  }
+    setShowPopup(false);
+    localStorage.removeItem("hasVisitedMessagePage");
+    router.push("/chat");
+  };
 
   if (!showPopup) {
     return null;

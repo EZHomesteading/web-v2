@@ -1,5 +1,5 @@
 //component to display a users reviews
-import Avatar from "@/app/components/Avatar";
+import Avatar from "@/components/Avatar";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, User, UserRole } from "@prisma/client";
 import { Outfit } from "next/font/google";

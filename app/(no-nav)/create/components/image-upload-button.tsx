@@ -1,5 +1,5 @@
 "use client";
-import Loader from "@/app/components/secondary-loader";
+import Loader from "@/components/secondary-loader";
 import { useUploadThing } from "@/utils/uploadthing";
 import { Outfit } from "next/font/google";
 import { toast } from "sonner";

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import axios from "axios";
 import { toast } from "sonner";
 import { Location, LocationObj, UserRole } from "@prisma/client";

@@ -2,11 +2,11 @@
 //client side layout for listing page
 import { useState } from "react";
 import { addDays } from "date-fns";
-import Container from "@/app/components/Container";
-import ListingHead from "@/app/components/listings/ListingHead";
-import ListingInfo from "@/app/components/listings/ListingInfo";
+import Container from "@/components/Container";
+import ListingHead from "@/components/listings/ListingHead";
+import ListingInfo from "@/components/listings/ListingInfo";
 import ListingReservation from "@/app/(pages)/listings/[listingId]/components/ListingReservation";
-import ListingMap from "@/app/components/map/listing-map";
+import ListingMap from "@/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";

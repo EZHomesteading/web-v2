@@ -1,5 +1,5 @@
-import Avatar from "@/app/components/Avatar";
-import { Button } from "@/app/components/ui/button";
+import Avatar from "@/components/Avatar";
+import { Button } from "@/components/ui/button";
 
 interface AccountCardProps {
   title: string;
