@@ -15,7 +15,7 @@ import {
   o,
   z,
 } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { outfitFont } from "../../outfit.font";
+import { outfitFont } from "../../fonts";
 
 interface c {
   cart: CartItem[];

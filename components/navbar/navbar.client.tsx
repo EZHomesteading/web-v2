@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Categories from "./Categories";
+import Categories from "./_categories_filter_market/Categories";
 import Container from "../Container";
 import Logo from "@/components/navbar/Logo";
 import UserMenu from "./UserMenu";

@@ -1,0 +1,4 @@
+This layout is specifically for pages that have a navbar and the sidebar which changes based on route.
+
+http://localhost:3000/selling and all sub links
+http://localhost:3000/account and all sub links
