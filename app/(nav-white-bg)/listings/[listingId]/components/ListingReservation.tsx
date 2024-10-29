@@ -10,10 +10,7 @@ import { User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
-import {
-  o,
-  z,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont, zillaFont } from "@/components/outfit.font";
 
 interface ListingReservationProps {
   listingId: string;
@@ -184,11 +181,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         border-neutral-200 
         overflow-hidden
         gap-1 
-        p-2 ${o.className}`}
+        p-2 ${outfitFont.className}`}
       >
         <Button onClick={() => setConfirmmOpen(true)}>Report Listing</Button>
         <div
-          className={`${z.className}
+          className={`${zillaFont.className}
       text-lg font-light text-neutral-500 p-2`}
         >
           {renderRating()}

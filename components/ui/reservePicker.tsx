@@ -6,9 +6,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
-import { ExtendedHours } from "@/next-auth";
-import EarliestPickup2 from "@/app/(pages)/listings/[listingId]/components/earliest-pickup";
-import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
+
+import { ValidTime } from "@/app/(nav-white-bg)/listings/[listingId]/components/CustomTimeModal2";
+import { Hours } from "@prisma/client";
+import EarliestPickup from "@/app/(nav-white-bg)/listings/[listingId]/components/earliest-pickup";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -61,7 +62,7 @@ const sheetVariants = cva(
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  hours: ExtendedHours;
+  hours: Hours;
   sodt: (number | null)[];
   onSetTime: (childTime: ValidTime) => Promise<void>;
   sellerRole: string;
@@ -93,7 +94,7 @@ const SheetContentC = React.forwardRef<
         {...props}
       >
         <SheetPrimitive.Close className="rounded-lg lg:w-1/4 lg:h-1/4 h-1/3 w-full sm:w-3/4 mx-2 cursor-pointer flex flex-col items-center justify-center sm:justify-start opacity-95 hover:opacity-100 bg-green-100 text-center hover:bg-green-200">
-          <EarliestPickup2
+          <EarliestPickup
             role={sellerRole}
             sodtarr={sodt}
             hours={hours}

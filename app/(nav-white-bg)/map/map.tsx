@@ -18,7 +18,7 @@ import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
 import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "@/components/outfit.font";
 
 interface MapUser {
   coordinates: [number, number];
@@ -346,13 +346,13 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     >
       <Popover>
         <PopoverTrigger
-          className={`${o.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${outfitFont.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool
         </PopoverTrigger>
         <PopoverContent className=" bg-slate-800 text-white mt-1 ml-1 rounded-md z">
-          <ul className={`${o.className} p-2 rounded-md text-xs`}>
+          <ul className={`${outfitFont.className} p-2 rounded-md text-xs`}>
             <li className="flex flex-row">
               - Click
               <button className="ml-1 text-xs bg-teal-600 hover:bg-teal-900 flex flex-row items-center rounded-md px-1 ">
@@ -536,10 +536,10 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
             <header className="flex flex-row p-1 relative w-full">
               <Avatar image={selectedMarker.user.image} />
               <ul className="flex flex-col ml-1 pl-1">
-                <h1 className={`${o.className} text-sm `}>
+                <h1 className={`${outfitFont.className} text-sm `}>
                   {selectedMarker.user.name}
                 </h1>
-                <p className={`${o.className} text-xs text-gray-600`}>
+                <p className={`${outfitFont.className} text-xs text-gray-600`}>
                   {selectedMarker.user.firstName}
                 </p>
               </ul>

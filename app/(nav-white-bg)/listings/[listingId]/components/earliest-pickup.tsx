@@ -3,10 +3,10 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { ValidTime } from "./CustomTimeModal2";
-import { Availability } from "@prisma/client";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { Availability, Hours } from "@prisma/client";
+import { outfitFont } from "@/components/outfit.font";
 interface Props {
-  hours: Availability;
+  hours: Hours;
   onSetTime: (childTime: ValidTime) => void;
   role: string;
   sodtarr: (number | null)[];
@@ -163,7 +163,7 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   if (Object.values(hours).every((dayHours) => dayHours === null)) {
     return (
       <Card
-        className={`bg-inherit border-none cursor-not-allowed opacity-50 ${o.className}`}
+        className={`bg-inherit border-none cursor-not-allowed opacity-50 ${outfitFont.className}`}
       >
         <CardHeader className={`text-2xl 2xl:text-3xl pb-0 mb-0 `}>
           Earliest pickup not available
@@ -180,17 +180,19 @@ const EarliestPickup = ({ hours, onSetTime, role, sodtarr }: Props) => {
   }
   return (
     <Card onClick={handleAsSoonAsPossible} className="bg-inherit border-none">
-      <CardHeader className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${o.className}`}>
+      <CardHeader
+        className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfitFont.className}`}
+      >
         {role === "PRODUCER"
           ? `Get delivered as soon as possible`
           : `Pickup as soon as possible`}
       </CardHeader>
-      <CardContent className={`${o.className}`}>
+      <CardContent className={`${outfitFont.className}`}>
         {role === "PRODUCER"
           ? `In a hurry? The earliest possible delivery time from this producer is `
           : `In a hurry? The earliest possible time for pickup from this co-op is `}
 
-        <span className={`${o.className} text-lg`}>
+        <span className={`${outfitFont.className} text-lg`}>
           {earliestPickupTime || "not available"}
         </span>
       </CardContent>

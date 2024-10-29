@@ -10,8 +10,8 @@ import ListingCard from "@/components/listings/ListingCardDash";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FinalListing } from "@/actions/getListings";
-import { UserInfo } from "@/next-auth";
 import { AlertCircle } from "lucide-react";
+import { UserInfo } from "next-auth";
 
 interface ListingsClientProps {
   canReceivePayouts: boolean;

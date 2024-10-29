@@ -11,11 +11,8 @@ import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { PiBasketThin } from "react-icons/pi";
 import { CartItem } from "@/actions/getCart";
-import {
-  o,
-  z,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { outfitFont } from "../../outfit.font";
+
+import { outfitFont, zillaFont } from "../../outfit.font";
 
 interface c {
   cart: CartItem[];
@@ -160,7 +157,7 @@ const CartIcon = ({ cart }: c) => {
                     className="w-16 h-16 object-cover rounded-xl"
                   />
                   <div className="flex flex-row justify-between w-full">
-                    <h4 className={`${z.className} text-sm font-light`}>
+                    <h4 className={`${zillaFont.className} text-sm font-light`}>
                       {getQuantityWording(
                         item.listing.quantityType
                           ? item.listing.quantityType
