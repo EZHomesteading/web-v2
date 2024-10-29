@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Hours, Location } from "@prisma/client";
 import WeelkyScheduleChart from "../weekly-schedule-chart";
 import { Button } from "@/components/ui/button";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
 import OnboardContainer from "@/app/onboard/onboard.container";
 

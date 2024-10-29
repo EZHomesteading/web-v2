@@ -5,7 +5,7 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
 import OnboardContainer from "@/app/onboard/onboard.container";
 import { z } from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";

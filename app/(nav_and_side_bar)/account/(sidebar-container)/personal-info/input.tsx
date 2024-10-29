@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FieldErrors, UseFormRegister, RegisterOptions } from "react-hook-form";
-import { FormValues } from "./types";
+import { FormValues } from "../../../../../types/address.types";
 import { BiDollar } from "react-icons/bi";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 

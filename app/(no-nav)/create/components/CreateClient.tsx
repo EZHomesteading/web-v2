@@ -26,7 +26,7 @@ import StepFour from "./steps/step4";
 import StepFive from "./steps/step5";
 import StepSix from "./steps/step6";
 import { Location } from "@prisma/client";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 import { Label } from "@/components/ui/label";
 import Help from "./help";
 

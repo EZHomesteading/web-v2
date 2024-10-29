@@ -1,6 +1,6 @@
 import React from "react";
 import { Zilla_Slab } from "next/font/google";
-import { outfitFont, zillaFont } from "@/components/outfit.font";
+import { outfitFont, zillaFont } from "@/components/fonts";
 interface SectionLayoutProps {
   title?: string;
   descriptions?: string[];

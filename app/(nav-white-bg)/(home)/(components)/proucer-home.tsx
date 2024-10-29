@@ -7,7 +7,7 @@ import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;

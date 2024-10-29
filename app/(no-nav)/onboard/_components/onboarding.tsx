@@ -19,7 +19,7 @@ import StepNine from "@/app/(no-nav)/onboard/_components/_steps/step9";
 import OnboardHeader from "./header.onboard";
 import { UserInfo } from "next-auth";
 import { LocationObj } from "location-types";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;

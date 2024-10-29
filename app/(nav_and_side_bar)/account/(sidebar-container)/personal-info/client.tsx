@@ -11,7 +11,7 @@ import AccountCard from "./account-card";
 import Input from "./input";
 import { Button } from "@/components/ui/button";
 import { UploadButton } from "@/utils/uploadthing";
-import { FormValues, AddressFields } from "./types";
+import { FormValues, AddressFields } from "../../../../../types/address.types";
 import {
   AlertDialog,
   AlertDialogContent,

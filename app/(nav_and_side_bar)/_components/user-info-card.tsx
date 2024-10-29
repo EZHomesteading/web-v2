@@ -41,7 +41,7 @@ const UserInfoCard = ({ sellerNav = false }: p) => {
               <div>
                 {user?.name}
                 <div className="text-xs text-neutral-700">
-                  {user?.firstName}
+                  {user?.fullName?.first}
                 </div>
               </div>
             </div>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import getReports from "@/actions/getReports";
 import getDisputesLite from "@/actions/getDisputes";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;
