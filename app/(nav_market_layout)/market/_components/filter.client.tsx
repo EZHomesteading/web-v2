@@ -1,12 +1,16 @@
 "use client";
 //filters sidebar popover component
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
-import { Slider } from "./radius-slider";
-import { Switch } from "../ui/switch";
-import FiltersIcon from "./icons/filters-icon";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Slider } from "@/app/(nav_market_layout)/market/_components/radius-slider";
+import { Switch } from "@/components/ui/switch";
+import FiltersIcon from "@/components/navbar/icons/filters-icon";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Outfit } from "next/font/google";
 import { UserRole } from "@prisma/client";
 import { GiFruitTree, GiFruiting } from "react-icons/gi";
 import { IoStorefrontOutline } from "react-icons/io5";
@@ -19,17 +23,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 import axios from "axios";
+import { outfitFont } from "@/components/fonts";
 
 interface Props {
   role?: UserRole;
 }
 
-const outfit = Outfit({
-  subsets: ["latin-ext"],
-  display: "block",
-});
 const Filters = ({ role }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -153,7 +154,7 @@ const Filters = ({ role }: Props) => {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className={`${outfit.className} w-screen sm:w-3/4 md:w-1/2 2xl:w-1/5 px-2 sm:px-4 flex flex-col text-zinc-700 sheet`}
+        className={`${outfitFont.className} w-screen sm:w-3/4 md:w-1/2 2xl:w-1/5 px-2 sm:px-4 flex flex-col text-zinc-700 sheet`}
       >
         <SheetHeader className="pt-12 text-4xl font-extralight">
           Filters
@@ -213,7 +214,7 @@ const Filters = ({ role }: Props) => {
                 <SelectValue placeholder="" defaultValue={ra || "htl"} />
               </SelectTrigger>
               <SelectContent
-                className={`${outfit.className}`}
+                className={`${outfitFont.className}`}
                 onClick={stopPropagation}
               >
                 <SelectGroup>
@@ -238,7 +239,7 @@ const Filters = ({ role }: Props) => {
                 <SelectValue placeholder="" defaultValue={pr || "htl"} />
               </SelectTrigger>
               <SelectContent
-                className={`${outfit.className}`}
+                className={`${outfitFont.className}`}
                 onClick={stopPropagation}
               >
                 <SelectGroup>

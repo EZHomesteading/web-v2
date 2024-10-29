@@ -1,4 +1,5 @@
-//market server side layout with search parameters for grabbing data
+// market server side layout with search parameters for grabbing data
+
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/EmptyState";
 import ClientOnly from "@/components/client/ClientOnly";
@@ -25,7 +26,7 @@ interface ShopProps {
 }
 
 const MarketComponent = dynamic(
-  () => import("@/app/(nav_market_market)/market/market-component"),
+  () => import("@/app/(nav_market_layout)/market/_components/market-component"),
   {
     ssr: true,
   }

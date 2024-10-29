@@ -25,13 +25,13 @@ import { LuBeef, LuBean, LuMilk } from "react-icons/lu";
 import { CiApple, CiForkAndKnife } from "react-icons/ci";
 import { FaAppleAlt } from "react-icons/fa";
 
-import Container from "../Container";
-import Filters from "./filter.client";
 import { Outfit } from "next/font/google";
 import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
 import { IoFishOutline } from "react-icons/io5";
 import { MdOutlineSolarPower } from "react-icons/md";
 import { UserRole } from "@prisma/client";
+import Container from "@/components/Container";
+import Filters from "./filter.client";
 
 const outfit = Outfit({
   subsets: ["latin"],

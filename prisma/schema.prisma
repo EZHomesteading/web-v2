@@ -152,17 +152,14 @@ model Location {
 }
 
 model User {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  name          String
-  email         String     @unique
-  fullName      fullName?
-  // firstName     String?
-  emailVerified DateTime?
-  phoneNumber   String?
-  locations     Location[]
-  image         String?
-
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String
+  email                 String                 @unique
+  fullName              fullName?
+  emailVerified         DateTime?
+  phoneNumber           String?
+  locations             Location[]
+  image                 String?
   role                  UserRole               @default(PRODUCER)
   password              String?
   stripeAccountId       String?
