@@ -5,17 +5,15 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import { LocationObj } from "@/next-auth";
 import { Button } from "@/app/components/ui/button";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { getFulfillmentText } from "./step5";
-import OnboardHeader from "./header.onboard";
 import OnboardContainer from "./onboard.container";
+import { Location } from "@prisma/client";
+import { LocationObj } from "location-types";
 
 interface StepFiveProps {
   location?: LocationObj;
   user: any;
-  updateFormData: (newData: { location: LocationObj }) => void;
+  updateFormData: (newData: { location: Location }) => void;
   formData: string[] | undefined;
   onComplete: (selectedDays: string[]) => void;
   onCompleteHours: () => void;

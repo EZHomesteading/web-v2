@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { LocationObj } from "@/next-auth";
-import { Hours } from "@prisma/client";
+import { Hours, Location } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import WeelkyScheduleChart from "./weekly-schedule-chart";
 import OnboardContainer from "./onboard.container";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { Button } from "../../components/ui/button";
+import { outfitFont } from "@/app/components/outfit.font";
+import { LocationObj } from "location-types";
 
 interface StepSevenProps {
   location?: LocationObj;
@@ -68,7 +68,9 @@ const StepNine = ({
         title="Congratulations!"
         descriptions={["You've successfully added your first store & hours"]}
       />
-      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${o.className}`}>
+      <div
+        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${outfitFont.className}`}
+      >
         {/* months section */}
         <div className="flex flex-col mb-3">
           <h2 className="text-xl font-normal text-center mb-3">

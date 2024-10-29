@@ -2,7 +2,7 @@
 import { Outfit } from "next/font/google";
 import Sidebar from "./update-listing/components/sidebar";
 import { Viewport } from "next";
-import BackArrow from "@/app/account/components/back-arrow";
+import BackArrow from "../../_components/back-arrow";
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };

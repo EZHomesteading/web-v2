@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { LocationObj } from "@/next-auth";
-import { Hours } from "@prisma/client";
+import { Hours, Location } from "@prisma/client";
 import OnboardContainer from "./onboard.container";
 import WeelkyScheduleChart from "./weekly-schedule-chart";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { Button } from "../../components/ui/button";
+import { outfitFont } from "@/app/components/outfit.font";
+import { LocationObj } from "location-types";
 
 interface StepSevenProps {
   location?: LocationObj;
@@ -151,16 +151,25 @@ const StepEight: React.FC<StepSevenProps> = ({
         const dayOfWeek = date.getDay();
         const schedules = location?.hours?.pickup || [];
         const daySchedule = schedules.find(
-          (schedule) =>
+          (schedule: {
+            date: {
+              toLocaleString: (
+                arg0: string,
+                arg1: { weekday: string }
+              ) => string;
+            };
+          }) =>
             weekDays[dayOfWeek] ===
             schedule.date.toLocaleString("en-US", { weekday: "long" })
         );
 
         if (daySchedule && daySchedule.timeSlots.length > 0) {
-          const timeSlots = daySchedule.timeSlots.map((slot) => ({
-            open: slot.open,
-            close: slot.close,
-          }));
+          const timeSlots = daySchedule.timeSlots.map(
+            (slot: { open: any; close: any }) => ({
+              open: slot.open,
+              close: slot.close,
+            })
+          );
 
           const dailySchedule = {
             date,
@@ -255,7 +264,9 @@ const StepEight: React.FC<StepSevenProps> = ({
           "You will be able to edit specific days later in settings",
         ]}
       />
-      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${o.className}`}>
+      <div
+        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${outfitFont.className}`}
+      >
         {/* months section */}
         <div className="flex flex-col mb-3">
           <h2 className="text-xl font-normal text-center">Month Schedule</h2>

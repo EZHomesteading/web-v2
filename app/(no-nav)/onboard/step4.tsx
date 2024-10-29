@@ -1,6 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { LocationObj } from "@/next-auth";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import {
   PiArrowsCounterClockwiseThin,
   PiCalendarBlankThin,
@@ -8,6 +6,9 @@ import {
   PiStorefrontThin,
 } from "react-icons/pi";
 import OnboardContainer, { zillaFont } from "./onboard.container";
+import { Location } from "@prisma/client";
+import { outfitFont } from "@/app/components/outfit.font";
+import { LocationObj } from "location-types";
 
 interface StepFiveProps {
   location?: LocationObj;
@@ -100,7 +101,7 @@ const StepFour: React.FC<StepFiveProps> = ({
               setIndex(index);
             }}
             className={`${
-              o.className
+              outfitFont.className
             } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:min-w-[402.88px] rounded-xl min-h-[134px]  border transition ${
               selectedOption.includes(option.label)
                 ? "bg-black text-white"

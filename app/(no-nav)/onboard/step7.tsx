@@ -1,15 +1,17 @@
 import { useRef, useState } from "react";
-import { LocationObj } from "@/next-auth";
-import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "sonner";
+
+import OnboardContainer from "./onboard.container";
+import { PiTrashThin } from "react-icons/pi";
+import { Location } from "@prisma/client";
 import {
   checkOverlap,
   convertMinutesToTimeString,
   convertTimeStringToMinutes,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
-import OnboardContainer from "./onboard.container";
-import { PiTrashThin } from "react-icons/pi";
+} from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import TimePicker from "@/app/(nav_and_side_bar)/selling/(container-selling)/availability-calendar/(components)/time-slot";
+import { LocationObj } from "location-types";
 
 interface StepSixProps {
   user: any;
@@ -162,7 +164,7 @@ const StepSeven: React.FC<StepSixProps> = ({
 
     const existingPickup = location.hours?.pickup || [];
     const newPickup = existingPickup.filter(
-      (pickup) =>
+      (pickup: { date: string | number | Date }) =>
         !selectedDays.includes(weekDays[new Date(pickup.date).getUTCDay()])
     );
     newPickup.push(...updatedPickup);

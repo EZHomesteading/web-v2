@@ -2,23 +2,14 @@ import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Loading from "@/app/components/secondary-loader";
 import { Libraries } from "@googlemaps/js-api-loader";
-import { LocationObj, UserInfo } from "@/next-auth";
-import { Outfit } from "next/font/google";
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
   Suggestion,
 } from "react-places-autocomplete";
-import { LiaMapMarkedSolid } from "react-icons/lia";
-import { UserRole } from "@prisma/client";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { PiMapPinLineThin } from "react-icons/pi";
+import { Location, UserRole } from "@prisma/client";
 import OnboardContainer from "./onboard.container";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { LocationObj } from "location-types";
 
 interface Props {
   role?: UserRole;

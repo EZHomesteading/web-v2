@@ -1,5 +1,5 @@
+import { LocationObj } from "location-types";
 import { useEffect, useRef, useState } from "react";
-import { LocationObj } from "next-auth";
 
 interface p {
   location?: LocationObj;
@@ -235,48 +235,50 @@ const WeelkyScheduleChart = ({
         ))}
 
         {/*time slot rects*/}
-        {location?.hours?.pickup.map((pickup) => {
-          const dayIndex = pickup.date.getDay();
-          const dayName = getDayNameFromSlot(dayIndex);
+        {location?.hours?.pickup.map(
+          (pickup: { date: { getDay: () => any }; timeSlots: any[] }) => {
+            const dayIndex = pickup.date.getDay();
+            const dayName = getDayNameFromSlot(dayIndex);
 
-          return pickup.timeSlots.map((slot, slotIndex) => {
-            const startHour = Math.floor(slot.open / 60);
-            const endHour = Math.ceil(slot.close / 60);
-            const startY = graphTop + (startHour / 3) * hourHeight;
-            const height = ((endHour - startHour) / 3) * hourHeight;
+            return pickup.timeSlots.map((slot, slotIndex) => {
+              const startHour = Math.floor(slot.open / 60);
+              const endHour = Math.ceil(slot.close / 60);
+              const startY = graphTop + (startHour / 3) * hourHeight;
+              const height = ((endHour - startHour) / 3) * hourHeight;
 
-            return (
-              <g key={`${dayIndex}-${slotIndex}`}>
-                <rect
-                  x={padding + dayIndex * dayWidth + 4}
-                  y={startY}
-                  width={dayWidth - 8}
-                  height={height}
-                  opacity={0.95}
-                  fill={barColor}
-                  rx={6}
-                  ry={6}
-                  filter="url(#dropShadow)"
-                  onClick={() => handleDayClick(dayName)}
-                />
-                {editHours && (
+              return (
+                <g key={`${dayIndex}-${slotIndex}`}>
                   <rect
                     x={padding + dayIndex * dayWidth + 4}
                     y={startY}
                     width={dayWidth - 8}
                     height={height}
-                    fill="transparent"
+                    opacity={0.95}
+                    fill={barColor}
                     rx={6}
                     ry={6}
-                    className="hover:fill-black hover:opacity-50"
+                    filter="url(#dropShadow)"
                     onClick={() => handleDayClick(dayName)}
-                    style={{ cursor: "pointer" }}
                   />
-                )}
-              </g>
-            );
-          });
-        })}
+                  {editHours && (
+                    <rect
+                      x={padding + dayIndex * dayWidth + 4}
+                      y={startY}
+                      width={dayWidth - 8}
+                      height={height}
+                      fill="transparent"
+                      rx={6}
+                      ry={6}
+                      className="hover:fill-black hover:opacity-50"
+                      onClick={() => handleDayClick(dayName)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                </g>
+              );
+            });
+          }
+        )}
       </svg>
     </div>
   );

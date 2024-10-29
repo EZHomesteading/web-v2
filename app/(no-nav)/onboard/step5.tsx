@@ -1,15 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { LocationObj } from "@/next-auth";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import {
-  PiCalendarBlankThin,
-  PiCalendarCheckThin,
-  PiCalendarPlusThin,
-  PiCalendarThin,
-  PiGearThin,
-} from "react-icons/pi";
-import OnboardHeader from "./header.onboard";
 import OnboardContainer from "./onboard.container";
+import { LocationObj } from "location-types";
 
 interface StepFourProps {
   location?: LocationObj;

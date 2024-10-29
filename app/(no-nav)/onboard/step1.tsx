@@ -1,10 +1,10 @@
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "@/app/components/outfit.font";
 
 const StepOne = () => {
   return (
     <div className="flex flex-col justify-center items-center h-full px-20">
       <div
-        className={`w-full max-w-2xl flex flex-col items-start text-start ${o.className}`}
+        className={`w-full max-w-2xl flex flex-col items-start text-start ${outfitFont.className}`}
       >
         <div className="text-3xl sm:text-6xl ">Set Up Your Store</div>
         <div className="text-xs sm:text-base mt-2 font-extralight">
