@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import useConversation from "@/hooks/messenger/useConversation";
 import EmptyState from "@/components/EmptyState";
-import MessagesPopup from "@/app/(nav-white-bg)/info-modals/messages-info-modal";
+import MessagesPopup from "@/app/(white_nav_layout)/info-modals/messages-info-modal";
 import { useEffect, useRef } from "react";
 import axios from "axios";
 

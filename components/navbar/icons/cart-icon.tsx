@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { PiBasketThin } from "react-icons/pi";
 import { CartItem } from "@/actions/getCart";
 
-import { outfitFont, zillaFont } from "../../outfit.font";
+import { outfitFont, zillaFont } from "../../fonts";
 
 interface c {
   cart: CartItem[];

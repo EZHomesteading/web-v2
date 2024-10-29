@@ -7,7 +7,7 @@ import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { PiBellThin } from "react-icons/pi";
 import { navBuyOrder, navSellOrder } from "order-types";
-import { outfitFont } from "../../outfit.font";
+import { outfitFont } from "../../fonts";
 
 interface Props {
   bOrders?: navBuyOrder[];
