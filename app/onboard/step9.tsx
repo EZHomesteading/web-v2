@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import WeelkyScheduleChart from "./weekly-schedule-chart";
 import OnboardContainer from "./onboard.container";
 import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { Button } from "../components/ui/button";
+import { Button } from "../../components/ui/button";
 
 interface StepSevenProps {
   location?: LocationObj;

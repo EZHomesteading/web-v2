@@ -2,7 +2,7 @@
 
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma from "./lib/prisma";
+import prisma from "@/lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import {  fullName, Notification,  UserRole } from "@prisma/client";
@@ -66,7 +66,7 @@ export const {
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
       token.phoneNumber = existingUser.phoneNumber ?? "";
-      token.image = existingUser.image;
+      token.image = existingUser.image ?? "";
       token.hasPickedRole = existingUser.hasPickedRole ?? false
       token.url = existingUser.url ?? "";
       token.role = existingUser.role;

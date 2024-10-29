@@ -28,7 +28,7 @@ export default async function getDisputes() {
                 phoneNumber: true,
                 createdAt: true,
                 role: true,
-                firstName: true,
+                fullName: true,
               },
             },
             seller: {
@@ -38,7 +38,7 @@ export default async function getDisputes() {
                 phoneNumber: true,
                 createdAt: true,
                 role: true,
-                firstName: true,
+                fullName: true,
               },
             },
           },

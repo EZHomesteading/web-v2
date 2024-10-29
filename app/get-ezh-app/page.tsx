@@ -10,7 +10,7 @@ import PWAInstall from "@/app/get-ezh-app/pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Navbar from "../components/navbar/Navbar";
+import Navbar from "../../components/navbar/Navbar";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { navUser } from "@/next-auth";
 

@@ -4,7 +4,7 @@ import { Hours } from "@prisma/client";
 import OnboardContainer from "./onboard.container";
 import WeelkyScheduleChart from "./weekly-schedule-chart";
 import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { Button } from "../components/ui/button";
+import { Button } from "../../components/ui/button";
 
 interface StepSevenProps {
   location?: LocationObj;

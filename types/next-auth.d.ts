@@ -19,7 +19,7 @@ declare module "next-auth" {
     seenMessageIds: string[];
     subscriptions?: string;
     totalPaidOut: number;
-    notifications: Notification;
+    notifications: Notification[];
     SODT?: number;
     bio?: string;
     banner?: string;

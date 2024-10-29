@@ -6,7 +6,7 @@ import Stripe from "stripe";
 import { getLocationByIndex, getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
 import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import { outfitFont } from "../components/outfit.font";
+import { outfitFont } from "../../components/outfit.font";
 import { LocationEZH } from "next-auth";
 
 export const viewport: Viewport = {
