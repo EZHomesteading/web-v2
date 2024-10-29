@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "sonner";
 
-import OnboardContainer from "./onboard.container";
+import OnboardContainer from "../../onboard.container";
 import { PiTrashThin } from "react-icons/pi";
 import { Location } from "@prisma/client";
 import {

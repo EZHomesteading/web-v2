@@ -6,7 +6,7 @@ import { IoStorefrontOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { useState } from "react";
-import OnboardContainer, { zillaFont } from "./onboard.container";
+import OnboardContainer, { zillaFont } from "../../onboard.container";
 import { PiPlantThin, PiStorefrontThin } from "react-icons/pi";
 
 interface p {

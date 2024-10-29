@@ -8,7 +8,7 @@ import { loadConnectAndInitialize } from "@stripe/connect-js/pure";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "@/app/components/secondary-loader";
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 
 interface Props {
   user?: UserInfo;

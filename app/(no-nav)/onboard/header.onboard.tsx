@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFulfillmentText } from "./step5";
+import { getFulfillmentText } from "./_components/_steps/step5";
 import { outfitFont } from "../../components/outfit.font";
 
 interface p {

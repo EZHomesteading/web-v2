@@ -5,7 +5,7 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import OnboardContainer, { zillaFont } from "./onboard.container";
+import OnboardContainer, { zillaFont } from "../../onboard.container";
 import { Location } from "@prisma/client";
 import { outfitFont } from "@/app/components/outfit.font";
 import { LocationObj } from "location-types";
