@@ -32,6 +32,7 @@ import {
 } from "./helper-functions-calendar";
 import { usePathname } from "next/navigation";
 import { RiArrowDownSLine } from "react-icons/ri";
+import axios from "axios";
 
 interface p {
   location?: Location;
@@ -586,11 +587,13 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
       toast.error("Time slots overlap. Please adjust the hours.");
       return;
     }
+
     const selectedDates = Object.entries(selectedDays)
       .filter(([_, isSelected]) => isSelected)
       .map(([dateString, _]) => parseISO(dateString))
       .filter((date): date is Date => isValid(date))
       .sort((a, b) => a.getTime() - b.getTime());
+
     const { currentHours } = getCurrentHours();
     const currentSetsMap = new Map(
       currentHours?.map((currentSet: any) => [
@@ -604,7 +607,6 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
 
     selectedDates.forEach((date) => {
       const dateKey = format(date, "yyyy-MM-dd");
-
       const newException: Availability = {
         date,
         timeSlots: isOpen ? allTimeSlots.flat() : [],
@@ -614,7 +616,6 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
     });
 
     const updateHours = Array.from(currentSetsMap.values());
-
     const updatedHours = {
       ...hours,
       [deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY
@@ -622,15 +623,35 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
         : "pickup"]: updateHours,
     };
 
-    setHours(updatedHours);
-
     try {
-      await updateUserHours(updatedHours, location?.id);
-      toast.success("Hours updated successfully");
+      const response = await axios.post(
+        "/api/useractions/update/location-hours",
+        {
+          location: [
+            {
+              address: location?.address,
+              coordinates: location?.coordinates,
+              role: location?.role,
+              hours: updatedHours,
+            },
+          ],
+          locationId: location?.id,
+          isDefault: null,
+        }
+      );
+
+      if (response.data) {
+        setHours(updatedHours);
+        toast.success("Hours updated successfully");
+      } else {
+        toast.error("Failed to update hours");
+      }
     } catch (error) {
       console.error("Error updating hours:", error);
       toast.error("Failed to update hours");
+      return;
     }
+
     if (!panelSide) {
       setIsBasePanelOpen(false);
     }
