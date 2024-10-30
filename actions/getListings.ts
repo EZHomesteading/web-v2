@@ -499,6 +499,7 @@ const getListingByIdUpdate = async (params: IParams) => {
             role: true,
             url: true,
             SODT: true,
+            locations: true,
           },
         },
         location: true,

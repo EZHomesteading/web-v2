@@ -5,11 +5,15 @@ import {
   User,
   Prisma,
   $Enums,
+  Location,
 } from "@prisma/client";
 
 export type SafeListing = Omit<Listing, "createdAt"> & {
   createdAt: string;
-  user: User;
+  user: User & {
+    locations: Location[];
+  };
+  location: Location;
 };
 
 export type SafeUser = Omit<
