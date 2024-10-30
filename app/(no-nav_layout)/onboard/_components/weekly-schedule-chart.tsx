@@ -1,5 +1,5 @@
 import { LocationObj } from "location-types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface p {
   location?: LocationObj;

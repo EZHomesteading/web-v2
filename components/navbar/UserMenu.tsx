@@ -18,7 +18,7 @@ import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
 import { IconType } from "react-icons";
-import { outfitFont } from "../fonts";
+import { outfitFont } from "@/components/fonts";
 
 type MenuIconItem = IconItem | ComponentItem;
 

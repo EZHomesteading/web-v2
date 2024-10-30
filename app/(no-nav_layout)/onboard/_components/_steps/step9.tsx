@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Hours, Location } from "@prisma/client";
+import { Hours } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import WeelkyScheduleChart from "../weekly-schedule-chart";
 import { Button } from "@/components/ui/button";

@@ -1,5 +1,4 @@
 //default navbar parent element
-
 import NavbarClient from "@/components/navbar/navbar.client";
 import { UserRole } from "@prisma/client";
 import Stripe from "stripe";

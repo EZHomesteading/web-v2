@@ -2,7 +2,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { outfitFont } from "../fonts";
+import { outfitFont } from "@/components/fonts";
 
 const Logo = () => {
   const pathname = usePathname();

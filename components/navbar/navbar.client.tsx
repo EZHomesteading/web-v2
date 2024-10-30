@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Categories from "@/app/(nav_market_layout)/market/_components/categories";
 import Container from "../Container";
 import Logo from "@/components/navbar/Logo";
 import UserMenu from "./UserMenu";
 import FindListingsComponent from "@/components/listings/search-listings";
-
 import { NavUser } from "@/actions/getUser";
+import Categories from "@/app/(nav_market_layout)/market/_components/categories";
 
 interface NavbarProps {
   user?: NavUser;

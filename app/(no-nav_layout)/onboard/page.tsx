@@ -1,13 +1,11 @@
 //onboarding parent element
-import Onboarding from "./_components/onboarding";
 import { Viewport } from "next";
 import authCache from "@/auth-cache";
-import Stripe from "stripe";
-import { getLocationByIndex, getUserLocations } from "@/actions/getUser";
+import { getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
 import { outfitFont } from "../../../components/fonts";
 import { Location } from "@prisma/client";
-
+import Onboarding from "./_components/onboarding";
 export const viewport: Viewport = {
   themeColor: "#fff",
 };

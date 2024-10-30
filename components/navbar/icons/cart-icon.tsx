@@ -1,3 +1,4 @@
+import { zillaFont } from "@/components/fonts";
 import {
   Sheet,
   SheetContent,
@@ -11,8 +12,7 @@ import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { PiBasketThin } from "react-icons/pi";
 import { CartItem } from "@/actions/getCart";
-
-import { outfitFont, zillaFont } from "../../fonts";
+import { outfitFont } from "@/components/fonts";
 
 interface c {
   cart: CartItem[];
