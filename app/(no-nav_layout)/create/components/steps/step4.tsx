@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import Counter from "@/app/(nav_and_side_bar)/create/components/Counter";
+import Counter from "../Counter";
 interface p {
   nonPerishable: boolean;
   handleNonPerishableCheckboxChange: (checked: boolean, index: number) => void;

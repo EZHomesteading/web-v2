@@ -17,10 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { IoStorefrontOutline } from "react-icons/io5";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Availability } from "@prisma/client";
-import {
-  o,
-  z,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 interface CustomTimeProps {
   isOpen?: boolean;
@@ -142,7 +139,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className={`${o.className} font-semibold text-xl mb-1`}>
+      <h1 className={`${outfitFont.className} font-semibold text-xl mb-1`}>
         Pick a Date & Time
       </h1>
       <div>
@@ -151,14 +148,14 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${z.className} bg-neutral-100 shadow-md mb-1`}
+                className={`${zillaFont.className} bg-neutral-100 shadow-md mb-1`}
               >
                 <IoStorefrontOutline className="mr-2 h-4 w-4" />
                 <span>View Farm Hours</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${o.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${outfitFont.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
               {/* <HoursDisplay coOpHours={hours} /> */}
             </PopoverContent>
@@ -167,14 +164,14 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${z.className} bg-neutral-100 shadow-md mb-2`}
+                className={`${zillaFont.className} bg-neutral-100 shadow-md mb-2`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {date ? format(date, "PPP") : <span>Set Pickup Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${o.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${outfitFont.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
               <Calendar
                 mode="single"
@@ -202,20 +199,20 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
 
                   if (selectedDate < today) {
                     return (
-                      <div className={`${z.className} text-sm`}>
+                      <div className={`${zillaFont.className} text-sm`}>
                         Date has passed
                       </div>
                     );
                   } else if (!options.length) {
                     return (
-                      <div className={`${z.className} text-sm`}>
+                      <div className={`${zillaFont.className} text-sm`}>
                         Closed on {format(date, "EEEE")}
                       </div>
                     );
                   } else {
                     return (
                       <h4
-                        className={`${o.className} mb-4 text- font-medium leading-none`}
+                        className={`${outfitFont.className} mb-4 text- font-medium leading-none`}
                       >
                         Select a Time
                       </h4>
@@ -227,7 +224,7 @@ const CustomTimeModal2: React.FC<CustomTimeProps> = ({
                   <div key={option} className="hover:bg-slate">
                     <div onClick={onClose}>
                       <div
-                        className={`${z.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
+                        className={`${zillaFont.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
                         onClick={() => {
                           setTime(option);
                           onClose;

@@ -27,7 +27,7 @@ import {
   IoTrash,
 } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+//import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import CancelModal from "./CancelModal";
 import ConfirmModal from "./ConfirmModal";
 import DisputeModal from "./DisputeModal";
@@ -347,9 +347,9 @@ const Body: React.FC<BodyProps> = ({
                     </SheetTrigger>
 
                     <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                      <HoursDisplay
+                      {/* <HoursDisplay
                         coOpHours={order.location.hours as ExtendedHours}
-                      />
+                      /> */}
                     </SheetContent>
                   </Sheet>
                   <Button
@@ -402,9 +402,9 @@ const Body: React.FC<BodyProps> = ({
                   </SheetTrigger>
 
                   <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
-                    <HoursDisplay
+                    {/* <HoursDisplay
                       coOpHours={order.location.hours as ExtendedHours}
-                    />
+                    /> */}
                   </SheetContent>
                 </Sheet>
                 <Button

@@ -1,5 +1,5 @@
 //map routes server side page layout
-import { getVendorLocsMap, NavUser } from "@/actions/getUser";
+import { getNavUser, getVendorLocsMap, NavUser } from "@/actions/getUser";
 import authCache from "@/auth-cache";
 import Map from "@/app/(white_nav_layout)/map/map";
 import { UserRole } from "@prisma/client";
@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 const MapPage = async () => {
   const map_api_key = process.env.MAPS_KEY as string;
   const session = await authCache();
-  const user = session?.user;
+  const user = await getNavUser();
 
   let producers: any = [];
 
@@ -24,22 +24,17 @@ const MapPage = async () => {
     producers = await getVendorLocsMap({ role: UserRole.PRODUCER });
   }
   const defaultLocation = { lat: 44.58, lng: -103.46 };
-  const initialLocation = session?.user.location
-    ? session?.user.location[0]
+  const initialLocation = user?.locations
+    ? user.locations[0]
       ? {
-          lat: session?.user?.location[0].coordinates[1],
-          lng: session?.user?.location[0].coordinates[0],
+          lat: user?.locations[0].coordinates[1],
+          lng: user?.locations[0].coordinates[0],
         }
       : defaultLocation
     : defaultLocation;
 
   return (
     <div className="h-sreen overflow-hidden touch-none">
-      <div className="relative w-full z-10 shadow-sm">
-        <Container>
-          <Navbar user={user as unknown as NavUser} />
-        </Container>
-      </div>
       <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
         <Map
           coordinates={initialLocation}

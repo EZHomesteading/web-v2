@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "./fonts";
 
 interface EmptyStateProps {
   title?: string;
@@ -44,7 +44,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   }
   return (
     <div
-      className={`${o.className}
+      className={`${outfitFont.className}
         h-[60vh]
         flex 
         flex-col 

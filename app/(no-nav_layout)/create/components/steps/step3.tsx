@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import Input from "@/app/(nav_and_side_bar)/create/components/listing-input";
+import Input from "../listing-input";
 import UnitSelect, { QuantityTypeValue } from "../UnitSelect";
 import {
   CommonInputProps,

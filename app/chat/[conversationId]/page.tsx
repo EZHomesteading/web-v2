@@ -121,7 +121,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
   }
   const { reviews } = data;
   const reviewsFinal: Reviews[] = await Promise.all(
-    reviews.map(async (review) => {
+    reviews.map(async (review: any) => {
       return { ...review };
     })
   );

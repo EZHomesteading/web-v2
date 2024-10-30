@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Categories from "./_categories_filter_market/Categories";
+import Categories from "@/app/(nav_market_layout)/market/_components/categories";
 import Container from "../Container";
 import Logo from "@/components/navbar/Logo";
 import UserMenu from "./UserMenu";
@@ -49,7 +49,7 @@ const Navbar = ({
   }, []);
 
   const renderHomeNav = () => (
-    <div className={`absolute w-full z-[10] ${bg} select-none !text-black`}>
+    <div className={`sticky w-full z-[10] ${bg} select-none !text-black`}>
       <Container>
         <div className="sm:flex sm:justify-between sm:items-center">
           <Logo />

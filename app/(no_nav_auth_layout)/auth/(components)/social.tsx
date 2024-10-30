@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { z } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { zillaFont } from "@/components/fonts";
 
 export const Social = () => {
   const searchParams = useSearchParams();
@@ -19,7 +19,7 @@ export const Social = () => {
   return (
     <Button
       size="lg"
-      className={`${z.className} w-[280px] sm:w-[350px]`}
+      className={`${zillaFont.className} w-[280px] sm:w-[350px]`}
       variant="outline"
       onClick={() => onClick("google")}
     >

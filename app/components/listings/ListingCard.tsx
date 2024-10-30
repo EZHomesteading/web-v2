@@ -27,10 +27,15 @@ import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
-import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
+//import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "@/components/outfit.font";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/listings/error-popover";
 const work = Work_Sans({
   display: "block",
   subsets: ["latin"],
@@ -173,7 +178,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
         <div className="font-semibold text-lg">
           {" "}
-          <div className={`${o.className} text-lg`}>{data.title}</div>
+          <div className={`${outfitFont.className} text-lg`}>{data.title}</div>
           <div
             className={`font-light text-neutral-500 text-xs ${work.className}`}
           >

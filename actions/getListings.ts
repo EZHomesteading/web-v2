@@ -4,7 +4,7 @@ import haversine from "haversine-distance";
 import Fuse from "fuse.js";
 import { Location, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
-import { LocationEZH } from "@/next-auth";
+import { getDisplayName } from "next/dist/shared/lib/utils";
 
 // Interface for defining the search parameters
 type sort = "htl" | "lth" | "1" | "2" | "3" | "4" | "5";
@@ -47,7 +47,7 @@ export type FinalListing1 = {
   rating: number[];
   quantityType: string | null;
   createdAt: Date;
-  location: LocationEZH;
+  location: Location | null;
   keyWords: string[];
   imageSrc: string[];
   subCategory: string;
@@ -131,6 +131,8 @@ const GetListingsMarket = async (
           userId: true,
           type: true,
           coordinates: true,
+          displayName: true,
+          showPreciseLocation: true,
           address: true,
           role: true,
           isDefault: true,
@@ -471,7 +473,7 @@ const getListingById = async (params: IParams) => {
     //     emailVerified: listing.user.emailVerified?.toString() || null,
     //   },
     // };
-    return { listing: listing };
+    return listing;
   } catch (error: any) {
     console.error(error);
     throw new Error(error);

@@ -1,13 +1,12 @@
 //onboarding parent element
-import Onboarding from "./onboarding";
+import Onboarding from "./_components/onboarding";
 import { Viewport } from "next";
 import authCache from "@/auth-cache";
 import Stripe from "stripe";
 import { getLocationByIndex, getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { outfitFont } from "../../../components/fonts";
-import { LocationEZH } from "next-auth";
+import { Location } from "@prisma/client";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
@@ -27,7 +26,7 @@ const Page = async () => {
   if (!apiKey) {
     return;
   }
-  const getLocationTitle = (location: LocationEZH, index: number) => {
+  const getLocationTitle = (location: Location, index: number) => {
     if (location?.isDefault) return "Edit Default Location";
     if (index === 1) return "Edit Second Location";
     if (index === 2) return "Edit Third Location";

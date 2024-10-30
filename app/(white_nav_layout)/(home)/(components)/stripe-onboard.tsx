@@ -1,6 +1,6 @@
 "use client";
 //button to register user to stripe, giving them a stripe ID
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 import Link from "next/link";
 import { Button } from "../../../../components/ui/button";
 import axios from "axios";
