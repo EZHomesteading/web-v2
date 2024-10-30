@@ -49,7 +49,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     selectedMonths?: number[];
   }>({});
   const [progress, setProgress] = useState(0);
-
+  console.log(formData);
   const updateFormData = useCallback(
     (newData: Partial<{ location: LocationObj }>) => {
       setFormData((prevData) => {
@@ -297,6 +297,22 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   useEffect(() => {
     setProgress(step * 14.28); // 100 / 7 steps
   }, [step]);
+  const shouldShowNextButton = () => {
+    switch (step) {
+      case 1:
+        return true;
+      case 2:
+        return !!formData.role;
+      case 3:
+        return !!(formData.location?.address && formData.location?.coordinates);
+      case 4:
+        return !!formData.fulfillmentStyle;
+      case 5:
+        return formData.selectedMonths && formData.selectedMonths.length >= 1;
+      default:
+        return false;
+    }
+  };
 
   return (
     <>
@@ -417,7 +433,9 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
                 </div>
               </div>
             )}
-            {step < 6 && <Button onClick={handleNext}>Next</Button>}
+            {step > 1 && step < 9 && shouldShowNextButton() && (
+              <Button onClick={handleNext}>Next</Button>
+            )}{" "}
           </div>
         </div>
       </div>

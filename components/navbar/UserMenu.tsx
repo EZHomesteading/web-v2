@@ -17,8 +17,8 @@ import { iconMap } from "./icon-map";
 import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { IconType } from "react-icons";
+import {outfitFont} from "@/components/fonts"
 
 type MenuIconItem = IconItem | ComponentItem;
 
@@ -196,7 +196,7 @@ const UserMenu: React.FC<Props> = ({
           <MenuIcon image={user?.image} />
         </div>
         <PopoverContent
-          className={`${o.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
+          className={`${outfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
           align="end"
           alignOffset={0}
         >
@@ -310,7 +310,7 @@ const UserMenu: React.FC<Props> = ({
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
-                  className={`${o.className} min-h-screen w-screen d1dbbf `}
+                  className={`${outfitFont.className} min-h-screen w-screen d1dbbf `}
                 >
                   <div className="h-full flex flex-col items-center justify-center px-10">
                     <ul className="w-full max-w-3xl">
@@ -394,7 +394,7 @@ const IconWrapper: React.FC<{
       onClick={onClick}
     >
       <Icon className={`h-8 w-8  `} />
-      <div className={`text-xs ${o.className} `}>{label}</div>
+      <div className={`text-xs ${outfitFont.className} `}>{label}</div>
     </button>
   );
 };
