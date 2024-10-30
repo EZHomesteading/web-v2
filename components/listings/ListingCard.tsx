@@ -30,12 +30,7 @@ import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-<<<<<<< HEAD
-import { outfitFont } from "@/components/fonts"
-=======
-import { outfitFont } from "../fonts";
-
->>>>>>> origin
+import { outfitFont } from "@/components/fonts";
 const work = Work_Sans({
   display: "block",
   subsets: ["latin"],

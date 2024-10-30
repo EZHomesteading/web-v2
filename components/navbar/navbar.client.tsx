@@ -26,6 +26,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({
+  isChat,
   user,
   apiKey,
   isMarketPage,
@@ -48,7 +49,11 @@ const Navbar = ({
   }, []);
 
   const renderHomeNav = () => (
-    <div className={`sticky w-full z-[10] ${bg} select-none !text-black`}>
+    <div
+      className={`${
+        isChat === true ? "absolute" : "sticky"
+      } w-full z-[10] ${bg} select-none !text-black`}
+    >
       <Container>
         <div className="sm:flex sm:justify-between sm:items-center">
           <Logo />
