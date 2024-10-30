@@ -24,7 +24,7 @@
     },
     "allowSyntheticDefaultImports": true,
     "noErrorTruncation": true,
-    "types": ["node", "mongodb"],
+    "types": ["node"],
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"]
   },

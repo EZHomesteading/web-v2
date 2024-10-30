@@ -230,15 +230,25 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
         </div>
         <div className="h-10 w-10">
           {isCollapsed ? (
-            <PiSidebarSimpleThin
-              onClick={toggleSidebar}
-              className="hover:text-black text-white w-10 h-10 absolute bottom-50 right-1 transform translate-x-[1.9rem] hover:cursor-pointer transition-transform duration-300"
-            />
+            <div className="hover:text-black text-white  absolute bottom-50 right-1 ">
+              <div className="transform translate-x-[3rem] translate-y-[2rem]  hover:cursor-pointer transition-transform duration-300">
+                {`>`}
+              </div>
+              <PiSidebarSimpleThin
+                onClick={toggleSidebar}
+                className=" w-10 h-10 transform translate-x-[1.9rem] hover:cursor-pointer transition-transform duration-300"
+              />
+            </div>
           ) : (
-            <PiSidebarSimpleThin
-              onClick={toggleSidebar}
-              className="hover:text-black text-white w-10 h-10 absolute bottom-50 right-1 transform translate-x-[1.9rem] hover:cursor-pointer transition-transform duration-300"
-            />
+            <div className="hover:text-black text-white  absolute bottom-50 right-1 ">
+              <div className="transform translate-x-[3rem] translate-y-[2rem]  hover:cursor-pointer transition-transform duration-300">
+                {`<`}
+              </div>
+              <PiSidebarSimpleThin
+                onClick={toggleSidebar}
+                className=" w-10 h-10  transform translate-x-[1.9rem] hover:cursor-pointer transition-transform duration-300"
+              />
+            </div>
           )}
         </div>
       </div>

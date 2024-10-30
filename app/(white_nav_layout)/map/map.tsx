@@ -18,9 +18,15 @@ import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
 import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
+<<<<<<< HEAD
 import {outfitFont} from "@/components/fonts"
+=======
+import { outfitFont } from "@/components/fonts";
+import { NavUser } from "@/actions/getUser";
+
+>>>>>>> origin
 interface MapUser {
-  coordinates: [number, number];
+  coordinates: number[];
   id: string;
 }
 
@@ -37,7 +43,7 @@ interface MapProps {
   producers: MapUser[];
   coordinates: { lat: number; lng: number };
   mk: string;
-  user?: UserInfo;
+  user?: NavUser | null;
 }
 
 const libraries: Libraries = ["drawing", "geometry"];
@@ -535,10 +541,10 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
             <header className="flex flex-row p-1 relative w-full">
               <Avatar image={selectedMarker.user.image} />
               <ul className="flex flex-col ml-1 pl-1">
-                <h1 className={`${o.className} text-sm `}>
+                <h1 className={`${outfitFont.className} text-sm `}>
                   {selectedMarker.user.name}
                 </h1>
-                <p className={`${o.className} text-xs text-gray-600`}>
+                <p className={`${outfitFont.className} text-xs text-gray-600`}>
                   {selectedMarker.user.firstName}
                 </p>
               </ul>

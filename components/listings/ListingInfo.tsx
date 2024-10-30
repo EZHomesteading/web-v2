@@ -5,8 +5,7 @@ import FollowButton from "@/components/follow/followButton";
 import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { UserInfo } from "next-auth";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-
+import { outfitFont } from "../fonts";
 interface ListingInfoProps {
   description: string;
   followUserId: string;
@@ -40,7 +39,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             items-center
           "
       >
-        <span style={{ marginRight: "5px" }} className={`${o.className}`}>
+        <span
+          style={{ marginRight: "5px" }}
+          className={`${outfitFont.className}`}
+        >
           Sold by
         </span>
         <span

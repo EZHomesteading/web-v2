@@ -1,15 +1,14 @@
 "use client";
 import { useState } from "react";
 
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import StepOne from "@/app/stripe-setup/step1";
-import StepTwo from "@/app/stripe-setup/step2";
+import StepOne from "./step1";
+import StepTwo from "./step2";
 
 import { toast } from "sonner";
-
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;
@@ -51,7 +50,9 @@ const StripeSetup = ({ user }: Props) => {
         <div
           className={`fixed bottom-0 left-0 w-full bg-white lg:bg-transparent border-t lg:border-none z`}
         >
-          <div className={`flex justify-between px-4 py-2 ${o.className} `}>
+          <div
+            className={`flex justify-between px-4 py-2 ${outfitFont.className} `}
+          >
             {step > 1 && (
               <Button onClick={handlePrevious} variant="outline">
                 Back

@@ -15,7 +15,7 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   let listing = await getListingById(params);
   const user = await getUserwithCart();
   const following = await getFollows();
-
+  console.log(listing);
   if (!listing) {
     return (
       <div className="flex h-screen items-center justify-center">

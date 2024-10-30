@@ -12,7 +12,12 @@ import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { PiBasketThin } from "react-icons/pi";
 import { CartItem } from "@/actions/getCart";
+<<<<<<< HEAD
 import {outfitFont} from "@/components/fonts"
+=======
+
+import { outfitFont, zillaFont } from "../../fonts";
+>>>>>>> origin
 
 interface c {
   cart: CartItem[];

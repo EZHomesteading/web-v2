@@ -13,8 +13,8 @@ import { toast } from "sonner";
 import SoonExpiryModal from "./soonExpiryModal";
 import { addDays, format } from "date-fns";
 import { FinalListing } from "@/actions/getListings";
-import { Availability, Location, Order } from "@prisma/client";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { Availability, Hours, Location, Order } from "@prisma/client";
+import { outfitFont } from "@/components/fonts";
 
 interface StatusProps {
   onSetTime: (childTime: Date) => void;
@@ -167,7 +167,7 @@ const DateState2 = ({
         side="top"
         className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
         sellerRole={listing.user.role}
-        hours={listing?.location?.hours as unknown as Availability}
+        hours={listing?.location?.hours as unknown as Hours}
         onSetTime={handleTimer}
         sodt={sodt}
       >
@@ -175,11 +175,11 @@ const DateState2 = ({
           <SheetTrigger className="h-full w-full">
             <Card className="bg-inherit border-none">
               <CardHeader
-                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${o.className}`}
+                className={`text-2xl 2xl:text-3xl pb-0 mb-0 ${outfitFont.className}`}
               >
                 Set a custom pickup time{" "}
               </CardHeader>
-              <CardContent className={`${o.className} mt-2`}>
+              <CardContent className={`${outfitFont.className} mt-2`}>
                 Not in a rush? Feel free to set a pick up anytime within the
                 freshness window of your cart items and this co-op&apos;s open
                 hours.

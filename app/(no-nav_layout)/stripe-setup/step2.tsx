@@ -1,6 +1,6 @@
-import { UserInfo } from "@/next-auth";
 import AccountOnboardingUI from "./stripe-onboarding";
-import Loading from "../loading";
+import Loading from "@/app/loading";
+import { UserInfo } from "next-auth";
 import { Dispatch, SetStateAction } from "react";
 interface p {
   user: UserInfo;

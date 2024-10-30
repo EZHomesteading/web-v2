@@ -5,7 +5,7 @@ import { addDays } from "date-fns";
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
-import ListingReservation from "@/app/(pages)/listings/[listingId]/components/ListingReservation";
+import ListingReservation from "./components/ListingReservation";
 import ListingMap from "@/components/map/listing-map";
 import useCart from "@/hooks/listing/use-cart";
 import { FinalListing } from "@/actions/getListings";
@@ -32,7 +32,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   following,
   apiKey,
 }) => {
-  const listingRole = listing.user.role;
+  const listingRole = listing?.location?.role;
   const listingUser = listing.user.id;
   const listingId = listing.id;
   const { toggleCart } = useCart({

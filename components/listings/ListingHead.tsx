@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { Location } from "@prisma/client";
+import { outfitFont } from "../fonts";
 
 interface ListingHeadProps {
   title: string;
   imageSrc: string[];
-  location: Location;
+  location: Location | null;
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
@@ -70,7 +70,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
       <div className="mt-2">
         <div className={"text-start"}>
-          <div className={`${o.className} text-xl sm:text-2xl font-bold`}>
+          <div
+            className={`${outfitFont.className} text-xl sm:text-2xl font-bold`}
+          >
             {title}
           </div>
           <div className="font-light text-neutral-500 mt-0 md:text-xs text-[.7rem]">

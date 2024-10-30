@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import clsx from "clsx";
 import { FullConversationType } from "@/types";
@@ -14,7 +12,7 @@ import {
 } from "@/actions/chat/pushService";
 import axios from "axios";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts"
+import { outfitFont } from "@/components/fonts";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];

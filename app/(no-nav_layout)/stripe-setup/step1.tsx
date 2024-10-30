@@ -1,11 +1,7 @@
-import { Outfit } from "next/font/google";
 import { BsBank } from "react-icons/bs";
-
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 const StepOne = () => {
-  const router = useRouter();
   return (
     <div className="flex-1 flex items-center justify-center px-6 sm:px-20 mt-16 mb-20">
       <div className="w-full max-w-2xl">
@@ -22,14 +18,14 @@ const StepOne = () => {
         <div className="w-[100%] h-1 bg-gradient-to-r from-gray-800 to-gray-400 rounded-full mb-6" />
 
         <p className="text-sm sm:text-lg text-gray-600 leading-relaxed max-w-xl">
-          Lastly, EZHomesteading partners with Stripe for both payments and
-          payouts. The information you provide here is required by government
-          regulation to protect yourself and others against fraud.
+          EZHomesteading partners with Stripe for both payments and payouts. The
+          information you provide here is required by government regulation to
+          protect yourself and others against fraud.
         </p>
         <Button
           className="mt-4"
           onClick={() =>
-            router.push("https://support.stripe.com/topics/payouts")
+            window.open("https://support.stripe.com/topics/payouts", "_blank")
           }
         >
           More Info
