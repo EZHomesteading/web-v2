@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import clsx from "clsx";
 import { FullConversationType } from "@/types";

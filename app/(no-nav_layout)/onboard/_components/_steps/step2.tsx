@@ -11,9 +11,10 @@ import { z } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/a
 interface p {
   user: UserInfo;
   updateFormData: (data: Partial<{ role: UserRole }>) => void;
+  selectedRole?: string;
 }
 
-const StepTwo = ({ user, updateFormData }: p) => {
+const StepTwo = ({ user, updateFormData, selectedRole }: p) => {
   const options = [
     {
       label: "Co-Op Location",
@@ -36,6 +37,7 @@ const StepTwo = ({ user, updateFormData }: p) => {
       ],
     },
   ];
+  let num;
   const [selectedIndex, setSelectedIndex] = useState<number>();
   const Producer = async () => {
     updateFormData({ role: "PRODUCER" });
