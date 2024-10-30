@@ -6,78 +6,136 @@ import {
   PiStorefrontThin,
 } from "react-icons/pi";
 import { outfitFont } from "@/components/fonts";
-import { LocationObj } from "location-types";
 import OnboardContainer from "../onboard.container";
 import { z } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface StepFiveProps {
-  location?: LocationObj;
   user: any;
   updateFormData: (newData: Partial<{ fulfillmentStyle: string }>) => void;
-  formData: string[] | undefined;
+  formData: string | undefined;
   fStyle?: string;
 }
 
 const StepFour: React.FC<StepFiveProps> = ({
   updateFormData,
-
+  formData,
   fStyle = "",
 }) => {
+  console.log(formData);
   const [selectedOption, setSelectedOption] = useState("");
   const [index, setIndex] = useState<number>();
-  const options = [
-    {
-      label: "Unique Delivery & Pickup Hours",
-      icon: <PiCalendarBlankThin size={24} />,
-      description: [
-        "Deliver or pickup depending on date and time",
-        "Most common and recommended option",
-      ],
-    },
-    {
-      label: "Pickup Only",
-      icon: <PiStorefrontThin size={24} />,
-      description: [
-        "All purchases and sales happen at this location",
-        "Best for sellers who never want to deliver",
-      ],
-    },
-    {
-      label: "Delivery Only",
-      icon: <PiCarProfileThin size={24} />,
-      description: [
-        "All purchases and sales handled via delivery",
-        "Best for sellers who don't want visitors at this address",
-      ],
-    },
+  let options: any = null;
+  if (formData === "PRODUCER") {
+    options = [
+      {
+        label: "Delivery Only",
+        icon: <PiCarProfileThin size={24} />,
+        description: [
+          "All purchases and sales handled via delivery",
+          "Best for sellers who don't want visitors at this address",
+        ],
+      },
+      {
+        label: "Pickup Only",
+        icon: <PiStorefrontThin size={24} />,
+        description: [
+          "All purchases and sales happen at this location",
+          "Best for sellers who never want to deliver",
+        ],
+      },
 
-    {
-      label: "Set the Same Hours for Both",
-      icon: <PiArrowsCounterClockwiseThin size={24} />,
-      description: [
-        "Use identical hours for delivery and pickup.",
-        "Best for locations able to manage deliveries and on-site orders at the same times",
-      ],
-    },
-  ];
+      {
+        label: "Set the Same Hours for Both",
+        icon: <PiArrowsCounterClockwiseThin size={24} />,
+        description: [
+          "Use identical hours for delivery and pickup.",
+          "Best for locations able to manage deliveries and on-site orders at the same times",
+        ],
+      },
+      {
+        label: "Unique Delivery & Pickup Hours",
+        icon: <PiCalendarBlankThin size={24} />,
+        description: [
+          "Deliver or pickup depending on date and time",
+          "Most common and recommended option",
+        ],
+      },
+    ];
+  } else {
+    options = [
+      {
+        label: "Pickup Only",
+        icon: <PiStorefrontThin size={24} />,
+        description: [
+          "All purchases and sales happen at this location",
+          "Best for sellers who never want to deliver",
+        ],
+      },
+      {
+        label: "Delivery Only",
+        icon: <PiCarProfileThin size={24} />,
+        description: [
+          "All purchases and sales handled via delivery",
+          "Best for sellers who don't want visitors at this address",
+        ],
+      },
+
+      {
+        label: "Set the Same Hours for Both",
+        icon: <PiArrowsCounterClockwiseThin size={24} />,
+        description: [
+          "Use identical hours for delivery and pickup.",
+          "Best for locations able to manage deliveries and on-site orders at the same times",
+        ],
+      },
+      {
+        label: "Unique Delivery & Pickup Hours",
+        icon: <PiCalendarBlankThin size={24} />,
+        description: [
+          "Deliver or pickup depending on date and time",
+          "Most common and recommended option",
+        ],
+      },
+    ];
+  }
   const [fulfillmentStyle, setFulfillmentStyle] = useState<string>(fStyle);
   const changeStyle = (index: number) => {
     let style: string = fulfillmentStyle;
-    switch (index) {
-      case 0:
-        style = "bothone";
-        break;
-      case 1:
-        style = "pickup";
-        break;
-      case 2:
-        style = "delivery";
-        break;
-      case 3:
-        style = "both";
-        break;
-      default:
-        console.log("Invalid index");
+    if (formData === "PRODUCER") {
+      switch (index) {
+        case 0:
+          style = "delivery";
+          break;
+        case 1:
+          style = "pickup";
+          break;
+        case 2:
+          style = "both";
+          break;
+        case 3:
+          style = "bothone";
+          break;
+        default:
+          console.log("Invalid index");
+      }
+    } else {
+      switch (index) {
+        case 0:
+          style = "pickup";
+
+          break;
+        case 1:
+          style = "delivery";
+          break;
+        case 2:
+          style = "both";
+          break;
+        case 3:
+          style = "bothone";
+          break;
+        default:
+          console.log("Invalid index");
+      }
     }
     setFulfillmentStyle(style);
     updateFormData({ fulfillmentStyle: style });
@@ -92,7 +150,7 @@ const StepFour: React.FC<StepFiveProps> = ({
       ]}
     >
       <div className="grid grid-cols-1 gap-2">
-        {options.map((option, index) => (
+        {options.map((option: any, index: number) => (
           <button
             key={option.label}
             onClick={() => {
@@ -115,7 +173,7 @@ const StepFour: React.FC<StepFiveProps> = ({
               </span>
             </div>
             {Array.isArray(option.description) ? (
-              option.description.map((line, idx) => (
+              option.description.map((line: string, idx: number) => (
                 <p
                   key={idx}
                   className={` ${

@@ -2,11 +2,9 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { format, addMonths, isValid, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
-import TimePicker from "@/app/selling/(container-selling)/availability-calendar/(components)/time-slot";
+import TimePicker from "./time-slot";
 import { toast } from "sonner";
-import StackingPanelLayout, {
-  PanelProps,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/panel";
+import StackingPanelLayout, { PanelProps } from "./panel";
 import {
   DeliveryPickupToggle,
   DeliveryPickupToggleMode,
@@ -15,7 +13,7 @@ import {
   CalendarDay,
   LocationSelector,
   o,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+} from "./helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import {
   Availability,
@@ -31,7 +29,7 @@ import {
   createDateKey,
   daysOfWeek,
   updateUserHours,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+} from "./helper-functions-calendar";
 import { usePathname } from "next/navigation";
 import { RiArrowDownSLine } from "react-icons/ri";
 
