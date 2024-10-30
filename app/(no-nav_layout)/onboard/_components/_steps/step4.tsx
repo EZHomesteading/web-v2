@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PiArrowsCounterClockwiseThin,
   PiCalendarBlankThin,
@@ -24,8 +24,13 @@ const StepFour: React.FC<StepFiveProps> = ({
 
   fStyle = "",
 }) => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [index, setIndex] = useState<number>();
+  const [selectedOption, setSelectedOption] = useState<string>(fStyle); // Initialize with fStyle
+  const [fulfillmentStyle, setFulfillmentStyle] = useState<string>(fStyle);
+
+  // Sync selectedOption with the initial fStyle
+  useEffect(() => {
+    setSelectedOption(fStyle);
+  }, [fStyle]);
   const options = [
     {
       label: "Unique Delivery & Pickup Hours",
@@ -34,6 +39,7 @@ const StepFour: React.FC<StepFiveProps> = ({
         "Deliver or pickup depending on date and time",
         "Most common and recommended option",
       ],
+      value: "bothone",
     },
     {
       label: "Pickup Only",
@@ -42,6 +48,7 @@ const StepFour: React.FC<StepFiveProps> = ({
         "All purchases and sales happen at this location",
         "Best for sellers who never want to deliver",
       ],
+      value: "pickup",
     },
     {
       label: "Delivery Only",
@@ -50,6 +57,7 @@ const StepFour: React.FC<StepFiveProps> = ({
         "All purchases and sales handled via delivery",
         "Best for sellers who don't want visitors at this address",
       ],
+      value: "delivery",
     },
 
     {
@@ -59,29 +67,14 @@ const StepFour: React.FC<StepFiveProps> = ({
         "Use identical hours for delivery and pickup.",
         "Best for locations able to manage deliveries and on-site orders at the same times",
       ],
+      value: "both",
     },
   ];
-  const [fulfillmentStyle, setFulfillmentStyle] = useState<string>(fStyle);
   const changeStyle = (index: number) => {
-    let style: string = fulfillmentStyle;
-    switch (index) {
-      case 0:
-        style = "bothone";
-        break;
-      case 1:
-        style = "pickup";
-        break;
-      case 2:
-        style = "delivery";
-        break;
-      case 3:
-        style = "both";
-        break;
-      default:
-        console.log("Invalid index");
-    }
-    setFulfillmentStyle(style);
-    updateFormData({ fulfillmentStyle: style });
+    const selectedStyle = options[index].value;
+    setFulfillmentStyle(selectedStyle);
+    setSelectedOption(selectedStyle); // Update selected option
+    updateFormData({ fulfillmentStyle: selectedStyle }); // Sync with form data
   };
 
   return (
@@ -99,7 +92,6 @@ const StepFour: React.FC<StepFiveProps> = ({
             onClick={() => {
               setSelectedOption(option.label);
               changeStyle(index);
-              setIndex(index);
             }}
             className={`${
               outfitFont.className

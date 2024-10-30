@@ -26,7 +26,8 @@ const StepThree: React.FC<Props> = ({
   role,
   location,
 }) => {
-  const [address, setAddress] = useState("");
+  const fullAddress = location?.address.join(", ");
+  const [address, setAddress] = useState(fullAddress);
   const [currentCenter, setCurrentCenter] = useState<google.maps.LatLngLiteral>(
     location?.coordinates
       ? {
