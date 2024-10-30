@@ -348,9 +348,8 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
           )}
           {step === 4 && (
             <StepFour
-              location={formData.location}
               user={user}
-              formData={formData.location?.address}
+              formData={formData.role}
               fStyle={formData.fulfillmentStyle ?? ""}
               updateFormData={updateFulfillmentData}
             />

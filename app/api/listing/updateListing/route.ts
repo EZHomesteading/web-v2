@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       harvestFeatures,
       stock,
       shelfLife,
-      location,
+
       price,
       userId,
       title,
@@ -58,6 +58,13 @@ export async function POST(request: Request) {
       minOrder,
       reports,
       review,
+      ...(location !== undefined && {
+        location: {
+          connect: {
+            id: location,
+          },
+        },
+      }),
     },
   });
 

@@ -2,14 +2,11 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Map from "@/app/(no-nav)/onboard/map";
+import Map from "@/app/(no-nav_layout)/onboard/_components/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LocationSelector,
-  o,
-} from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { LocationSelector, o } from "./helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";
 import {

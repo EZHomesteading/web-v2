@@ -5,23 +5,20 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import { outfitFont } from "@/components/fonts";
-import { LocationObj } from "location-types";
-import { z } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 import OnboardContainer from "../onboard.container";
 
 interface StepFiveProps {
-  location?: LocationObj;
   user: any;
   updateFormData: (newData: Partial<{ fulfillmentStyle: string }>) => void;
-  formData: string[] | undefined;
+  formData: string | undefined;
   fStyle?: string;
 }
 
 const StepFour: React.FC<StepFiveProps> = ({
   updateFormData,
-
+  formData,
   fStyle = "",
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>(fStyle); // Initialize with fStyle
@@ -86,7 +83,7 @@ const StepFour: React.FC<StepFiveProps> = ({
       ]}
     >
       <div className="grid grid-cols-1 gap-2">
-        {options.map((option, index) => (
+        {options.map((option: any, index: number) => (
           <button
             key={option.label}
             onClick={() => {
@@ -108,12 +105,12 @@ const StepFour: React.FC<StepFiveProps> = ({
               </span>
             </div>
             {Array.isArray(option.description) ? (
-              option.description.map((line, idx) => (
+              option.description.map((line: string, idx: number) => (
                 <p
                   key={idx}
                   className={` ${
                     selectedOption.includes(option.label) && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${z.className} `}
+                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
                 >
                   {line}
                 </p>
