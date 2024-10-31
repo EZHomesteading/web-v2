@@ -1,7 +1,6 @@
 "use client";
 //settings page
 import { Button } from "@/components/ui/button";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { useState } from "react";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import axios from "axios";
@@ -18,20 +17,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { Outfit } from "next/font/google";
 import { Textarea } from "@/components/ui/textarea";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { GiFruitTree } from "react-icons/gi";
 import { CiCircleInfo } from "react-icons/ci";
 import homebg from "@/public/images/website-images/ezh-modal.jpg";
 import HoursLocationContainer from "./location-hours-container";
-import AccountCard from "@/app/account/(sidebar-container)/personal-info/account-card";
-import { UserInfo } from "@/next-auth";
+import { UserInfo } from "next-auth";
+import AccountCard from "@/app/(nav_and_side_bar_layout)/account/(sidebar-container)/personal-info/account-card";
+import { outfitFont } from "@/components/fonts";
 
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-});
 interface p {
   apiKey: string;
   locations: Location[];
@@ -152,7 +147,7 @@ const StoreSettings = ({ apiKey, locations = [], user }: p) => {
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={user?.SODT || "Select a Time"} />
             </SelectTrigger>
-            <SelectContent className={`${outfit.className} sheet`}>
+            <SelectContent className={`${outfitFont.className} sheet`}>
               <SelectGroup>
                 <SelectItem value="15">15 Minutes</SelectItem>
                 <SelectItem value="30">30 Minutes</SelectItem>
@@ -179,19 +174,6 @@ const StoreSettings = ({ apiKey, locations = [], user }: p) => {
             onChange={(e) => setBio(e.target.value)}
           />
         </AccountCard>
-        {/* <AccountCard
-          title="Store URL"
-          info={user?.url || "No Url Saved"}
-          onSave={() => {
-            onSubmit;
-          }}
-          isEditing={editingCard === "url"}
-          onEditStart={() => handleEditStart("url")}
-          onEditCancel={handleEditCancel}
-          isDisabled={editingCard !== null && editingCard !== "url"}
-        >
-         <Input id="url" label="Store URL" errors={error}/>
-        </AccountCard> */}
       </div>
     );
 };

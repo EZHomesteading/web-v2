@@ -58,6 +58,15 @@ const Wheel: React.FC<WheelProps> = ({
     }
   };
 
+  const handleOptionClick = (option: string, index: number) => {
+    if (!isOpen) return;
+
+    onSelect(option);
+    if (wheelRef.current) {
+      wheelRef.current.scrollTop = index * ITEM_HEIGHT;
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
@@ -85,7 +94,7 @@ const Wheel: React.FC<WheelProps> = ({
       return (
         <div
           key={`${option}-${index}`}
-          className={`flex items-center justify-center text-xl text-black transition-all duration-200 ${
+          className={`select-none flex items-center justify-center text-xl text-black transition-all duration-200 hover:cursor-pointer ${
             !isOpen && " hover:cursor-not-allowed text-neutral-600"
           }`}
           style={{
@@ -95,6 +104,7 @@ const Wheel: React.FC<WheelProps> = ({
             lineHeight: `${ITEM_HEIGHT}px`,
             transformOrigin: "center center",
           }}
+          onClick={() => handleOptionClick(option, index)}
         >
           {option}
         </div>

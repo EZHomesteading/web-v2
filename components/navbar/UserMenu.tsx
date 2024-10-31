@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { UserRole } from "@prisma/client";
@@ -36,22 +36,53 @@ type ComponentItem = {
 
 interface Props {
   user?: NavUser;
-  canReceivePayouts: boolean;
   uniqueUrl: string;
   harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
 }
-
-const UserMenu: React.FC<Props> = ({
-  user,
-  canReceivePayouts,
-  uniqueUrl,
-  harvestMessages,
-}) => {
+interface p {
+  image: string | null | undefined;
+}
+const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const router = useRouter();
   const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
   const pathname = usePathname();
   const selling = pathname?.startsWith("/selling");
+
+  const MenuIcon = ({ image }: p) => {
+    return (
+      <>
+        {!isMdOrLarger ? (
+          <>
+            <PopoverTrigger
+              asChild
+              className="flex flex-col items-center sm:hidden hover:cursor-pointer"
+            >
+              <IconWrapper
+                icon={iconMap.CiMenuFries}
+                label="Menu"
+                onClick={() => {}}
+              />
+            </PopoverTrigger>
+          </>
+        ) : (
+          <>
+            {" "}
+            <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
+              <iconMap.IoIosMenu className={`w-8 h-8 mr-1 `} />
+              <Image
+                src={image || placeholder}
+                alt="Profile Image"
+                height={25}
+                width={25}
+                className="object-fit rounded-full"
+              />
+            </PopoverTrigger>
+          </>
+        )}
+      </>
+    );
+  };
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -103,8 +134,6 @@ const UserMenu: React.FC<Props> = ({
       (user?.hasPickedRole || user?.hasPickedRole === null) &&
       user?.locations?.[0]?.address &&
       user?.locations?.[0]?.hours
-      //user?.image &&
-      //canReceivePayouts
     ) {
       router.push("/create");
     } else {
@@ -396,35 +425,6 @@ const IconWrapper: React.FC<{
       <Icon className={`h-8 w-8  `} />
       <div className={`text-xs ${outfitFont.className} `}>{label}</div>
     </button>
-  );
-};
-interface p {
-  image: string | null | undefined;
-}
-const MenuIcon = ({ image }: p) => {
-  return (
-    <>
-      <PopoverTrigger
-        asChild
-        className="flex flex-col items-center sm:hidden hover:cursor-pointer"
-      >
-        <IconWrapper
-          icon={iconMap.CiMenuFries}
-          label="Menu"
-          onClick={() => {}}
-        />
-      </PopoverTrigger>
-      <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
-        <iconMap.IoIosMenu className={`w-8 h-8 mr-1 `} />
-        <Image
-          src={image || placeholder}
-          alt="Profile Image"
-          height={25}
-          width={25}
-          className="object-fit rounded-full"
-        />
-      </PopoverTrigger>
-    </>
   );
 };
 

@@ -43,12 +43,6 @@ const Navbar = async ({
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
-  // let locations: Location[] | null = [];
-  // if (user && user.id) {
-  //   locations = await getUserLocations({
-  //     userId: user?.id,
-  //   });
-  // }
 
   const harvestMessages = await getHarvestMessages(user?.id);
   return (

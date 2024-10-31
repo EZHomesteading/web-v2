@@ -34,7 +34,7 @@ export const {
         session.user.id = token.id as string;
         session.user.fullName = token.fullName as fullName
         session.user.name = token.name;
-        session.user.email = token.email ?? "";
+        session.user.email = token.email ?? undefined;
         session.user.phoneNumber = token.phoneNumber as string | undefined;
         session.user.image = token.image as string | undefined;
         session.user.stripeAccountId = token.stripeAccountId as
@@ -53,6 +53,7 @@ export const {
         session.user.banner = token.banner as string | undefined;
         session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
         session.user.openClosedTemplates = token.openClosedTemplates as unknown as any
+        session.user.canRecievePayouts = token.canRecievePayouts as boolean
       }
       return session;
     },
@@ -61,28 +62,29 @@ export const {
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
       token.id = existingUser.id;
-      token.fullName = existingUser.fullName ?? {first:"", last:""}
+      token.fullName = existingUser.fullName ?? {first:null, last:null}
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.emailVerified = existingUser.emailVerified;
-      token.phoneNumber = existingUser.phoneNumber ?? "";
-      token.image = existingUser.image ?? "";
+      token.phoneNumber = existingUser.phoneNumber ?? undefined
+      token.image = existingUser.image ?? undefined
       token.hasPickedRole = existingUser.hasPickedRole ?? false
-      token.url = existingUser.url ?? "";
+      token.url = existingUser.url ?? ""
       token.role = existingUser.role;
       token.password = existingUser.password;
-      token.stripeAccountId = existingUser.stripeAccountId ?? "";
+      token.stripeAccountId = existingUser.stripeAccountId ?? undefined
       token.createdAt = existingUser.createdAt;
       token.updatedAt = existingUser.updatedAt;
       token.conversationIds = existingUser.conversationIds;
       token.seenMessageIds = existingUser.seenMessageIds;
-      token.subscriptions = existingUser.subscriptions ?? "";
+      token.subscriptions = existingUser.subscriptions ?? undefined
       token.totalPaidOut = existingUser.totalPaidOut ?? 0;
       token.notifications = existingUser.notifications;
-      token.SODT = existingUser.SODT ?? 0;
-      token.bio = existingUser.bio ?? "";
-      token.banner = existingUser.banner ?? "";
+      token.SODT = existingUser.SODT ?? undefined;
+      token.bio = existingUser.bio ?? undefined
+      token.banner = existingUser.banner ?? undefined
       token.openClosedTemplates = existingUser.openCloseTemplates
+      token.canRecievePayouts = existingUser.canRecievePayouts ?? undefined
       return token;
     },
   },

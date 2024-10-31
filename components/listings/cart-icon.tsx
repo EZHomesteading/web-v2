@@ -1,41 +1,28 @@
 "use client";
-//cart icon component, handles toggler cart
+import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import useCart from "@/hooks/listing/use-cart";
 import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
-  listingId: string;
+  listing: MarketListing;
   user?: UserInfo;
-  listingRole: string;
-  listingUser: string | undefined;
-  listingMin: number | null;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({
-  listingId,
-  user,
-  listingRole,
-  listingUser,
-  listingMin,
-}) => {
+const CartButton: React.FC<CartButtonProps> = ({ user, listing }) => {
+  console.log(listing);
   const { hasCart, toggleCart } = useCart({
-    listingId,
     user,
-    listingRole,
-    listingUser,
+    listing,
   });
-  if (!listingMin) {
-    listingMin = 1;
-  }
+
   return (
     <div
-      onClick={(e) => toggleCart(e, listingMin)}
+      onClick={(e) => toggleCart(e, listing.minOrder || 1)} // Ensure `listing.minOrder` is accessible
       className="
-        relative
         hover:opacity-80
         transition
         cursor-pointer
-        
+        absolute top-3 right-3
       "
     >
       <svg

@@ -4,7 +4,7 @@ import ClientOnly from "@/components/client/ClientOnly";
 import { currentUser } from "@/lib/auth";
 import { GetListingsByUserId } from "@/actions/getListings";
 import ListingsClient from "./ListingsClient";
-import { getUserWithBuyOrders, getUserWithSellOrders } from "@/actions/getUser";
+import { getUserWithSellOrders } from "@/actions/getUser";
 import { parse } from "json5";
 import Stripe from "stripe";
 

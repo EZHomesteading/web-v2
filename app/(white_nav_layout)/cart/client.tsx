@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import OrderCreate from "./components/order-create";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import { MdErrorOutline } from "react-icons/md";
-import { Outfit } from "next/font/google";
 import Link from "next/link";
 import {
   Popover,
@@ -25,14 +24,9 @@ import {
 import { CartItem } from "@/actions/getCart";
 import { FinalListing } from "@/actions/getListings";
 import DateState from "./components/dateStates";
-import { Availability } from "@prisma/client";
 import SpCounter from "./components/counter";
+import { outfitFont } from "@/components/fonts";
 
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
 interface CartProps {
   cartItems?: CartItem[];
 }
@@ -313,7 +307,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                         cartItem.listing.location.address[0] ? (
                         <li className="flex justify-between outline-none border-t-[2px]  border-gray-200 pt-4">
                           <p
-                            className={`${outfit.className} text-2xl md:text-4xl`}
+                            className={`${outfitFont.className} text-2xl md:text-4xl`}
                           >
                             {cartItem.listing.user.name}
                           </p>

@@ -37,8 +37,14 @@ const StepTwo = ({ user, updateFormData, selectedRole }: p) => {
       ],
     },
   ];
+
   let num;
-  const [selectedIndex, setSelectedIndex] = useState<number>();
+  if (selectedRole === "PRODUCER") {
+    num = 1;
+  } else if (selectedRole === "COOP") {
+    num = 0;
+  }
+  const [selectedIndex, setSelectedIndex] = useState(num);
   const Producer = async () => {
     updateFormData({ role: "PRODUCER" });
     if ((user.role = "CONSUMER") || (user.role = "PRODUCER")) {

@@ -1,6 +1,5 @@
 "use client";
 //client side layout for listing page
-import { useState } from "react";
 import { addDays } from "date-fns";
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
@@ -32,16 +31,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
   following,
   apiKey,
 }) => {
-  const listingRole = listing?.location?.role;
-  const listingUser = listing.user.id;
-  const listingId = listing.id;
   const { toggleCart } = useCart({
-    listingId,
     user,
-    listingRole,
-    listingUser,
+    listing,
   });
-  //adjusting listings shelflife to be accurate. and be in date format.
   const adjustedListing = {
     ...listing,
     endDate:

@@ -332,7 +332,11 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
         <div className={`flex-grow py-[4.5rem]`}>
           {step === 1 && <StepOne />}
           {step === 2 && (
-            <StepTwo user={user} updateFormData={updateFormDataRole} />
+            <StepTwo
+              user={user}
+              updateFormData={updateFormDataRole}
+              selectedRole={formData.role}
+            />
           )}
           {step === 3 && (
             <StepThree
@@ -432,7 +436,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
                 </div>
               </div>
             )}
-            {step > 1 && step < 9 && shouldShowNextButton() && (
+            {step < 6 && shouldShowNextButton() && (
               <Button onClick={handleNext}>Next</Button>
             )}{" "}
           </div>

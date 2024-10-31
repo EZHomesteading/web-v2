@@ -1,4 +1,5 @@
 "use client";
+import { outfitFont } from "@/components/fonts";
 //stripe payment component
 import { Button } from "@/components/ui/button";
 import {
@@ -9,12 +10,6 @@ import {
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
 import { Outfit } from "next/font/google";
 import { useState } from "react";
-
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export default function PaymentComponent() {
   const stripe = useStripe();
@@ -59,7 +54,7 @@ export default function PaymentComponent() {
       <form id="payment-form" onSubmit={handleSubmit}>
         <PaymentElement id="payment-element" options={options} />
         <Button
-          className={`${outfit.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
+          className={`${outfitFont.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
           disabled={isLoading || !stripe || !elements}
           id="submit"
         >

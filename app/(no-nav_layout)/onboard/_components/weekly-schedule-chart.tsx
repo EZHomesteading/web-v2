@@ -219,7 +219,6 @@ const WeelkyScheduleChart = ({
           </g>
         ))}
 
-        {/* hours on side */}
         {[0, 3, 6, 9, 12, 15, 18, 21, 24].map((hour, index) => (
           <text
             key={hour}

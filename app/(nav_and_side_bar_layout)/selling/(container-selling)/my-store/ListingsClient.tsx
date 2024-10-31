@@ -5,7 +5,6 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import Heading from "@/components/Heading";
-import Container from "@/components/Container";
 import ListingCard from "@/components/listings/ListingCardDash";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
