@@ -29,13 +29,8 @@ import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { outfitFont, workFont} from "@/components/fonts";
 import { UserRole } from "@prisma/client";
-const work = Work_Sans({
-  display: "block",
-  subsets: ["latin"],
-  weight: ["300"],
-});
 
 interface ListingCardProps {
   data: MarketListing;

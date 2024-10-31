@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
-import { ValidTime } from "@/app/(pages)/listings/[listingId]/components/CustomTimeModal2";
+//import { ValidTime } from "./CustomTimeModal2";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -40,7 +40,7 @@ import Form from "./Form";
 import Avatar from "@/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+//import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import { IoStorefront } from "react-icons/io5";
 
 import HarvestModal from "./HarvestModal";
@@ -451,11 +451,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
   };
   //receive data from child and set date time based on user inputs in modal
-  const handleTime = (childTime: ValidTime) => {
-    setDateTime(childTime.pickupTime);
-    const date = formatTime(childTime.pickupTime);
-    setValidTime(date);
-  };
+  // const handleTime = (childTime: ValidTime) => {
+  //   setDateTime(childTime.pickupTime);
+  //   const date = formatTime(childTime.pickupTime);
+  //   setValidTime(date);
+  // };
 
   // const anyhours: ExtendedHours = {
   //   0: [{ open: 0, close: 1439 }],

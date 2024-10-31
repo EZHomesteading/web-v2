@@ -275,7 +275,7 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-6 mt-[50px] md:mt-[66px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
@@ -498,7 +498,7 @@ const Body: React.FC<BodyProps> = ({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="pb-[100px] md:pb-[150px]"></div>
+      <div className="pb-[100px] sm:pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
           messagesLength={messages.length}
