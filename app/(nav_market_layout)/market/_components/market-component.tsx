@@ -18,7 +18,7 @@ export interface MarketListing {
   location: {
     address: string[];
     role: UserRole;
-  };
+  } | null;
   minOrder?: number;
   user: {
     id: string;

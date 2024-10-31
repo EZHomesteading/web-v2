@@ -52,12 +52,15 @@ const Navbar = ({
       <Container>
         <div className="sm:flex sm:justify-between sm:items-center">
           <Logo />
+          {apiKey && !isSmallScreen && isMarketPage && (
+            <FindListingsComponent apiKey={apiKey} />
+          )}
           <UserMenu
             user={user}
             uniqueUrl={uniqueUrl}
             harvestMessages={harvestMessages}
           />
-        </div>{" "}
+        </div>
       </Container>
     </div>
   );

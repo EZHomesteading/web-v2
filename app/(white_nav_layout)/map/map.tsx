@@ -16,7 +16,6 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
-import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
 import { outfitFont } from "@/components/fonts";
 import { NavUser } from "@/actions/getUser";
@@ -340,14 +339,13 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     setShowProducers(user?.role === UserRole.COOP ? true : false);
     setDrawnShape(null);
   };
-  console.log("filter coops", filteredCoops);
   return (
     <div
       className={`relative touch-none ${isDrawingEnabled ? "opacity-80 " : ""}`}
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfitFont.className} absolute top-[76px] left-1 z-10 bg-slate-800 text-white shadow-lg px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${outfitFont.className} absolute top-1 left-1 z-10 bg-slate-800 text-white shadow-md px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool
@@ -386,23 +384,25 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
       </Popover>
       <div>
         {user && user?.role !== "CONSUMER" && (
-          <div className="absolute top-1 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5">
+          <div
+            className={`${outfitFont.className} absolute top-11 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5`}
+          >
             <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center gap-x-2 text-xl  font-medium mb-2 whitespace-nowrap">
+              <div className="flex items-center gap-x-2 text-md  font-medium mb-2 whitespace-nowrap">
                 <Switch
                   checked={showCoops}
                   onCheckedChange={setShowCoops}
-                  className="w-8 h-4"
+                  className="w-8 h-4 ml-1"
                 />
                 <span>Co-ops</span>
               </div>
-              <div className="flex items-center justify-start gap-x-2 text-xl  font-medium whitespace-nowrap">
+              <div className="flex items-center justify-start gap-x-2 text-md  font-medium whitespace-nowrap">
                 <Switch
                   checked={showProducers}
                   onCheckedChange={setShowProducers}
-                  className="w-8 h-4"
+                  className="w-8 h-4 ml-1"
                 />
-                <span>Producers</span>
+                <span>Growers</span>
               </div>
             </div>
           </div>
@@ -410,7 +410,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
       </div>
       {!isDrawingEnabled && (
         <Button
-          className="absolute top-1 sm:top-5 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
+          className="absolute top-1 right-1 z-10 p-1 text-xs sm:text-sm bg-teal-600 hover:bg-teal-900"
           onClick={startDrawing}
         >
           <CiEdit size={20} className="mr-1" />
@@ -428,7 +428,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
       )}
       {drawnShape && (
         <Button
-          className="absolute top-[120px] left-1 z-10 p-1 bg-red-500 hover:bg-red-700"
+          className="absolute top-11 right-1 z-10 p-1 bg-red-500 hover:bg-red-700"
           onClick={() => resetMap()}
         >
           <CiBookmarkRemove size={20} className="ml-1" />
