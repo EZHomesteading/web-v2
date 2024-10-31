@@ -1,7 +1,7 @@
 import React from "react";
 import { getUserLocations } from "@/actions/getUser";
 import { auth } from "@/auth";
-import Calendar from "@/app/selling/(container-selling)/availability-calendar/(components)/calendar";
+import Calendar from "../(components)/calendar";
 import { Location } from "@prisma/client";
 
 export default async function EditLocationPage() {
