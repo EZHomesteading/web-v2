@@ -270,7 +270,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               <Link href={`/create?id=${location?.id}`}>
                 <Button className="w-full my-2 border py-8 justify-center text-center flex relative bg-inherit text-black hover:bg-white">
                   <div className="text-md sm:text-xl font-light">
-                    Create Listing at This Location
+                    Add Product to this Location
                   </div>
                 </Button>
               </Link>

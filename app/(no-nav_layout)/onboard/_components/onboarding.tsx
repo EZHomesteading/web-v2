@@ -157,6 +157,9 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
       setStep(6);
       return;
     }
+    if (step === 7) {
+      handleStep7Back();
+    }
     setStep((prevStep) => prevStep - 1);
     setProgress((prevProgress) => prevProgress - 14.28); // 100 / 7 steps
   };
@@ -178,7 +181,12 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
     setStep(8);
   };
   const handleStep7Back = () => {
-    setStep(6);
+    console.log(selectedDays);
+    setPrevSelectedDays((prevDays) => {
+      // Filter out any days that are in selectedDays
+      return prevDays.filter((day) => !selectedDays.includes(day));
+    });
+    setSelectedDays([]);
   };
 
   const handleStep7Complete = () => {
