@@ -9,6 +9,7 @@ import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
+import CartButton from "@/components/listings/cart-icon";
 
 interface ListingCardProps {
   listing: MarketListing;
@@ -68,35 +69,55 @@ const StarRating = ({
   );
 };
 
-const MarketCard: React.FC<ListingCardProps> = ({ listing, user }) => {
+import React from "react";
+
+const MarketGrid = ({ children }: { children: any }) => {
+  return (
+    <div className="w-full px-4 mx-auto max-w-[1920px]">
+      <div
+        className="
+        pt-36
+        sm:pt-0
+        grid gap-6
+        grid-cols-1
+        sm:grid-cols-2 
+        md:grid-cols-3 
+        lg:grid-cols-4 
+        xl:grid-cols-5"
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const MarketCard = ({ listing, user }: ListingCardProps) => {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="col-span-1 cursor-pointer group"
+      className="block w-full cursor-pointer group mx-auto"
     >
-      <div className="flex flex-col relative">
-        <div className="relative overflow-hidden rounded-xl">
-          <Carousel className="relative rounded-lg">
-            <CarouselContent>
+      <div className="flex flex-col relative w-full">
+        <div className="relative overflow-hidden rounded-xl w-full aspect-square">
+          <Carousel className="h-full w-full relative rounded-lg">
+            <CarouselContent className="h-full">
               {listing.imageSrc.map((src, index) => (
-                <CarouselItem key={index}>
-                  <Card>
-                    <CardContent className="flex items-center justify-center relative aspect-square h-[16.5rem]">
-                      <Image
-                        src={src}
-                        alt={`Carousel Image ${index + 1}`}
-                        fill
-                        className="object-cover rounded-md hover:scale-105 transition-transform duration-200"
-                        sizes="(max-width: 640px) 100vw, (max-width: 764px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                        placeholder="blur"
-                        blurDataURL="/images/website-images/grey.jpg"
-                      />
-                    </CardContent>
-                  </Card>
+                <CarouselItem
+                  key={index}
+                  className="flex items-center justify-center relative aspect-square h-full"
+                >
+                  <Image
+                    src={src}
+                    alt={`Carousel Image ${index + 1}`}
+                    fill
+                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200"
+                    sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
+                    placeholder="blur"
+                    blurDataURL="/images/website-images/grey.jpg"
+                  />
                 </CarouselItem>
               ))}
             </CarouselContent>
-
             {listing.imageSrc.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
                 {listing.imageSrc.map((_, index) => (
@@ -110,7 +131,7 @@ const MarketCard: React.FC<ListingCardProps> = ({ listing, user }) => {
           </Carousel>
         </div>
 
-        <div className="mt-2">
+        <div className="mt-2 w-full">
           <h3 className={`${outfitFont.className} text-lg font-semibold`}>
             {listing.title}
           </h3>
@@ -121,7 +142,7 @@ const MarketCard: React.FC<ListingCardProps> = ({ listing, user }) => {
           </p>
         </div>
 
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-2 w-full">
           <div
             className={`${workFont.className} text-sm flex items-center gap-1`}
           >
@@ -140,4 +161,4 @@ const MarketCard: React.FC<ListingCardProps> = ({ listing, user }) => {
   );
 };
 
-export default MarketCard;
+export { MarketGrid, MarketCard };

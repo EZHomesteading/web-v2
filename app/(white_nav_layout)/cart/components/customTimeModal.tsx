@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import Modal from "@/components/modals/chatmodals/Modal";
 
-import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
+// import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import {
   Popover,
   PopoverTrigger,
@@ -16,27 +16,19 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { CartGroup } from "@/next-auth";
-import { ExtendedHours } from "@/next-auth";
-import { Outfit, Zilla_Slab } from "next/font/google";
+// import { CartGroup } from "@/next-auth";
+// import { ExtendedHours } from "@/next-auth";
 import { IoStorefrontOutline } from "react-icons/io5";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-const zilla = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500"],
-});
+
 import { ValidTime } from "../client";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
-  hours: ExtendedHours;
+  hours: any;
   index: number;
-  cartGroup: CartGroup | null;
+  cartGroup: any | null;
   onSetTime: (childTime: ValidTime) => void;
   role: string;
 }
@@ -86,7 +78,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
 
     const currentMin = now.getHours() * 60 + now.getMinutes();
     const newHoursIndex = (date.getDay() + 6) % 7;
-    const newHours = hours[newHoursIndex as keyof ExtendedHours];
+    const newHours = hours[newHoursIndex as keyof any];
 
     // Early return if co-op is closed or hours are undefined
     if (newHours === null || newHours === undefined) {
@@ -167,7 +159,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className={`${outfit.className} font-semibold text-xl mb-1`}>
+      <h1 className={`${outfitFont.className} font-semibold text-xl mb-1`}>
         Pick a Date & Time
       </h1>
       <div>
@@ -176,30 +168,30 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${zilla.className} bg-neutral-100 shadow-md mb-1`}
+                className={`${zillaFont.className} bg-neutral-100 shadow-md mb-1`}
               >
                 <IoStorefrontOutline className="mr-2 h-4 w-4" />
                 <span>View Hours</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${outfitFont.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
-              <HoursDisplay coOpHours={hours} />
+              {/* <HoursDisplay coOpHours={hours} /> */}
             </PopoverContent>
           </Popover>
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild className="flex justify-start">
               <Button
                 variant={"outline"}
-                className={`${zilla.className} bg-neutral-100 shadow-md mb-2`}
+                className={`${zillaFont.className} bg-neutral-100 shadow-md mb-2`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {date ? format(date, "PPP") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
+              className={`${outfitFont.className} border-neutral-400 border-[1px] rounded-lg shadow-md bg-neutral-100`}
             >
               <Calendar
                 mode="single"
@@ -228,20 +220,20 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
 
                   if (selectedDate < today) {
                     return (
-                      <div className={`${zilla.className} text-sm`}>
+                      <div className={`${zillaFont.className} text-sm`}>
                         Date has passed
                       </div>
                     );
                   } else if (!options.length) {
                     return (
-                      <div className={`${zilla.className} text-sm`}>
+                      <div className={`${zillaFont.className} text-sm`}>
                         Closed on {format(date, "EEEE")}
                       </div>
                     );
                   } else {
                     return (
                       <h4
-                        className={`${outfit.className} mb-4 text- font-medium leading-none`}
+                        className={`${outfitFont.className} mb-4 text- font-medium leading-none`}
                       >
                         Select a Time
                       </h4>
@@ -253,7 +245,7 @@ const CustomTimeModal: React.FC<CustomTimeProps> = ({
                   <div key={option} className="hover:bg-slate">
                     <div onClick={onClose}>
                       <div
-                        className={`${zilla.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
+                        className={`${zillaFont.className} text-sm cursor-pointer hover:bg-green-200 rounded-md p-[.25rem]`}
                         onClick={() => {
                           setTime(option);
                           onClose;

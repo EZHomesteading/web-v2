@@ -18,13 +18,9 @@ import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
 import { UserInfo } from "next-auth";
 import { UserRole } from "@prisma/client";
-<<<<<<< HEAD
-import {outfitFont} from "@/components/fonts"
-=======
 import { outfitFont } from "@/components/fonts";
 import { NavUser } from "@/actions/getUser";
 
->>>>>>> origin
 interface MapUser {
   coordinates: number[];
   id: string;

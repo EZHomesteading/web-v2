@@ -1,19 +1,15 @@
 //map routes server side page layout
 import { getNavUser, getVendorLocsMap, NavUser } from "@/actions/getUser";
-import authCache from "@/auth-cache";
 import Map from "@/app/(white_nav_layout)/map/map";
 import { UserRole } from "@prisma/client";
-import Container from "@/components/Container";
 import type { Viewport } from "next";
 import MapPopup from "@/app/(white_nav_layout)/info-modals/map-info-modal";
-import Navbar from "@/components/navbar/Navbar";
 
 export const viewport: Viewport = {
   themeColor: "white",
 };
 const MapPage = async () => {
   const map_api_key = process.env.MAPS_KEY as string;
-  const session = await authCache();
   const user = await getNavUser();
 
   let producers: any = [];

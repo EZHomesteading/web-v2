@@ -37,12 +37,6 @@ const Navbar = async ({ user, bg = "bg-inherit", isMarketPage = false }: p) => {
     const nameToUse = user.name || `vendor${user.id}`;
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
-  // let locations: Location[] | null = [];
-  // if (user && user.id) {
-  //   locations = await getUserLocations({
-  //     userId: user?.id,
-  //   });
-  // }
 
   const harvestMessages = await getHarvestMessages(user?.id);
   return (

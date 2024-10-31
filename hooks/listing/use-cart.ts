@@ -1,81 +1,53 @@
-import { UserRole } from "@prisma/client";
+import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
+
 interface IUseCart {
-  listingId: string;
   user?: any | null;
-  quantity?: number;  
-  storeUserInfo: {
-    id: string;
-    role: UserRole;
-  };
+  listing: MarketListing;
 }
 
-const useCart = ({ listingId, user, storeUserInfo }: IUseCart) => {
+const useCart = ({ user, listing }: IUseCart) => {
   const router = useRouter();
   const cartItems = user?.cart || [];
+  const listingId = listing.id;
 
-  const hasCart = useMemo(() => {
-    return cartItems.some((item: any) => item.listingId === listingId);
-  }, [user, listingId]);
-  const toggleCart = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement>, quantity: number) => {
-      e.stopPropagation();
-      if (!user) {
-        let callbackUrl = window.location.href;
-        // if (nextUrl.search) {
-        //   callbackUrl += nextUrl.search;
-        // }
-        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+  const hasCart = useMemo(() => cartItems.some((item: any) => item.listingId === listingId), [cartItems, listingId]);
 
-        router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
-        return;
+  const toggleCart = useCallback(async (e: React.MouseEvent<HTMLDivElement>, quantity = 1) => {
+    e.stopPropagation();
+
+    if (!user) {
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(window.location.href)}`);
+      return;
+    }
+
+    try {
+      if (hasCart) {
+        const cartId = cartItems.find((item: any) => item.listingId === listingId)?.id;
+        if (cartId) await axios.delete(`/api/useractions/checkout/cart/${cartId}`);
+      } else {
+        if (!listingId) throw new Error("Listing ID is required");
+        await axios.post(`/api/useractions/checkout/cart/${listingId}`, { quantity, pickup: null });
       }
 
-      if (!quantity) {
-        quantity = 1;
+      router.refresh();
+      toast.success("Your cart was updated!");
+    } catch (error) {
+      if (listing.location.role === "PRODUCER" && (!user || ["CONSUMER", "PRODUCER"].includes(user.role))) {
+        toast.error("Must be a Co-Op to add Producers listings");
+      } else if (listing.user.id === user.id) {
+        toast.error("Can't add your own listings to cart");
+      } else {
+        toast.error("Something went wrong");
       }
-      try {
-        if (hasCart) {
-          const matchingObject = cartItems.find(
-            (item: any) => item.listingId === listingId
-          );
-          const cartId = matchingObject.id;
-          await axios.delete(`/api/useractions/checkout/cart/${cartId}`);
-        } else {
-          if (!listingId) {
-            throw new Error("Listing ID is required");
-          }
-          await axios.post(`/api/useractions/checkout/cart/${listingId}`, {
-            quantity: quantity,
-            pickup: null,
-          });
-        }
-        router.refresh();
-        toast.success("Your cart was updated!");
-      } catch (error) {
-        if (storeUserInfo.id === user.id) {
-          toast.error("Can't add your own listings to cart");
-        } else if (
-          (user.role === "PRODUCER" && storeUserInfo.role === "PRODUCER") ||
-          (storeUserInfo.role === "PRODUCER" && user.role === "CONSUMER") ||
-          (storeUserInfo.role === "PRODUCER" && !user)
-        ) {
-          toast.error("Must be a Co-Op to add Producers listings");
-        } else {
-          toast.error("Something went wrong");
-        }
-      }
-    },
-    [user, hasCart, listingId, router]
-  );
+    }
+  }, [user, hasCart, listingId, router, cartItems, listing.location.role, listing.user.id]);
 
-  return {
-    hasCart,
-    toggleCart,
-  };
+  return { hasCart, toggleCart };
 };
 
 export default useCart;
+

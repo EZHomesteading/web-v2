@@ -1,39 +1,28 @@
 "use client";
-//cart icon component, handles toggler cart
+import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import useCart from "@/hooks/listing/use-cart";
-import { UserRole } from "@prisma/client";
 import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
-  listingId: string;
+  listing: MarketListing;
   user?: UserInfo;
-  listingMin: number | null;
-  storeUserInfo: {
-    id: string;
-    role: UserRole;
-  };
 }
 
-const CartButton: React.FC<CartButtonProps> = ({
-  listingId,
-  user,
-  storeUserInfo,
-}) => {
+const CartButton: React.FC<CartButtonProps> = ({ user, listing }) => {
+  console.log(listing);
   const { hasCart, toggleCart } = useCart({
-    listingId,
     user,
-    storeUserInfo: storeUserInfo,
+    listing,
   });
 
   return (
     <div
-      onClick={(e) => toggleCart(e, listingMin)}
+      onClick={(e) => toggleCart(e, listing.minOrder || 1)} // Ensure `listing.minOrder` is accessible
       className="
-        relative
         hover:opacity-80
         transition
         cursor-pointer
-        
+        absolute top-3 right-3
       "
     >
       <svg

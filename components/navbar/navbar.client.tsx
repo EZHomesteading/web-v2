@@ -54,7 +54,6 @@ const Navbar = ({
           <Logo />
           <UserMenu
             user={user}
-            canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
             harvestMessages={harvestMessages}
           />
@@ -93,7 +92,6 @@ const Navbar = ({
                     )}
                     <UserMenu
                       user={user}
-                      canReceivePayouts={canReceivePayouts}
                       uniqueUrl={uniqueUrl}
                       harvestMessages={harvestMessages}
                     />
@@ -130,7 +128,6 @@ const Navbar = ({
         >
           <UserMenu
             user={user}
-            canReceivePayouts={canReceivePayouts}
             uniqueUrl={uniqueUrl}
             harvestMessages={harvestMessages}
           />

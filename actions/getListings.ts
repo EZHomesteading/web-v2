@@ -427,7 +427,42 @@ const GetListingsByIds = async (params: Params) => {
     throw new Error(error);
   }
 };
+// const getListingSlug = async (params:IParams) => {
+//   try {
+//     const { listingId } = params;
+//     if (listingId?.length !== 24) {
+//       return null;
+//     }
+//     const listing = await prisma.listing.findUnique({
+//       where: {
+//         id: listingId,
+//       },
+//       include: {
+//         user: {
+//           select: {
+//             id: true,
+//             name: true,
+//             createdAt: true,
+//             updatedAt: true,
+//             emailVerified: true,
+//             role: true,
+//             url: true,
+//             SODT: true,
+//           },
+//         },
+//         location: true,
+//       },
+//     });
 
+//     if (!listing) {
+//       return null;
+//     }
+//     return listing;
+//   } catch (error: any) {
+//     console.error(error);
+//     throw new Error(error);
+//   }
+// }
 // get a single listing by id
 const getListingById = async (params: IParams) => {
   try {
@@ -459,20 +494,6 @@ const getListingById = async (params: IParams) => {
     if (!listing) {
       return null;
     }
-
-    // const location = (await getUserLocation(listing)) as unknown as Location;
-    // const Listing: FinalListing = listing as unknown as FinalListing;
-    // return {
-    //   ...Listing,
-    //   location,
-    //   createdAt: listing.createdAt.toString(),
-    //   user: {
-    //     ...listing.user,
-    //     createdAt: listing.user.createdAt.toString(),
-    //     updatedAt: listing.user.updatedAt.toString(),
-    //     emailVerified: listing.user.emailVerified?.toString() || null,
-    //   },
-    // };
     return listing;
   } catch (error: any) {
     console.error(error);

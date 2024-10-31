@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
     const listings = await prisma.listing.findMany({
       where: {
         locationId: { in: locationIds },
+        user: {canRecievePayouts:true}
       },
       select: {
         id:true,
@@ -61,6 +62,12 @@ export async function GET(req: NextRequest) {
         location: {
           select: { address: true, role:true}
         },
+        minOrder:true,
+        user: {
+          select:{
+            id:true
+          }
+        }
       }
     });
  

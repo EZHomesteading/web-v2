@@ -5,7 +5,6 @@ import EmptyState from "@/components/EmptyState";
 import ClientOnly from "@/components/client/ClientOnly";
 import { getUserwithCart } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
-import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getMarketListings } from "@/actions/getMarketListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 

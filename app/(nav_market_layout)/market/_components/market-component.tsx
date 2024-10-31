@@ -6,7 +6,7 @@ import SessionStorageManager from "@/components/sessionStorageManager";
 import { UserInfo } from "next-auth";
 import { outfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
-import MarketCard from "./market-card";
+import { MarketGrid, MarketCard } from "./market-card";
 
 export interface MarketListing {
   id: string;
@@ -18,6 +18,10 @@ export interface MarketListing {
   location: {
     address: string[];
     role: UserRole;
+  };
+  minOrder?: number;
+  user: {
+    id: string;
   };
 }
 interface ShopProps {
@@ -46,11 +50,11 @@ const Shop = ({
       <SessionStorageManager />
       <Container>
         {emptyState || (
-          <div className="pt-[140px] pb-[90px] sm:pb-0 md:pt-5 grid  grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
+          <MarketGrid>
             {listings.map((listing, index) => (
               <MarketCard user={user} key={index} listing={listing} />
             ))}
-          </div>
+          </MarketGrid>
         )}
         {totalPages > 1 && (
           <>
