@@ -1,3 +1,4 @@
+import { UserRole } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
@@ -5,12 +6,14 @@ import { toast } from "sonner";
 interface IUseCart {
   listingId: string;
   user?: any | null;
-  quantity?: number;
-  listingRole?: string;
-  listingUser?: string;
+  quantity?: number;  
+  storeUserInfo: {
+    id: string;
+    role: UserRole;
+  };
 }
 
-const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
+const useCart = ({ listingId, user, storeUserInfo }: IUseCart) => {
   const router = useRouter();
   const cartItems = user?.cart || [];
 
@@ -53,12 +56,12 @@ const useCart = ({ listingId, user, listingRole, listingUser }: IUseCart) => {
         router.refresh();
         toast.success("Your cart was updated!");
       } catch (error) {
-        if (listingUser === user.id) {
+        if (storeUserInfo.id === user.id) {
           toast.error("Can't add your own listings to cart");
         } else if (
-          (user.role === "PRODUCER" && listingRole === "PRODUCER") ||
-          (listingRole === "PRODUCER" && user.role === "CONSUMER") ||
-          (listingRole === "PRODUCER" && !user)
+          (user.role === "PRODUCER" && storeUserInfo.role === "PRODUCER") ||
+          (storeUserInfo.role === "PRODUCER" && user.role === "CONSUMER") ||
+          (storeUserInfo.role === "PRODUCER" && !user)
         ) {
           toast.error("Must be a Co-Op to add Producers listings");
         } else {

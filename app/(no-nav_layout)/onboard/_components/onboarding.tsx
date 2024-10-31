@@ -436,7 +436,7 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
                 </div>
               </div>
             )}
-            {step > 1 && step < 9 && shouldShowNextButton() && (
+            {step < 6 && shouldShowNextButton() && (
               <Button onClick={handleNext}>Next</Button>
             )}{" "}
           </div>

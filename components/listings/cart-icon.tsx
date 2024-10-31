@@ -1,32 +1,30 @@
 "use client";
 //cart icon component, handles toggler cart
 import useCart from "@/hooks/listing/use-cart";
+import { UserRole } from "@prisma/client";
 import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
   listingId: string;
   user?: UserInfo;
-  listingRole: string;
-  listingUser: string | undefined;
   listingMin: number | null;
+  storeUserInfo: {
+    id: string;
+    role: UserRole;
+  };
 }
 
 const CartButton: React.FC<CartButtonProps> = ({
   listingId,
   user,
-  listingRole,
-  listingUser,
-  listingMin,
+  storeUserInfo,
 }) => {
   const { hasCart, toggleCart } = useCart({
     listingId,
     user,
-    listingRole,
-    listingUser,
+    storeUserInfo: storeUserInfo,
   });
-  if (!listingMin) {
-    listingMin = 1;
-  }
+
   return (
     <div
       onClick={(e) => toggleCart(e, listingMin)}

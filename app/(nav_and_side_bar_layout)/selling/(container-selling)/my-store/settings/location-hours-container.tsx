@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import axios from "axios";
 import { toast } from "sonner";
-import { Location, LocationObj, UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import AccountCard from "./location-card";
 
 const locationHeadings = [

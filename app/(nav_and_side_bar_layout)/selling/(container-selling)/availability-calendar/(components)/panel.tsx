@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Location } from "@prisma/client";
 import Link from "next/link";
-import setDefault from "./set-default-button";
 import SetDefaultButton from "./set-default-button";
 export interface PanelProps {
   content: ReactNode;

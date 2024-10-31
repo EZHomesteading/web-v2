@@ -30,6 +30,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
 import { outfitFont } from "@/components/fonts";
+import { UserRole } from "@prisma/client";
 const work = Work_Sans({
   display: "block",
   subsets: ["latin"],
@@ -37,7 +38,7 @@ const work = Work_Sans({
 });
 
 interface ListingCardProps {
-  data: FinalListing;
+  data: MarketListing;
   onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
@@ -46,7 +47,10 @@ interface ListingCardProps {
   secondActionLabel?: string;
   onSecondAction?: (id: string) => void;
   user?: UserInfo;
-  storeUser: UserInfo;
+  storeUser: {
+    id: string;
+    role: UserRole;
+  };
   priority?: boolean;
   review?: boolean | null;
 }
@@ -157,28 +161,23 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           )}
           <div className="absolute top-3 right-3">
-            {data.stock <= 0 ? (
-              <></>
-            ) : (
+            {data.stock <= 0 && (
               <CartIcon
                 listingId={data.id}
                 user={user}
-                listingRole={storeUser.role}
-                listingUser={storeUser.id}
                 listingMin={data.minOrder}
+                storeUserInfo={{ id: storeUser.id, role: storeUser.role }}
               />
             )}
           </div>
         </div>
         <div className="font-semibold text-lg">
-          {" "}
           <div className={`${outfitFont.className} text-lg`}>{data.title}</div>
           <div
             className={`font-light text-neutral-500 text-xs ${work.className}`}
           >
             {data?.location?.address && (
               <>
-                {" "}
                 {data?.location?.address[1]}, {data?.location?.address[2]}
               </>
             )}

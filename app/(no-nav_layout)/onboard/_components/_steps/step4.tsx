@@ -93,7 +93,7 @@ const StepFour: React.FC<StepFiveProps> = ({
             className={`${
               outfitFont.className
             } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:min-w-[402.88px] rounded-xl min-h-[134px]  border transition ${
-              selectedOption.includes(option.label)
+              selectedOption == option.value
                 ? "bg-black text-white"
                 : "bg-white text-black"
             }`}

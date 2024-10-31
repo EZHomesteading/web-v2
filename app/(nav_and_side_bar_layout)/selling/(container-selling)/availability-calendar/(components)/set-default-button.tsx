@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -11,14 +10,12 @@ const SetDefaultButton = ({
   className = "border-[1px] rounded-xl w-[300px] h-[100px] shadow-md flex flex-col items-center justify-center",
   title,
 }: {
-  userId: string;
+  userId?: string;
   title?: string;
   locationId: string;
   street: string;
   className?: string;
 }) => {
-  const router = useRouter();
-
   const handleSetDefault = async () => {
     try {
       const response = await axios.post("/api/location/update/set-default", {
@@ -26,7 +23,7 @@ const SetDefaultButton = ({
         locationId,
       });
       if (response.status === 200) {
-        toast.success(street + " was set to your default address");
+        toast.success(street + " is now your default address");
         window.location.replace("/selling/availability-calendar");
       }
     } catch (error) {}

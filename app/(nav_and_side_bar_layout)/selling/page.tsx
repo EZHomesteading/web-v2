@@ -1,7 +1,6 @@
 import React from "react";
 import {
   PiCalendarCheckThin,
-  PiChartBarThin,
   PiChatCircleThin,
   PiClipboardTextThin,
   PiClockCountdownThin,
@@ -10,9 +9,9 @@ import {
   PiMoneyThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import MenuCard from "@/app/account/components/menu-card";
 import { CiSettings } from "react-icons/ci";
-import UserInfoCard from "@/app/account/components/user-info-card";
+import UserInfoCard from "../_components/user-info-card";
+import MenuCard from "../_components/menu-card";
 const menuItems = [
   {
     title: "To-Dos",

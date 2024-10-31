@@ -3,11 +3,13 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/EmptyState";
 import ClientOnly from "@/components/client/ClientOnly";
-import { FinalListing, GetListingsMarket } from "@/actions/getListings";
 import { getUserwithCart } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
+import { FinalListing, GetListingsMarket } from "@/actions/getListings";
+import { getMarketListings } from "@/actions/getMarketListings";
+import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 
-interface ShopProps {
+export interface ShopProps {
   userId?: string;
   searchParams?: {
     q?: string;
@@ -37,39 +39,13 @@ const ShopPage = async ({
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const {
-    q = "",
-    lat = "",
-    lng = "",
-    radius = "",
-    p = "",
-    c = "",
-    ra = "",
-    pr = "",
-    s = "",
-    cat = "",
-    subcat = "",
-  } = searchParams || {};
-  let page = parseInt(searchParams?.page as string, 10);
-  page = !page || page < 1 ? 1 : page;
+  const page = Math.max(1, parseInt(searchParams?.page ?? "1"));
   const perPage = 36;
-  const { listings, totalItems } = await GetListingsMarket(
-    {
-      q,
-      lat,
-      lng,
-      radius,
-      p,
-      ra,
-      pr,
-      c,
-      s,
-      cat,
-      subcat,
-    },
-    page,
-    perPage
-  );
+
+  const response = await getMarketListings(searchParams, page, perPage);
+
+  const { listings = [], totalItems = 0 } = response || {};
+
   let user = await getUserwithCart();
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
@@ -84,10 +60,9 @@ const ShopPage = async ({
       pageNumbers.push(i);
     }
   }
-
   return (
     <MarketComponent
-      listings={listings as unknown as FinalListing[]}
+      listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
       emptyState={
         listings.length === 0 ? (

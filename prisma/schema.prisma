@@ -187,6 +187,7 @@ model User {
   subscriptions         String?
   hasPickedRole         Boolean?
   openCloseTemplates    OpenCloseTemplates[]
+  canRecievePayouts     Boolean?               @default(false)
 }
 
 model Following {
