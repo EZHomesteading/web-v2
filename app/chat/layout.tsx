@@ -18,7 +18,7 @@ export default async function ConversationsLayout({
   const navUser = await getNavUser();
   return (
     <div className="min-h-screen bg-chat">
-      <Navbar user={navUser as unknown as NavUser} />
+      <Navbar user={navUser as unknown as NavUser} isChat={true} />
 
       <ConversationList
         title="Messages"
