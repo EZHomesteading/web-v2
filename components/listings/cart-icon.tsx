@@ -1,23 +1,27 @@
 "use client";
+import { FinalListing } from "@/actions/getListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import useCart from "@/hooks/listing/use-cart";
 import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
-  listing: MarketListing;
+  listing: FinalListing;
   user?: UserInfo;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ user, listing }) => {
+const CartButton: React.FC<CartButtonProps> = async ({ user, listing }) => {
   console.log(listing);
-  const { hasCart, toggleCart } = useCart({
+  const hasCart = await useCart({
     user,
-    listing,
+    listingId: listing.id,
   });
+  if (!hasCart) {
+    return;
+  }
 
   return (
     <div
-      onClick={(e) => toggleCart(e, listing.minOrder || 1)} // Ensure `listing.minOrder` is accessible
+      onClick={(e) => hasCart.toggleCart(e, listing.minOrder || 1)} // Ensure `listing.minOrder` is accessible
       className="
         hover:opacity-80
         transition

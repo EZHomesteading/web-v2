@@ -25,16 +25,19 @@ interface ListingClientProps {
   apiKey?: string;
 }
 
-const ListingClient: React.FC<ListingClientProps> = ({
+const ListingClient: React.FC<ListingClientProps> = async ({
   listing,
   user,
   following,
   apiKey,
 }) => {
-  const { toggleCart } = useCart({
+  const toggleCart = await useCart({
     user,
-    listing,
+    listingId: listing.id,
   });
+  if (!toggleCart) {
+    return;
+  }
   const adjustedListing = {
     ...listing,
     endDate:
@@ -70,7 +73,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
           </div>
           <div className="w-full lg:w-1/3 px-4">
             <ListingReservation
-              toggleCart={toggleCart}
+              toggleCart={toggleCart?.toggleCart}
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
