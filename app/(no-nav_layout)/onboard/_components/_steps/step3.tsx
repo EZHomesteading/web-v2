@@ -7,11 +7,12 @@ import PlacesAutocomplete, {
   getLatLng,
   Suggestion,
 } from "react-places-autocomplete";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { LocationObj } from "location-types";
 
 import OnboardContainer from "../onboard.container";
 interface Props {
+  locations?: Location[] | null;
   role?: UserRole;
   location?: LocationObj;
   apiKey: string;
@@ -25,6 +26,7 @@ const StepThree: React.FC<Props> = ({
   apiKey,
   role,
   location,
+  locations,
 }) => {
   const fullAddress = location?.address.join(", ");
   const [address, setAddress] = useState(fullAddress);
@@ -138,7 +140,13 @@ const StepThree: React.FC<Props> = ({
 
   return (
     <OnboardContainer
-      title="Add your First Selling Location"
+      title={
+        locations?.length === 1
+          ? "Add your Second Selling Location"
+          : locations?.length === 2
+          ? "Add your Third Selling Location"
+          : "Add your First Selling Location"
+      }
       descriptions={[
         "Sellers can have up to three selling locations",
         "You may change the address at any time",

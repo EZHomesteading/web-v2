@@ -17,24 +17,6 @@ const Page = async ({
   const user = await currentUser();
   let index = 1;
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2023-10-16",
-  });
-
-  const canReceivePayouts =
-    (user?.stripeAccountId
-      ? await checkPayoutCapability(user?.stripeAccountId)
-      : false) || false;
-
-  async function checkPayoutCapability(stripeAccountId: string) {
-    try {
-      const account = await stripe.accounts.retrieve(stripeAccountId);
-      return account.capabilities?.transfers === "active";
-    } catch (error) {
-      console.error("Error checking payout capability:", error);
-      return null;
-    }
-  }
   if (!user?.id) {
     return null;
   }
@@ -52,7 +34,6 @@ const Page = async ({
         <>
           <CreateClient
             defaultId={defaultId}
-            canReceivePayouts={canReceivePayouts}
             index={index}
             user={user}
             locations={locations}
