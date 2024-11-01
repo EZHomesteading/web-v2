@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Map from "@/app/(no-nav_layout)/onboard/_components/map";
+import Map from "@/app/(no-nav_layout)/new-location-and-hours/_components/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
@@ -281,8 +281,8 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             {(geoResult || location) && (
               <Map
                 center={{
-                  lat: geoResult?.lat || location?.coordinates[1],
-                  lng: geoResult?.lng || location?.coordinates[0],
+                  lat: geoResult?.lat || location?.coordinates[1] || 38,
+                  lng: geoResult?.lng || location?.coordinates[0] || -79,
                 }}
                 mk={mk}
                 showSearchBar={false}

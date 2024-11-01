@@ -4,18 +4,18 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
-import StepOne from "@/app/(no-nav_layout)/onboard/_components/_steps/step1";
-import StepTwo from "@/app/(no-nav_layout)/onboard/_components/_steps/step2";
-import StepThree from "@/app/(no-nav_layout)/onboard/_components/_steps/step3";
-import StepFour from "@/app/(no-nav_layout)/onboard/_components/_steps/step4";
-import { StepFive } from "@/app/(no-nav_layout)/onboard/_components/_steps/step5";
-import StepSix from "@/app/(no-nav_layout)/onboard/_components/_steps/step6";
-import StepSeven from "@/app/(no-nav_layout)/onboard/_components/_steps/step7";
-import StepEight from "@/app/(no-nav_layout)/onboard/_components/_steps/step8";
+import StepOne from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step1";
+import StepTwo from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step2";
+import StepThree from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step3";
+import StepFour from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step4";
+import { StepFive } from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step5";
+import StepSix from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step6";
+import StepSeven from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step7";
+import StepEight from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step8";
 import { HoverButton } from "@/components/ui/hoverButton";
 import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
-import StepNine from "@/app/(no-nav_layout)/onboard/_components/_steps/step9";
+import StepNine from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step9";
 import OnboardHeader from "./header.onboard";
 import { UserInfo } from "next-auth";
 import { LocationObj } from "location-types";
@@ -30,7 +30,12 @@ interface Props {
   locations: Location[] | null;
 }
 
-const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
+const NewLocHoursClient = ({
+  user: initialUser,
+  index,
+  apiKey,
+  locations,
+}: Props) => {
   const router = useRouter();
   const [step, setStep] = useState(locations?.length !== 0 ? 2 : index);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -446,4 +451,4 @@ const Onboarding = ({ user: initialUser, index, apiKey, locations }: Props) => {
   );
 };
 
-export default Onboarding;
+export default NewLocHoursClient;

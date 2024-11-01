@@ -7,10 +7,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Location, TimeSlot } from "@prisma/client";
-import axios from "axios";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import {
   PiCarProfileThin,
@@ -220,7 +219,7 @@ const LocationSelector = ({
           value={id}
           onValueChange={(value) => {
             if (value === "new") {
-              router.push("/selling/availability-calendar/new-location");
+              router.push("/new-location-and-hours");
             } else {
               router.push(`/selling/availability-calendar/${value}`);
             }

@@ -1,6 +1,6 @@
 import React from "react";
-import { Zilla_Slab } from "next/font/google";
 import { outfitFont, zillaFont } from "@/components/fonts";
+
 interface SectionLayoutProps {
   title?: string;
   descriptions?: string[];
@@ -8,9 +8,6 @@ interface SectionLayoutProps {
   className?: string;
   maxWidth?: string;
   containerClassName?: string;
-  subtitle?: string;
-  titleRight?: React.ReactNode;
-  centerTitle?: boolean;
 }
 
 const OnboardContainer = ({
@@ -20,9 +17,6 @@ const OnboardContainer = ({
   className = "",
   maxWidth = "sm:max-w-[402.88px]",
   containerClassName = "",
-  subtitle,
-  titleRight,
-  centerTitle = false,
 }: SectionLayoutProps) => {
   return (
     <div

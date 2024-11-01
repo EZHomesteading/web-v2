@@ -1,4 +1,5 @@
 "use client";
+
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Loading from "@/components/secondary-loader";
@@ -7,7 +8,7 @@ import LocationSearchInput from "@/components/map/LocationSearchInput";
 
 interface MapProps {
   mk: string;
-  center?: { lat?: number; lng?: number };
+  center?: { lat: number; lng: number };
   showSearchBar?: boolean;
   h?: number;
   w?: number;

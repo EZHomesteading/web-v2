@@ -1,13 +1,13 @@
 //server side page layout for the homepage
-import Home from "@/app/(white_nav_layout)/(home)/(components)/consumer-home";
-import CoopHome from "./(home)/(components)/coop-home";
-import ProducerHome from "./(home)/(components)/proucer-home";
+import Home from "@/app/(fixed_nav_white)/(home)/(components)/consumer-home";
+import CoopHome from "./coop-home";
+import ProducerHome from "./proucer-home";
 import { UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-import AdminHome from "./(home)/(components)/admin-home";
-import NoAuthHome from "./(home)/(components)/no-auth-home";
+import AdminHome from "./admin-home";
+import NoAuthHome from "./no-auth-home";
 import Stripe from "stripe";
 const HomePage = async () => {
   const user = await currentUser();
@@ -35,7 +35,7 @@ const HomePage = async () => {
   }
   return (
     <>
-      {user ? (
+      {/* {user ? (
         user?.role == UserRole.COOP ? (
           <CoopHome user={user} canReceivePayouts={canReceivePayouts} />
         ) : user?.role == UserRole.PRODUCER ? (
@@ -45,9 +45,8 @@ const HomePage = async () => {
         ) : (
           <Home user={user} />
         )
-      ) : (
-        <NoAuthHome />
-      )}
+      ) : ( */}
+      <NoAuthHome />
     </>
   );
 };

@@ -137,7 +137,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
     ) {
       router.push("/create");
     } else {
-      router.push("/onboard");
+      router.push("/new-location-and-hours");
     }
   };
 

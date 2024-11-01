@@ -5,7 +5,8 @@ import { getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
 import { outfitFont } from "../../../components/fonts";
 import { Location } from "@prisma/client";
-import Onboarding from "./_components/onboarding";
+import NewLocHours from "@/app/(no-nav_layout)/new-location-and-hours/_components/new-loc-hours.client";
+
 export const viewport: Viewport = {
   themeColor: "#fff",
 };
@@ -46,7 +47,7 @@ const Page = async () => {
         // > 3
         <>
           {session?.user && (
-            <Onboarding
+            <NewLocHours
               locations={sortedLocations}
               index={index}
               user={session?.user}
