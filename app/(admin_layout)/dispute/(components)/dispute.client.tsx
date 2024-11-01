@@ -8,13 +8,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
-import FilterButtons from "@/app/dispute/dispute-filters";
 import { $Enums, fullName, OrderStatus } from "@prisma/client";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { ExplanationDialog } from "./dispute.explanation";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import FilterButtons from "./dispute-filters";
 const sesClient = new SESClient({
   region: process.env.AWS_REGION as string,
   credentials: {
