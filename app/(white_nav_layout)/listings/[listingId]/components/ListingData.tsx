@@ -14,7 +14,7 @@ import { useWishlist } from "@/hooks/listing/use-wishlist";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
 
-interface ListingReservationProps {
+interface ListingInfoProps {
   listingId: string;
   user?: User | null;
   product: FinalListing & { description: string };
@@ -22,7 +22,7 @@ interface ListingReservationProps {
   rating: number[];
 }
 
-const ListingReservation: React.FC<ListingReservationProps> = ({
+const ListingInfo: React.FC<ListingInfoProps> = ({
   product,
   listingId,
   user,
@@ -420,4 +420,4 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   );
 };
 
-export default ListingReservation;
+export default ListingInfo;

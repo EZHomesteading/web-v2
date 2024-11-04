@@ -5,7 +5,7 @@ import { addDays } from "date-fns";
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
-import ListingReservation from "./components/ListingReservation";
+import ListingData from "./components/ListingData";
 import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";
@@ -95,7 +95,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
           </div>
           <div className="w-full lg:w-1/3 px-4">
-            <ListingReservation
+            <ListingData
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
