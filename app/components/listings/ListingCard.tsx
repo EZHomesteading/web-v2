@@ -30,7 +30,7 @@ import ReactStars from "react-stars";
 //import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/outfit.font";
+import { outfitFont } from "@/components/fonts";
 import {
   Popover,
   PopoverContent,
@@ -167,11 +167,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <></>
             ) : (
               <CartIcon
-                listingId={data.id}
+                listing={data}
                 user={user}
-                listingRole={storeUser.role}
-                listingUser={storeUser.id}
-                listingMin={data.minOrder}
+                // listingRole={storeUser.role}
+                // listingUser={storeUser.id}
+                // listingMin={data.minOrder}
               />
             )}
           </div>

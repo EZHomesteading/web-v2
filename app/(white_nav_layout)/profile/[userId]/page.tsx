@@ -23,7 +23,7 @@ export default async function ProfilePage({ params }: Props) {
 
   const { user, reviews } = data;
   const reviewsWithReviewers: ReviewWithReviewer[] = await Promise.all(
-    reviews.map(async (review) => {
+    reviews.map(async (review: any) => {
       const reviewer = await getUserById(review.reviewerId);
       return { ...review, reviewer };
     })

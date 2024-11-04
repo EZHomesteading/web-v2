@@ -21,7 +21,7 @@ interface ListingReservationProps {
   rating: number[];
 }
 
-const ListingReservation: React.FC<ListingReservationProps> = ({
+const ListingReservation: React.FC<ListingReservationProps> = async ({
   product,
   listingId,
   user,
@@ -88,10 +88,9 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const [confirmmOpen, setConfirmmOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
   const [quantity, setQuantity] = useState(product.minOrder || 1);
-  const { hasCart } = useCartListing({
+  const hasCart = await useCartListing({
     listingId,
     user,
-    quantity,
   });
   const description = product.description;
   const stock = product.stock;

@@ -4,12 +4,12 @@ import { SheetCartC, SheetContentC } from "@/components/ui/sheet-cart";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
-import { CartGroup } from "@/next-auth";
-import { ExtendedHours } from "@/next-auth";
+
 import "react-datetime-picker/dist/DateTimePicker.css";
 import CustomTimeModal from "./customTimeModal";
 import { Outfit } from "next/font/google";
 import { CartGroup2, ValidTime } from "../client";
+import { Hours } from "@prisma/client";
 
 const outfit = Outfit({
   style: ["normal"],
@@ -19,10 +19,10 @@ const outfit = Outfit({
 
 interface StatusProps {
   role: string;
-  hours: ExtendedHours;
+  hours: Hours;
   onSetTime: (childTime: ValidTime) => void;
   index: number;
-  cartGroup: CartGroup | null;
+  cartGroup: CartGroup2 | null;
   sodtarr: CartGroup2[];
 }
 

@@ -3,10 +3,10 @@
 //import getUserById from "@/actions/user/getUserById";
 import { ReviewWithReviewer } from "@/actions/getUser";
 import Avatar from "@/components/Avatar";
+import { outfitFont } from "@/components/fonts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
 import { UserInfo } from "next-auth";
@@ -57,7 +57,9 @@ const Bio = ({ user, reviews }: Props) => {
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
             <Avatar image={user?.image} />
-            <div className={`${o.className} weight-100 flex flex-col ml-2`}>
+            <div
+              className={`${outfitFont.className} weight-100 flex flex-col ml-2`}
+            >
               <div className="flex flex-col items-start gap-x-2">
                 <div className="font-bold text-xl lg:text-2xl">
                   {user?.name}
@@ -92,7 +94,9 @@ const Bio = ({ user, reviews }: Props) => {
             </>
           )}
           {total === 0 ? (
-            <div className={`${o.className} flex justify-center text-2xl mt-5`}>
+            <div
+              className={`${outfitFont.className} flex justify-center text-2xl mt-5`}
+            >
               No reviews found
             </div>
           ) : (
