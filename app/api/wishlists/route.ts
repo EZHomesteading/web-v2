@@ -2,7 +2,7 @@ import authCache from "@/auth-cache";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function GET() {
 const session = await authCache()
   try {
     const wishlists = await prisma.wishlistGroup.findMany({

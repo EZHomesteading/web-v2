@@ -145,7 +145,7 @@ model Location {
   user                User            @relation(fields: [userId], references: [id])
   listings            Listing[]
   orders              Order[]
-  type                String
+  type                orderMethod     @default(PICKUP)
   coordinates         Float[]
   address             String[]
   hours               Hours?
