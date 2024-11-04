@@ -1,9 +1,8 @@
 "use client";
-//component for displaying add to cart, buy now button, information about the product and a counter for the user to choose how much of the product to add to cart
+
 import { addDays, format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import useCartListing from "@/hooks/listing/use-cart";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DateState2 from "./DateState2";
 import NotifyModal from "./NotifyModal";
 import { User } from "@prisma/client";
@@ -11,21 +10,22 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
 import { outfitFont, zillaFont } from "@/components/fonts";
+import { useWishlistCart } from "@/hooks/listing/use-cart";
+import { toast } from "sonner";
+import { Loader2, ShoppingCart, Trash } from "lucide-react";
 
 interface ListingReservationProps {
   listingId: string;
   user?: User | null;
   product: FinalListing & { description: string };
-  toggleCart: (e: any, quantity: number) => Promise<void>;
   sodt: (number | null)[];
   rating: number[];
 }
 
-const ListingReservation: React.FC<ListingReservationProps> = async ({
+const ListingReservation: React.FC<ListingReservationProps> = ({
   product,
   listingId,
   user,
-  toggleCart,
   sodt,
   rating,
 }) => {
@@ -35,6 +35,7 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
     3: "No Inorganic Pesticides",
     4: "Not Modified After Harvest",
   };
+
   const inverseRatingMeanings: { [key: number]: string } = {
     1: "May be Genetically Modified",
     2: "May use Inorganic Fertilizers",
@@ -42,6 +43,132 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
     4: "May be Modified After Harvest",
   };
 
+  // State management
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmmOpen, setConfirmmOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<Date>();
+  const [existingItem, setExistingItem] = useState<any>(null);
+
+  // Initialize wishlist cart hook
+  const {
+    isLoading,
+    quantity,
+    setQuantity,
+    toggleWishlist,
+    checkExistingItem,
+    isInWishlist,
+  } = useWishlistCart({
+    listingId,
+    user,
+    initialQuantity: product.minOrder || 1,
+  });
+
+  // Check for existing wishlist item on mount
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (user) {
+        const item = await checkExistingItem();
+        setExistingItem(item);
+        if (item?.quantity) {
+          setQuantity(item.quantity);
+        }
+      }
+    };
+    checkWishlist();
+  }, [user, checkExistingItem, setQuantity]);
+
+  // Product details
+  const {
+    description,
+    stock,
+    quantityType,
+    price,
+    createdAt: startDate,
+    shelfLife,
+    minOrder,
+  } = product;
+
+  // Calculate end date
+  const endDate =
+    shelfLife !== -1 ? addDays(new Date(startDate), shelfLife) : null;
+  const endDateString = endDate
+    ? format(endDate, "MMM dd, yyyy")
+    : "No expiry date";
+
+  // Quantity handlers
+  const increaseQuantity = () => {
+    if (stock && quantity < stock) {
+      setQuantity(quantity + 1);
+    } else {
+      toast.error("Cannot exceed available stock");
+    }
+  };
+
+  const decreaseQuantity = () => {
+    const minQuantity = minOrder || 1;
+    if (quantity > minQuantity) {
+      setQuantity(quantity - 1);
+    } else {
+      toast.error(`Minimum order is ${minQuantity} ${quantityType}`);
+    }
+  };
+
+  // Cart handlers
+  const handleToggleCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!user) {
+      toast.error("Please login to add items to cart");
+      return;
+    }
+
+    try {
+      await toggleWishlist(e);
+      if (!isInWishlist) {
+        const item = await checkExistingItem();
+        setExistingItem(item);
+      } else {
+        setExistingItem(null);
+      }
+    } catch (error) {
+      toast.error("Failed to update cart");
+    }
+  };
+
+  const handleTimer = (childTime: Date) => {
+    setSelectedTime(childTime);
+  };
+
+  // Utility function for pluralization
+  function pluralizeQuantityType(quantity: number, type: string) {
+    if (quantity === 1) return type;
+
+    switch (type.toLowerCase()) {
+      case "lb":
+        return "lbs";
+      case "oz":
+        return "oz";
+      case "pint":
+      case "quart":
+      case "gallon":
+      case "bushel":
+      case "peck":
+      case "crate":
+      case "basket":
+      case "bag":
+      case "box":
+      case "bunch":
+        return type + "s";
+      case "dozen":
+        return "dozen";
+      case "each":
+        return "each";
+      case "none":
+        return "";
+      default:
+        return type;
+    }
+  }
+
+  // Rating component
   const renderRating = () => {
     const applicableRatings = rating.filter(
       (index) => index !== 0 && index in ratingMeanings
@@ -50,8 +177,9 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
     const inverseRatings = possibleRatings.filter(
       (index) => index !== 0 && !applicableRatings.includes(index)
     );
+
     return (
-      <div className="text-sm text-gray-600  items-center gap-x-1">
+      <div className="text-sm text-gray-600 items-center gap-x-1">
         <div className="text-sm text-gray-600 flex items-center gap-x-1">
           <ReactStars
             count={4}
@@ -84,81 +212,34 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
     );
   };
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmmOpen, setConfirmmOpen] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<Date>(); //users selected time
-  const [quantity, setQuantity] = useState(product.minOrder || 1);
-  const hasCart = await useCartListing({
-    listingId,
-    user,
-  });
-  const description = product.description;
-  const stock = product.stock;
-  const quantityType = product.quantityType;
-  const price = product.price;
-  const startDate = product.createdAt;
-  const endDate =
-    product.shelfLife !== -1
-      ? addDays(new Date(startDate), product.shelfLife)
-      : null;
-  const endDateString = endDate
-    ? format(endDate, "MMM dd, yyyy")
-    : "No expiry date";
-
-  const increaseQuantity = () => {
-    if (product.stock && quantity < product.stock) {
-      setQuantity((prevQuantity: number) => prevQuantity + 1);
+  // Render cart button text
+  const renderCartButtonText = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Processing...
+        </div>
+      );
     }
+
+    if (isInWishlist) {
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <Trash className="h-4 w-4" />
+          Remove from Cart
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-center gap-2">
+        <ShoppingCart className="h-4 w-4" />
+        Add {quantity} {quantityType} to Cart
+      </div>
+    );
   };
 
-  const decreaseQuantity = () => {
-    if (product.minOrder === null) {
-      product.minOrder = 1;
-    }
-    if (quantity > product.minOrder) {
-      setQuantity((prevQuantity: number) => prevQuantity - 1);
-    }
-  };
-
-  const handleToggleCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    await toggleCart(e, quantity);
-  };
-
-  const handleTimer = (childTime: Date) => {
-    setSelectedTime(childTime);
-  };
-  function pluralizeQuantityType(quantity: number, type: string) {
-    if (quantity === 1) {
-      return type;
-    }
-
-    switch (type.toLowerCase()) {
-      case "lb":
-        return "lbs";
-      case "oz":
-        return "oz";
-      case "pint":
-      case "quart":
-      case "gallon":
-      case "bushel":
-      case "peck":
-      case "crate":
-      case "basket":
-      case "bag":
-      case "box":
-      case "bunch":
-        return type + "s";
-      case "dozen":
-        return "dozen";
-      case "each":
-        return "each";
-      case "none":
-        return "";
-      default:
-        return type;
-    }
-  }
   return (
     <>
       <NotifyModal
@@ -174,7 +255,7 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
         reports={product.reports}
       />
       <div
-        className={` bg-white 
+        className={`bg-white 
         rounded-xl 
         border-[1px]
         border-neutral-200 
@@ -182,19 +263,27 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
         gap-1 
         p-2 ${outfitFont.className}`}
       >
-        <Button onClick={() => setConfirmmOpen(true)}>Report Listing</Button>
+        <Button
+          onClick={() => setConfirmmOpen(true)}
+          variant="outline"
+          className="w-full mb-2"
+        >
+          Report Listing
+        </Button>
         <div
           className={`${zillaFont.className}
-      text-lg font-light text-neutral-500 p-2`}
+          text-lg font-light text-neutral-500 p-2`}
         >
           {renderRating()}
           Item Description: {description}
         </div>
         <hr />
         <ul className="p-2">
-          {stock}{" "}
-          {quantityType ? pluralizeQuantityType(stock, quantityType) : null}{" "}
-          remaining
+          <li>
+            {stock}{" "}
+            {quantityType ? pluralizeQuantityType(stock, quantityType) : null}{" "}
+            remaining
+          </li>
           <li>
             ${price} per {quantityType}
           </li>
@@ -202,7 +291,7 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
         <hr />
         <div className="p-2">Expected Expiry Date: {endDateString}</div>
         <hr />
-        {product.stock <= 0 ? (
+        {stock <= 0 ? (
           <div>
             <div className="p-2">Item is out of stock</div>
             <Button
@@ -214,87 +303,100 @@ const ListingReservation: React.FC<ListingReservationProps> = async ({
           </div>
         ) : (
           <>
-            {product.minOrder === null || product.minOrder === 1 ? (
-              <></>
-            ) : (
+            {minOrder && minOrder > 1 && (
               <>
                 <div className="flex flex-row items-center p-2">
-                  Minimum order: {product.minOrder} {quantityType}
+                  Minimum order: {minOrder} {quantityType}
                 </div>
                 <hr />
               </>
             )}
-            {!hasCart ? (
-              <div className="flex flex-col items-center gap-2">
-                <div className=" flex flex-row justify-center items-center mt-2 ">
-                  Set Quantity
-                  <div
-                    className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
-                    style={{ width: "fit-content" }}
-                  >
-                    <button
-                      className="text-gray-600 focus:outline-none"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        decreaseQuantity();
-                      }}
-                    >
-                      -
-                    </button>
-                    <input
-                      className="bg-transparent text-center appearance-none outline-none"
-                      value={quantity}
-                      min={1}
-                      max={product.stock ?? undefined}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value);
-                        if (
-                          !isNaN(value) &&
-                          value >= 1 &&
-                          value <= (product.stock ?? Infinity)
-                        ) {
-                          setQuantity(value);
-                        }
-                      }}
-                      style={{
-                        WebkitAppearance: "textfield",
-                        MozAppearance: "textfield",
-                        appearance: "textfield",
-                        width: "40px",
-                      }}
-                    />
-                    <button
-                      className="text-gray-600 focus:outline-none"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        increaseQuantity();
-                      }}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                <Button
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                    handleToggleCart(e)
-                  }
-                  className="w-full bg-green-400 shadow-xl mb-[2px]"
-                >
-                  {hasCart
-                    ? `Added to Cart`
-                    : `Add ${quantity} ${quantityType} to Cart`}
-                </Button>
+
+            {/* Show existing cart info if item exists */}
+            {existingItem && (
+              <div className="p-2 bg-gray-50 rounded-md mb-2">
+                <h3 className="font-medium text-sm mb-1">Currently in Cart:</h3>
+                <ul className="text-sm text-gray-600">
+                  <li>
+                    Quantity: {existingItem.quantity} {quantityType}
+                  </li>
+                  {existingItem.wishlistGroup?.pickupDate && (
+                    <li>
+                      Pickup:{" "}
+                      {format(
+                        new Date(existingItem.wishlistGroup.pickupDate),
+                        "PPp"
+                      )}
+                    </li>
+                  )}
+                </ul>
               </div>
-            ) : (
-              <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                  handleToggleCart(e)
-                }
-                className="w-full bg-green-400 mb-[2px]"
-              >
-                {hasCart ? `Added to Cart` : "Add to Cart"}
-              </Button>
             )}
+
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-row justify-center items-center mt-2">
+                Set Quantity
+                <div
+                  className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
+                  style={{ width: "fit-content" }}
+                >
+                  <button
+                    className="text-gray-600 focus:outline-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      decreaseQuantity();
+                    }}
+                    disabled={isLoading}
+                  >
+                    -
+                  </button>
+                  <input
+                    className="bg-transparent text-center appearance-none outline-none"
+                    value={quantity}
+                    min={minOrder || 1}
+                    max={stock}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (
+                        !isNaN(value) &&
+                        value >= (minOrder || 1) &&
+                        value <= stock
+                      ) {
+                        setQuantity(value);
+                      }
+                    }}
+                    style={{
+                      WebkitAppearance: "textfield",
+                      MozAppearance: "textfield",
+                      appearance: "textfield",
+                      width: "40px",
+                    }}
+                    disabled={isLoading}
+                  />
+                  <button
+                    className="text-gray-600 focus:outline-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      increaseQuantity();
+                    }}
+                    disabled={isLoading}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <Button
+                onClick={handleToggleCart}
+                disabled={isLoading}
+                className={`w-full shadow-xl mb-[2px] ${
+                  isInWishlist
+                    ? "bg-red-400 hover:bg-red-500"
+                    : "bg-green-400 hover:bg-green-500"
+                }`}
+              >
+                {renderCartButtonText()}
+              </Button>
+            </div>
             <div>
               <DateState2
                 sodt={sodt}

@@ -1,0 +1,72 @@
+// app/api/wishlist/groups/[groupId]/route.ts
+import { NextResponse } from "next/server";
+import { currentUser } from "@/lib/auth";
+import prisma from "@/lib/prismadb";
+import { wishlistStatus } from "@prisma/client";
+
+interface IParams {
+  groupId: string;
+}
+
+export async function PATCH(request: Request, { params }: { params: IParams }) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { groupId } = params;
+    const body = await request.json();
+    const { status, pickupDate, deliveryDate, notes, proposedLoc } = body;
+
+    if (!groupId) {
+      return new NextResponse("Group ID is required", { status: 400 });
+    }
+
+    // Verify ownership and get existing group
+    const existingGroup = await prisma.wishlistGroup.findFirst({
+      where: {
+        id: groupId,
+        userId: user.id,
+      },
+    });
+
+    if (!existingGroup) {
+      return new NextResponse("Group not found", { status: 404 });
+    }
+
+    // Prepare update data with type safety
+    const updateData: any = {};
+
+    if (status) {
+      updateData.status = status as wishlistStatus;
+    }
+
+    if (pickupDate !== undefined) {
+      updateData.pickupDate = pickupDate ? new Date(pickupDate) : null;
+    }
+
+    if (deliveryDate !== undefined) {
+      updateData.deliveryDate = deliveryDate ? new Date(deliveryDate) : null;
+    }
+
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+
+    if (proposedLoc !== undefined) {
+      updateData.proposedLoc = proposedLoc;
+    }
+
+    // Update the wishlist group
+    const updatedGroup = await prisma.wishlistGroup.update({
+      where: { id: groupId },
+      data: updateData,
+    });
+
+    return NextResponse.json(updatedGroup);
+  } catch (error) {
+    console.error("[WISHLIST_GROUP_PATCH]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}

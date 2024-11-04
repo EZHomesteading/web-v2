@@ -1,30 +1,40 @@
-import { getListingById } from "@/actions/getListings";
-import axios from "axios";
+// hooks/listing/use-cart.ts
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 
-interface IUseCart {
-  user?: any | null;
+interface UseWishlistCartProps {
   listingId: string;
+  user?: any | null;
+  initialQuantity?: number;
 }
 
-const useCart = async ({ user, listingId }: IUseCart) => {
+export const useWishlistCart = ({
+  listingId,
+  user,
+  initialQuantity = 1,
+}: UseWishlistCartProps) => {
   const router = useRouter();
-  const cartItems = user?.cart || [];
-  const listing = await getListingById({ listingId });
-  if (!listing) {
-    return null;
-  }
-  const hasCart = useMemo(
-    () => cartItems.some((item: any) => item.listingId === listingId),
-    [cartItems, listingId]
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [quantity, setQuantity] = useState(initialQuantity);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
-  const toggleCart = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement>, quantity = 1) => {
-      e.stopPropagation();
+  const checkExistingItem = useCallback(async () => {
+    if (!user) return null;
 
+    try {
+      const response = await axios.get(`/api/wishlist/check/${listingId}`);
+      setIsInWishlist(!!response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error checking wishlist:", error);
+      return null;
+    }
+  }, [listingId, user]);
+
+  const addToWishlist = useCallback(
+    async (status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE") => {
       if (!user) {
         router.push(
           `/auth/login?callbackUrl=${encodeURIComponent(window.location.href)}`
@@ -32,48 +42,73 @@ const useCart = async ({ user, listingId }: IUseCart) => {
         return;
       }
 
+      setIsLoading(true);
       try {
-        if (hasCart) {
-          const cartId = cartItems.find(
-            (item: any) => item.listingId === listingId
-          )?.id;
-          if (cartId)
-            await axios.delete(`/api/useractions/checkout/cart/${cartId}`);
-        } else {
-          if (!listingId) throw new Error("Listing ID is required");
-          await axios.post(`/api/useractions/checkout/cart/${listingId}`, {
-            quantity,
-            pickup: null,
-          });
-        }
-
+        await axios.post(`/api/wishlist/items`, {
+          listingId,
+          quantity,
+          status,
+        });
+        setIsInWishlist(true);
+        toast.success("Added to cart!");
         router.refresh();
-        toast.success("Your cart was updated!");
-      } catch (error) {
-        if (
-          listing.location?.role === "PRODUCER" &&
-          (!user || ["CONSUMER", "PRODUCER"].includes(user.role))
-        ) {
-          toast.error("Must be a Co-Op to add Producers listings");
-        } else if (listing.user.id === user.id) {
-          toast.error("Can't add your own listings to cart");
-        } else {
-          toast.error("Something went wrong");
-        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "Something went wrong");
+      } finally {
+        setIsLoading(false);
       }
     },
-    [
-      user,
-      hasCart,
-      listingId,
-      router,
-      cartItems,
-      listing.location?.role,
-      listing.user.id,
-    ]
+    [user, listingId, quantity, router]
   );
 
-  return { hasCart, toggleCart };
-};
+  const removeFromWishlist = useCallback(async () => {
+    if (!user) return;
 
-export default useCart;
+    setIsLoading(true);
+    try {
+      // First get the wishlist item ID
+      const item = await checkExistingItem();
+      if (!item?.id) {
+        throw new Error("Item not found");
+      }
+
+      // Then delete using the item ID
+      await axios.delete(`/api/wishlist/items/${item.id}`);
+      setIsInWishlist(false);
+      toast.success("Removed from cart");
+      router.refresh();
+    } catch (error: any) {
+      console.error("Remove error:", error);
+      toast.error(error.response?.data?.message || "Failed to remove item");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, checkExistingItem, router]);
+
+  const toggleWishlist = useCallback(
+    async (
+      e: React.MouseEvent<HTMLButtonElement>,
+      status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE"
+    ) => {
+      e.stopPropagation();
+
+      if (isInWishlist) {
+        await removeFromWishlist();
+      } else {
+        await addToWishlist(status);
+      }
+    },
+    [isInWishlist, removeFromWishlist, addToWishlist]
+  );
+
+  return {
+    isLoading,
+    quantity,
+    setQuantity,
+    isInWishlist,
+    checkExistingItem,
+    addToWishlist,
+    removeFromWishlist,
+    toggleWishlist,
+  };
+};
