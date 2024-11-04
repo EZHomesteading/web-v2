@@ -122,6 +122,11 @@ type TimeSlot {
   close Int
 }
 
+type pickupDate {
+  date DateTime
+  time Int
+}
+
 type Availability {
   date      DateTime
   timeSlots TimeSlot[]

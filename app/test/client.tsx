@@ -10,7 +10,6 @@ import {
   hasAvailableHours,
   week_day_mmm_dd_yy_time,
 } from "../(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
-
 const STEPS = {
   QUANTITIES: "QUANTITIES",
   ORDER_TYPE: "ORDER_TYPE",
@@ -46,10 +45,10 @@ interface ReservationState {
   orderType: OrderType | null;
   quantities: Record<string, number>;
   pickupTimePreference: TimePreference | null;
-  pickupCustomDate: Date | null;
+  pickupDate: Date | null;
   deliveryLocation: string[] | null;
   deliveryTimePreference: TimePreference | null;
-  deliveryCustomDate: Date | null;
+  deliveryDate: { date: Date; time: number } | null;
   notes: string;
 }
 
@@ -65,10 +64,10 @@ const initialState: ReservationState = {
   orderType: null,
   quantities: {},
   pickupTimePreference: null,
-  pickupCustomDate: null,
+  pickupDate: null,
   deliveryLocation: null,
   deliveryTimePreference: null,
-  deliveryCustomDate: null,
+  deliveryDate: null,
   notes: "",
 };
 const findEarliestTime = (orderType: OrderType, sellerHours: Hours) => {
@@ -80,11 +79,11 @@ const findEarliestTime = (orderType: OrderType, sellerHours: Hours) => {
     .filter((availability) => new Date(availability.date) >= currentDate)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
-  let time = week_day_mmm_dd_yy_time(
+  let timeString = week_day_mmm_dd_yy_time(
     firstAvailable.timeSlots[0].open,
     firstAvailable.date
   );
-  return time;
+  return timeString;
 };
 interface pp {
   onClick: () => void;
@@ -219,16 +218,17 @@ const TimePreferenceStep = ({
     >
       <div className="gap-3 flex flex-col items-center justify-center">
         <ButtonCard
-          onClick={() =>
+          onClick={() => {
             onNext({
               [isDelivery ? "deliveryTimePreference" : "pickupTimePreference"]:
                 TIME_PREFERENCES.ASAP,
+
               currentStep:
                 state.orderType === ORDER_TYPES.EITHER && !isDelivery
                   ? STEPS.DELIVERY_LOCATION
                   : STEPS.NOTES,
-            })
-          }
+            });
+          }}
         >
           As soon as possible
           <div>{time_string}</div>
