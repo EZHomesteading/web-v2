@@ -5,6 +5,7 @@ import Fuse from "fuse.js";
 import { Location, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
 import { getDisplayName } from "next/dist/shared/lib/utils";
+import axios from "axios";
 
 // Interface for defining the search parameters
 type sort = "htl" | "lth" | "1" | "2" | "3" | "4" | "5";
@@ -464,12 +465,12 @@ const GetListingsByIds = async (params: Params) => {
 //   }
 // }
 // get a single listing by id
-const getListingById = async (params: IParams) => {
+export async function getListingById(params: { listingId?: string }) {
   try {
     const { listingId } = params;
-    if (listingId?.length !== 24) {
-      return null;
-    }
+
+    if (!listingId) return null;
+
     const listing = await prisma.listing.findUnique({
       where: {
         id: listingId,
@@ -484,7 +485,6 @@ const getListingById = async (params: IParams) => {
             emailVerified: true,
             role: true,
             url: true,
-            SODT: true,
           },
         },
         location: true,
@@ -494,12 +494,18 @@ const getListingById = async (params: IParams) => {
     if (!listing) {
       return null;
     }
-    return listing;
-  } catch (error: any) {
-    console.error(error);
-    throw new Error(error);
+
+    // Ensure dates are serializable
+    return JSON.parse(JSON.stringify(listing));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error:", error.response?.data || error.message);
+    } else {
+      console.error("Error fetching listing:", error);
+    }
+    return null;
   }
-};
+}
 // get a single listing by id
 const getListingByIdUpdate = async (params: IParams) => {
   try {
@@ -628,7 +634,6 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
 export {
   GetListingsByIds,
   GetListingsMarket,
-  getListingById,
   GetListingsByOrderId,
   GetListingsByUserId,
   getListingByIdUpdate,

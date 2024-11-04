@@ -1,15 +1,17 @@
 "use client";
-//client side layout for listing page
+
+import { useEffect, useState } from "react";
 import { addDays } from "date-fns";
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
 import ListingReservation from "./components/ListingReservation";
 import ListingMap from "@/components/map/listing-map";
-import useCart from "@/hooks/listing/use-cart";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";
 import { UserInfo } from "next-auth";
+import { useWishlistCart } from "@/hooks/listing/use-cart";
+import { Loader2 } from "lucide-react";
 
 interface ListingClientProps {
   listing: FinalListing & { description: string };
@@ -25,19 +27,36 @@ interface ListingClientProps {
   apiKey?: string;
 }
 
-const ListingClient: React.FC<ListingClientProps> = async ({
+const ListingClient: React.FC<ListingClientProps> = ({
   listing,
   user,
   following,
   apiKey,
 }) => {
-  const toggleCart = await useCart({
-    user,
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const {
+    isLoading: isCartLoading,
+    checkExistingItem,
+    isInWishlist,
+    quantity,
+  } = useWishlistCart({
     listingId: listing.id,
+    user,
+    initialQuantity: listing.minOrder || 1,
   });
-  if (!toggleCart) {
-    return;
-  }
+
+  useEffect(() => {
+    const initializeWishlistState = async () => {
+      if (user) {
+        await checkExistingItem();
+      }
+      setIsInitialized(true);
+    };
+
+    initializeWishlistState();
+  }, [user, checkExistingItem]);
+
   const adjustedListing = {
     ...listing,
     endDate:
@@ -46,15 +65,19 @@ const ListingClient: React.FC<ListingClientProps> = async ({
         : null,
   };
 
+  if (!isInitialized || isCartLoading) {
+    return (
+      <Container>
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <Loader2 className="h-12 w-12 animate-spin text-gray-900" />
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
-      <div
-        className="
-          max-w-screen-lg 
-          mx-auto
-          mt-8
-        "
-      >
+      <div className="max-w-screen-lg mx-auto mt-8">
         <div className="flex flex-wrap">
           <div className="w-full lg:w-2/3">
             <ListingHead
@@ -73,18 +96,17 @@ const ListingClient: React.FC<ListingClientProps> = async ({
           </div>
           <div className="w-full lg:w-1/3 px-4">
             <ListingReservation
-              toggleCart={toggleCart?.toggleCart}
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
               sodt={[listing.SODT, listing.user.SODT]}
               rating={listing.rating}
             />
-            <div className="mt-5">
-              {apiKey && (
+            {apiKey && (
+              <div className="mt-5">
                 <ListingMap location={listing.location} apiKey={apiKey} />
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
