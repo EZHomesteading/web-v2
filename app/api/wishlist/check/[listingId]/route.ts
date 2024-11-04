@@ -20,7 +20,7 @@ export async function GET(request: Request, { params }: { params: IParams }) {
       return new NextResponse("Listing ID is required", { status: 400 });
     }
 
-    // Find wishlist item for this listing
+    // Optimized query to only fetch necessary fields
     const wishlistItem = await prisma.wishlistItem.findFirst({
       where: {
         listingId,
@@ -29,8 +29,15 @@ export async function GET(request: Request, { params }: { params: IParams }) {
           status: "ACTIVE",
         },
       },
-      include: {
-        wishlistGroup: true,
+      select: {
+        id: true,
+        quantity: true,
+        wishlistGroup: {
+          select: {
+            pickupDate: true,
+            status: true,
+          },
+        },
       },
     });
 
@@ -38,13 +45,7 @@ export async function GET(request: Request, { params }: { params: IParams }) {
       return NextResponse.json(null);
     }
 
-    // Ensure we return the item ID
-    return NextResponse.json({
-      id: wishlistItem.id,
-      quantity: wishlistItem.quantity,
-      wishlistGroup: wishlistItem.wishlistGroup,
-      listingId: wishlistItem.listingId,
-    });
+    return NextResponse.json(wishlistItem);
   } catch (error) {
     console.error("[WISHLIST_CHECK]", error);
     return new NextResponse("Internal error", { status: 500 });

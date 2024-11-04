@@ -10,7 +10,7 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
 import { outfitFont, zillaFont } from "@/components/fonts";
-import { useWishlistCart } from "@/hooks/listing/use-cart";
+import { useWishlist } from "@/hooks/listing/use-wishlist";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
 
@@ -49,7 +49,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const [selectedTime, setSelectedTime] = useState<Date>();
   const [existingItem, setExistingItem] = useState<any>(null);
 
-  // Initialize wishlist cart hook
+  // Initialize wishlist hook
   const {
     isLoading,
     quantity,
@@ -57,7 +57,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     toggleWishlist,
     checkExistingItem,
     isInWishlist,
-  } = useWishlistCart({
+  } = useWishlist({
     listingId,
     user,
     initialQuantity: product.minOrder || 1,
@@ -113,10 +113,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     }
   };
 
-  // Cart handlers
-  const handleToggleCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  // wish list handlers
+  const handleToggleWishList = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     if (!user) {
-      toast.error("Please login to add items to cart");
+      toast.error("Please login to add items to your Wish List");
       return;
     }
 
@@ -129,7 +131,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         setExistingItem(null);
       }
     } catch (error) {
-      toast.error("Failed to update cart");
+      toast.error("Failed to update Wish List");
     }
   };
 
@@ -212,8 +214,8 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     );
   };
 
-  // Render cart button text
-  const renderCartButtonText = () => {
+  // Render wish list button text
+  const renderWishlistButtonText = () => {
     if (isLoading) {
       return (
         <div className="flex items-center gap-2">
@@ -227,7 +229,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       return (
         <div className="flex items-center justify-center gap-2">
           <Trash className="h-4 w-4" />
-          Remove from Cart
+          Remove from Wish List
         </div>
       );
     }
@@ -235,7 +237,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     return (
       <div className="flex items-center justify-center gap-2">
         <ShoppingCart className="h-4 w-4" />
-        Add {quantity} {quantityType} to Cart
+        Add {quantity} {quantityType} to Wish List
       </div>
     );
   };
@@ -312,10 +314,12 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
               </>
             )}
 
-            {/* Show existing cart info if item exists */}
+            {/* Show existing cwishlist info if item exists */}
             {existingItem && (
               <div className="p-2 bg-gray-50 rounded-md mb-2">
-                <h3 className="font-medium text-sm mb-1">Currently in Cart:</h3>
+                <h3 className="font-medium text-sm mb-1">
+                  Currently on Wish List:
+                </h3>
                 <ul className="text-sm text-gray-600">
                   <li>
                     Quantity: {existingItem.quantity} {quantityType}
@@ -332,61 +336,63 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
                 </ul>
               </div>
             )}
-
             <div className="flex flex-col items-center gap-2">
-              <div className="flex flex-row justify-center items-center mt-2">
-                Set Quantity
-                <div
-                  className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
-                  style={{ width: "fit-content" }}
-                >
-                  <button
-                    className="text-gray-600 focus:outline-none"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      decreaseQuantity();
-                    }}
-                    disabled={isLoading}
+              {!isInWishlist && (
+                <div className="flex flex-row justify-center items-center mt-2">
+                  Set Quantity
+                  <div
+                    className="flex items-center bg-gray-200 rounded-full ml-2 px-4 py-2"
+                    style={{ width: "fit-content" }}
                   >
-                    -
-                  </button>
-                  <input
-                    className="bg-transparent text-center appearance-none outline-none"
-                    value={quantity}
-                    min={minOrder || 1}
-                    max={stock}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (
-                        !isNaN(value) &&
-                        value >= (minOrder || 1) &&
-                        value <= stock
-                      ) {
-                        setQuantity(value);
-                      }
-                    }}
-                    style={{
-                      WebkitAppearance: "textfield",
-                      MozAppearance: "textfield",
-                      appearance: "textfield",
-                      width: "40px",
-                    }}
-                    disabled={isLoading}
-                  />
-                  <button
-                    className="text-gray-600 focus:outline-none"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      increaseQuantity();
-                    }}
-                    disabled={isLoading}
-                  >
-                    +
-                  </button>
+                    <button
+                      className="text-gray-600 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        decreaseQuantity();
+                      }}
+                      disabled={isLoading}
+                    >
+                      -
+                    </button>
+                    <input
+                      className="bg-transparent text-center appearance-none outline-none"
+                      value={quantity}
+                      min={minOrder || 1}
+                      max={stock}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (
+                          !isNaN(value) &&
+                          value >= (minOrder || 1) &&
+                          value <= stock
+                        ) {
+                          setQuantity(value);
+                        }
+                      }}
+                      style={{
+                        WebkitAppearance: "textfield",
+                        MozAppearance: "textfield",
+                        appearance: "textfield",
+                        width: "40px",
+                      }}
+                      disabled={isLoading}
+                    />
+                    <button
+                      className="text-gray-600 focus:outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        increaseQuantity();
+                      }}
+                      disabled={isLoading}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
+
               <Button
-                onClick={handleToggleCart}
+                onClick={handleToggleWishList}
                 disabled={isLoading}
                 className={`w-full shadow-xl mb-[2px] ${
                   isInWishlist
@@ -394,7 +400,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
                     : "bg-green-400 hover:bg-green-500"
                 }`}
               >
-                {renderCartButtonText()}
+                {renderWishlistButtonText()}
               </Button>
             </div>
             <div>

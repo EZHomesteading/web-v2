@@ -231,7 +231,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
 interface User {
   id: string;
   name: string;
-  fullName:{ first: string | null; } | null
+  fullName: { first: string | null } | null;
   image: string | null;
   url: string | null;
   createdAt: Date;
@@ -239,7 +239,7 @@ interface User {
 interface User1 {
   id: string;
   name: string;
-  fullName:{ first: string | null; } | null
+  fullName: { first: string | null } | null;
   image: string | null;
   createdAt: Date;
 }
@@ -274,7 +274,7 @@ const getUserWithBuyReviews = async (
         id: true,
         name: true,
         fullName: {
-          select: {first:true}
+          select: { first: true },
         },
         image: true,
         url: true,
@@ -296,11 +296,11 @@ const getUserWithBuyReviews = async (
           select: {
             id: true,
             name: true,
-           fullName:{
-            select:{
-              first:true
-            }
-           } ,
+            fullName: {
+              select: {
+                first: true,
+              },
+            },
             image: true,
             url: true,
           },
@@ -433,7 +433,7 @@ export type StoreData = {
   user: User1 & {
     listings: FinalListingShop[];
   };
-  reviews:any[];
+  reviews: any[];
 };
 interface GetUserLocationParams {
   userId: string;
@@ -516,10 +516,10 @@ const getUserStore = async (
       select: {
         id: true,
         name: true,
-        fullName:{
-          select:{
-            first:true,
-          }
+        fullName: {
+          select: {
+            first: true,
+          },
         },
         image: true,
         createdAt: true,
@@ -560,11 +560,11 @@ const getUserStore = async (
           select: {
             id: true,
             name: true,
-           fullName:{
-            select:{
-              first:true,
-            }
-           },
+            fullName: {
+              select: {
+                first: true,
+              },
+            },
             image: true,
             url: true,
           },
@@ -607,7 +607,7 @@ const getUserStore = async (
   }
 };
 
-const getUserwithCart = async () => {
+const getCurrentUser = async () => {
   const session = await authCache();
   if (session?.user) {
     try {
@@ -630,8 +630,7 @@ const getUserwithCart = async () => {
 
 export interface NavUser {
   id: string;
-  fullName:
-    { first: string | null; } | null
+  fullName: { first: string | null } | null;
   url: string | null;
   role: UserRole;
   name: string;
@@ -672,10 +671,10 @@ const getNavUser = async (): Promise<NavUser | null> => {
       },
       select: {
         id: true,
-        fullName:{
-          select:{
-            first:true
-          }
+        fullName: {
+          select: {
+            first: true,
+          },
         },
         hasPickedRole: true,
         role: true,
@@ -836,7 +835,7 @@ export {
   getUserById,
   getUserStore,
   getUserWithBuyOrders,
-  getUserwithCart,
+  getCurrentUser,
   getNavUser,
   getRoleGate,
   getRole,

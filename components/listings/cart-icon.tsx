@@ -1,7 +1,7 @@
 "use client";
 import { FinalListing } from "@/actions/getListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
-import useCart from "@/hooks/listing/use-cart";
+import useCart from "@/hooks/listing/use-wishlist";
 import { UserInfo } from "next-auth";
 
 interface CartButtonProps {
