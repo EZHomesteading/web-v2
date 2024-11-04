@@ -139,25 +139,25 @@ type fullName {
 }
 
 model Location {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @db.ObjectId
-  displayName String?
-  user        User      @relation(fields: [userId], references: [id])
-  listings    Listing[]
-  orders      Order[]
-  type        String
-  coordinates Float[]
-  address     String[]
-  hours       Hours?
-  role        UserRole  @default(PRODUCER)
-  SODT        Int?
-  bio         String?
-
-  isDefault           Boolean  @default(false)
-  showPreciseLocation Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  Cart                Cart[]
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String          @db.ObjectId
+  displayName         String?
+  user                User            @relation(fields: [userId], references: [id])
+  listings            Listing[]
+  orders              Order[]
+  type                String
+  coordinates         Float[]
+  address             String[]
+  hours               Hours?
+  role                UserRole        @default(PRODUCER)
+  SODT                Int?
+  bio                 String?
+  image               String?
+  isDefault           Boolean         @default(false)
+  showPreciseLocation Boolean         @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  wishlist            WishlistGroup[]
 }
 
 model User {
@@ -180,7 +180,7 @@ model User {
   favoriteIds           String[]               @db.ObjectId
   accounts              Account[]
   listings              Listing[]
-  cart                  Cart[]
+  wishlist              WishlistGroup[]
   following             Following?
   buyerOrders           Order[]                @relation("buyer")
   sellerOrders          Order[]                @relation("seller")
@@ -293,34 +293,59 @@ model Listing {
   emailList       notifList?
   smsList         notifList?
 
-  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cart Cart[]
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WishlistItem WishlistItem[]
 }
 
-enum DeliveryMethod {
+enum orderMethod {
   UNDECIDED
   PICKUP
   DELIVERY
 }
 
-model Cart {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String    @db.ObjectId
-  listingId String    @db.ObjectId
-  quantity  Int       @default(1)
-  pickup    DateTime?
-  price     Float
-  fee       Fees[]
+enum wishlistStatus {
+  ACTIVE
+  SAVED_FOR_LATER
+  EXPIRED
+  CONVERTED_TO_ORDER
+}
 
-  preferredDeliveryMethod DeliveryMethod? // Enum for PICKUP, DELIVERY, or UNDECIDED
-  preferredLocationId     String?         @db.ObjectId // Reference to one of the user's locations
-  preferredLocation       Location?       @relation(fields: [preferredLocationId], references: [id])
-  notes                   String? // Any special requests/notes about delivery/pickup
+model WishlistItem {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  wishlistGroupId String        @db.ObjectId
+  wishlistGroup   WishlistGroup @relation(fields: [wishlistGroupId], references: [id], onDelete: Cascade)
+  listingId       String        @db.ObjectId
+  listing         Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  quantity        Int           @default(1)
+  price           Int // price in cents  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  @@unique([wishlistGroupId, listingId])
+}
 
-  @@unique([userId, listingId])
+type proposedLoc {
+  coordinates Float[]
+  address     String[]
+}
+
+model WishlistGroup {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String         @db.ObjectId
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId   String         @db.ObjectId
+  location     Location       @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  proposedLoc  proposedLoc?
+  items        WishlistItem[]
+  pickupDate   DateTime?
+  deliveryDate DateTime?
+  orderMethod  orderMethod    @default(UNDECIDED)
+  status       wishlistStatus @default(ACTIVE)
+  notes        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([userId, locationId])
 }
 
 model TransactionHistory {
@@ -363,10 +388,9 @@ model Order {
   buyer          User?          @relation(name: "buyer", fields: [userId], references: [id])
   seller         User?          @relation(name: "seller", fields: [sellerId], references: [id])
 
-  initialDeliveryMethod DeliveryMethod
-  preferredLocationId   String?        @db.ObjectId
-  actualLocationId      String?        @db.ObjectId
-  deliveryNotes         String?
+  preferredLocationId String? @db.ObjectId
+  actualLocationId    String? @db.ObjectId
+  deliveryNotes       String?
 
   listingIds String[]  @db.ObjectId
   location   Location? @relation(fields: [locationId], references: [id])
