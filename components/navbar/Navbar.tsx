@@ -44,7 +44,7 @@ const Navbar = async ({
     uniqueUrl = await generateUniqueUrl(nameToUse);
   }
 
-  const harvestMessages = await getHarvestMessages(user?.id);
+  // const harvestMessages = await getHarvestMessages(user?.id);
   return (
     <>
       <NavbarClient
@@ -54,7 +54,7 @@ const Navbar = async ({
         canReceivePayouts={canReceivePayouts}
         isMarketPage={isMarketPage}
         uniqueUrl={uniqueUrl}
-        harvestMessages={harvestMessages}
+        harvestMessages={[]} //havestMessages
         bg={bg}
       />
     </>

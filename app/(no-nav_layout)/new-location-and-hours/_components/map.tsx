@@ -15,6 +15,7 @@ interface MapProps {
   z?: number;
   maxZ?: number;
   minZ?: number;
+  subtitle?: string;
 }
 
 const libraries: Libraries = ["places", "drawing", "geometry"];
@@ -35,6 +36,7 @@ const Map = ({
   z = 14,
   minZ = 12,
   maxZ = 15,
+  subtitle = "This is how your location will appear to buyers.",
 }: MapProps) => {
   const [address, setAddress] = useState("");
   const [currentCenter, setCurrentCenter] =
@@ -136,7 +138,7 @@ const Map = ({
           />
         </div>
       )}
-      <div>This is how your location will appear to buyers.</div>
+      <div>{subtitle}</div>
       <GoogleMap
         onLoad={(map) => {
           mapRef.current = map;

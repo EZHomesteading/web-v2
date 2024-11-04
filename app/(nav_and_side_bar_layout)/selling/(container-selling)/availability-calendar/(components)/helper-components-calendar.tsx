@@ -1,3 +1,4 @@
+import { outfitFont, zillaFont } from "@/components/fonts";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Location, TimeSlot } from "@prisma/client";
-import { Outfit, Zilla_Slab } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
@@ -18,11 +18,6 @@ import {
   PiPencilSimpleLineThin,
 } from "react-icons/pi";
 import { RiArrowDownSLine } from "react-icons/ri";
-
-const o = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export enum DeliveryPickupToggleMode {
   DELIVERY = "DELIVERY",
@@ -64,7 +59,7 @@ const DeliveryPickupToggle = ({
           <RiArrowDownSLine className="h-6 w-6 pl-1" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={`w-full ${o.className} p-4`}>
+      <DropdownMenuContent className={`w-full ${outfitFont.className} p-4`}>
         <DropdownMenuRadioGroup
           value={mode}
           onValueChange={(value: string) =>
@@ -151,7 +146,7 @@ const LocationSelector = ({
     <DropdownMenuRadioItem
       key={idx}
       value={location.id}
-      className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+      className={`${outfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
     >
       <div
         className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
@@ -174,7 +169,7 @@ const LocationSelector = ({
       <DropdownMenuRadioItem
         key={`new`}
         value={`new`}
-        className={`${o.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+        className={`${outfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
       >
         <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
         Add New Location & Hours
@@ -320,7 +315,7 @@ const ViewEditToggle = ({
           <RiArrowDownSLine className="h-6 w-6 pl-1" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={`w-full p-4 ${o.className}`}>
+      <DropdownMenuContent className={`w-full p-4 ${outfitFont.className}`}>
         <DropdownMenuRadioGroup
           value={mode}
           onValueChange={(value: string) => onModeChange(value as Mode)}
@@ -370,15 +365,9 @@ interface CalendarDayProps {
   day: number | null;
   onMouseDown: (day: number | null) => void;
   onMouseEnter: (day: number | null) => void;
-  isSelected: boolean;
+  isSelected: boolean | null;
   timeSlots?: TimeSlot[];
 }
-
-const z = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300"],
-});
 
 const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
@@ -436,7 +425,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
           {timeSlots?.map((slot, index) => (
             <div
               key={index}
-              className={`${z.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
+              className={`${zillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
             >
               {`${convertMinutesToTimeString(
                 slot.open
@@ -451,13 +440,85 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
     </div>
   );
 };
+interface CalendarDayCartProps {
+  day: number | null;
+  onMouseDown: (day: number | null) => void;
+  isSelected: boolean | null;
+  timeSlots?: TimeSlot[];
+}
 
+const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
+  day,
+  onMouseDown,
+  isSelected,
+  timeSlots,
+}) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (day !== null) {
+      e.preventDefault();
+      onMouseDown(day);
+    }
+  };
+
+  const convertMinutesToTimeString = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")} ${period}`;
+  };
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      className={`
+        ${
+          day !== null
+            ? "border border-black h-36 cursor-pointer bg-white"
+            : "h-12"
+        }
+        ${isSelected && day !== null ? "bg-emerald-200/80 border " : ""}
+        relative
+      `}
+    >
+      {day !== null && (
+        <div className="sm:p-2 pl-1 ">
+          <div
+            className={`text-sm font-light ${
+              isSelected
+                ? "underline"
+                : timeSlots?.length === 0
+                ? "line-through"
+                : ""
+            }`}
+          >
+            {day}
+          </div>
+          {timeSlots?.map((slot, index) => (
+            <div
+              key={index}
+              className={`${zillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
+            >
+              {`${convertMinutesToTimeString(
+                slot.open
+              )} - ${convertMinutesToTimeString(slot.close)}`}
+            </div>
+          ))}
+        </div>
+      )}
+      {isSelected && day !== null && (
+        <div className="absolute inset-0 bg-slate-700 opacity-50 pointer-events-none"></div>
+      )}
+    </div>
+  );
+};
 export {
   DeliveryPickupToggle,
+  CalendarDayCart,
   ViewEditToggle,
   CustomSwitch,
   LocationSelector,
   CalendarDay,
-  o,
-  z,
 };

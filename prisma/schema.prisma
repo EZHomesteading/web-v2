@@ -134,21 +134,25 @@ type fullName {
 }
 
 model Location {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId              String    @db.ObjectId
-  displayName         String?
-  user                User      @relation(fields: [userId], references: [id])
-  listings            Listing[]
-  orders              Order[]
-  type                String
-  coordinates         Float[]
-  address             String[]
-  hours               Hours?
-  role                UserRole  @default(CONSUMER)
-  isDefault           Boolean   @default(false)
-  showPreciseLocation Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  displayName String?
+  user        User      @relation(fields: [userId], references: [id])
+  listings    Listing[]
+  orders      Order[]
+  type        String
+  coordinates Float[]
+  address     String[]
+  hours       Hours?
+  role        UserRole  @default(PRODUCER)
+  SODT        Int?
+  bio         String?
+
+  isDefault           Boolean  @default(false)
+  showPreciseLocation Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  Cart                Cart[]
 }
 
 model User {
@@ -165,16 +169,9 @@ model User {
   stripeAccountId       String?
   totalPaidOut          Int?
   notifications         Notification[]
-  SODT                  Int? // set out and delivery time for co-ops/producers respectively expressed as an integer
-  bio                   String? // bio for co-ops and producers (should consumer have bios?)
-  banner                String? // banner for co-op and producer stores
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   url                   String?
-  conversationIds       String[]               @db.ObjectId
-  conversations         Conversation[]         @relation(fields: [conversationIds], references: [id])
-  seenMessageIds        String[]               @db.ObjectId
-  seenMessages          Message[]              @relation("Seen", fields: [seenMessageIds], references: [id])
   favoriteIds           String[]               @db.ObjectId
   accounts              Account[]
   listings              Listing[]
@@ -182,7 +179,7 @@ model User {
   following             Following?
   buyerOrders           Order[]                @relation("buyer")
   sellerOrders          Order[]                @relation("seller")
-  sentMessages          Message[]              @relation("SentMessages")
+  sentMessages          Message[]
   twoFactorConfirmation TwoFactorConfirmation?
   subscriptions         String?
   hasPickedRole         Boolean?
@@ -295,6 +292,12 @@ model Listing {
   cart Cart[]
 }
 
+enum DeliveryMethod {
+  UNDECIDED
+  PICKUP
+  DELIVERY
+}
+
 model Cart {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userId    String    @db.ObjectId
@@ -302,9 +305,15 @@ model Cart {
   quantity  Int       @default(1)
   pickup    DateTime?
   price     Float
-  // fee       Fees[]
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  listing   Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  fee       Fees[]
+
+  preferredDeliveryMethod DeliveryMethod? // Enum for PICKUP, DELIVERY, or UNDECIDED
+  preferredLocationId     String?         @db.ObjectId // Reference to one of the user's locations
+  preferredLocation       Location?       @relation(fields: [preferredLocationId], references: [id])
+  notes                   String? // Any special requests/notes about delivery/pickup
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   @@unique([userId, listingId])
 }
@@ -330,8 +339,7 @@ model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
 
-  listingIds String[]
-  sellerId   String   @db.ObjectId
+  sellerId String @db.ObjectId
 
   pickupDate      DateTime
   paymentIntentId String?
@@ -350,9 +358,14 @@ model Order {
   buyer          User?          @relation(name: "buyer", fields: [userId], references: [id])
   seller         User?          @relation(name: "seller", fields: [sellerId], references: [id])
 
-  purchaseLoc OrderLoc?
-  Location    Location? @relation(fields: [locationId], references: [id])
-  locationId  String?   @db.ObjectId
+  initialDeliveryMethod DeliveryMethod
+  preferredLocationId   String?        @db.ObjectId
+  actualLocationId      String?        @db.ObjectId
+  deliveryNotes         String?
+
+  listingIds String[]  @db.ObjectId
+  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?   @db.ObjectId
 }
 
 model Payment {
@@ -376,14 +389,9 @@ model Conversation {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt     DateTime @default(now())
   lastMessageAt DateTime @default(now())
-  name          String?
-  isGroup       Boolean?
 
-  messagesIds String[]  @db.ObjectId
-  messages    Message[]
-
-  userIds String[] @db.ObjectId
-  users   User[]   @relation(fields: [userIds], references: [id])
+  participantIds String[]  @db.ObjectId // Just store the IDs, no relation
+  messages       Message[]
 }
 
 model Message {
@@ -393,14 +401,13 @@ model Message {
   createdAt    DateTime @default(now())
   messageOrder String?
   listingId    String?  @db.ObjectId
-  seenIds      String[] @db.ObjectId
-  seen         User[]   @relation("Seen", fields: [seenIds], references: [id])
+  seen         Boolean  @default(false)
 
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   senderId String @db.ObjectId
-  sender   User   @relation("SentMessages", fields: [senderId], references: [id])
+  sender   User   @relation(fields: [senderId], references: [id])
 }
 
 model Dispute {

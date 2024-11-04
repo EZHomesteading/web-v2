@@ -4,9 +4,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { PiPlantThin, PiStorefrontThin } from "react-icons/pi";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { outfitFont, zillaFont } from "@/components/fonts";
 import OnboardContainer from "../onboard.container";
-import { z } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 
 interface p {
   user: UserInfo;
@@ -119,7 +118,7 @@ const StepTwo = ({ user, updateFormData, selectedRole }: p) => {
                   key={idx}
                   className={` ${
                     selectedIndex === index && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${z.className} `}
+                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
                 >
                   {line}
                 </p>

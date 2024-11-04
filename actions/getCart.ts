@@ -1,7 +1,7 @@
 //action to get the current users cart
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
-import { Prisma, UserRole } from "@prisma/client";
+import { Availability, Prisma, UserRole } from "@prisma/client";
 export type Listing = {
   user: {
     id: string;
@@ -29,39 +29,7 @@ export type Location = {
   address: string[];
   hours: Prisma.JsonValue;
 };
-export type CartItem = {
-  id: string;
-  quantity: number;
-  listing: {
-    id: string;
-    title: string;
-    price: number;
-    reports: number;
-    stock: number;
-    SODT: number | null;
-    quantityType: string | null;
-    shelfLife: number;
-    rating: number[];
-    createdAt: string;
-    location: {
-      type: string;
-      coordinates: number[];
-      address: string[];
-      hours: Prisma.JsonValue;
-    };
-    imageSrc: string[];
-    userId: string;
-    subCategory: string;
-    minOrder: number;
-    user: {
-      id: string;
-      SODT: number | null;
-      name: string;
-      role: UserRole;
-      //hours: JsonValue;
-    };
-  };
-};
+
 const getUserLocation = async (listing: Listing) => {
   try {
     const user = await prisma.user.findUnique({

@@ -6,7 +6,7 @@ import Map from "@/app/(no-nav_layout)/new-location-and-hours/_components/map";
 import { PiCalendarBlankThin } from "react-icons/pi";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
-import { LocationSelector, o } from "./helper-components-calendar";
+import { LocationSelector } from "./helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";
 import {
@@ -18,6 +18,7 @@ import {
 import { Location } from "@prisma/client";
 import Link from "next/link";
 import SetDefaultButton from "./set-default-button";
+import { outfitFont } from "@/components/fonts";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -228,7 +229,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const basePanel: PanelProps = {
     content: (
-      <div className={`${o.className} flex justify-center w-full`}>
+      <div className={`${outfitFont.className} flex justify-center w-full`}>
         <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
           {!panelSide && (
             <Button
@@ -421,7 +422,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent
-                className={`${o.className} sheet p-3 h-64 w-72 rounded-xl border`}
+                className={`${outfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
               >
                 <>
                   <div className="text-2xl">Are you sure?</div>

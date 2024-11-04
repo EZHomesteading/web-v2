@@ -67,7 +67,7 @@ interface SheetContentCProps
   reviewerId: string;
   reviewedId: string | undefined;
   buyer: boolean;
-  orderId: string;
+  orderId?: string;
 }
 
 const SheetContentF = React.forwardRef<
