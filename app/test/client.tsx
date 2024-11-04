@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   hasAvailableHours,
   week_day_mmm_dd_yy_time,
-} from "../(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+} from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 const STEPS = {
   QUANTITIES: "QUANTITIES",
   ORDER_TYPE: "ORDER_TYPE",

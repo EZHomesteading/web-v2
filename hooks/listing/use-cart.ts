@@ -1,5 +1,4 @@
 import { getListingById } from "@/actions/getListings";
-import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
