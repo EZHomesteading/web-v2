@@ -6,6 +6,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IoReturnDownBack } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { Outfit } from "next/font/google";
+import { Hours } from "@prisma/client";
+import { CartGroup2, ValidTime } from "@/app/(white_nav_layout)/cart/client";
 // import EarliestPickup from "@/app/(pages)/cart/components/earliest-pickup";
 // import { ExtendedHours } from "@/next-auth";
 // import { CartGroup2, ValidTime } from "@/app/(pages)/cart/client";
@@ -55,11 +57,11 @@ const sheetVariants = cva(
 interface SheetContentCProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  // hours: ExtendedHours;
+  hours: Hours;
   index: number;
-  // onSetTime: (childTime: ValidTime) => void;
+  onSetTime: (childTime: ValidTime) => void;
   role: string;
-  // sodtarr: CartGroup2[];
+  sodtarr: CartGroup2[];
 }
 
 const SheetContentC = React.forwardRef<

@@ -1,5 +1,3 @@
-"use client";
-//client side layout for users store page
 import Container from "@/components/Container";
 import ListingCard from "@/components/listings/ListingCard";
 import ClientOnly from "@/components/client/ClientOnly";
@@ -10,7 +8,7 @@ import { FinalListingShop, StoreData } from "@/actions/getUser";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import { UserInfo } from "next-auth";
-import { o } from "@/app/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { outfitFont } from "@/components/fonts";
 
 interface StorePageProps {
   store: any;
@@ -48,7 +46,9 @@ const StorePage = ({ store, user, emptyState, following }: StorePageProps) => {
               <Avatar image={``} />
             )}
 
-            <div className={`${o.className} weight-100 flex flex-col ml-2`}>
+            <div
+              className={`${outfitFont.className} weight-100 flex flex-col ml-2`}
+            >
               <div className="flex flex-row items-center gap-x-2">
                 <div className="font-bold text-2xl lg:text-4xl">
                   {store?.user?.name}

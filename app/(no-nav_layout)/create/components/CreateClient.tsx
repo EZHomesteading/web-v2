@@ -33,18 +33,11 @@ import Help from "./help";
 interface Props {
   defaultId: string;
   locations: Location[] | null;
-  canReceivePayouts: boolean;
   user: UserInfo;
   index: number;
 }
 
-const CreateClient = ({
-  user,
-  index,
-  canReceivePayouts,
-  locations,
-  defaultId,
-}: Props) => {
+const CreateClient = ({ user, index, locations, defaultId }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -65,7 +58,7 @@ const CreateClient = ({
   const [category, setCategory] = useState<Category>("");
   const [subCategory, setSubCategory] = useState<SubCategory>("");
   const [projectHarvest, setProjectHarvest] = useState(true);
-  const [harvestDates, setHarvestDates] = useState<string[]>([]);
+  //const [harvestDates, setHarvestDates] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
@@ -369,6 +362,7 @@ const CreateClient = ({
             default:
               break;
           }
+          setStep(2);
         }
       });
     }
@@ -900,6 +894,174 @@ const CreateClient = ({
               </div>
             )}
           </div>
+        </div>
+      )}
+      {step === 2 && locations && locations[0] !== null && defaultId && (
+        <div className="w-screen flex absolute bottom-1  items-center justify-center px-2">
+          {locations === null ||
+          locations === undefined ||
+          ((locations[0] === null || locations[0] === undefined) &&
+            (locations[1] === null || locations[1] === undefined) &&
+            (locations[2] === null || locations[2] === undefined)) ? (
+            <Card
+              className={""}
+              onClick={() => {
+                router.replace("/onboard");
+              }}
+            >
+              <CardContent>
+                <CardHeader className="pt-2 sm:pt-6">
+                  <div className="text-start">
+                    <div className="text-xl sm:text-2xl font-bold">
+                      You have no addresses set. Please set this up before
+                      creating a listing. Click Here to set up Store Locations
+                    </div>
+                  </div>
+                </CardHeader>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="flex flex-row justify-evenly gap-2 pt-4 w-full max-w-4xl">
+              {locations.length >= 1 && (
+                <Card
+                  className={
+                    clicked
+                      ? "bg-black text-white shadow-sm"
+                      : "shadow-sm hover:cursor-pointer"
+                  }
+                  onClick={() => {
+                    if (locations) {
+                      setClicked(true);
+                      setClicked1(false);
+                      setClicked2(false);
+                      setValue("locationId", locations[0].id);
+                    }
+                  }}
+                >
+                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                    <div className="text-start">
+                      <div className="text-xl font-normal">
+                        {clicked
+                          ? "Using Default Address"
+                          : "Use My Default Address"}
+                      </div>
+                    </div>
+                    <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                      <ul>
+                        <li className={`${outfitFont.className}`}></li>{" "}
+                        {locations && locations[0]?.address.length === 4 ? (
+                          <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
+                        ) : (
+                          <li>Full Address not available</li>
+                        )}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {locations.length >= 2 && (
+                <Card
+                  className={
+                    clicked1
+                      ? "bg-black text-white shadow-sm"
+                      : "shadow-sm hover:cursor-pointer"
+                  }
+                  onClick={() => {
+                    if (locations) {
+                      setClicked1(true);
+                      setClicked(false);
+                      setClicked2(false);
+                      setValue("locationId", locations[1].id);
+                    }
+                  }}
+                >
+                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                    <div className="text-start">
+                      <div className="text-xl ">
+                        {" "}
+                        {clicked1
+                          ? "Using Second Address"
+                          : "Use My Second Address"}
+                      </div>
+                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                        <ul>
+                          <li className={`${outfitFont.className}`}></li>{" "}
+                          {locations && locations[1]?.address.length === 4 ? (
+                            <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
+                          ) : (
+                            <li>Full Address not available</li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {locations.length === 3 && (
+                <Card
+                  className={
+                    clicked2
+                      ? "bg-black text-white shadow-sm"
+                      : "shadow-sm hover:cursor-pointer"
+                  }
+                  onClick={() => {
+                    if (locations) {
+                      setClicked2(true);
+                      setClicked1(false);
+                      setClicked(false);
+                      setValue("locationId", locations[2].id);
+                    }
+                  }}
+                >
+                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                    <div className="text-start">
+                      <div className="text-xl ">
+                        {" "}
+                        {clicked1
+                          ? "Using Third Address"
+                          : "Use My Third Address"}
+                      </div>
+                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
+                        <ul>
+                          <li className={`${outfitFont.className}`}></li>{" "}
+                          {locations && locations[2]?.address.length === 4 ? (
+                            <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
+                          ) : (
+                            <li>Full Address not available</li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {locations.length < 3 && (
+                <Card
+                  className={
+                    clicked2
+                      ? "bg-black text-white shadow-sm"
+                      : "shadow-sm hover:cursor-pointer"
+                  }
+                  onClick={() => {
+                    router.push("/onboard");
+                  }}
+                >
+                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
+                    <div className="text-start">
+                      <div className="text-xl ">
+                        Create a{" "}
+                        {locations.length === 1
+                          ? "Second Location?"
+                          : locations.length === 2
+                          ? "Third Location?"
+                          : "Location"}{" "}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Outfit } from "next/font/google";
 import FollowButton from "./followButton";
-import { Prisma } from "@prisma/client";
+import { $Enums, Location, Prisma } from "@prisma/client";
 import Avatar from "../Avatar";
 import { Card, CardContent } from "../ui/card";
 
@@ -20,24 +20,10 @@ interface ListingCardProps {
     image: string | null;
     url: string | null;
     location: {
-      0: {
-        type: string;
-        coordinates: number[];
-        address: string[];
-        hours: Prisma.JsonValue;
-      } | null;
-      1: {
-        type: string;
-        coordinates: number[];
-        address: string[];
-        hours: Prisma.JsonValue;
-      } | null;
-      2: {
-        type: string;
-        coordinates: number[];
-        address: string[];
-        hours: Prisma.JsonValue;
-      } | null;
+      role: string;
+      address: string[];
+      type: string;
+      coordinates: number[];
     } | null;
   } | null;
   followarr:

@@ -64,17 +64,17 @@ const Navbar = () => {
                     <SheetTrigger className="w-full">
                       <MenuItem
                         label="Home"
-                        icon={<GiBarn className="mr-2" />}
+                        //icon={<GiBarn className="mr-2" />}
                         onClick={() => router.push("/market")}
                       />
                       <MenuItem
                         label="Market"
-                        icon={<CiShop className="mr-2" />}
+                        //icon={<CiShop className="mr-2" />}
                         onClick={() => router.push("/market")}
                       />
                       <MenuItem
                         label="Map"
-                        icon={<LiaMapMarkedSolid className="mr-2" />}
+                        //icon={<LiaMapMarkedSolid className="mr-2" />}
                         onClick={() => router.push("/map")}
                       />
                     </SheetTrigger>

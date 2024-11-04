@@ -27,7 +27,7 @@ interface Review {
 interface ProfileUser {
   id: string;
   name: string;
-  firstName: string | null;
+  //firstName: string | null;
   image: string | null;
   url: string | null;
   createdAt: Date;
@@ -71,7 +71,7 @@ export default function ProfileClient({ user, reviews }: ProfileClientProps) {
             </div>
             <div className="flex flex-col ml-2">
               <div className="text-lg lg:text-2xl">{user?.name}</div>
-              {user?.firstName}
+              {user?.name}
             </div>
           </div>
           {user?.url && (
@@ -190,7 +190,7 @@ export default function ProfileClient({ user, reviews }: ProfileClientProps) {
                         <div className="ml-4">
                           <div className="text-sm font-bold text-gray-900 flex flex-col ml-2">
                             <h4 className="text-lg">{review.reviewer.name}</h4>
-                            {review.reviewer.firstName}
+                            {review.reviewer.name}
                           </div>
                         </div>
                       </Link>

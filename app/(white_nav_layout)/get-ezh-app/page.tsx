@@ -3,16 +3,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FaAndroid } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
 import { FaLinux } from "react-icons/fa";
-import PWAInstall from "@/app/(nav-white-bg)/get-ezh-app/pwa";
+import PwaInstall from "./pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import Navbar from "../../../components/navbar/Navbar";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
-import {
-  o,
-  z,
-} from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+
 import { NavUser } from "@/actions/getUser";
+import { outfitFont, zillaFont } from "@/components/fonts";
 
 enum DEVICE {
   ANDROID = "Android",
@@ -98,8 +96,8 @@ const Page = () => {
   );
 
   const WindowsComponent = () => (
-    <div className={`${z.className} text-lg`}>
-      <PWAInstall />
+    <div className={`${zillaFont.className} text-lg`}>
+      <PwaInstall />
     </div>
   );
 
@@ -122,16 +120,16 @@ const Page = () => {
       <Navbar user={user as unknown as NavUser} />
       <div className="lg:col-span-1 hidden lg:block"></div>
       <div className="col-span-3 lg:col-span-2 xl:col-span-2">
-        <h2 className={`${o.className} pt-10 lg:text-5xl text-2xl`}>
+        <h2 className={`${outfitFont.className} pt-10 lg:text-5xl text-2xl`}>
           Get the EZ Homesteading App
         </h2>
         <div>
-          <div className={`${z.className} lg:text-xl mb-1`}>
+          <div className={`${zillaFont.className} lg:text-xl mb-1`}>
             The user experience on the app is significantly better
           </div>
 
           <ul
-            className={`${z.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
+            className={`${zillaFont.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
           >
             <li>Full screen display</li>
             <li className="list-sqaure">
@@ -147,17 +145,21 @@ const Page = () => {
           <div className="grid 2xl:grid-rows-1  2xl:grid-cols-4 w-[100%] gap-2 ">
             <div className="grid grid-cols-2 2xl:grid-cols-1">
               <Card className="grid-row-1 2xl:grid-col-1 sheet shadow-md">
-                <CardHeader className={`${o.className} text-7xl font-semibold`}>
+                <CardHeader
+                  className={`${outfitFont.className} text-7xl font-semibold`}
+                >
                   90%
                 </CardHeader>
-                <CardContent className={`${o.className} text-2xl`}>
+                <CardContent className={`${outfitFont.className} text-2xl`}>
                   Browser Support
                 </CardContent>
               </Card>
               <div className="grid-col-1 2xl:hidden"></div>
             </div>
             <Card className="sheet 2xl:grid-col-3 grid-row-1 shadow-md 2xl:w-[700px]">
-              <CardHeader className={`${o.className} text-3xl font-semibold`}>
+              <CardHeader
+                className={`${outfitFont.className} text-3xl font-semibold`}
+              >
                 Compatible With
               </CardHeader>
               <CardContent className="grid grid-cols-4 gap-x-2">
@@ -184,7 +186,9 @@ const Page = () => {
               </CardContent>
             </Card>
           </div>
-          <h2 className={`${o.className} text-5xl`}>Installation Guide</h2>
+          <h2 className={`${outfitFont.className} text-5xl`}>
+            Installation Guide
+          </h2>
           {device === DEVICE.ANDROID && <AndroidComponent />}
           {device === DEVICE.IOS && browser === BROWSER.SAFARI ? (
             <IOSSafariComponent />
