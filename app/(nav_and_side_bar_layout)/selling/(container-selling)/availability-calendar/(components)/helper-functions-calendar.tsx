@@ -1,6 +1,7 @@
 import axios from "axios";
-import { Hours } from "@prisma/client";
+import { Availability, Hours } from "@prisma/client";
 import { TimeSlot } from "@prisma/client";
+import { isThisYear, format } from "date-fns";
 
 const convertMinutesToTimeString = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -10,6 +11,27 @@ const convertMinutesToTimeString = (minutes: number): string => {
   return `${formattedHours.toString().padStart(2, "0")}:${mins
     .toString()
     .padStart(2, "0")} ${period}`;
+};
+const week_day_mmm_dd_yy_time = (minutes: number, date: Date): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const period = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12;
+  const timeString = `${formattedHours}:${mins
+    .toString()
+    .padStart(2, "0")}${period}`;
+
+  const dateFormat = isThisYear(date) ? "EEE, MMM d" : "EEE, MMM d yyyy";
+
+  const dateString = format(date, dateFormat);
+
+  return `${dateString} at ${timeString}`;
+};
+const hasAvailableHours = (hours: Availability[] | null): boolean => {
+  console.log(hours);
+  if (!hours) return false;
+
+  return !!hours && hours.length > 0;
 };
 
 const convertTimeStringToMinutes = (timeString: string): number => {
@@ -79,7 +101,9 @@ export {
   convertTimeStringToMinutes,
   updateUserHours,
   createDateKey,
+  hasAvailableHours,
   daysOfWeek,
   checkOverlap,
+  week_day_mmm_dd_yy_time,
   panelVariants,
 };

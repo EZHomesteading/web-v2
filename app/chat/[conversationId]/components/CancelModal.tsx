@@ -1,6 +1,6 @@
 "use client";
 //modal that handles order cancellation(need to add logic to start refun process dependent on step the order is cancelled)
-import React, { useState } from "react";
+import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -8,14 +8,14 @@ import { useSession } from "next-auth/react";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
 import { toast } from "react-hot-toast";
-import { Order } from "@prisma/client";
+import { ChatOrder } from "chat-types";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  order: Order;
+  order: ChatOrder | null;
   otherUser: string | undefined;
-  convoId: string | null;
+  convoId?: string | null;
   otherUserRole: string | undefined;
   isSeller: boolean;
 }
@@ -32,7 +32,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   const session = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [text, setText] = React.useState("");
+  const [text, setText] = useState("");
   const handleTextChange = (e: any) => {
     setText(e.target.value);
   };
@@ -44,19 +44,19 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
       return;
     }
     setIsLoading(true);
-    console.log(order.paymentIntentId);
+    console.log(order?.paymentIntentId);
     axios.post("/api/stripe/refund-payment", {
-      paymentId: order.paymentIntentId,
+      paymentId: order?.paymentIntentId,
     });
     if (isSeller === true) {
       axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 4,
         completedAt: new Date(),
       });
     } else {
       axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 12,
         completedAt: new Date(),
       });
@@ -72,13 +72,13 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
       .post("/api/chat/updateListingOnCancel", { order: order })
       .then(() => {
         //sependent on who cancelled, set order status appropriately.
-        if (session.data?.user.id === order.sellerId) {
+        if (session.data?.user.id === order?.sellerId) {
           //if seller cancels
           if (session.data?.user.role === "COOP") {
             //if seller is coop
             axios
               .post("/api/useractions/checkout/update-order", {
-                orderId: order.id,
+                orderId: order?.id,
                 status: 4,
                 completedAt: new Date(),
               })
@@ -90,7 +90,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
             //if seller is producer(can be else as consumers cant create listings)
             axios
               .post("/api/useractions/checkout/update-order", {
-                orderId: order.id,
+                orderId: order?.id,
                 status: 12,
                 completedAt: new Date(),
               })
@@ -110,7 +110,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               //if both users are coop's
               axios
                 .post("/api/useractions/checkout/update-order", {
-                  orderId: order.id,
+                  orderId: order?.id,
                   status: 7,
                   completedAt: new Date(),
                 })
@@ -122,7 +122,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               //if only person cancelling is coop buying from producer
               axios
                 .post("/api/useractions/checkout/update-order", {
-                  orderId: order.id,
+                  orderId: order?.id,
                   status: 15,
                   completedAt: new Date(),
                 })
@@ -135,7 +135,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
             //if consumer cancels
             axios
               .post("/api/useractions/checkout/update-order", {
-                orderId: order.id,
+                orderId: order?.id,
                 status: 7,
                 completedAt: new Date(),
               })

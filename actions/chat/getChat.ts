@@ -1,136 +1,200 @@
-// get conversation based on current user
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const getConversationById = async (conversationId: string) => {
+ try {
+   const user = await currentUser(); 
+   if (!user) {
+     return null;
+   }
+
+   // get conversation and all its messages, including sender details for each message
+   const conversation = await prisma.conversation.findUnique({
+     where: { id: conversationId },
+     include: {
+       messages: {
+         include: {
+           sender: {
+             select: {
+               id: true,
+               name: true,
+               role: true,
+               image: true,
+               url: true,
+               email: true,
+               stripeAccountId: true,
+             }
+           }
+         }
+       }
+     }
+   });
+
+   if (!conversation) {
+     return null;
+   }
+
+   const otherUserId = conversation.participantIds.find(id => id !== user.id);
+   
+   if (!otherUserId) {
+     return null;
+   }
+
+   const otherUser = await prisma.user.findUnique({
+     where: { id: otherUserId },
+     select: {
+       id: true,
+       name: true,
+       role: true,
+       image: true,
+       url: true,
+       email: true,
+       stripeAccountId: true,
+     }
+   });
+
+   return {
+     ...conversation,
+     currentUser: {
+       id: user.id,
+       name: user.name,
+       role: user.role,
+       email: user.email,
+       url: user.url,
+       location: user.location,
+     },
+     otherUser: otherUser ,
+   };
+ } catch (error: any) {
+   if (error instanceof PrismaClientKnownRequestError && error.code === "P2023") {
+     console.error("Invalid conversationId:", conversationId);
+     return null;
+   }
+   console.error(error, "SERVER_ERROR");
+   return null;
+ }
+};
+const GetOrderChat = async (conversationId: string) => {
   try {
-    const user = await currentUser();
-    if (!user) {
+    if (!conversationId) {
       return null;
     }
 
-    // Fetch the conversation from the database using the provided conversationId
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
-      include: {
-        users: {
+    const order = await prisma.order.findFirst({
+      where: {
+        conversationId,
+      },
+      select: {
+          id: true,
+          sellerId: true,
+          userId: true,
+          pickupDate: true,
+          totalPrice: true,
+          conversationId: true,
+          paymentIntentId: true,
+          quantity:true, 
+          status:true,
+          purchaseLoc:true,
+          listingIds:true,
+          location: {
+            select: {hours:true},
+          },
+        },
+      })
+      const listings = order?.listingIds
+      ? await prisma.listing.findMany({
+          where: {
+            id: { in: order.listingIds },
+          },
           select: {
             id: true,
-            name: true,
-            role: true,
-            image: true,
-            url: true,
-            //hours: true,
-            email: true,
-            stripeAccountId: true,
+            title: true,
+            price: true,
+            quantityType:true,
+            imageSrc:true,
           },
-        },
-      },
-    });
-
-    if (!conversation) {
-      // If no conversation is found, return null
-      return null;
-    }
-
-    // Find the other user in the conversation (the one who is not the current user)
-    const otherUser = conversation.users.find((u) => u.id !== user.id);
-
-    // Return the conversation with additional data for the current user and the other user
-    return {
-      ...conversation,
-      currentUser: {
-        id: user.id,
-        name: user.name,
-        role: user.role,
-        email: user.email,
-        url: user.url,
-        //hours: user.hours,
-        location: user.location,
-      },
-      otherUser: otherUser
-        ? {
-            id: otherUser.id,
-            name: otherUser.name,
-            role: otherUser.role,
-            image: otherUser.image,
-            url: user.url,
-            email: otherUser.email,
-            //hours: otherUser.hours,
-            stripeAccountId: otherUser.stripeAccountId,
-          }
-        : null,
-    };
+        })
+      : [];
+      return {order, listings}
   } catch (error: any) {
-    // Handle specific Prisma error: P2023 (Invalid input data)
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      error.code === "P2023"
-    ) {
-      console.error("Invalid conversationId:", conversationId);
-      return null;
-    }
-    // Log any other error and return null
-    console.error(error, "SERVER_ERROR");
-    return null;
+    console.error(error);
+    throw new Error(error);
   }
-};
-
+  }
 const getConversations = async () => {
-  const user = await currentUser();
+ const user = await currentUser();
 
-  if (!user?.id) {
-    return { conversations: [], user: null };
-  }
+ if (!user?.id) {
+   return { conversations: [], user: null };
+ }
 
-  try {
-    const conversations = await prisma.conversation.findMany({
-      orderBy: {
-        lastMessageAt: "desc",
-      },
-      where: {
-        userIds: {
-          has: user.id,
-        },
-        NOT: {
-          id: user?.id,
-        },
-      },
-      include: {
-        users: true,
-        messages: {
-          include: {
-            sender: true,
-            seen: true,
-          },
-        },
-      },
-    });
+ try {
+   // get all conversations where user is a participant
+   const conversations = await prisma.conversation.findMany({
+     orderBy: {
+       lastMessageAt: "desc", // newest conversations first
+     },
+     where: {
+       participantIds: {
+         has: user.id, // array contains current user's id
+       },
+     },
+     include: {
+       messages: {
+         include: {
+           sender: true, // include message sender details
+         }
+       }
+     }
+   });
 
-    return { conversations, user };
-  } catch (error: any) {
-    return { conversations: [], user: null };
-  }
+   // add other participant's details to each conversation
+   const conversationsWithUsers = await Promise.all(
+     conversations.map(async (conversation) => {
+       const otherUserId = conversation.participantIds.find(id => id !== user.id);
+       const otherUser = otherUserId ? await prisma.user.findUnique({
+         where: { id: otherUserId }
+       }) : null;
+
+       return {
+         ...conversation,
+         users: otherUser ? [user, otherUser] : [user] // maintain old format expecting users array
+       };
+     })
+   );
+
+   return { conversations: conversationsWithUsers, user };
+ } catch (error: any) {
+   return { conversations: [], user: null };
+ }
 };
+
 const getMessages = async (conversationId: string) => {
-  try {
-    const messages = await prisma.message.findMany({
-      where: {
-        conversationId: conversationId,
-      },
-      include: {
-        sender: true,
-        seen: true,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
+ try {
+   // get all messages for a conversation
+   const messages = await prisma.message.findMany({
+     where: {
+       conversationId: conversationId,
+     },
+     include: {
+       sender: true, // include message sender details
+     },
+     orderBy: {
+       createdAt: "asc", // oldest messages first
+     },
+   });
 
-    return messages;
-  } catch (error: any) {
-    return [];
-  }
+   // transform to maintain old format but with boolean seen status
+   const transformedMessages = messages.map(message => ({
+     ...message,
+     seen: message.seen // seen is now a boolean instead of relation
+   }));
+
+   return transformedMessages;
+ } catch (error: any) {
+   return [];
+ }
 };
-export { getConversations, getConversationById, getMessages };
+
+export { getConversations, getConversationById, getMessages, GetOrderChat };

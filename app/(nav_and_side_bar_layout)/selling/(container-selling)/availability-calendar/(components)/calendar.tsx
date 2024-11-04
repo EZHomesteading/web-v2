@@ -12,7 +12,6 @@ import {
   CustomSwitch,
   CalendarDay,
   LocationSelector,
-  o,
 } from "./helper-components-calendar";
 import { PiGearThin } from "react-icons/pi";
 import {
@@ -33,6 +32,7 @@ import {
 import { usePathname } from "next/navigation";
 import { RiArrowDownSLine } from "react-icons/ri";
 import axios from "axios";
+import { outfitFont } from "@/components/fonts";
 
 interface p {
   location?: Location;
@@ -394,7 +394,7 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
 
   const renderCalendarContent = () => (
     <>
-      <div className={`sticky top-0 z-40 w-full ${o.className}`}>
+      <div className={`sticky top-0 z-40 w-full ${outfitFont.className}`}>
         <div
           className="flex justify-start sm:justify-end items-center gap-px sm:px-3 pt-2 px-1 overflow-x-auto scrollbar-hide gap-x-1 flex-nowrap"
           style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}

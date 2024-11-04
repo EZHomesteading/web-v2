@@ -13,7 +13,7 @@ import { toast } from "react-hot-toast";
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  orderId: string;
+  orderId?: string;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({

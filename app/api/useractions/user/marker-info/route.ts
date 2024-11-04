@@ -18,8 +18,12 @@ export async function GET(request: Request) {
         user:{
           select:{
             name: true,
-            firstName: true,
             image: true,
+            fullName:{
+              select:{
+                first:true,
+              },
+            },
             url: true,
             
           }

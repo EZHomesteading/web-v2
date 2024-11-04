@@ -65,6 +65,36 @@
     --ring: 240 4.9% 83.9% !important;
   }
 }
+.gradient {
+      width: 100%;
+      background: 
+        linear-gradient(135deg,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(248, 252, 249, 0.95) 10%,
+          rgba(241, 249, 243, 0.9) 20%,
+          rgba(234, 246, 237, 0.85) 30%,
+          rgba(227, 243, 231, 0.8) 40%,
+          rgba(220, 240, 225, 0.75) 50%,
+          rgba(213, 237, 219, 0.7) 60%,
+          rgba(206, 234, 213, 0.65) 70%,
+          rgba(199, 231, 207, 0.6) 80%,
+          rgba(192, 228, 201, 0.55) 90%),
+        radial-gradient(circle at 25% 25%,
+          rgba(255, 255, 255, 0.4) 0%,
+          rgba(245, 251, 247, 0.35) 25%,
+          rgba(235, 247, 238, 0.3) 50%,
+          rgba(225, 243, 229, 0.25) 75%),
+        radial-gradient(circle at 75% 75%,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(240, 249, 243, 0.25) 30%,
+          rgba(225, 243, 229, 0.2) 60%,
+          rgba(210, 237, 215, 0.15) 90%),
+        linear-gradient(45deg,
+          rgba(255, 255, 255, 0.2) 0%,
+          rgba(235, 247, 238, 0.15) 50%,
+          rgba(215, 237, 220, 0.1) 100%);
+    }
+
 .hideOverflow {
   overflow-y: hidden !important;
   overflow-x: hidden !important;

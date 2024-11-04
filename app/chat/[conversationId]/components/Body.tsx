@@ -3,13 +3,10 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
-import MessageBox from "./MessageBox";
+import MessageBox from "./NewMsgBox";
 import { FullMessageType } from "@/types";
-import { find } from "lodash";
-import { $Enums, Order, Reviews } from "@prisma/client";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Outfit } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SheetCartC, SheetContentF } from "@/components/ui/review-sheet";
 
@@ -27,7 +24,6 @@ import {
   IoTrash,
 } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-//import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import CancelModal from "./CancelModal";
 import ConfirmModal from "./ConfirmModal";
 import DisputeModal from "./DisputeModal";
@@ -40,31 +36,31 @@ import {
 import { PiGavel } from "react-icons/pi";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { MdOutlineRateReview } from "react-icons/md";
-import { UserInfo } from "next-auth";
+import { outfitFont } from "@/components/fonts";
+import {
+  ChatListing,
+  ChatMessage,
+  ChatOrder,
+  ChatUser,
+  OtherUserChat,
+} from "chat-types";
 
-interface BodyProps {
-  initialMessages: FullMessageType[];
-  adminMessages: any[];
-  otherUser: {
+interface AdminMessage {
+  listing: {
     id: string;
-    name: string;
-    role: $Enums.UserRole;
-    image: string | null;
-    email: string;
-    stripeAccountId: string | null;
-    url: string | undefined;
   } | null;
-  order: Order;
-  user: UserInfo;
-  conversationId: string;
-  listings: any;
-  reviews: Reviews[];
 }
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-const Body: React.FC<BodyProps> = ({
+interface p {
+  initialMessages: ChatMessage[];
+  adminMessages: AdminMessage[];
+  otherUser: OtherUserChat | null;
+  order: ChatOrder | null;
+  user: ChatUser;
+  conversationId: string;
+  listings: ChatListing[];
+}
+
+const Body = ({
   initialMessages = [],
   otherUser,
   adminMessages,
@@ -72,11 +68,13 @@ const Body: React.FC<BodyProps> = ({
   user,
   conversationId,
   listings,
-  reviews,
-}) => {
+}: p) => {
   const sellerRole =
-    otherUser?.id === order.sellerId ? otherUser.role : user.role;
-  const quantities = JSON.parse(order.quantity);
+    otherUser?.id === order?.sellerId ? otherUser?.role : user.role;
+  let quantities: any;
+  if (order?.quantity) {
+    quantities = JSON.parse(order.quantity);
+  }
   const getQuantitiy = (listingId: string) => {
     // Find the listing with the matching id
     const foundListing = quantities.find(
@@ -113,7 +111,7 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "18" ||
       lastMessage.messageOrder === "19" ||
       lastMessage.messageOrder === "17" ||
-      (user.id !== order.sellerId && lastMessage.messageOrder === "14") ||
+      (user.id !== order?.sellerId && lastMessage.messageOrder === "14") ||
       lastMessage.messageOrder === "12" ||
       lastMessage.messageOrder === "6" ||
       lastMessage.messageOrder === "1.1" ||
@@ -158,10 +156,7 @@ const Body: React.FC<BodyProps> = ({
   }),
     [order];
   //handle seen messages
-  const seenList = (lastMessage.seen || [])
-    .filter((user) => user.email !== lastMessage?.sender?.email)
-    .map((user) => user.name)
-    .join(", ");
+
   if (!user?.id) {
     return null;
   }
@@ -226,13 +221,13 @@ const Body: React.FC<BodyProps> = ({
   console.log(adminMessages);
   return (
     <div className="flex-1 overflow-y-auto">
-      {user.id === order.sellerId ? (
+      {user.id === order?.sellerId ? (
         <CancelModal
           isOpen={cancelOpen}
           onClose={() => setCancelOpen(false)}
           order={order}
           otherUser={otherUser?.id}
-          convoId={order.conversationId}
+          convoId={order?.conversationId}
           otherUserRole={otherUser?.role}
           isSeller={true}
         />
@@ -242,40 +237,40 @@ const Body: React.FC<BodyProps> = ({
           onClose={() => setCancelOpen(false)}
           order={order}
           otherUser={otherUser?.id}
-          convoId={order.conversationId}
+          convoId={order?.conversationId}
           otherUserRole={otherUser?.role}
           isSeller={false}
         />
       )}
       <ConfirmModal
         isOpen={confirmOpen}
-        orderId={order.id}
+        orderId={order?.id}
         onClose={() => setConfirmOpen(false)}
       />
       <DisputeModal
         isOpen={disputeOpen}
         onClose={() => setDisputeOpen(false)}
         user={user}
-        orderId={order.id}
-        conversationId={order.conversationId}
+        orderId={order?.id}
+        conversationId={order?.conversationId}
         otherUserId={otherUser?.id}
       />
       <EscalateModal
         isOpen={escalateOpen}
         onClose={() => setEscalateOpen(false)}
-        orderId={order.id}
+        orderId={order?.id}
       />
       <RefundModal
         isOpen={refundOpen}
         onClose={() => setRefundOpen(false)}
-        orderId={order.id}
-        orderAmount={order.totalPrice}
-        conversationId={order.conversationId}
+        orderId={order?.id}
+        orderAmount={order?.totalPrice}
+        conversationId={order?.conversationId}
         otherUserId={otherUser?.id}
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfitFont.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
@@ -298,7 +293,7 @@ const Body: React.FC<BodyProps> = ({
           >
             <Button>More Options</Button>
           </PopoverTrigger>
-          <PopoverContent className={`${outfit.className} mr-9  `}>
+          <PopoverContent className={`${outfitFont.className} mr-9  `}>
             <div className="font-normal text-xl mb-3 border-b-[1px]">
               Order Details
             </div>
@@ -333,10 +328,10 @@ const Body: React.FC<BodyProps> = ({
               ))}
             </div>
             <div className="font-normal text-xl my-3 border-b-[1px]">
-              {user.id === order.sellerId ? "Buyer Details" : "Seller Details"}
+              {user.id === order?.sellerId ? "Buyer Details" : "Seller Details"}
             </div>
 
-            {user.id === order.sellerId ? (
+            {user.id === order?.sellerId ? (
               user.role === "PRODUCER" ? (
                 <div className="flex flex-col items-center justify-center space-y-1 w-full ">
                   <Sheet>
@@ -355,7 +350,7 @@ const Body: React.FC<BodyProps> = ({
                   <Button
                     onClick={() =>
                       window.open(
-                        `http://maps.apple.com/?address=${order.location.address}`,
+                        `http://maps.apple.com/?address=${order?.purchaseLoc?.address}`,
                         "_ blank"
                       )
                     }
@@ -410,7 +405,7 @@ const Body: React.FC<BodyProps> = ({
                 <Button
                   onClick={() =>
                     window.open(
-                      `http://maps.apple.com/?address=${order.location.address}`,
+                      `http://maps.apple.com/?address=${order?.purchaseLoc?.address}`,
                       "_ blank"
                     )
                   }
@@ -459,7 +454,7 @@ const Body: React.FC<BodyProps> = ({
                   <div>Get an Admin Involved</div> <PiGavel />
                 </Button>
               ) : null}
-              {refund === true && user.id === order.sellerId ? (
+              {refund === true && user.id === order?.sellerId ? (
                 <Button
                   type="submit"
                   onClick={() => setRefundOpen(true)}
@@ -480,8 +475,8 @@ const Body: React.FC<BodyProps> = ({
                     className="border-none h-screen w-screen bg-transparent flex flex-col lg:flex-row justify-center lg:justify-evenly items-center"
                     reviewedId={otherUser?.id}
                     reviewerId={user?.id}
-                    orderId={order.id}
-                    buyer={user.id === order.sellerId ? false : true}
+                    orderId={order?.id}
+                    buyer={user.id === order?.sellerId ? false : true}
                   ></SheetContentF>
                 </SheetCartC>
               ) : null}
@@ -501,17 +496,17 @@ const Body: React.FC<BodyProps> = ({
       <div className="pb-[100px] sm:pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
-          messagesLength={messages.length}
-          listing={messages !== adminMessages ? adminMessages[i].listing : null}
+          listing={null}
+          // {messages !== adminMessages ? adminMessages[i].listing : null}
           isLast={i === messages.length - 1}
-          key={message.id}
-          data={message}
+          key={i}
+          message={message}
           user={user}
           convoId={conversationId}
-          otherUsersId={otherUser?.id}
           order={order}
-          otherUserRole={otherUser?.role}
           stripeAccountId={otherUser?.stripeAccountId}
+          messagesLength={messages.length}
+          otherUser={otherUser}
         />
       ))}
       <div className="pt-24" ref={bottomRef} />
