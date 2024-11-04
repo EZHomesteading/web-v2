@@ -7,8 +7,6 @@ const WishlistPage = () => {
       <div className={`grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4`}>
         <div className={`aspect-square rounded border`}></div>
         <div className={`aspect-sqaure rounded border`}></div>
-        <div className={`aspect-sqaure rounded border`}></div>
-        <div className={`aspect-sqaure rounded border`}></div>
       </div>
     </div>
   );
