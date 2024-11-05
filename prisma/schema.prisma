@@ -381,6 +381,10 @@ type OrderLoc {
   address     String[]
   coordinates Float[]
 }
+type ListingQuantities{
+  id String @db.ObjectId
+  quantity Int
+  }
 
 model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
@@ -390,7 +394,7 @@ model Order {
 
   pickupDate      DateTime
   paymentIntentId String?
-  quantity        String
+  quantity        ListingQuantities[]
   totalPrice      Float
   status          OrderStatus @default(PENDING)
 
@@ -402,14 +406,13 @@ model Order {
   payments       Payment[]
   history        OrderHistory[]
   dispute        Dispute?
-  buyer          User?          @relation(name: "buyer", fields: [userId], references: [id])
-  seller         User?          @relation(name: "seller", fields: [sellerId], references: [id])
+  buyer          User          @relation(name: "buyer", fields: [userId], references: [id])
+  seller         User          @relation(name: "seller", fields: [sellerId], references: [id])
 
   preferredLocationId String? @db.ObjectId
   actualLocationId    String? @db.ObjectId
   deliveryNotes       String?
 
-  listingIds String[]  @db.ObjectId
   location   Location? @relation(fields: [locationId], references: [id])
   locationId String?   @db.ObjectId
 }

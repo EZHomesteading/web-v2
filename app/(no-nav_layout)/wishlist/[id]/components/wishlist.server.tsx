@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import Map from "@/app/(no-nav_layout)/new-location-and-hours/_components/map";
 import WishlistButtons from "./wishlist-settings";
 import { WishlistLocation } from "@/actions/getUser";
+import MessageSeller from "./wishlist-message";
 interface p {
   wishlist: Wishlist_ID_Page;
   userLocs: WishlistLocation[] | null;
@@ -158,7 +159,7 @@ const WishlistServer = ({ wishlist, userLocs }: p) => {
                   </div>
                 </div>
               ))}{" "}
-              <Button className={`w-full`}>Send Inquiry to Seller</Button>
+              <MessageSeller wishlist={wishlist} />
             </div>
           </div>
           <div className={` rounded-t-md`}>
@@ -167,8 +168,12 @@ const WishlistServer = ({ wishlist, userLocs }: p) => {
               showSearchBar={false}
               subtitle=""
               center={{
-                lat: wishlist.location.coordinates[1] || 38,
-                lng: wishlist.location.coordinates[0] || -79,
+                lat: wishlist.location.coordinates
+                  ? wishlist.location.coordinates[1]
+                  : 38,
+                lng: wishlist.location.coordinates
+                  ? wishlist.location.coordinates[0]
+                  : -79,
               }}
               maxZ={14}
               minZ={10}
