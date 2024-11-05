@@ -12,11 +12,11 @@ import { toast } from "react-hot-toast";
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
-  orderId?: string;
-  orderAmount?: number;
-  conversationId?: string | null;
+  orderId: string | undefined;
+  orderAmount: number | undefined;
+  conversationId: string | null | undefined;
   otherUserId: string | undefined;
-  paymentId?: string | null;
+  paymentId: string | null | undefined;
 }
 
 const RefundModal: React.FC<ConfirmModalProps> = ({

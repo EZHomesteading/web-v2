@@ -12,13 +12,14 @@ import Modal from "@/components/modals/chatmodals/HarvestModal";
 import Button from "@/components/modals/chatmodals/Button";
 import axios from "axios";
 import { toast } from "sonner";
+import { Listing } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
   onClose: () => void;
   messageId: string;
-  listing: any | null;
+  listing: Listing | null;
   conversationId: string;
   messagesLength: number;
 }
@@ -49,6 +50,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
     "Update stock to current expected quantity and disable future harvest projections",
     "Remove projected harvest for this month from the listing",
   ];
+  console.log(messageId);
   const harvestSet = async (harvestType: string) => {
     setIsLoading(true);
     try {

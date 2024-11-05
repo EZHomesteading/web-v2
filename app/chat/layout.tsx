@@ -5,6 +5,7 @@ import { getConversations } from "@/actions/chat/getChat";
 import type { Viewport } from "next";
 import { getNavUser, NavUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
+import { FullConversationType } from "@/types";
 
 export const viewport: Viewport = {
   themeColor: "rgb(	241 239 231)",
@@ -22,8 +23,10 @@ export default async function ConversationsLayout({
 
       <ConversationList
         title="Messages"
-        initialItems={conversations.conversations}
-        user={conversations.user as unknown as UserInfo}
+        initialItems={
+          conversations.conversations as unknown as FullConversationType[]
+        }
+        user={conversations.user}
       />
       {children}
     </div>

@@ -8,14 +8,19 @@ import { pusherClient } from "@/lib/pusher";
 import Avatar from "@/components/Avatar";
 import useOtherUser from "@/hooks/messenger/useOtherUser";
 import { FullConversationType, FullMessageType } from "@/types";
+import { Outfit } from "next/font/google";
 import { IoNotificationsCircle } from "react-icons/io5";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface ConversationBoxProps {
   data: FullConversationType;
   selected?: boolean;
-  user?: UserInfo;
+  user?: UserInfo | null | undefined;
 }
 
 const ConversationBox: React.FC<ConversationBoxProps> = ({
@@ -93,7 +98,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     >
       <Avatar image={otherUser.image} />
 
-      <div className={`${outfitFont.className} min-w-0 flex-1`}>
+      <div className={`${outfit.className} min-w-0 flex-1`}>
         <div className="focus:outline-none">
           <span className="absolute inset-0" aria-hidden="true" />
           {(notOwn &&

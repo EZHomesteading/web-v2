@@ -1,30 +1,32 @@
 declare module "chat-types" {
-
-  export type MessageActionType = 
-  | 'ACCEPT_TIME'
-  | 'PROPOSE_TIME'
-  | 'CONFIRM_PICKUP'
-  | 'MARK_READY'
-  | 'UPLOAD_IMAGE'
-  | 'DISPUTE_ORDER'
-  | 'ESCALATE_DISPUTE'
-  | 'REFUND_ORDER'
-  | 'COMPLETE_ORDER'
-  | 'CANCEL_ORDER';
-
+  export type MessageActionType =
+    | "ACCEPT_TIME"
+    | "PROPOSE_TIME"
+    | "CONFIRM_PICKUP"
+    | "MARK_READY"
+    | "UPLOAD_IMAGE"
+    | "DISPUTE_ORDER"
+    | "ESCALATE_DISPUTE"
+    | "REFUND_ORDER"
+    | "COMPLETE_ORDER"
+    | "CANCEL_ORDER";
+  interface ListingQuantity {
+    id: string;
+    quantity: number;
+  }
   interface MessageOption {
     icon: ReactNode;
     label: string;
-    
+
     action: MessageActionType;
     status: OrderStatus;
-    
+
     requiresImage?: boolean;
     requiresConfirmation?: boolean;
     confirmationMessage?: string;
-    
+
     validate?: () => boolean;
-    
+
     data?: {
       pickupDate?: Date;
       price?: number;
@@ -69,7 +71,7 @@ declare module "chat-types" {
   type OtherUserChat = {
     id: string;
     name: string;
-    role: UserRole; 
+    role: UserRole;
     image: string | null;
     url: string | null;
     email: string;
@@ -81,11 +83,12 @@ declare module "chat-types" {
     name: string;
     role: UserRole;
     email: string;
+    phoneNumber: string | undefined;
     url: string | undefined;
-    stripeAccountId?:string
-    location: Location[] | null; 
+    stripeAccountId?: string;
+    location: Location[] | null;
   }
-  
+
   interface ChatMessage {
     id: string;
     body: string | null;
@@ -112,14 +115,11 @@ declare module "chat-types" {
     totalPrice: number;
     conversationId: string | null;
     paymentIntentId: string | null;
-    quantity: string;
+    quantity: ListingQuantities[];
     status: OrderStatus;
-    purchaseLoc?: {
-      address: string[];
-      coordinates: number[];
-    } | null;
-    listingIds: string[];
+
     location: {
+      address: string[];
       hours: {
         delivery: {
           date: Date;
@@ -134,7 +134,7 @@ declare module "chat-types" {
       } | null;
     } | null;
   }
-  
+
   interface ChatListing {
     id: string;
     title: string;
@@ -142,7 +142,7 @@ declare module "chat-types" {
     quantityType: string;
     imageSrc: string[];
   }
-  
+
   interface FullChatData {
     conversation: {
       id: string;
@@ -150,7 +150,7 @@ declare module "chat-types" {
       messages: ChatMessage[];
     };
     currentUser: ChatUser;
-    otherUser: OtherUserChat| null;
+    otherUser: OtherUserChat | null;
     order: ChatOrder | null;
     listings: ChatListing[];
     messages: ChatMessage[];
