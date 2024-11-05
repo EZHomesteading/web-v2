@@ -23,7 +23,7 @@ export async function DELETE(
       return new NextResponse("Item ID is required", { status: 400 });
     }
 
-    // First, get the wishlist item to check ownership
+    // Only fetch the minimal data needed to verify ownership
     const wishlistItem = await prisma.wishlistItem.findFirst({
       where: {
         id: itemId,
@@ -31,8 +31,9 @@ export async function DELETE(
           userId: user.id,
         },
       },
-      include: {
-        wishlistGroup: true,
+      select: {
+        id: true,
+        wishlistGroupId: true,
       },
     });
 
@@ -40,24 +41,25 @@ export async function DELETE(
       return new NextResponse("Item not found", { status: 404 });
     }
 
-    // Delete the wishlist item
-    await prisma.wishlistItem.delete({
-      where: { id: itemId },
-    });
-
-    // Check if the wishlist group is now empty
-    const remainingItems = await prisma.wishlistItem.count({
-      where: {
-        wishlistGroupId: wishlistItem.wishlistGroupId,
-      },
-    });
-
-    // If no items remain, delete the group
-    if (remainingItems === 0) {
-      await prisma.wishlistGroup.delete({
-        where: { id: wishlistItem.wishlistGroupId },
+    // Delete in transaction to ensure atomicity
+    await prisma.$transaction(async (tx) => {
+      // Delete the item
+      await tx.wishlistItem.delete({
+        where: { id: itemId },
       });
-    }
+
+      // Check remaining items count
+      const remainingCount = await tx.wishlistItem.count({
+        where: { wishlistGroupId: wishlistItem.wishlistGroupId },
+      });
+
+      // If no items remain, delete the group
+      if (remainingCount === 0) {
+        await tx.wishlistGroup.delete({
+          where: { id: wishlistItem.wishlistGroupId },
+        });
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

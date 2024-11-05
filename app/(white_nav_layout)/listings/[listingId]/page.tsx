@@ -3,7 +3,7 @@ import { getListingById } from "@/actions/getListings";
 import { Suspense } from "react";
 import ClientOnly from "@/components/client/ClientOnly";
 import ListingClient from "./ListingClient";
-import { getUserwithCart } from "@/actions/getUser";
+import { getCurrentUser } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/components/sessionStorageManager";
 import { FinalListing } from "@/actions/getListings";
@@ -17,7 +17,7 @@ export default async function ListingPage({
     // Fetch all data in parallel
     const [listing, user, following] = await Promise.all([
       getListingById({ listingId: params.listingId }),
-      getUserwithCart(),
+      getCurrentUser(),
       getFollows(),
     ]);
 
