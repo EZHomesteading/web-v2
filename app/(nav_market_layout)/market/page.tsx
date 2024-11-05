@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/EmptyState";
 import ClientOnly from "@/components/client/ClientOnly";
-import { getUserwithCart } from "@/actions/getUser";
+import { getCurrentUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
 import { getMarketListings } from "@/actions/getMarketListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
@@ -45,7 +45,7 @@ const ShopPage = async ({
 
   const { listings = [], totalItems = 0 } = response || {};
 
-  let user = await getUserwithCart();
+  let user = await getCurrentUser();
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;

@@ -5,6 +5,7 @@ import WishlistButtons from "./wishlist-settings";
 import Map from "./map-wishlist";
 import { zillaFont } from "@/components/fonts";
 import useMediaQuery from "@/hooks/media-query";
+import MessageSeller from "./wishlist-message";
 
 interface p {
   wishlist: any;
@@ -61,11 +62,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                   </div>
                 </div>
               ))}{" "}
-              <button
-                className={`w-full border rounded-md p-3 bg-[#007aff] text-white `}
-              >
-                Send Message to Seller
-              </button>
+              <MessageSeller wishlist={wishlist} />
             </div>
           </div>
           <div className={` rounded-t-md`}>
