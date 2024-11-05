@@ -10,7 +10,7 @@ interface UseWishlistCartProps {
   initialQuantity?: number;
 }
 
-export const useWishlistCart = ({
+export const useWishlist = ({
   listingId,
   user,
   initialQuantity = 1,

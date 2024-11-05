@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import { wishlistStatus } from "@prisma/client";
 
 interface IParams {
   groupId: string;
@@ -19,49 +18,40 @@ export async function PATCH(request: Request, { params }: { params: IParams }) {
     const body = await request.json();
     const { status, pickupDate, deliveryDate, notes, proposedLoc } = body;
 
-    if (!groupId) {
-      return new NextResponse("Group ID is required", { status: 400 });
-    }
-
-    // Verify ownership and get existing group
+    // Only check existence and ownership
     const existingGroup = await prisma.wishlistGroup.findFirst({
       where: {
         id: groupId,
         userId: user.id,
       },
+      select: { id: true },
     });
 
     if (!existingGroup) {
       return new NextResponse("Group not found", { status: 404 });
     }
 
-    // Prepare update data with type safety
+    // Create update data object dynamically
     const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (pickupDate !== undefined) updateData.pickupDate = new Date(pickupDate);
+    if (deliveryDate !== undefined)
+      updateData.deliveryDate = new Date(deliveryDate);
+    if (notes !== undefined) updateData.notes = notes;
+    if (proposedLoc !== undefined) updateData.proposedLoc = proposedLoc;
 
-    if (status) {
-      updateData.status = status as wishlistStatus;
-    }
-
-    if (pickupDate !== undefined) {
-      updateData.pickupDate = pickupDate ? new Date(pickupDate) : null;
-    }
-
-    if (deliveryDate !== undefined) {
-      updateData.deliveryDate = deliveryDate ? new Date(deliveryDate) : null;
-    }
-
-    if (notes !== undefined) {
-      updateData.notes = notes;
-    }
-
-    if (proposedLoc !== undefined) {
-      updateData.proposedLoc = proposedLoc;
-    }
-
-    // Update the wishlist group
+    // Update with only changed fields
     const updatedGroup = await prisma.wishlistGroup.update({
       where: { id: groupId },
       data: updateData,
+      select: {
+        id: true,
+        status: true,
+        pickupDate: true,
+        deliveryDate: true,
+        notes: true,
+        proposedLoc: true,
+      },
     });
 
     return NextResponse.json(updatedGroup);

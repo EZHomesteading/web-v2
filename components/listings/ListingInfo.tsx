@@ -6,7 +6,7 @@ import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { UserInfo } from "next-auth";
 import { outfitFont } from "../fonts";
-interface ListingInfoProps {
+interface ListingDataProps {
   description: string;
   followUserId: string;
   following:
@@ -20,7 +20,7 @@ interface ListingInfoProps {
   listingUser: UserInfo;
 }
 
-const ListingInfo: React.FC<ListingInfoProps> = ({
+const ListingData: React.FC<ListingDataProps> = ({
   followUserId,
   following,
   listingUser,
@@ -67,4 +67,4 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   );
 };
 
-export default ListingInfo;
+export default ListingData;

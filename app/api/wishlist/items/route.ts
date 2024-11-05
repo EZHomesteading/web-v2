@@ -17,59 +17,51 @@ export async function POST(request: Request) {
       return new NextResponse("Listing ID is required", { status: 400 });
     }
 
-    // Check if a wishlist group exists for this user and location
+    // Only get locationId from listing
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
-      select: { locationId: true },
+      select: {
+        locationId: true,
+        price: true,
+      },
     });
 
-    if (!listing) {
+    if (!listing?.locationId) {
       return new NextResponse("Listing not found", { status: 404 });
     }
 
-    if (!listing.locationId) {
-      return new NextResponse("Invalid location", { status: 400 });
-    }
-
-    // Get or create wishlist group
+    // Check for existing group with minimal data
     let wishlistGroup = await prisma.wishlistGroup.findFirst({
       where: {
         userId: user.id,
-        locationId: listing.locationId, // This locationId is now guaranteed to be a string
-        status: status as
-          | "ACTIVE"
-          | "SAVED_FOR_LATER"
-          | "EXPIRED"
-          | "CONVERTED_TO_ORDER",
+        locationId: listing.locationId,
+        status: status,
       },
+      select: { id: true },
     });
 
     if (!wishlistGroup) {
       wishlistGroup = await prisma.wishlistGroup.create({
         data: {
           userId: user.id,
-          locationId: listing.locationId, // This locationId is now guaranteed to be a string
-          status: status as
-            | "ACTIVE"
-            | "SAVED_FOR_LATER"
-            | "EXPIRED"
-            | "CONVERTED_TO_ORDER",
+          locationId: listing.locationId,
+          status: status,
         },
+        select: { id: true },
       });
     }
 
-    // Create wishlist item
-    const listing_price = await prisma.listing.findUnique({
-      where: { id: listingId },
-      select: { price: true },
-    });
-
+    // Create wishlist item with only necessary data
     const wishlistItem = await prisma.wishlistItem.create({
       data: {
         wishlistGroupId: wishlistGroup.id,
         listingId,
         quantity,
-        price: listing_price?.price || 0,
+        price: listing.price,
+      },
+      select: {
+        id: true,
+        quantity: true,
       },
     });
 
@@ -80,7 +72,7 @@ export async function POST(request: Request) {
   }
 }
 
-// GET all wishlist items for current user
+// GET route optimized to only fetch necessary fields
 export async function GET(request: Request) {
   try {
     const user = await currentUser();
@@ -92,11 +84,20 @@ export async function GET(request: Request) {
       where: {
         wishlistGroup: {
           userId: user.id,
+          status: "ACTIVE",
         },
       },
-      include: {
-        listing: true,
-        wishlistGroup: true,
+      select: {
+        id: true,
+        quantity: true,
+        price: true,
+        listingId: true,
+        wishlistGroup: {
+          select: {
+            pickupDate: true,
+            locationId: true,
+          },
+        },
       },
     });
 

@@ -5,12 +5,12 @@ import { addDays } from "date-fns";
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
-import ListingReservation from "./components/ListingReservation";
+import ListingData from "./components/ListingData";
 import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";
 import { UserInfo } from "next-auth";
-import { useWishlistCart } from "@/hooks/listing/use-cart";
+import { useWishlist } from "@/hooks/listing/use-wishlist";
 import { Loader2 } from "lucide-react";
 
 interface ListingClientProps {
@@ -36,11 +36,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const {
-    isLoading: isCartLoading,
+    isLoading: isListLoading,
     checkExistingItem,
     isInWishlist,
     quantity,
-  } = useWishlistCart({
+  } = useWishlist({
     listingId: listing.id,
     user,
     initialQuantity: listing.minOrder || 1,
@@ -65,7 +65,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         : null,
   };
 
-  if (!isInitialized || isCartLoading) {
+  if (!isInitialized || isListLoading) {
     return (
       <Container>
         <div className="flex justify-center items-center min-h-[50vh]">
@@ -95,7 +95,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
           </div>
           <div className="w-full lg:w-1/3 px-4">
-            <ListingReservation
+            <ListingData
               listingId={adjustedListing.id}
               user={user}
               product={adjustedListing}
