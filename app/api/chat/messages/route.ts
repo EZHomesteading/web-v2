@@ -4,6 +4,7 @@ import { currentUser } from "@/lib/auth";
 import { pusherServer } from "@/lib/pusher";
 import prisma from "@/lib/prismadb";
 import webPush, { PushSubscription } from "web-push";
+import { getUserById } from "@/data/user";
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +22,6 @@ export async function POST(request: Request) {
 
     const newMessage = await prisma.message.create({
       include: {
-        seen: true,
         sender: true,
       },
       data: {
@@ -33,11 +33,6 @@ export async function POST(request: Request) {
         },
         sender: {
           connect: { id: user.id },
-        },
-        seen: {
-          connect: {
-            id: user.id,
-          },
         },
       },
     });
@@ -55,12 +50,7 @@ export async function POST(request: Request) {
         },
       },
       include: {
-        users: true,
-        messages: {
-          include: {
-            seen: true,
-          },
-        },
+        messages: true,
       },
     });
 
@@ -69,8 +59,9 @@ export async function POST(request: Request) {
     const lastMessage =
       updatedConversation.messages[updatedConversation.messages.length - 1];
 
-    updatedConversation.users.map((user) => {
-      pusherServer.trigger(user.email!, "conversation:update", {
+    updatedConversation.participantIds.map(async (Id) => {
+      const user = await getUserById(Id);
+      pusherServer.trigger(user?.email!, "conversation:update", {
         id: conversationId,
         messages: [lastMessage],
       });
