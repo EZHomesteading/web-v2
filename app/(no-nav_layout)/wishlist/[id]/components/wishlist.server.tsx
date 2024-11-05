@@ -31,7 +31,7 @@ const WishlistServer = ({ wishlist, userLocs }: p) => {
   return (
     <>
       <div
-        className={`w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 min-h-screen`}
+        className={`w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 min-h-screen`}
       >
         <div className={`flex flex-col gap-y-2 col-span-1 xl:col-span-2 pt-32`}>
           {wishlist.items.map((item: item, index: number) => (
