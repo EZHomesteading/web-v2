@@ -28,7 +28,7 @@ export default async function EditLocationPage({
       console.error("Error fetching location:", error);
     }
   }
-
+  console.log(locations);
   const location = locations.find((loc) => loc.isDefault === true);
   if (locations.length > 0 && !location) {
     return <SelectDefaultLoc locations={locations} user={session?.user} />;

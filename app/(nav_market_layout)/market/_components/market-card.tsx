@@ -8,7 +8,6 @@ import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
-import CartButton from "@/components/listings/cart-icon";
 
 interface ListingCardProps {
   listing: MarketListing;
@@ -68,8 +67,6 @@ const StarRating = ({
   );
 };
 
-import React from "react";
-
 const MarketGrid = ({ children }: { children: any }) => {
   return (
     <div className="w-full px-4 mx-auto max-w-[1920px]">
@@ -90,7 +87,7 @@ const MarketGrid = ({ children }: { children: any }) => {
   );
 };
 
-const MarketCard = ({ listing, user }: ListingCardProps) => {
+const MarketCard = ({ listing }: ListingCardProps) => {
   return (
     <Link
       href={`/listings/${listing.id}`}
@@ -160,4 +157,4 @@ const MarketCard = ({ listing, user }: ListingCardProps) => {
   );
 };
 
-export { MarketGrid, MarketCard };
+export { MarketGrid, MarketCard, StarRating };

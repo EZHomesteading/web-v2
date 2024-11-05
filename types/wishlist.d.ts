@@ -1,29 +1,42 @@
-import { Hours, orderMethod, UserRole } from "@prisma/client"
+import { Hours, orderMethod, proposedLoc, UserRole } from "@prisma/client"
 
 declare module "wishlist" {
-    interface WishlistItemListing {
-        id:string,
-        title:string,
-        quantityType?:string,
-        imageSrc?:string[],
-        stock:number,
-        price:number,
-        minOrder:number,
-        shelfLife:number,
-        rating: number[]
-        createdAt: Date
-    }
-
-    interface WishlistGroupLoc {
-        id:string,
-        displayName?:string,
-        image?:string,
-        type: orderMethod
-        coordinates: number[]
-        address: string[]
-        hours?: Hours
-        role: UserRole
-        user: any
-    }
-
+    // in use in /api/wishlist/get/unique and /wishlist/[id]
+    interface Wishlist_ID_Page { 
+        id: string;
+        proposedLoc?: proposedLoc;
+        pickupDate?: Date
+        deliveryDate?: Date
+        orderMethod: orderMethod
+        items: {
+          quantity:number,
+          price:number,
+          listing: {
+            id:string
+            title: string;
+            quantityType: string;
+            imageSrc: string[];
+            stock: number;
+            price: number;
+            minOrder: number;
+            shelfLife: string;
+            rating: number[];
+            createdAt: Date;
+          };
+        }[];
+        location: {
+          id: string;
+          displayName: string;
+          image: string | null;
+          type: string;
+          coordinates: number[] | null;
+          address: string[] | null;
+          hours: Hours;
+          role: UserRole;
+          user: {
+            url?: string;
+            name: string;
+          };
+        };
+      }
 }

@@ -462,6 +462,41 @@ const getUserLocations = async ({
     );
   }
 };
+export interface WishlistLocation {
+  id: string;
+  coordinates: number[] | null;
+  address: string[] | null;
+  user: {
+    id: string;
+  };
+}
+const getUserLocationsWishList = async (): Promise<WishlistLocation[] | null> => {
+  const session = await authCache()
+  try {
+    const locations = await prisma.location.findMany({
+      where: {
+        userId: session?.user?.id,
+      },
+      select: {
+        id:true,
+        coordinates:true,
+        address:true,
+        user:{
+          select:{
+            id:true,
+          }
+        }
+      }
+    });
+
+    return locations;
+  } catch (error) {
+    console.error("Error fetching user location:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
+  }
+};
 const getUserLocation = async ({
   userId,
   index,
@@ -683,13 +718,6 @@ const getNavUser = async (): Promise<NavUser | null> => {
         url: true,
         email: true,
         image: true,
-        // cart: {
-        //   select: {
-        //     id: true,
-        //     quantity: true,
-        //     listingId: true,
-        //   },
-        // },
         locations: true,
         buyerOrders: {
           select: {
@@ -735,45 +763,8 @@ const getNavUser = async (): Promise<NavUser | null> => {
       return null;
     }
 
-    // let updatedCart = user.cart;
-    // if (user.cart && user.cart.length > 0) {
-    //   const cartItemsPromises = user.cart.map(async (cartItem) => {
-    //     try {
-    //       const listing = await prisma.listing.findUnique({
-    //         where: { id: cartItem.listingId },
-    //         select: {
-    //           imageSrc: true,
-    //           quantityType: true,
-    //           title: true,
-    //           user: {
-    //             select: {
-    //               id: true,
-    //               name: true,
-    //             },
-    //           },
-    //         },
-    //       });
-    //       if (!listing) {
-    //         await prisma.cart.delete({
-    //           where: { id: cartItem.id },
-    //         });
-    //         return null;
-    //       }
-    //       return { ...cartItem, listing };
-    //     } catch (error) {
-    //       console.error("Error fetching cart item:", error);
-    //       return null;
-    //     }
-    //   });
-
-    //   updatedCart = (await Promise.all(cartItemsPromises)).filter(
-    //     (item) => item !== null
-    //   );
-    // }
-
     const navUser: NavUser = {
       ...user,
-      // cart: updatedCart as unknown as CartItem[],
     };
 
     return navUser;
@@ -839,6 +830,7 @@ export {
   getUserwithCart,
   getNavUser,
   getRoleGate,
+  getUserLocationsWishList,
   getRole,
   getLocationByIndex,
   getUserLocations,
@@ -877,17 +869,4 @@ export type StoreUser = {
     };
   }[];
 };
-interface Cart {
-  id: string;
-  quantity: number;
-  listingId: string;
-  listing: {
-    imageSrc: string[];
-    quantityType: string;
-    title: string;
-    user: {
-      id: string;
-      name: string;
-    };
-  };
-}
+

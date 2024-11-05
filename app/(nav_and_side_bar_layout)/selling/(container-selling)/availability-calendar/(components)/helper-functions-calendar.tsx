@@ -28,7 +28,6 @@ const week_day_mmm_dd_yy_time = (minutes: number, date: Date): string => {
   return `${dateString} at ${timeString}`;
 };
 const hasAvailableHours = (hours: Availability[] | null): boolean => {
-  console.log(hours);
   if (!hours) return false;
 
   return !!hours && hours.length > 0;

@@ -124,7 +124,7 @@ const Map = ({
       ? `h-[${h}px] w-screen`
       : w
       ? `w-[${w}px] h-screen`
-      : "h-screen w-screen";
+      : "h-screen w-screen rounded-md shadow-xl";
 
   return (
     <div className={`relative touch-none`}>
