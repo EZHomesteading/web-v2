@@ -9,6 +9,7 @@ const Page = async () => {
   let locations: Location[] = [];
 
   const userId = user?.id;
+
   if (userId) {
     try {
       locations =
@@ -19,6 +20,7 @@ const Page = async () => {
       console.error("Error fetching location:", error);
     }
   }
+
   return (
     <>
       <ReservationFlow mk={mk} sellerLoc={locations[0]} locations={locations} />

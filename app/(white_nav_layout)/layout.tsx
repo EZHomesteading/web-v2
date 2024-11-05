@@ -10,7 +10,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
     <>
-      <Navbar user={user as unknown as NavUser} bg="bg-white" />
+      <Navbar user={user as unknown as NavUser} className="bg-white" />
       {children}
     </>
   );

@@ -9,7 +9,7 @@ import { NavUser } from "@/actions/getUser";
 
 interface p {
   user?: NavUser;
-  bg?: string;
+  className?: string;
   isMarketPage?: boolean;
   isChat?: boolean;
 }
@@ -18,9 +18,9 @@ const apiKey = process.env.MAPS_KEY as string;
 
 const Navbar = async ({
   user,
-  bg = "bg-inherit",
+  className = "bg-inherit",
   isMarketPage = false,
-  isChat,
+  isChat = false,
 }: p) => {
   let uniqueUrl = "";
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -55,7 +55,7 @@ const Navbar = async ({
         isMarketPage={isMarketPage}
         uniqueUrl={uniqueUrl}
         harvestMessages={[]} //havestMessages
-        bg={bg}
+        className={className}
       />
     </>
   );

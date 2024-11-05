@@ -20,8 +20,12 @@ enum OrderStatus {
   PAYMENT_FAILED
 
   // Scheduling states
-  BUYER_PROPOSED_TIME // order is placed with a pick up / delivery time
-  BUYER_ACCEPTED_NEW_TIME // if the seller proposes a new time, buyer accepted it, this allows for the conversation to go back and forth
+  BUYER_PROPOSED_TIME //AND_LOC // order is placed with a pick up / delivery time
+
+  // If delivery
+  SELLER_PROPOSED_DELIVERY_FEE
+
+  BUYER_ACCEPTED // if the seller proposes a new time, buyer accepted it, this allows for the conversation to go back and forth
   BUYER_RESCHEDULED // if the seller proposes a new time, buyer rejects it, this allows for the conversation to go back and forth
   SELLER_ACCEPTED // if the seller accepts to buyers proposed time, this allows for the conversation to go back and forth
   SELLER_RESCHEDULED // if the buyer proposes a new time, seller rejects it, this allows for the conversation to go back and forth
@@ -293,8 +297,9 @@ model Listing {
   emailList       notifList?
   smsList         notifList?
 
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  WishlistItem WishlistItem[]
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wishlistItem       WishlistItem[]
+  recentlyViewedItem RecentlyViewedItem[]
 }
 
 enum orderMethod {
@@ -308,6 +313,18 @@ enum wishlistStatus {
   SAVED_FOR_LATER
   EXPIRED
   CONVERTED_TO_ORDER
+}
+
+model RecentlyViewedItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  price     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([listingId])
 }
 
 model WishlistItem {
@@ -419,7 +436,7 @@ model Conversation {
   createdAt     DateTime @default(now())
   lastMessageAt DateTime @default(now())
 
-  participantIds String[]  @db.ObjectId // Just store the IDs, no relation
+  participantIds String[]  @db.ObjectId
   messages       Message[]
 }
 

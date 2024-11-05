@@ -16,7 +16,7 @@ interface NavbarProps {
   isHome?: boolean;
   canReceivePayouts: boolean;
   uniqueUrl: string;
-  bg: string;
+  className: string;
   harvestMessages:
     | {
         conversationId: string;
@@ -30,7 +30,7 @@ const Navbar = ({
   user,
   apiKey,
   isMarketPage,
-  bg,
+  className,
   canReceivePayouts,
   uniqueUrl,
   harvestMessages,
@@ -48,37 +48,38 @@ const Navbar = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const renderHomeNav = () => (
-    <div
-      className={`${
-        isChat === true ? "absolute" : "sticky"
-      } w-full z-[10] ${bg} select-none !text-black`}
-    >
-      <Container>
-        <div className="sm:flex sm:justify-between sm:items-center">
-          <Logo />
-          {apiKey && !isSmallScreen && isMarketPage && (
-            <FindListingsComponent apiKey={apiKey} />
-          )}
-          <UserMenu
-            user={user}
-            uniqueUrl={uniqueUrl}
-            harvestMessages={harvestMessages}
-          />
-        </div>
-      </Container>
-    </div>
-  );
+  const homeNavClass = `${isChat ? "absolute" : "sticky"} w-full z-10 ${
+    className || ""
+  } select-none !text-black`;
+
+  const topNavClass = `top-0 left-0 right-0 sm:py-2 md:border-b-[1px] z-10 ${
+    isSmallScreen ? "relative" : `sticky ${className}`
+  }`;
+
+  const findListingsClass = "py-2 flex justify-center mb-2 w-full max-w-2xl";
 
   return (
     <>
       {!isSmallScreen ? (
-        renderHomeNav()
+        <div className={homeNavClass}>
+          <Container>
+            <div className="sm:flex sm:justify-between sm:items-center">
+              <Logo />
+              {apiKey && isMarketPage && !isSmallScreen && (
+                <FindListingsComponent apiKey={apiKey} />
+              )}
+              <UserMenu
+                user={user}
+                uniqueUrl={uniqueUrl}
+                harvestMessages={harvestMessages}
+              />
+            </div>
+          </Container>
+        </div>
       ) : (
         <>
           <div
-            className={`top-0 left-0 right-0 sm:py-2 md:border-b-[1px] z-10 
-            ${isSmallScreen ? "relative" : `sticky ${bg}`}`}
+            className={topNavClass}
             style={{ height: isSmallScreen ? "0px" : "80px" }}
           >
             {!isSmallScreen ? (
@@ -86,16 +87,9 @@ const Navbar = ({
                 <div className="container mx-auto h-full">
                   <div className="flex items-center justify-between h-full">
                     <Logo />
-
                     {isMarketPage && (
-                      <div className="py-2 ">
-                        <div className="flex justify-center mb-2">
-                          <div className="w-full max-w-2xl">
-                            {apiKey && (
-                              <FindListingsComponent apiKey={apiKey} />
-                            )}
-                          </div>
-                        </div>
+                      <div className={findListingsClass}>
+                        {apiKey && <FindListingsComponent apiKey={apiKey} />}
                       </div>
                     )}
                     <UserMenu
@@ -107,20 +101,14 @@ const Navbar = ({
                 </div>
               </div>
             ) : (
-              <>
-                {isMarketPage && (
-                  <div className="container mx-auto">
-                    <div className="py-2">
-                      <div className="flex justify-center mb-2">
-                        <div className="w-full">
-                          {apiKey && <FindListingsComponent apiKey={apiKey} />}
-                        </div>
-                      </div>
-                      <Categories />
-                    </div>
+              isMarketPage && (
+                <div className="container mx-auto">
+                  <div className={findListingsClass}>
+                    {apiKey && <FindListingsComponent apiKey={apiKey} />}
                   </div>
-                )}
-              </>
+                  <Categories />
+                </div>
+              )
             )}
           </div>
           {!isSmallScreen && isMarketPage && (
@@ -132,7 +120,7 @@ const Navbar = ({
       )}
       {isSmallScreen && (
         <div
-          className={`fixed bottom-0 left-0 right-0 border-t border-gray-200 p-2 z-10 ${bg}`}
+          className={`fixed bottom-0 left-0 right-0 border-t border-gray-200 p-2 z-10 ${className}`}
         >
           <UserMenu
             user={user}
