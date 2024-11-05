@@ -35,16 +35,16 @@ import {
 } from "@/components/ui/select";
 
 import axios from "axios";
+
 import { BsBucket } from "react-icons/bs";
-import { UserInfo } from "next-auth";
 import { ChatUser } from "chat-types";
 
 interface p {
   user?: ChatUser;
   isOpen?: boolean;
   onClose: () => void;
-  orderId?: string;
-  conversationId?: string | null;
+  orderId: string | undefined;
+  conversationId: string | null | undefined;
   otherUserId: string | undefined;
 }
 
@@ -59,7 +59,7 @@ const DisputeModal = ({
   const [image, setImage] = useState("");
   const [reason, setReason] = useState("");
   const [comments, setComments] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
   const [email, setEmail] = useState(user?.email || "");
   const handleSubmit = async () => {
     const data = {

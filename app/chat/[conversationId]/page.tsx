@@ -35,7 +35,7 @@ const ChatId = async ({ params }: { params: IParams }) => {
   });
 
   return (
-    <div className="chat-layout">
+    <div className="chat-layout lg:pl-80">
       <Header name={otherUser?.name || "(Deleted User)"} />
       <Body
         initialMessages={messages}

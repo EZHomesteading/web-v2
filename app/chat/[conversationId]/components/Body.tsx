@@ -3,10 +3,13 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { pusherClient } from "@/lib/pusher";
-import MessageBox from "./NewMsgBox";
+import MessageBox from "./MessageBox";
 import { FullMessageType } from "@/types";
+import { find } from "lodash";
+import { $Enums, Order, Reviews, User } from "@prisma/client";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Outfit } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SheetCartC, SheetContentF } from "@/components/ui/review-sheet";
 
@@ -24,6 +27,7 @@ import {
   IoTrash,
 } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+//import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
 import CancelModal from "./CancelModal";
 import ConfirmModal from "./ConfirmModal";
 import DisputeModal from "./DisputeModal";
@@ -36,31 +40,24 @@ import {
 import { PiGavel } from "react-icons/pi";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { MdOutlineRateReview } from "react-icons/md";
-import { outfitFont } from "@/components/fonts";
-import {
-  ChatListing,
-  ChatMessage,
-  ChatOrder,
-  ChatUser,
-  OtherUserChat,
-} from "chat-types";
+import { UserInfo } from "next-auth";
+import { ChatMessage, ChatOrder, ChatUser, OtherUserChat } from "chat-types";
 
-interface AdminMessage {
-  listing: {
-    id: string;
-  } | null;
-}
-interface p {
+interface BodyProps {
   initialMessages: ChatMessage[];
-  adminMessages: AdminMessage[];
+  adminMessages: any[];
   otherUser: OtherUserChat | null;
   order: ChatOrder | null;
   user: ChatUser;
   conversationId: string;
-  listings: ChatListing[];
+  listings: any;
+  //reviews: Reviews[];
 }
-
-const Body = ({
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+});
+const Body: React.FC<BodyProps> = ({
   initialMessages = [],
   otherUser,
   adminMessages,
@@ -68,16 +65,14 @@ const Body = ({
   user,
   conversationId,
   listings,
-}: p) => {
+  //reviews,
+}) => {
   const sellerRole =
     otherUser?.id === order?.sellerId ? otherUser?.role : user.role;
-  let quantities: any;
-  if (order?.quantity) {
-    quantities = JSON.parse(order.quantity);
-  }
+  const quantities = order?.quantity;
   const getQuantitiy = (listingId: string) => {
     // Find the listing with the matching id
-    const foundListing = quantities.find(
+    const foundListing = quantities?.find(
       (quantity: any) => quantity.id === listingId
     );
 
@@ -156,13 +151,16 @@ const Body = ({
   }),
     [order];
   //handle seen messages
-
+  // const seenList = (lastMessage.seen || [])
+  //   .filter((user) => user.email !== lastMessage?.sender?.email)
+  //   .map((user) => user.name)
+  //   .join(", ");
   if (!user?.id) {
     return null;
   }
-  useEffect(() => {
-    axios.post(`/api/chat/conversations/${conversationId}/seen`);
-  }, [conversationId]);
+  // useEffect(() => {
+  //   axios.post(`/api/chat/conversations/${conversationId}/seen`);
+  // }, [conversationId]);
   const router = useRouter();
   useEffect(() => {
     bottomRef?.current?.scrollIntoView();
@@ -215,7 +213,7 @@ const Body = ({
     ? formatPickupDate(order.pickupDate)
     : "No pickup date set";
   let item = "items";
-  if (order?.listingIds?.length === 1) {
+  if (order?.quantity?.length === 1) {
     item = "item";
   }
   console.log(adminMessages);
@@ -227,7 +225,7 @@ const Body = ({
           onClose={() => setCancelOpen(false)}
           order={order}
           otherUser={otherUser?.id}
-          convoId={order?.conversationId}
+          convoId={order.conversationId}
           otherUserRole={otherUser?.role}
           isSeller={true}
         />
@@ -270,11 +268,11 @@ const Body = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfitFont.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
-            {order?.listingIds?.length} {item}
+            {order?.quantity?.length} {item}
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
           <div>
@@ -293,7 +291,7 @@ const Body = ({
           >
             <Button>More Options</Button>
           </PopoverTrigger>
-          <PopoverContent className={`${outfitFont.className} mr-9  `}>
+          <PopoverContent className={`${outfit.className} mr-9  `}>
             <div className="font-normal text-xl mb-3 border-b-[1px]">
               Order Details
             </div>
@@ -350,7 +348,7 @@ const Body = ({
                   <Button
                     onClick={() =>
                       window.open(
-                        `http://maps.apple.com/?address=${order?.purchaseLoc?.address}`,
+                        `http://maps.apple.com/?address=${order?.location?.address}`,
                         "_ blank"
                       )
                     }
@@ -405,7 +403,7 @@ const Body = ({
                 <Button
                   onClick={() =>
                     window.open(
-                      `http://maps.apple.com/?address=${order?.purchaseLoc?.address}`,
+                      `http://maps.apple.com/?address=${order?.location?.address}`,
                       "_ blank"
                     )
                   }
@@ -496,17 +494,17 @@ const Body = ({
       <div className="pb-[100px] sm:pb-[150px]"></div>
       {messages.map((message, i) => (
         <MessageBox
-          listing={null}
-          // {messages !== adminMessages ? adminMessages[i].listing : null}
+          messagesLength={messages.length}
+          listing={messages !== adminMessages ? adminMessages[i].listing : null}
           isLast={i === messages.length - 1}
-          key={i}
-          message={message}
+          key={message.id}
+          data={message}
           user={user}
           convoId={conversationId}
+          otherUsersId={otherUser?.id}
           order={order}
+          otherUserRole={otherUser?.role}
           stripeAccountId={otherUser?.stripeAccountId}
-          messagesLength={messages.length}
-          otherUser={otherUser}
         />
       ))}
       <div className="pt-24" ref={bottomRef} />

@@ -18,7 +18,7 @@ import { outfitFont } from "@/components/fonts";
 interface ConversationListProps {
   initialItems: FullConversationType[];
   title?: string;
-  user?: UserInfo;
+  user?: UserInfo | null;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
