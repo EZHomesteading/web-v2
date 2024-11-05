@@ -1,7 +1,15 @@
 import prisma from "@/lib/prismadb";
 import { currentUser } from "@/lib/auth";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { FullChatData, ChatOrder, ChatUser, ChatMessage, ChatListing, OtherUserChat } from "chat-types";
+import type {
+  FullChatData,
+  ChatOrder,
+  ChatUser,
+  ChatMessage,
+  ChatListing,
+  OtherUserChat,
+} from "chat-types";
+import { ListingQuantities } from "@prisma/client";
 
 const getFullChatData = async (
   conversationId: string
@@ -37,7 +45,9 @@ const getFullChatData = async (
       return null;
     }
 
-    const otherUserId = conversation.participantIds.find(id => id !== user.id);
+    const otherUserId = conversation.participantIds.find(
+      (id) => id !== user.id
+    );
     if (!otherUserId) {
       return null;
     }
@@ -55,7 +65,7 @@ const getFullChatData = async (
       },
     });
 
-    const order: ChatOrder | null = await prisma.order.findFirst({
+    const order = await prisma.order.findFirst({
       where: {
         conversationId,
       },
@@ -69,33 +79,51 @@ const getFullChatData = async (
         paymentIntentId: true,
         quantity: true,
         status: true,
-        purchaseLoc: true,
-        listingIds: true,
         location: {
-          select: { hours: true },
+          select: { hours: true, address: true },
         },
       },
     });
 
-    const listings: ChatListing[] = order?.listingIds
-      ? await prisma.listing.findMany({
-          where: { id: { in: order.listingIds } },
-          select: {
-            id: true,
-            title: true,
-            price: true,
-            quantityType: true,
-            imageSrc: true,
-          },
-        })
-      : [];
+    const transformedOrder: ChatOrder | null = order
+      ? {
+          id: order.id,
+          sellerId: order.sellerId,
+          userId: order.userId,
+          pickupDate: order.pickupDate,
+          totalPrice: order.totalPrice,
+          conversationId: order.conversationId,
+          paymentIntentId: order.paymentIntentId,
+          quantity: order.quantity as ListingQuantities[],
+          status: order.status,
+          location: order.location,
+        }
+      : null;
 
-    const chatMessages: ChatMessage[] = conversation.messages.map(message => ({
-      ...message,
-      seen: !!message.seen,
-    }));
+    // Extract listing IDs from the quantity array
+    const listingIds = order?.quantity?.map((item) => item.id) ?? [];
 
-    // Consolidate data for the frontend
+    const listings: ChatListing[] =
+      listingIds.length > 0
+        ? await prisma.listing.findMany({
+            where: { id: { in: listingIds } },
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              quantityType: true,
+              imageSrc: true,
+            },
+          })
+        : [];
+
+    const chatMessages: ChatMessage[] = conversation.messages.map(
+      (message) => ({
+        ...message,
+        seen: !!message.seen,
+      })
+    );
+
     const result: FullChatData = {
       conversation: {
         id: conversation.id,
@@ -106,19 +134,23 @@ const getFullChatData = async (
         id: user.id,
         name: user.name,
         role: user.role,
+        phoneNumber: user.phoneNumber,
         email: user.email,
         url: user.url,
         location: user.location ?? null,
       } as ChatUser,
       otherUser,
-      order,
+      order: transformedOrder,
       listings,
       messages: chatMessages,
     };
 
     return result;
   } catch (error: any) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === "P2023") {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2023"
+    ) {
       console.error("Invalid conversationId:", conversationId);
       return null;
     }

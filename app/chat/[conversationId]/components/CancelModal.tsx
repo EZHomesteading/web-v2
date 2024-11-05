@@ -1,6 +1,6 @@
 "use client";
 //modal that handles order cancellation(need to add logic to start refun process dependent on step the order is cancelled)
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
 import { toast } from "react-hot-toast";
+import { Order } from "@prisma/client";
 import { ChatOrder } from "chat-types";
 
 interface ConfirmModalProps {
@@ -15,7 +16,7 @@ interface ConfirmModalProps {
   onClose: () => void;
   order: ChatOrder | null;
   otherUser: string | undefined;
-  convoId?: string | null;
+  convoId: string | null | undefined;
   otherUserRole: string | undefined;
   isSeller: boolean;
 }
@@ -32,7 +33,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   const session = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [text, setText] = useState("");
+  const [text, setText] = React.useState("");
   const handleTextChange = (e: any) => {
     setText(e.target.value);
   };

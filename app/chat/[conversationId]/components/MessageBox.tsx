@@ -45,6 +45,7 @@ import { IoStorefront } from "react-icons/io5";
 
 import HarvestModal from "./HarvestModal";
 import { UserInfo } from "next-auth";
+import { ChatMessage, ChatOrder, ChatUser } from "chat-types";
 const zilla = Zilla_Slab({
   subsets: ["latin"],
   display: "swap",
@@ -56,14 +57,14 @@ const outfit = Outfit({
 });
 type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
-  data: FullMessageType;
+  data: ChatMessage;
   listing: Listing | null;
   isLast?: boolean;
   convoId: string;
   otherUsersId: string | undefined;
-  order: Order;
+  order: ChatOrder | null;
   otherUserRole: string | undefined;
-  user: UserInfo;
+  user: ChatUser;
   stripeAccountId?: string | null;
   messagesLength: number;
 }
@@ -110,10 +111,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 `;
   //dependent on message order allow or dont allow the cancel button to be visible
   //handle seen messages
-  const seenList = (data.seen || [])
-    .filter((user) => user.email !== data?.sender?.email)
-    .map((user) => user.name)
-    .join(", ");
+  // const seenList = (data.seen || [])
+  //   .filter((user) => user.email !== data?.sender?.email)
+  //   .map((user) => user.name)
+  //   .join(", ");
   if (!user?.id) {
     return null;
   }
@@ -173,12 +174,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
     if (user.role === UserRole.COOP) {
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 2,
       });
     } else {
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 10,
       });
     }
@@ -196,7 +197,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 3,
       pickupDate: dateTime,
     });
@@ -210,7 +211,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 5,
     });
   };
@@ -225,24 +226,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
       //if buyer is coop buying from producer set status 17
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 17,
       });
     } else {
       //if buyer is not coop buying from producer set status to 9
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 9,
       });
     }
-    const TotalPrice = order.totalPrice * 100;
+    const TotalPrice = order?.totalPrice ? order.totalPrice * 100 : 0;
     const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
     await axios.post("/api/stripe/transfer", {
       //finalise stripe transaction
       total: TotalPrice - stripeFee,
       stripeAccountId: stripeAccountId,
-      orderId: order.id,
-      status: order.status,
+      orderId: order?.id,
+      status: order?.status,
     });
   };
   const tryseven = async (message: string) => {
@@ -254,7 +255,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 18,
     });
   };
@@ -274,13 +275,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     if (user.role === UserRole.PRODUCER) {
       //pretty sure this is not needed, will keep just in case
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 11,
         pickupDate: dateTime,
       });
     } else {
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 6,
         pickupDate: dateTime,
       });
@@ -299,7 +300,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 11,
       pickupDate: dateTime,
     });
@@ -314,12 +315,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     });
     if (user.role === UserRole.COOP) {
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 13,
       });
     } else {
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 10,
       });
     }
@@ -338,7 +339,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 14,
       pickupDate: dateTime,
     });
@@ -352,21 +353,21 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       otherUserId: otherUsersId,
     });
     await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order.id,
+      orderId: order?.id,
       status: 10,
     });
   };
   const onSubmit = async (trynum: (message: string) => Promise<void>) => {
     let message = "";
     if (trynum === tryone) {
-      message = `Yes, That time works, Your order will be ready at that time. at ${order?.purchaseLoc?.address[0]}, ${order?.purchaseLoc?.address[1]}, ${order?.purchaseLoc?.address[2]}. ${order?.purchaseLoc?.address[3]}.`;
+      message = `Yes, That time works, Your order will be ready at that time. at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}.`;
     } else if (trynum === trytwo) {
       message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
     } else if (trynum === tryfour) {
       message =
         "Fantastic, I will be there to pick up the item at the specified time.";
     } else if (trynum === trysix) {
-      message = "I have Received my order. Thank you!";
+      message = "I have Received my order?. Thank you!";
     } else if (trynum === tryseven) {
       message =
         "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
@@ -408,13 +409,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
-        message: `Your order is ready to be picked up at ${order?.purchaseLoc?.address[0]}, ${order?.purchaseLoc?.address[1]}, ${order?.purchaseLoc?.address[2]}. ${order?.purchaseLoc?.address[3]}!`,
+        message: `Your order is ready to be picked up at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}!`,
         messageOrder: "6",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 8,
       });
     } catch (error) {
@@ -441,7 +442,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         otherUserId: otherUsersId,
       });
       await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order.id,
+        orderId: order?.id,
         status: 16,
       });
     } catch (error) {
@@ -1193,7 +1194,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   return (
     <div>
-      {/* {user.id === order.sellerId ? (
+      {/* {user.id === order?.sellerId ? (
         <CustomTimeModal2
           isOpen={customTimeOpen}
           onClose={() => setCustomTimeOpen(false)}
@@ -1205,7 +1206,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         <CustomTimeModal2
           isOpen={customTimeOpen}
           onClose={() => setCustomTimeOpen(false)}
-          hours={order.location.hours as unknown as ExtendedHours}
+          hours={order?.location.hours as unknown as ExtendedHours}
           onSetTime={handleTime}
           isSeller={false}
         />
@@ -1215,7 +1216,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClose={() => setCancelOpen(false)}
         order={order}
         otherUser={otherUsersId}
-        convoId={order.conversationId}
+        convoId={order?.conversationId}
         otherUserRole={otherUserRole}
         isSeller={true}
       />
@@ -1223,7 +1224,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         isOpen={disputeOpen}
         onClose={() => setDisputeOpen(false)}
         user={user}
-        orderId={order.id}
+        orderId={order?.id}
         conversationId={convoId}
         otherUserId={otherUsersId}
       />
@@ -1315,7 +1316,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
                     <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
                       {/* <HoursDisplay
-                        coOpHours={order.location.hours}
+                        coOpHours={order?.location.hours}
                       /> */}
                     </SheetContent>
                   </Sheet>
@@ -1336,12 +1337,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               )}
             </div>
           )}
-          {/* display seen messages */}
+          {/* display seen messages
           {isLast && isOwn && seenList.length > 0 && (
             <div className="text-xs font-light text-gray-500">
               {`Seen by ${seenList}`}
             </div>
-          )}
+          )} */}
         </div>
       </div>
       {/* MESSAGE OPTIONS START HERE */}

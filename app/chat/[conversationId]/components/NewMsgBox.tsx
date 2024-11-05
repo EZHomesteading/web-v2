@@ -22,6 +22,7 @@ interface p {
   order: ChatOrder | null;
   user: ChatUser;
   otherUser: OtherUserChat | null;
+  stripeAccountId: string | null | undefined;
   messagesLength: number;
 }
 
