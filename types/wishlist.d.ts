@@ -4,7 +4,7 @@ declare module "wishlist" {
     // in use in /api/wishlist/get/unique and /wishlist/[id]
     interface Wishlist_ID_Page { 
         id: string;
-        proposedLoc?: proposedLoc;
+        proposedLoc?: proposedLoc | null;
         pickupDate?: Date
         deliveryDate?: Date
         orderMethod: orderMethod
