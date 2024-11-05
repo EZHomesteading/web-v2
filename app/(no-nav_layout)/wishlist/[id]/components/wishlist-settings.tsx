@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { orderMethod } from "@prisma/client";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -24,8 +25,7 @@ type ProposedLocation = {
 };
 const WishlistButtons = ({ wishlist, userLocs }: WishlistButtonsProps) => {
   const router = useRouter();
-
-  // Determine available order methods based on seller's hours
+  const [showSearchBar, setShowSearchBar] = useState(false);
   const { hasPickup, hasDelivery, initialOrderMethod } = useMemo(() => {
     const hasPickup = hasAvailableHours(wishlist.location.hours?.pickup || []);
     const hasDelivery = hasAvailableHours(
@@ -63,14 +63,14 @@ const WishlistButtons = ({ wishlist, userLocs }: WishlistButtonsProps) => {
         orderMethod: orderMethod.UNDECIDED,
         pickupDate: undefined,
         deliveryDate: undefined,
-        proposedLoc: undefined,
+        proposedLoc: null,
       }));
     } else {
       setWishlistState((prev) => ({
         ...prev,
         pickupDate: undefined,
         deliveryDate: undefined,
-        proposedLoc: undefined,
+        proposedLoc: null,
       }));
     }
   };
@@ -100,116 +100,41 @@ const WishlistButtons = ({ wishlist, userLocs }: WishlistButtonsProps) => {
   };
 
   return (
-    <div className="w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2">
-      {hasPickup && hasDelivery && (
-        <Popover>
-          <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
-            {formatOrderMethodText(wishlistState.orderMethod)}
-          </PopoverTrigger>
-          <PopoverContent className="w-full max-w-[600px]">
-            <div
-              className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
-            >
-              Order Type
-            </div>
-            <div
-              className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
-            >
-              <button
-                className="flex justify-start items-center w-full"
-                onClick={() =>
-                  setWishlistState((prev) => ({
-                    ...prev,
-                    orderMethod: orderMethod.DELIVERY,
-                    pickupDate: undefined,
-                  }))
-                }
+    <>
+      <Link
+        href={`/store/${wishlist?.location?.user?.url}/${wishlist?.location?.id}`}
+        className={`hover:cursor-pointer text-4xl`}
+      >
+        {wishlist?.location?.displayName || wishlist?.location?.user?.name}
+      </Link>
+      <div className="w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2">
+        {hasPickup && hasDelivery && (
+          <Popover>
+            <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
+              {formatOrderMethodText(wishlistState.orderMethod)}
+            </PopoverTrigger>
+            <PopoverContent className="w-full max-w-[600px]">
+              <div
+                className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
               >
-                <div
-                  className={`rounded-full border p-[.4rem] ${
-                    wishlistState.orderMethod === orderMethod.DELIVERY
-                      ? "bg-black"
-                      : "bg-white"
-                  }`}
-                >
-                  <div className="rounded-full border bg-white p-1" />
-                </div>
-                <div className="ml-2">
-                  I would like the order delivered to me
-                </div>
-              </button>
-              <button
-                className="flex justify-start items-center w-full"
-                onClick={() =>
-                  setWishlistState((prev) => ({
-                    ...prev,
-                    orderMethod: orderMethod.PICKUP,
-                    deliveryDate: undefined,
-                    proposedLoc: undefined,
-                  }))
-                }
-              >
-                <div
-                  className={`rounded-full border p-[.4rem] ${
-                    wishlistState.orderMethod === orderMethod.PICKUP
-                      ? "bg-black"
-                      : "bg-white"
-                  }`}
-                >
-                  <div className="rounded-full border bg-white p-1" />
-                </div>
-                <div className="ml-2">I would like to pick up the order</div>
-              </button>
-              <div className="flex w-full justify-between">
-                <button className="underline" onClick={resetForm}>
-                  Reset
-                </button>
-                <button
-                  className="rounded-full border px-2 py-1"
-                  onClick={saveChanges}
-                >
-                  Save Changes
-                </button>
+                Order Type
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
-
-      {wishlist.orderMethod === orderMethod.DELIVERY && (
-        <Popover>
-          <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
-            {!wishlist.proposedLoc ? "Where?" : wishlist.proposedLoc.address[0]}
-          </PopoverTrigger>
-          <PopoverContent className="w-full max-w-[600px]">
-            <div
-              className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
-            >
-              Delivery Location
-            </div>
-            <div
-              className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
-            >
-              {userLocs?.map((userLoc, index) => (
+              <div
+                className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
+              >
                 <button
-                  key={index}
                   className="flex justify-start items-center w-full"
-                  onClick={() => {
-                    if (userLoc.coordinates && userLoc.address) {
-                      setWishlistState((prev) => ({
-                        ...prev,
-                        proposedLoc: {
-                          address: userLoc.address,
-                          coordinates: userLoc.coordinates,
-                        } as ProposedLocation,
-                      }));
-                    }
-                  }}
+                  onClick={() =>
+                    setWishlistState((prev) => ({
+                      ...prev,
+                      orderMethod: orderMethod.DELIVERY,
+                      pickupDate: undefined,
+                    }))
+                  }
                 >
                   <div
                     className={`rounded-full border p-[.4rem] ${
-                      wishlistState.proposedLoc?.coordinates ===
-                      userLoc.coordinates
+                      wishlistState.orderMethod === orderMethod.DELIVERY
                         ? "bg-black"
                         : "bg-white"
                     }`}
@@ -217,106 +142,200 @@ const WishlistButtons = ({ wishlist, userLocs }: WishlistButtonsProps) => {
                     <div className="rounded-full border bg-white p-1" />
                   </div>
                   <div className="ml-2">
-                    {userLoc && userLoc.address && <>{userLoc.address[0]}</>}
+                    I would like the order delivered to me
                   </div>
                 </button>
-              ))}
-              <div className="flex w-full justify-between">
                 <button
-                  className="underline"
+                  className="flex justify-start items-center w-full"
                   onClick={() =>
                     setWishlistState((prev) => ({
                       ...prev,
+                      orderMethod: orderMethod.PICKUP,
+                      deliveryDate: undefined,
                       proposedLoc: undefined,
                     }))
                   }
                 >
-                  Reset Location
+                  <div
+                    className={`rounded-full border p-[.4rem] ${
+                      wishlistState.orderMethod === orderMethod.PICKUP
+                        ? "bg-black"
+                        : "bg-white"
+                    }`}
+                  >
+                    <div className="rounded-full border bg-white p-1" />
+                  </div>
+                  <div className="ml-2">I would like to pick up the order</div>
                 </button>
-                <button
-                  className="rounded-full border px-2 py-1"
-                  onClick={saveChanges}
-                >
-                  Save Changes
-                </button>
+                <div className="flex w-full justify-between">
+                  <button className="underline" onClick={resetForm}>
+                    Reset
+                  </button>
+                  <button
+                    className="rounded-full border px-2 py-1"
+                    onClick={saveChanges}
+                  >
+                    Save Changes
+                  </button>
+                </div>
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
-
-      {((wishlist.orderMethod === orderMethod.DELIVERY &&
-        wishlist.proposedLoc) ||
-        wishlist.orderMethod === orderMethod.PICKUP) && (
-        <Popover>
-          <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
-            {wishlist.orderMethod === orderMethod.DELIVERY
-              ? wishlist.deliveryDate
-                ? wishlist.deliveryDate.toString()
-                : "When?"
-              : wishlist.pickupDate
-              ? wishlist.pickupDate.toString()
-              : "When?"}
-          </PopoverTrigger>
-          <PopoverContent className="w-full max-w-[600px]">
-            <div
-              className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
-            >
-              {wishlistState.orderMethod === orderMethod.DELIVERY
-                ? "Delivery Time"
-                : "Pickup Time"}
-            </div>
-            <div
-              className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
-            >
-              <div className="bg-slate-300 rounded-full p-2">
-                <button
-                  className={`rounded-full ${
-                    !wishlistState.deliveryDate && !wishlistState.pickupDate
-                      ? "bg-white border"
-                      : ""
-                  } py-1 px-2 mr-1`}
-                  onClick={() => {
-                    const now = new Date();
-                    setWishlistState((prev) => ({
-                      ...prev,
-                      ...(prev.orderMethod === orderMethod.DELIVERY
-                        ? { deliveryDate: now }
-                        : { pickupDate: now }),
-                    }));
-                  }}
-                >
-                  As Soon as Possible
-                </button>
-                <button className="rounded-full py-1 px-2 mr-1">
-                  Custom Time
-                </button>
+            </PopoverContent>
+          </Popover>
+        )}
+        {wishlist.orderMethod === orderMethod.DELIVERY && (
+          <Popover>
+            <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
+              {wishlist.proposedLoc === null
+                ? "Where?"
+                : wishlist?.proposedLoc?.address[0]}
+            </PopoverTrigger>
+            <PopoverContent className="w-full max-w-[600px]">
+              <div
+                className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
+              >
+                Delivery Location
               </div>
-              <div className="flex w-full justify-between">
-                <button
-                  className="underline"
-                  onClick={() =>
-                    setWishlistState((prev) => ({
-                      ...prev,
-                      deliveryDate: undefined,
-                      pickupDate: undefined,
-                    }))
-                  }
-                >
-                  Reset Time
+              <div
+                className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
+              >
+                {userLocs?.map((userLoc, index) => (
+                  <button
+                    key={index}
+                    className="flex justify-start items-center w-full"
+                    onClick={() => {
+                      if (userLoc.coordinates && userLoc.address) {
+                        setWishlistState((prev) => ({
+                          ...prev,
+                          proposedLoc: {
+                            address: userLoc.address,
+                            coordinates: userLoc.coordinates,
+                          } as ProposedLocation,
+                        }));
+                      }
+                    }}
+                  >
+                    <div
+                      className={`rounded-full border p-[.4rem] ${
+                        userLoc?.address &&
+                        wishlistState.proposedLoc?.address[0] ===
+                          userLoc.address[0]
+                          ? "bg-black"
+                          : "bg-white"
+                      }`}
+                    >
+                      <div className="rounded-full border bg-white p-1" />
+                    </div>
+                    <div className="ml-2">
+                      {userLoc && userLoc.address && <>{userLoc.address[0]}</>}
+                    </div>
+                  </button>
+                ))}
+                <button className="flex justify-start items-center w-full">
+                  <div
+                    className={`rounded-full border p-[.4rem] ${"bg-white"}`}
+                  >
+                    <div className="rounded-full border bg-white p-1" />
+                  </div>
+                  <div className="ml-2">
+                    <>Enter New Address</>
+                  </div>
                 </button>
-                <button
-                  className="rounded-full border px-2 py-1"
-                  onClick={saveChanges}
-                >
-                  Save Changes
-                </button>
+                <div className="flex w-full justify-between">
+                  <button
+                    className="underline"
+                    onClick={() =>
+                      setWishlistState((prev) => ({
+                        ...prev,
+                        proposedLoc: null,
+                      }))
+                    }
+                  >
+                    Reset
+                  </button>
+                  <button
+                    className="rounded-full border px-2 py-1"
+                    onClick={saveChanges}
+                  >
+                    Save Changes
+                  </button>
+                </div>
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
-    </div>
+            </PopoverContent>
+          </Popover>
+        )}
+        {((wishlist.orderMethod === orderMethod.DELIVERY &&
+          wishlist.proposedLoc) ||
+          wishlist.orderMethod === orderMethod.PICKUP) && (
+          <Popover>
+            <PopoverTrigger className="flex items-center justify-center rounded-full border px-3 py-2">
+              {wishlist.orderMethod === orderMethod.DELIVERY
+                ? wishlist.deliveryDate
+                  ? wishlist.deliveryDate.toString()
+                  : "When?"
+                : wishlist.pickupDate
+                ? wishlist.pickupDate.toString()
+                : "When?"}
+            </PopoverTrigger>
+            <PopoverContent className="w-full max-w-[600px]">
+              <div
+                className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
+              >
+                {wishlistState.orderMethod === orderMethod.DELIVERY
+                  ? "Delivery Time"
+                  : "Pickup Time"}
+              </div>
+              <div
+                className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
+              >
+                <div className="bg-slate-300 rounded-full p-2">
+                  <button
+                    className={`rounded-full ${
+                      !wishlistState.deliveryDate && !wishlistState.pickupDate
+                        ? "bg-white border"
+                        : ""
+                    } py-1 px-2 mr-1`}
+                    onClick={() => {
+                      const now = new Date();
+                      setWishlistState((prev) => ({
+                        ...prev,
+                        ...(prev.orderMethod === orderMethod.DELIVERY
+                          ? { deliveryDate: now }
+                          : { pickupDate: now }),
+                      }));
+                    }}
+                  >
+                    As Soon as Possible
+                  </button>
+                  <button className="rounded-full py-1 px-2 mr-1">
+                    Custom Time
+                  </button>
+                </div>
+                <div className="flex w-full justify-between">
+                  <button
+                    className="underline"
+                    onClick={() =>
+                      setWishlistState((prev) => ({
+                        ...prev,
+                        deliveryDate: undefined,
+                        pickupDate: undefined,
+                      }))
+                    }
+                  >
+                    Reset Time
+                  </button>
+                  <button
+                    className="rounded-full border px-2 py-1"
+                    onClick={saveChanges}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    </>
   );
 };
 
