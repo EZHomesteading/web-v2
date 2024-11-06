@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { item } from "./wishlist.server";
+import { item } from "./server.wishlist";
 import {
   Carousel,
   CarouselContent,
@@ -9,7 +9,7 @@ import Image from "next/image";
 import { workFont } from "@/components/fonts";
 import PriceBreakdown from "./price-breakdown";
 import { StarRating } from "@/app/(nav_market_layout)/market/_components/market-card";
-import WishlistCounter from "./wishlist.counter";
+import WishlistCounter from "./quantity-set.wishlist";
 
 const WishlistCard = ({ item }: { item: item }) => {
   return (

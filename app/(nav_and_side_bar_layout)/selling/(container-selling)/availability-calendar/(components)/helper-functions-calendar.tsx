@@ -59,7 +59,7 @@ const updateUserHours = async (updatedHours: Hours, locationId?: string) => {
   }
 };
 
-const daysOfWeek: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const daysOfWeek: string[] = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 const checkOverlap = (slots: TimeSlot[][]): boolean => {
   const flatSlots = slots.flat().sort((a, b) => a.open - b.open);

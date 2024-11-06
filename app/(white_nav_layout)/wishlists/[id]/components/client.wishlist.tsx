@@ -1,7 +1,7 @@
 "use client";
 
 import { WishlistLocation } from "@/actions/getUser";
-import Map from "./map-wishlist";
+import Map from "./map.wishlist";
 import useMediaQuery from "@/hooks/media-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
@@ -19,6 +19,8 @@ import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Wishlist_ID_Page } from "wishlist";
 import { PiChatsCircleThin } from "react-icons/pi";
+import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import SetCustomPickupDeliveryCalendar from "@/app/(white_nav_layout)/wishlists/[id]/components/calendar.wishlist";
 
 interface p {
   wishlist: any;
@@ -30,6 +32,7 @@ type ProposedLocation = {
   coordinates: number[];
 };
 const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
+  const [time_type, set_time_type] = useState("ASAP");
   const over_768px = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -174,10 +177,23 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
   const isPickupWithoutDate = () =>
     wishlist.orderMethod === orderMethod.PICKUP && !wishlist.pickupDate;
   wishlist.orderMethod === orderMethod.PICKUP && !wishlist.pickupDate;
+  const SaveChangesButton = () => {
+    return (
+      <>
+        <button
+          className={`${outfitFont.className} text-white bg-black px-3 py-2 rounded-full border `}
+          onClick={saveChanges}
+        >
+          Save Changes
+        </button>
+      </>
+    );
+  };
+
   return (
     <>
       <div
-        className={`fixed top-2 md:w-[calc(100%/2)] w-[100%] sm:top-20 left-0 ml-1 sm:ml-3 md:ml-7 lg:ml-[3.75rem] 2xl:ml-[7.75rem] bg-white`}
+        className={`fixed top-2 md:w-[calc(100%/2)] w-[100%] sm:top-20 left-0 ml-1  2xl:ml-[7.75rem] bg-white`}
       >
         <>
           <Link
@@ -186,7 +202,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
           >
             {wishlist?.location?.displayName || wishlist?.location?.user?.name}
           </Link>
-          <div className="w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2">
+          <div className="w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2 whitespace-nowrap pr-20">
             {" "}
             {!over_768px && (
               <Sheet>
@@ -207,24 +223,38 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                         {
                           label: "Proposed Pickup Date",
                           value: wishlist?.pickupDate?.toString() || "Not Set",
+                          display:
+                            wishlist?.orderMethod === orderMethod.PICKUP &&
+                            true,
                         },
                         {
                           label: "Proposed Delivery Location",
                           value: wishlist?.proposedLoc?.address[0],
+                          display:
+                            wishlist?.orderMethod === orderMethod.DELIVERY &&
+                            true,
                         },
                         {
                           label: "Proposed Delivery Date",
                           value: wishlist?.pickupDate?.toString() || "Not Set",
+                          display:
+                            wishlist?.orderMethod === orderMethod.DELIVERY &&
+                            true,
                         },
                         {
                           label: "Notes",
                           value: "None",
                           isTruncated: true,
+                          display: false,
                         },
                       ].map((item, index) => (
                         <div
                           key={index}
-                          className={`${zillaFont.className} flex justify-between w-full items-start `}
+                          className={`${
+                            zillaFont.className
+                          } flex justify-between w-full items-start ${
+                            item.display === false && "hidden"
+                          } `}
                         >
                           <div className={`mb-3 font-semibold text-sm`}>
                             {item.label}
@@ -339,12 +369,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                       <button className="underline" onClick={resetForm}>
                         Reset
                       </button>
-                      <button
-                        className="rounded-full border px-2 py-1"
-                        onClick={saveChanges}
-                      >
-                        Save Changes
-                      </button>
+                      <SaveChangesButton />
                     </div>
                   </div>
                 </PopoverContent>
@@ -353,9 +378,8 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
             {wishlist.orderMethod === orderMethod.DELIVERY && (
               <Popover>
                 <PopoverTrigger
-                  className={`flex items-center justify-center rounded-full border px-3 py-2 ${
-                    errorType === "location" ? "borderRed" : ""
-                  }`}
+                  className={`flex items-center justify-center rounded-full border px-3 py-2 
+                    w-[200px] ${errorType === "location" ? "borderRed" : ""}`}
                 >
                   {wishlist.proposedLoc === null
                     ? "Where?"
@@ -373,7 +397,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                     {userLocs?.map((userLoc, index) => (
                       <button
                         key={index}
-                        className="flex justify-start items-center w-full"
+                        className="truncate flex justify-start items-center w-[200px]"
                         onClick={() => {
                           if (userLoc.coordinates && userLoc.address) {
                             setWishlistState((prev) => ({
@@ -426,12 +450,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                       >
                         Reset
                       </button>
-                      <button
-                        className="rounded-full border px-2 py-1"
-                        onClick={saveChanges}
-                      >
-                        Save Changes
-                      </button>
+                      <SaveChangesButton />
                     </div>
                   </div>
                 </PopoverContent>
@@ -465,35 +484,63 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                       : "Pickup Time"}
                   </div>
                   <div
-                    className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
+                    className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-center justify-center text-start pt-3`}
                   >
-                    <div className="bg-slate-300 rounded-full p-2">
+                    <div className="bg-slate-300 rounded-full p-[2px]">
                       <button
                         className={`rounded-full ${
-                          !wishlistState.deliveryDate &&
-                          !wishlistState.pickupDate
-                            ? "bg-white border"
-                            : ""
-                        } py-1 px-2 mr-1`}
+                          time_type === "ASAP" && "bg-white "
+                        } py-2 px-3 mr-1`}
                         onClick={() => {
-                          const now = new Date();
-                          setWishlistState((prev) => ({
-                            ...prev,
-                            ...(prev.orderMethod === orderMethod.DELIVERY
-                              ? { deliveryDate: now }
-                              : { pickupDate: now }),
-                          }));
+                          set_time_type("ASAP");
                         }}
                       >
                         As Soon as Possible
                       </button>
-                      <button className="rounded-full py-1 px-2 mr-1">
+                      <button
+                        className={`${
+                          time_type === "CUSTOM" && "bg-white "
+                        } rounded-full py-2 px-3 ml-2`}
+                        onClick={() => {
+                          set_time_type("CUSTOM");
+                        }}
+                      >
                         Custom Time
                       </button>
                     </div>
+                    {time_type === "ASAP" ? (
+                      <>
+                        {wishlist.orderMethod === orderMethod.DELIVERY ? (
+                          <>
+                            The earlist time seller can deliver to you
+                            <div className={`text-center w-full`}>
+                              May 12<sup>th</sup> at 5:30PM
+                            </div>
+                          </>
+                        ) : (
+                          <>The earliest time you can pick up from the seller</>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <SetCustomPickupDeliveryCalendar
+                          mode={
+                            wishlist.orderMethod === orderMethod.DELIVERY
+                              ? DeliveryPickupToggleMode.DELIVERY
+                              : DeliveryPickupToggleMode.PICKUP
+                          }
+                          location={wishlist.location}
+                          mk={mk}
+                        />
+                      </>
+                    )}
                     <div className="flex w-full justify-between">
                       <button
-                        className="underline"
+                        className={`underline ${
+                          !wishlist.pickupDate &&
+                          !wishlist.deliveryDate &&
+                          "text-neutral-500 hover:cursor-not-allowed"
+                        }`}
                         onClick={() =>
                           setWishlistState((prev) => ({
                             ...prev,
@@ -502,14 +549,9 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                           }))
                         }
                       >
-                        Reset Time
+                        Reset
                       </button>
-                      <button
-                        className="rounded-full border px-2 py-1"
-                        onClick={saveChanges}
-                      >
-                        Save Changes
-                      </button>
+                      <SaveChangesButton />
                     </div>
                   </div>
                 </PopoverContent>
@@ -526,35 +568,60 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                 {
                   label: "Proposed Pickup Date",
                   value: wishlist?.pickupDate?.toString() || "Not Set",
+                  display: wishlist?.orderMethod === orderMethod.PICKUP && true,
+                  info_title: "Why do I need to enter this?",
+                  info: "After choosing a pickup time and messaging the seller, they'll review your order details and can either accept, reschedule, or decline your request.",
                 },
                 {
                   label: "Proposed Delivery Location",
-                  value: wishlist?.proposedLoc?.address[0],
+                  value: wishlist?.proposedLoc?.address[0] || "Not Set",
+                  display:
+                    wishlist?.orderMethod === orderMethod.DELIVERY && true,
+                  info_title: "Why do I need to enter this?",
+                  info: "Just enter your info and send a message—this doesn't mean you're committed to buying yet! Once you've picked a delivery time and location and reached out to the seller, they'll review your order and can choose to accept, reschedule, or decline.",
                 },
                 {
                   label: "Proposed Delivery Date",
                   value: wishlist?.pickupDate?.toString() || "Not Set",
+                  display:
+                    wishlist?.orderMethod === orderMethod.DELIVERY && true,
+                  info_title: "",
+                  info: "Just enter your info and send a message—this doesn't mean you're committed to buying yet! Once you've picked a delivery time and location and reached out to the seller, they'll review your order and can choose to accept, reschedule, or decline.",
                 },
                 {
                   label: "Notes",
                   value: "None",
                   isTruncated: true,
+                  display: false,
+                  info_title: "",
+                  info: "",
                 },
               ].map((item, index) => (
                 <div
                   key={index}
-                  className={`${zillaFont.className} flex justify-between w-full items-start `}
+                  className={`${
+                    zillaFont.className
+                  } flex justify-between w-full items-start ${
+                    item.display === false && "hidden"
+                  } `}
                 >
                   <div className={`mb-3 font-semibold text-sm`}>
                     {item.label}
                   </div>
-                  <div
-                    className={`${
-                      item.isTruncated ? "truncate max-w-[200px]" : ""
-                    }  underline`}
-                  >
-                    {item.value}
-                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div
+                        className={`${
+                          item.isTruncated ? "truncate max-w-[200px]" : ""
+                        }  hover:cursor-pointer underline select-none`}
+                      >
+                        {item.value}
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className={`${outfitFont.className} mr-3`}>
+                      {item.info}
+                    </PopoverContent>
+                  </Popover>
                 </div>
               ))}{" "}
               <button
