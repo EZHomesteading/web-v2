@@ -60,6 +60,8 @@ enum OrderStatus {
   ADMIN_RESOLVED_DISPUTE
   BUYER_RESOLVED_DISPUTE
   SELLER_RESOLVED_DISPUTE
+  ADMIN_MESSAGE
+  HARVEST
 
   DISPUTEE_RESPONDED
   DISPUTER_RESPONDED
@@ -385,6 +387,10 @@ type ListingQuantities{
   id String @db.ObjectId
   quantity Int
   }
+enum fulfillmentType {
+  DELIVERY
+  PICKUP
+}
 
 model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
@@ -401,14 +407,14 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  fee            Fees?
-  conversationId String?        @db.ObjectId
-  payments       Payment[]
-  history        OrderHistory[]
-  dispute        Dispute?
-  buyer          User          @relation(name: "buyer", fields: [userId], references: [id])
-  seller         User          @relation(name: "seller", fields: [sellerId], references: [id])
-
+  fee              Fees?
+  conversationId   String?        @db.ObjectId
+  payments         Payment[]
+  history          OrderHistory[]
+  dispute          Dispute?
+  buyer            User          @relation(name: "buyer", fields: [userId], references: [id])
+  seller           User          @relation(name: "seller", fields: [sellerId], references: [id])
+  fulfillmentType  fulfillmentType
   preferredLocationId String? @db.ObjectId
   actualLocationId    String? @db.ObjectId
   deliveryNotes       String?
@@ -448,7 +454,7 @@ model Message {
   body         String?
   image        String?
   createdAt    DateTime @default(now())
-  messageOrder String?
+  messageOrder OrderStatus
   listingId    String?  @db.ObjectId
   seen         Boolean  @default(false)
 

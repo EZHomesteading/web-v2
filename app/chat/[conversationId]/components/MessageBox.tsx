@@ -13,7 +13,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Outfit, Zilla_Slab } from "next/font/google";
 import CancelModal from "./CancelModal";
-import { Listing, Order, UserRole } from "@prisma/client";
+import { Listing, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
 import {
   PiCalendarBlankLight,
@@ -86,13 +86,16 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [validTime, setValidTime] = useState<string>("(select your time)");
   const [dateTime, setDateTime] = useState<Date | string>("");
   const [disputeOpen, setDisputeOpen] = useState(false);
+  const [SetFee, setSetFee] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [HarvestOpen, setHarvestOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [newStatus, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentSubmitFunction, setCurrentSubmitFunction] =
     useState<SubmitFunction | null>(null);
+
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
 
@@ -130,30 +133,42 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     isOwn ? ` ` : ``,
     data.image ? "rounded-md p-0" : " "
   );
-  let onConfirm = async () => {
-    setIsModalOpen(false);
-    if (currentSubmitFunction) {
-      await currentSubmitFunction();
-    }
-  };
-
   let onCancel = () => {
     setIsModalOpen(false);
     setIsLoading(false);
   };
-  const handleConfirm = (
-    message: string,
-    submitFunction: SubmitFunction
-  ): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setModalMessage(message);
-      setCurrentSubmitFunction(() => submitFunction);
-      setIsModalOpen(true);
 
-      onConfirm = async () => {
-        setIsModalOpen(false);
-        resolve(true);
-      };
+  let onConfirm = async (status: string, updatedMessage?: string) => {
+    console.log("ONCONFIRM", updatedMessage, status);
+    if (updatedMessage) {
+      setIsLoading(true);
+      try {
+        console.log("Submitting message:", updatedMessage); // Debug log
+        await trySubmit(status, updatedMessage);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(true);
+      try {
+        await trySubmit(status);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleConfirm = (status: string): Promise<boolean> => {
+    return new Promise(async (resolve) => {
+      const message = await getMessageByStatus(status);
+      console.log("HANDLECONFIRM", status, message);
+      setModalMessage(message); // Set initial message
+      setStatus(status);
+      setIsModalOpen(true);
 
       onCancel = () => {
         setIsModalOpen(false);
@@ -162,242 +177,64 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       };
     });
   };
-
-  // all onsubmit options dependent on messages in chat.
-  const tryone = async (message: string) => {
-    //coop seller confirms order pickup time
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "2",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP) {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 2,
-      });
-    } else {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 10,
-      });
-    }
-  };
-  const trytwo = async (message: string) => {
-    // coop chooses new delivery/pickup time
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "3",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 3,
-      pickupDate: dateTime,
-    });
-  };
-  const tryfour = async (message: string) => {
-    //buyer confirms new pickup time set by seller
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "5",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 5,
-    });
-  };
-  const trysix = async (message: string) => {
-    //buyer picks up/ receives delivery of the order, stripe transfer initiated
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "7",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
-      //if buyer is coop buying from producer set status 17
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 17,
-      });
-    } else {
-      //if buyer is not coop buying from producer set status to 9
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 9,
-      });
-    }
-    const TotalPrice = order?.totalPrice ? order.totalPrice * 100 : 0;
-    const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
-    await axios.post("/api/stripe/transfer", {
-      //finalise stripe transaction
-      total: TotalPrice - stripeFee,
-      stripeAccountId: stripeAccountId,
-      orderId: order?.id,
-      status: order?.status,
-    });
-  };
-  const tryseven = async (message: string) => {
-    //seller marks order as complete.
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "1.1",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 18,
-    });
-  };
-  const tryeight = async (message: string) => {
-    //early return if no time selected.
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    //handle producer reschedule or consumer reschedule
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "4",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.PRODUCER) {
-      //pretty sure this is not needed, will keep just in case
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 11,
-        pickupDate: dateTime,
-      });
-    } else {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 6,
-        pickupDate: dateTime,
-      });
-    }
-  };
-  const trynine = async (message: string) => {
-    //handle producer reschedule
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "11",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 11,
-      pickupDate: dateTime,
-    });
-  };
-  const tryten = async (message: string) => {
-    //handle producer accepts drop off time or producer accepts drop off time.
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "12",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    if (user.role === UserRole.COOP) {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 13,
-      });
-    } else {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: 10,
-      });
-    }
-  };
-  const tryeleven = async (message: string) => {
-    //early return if time is not selected
-    if (validTime === "(select your time)") {
-      toast.error("You must select a time before choosing this option");
-      return;
-    }
-    //coop declares new drop off time for producer deliveries
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "13",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 14,
-      pickupDate: dateTime,
-    });
-  };
-  const tryfourteen = async (message: string) => {
-    //producer confirms delivery time
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: "14",
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: 10,
-    });
-  };
-  const onSubmit = async (trynum: (message: string) => Promise<void>) => {
+  const getMessageByStatus = async (status: string) => {
     let message = "";
-    if (trynum === tryone) {
+    if (status === "SELLER_ACCEPTED" && order?.fulfillmentType === "PICKUP") {
       message = `Yes, That time works, Your order will be ready at that time. at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}.`;
-    } else if (trynum === trytwo) {
-      message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
-    } else if (trynum === tryfour) {
+    } else if (
+      (order?.fulfillmentType === "PICKUP" &&
+        status === "SELLER_RESCHEDULED") ||
+      status === "BUYER_RESCHEDULED"
+    ) {
+      message = `No, that time does not work. Does ${validTime} work instead?`;
+    } else if (status === "BUYER_ACCEPTED") {
       message =
-        "Fantastic, I will be there to pick up the item at the specified time.";
-    } else if (trynum === trysix) {
+        "That works, I will be there to pick up the item at the specified time.";
+    } else if (status === "PICKED_UP") {
       message = "I have Received my order?. Thank you!";
-    } else if (trynum === tryseven) {
+    } else if (status === "COMPLETED") {
       message =
         "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
-    } else if (trynum === tryeight) {
-      message = `No, that time does not work. Can it instead be at ${validTime}`;
-    } else if (trynum === trynine) {
+    } else if (
+      order?.fulfillmentType === "DELIVERY" &&
+      status === "SELLER_RESCHEDULED"
+    ) {
       message = `I can deliver these items to you at ${validTime}, does that work?`;
-    } else if (trynum === tryten) {
-      message = "Yes, That time works, See you then!";
-    } else if (trynum === tryeleven) {
-      message = `No, that time does not work. Does ${validTime} work instead? If not, my hours can be viewed in More Options. `;
-    } else if (trynum === tryfourteen) {
-      message =
-        "Yes, That time works. Your item will be delivered at that time.";
+    } else if (
+      status === "SELLER_PROPOSED_DELIVERY_FEE" &&
+      order?.fulfillmentType === "DELIVERY"
+    ) {
+      message = "Yes, That time works. Your delivery Fee will be";
     }
-    const submitFunction = async () => {
-      setIsLoading(true);
-      try {
-        await trynum(message);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    const confirmed = await handleConfirm(message, submitFunction);
-    if (confirmed && currentSubmitFunction) {
-      await currentSubmitFunction();
+    return message;
+  };
+  // all onsubmit options dependent on messages in chat.
+  const trySubmit = async (status: string, updatedMessage?: string) => {
+    let message = "";
+    if (!updatedMessage) {
+      message = await getMessageByStatus(status);
+    }
+    //coop seller confirms order pickup time
+    await axios.post("/api/chat/messages", {
+      message: updatedMessage || message,
+      messageOrder: status,
+      conversationId: convoId,
+      otherUserId: otherUsersId,
+    });
+    await axios.post("/api/useractions/checkout/update-order", {
+      orderId: order?.id,
+      status: status,
+    });
+  };
+
+  const onSubmit = async (status: string) => {
+    console.log("ONSUBMIT", status);
+    const confirmed = await handleConfirm(status);
+    if (confirmed) {
+      console.log("CONFIRMED SUCCESFULLY");
     }
   };
+
   const onSubmit5 = async (img: string) => {
     setIsLoading(true);
     try {
@@ -451,22 +288,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       setIsLoading(false);
     }
   };
-  //receive data from child and set date time based on user inputs in modal
-  // const handleTime = (childTime: ValidTime) => {
-  //   setDateTime(childTime.pickupTime);
-  //   const date = formatTime(childTime.pickupTime);
-  //   setValidTime(date);
-  // };
 
-  // const anyhours: ExtendedHours = {
-  //   0: [{ open: 0, close: 1439 }],
-  //   1: [{ open: 0, close: 1439 }],
-  //   2: [{ open: 0, close: 1439 }],
-  //   3: [{ open: 0, close: 1439 }],
-  //   4: [{ open: 0, close: 1439 }],
-  //   5: [{ open: 0, close: 1439 }],
-  //   6: [{ open: 0, close: 1439 }],
-  // };
   //Seller receives Order
   const resp1 = (
     <div className="flex flex-col  items-start  md:text-xl gap-0  py-1">
@@ -475,7 +297,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(tryone);
+            await onSubmit("SELLER_ACCEPTED");
           } catch (error) {
             console.error(error);
           } finally {
@@ -497,7 +319,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(trytwo);
+                await onSubmit("SELLER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -646,7 +468,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(tryfour);
+            await onSubmit("BUYER_ACCEPTED");
           } catch (error) {
             console.error(error);
           } finally {
@@ -668,7 +490,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(tryeight);
+                await onSubmit("BUYER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -716,7 +538,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(tryone);
+            await onSubmit("BUYER_ACCEPTED");
           } catch (error) {
             console.error(error);
           } finally {
@@ -738,7 +560,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(trytwo);
+                await onSubmit("BUYER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -869,7 +691,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(trysix);
+            await onSubmit("PICKED_UP");
           } catch (error) {
             console.error(error);
           } finally {
@@ -904,7 +726,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(tryseven);
+            await onSubmit("COMPLETED");
           } catch (error) {
             console.error(error);
           } finally {
@@ -931,7 +753,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(trynine);
+                await onSubmit("BUYER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -978,12 +800,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         type="submit"
         onClick={async () => {
           setIsLoading(true);
+          setSetFee(true);
           try {
-            await onSubmit(tryten);
+            await onSubmit("SELLER_PROPOSED_DELIVERY_FEE");
           } catch (error) {
             console.error(error);
           } finally {
             setIsLoading(false);
+            setSetFee(false);
           }
         }}
         className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
@@ -992,7 +816,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         disabled={isLoading}
       >
         <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Accept Delivery Time"}
+        {isLoading ? "Loading..." : "Accept Time and Set Fee"}
       </button>
       {dateTime ? (
         <div>
@@ -1001,7 +825,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(tryeleven);
+                await onSubmit("SELLER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -1130,7 +954,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClick={async () => {
           setIsLoading(true);
           try {
-            await onSubmit(tryfourteen);
+            await onSubmit("BUYER_ACCEPTED");
           } catch (error) {
             console.error(error);
           } finally {
@@ -1152,7 +976,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             onClick={async () => {
               setIsLoading(true);
               try {
-                await onSubmit(trynine);
+                await onSubmit("BUYER_RESCHEDULED");
               } catch (error) {
                 console.error(error);
               } finally {
@@ -1192,6 +1016,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
     </div>
   );
+
   return (
     <div>
       {/* {user.id === order?.sellerId ? (
@@ -1230,10 +1055,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       />
       <ChatConfirmModal
         open={isModalOpen}
-        // onOpenChange={setIsModalOpen}
         modalMessage={modalMessage}
-        // currentSubmitFunction={currentSubmitFunction}
-        // setIsLoading={setIsLoading}
+        SetFee={SetFee}
+        newStatus={newStatus}
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
@@ -1337,12 +1161,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               )}
             </div>
           )}
-          {/* display seen messages
-          {isLast && isOwn && seenList.length > 0 && (
-            <div className="text-xs font-light text-gray-500">
-              {`Seen by ${seenList}`}
-            </div>
-          )} */}
+          {/* display seen messages */}
+          {isLast && isOwn && data.seen === true && (
+            <div className="text-xs font-light text-gray-500">{`Seen`}</div>
+          )}
         </div>
       </div>
       {/* MESSAGE OPTIONS START HERE */}
@@ -1376,41 +1198,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <PopoverTrigger asChild>
               <Button
                 variant={
-                  (notOwn &&
-                    data.messageOrder !== "2" &&
-                    data.messageOrder !== "14") ||
-                  (isOwn &&
-                    (data.messageOrder === "2" || data.messageOrder === "14"))
+                  (notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
+                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
                     ? "default"
                     : "secondary"
                 }
                 className={`fixed mb-20 md:mb-0 bottom-5 right-5 flex items-center gap-2 transition-all duration-300
-            ${
-              (notOwn &&
-                data.messageOrder !== "2" &&
-                data.messageOrder !== "14") ||
-              (isOwn &&
-                (data.messageOrder === "2" || data.messageOrder === "14"))
-                ? "animate-bounce shadow-lg"
-                : ""
-            }
+           
             hover:scale-105
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
                 style={
-                  (notOwn &&
-                    data.messageOrder !== "2" &&
-                    data.messageOrder !== "14") ||
-                  (isOwn &&
-                    (data.messageOrder === "2" || data.messageOrder === "14"))
+                  (notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
+                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
               >
-                {(notOwn &&
-                  data.messageOrder !== "2" &&
-                  data.messageOrder !== "14") ||
-                (isOwn &&
-                  (data.messageOrder === "2" || data.messageOrder === "14")) ? (
+                {(notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
+                (isOwn && data.messageOrder === "SELLER_ACCEPTED") ? (
                   <>
                     <BiMessageSquareEdit className="w-6 h-6" />
                     <span className="text-lg">Choose Response</span>
@@ -1430,11 +1235,21 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   Your Response Options
                 </h3>
                 <div className="flex flex-col p-4 pt-0 bg-[#F1EFE7] rounded-b-md">
-                  {notOwn && data.messageOrder === "1" ? (
+                  {notOwn &&
+                  order?.fulfillmentType === "DELIVERY" &&
+                  data.messageOrder === "BUYER_PROPOSED_TIME" ? (
+                    resp9
+                  ) : notOwn && data.messageOrder === "BUYER_PROPOSED_TIME" ? (
                     resp1
-                  ) : isOwn && data.messageOrder === "2" ? (
+                  ) : isOwn &&
+                    order?.fulfillmentType === "DELIVERY" &&
+                    data.messageOrder === "SELLER_ACCEPTED" ? (
+                    resp10
+                  ) : isOwn &&
+                    order?.fulfillmentType !== "DELIVERY" &&
+                    data.messageOrder === "SELLER_ACCEPTED" ? (
                     resp2
-                  ) : notOwn && data.messageOrder === "3" ? (
+                  ) : notOwn && data.messageOrder === "SELLER_RESCHEDULED" ? (
                     resp3
                   ) : notOwn && data.messageOrder === "4" ? (
                     resp4
@@ -1505,3 +1320,198 @@ const formatTime = (timeString: Date) => {
 
   return `${formattedHours}:${formattedMinutes}${ampm} on ${month} ${day}${ordinalSuffix}`;
 };
+// const tryone = async (message: string) => {
+//   //coop seller confirms order pickup time
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "SELLER_ACCEPTED",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: "SELLER_ACCEPTED",
+//   });
+// };
+// const trytwo = async (message: string) => {
+//   // coop chooses new delivery/pickup time
+//   if (validTime === "(select your time)") {
+//     toast.error("You must select a time before choosing this option");
+//     return;
+//   }
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "SELLER_RESCHEDULED",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: "SELLER_RESCHEDULED",
+//     pickupDate: dateTime,
+//   });
+// };
+// const tryfour = async (message: string) => {
+//   //buyer confirms new pickup time set by seller
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "5",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: 5,
+//   });
+// };
+// const trysix = async (message: string) => {
+//   //buyer picks up/ receives delivery of the order, stripe transfer initiated
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "7",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
+//     //if buyer is coop buying from producer set status 17
+//     await axios.post("/api/useractions/checkout/update-order", {
+//       orderId: order?.id,
+//       status: 17,
+//     });
+//   } else {
+//     //if buyer is not coop buying from producer set status to 9
+//     await axios.post("/api/useractions/checkout/update-order", {
+//       orderId: order?.id,
+//       status: 9,
+//     });
+//   }
+//   const TotalPrice = order?.totalPrice ? order.totalPrice * 100 : 0;
+//   const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
+//   await axios.post("/api/stripe/transfer", {
+//     //finalise stripe transaction
+//     total: TotalPrice - stripeFee,
+//     stripeAccountId: stripeAccountId,
+//     orderId: order?.id,
+//     status: order?.status,
+//   });
+// };
+// const tryseven = async (message: string) => {
+//   //seller marks order as complete.
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "1.1",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: 18,
+//   });
+// };
+// const tryeight = async (message: string) => {
+//   //early return if no time selected.
+//   if (validTime === "(select your time)") {
+//     toast.error("You must select a time before choosing this option");
+//     return;
+//   }
+//   //handle producer reschedule or consumer reschedule
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "4",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   if (user.role === UserRole.PRODUCER) {
+//     //pretty sure this is not needed, will keep just in case
+//     await axios.post("/api/useractions/checkout/update-order", {
+//       orderId: order?.id,
+//       status: 11,
+//       pickupDate: dateTime,
+//     });
+//   } else {
+//     await axios.post("/api/useractions/checkout/update-order", {
+//       orderId: order?.id,
+//       status: 6,
+//       pickupDate: dateTime,
+//     });
+//   }
+// };
+// const trynine = async (message: string) => {
+//   //handle producer reschedule
+//   if (validTime === "(select your time)") {
+//     toast.error("You must select a time before choosing this option");
+//     return;
+//   }
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "11",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: 11,
+//     pickupDate: dateTime,
+//   });
+// };
+// const tryten = async (message: string) => {
+//   //handle producer accepts drop off time or producer accepts drop off time.
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "SELLER_PROPOSED_DELIVERY_FEE",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: "SELLER_PROPOSED_DELIVERY_FEE",
+//   });
+// };
+// const tryeleven = async (message: string) => {
+//   //early return if time is not selected
+//   if (validTime === "(select your time)") {
+//     toast.error("You must select a time before choosing this option");
+//     return;
+//   }
+//   //coop declares new drop off time for producer deliveries
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "13",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: 14,
+//     pickupDate: dateTime,
+//   });
+// };
+// const tryfourteen = async (message: string) => {
+//   //producer confirms delivery time
+//   await axios.post("/api/chat/messages", {
+//     message: message,
+//     messageOrder: "14",
+//     conversationId: convoId,
+//     otherUserId: otherUsersId,
+//   });
+//   await axios.post("/api/useractions/checkout/update-order", {
+//     orderId: order?.id,
+//     status: 10,
+//   });
+// };  //receive data from child and set date time based on user inputs in modal
+// const handleTime = (childTime: ValidTime) => {
+//   setDateTime(childTime.pickupTime);
+//   const date = formatTime(childTime.pickupTime);
+//   setValidTime(date);
+// };
+
+// const anyhours: ExtendedHours = {
+//   0: [{ open: 0, close: 1439 }],
+//   1: [{ open: 0, close: 1439 }],
+//   2: [{ open: 0, close: 1439 }],
+//   3: [{ open: 0, close: 1439 }],
+//   4: [{ open: 0, close: 1439 }],
+//   5: [{ open: 0, close: 1439 }],
+//   6: [{ open: 0, close: 1439 }],
+// };
