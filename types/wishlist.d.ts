@@ -39,4 +39,7 @@ declare module "wishlist" {
           };
         };
       }
+    interface Wishlist_Selected_Time_Type extends Wishlist_ID_Page {
+      selected_time_type: string | null
+    }
 }

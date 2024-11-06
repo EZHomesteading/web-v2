@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { id, proposedLoc, deliveryDate, pickupDate, orderMethod, items } = await req.json();
-
+  console.log(id, proposedLoc, deliveryDate, pickupDate, orderMethod, items)
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
-
+  console.log(deliveryDate)
   try {
     const updatedWishlist = await prisma.wishlistGroup.update({
       where: { id },

@@ -7,11 +7,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { FullMessageType } from "@/types";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Outfit, Zilla_Slab } from "next/font/google";
 import CancelModal from "./CancelModal";
 import { Listing, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
@@ -29,7 +27,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import DisputeModal from "./DisputeModal";
-//import { ValidTime } from "./CustomTimeModal2";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -40,21 +37,11 @@ import Form from "./Form";
 import Avatar from "@/components/Avatar";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
-//import { HoursDisplay } from "@/app/components/co-op-hours/hours-display";
-import { IoStorefront } from "react-icons/io5";
 
 import HarvestModal from "./HarvestModal";
-import { UserInfo } from "next-auth";
 import { ChatMessage, ChatOrder, ChatUser } from "chat-types";
-const zilla = Zilla_Slab({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300"],
-});
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { outfitFont, zillaFont } from "@/components/fonts";
+
 type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
   data: ChatMessage;
@@ -125,11 +112,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const container = clsx("flex flex-grow  items-start mt-4 gap-2 py-2 px-4");
   const body = clsx("flex  flex-col");
   const message = clsx(
-    `text-xs md:text-sm w-fit font-light ${outfit.className}`,
+    `text-xs md:text-sm w-fit font-light ${outfitFont.className}`,
     data.image ? "rounded-md p-0" : " "
   );
   const notMessage = clsx(
-    `text-xs md:text-sm w-fit ${outfit.className}`,
+    `text-xs md:text-sm w-fit ${outfitFont.className}`,
     isOwn ? ` ` : ``,
     data.image ? "rounded-md p-0" : " "
   );
@@ -1077,7 +1064,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
         <div className={body}>
           <div
-            className={`flex justify-start items-start gap-x-2 ${outfit.className} `}
+            className={`flex justify-start items-start gap-x-2 ${outfitFont.className} `}
           >
             <div className="flex items-center gap-x-2">
               {data.sender.name}
@@ -1226,11 +1213,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfit.className} rounded-t-md w-[300px] p-0`}
+              className={`${outfitFont.className} rounded-t-md w-[300px] p-0`}
             >
               <div>
                 <h3
-                  className={`${zilla.className} text-md rounded-t-md bg-[#F1EFE7] lg:text-md font-semibold pt-2 px-4`}
+                  className={`${zillaFont.className} text-md rounded-t-md bg-[#F1EFE7] lg:text-md font-semibold pt-2 px-4`}
                 >
                   Your Response Options
                 </h3>
