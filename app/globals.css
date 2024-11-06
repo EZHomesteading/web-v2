@@ -65,6 +65,9 @@
     --ring: 240 4.9% 83.9% !important;
   }
 }
+.borderRed {
+  border-color: #fd5c63 !important;
+}
 .gradient {
       width: 100%;
       background: 

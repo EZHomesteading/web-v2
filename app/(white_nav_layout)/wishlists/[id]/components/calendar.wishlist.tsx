@@ -7,6 +7,7 @@ import {
   isSameDay,
   parseISO,
   isBefore,
+  subMonths,
 } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -22,7 +23,8 @@ import {
   CalendarDayCart,
   DeliveryPickupToggleMode,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import SetCustomPickupDeliveryPanel from "./panel.cart";
+import SetCustomPickupDeliveryPanel from "./panel.wishlist";
+import { PiArrowLeftThin, PiArrowRightThin } from "react-icons/pi";
 
 interface p {
   location?: Location;
@@ -42,6 +44,7 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
         date: new Date(ex.date),
       })) || [],
   };
+  const [startMonth, setStartMonth] = useState(new Date());
 
   const [userClosedPanel, setUserClosedPanel] = useState(false);
   const [showModifyButton, setShowModifyButton] = useState(false);
@@ -68,6 +71,11 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
       const date = parseISO(key);
       const { currentHours } = getSellerHours();
 
+      if (selectedDay[key]) {
+        setSelectedDay({});
+        return;
+      }
+
       if (isBefore(date, new Date()) && !isSameDay(date, new Date())) {
         toast.error(`${format(date, "MMM d")} has already passed`);
         return;
@@ -92,13 +100,36 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
   };
 
   const getSelectionDescription = useMemo(() => {
-    if (!selectedDay) return "";
+    const selectedDateKey = Object.keys(selectedDay)[0];
+    if (!selectedDateKey) return "";
 
-    const date = parseISO(Object.keys(selectedDay)[0]);
-    if (!isValid(date)) return "";
-
-    return `Set Pickup Time for ${format(date, "MMM d")}`;
+    const date = parseISO(selectedDateKey);
+    return isValid(date) ? `Set Pickup Time for ${format(date, "MMM d")}` : "";
   }, [selectedDay]);
+
+  useEffect(() => {
+    const hasSelectedDate = Object.keys(selectedDay).length > 0;
+
+    if (hasSelectedDate && !isBasePanelOpen) {
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+      modifyButtonTimerRef.current = setTimeout(() => {
+        setShowModifyButton(true);
+      }, 1);
+    } else {
+      setShowModifyButton(false);
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+    }
+
+    return () => {
+      if (modifyButtonTimerRef.current) {
+        clearTimeout(modifyButtonTimerRef.current);
+      }
+    };
+  }, [selectedDay, isBasePanelOpen]);
 
   const getFirstDayOfMonth = (year: number, month: number): number => {
     return new Date(year, month, 1).getDay();
@@ -162,111 +193,22 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
       <div
         key={month}
         data-month={format(new Date(year, month), "MMM yyyy")}
-        className="sm:px-1"
+        className={`sm:px-1 ${outfitFont.className}`}
       >
-        <div className="text-2xl font-normal mb-4 px-2  w-fit">
+        <div className="text-lg font-semibold mb-2  w-fit">
           {format(new Date(year, month), "MMM yyyy")}
         </div>
-        <div className="grid grid-cols-7 w-full gap-px">{calendarDays}</div>
-      </div>
-    );
-  };
-
-  const renderAllMonths = (): JSX.Element[] => {
-    const calendarMonths: JSX.Element[] = [];
-
-    for (let i = 0; i < 12; i++) {
-      const monthDate = addMonths(currentDate, i);
-      calendarMonths.push(
-        renderCalendarForMonth(monthDate.getFullYear(), monthDate.getMonth())
-      );
-    }
-
-    return calendarMonths;
-  };
-
-  const renderCalendarContent = () => (
-    <>
-      <div
-        className={`sticky  top-0 z-40 w-full bg-white ${outfitFont.className}`}
-      >
-        <div className="grid grid-cols-7 gap-px w-full border-b border-gray-200 select-none">
-          {daysOfWeek.map((day) => (
-            <div key={day} className="text-center font-bold p-2">
+        <div className="  grid grid-cols-7 w-full gap-x-4">
+          {daysOfWeek.map((day: string, index: number) => (
+            <div key={index} className="mr-2 text-center">
               {day}
             </div>
           ))}
         </div>
+        <div className="  grid grid-cols-7 w-full gap-2">{calendarDays}</div>
       </div>
-      <div
-        className="flex-grow overflow-y-auto bg-white "
-        ref={containerRef}
-        style={{ height: "calc(100vh - 100px)" }}
-      >
-        <div className="pt-4 zmax">{renderAllMonths()}</div>
-      </div>
-
-      {showModifyButton && (
-        <div className="fixed bottom-[120px] left-1/2 transform -translate-x-1/2 z-50">
-          <Button
-            className="bg-slate-900 text-white hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg"
-            onClick={() => {
-              setIsBasePanelOpen(true);
-              setShowModifyButton(false);
-            }}
-          >
-            {getSelectionDescription}
-          </Button>
-        </div>
-      )}
-    </>
-  );
-
-  useEffect(() => {
-    if (selectedDay && !isBasePanelOpen) {
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-      modifyButtonTimerRef.current = setTimeout(() => {
-        setShowModifyButton(true);
-      }, 1);
-    } else {
-      setShowModifyButton(false);
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-    }
-
-    return () => {
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-    };
-  }, [selectedDay]);
-
-  useEffect(() => {
-    const shouldShowModifyButton = selectedDay;
-
-    if (shouldShowModifyButton) {
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-      modifyButtonTimerRef.current = setTimeout(() => {
-        setShowModifyButton(true);
-      }, 1);
-    } else {
-      setShowModifyButton(false);
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-    }
-
-    return () => {
-      if (modifyButtonTimerRef.current) {
-        clearTimeout(modifyButtonTimerRef.current);
-      }
-    };
-  }, [selectedDay, isBasePanelOpen]);
+    );
+  };
 
   useEffect(() => {
     const handleResize = () =>
@@ -314,12 +256,6 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
       currentSetsMap.set(dateKey, pickupDate);
     }
 
-    // const updatedCart = {
-    //   ...hours,
-    //   [mode === DeliveryPickupToggleMode.DELIVERY ? "delivery" : "pickup"]:
-    //     updateCart,
-    // };
-
     try {
       const response = await axios.post(
         "/api/useractions/update/cart-group",
@@ -341,20 +277,53 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, mk }: p) => {
     setSelectedDay({});
     setTime(540);
   };
+  const renderTwoMonths = (): JSX.Element[] => {
+    const month1 = startMonth;
+    const month2 = addMonths(startMonth, 1);
+
+    return [
+      renderCalendarForMonth(month1.getFullYear(), month1.getMonth()),
+      renderCalendarForMonth(month2.getFullYear(), month2.getMonth()),
+    ];
+  };
+
+  const handleBack = () => setStartMonth((prev) => subMonths(prev, 2));
+  const handleForward = () => setStartMonth((prev) => addMonths(prev, 2));
 
   return (
-    <SetCustomPickupDeliveryPanel
-      location={location} // cartgroup?.location or cartgroup?.preferred location
-      mainContentVariants={mainContentVariants}
-      panelSide={panelSide}
-      mode={mode}
-      mk={mk}
-      isBasePanelOpen={isBasePanelOpen}
-      setIsBasePanelOpen={setIsBasePanelOpen}
-      handleTimeChange={handleTimeSlotChange}
-    >
-      {renderCalendarContent()}
-    </SetCustomPickupDeliveryPanel>
+    <div className="relative select-none">
+      <div className="flex justify-between mb-4">
+        <PiArrowLeftThin
+          onClick={handleBack}
+          className={`hover:cursor-pointer text-2xl`}
+        />
+        <PiArrowRightThin
+          onClick={handleForward}
+          className={`hover:cursor-pointer text-2xl`}
+        />
+      </div>
+      {showModifyButton && selectedDay && (
+        <Button
+          className={`${
+            !selectedDay && "!hidden"
+          } fixed top-[4.1rem] left-1/2 transform -translate-x-1/2 z-50 bg-slate-900 text-white py-6 w-[316px] hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg`}
+          onClick={() => {
+            setIsBasePanelOpen(true);
+            setShowModifyButton(false);
+          }}
+        >
+          {getSelectionDescription}
+        </Button>
+      )}
+      <SetCustomPickupDeliveryPanel
+        mode={mode}
+        isBasePanelOpen={isBasePanelOpen}
+        setIsBasePanelOpen={setIsBasePanelOpen}
+        handleTimeChange={handleTimeSlotChange}
+      >
+        <div className="flex space-x-8">{renderTwoMonths()}</div>
+      </SetCustomPickupDeliveryPanel>
+    </div>
   );
 };
 

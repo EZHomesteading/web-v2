@@ -460,43 +460,33 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
     }
   };
 
-  const convertMinutesToTimeString = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    const period = hours >= 12 ? "PM" : "AM";
-    const formattedHours = hours % 12 || 12;
-    return `${formattedHours.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")} ${period}`;
-  };
-
   return (
     <div
       onMouseDown={handleMouseDown}
       className={`
-        ${
-          day !== null
-            ? "border border-black h-36 cursor-pointer bg-white"
-            : "h-12"
-        }
-        ${isSelected && day !== null ? "bg-emerald-200/80 border " : ""}
+        ${day !== null ? "border-black cursor-pointer bg-white" : ""}
+        ${isSelected && day !== null ? " " : ""}
         relative
       `}
     >
       {day !== null && (
-        <div className="sm:p-2 pl-1 ">
-          <div
-            className={`text-sm font-light ${
-              isSelected
-                ? "underline"
-                : timeSlots?.length === 0
-                ? "line-through"
-                : ""
-            }`}
-          >
-            {day}
-          </div>
-          {timeSlots?.map((slot, index) => (
+        <div
+          className={`text-sm font-light text-center ${outfitFont.className} ${
+            isSelected
+              ? "underline "
+              : timeSlots?.length === 0
+              ? "line-through text-neutral-600"
+              : "text-blue-500"
+          }`}
+        >
+          {day}
+        </div>
+      )}
+    </div>
+  );
+};
+{
+  /* {timeSlots?.map((slot, index) => (
             <div
               key={index}
               className={`${zillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
@@ -505,15 +495,8 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
                 slot.open
               )} - ${convertMinutesToTimeString(slot.close)}`}
             </div>
-          ))}
-        </div>
-      )}
-      {isSelected && day !== null && (
-        <div className="absolute inset-0 bg-slate-700 opacity-50 pointer-events-none"></div>
-      )}
-    </div>
-  );
-};
+          ))} */
+}
 export {
   DeliveryPickupToggle,
   CalendarDayCart,

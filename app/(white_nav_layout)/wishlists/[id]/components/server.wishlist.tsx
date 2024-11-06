@@ -1,7 +1,7 @@
 import { Wishlist_ID_Page } from "wishlist";
 import { WishlistLocation } from "@/actions/getUser";
-import WishlistCard from "./wishlist-card";
-import WishlistClient from "./wishlist.client";
+import WishlistCard from "./card.wishlist";
+import WishlistClient from "./client.wishlist";
 
 interface p {
   wishlist: Wishlist_ID_Page;
@@ -31,9 +31,11 @@ const WishlistServer = ({ wishlist, userLocs }: p) => {
   return (
     <>
       <div
-        className={`w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 min-h-screen`}
+        className={`w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 min-h-screen`}
       >
-        <div className={`flex flex-col gap-y-2 col-span-1 xl:col-span-2 pt-32`}>
+        <div
+          className={`flex flex-col gap-y-2 col-span-1 sm:col-span-2 pt-16 sm:pt-32`}
+        >
           {wishlist.items.map((item: item, index: number) => (
             <WishlistCard item={item} key={index} />
           ))}

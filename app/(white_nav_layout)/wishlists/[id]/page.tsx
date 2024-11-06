@@ -1,7 +1,7 @@
 import { getUniqueWishList } from "@/actions/wishlist/get/active";
-import WishlistServer from "./components/wishlist.server";
 import { getUserLocationsWishList } from "@/actions/getUser";
 import WishlistNotFound from "../[...not-found]/page";
+import WishlistServer from "./components/server.wishlist";
 
 interface p {
   params: { id: string };
