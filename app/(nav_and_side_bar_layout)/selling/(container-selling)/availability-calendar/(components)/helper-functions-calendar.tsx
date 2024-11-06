@@ -12,21 +12,29 @@ const convertMinutesToTimeString = (minutes: number): string => {
     .toString()
     .padStart(2, "0")} ${period}`;
 };
-const week_day_mmm_dd_yy_time = (minutes: number, date: Date): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
+
+const week_day_mmm_dd_yy_time = (
+  minutes: number,
+  date: Date
+): { time: string; date: Date } => {
+  const combinedDateTime = new Date(date.getTime() + minutes * 60000);
+
+  const hours = combinedDateTime.getHours();
+  const mins = combinedDateTime.getMinutes();
   const period = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12;
   const timeString = `${formattedHours}:${mins
     .toString()
     .padStart(2, "0")}${period}`;
 
-  const dateFormat = isThisYear(date) ? "EEE, MMM d" : "EEE, MMM d yyyy";
+  const dateFormat = isThisYear(combinedDateTime)
+    ? "EEE, MMM d"
+    : "EEE, MMM d yyyy";
+  const dateString = format(combinedDateTime, dateFormat);
 
-  const dateString = format(date, dateFormat);
-
-  return `${dateString} at ${timeString}`;
+  return { time: `${dateString} at ${timeString}`, date: combinedDateTime };
 };
+
 const hasAvailableHours = (hours: Availability[] | null): boolean => {
   if (!hours) return false;
 

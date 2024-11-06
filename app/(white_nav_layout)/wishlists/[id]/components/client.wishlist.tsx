@@ -4,23 +4,27 @@ import { WishlistLocation } from "@/actions/getUser";
 import Map from "./map.wishlist";
 import useMediaQuery from "@/hooks/media-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import {
+  hasAvailableHours,
+  week_day_mmm_dd_yy_time,
+} from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import { outfitFont, zillaFont } from "@/components/fonts";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { orderMethod } from "@prisma/client";
+import { Hours, orderMethod } from "@prisma/client";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import { Wishlist_ID_Page } from "wishlist";
+import { Wishlist_ID_Page, Wishlist_Selected_Time_Type } from "wishlist";
 import { PiChatsCircleThin } from "react-icons/pi";
 import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import SetCustomPickupDeliveryCalendar from "@/app/(white_nav_layout)/wishlists/[id]/components/calendar.wishlist";
+import { isNaN } from "lodash";
 
 interface p {
   wishlist: any;
@@ -56,10 +60,12 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
     return { hasPickup, hasDelivery, initialOrderMethod };
   }, [wishlist.location.hours]);
 
-  const [wishlistState, setWishlistState] = useState<Wishlist_ID_Page>({
-    ...wishlist,
-    orderMethod: wishlist.orderMethod || initialOrderMethod,
-  });
+  const [wishlistState, setWishlistState] =
+    useState<Wishlist_Selected_Time_Type>({
+      ...wishlist,
+      orderMethod: wishlist.orderMethod || initialOrderMethod,
+      selected_time_type: null,
+    });
   const [errorType, setErrorType] = useState<
     "undecided" | "location" | "deliveryDate" | "pickupDate" | null
   >(null);
@@ -100,11 +106,19 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
         quantity: item.quantity,
       })),
     };
-
+    console.log(updatedData);
     try {
       const res = await axios.post("/api/wishlists/update", updatedData);
       if (res.status === 200) {
         toast.success("Wishlist was updated");
+        setWishlistState((prev) => ({
+          ...prev,
+          deliveryDate: wishlistState.deliveryDate,
+          pickupDate: wishlistState.pickupDate,
+          proposedLoc: wishlistState.proposedLoc,
+          orderMethod: wishlistState.orderMethod,
+        }));
+
         router.refresh();
       }
     } catch {
@@ -129,8 +143,6 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
     };
     try {
       const OrderResponse = await axios.post("/api/chat/createOrder", params);
-
-      console.log("order created successfully!", OrderResponse.data);
     } catch (error) {
       console.error("Error in the overall process:", error);
       if (error instanceof Error) {
@@ -165,7 +177,6 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
     setErrorType(null);
     return false;
   };
-
   const isOrderMethodUndecided = () =>
     wishlist.orderMethod === orderMethod.UNDECIDED;
   const isDeliveryWithoutLocation = () =>
@@ -189,6 +200,49 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
       </>
     );
   };
+  const findEarliestTime = (orderType: orderMethod, sellerHours: Hours) => {
+    const currentDate = new Date();
+    const relevantHours =
+      orderType === orderMethod.DELIVERY
+        ? sellerHours.delivery
+        : sellerHours.pickup;
+
+    const firstAvailable = relevantHours
+      .filter((availability) => {
+        const availableDate = new Date(availability.date);
+        return !isNaN(availableDate.getTime()) && availableDate >= currentDate;
+      })
+      .sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      )[0];
+
+    if (!firstAvailable) {
+      return { time: "No available time", date: null }; // Consistent object with placeholder values
+    }
+
+    const { time, date } = week_day_mmm_dd_yy_time(
+      firstAvailable.timeSlots[0].open,
+      new Date(firstAvailable.date)
+    );
+
+    return { time, date };
+  };
+
+  const { time, date } = findEarliestTime(
+    wishlist.orderMethod,
+    wishlist.location?.hours
+  );
+  function isValidDate(date: any): boolean {
+    return date instanceof Date && !isNaN(date.getTime());
+  }
+  // function check(date, date) {
+  // if (date === null || !wishlistState.deliveryDate) {
+  //   return "";
+  // }}
+  // check()
+  // const earlyDate = new Date(date);
+  // const dDate = new Date(wishlistState.deliveryDate);
+  // const pDate = new Date(wishlist.deliveryDate);
 
   return (
     <>
@@ -202,8 +256,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
           >
             {wishlist?.location?.displayName || wishlist?.location?.user?.name}
           </Link>
-          <div className="w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2 whitespace-nowrap pr-20">
-            {" "}
+          <div className="w-screen md:w-full overflow-x-auto my-3 flex justify-start items-center gap-x-2 whitespace-nowrap pr-20">
             {!over_768px && (
               <Sheet>
                 <SheetTrigger asChild>
@@ -484,7 +537,7 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                       : "Pickup Time"}
                   </div>
                   <div
-                    className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-center justify-center text-start pt-3`}
+                    className={`${zillaFont.className} text-lg w-full flex flex-col gap-y-3 items-center justify-start text-start pt-3`}
                   >
                     <div className="bg-slate-300 rounded-full p-[2px]">
                       <button
@@ -510,16 +563,61 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                     </div>
                     {time_type === "ASAP" ? (
                       <>
-                        {wishlist.orderMethod === orderMethod.DELIVERY ? (
-                          <>
-                            The earlist time seller can deliver to you
-                            <div className={`text-center w-full`}>
-                              May 12<sup>th</sup> at 5:30PM
+                        <>
+                          {wishlist.orderMethod === orderMethod.DELIVERY ? (
+                            <>The earlist time seller can deliver to you</>
+                          ) : (
+                            <>
+                              The earliest time you can pick up from the seller
+                            </>
+                          )}
+
+                          <button
+                            onClick={() => {
+                              if (
+                                time_type === "ASAP" &&
+                                time &&
+                                isValidDate(date)
+                              ) {
+                                if (
+                                  wishlist.orderMethod === orderMethod.PICKUP
+                                ) {
+                                  setWishlistState((prev) => ({
+                                    ...prev,
+                                    deliveryDate: undefined,
+                                    proposedLoc: undefined,
+                                    pickupDate: date || undefined,
+                                    selected_time_type: "ASAP",
+                                  }));
+                                } else if (
+                                  wishlist.orderMethod === orderMethod.DELIVERY
+                                ) {
+                                  setWishlistState((prev) => ({
+                                    ...prev,
+                                    pickupDate: undefined,
+                                    deliveryDate: date || undefined,
+                                    selected_time_type: "ASAP",
+                                  }));
+                                }
+                              }
+                            }}
+                            className="truncate flex justify-start items-center"
+                          >
+                            <div
+                            // className={`rounded-full border p-[.4rem] ${
+                            //   pDate?.getTime() === earlyDate.getTime() ||
+                            //   dDate.getTime() === earlyDate.getTime()
+                            //     ? "bg-black"
+                            //     : "bg-white"
+                            // }`}
+                            >
+                              <div className="rounded-full border bg-white p-1" />
                             </div>
-                          </>
-                        ) : (
-                          <>The earliest time you can pick up from the seller</>
-                        )}
+                            <div className={`text-center w-full ml-2`}>
+                              {time}
+                            </div>
+                          </button>
+                        </>
                       </>
                     ) : (
                       <>
@@ -551,7 +649,12 @@ const WishlistClient = ({ wishlist, userLocs, mk }: p) => {
                       >
                         Reset
                       </button>
-                      <SaveChangesButton />
+                      <button
+                        className={`${outfitFont.className} text-white bg-black px-3 py-2 rounded-full border `}
+                        onClick={() => saveChanges()}
+                      >
+                        Save Changes
+                      </button>
                     </div>
                   </div>
                 </PopoverContent>
