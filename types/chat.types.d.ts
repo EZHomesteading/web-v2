@@ -120,7 +120,11 @@ declare module "chat-types" {
     paymentIntentId: string | null;
     quantity: ListingQuantities[];
     status: OrderStatus;
-
+    fee: {
+      delivery: number | null;
+      site: number | null;
+      other: number[];
+    } | null;
     location: {
       address: string[];
       hours: {

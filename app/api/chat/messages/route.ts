@@ -10,7 +10,8 @@ export async function POST(request: Request) {
   try {
     const user = await currentUser();
     const body = await request.json();
-    const { message, messageOrder, image, conversationId, otherUserId } = body;
+    const { message, messageOrder, image, conversationId, otherUserId, fee } =
+      body;
     if (!user?.id || !user?.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
       data: {
         body: message,
         messageOrder: messageOrder,
+        fee: fee,
         image: image,
         conversation: {
           connect: { id: conversationId },
