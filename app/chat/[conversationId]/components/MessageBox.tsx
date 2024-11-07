@@ -180,7 +180,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       message =
         "That works, I will be there to pick up the item at the specified time.";
     } else if (status === "PICKED_UP") {
-      message = "I have Received my order?. Thank you!";
+      message = "I have Received my order. Thank you!";
     } else if (status === "COMPLETED") {
       message =
         "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
@@ -195,7 +195,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     ) {
       message = "Yes, That time works. Your delivery Fee will be";
     } else if (status === "IN_TRANSIT") {
-      message = "Your order is on the way!";
+      message = "Your order is on the way!We are Preparing your Order";
+    } else if (status === "SELLER_PREPARING") {
+      message = "We are Preparing your Order!";
     }
     return message;
   };
@@ -210,10 +212,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       conversationId: convoId,
       otherUserId: otherUsersId,
     });
-    await axios.post("/api/useractions/checkout/update-order", {
-      orderId: order?.id,
-      status: status,
-    });
+    if (status === "COMPLETED") {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order?.id,
+        status: status,
+        completedAt: new Date(),
+      });
+    } else {
+      await axios.post("/api/useractions/checkout/update-order", {
+        orderId: order?.id,
+        status: status,
+      });
+    }
   };
   console.log(order?.fee?.delivery);
   const onSubmit = async (status: OrderStatus) => {
@@ -1029,6 +1039,30 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       </button>
     </div>
   );
+  const resp13 = (
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
+      <button
+        type="submit"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit("SELLER_PREPARING");
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
+      >
+        <PiCalendarCheckLight />
+        {isLoading ? "Loading..." : "Preparing Order"}
+      </button>
+    </div>
+  );
   return (
     <div>
       {/* {user.id === order?.sellerId ? (
@@ -1192,6 +1226,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     Pay for your order to confirm Delivery
                   </button>
                 </div>
+              ) : isLast &&
+                notOwn &&
+                data.messageOrder === "SELLER_ACCEPTED" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+
+                  <button
+                    onClick={() => setIsCheckoutOpen(true)}
+                    className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
+                  >
+                    Pay for your order to Confirm
+                  </button>
+                </div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}
@@ -1235,7 +1282,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               <Button
                 variant={
                   (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (isOwn && data.messageOrder === "IN_TRANSIT")
+                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (isOwn && data.messageOrder === "IN_TRANSIT") ||
+                  (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? "default"
                     : "secondary"
                 }
@@ -1245,13 +1294,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
                 style={
                   (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (isOwn && data.messageOrder === "IN_TRANSIT")
+                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (isOwn && data.messageOrder === "IN_TRANSIT") ||
+                  (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
               >
                 {(notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                (isOwn && data.messageOrder === "IN_TRANSIT") ? (
+                (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                (isOwn && data.messageOrder === "IN_TRANSIT") ||
+                (isOwn && data.messageOrder === "SELLER_PREPARING") ? (
                   <>
                     <BiMessageSquareEdit className="w-6 h-6" />
                     <span className="text-lg">Choose Response</span>
@@ -1281,28 +1334,37 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     order?.fulfillmentType === "DELIVERY" &&
                     data.messageOrder === "SELLER_ACCEPTED" ? (
                     resp10
-                  ) : isOwn &&
-                    order?.fulfillmentType !== "DELIVERY" &&
-                    data.messageOrder === "SELLER_ACCEPTED" ? (
-                    resp2
-                  ) : notOwn && data.messageOrder === "SELLER_RESCHEDULED" ? (
+                  ) : // : notOwn &&
+                  //   order?.fulfillmentType === "PICKUP" &&
+                  //   data.messageOrder === "SELLER_ACCEPTED" ? (
+                  //   resp2
+                  // )
+                  notOwn && data.messageOrder === "SELLER_RESCHEDULED" ? (
                     resp3
                   ) : notOwn && data.messageOrder === "4" ? (
                     resp4
                   ) : notOwn && data.messageOrder === "5" ? (
                     resp5
-                  ) : notOwn && data.messageOrder === "6" ? (
+                  ) : (notOwn && data.messageOrder === "DELIVERED") ||
+                    (notOwn && data.messageOrder === "READY_FOR_PICKUP") ? (
                     resp6
-                  ) : notOwn && data.messageOrder === "7" ? (
+                  ) : notOwn && data.messageOrder === "PICKED_UP" ? (
                     resp7
                   ) : notOwn && data.messageOrder === "10" ? (
                     resp8
                   ) : notOwn &&
+                    order?.fulfillmentType === "DELIVERY" &&
                     data.messageOrder === "SCHEDULE_CONFIRMED_PAID" ? (
                     resp12
+                  ) : notOwn &&
+                    order?.fulfillmentType === "PICKUP" &&
+                    data.messageOrder === "SCHEDULE_CONFIRMED_PAID" ? (
+                    resp13
                   ) : isOwn && data.messageOrder === "IN_TRANSIT" ? (
                     resp10
-                  ) : notOwn && data.messageOrder === "13" ? (
+                  ) : isOwn && data.messageOrder === "SELLER_PREPARING" ? (
+                    resp5
+                  ) : notOwn && data.messageOrder === "DELIVERED" ? (
                     resp11
                   ) : isOwn && data.messageOrder === "14" ? (
                     resp10
