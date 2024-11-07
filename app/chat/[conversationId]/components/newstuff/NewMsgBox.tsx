@@ -11,7 +11,7 @@ import {
 import Avatar from "@/components/Avatar";
 import { outfitFont } from "@/components/fonts";
 import { getMessageOptions } from "./messageOptions";
-import { chatService } from "../helper-funcs/chat-service";
+import { chatService } from "../../helper-funcs/chat-service";
 import { MessageImage } from "./message-image";
 import { MessageActions } from "./message-actions";
 

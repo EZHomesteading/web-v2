@@ -78,6 +78,7 @@ const getFullChatData = async (
         fulfillmentType: true,
         conversationId: true,
         paymentIntentId: true,
+        fee: true,
         quantity: true,
         status: true,
         location: {
@@ -93,6 +94,7 @@ const getFullChatData = async (
           userId: order.userId,
           fulfillmentType: order.fulfillmentType,
           pickupDate: order.pickupDate,
+          fee: order.fee,
           totalPrice: order.totalPrice,
           conversationId: order.conversationId,
           paymentIntentId: order.paymentIntentId,

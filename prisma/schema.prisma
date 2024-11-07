@@ -406,8 +406,9 @@ model Order {
   totalPrice      Float
   status          OrderStatus         @default(PENDING)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
 
   fee                 Fees?
   conversationId      String?         @db.ObjectId
@@ -452,14 +453,14 @@ model Conversation {
 }
 
 model Message {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  body         String?
-  image        String?
-  createdAt    DateTime    @default(now())
-  messageOrder OrderStatus
-  listingId    String?     @db.ObjectId
-  seen         Boolean     @default(false)
-
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  body           String?
+  image          String?
+  createdAt      DateTime     @default(now())
+  messageOrder   OrderStatus
+  listingId      String?      @db.ObjectId
+  seen           Boolean      @default(false)
+  fee            Float?
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
