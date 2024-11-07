@@ -143,25 +143,25 @@ type fullName {
 }
 
 model Location {
-  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
-  userId              String          @db.ObjectId
+  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String        @db.ObjectId
   displayName         String?
-  user                User            @relation(fields: [userId], references: [id])
+  user                User          @relation(fields: [userId], references: [id])
   listings            Listing[]
   orders              Order[]
   type                String
   coordinates         Float[]
   address             String[]
   hours               Hours?
-  role                UserRole        @default(PRODUCER)
+  role                UserRole      @default(PRODUCER)
   SODT                Int?
   bio                 String?
   image               String?
-  isDefault           Boolean         @default(false)
-  showPreciseLocation Boolean         @default(false)
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  wishlist            WishlistGroup[]
+  isDefault           Boolean       @default(false)
+  showPreciseLocation Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  basket              BasketGroup[]
 }
 
 model User {
@@ -184,7 +184,7 @@ model User {
   favoriteIds           String[]               @db.ObjectId
   accounts              Account[]
   listings              Listing[]
-  wishlist              WishlistGroup[]
+  basket                BasketGroup[]
   following             Following?
   buyerOrders           Order[]                @relation("buyer")
   sellerOrders          Order[]                @relation("seller")
@@ -298,7 +298,7 @@ model Listing {
   smsList         notifList?
 
   user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wishlistItem       WishlistItem[]
+  basketItem         BasketItem[]
   recentlyViewedItem RecentlyViewedItem[]
 }
 
@@ -308,7 +308,7 @@ enum orderMethod {
   DELIVERY
 }
 
-enum wishlistStatus {
+enum basketStatus {
   ACTIVE
   SAVED_FOR_LATER
   EXPIRED
@@ -327,18 +327,18 @@ model RecentlyViewedItem {
   @@unique([listingId])
 }
 
-model WishlistItem {
-  id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  wishlistGroupId String        @db.ObjectId
-  wishlistGroup   WishlistGroup @relation(fields: [wishlistGroupId], references: [id], onDelete: Cascade)
-  listingId       String        @db.ObjectId
-  listing         Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  quantity        Int           @default(1)
-  price           Int // price in cents  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+model BasketItem {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  basketGroupId String      @db.ObjectId
+  basketGroup   BasketGroup @relation(fields: [basketGroupId], references: [id], onDelete: Cascade)
+  listingId     String      @db.ObjectId
+  listing       Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  quantity      Int         @default(1)
+  price         Int // price in cents  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  @@unique([wishlistGroupId, listingId])
+  @@unique([basketGroupId, listingId])
 }
 
 type proposedLoc {
@@ -346,21 +346,21 @@ type proposedLoc {
   address     String[]
 }
 
-model WishlistGroup {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String         @db.ObjectId
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  locationId   String         @db.ObjectId
-  location     Location       @relation(fields: [locationId], references: [id], onDelete: Cascade)
+model BasketGroup {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String       @db.ObjectId
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId   String       @db.ObjectId
+  location     Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
   proposedLoc  proposedLoc?
-  items        WishlistItem[]
+  items        BasketItem[]
   pickupDate   DateTime?
   deliveryDate DateTime?
-  orderMethod  orderMethod    @default(UNDECIDED)
-  status       wishlistStatus @default(ACTIVE)
+  orderMethod  orderMethod  @default(UNDECIDED)
+  status       basketStatus @default(ACTIVE)
   notes        String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@unique([userId, locationId])
 }
@@ -381,10 +381,11 @@ type OrderLoc {
   address     String[]
   coordinates Float[]
 }
-type ListingQuantities{
-  id String @db.ObjectId
+
+type ListingQuantities {
+  id       String @db.ObjectId
   quantity Int
-  }
+}
 
 model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
@@ -396,7 +397,7 @@ model Order {
   paymentIntentId String?
   quantity        ListingQuantities[]
   totalPrice      Float
-  status          OrderStatus @default(PENDING)
+  status          OrderStatus         @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -406,8 +407,8 @@ model Order {
   payments       Payment[]
   history        OrderHistory[]
   dispute        Dispute?
-  buyer          User          @relation(name: "buyer", fields: [userId], references: [id])
-  seller         User          @relation(name: "seller", fields: [sellerId], references: [id])
+  buyer          User           @relation(name: "buyer", fields: [userId], references: [id])
+  seller         User           @relation(name: "seller", fields: [sellerId], references: [id])
 
   preferredLocationId String? @db.ObjectId
   actualLocationId    String? @db.ObjectId

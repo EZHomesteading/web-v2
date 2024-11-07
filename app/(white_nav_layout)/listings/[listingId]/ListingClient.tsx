@@ -10,7 +10,7 @@ import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";
 import { UserInfo } from "next-auth";
-import { useWishlist } from "@/hooks/listing/use-wishlist";
+import { useWishlist } from "@/hooks/listing/use-basket";
 import { Loader2 } from "lucide-react";
 
 interface ListingClientProps {

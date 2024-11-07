@@ -10,7 +10,7 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
 import { outfitFont, zillaFont } from "@/components/fonts";
-import { useWishlist } from "@/hooks/listing/use-wishlist";
+import { useWishlist } from "@/hooks/listing/use-basket";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
 
