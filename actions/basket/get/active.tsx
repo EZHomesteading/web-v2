@@ -1,6 +1,5 @@
 import { Basket } from "@/app/(white_nav_layout)/my-baskets/page";
 import authCache from "@/auth-cache";
-import { NextResponse } from "next/server";
 import { Basket_ID_Page } from "@/types/basket";
 
 async function getActiveBaskets(): Promise<{

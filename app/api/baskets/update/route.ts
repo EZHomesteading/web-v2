@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   }
   console.log(deliveryDate)
   try {
-    const updatedWishlist = await prisma.basketGroup.update({
+    const updatedWishlist = await prisma.basket.update({
       where: { id },
       data: {
         proposedLoc:proposedLoc,

@@ -10,7 +10,7 @@ export async function GET(req:NextRequest) {
     return null
   }
   try {
-    const baskets = await prisma.basketGroup.findMany({
+    const baskets = await prisma.basket.findMany({
       where: {
         userId: userId,
         status: basketStatus.ACTIVE

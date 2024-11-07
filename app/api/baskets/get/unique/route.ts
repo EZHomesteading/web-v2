@@ -14,7 +14,7 @@ export async function GET(request: Request): Promise<Basket_ID_Page | NextRespon
     }
 
     try {
-        const basketGroup = await prisma.basketGroup.findUnique({
+        const basketGroup = await prisma.basket.findUnique({
             where: { id },
             select:{
                 userId:true
@@ -34,7 +34,7 @@ export async function GET(request: Request): Promise<Basket_ID_Page | NextRespon
             )
         }
 
-        const fullBasketGroup = await prisma.basketGroup.findUnique({
+        const fullBasketGroup = await prisma.basket.findUnique({
             where: { id },
             select: {
                 id:true,

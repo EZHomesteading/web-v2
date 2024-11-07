@@ -92,8 +92,8 @@ const PanelCart: React.FC<StackingPanelLayoutProps> = ({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                width: "100%",
-                height: "100%",
+                width: "50%",
+                height: "50%",
                 top: 0,
               }}
               initial={{ y: "-150%" }}

@@ -82,7 +82,7 @@ const BasketCard = ({ basket }: BasketCardProps) => {
     layoutConfigs[1];
 
   return (
-    <Link href={`/basket/${id}`} className="max-w-[300px]">
+    <Link href={`/my-basket/${id}`} className="max-w-[300px]">
       <div className="group rounded-lg overflow-hidden shadow-md hover:shadow-md transition-shadow duration-200">
         <div className="relative w-full  pt-[100%]">
           <div

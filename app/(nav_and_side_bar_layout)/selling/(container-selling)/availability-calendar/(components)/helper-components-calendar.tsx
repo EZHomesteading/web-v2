@@ -463,11 +463,11 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
   return (
     <div
       onMouseDown={handleMouseDown}
-      className={`
-        ${day !== null ? "border-black cursor-pointer bg-white" : ""}
-        ${isSelected && day !== null ? " " : ""}
-        relative
-      `}
+      className={`relative flex items-center justify-center  ${
+        day !== null ? " cursor-pointer p-1" : ""
+      } ${
+        isSelected && day !== null ? "border-blue-500" : "border-transparent"
+      }`}
     >
       {day !== null && (
         <div
@@ -485,6 +485,7 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
     </div>
   );
 };
+
 {
   /* {timeSlots?.map((slot, index) => (
             <div

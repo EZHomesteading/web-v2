@@ -82,7 +82,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, mode }) => {
             : "Delivery Time"}
         </div>
         <input
-          className={`text-xl font-medium text-center border border-gray-300 bg-inherit focus:outline-none w-fit rounded-md shadow-md px-2 py-4`}
+          className={`text-sm font-normal text-center border border-gray-300 bg-inherit focus:outline-none w-fit rounded-md shadow-md p-2`}
           value={value}
           onChange={handleTimeInputChange}
           size={8}
