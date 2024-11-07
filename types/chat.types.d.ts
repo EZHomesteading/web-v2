@@ -98,6 +98,7 @@ declare module "chat-types" {
     createdAt: Date;
     messageOrder: string | null;
     seen: boolean;
+    fee: number | null;
     sender: {
       id: string;
       name: string;

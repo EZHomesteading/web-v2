@@ -39,11 +39,13 @@ import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
 
 import HarvestModal from "./HarvestModal";
-import { ChatMessage, ChatOrder, ChatUser } from "chat-types";
+import { ChatListing, ChatMessage, ChatOrder, ChatUser } from "chat-types";
 import { outfitFont, zillaFont } from "@/components/fonts";
+import CheckoutModal from "./CheckoutModal";
 
 type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
+  listings: ChatListing[];
   data: ChatMessage;
   listing: Listing | null;
   isLast?: boolean;
@@ -59,6 +61,7 @@ interface MessageBoxProps {
 const MessageBox: React.FC<MessageBoxProps> = ({
   data,
   isLast,
+  listings,
   user,
   convoId,
   listing,
@@ -79,6 +82,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [newStatus, setStatus] = useState<OrderStatus>("PENDING");
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [currentSubmitFunction, setCurrentSubmitFunction] =
     useState<SubmitFunction | null>(null);
@@ -1046,6 +1051,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        listings={listings}
+        order={order}
+        user={user}
+        deliveryFee={data.fee || null}
+      />
       <HarvestModal
         isOpen={HarvestOpen}
         onClose={() => setHarvestOpen(false)}
@@ -1130,7 +1143,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     </SheetContent>
                   </Sheet>
                 </div>
-              ) : data.messageOrder === "100" ? (
+              ) : data.messageOrder === "HARVEST" ? (
                 <div>
                   <div className={message}>{data.body}</div>
 
@@ -1139,6 +1152,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
                   >
                     Projected Harvest Options
+                  </button>
+                </div>
+              ) : isLast &&
+                notOwn &&
+                data.messageOrder === "SELLER_PROPOSED_DELIVERY_FEE" ? (
+                <div>
+                  <div className={message}>{data.body}</div>
+
+                  <button
+                    onClick={() => setIsCheckoutOpen(true)}
+                    className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
+                  >
+                    Pay for your order to confirm Delivery
                   </button>
                 </div>
               ) : (
