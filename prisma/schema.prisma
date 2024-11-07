@@ -60,6 +60,8 @@ enum OrderStatus {
   ADMIN_RESOLVED_DISPUTE
   BUYER_RESOLVED_DISPUTE
   SELLER_RESOLVED_DISPUTE
+  ADMIN_MESSAGE
+  HARVEST
 
   DISPUTEE_RESPONDED
   DISPUTER_RESPONDED
@@ -387,6 +389,11 @@ type ListingQuantities {
   quantity Int
 }
 
+enum fulfillmentType {
+  DELIVERY
+  PICKUP
+}
+
 model Order {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
@@ -402,16 +409,16 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  fee            Fees?
-  conversationId String?        @db.ObjectId
-  payments       Payment[]
-  history        OrderHistory[]
-  dispute        Dispute?
-  buyer          User           @relation(name: "buyer", fields: [userId], references: [id])
-  seller         User           @relation(name: "seller", fields: [sellerId], references: [id])
-
-  preferredLocationId String? @db.ObjectId
-  actualLocationId    String? @db.ObjectId
+  fee                 Fees?
+  conversationId      String?         @db.ObjectId
+  payments            Payment[]
+  history             OrderHistory[]
+  dispute             Dispute?
+  buyer               User            @relation(name: "buyer", fields: [userId], references: [id])
+  seller              User            @relation(name: "seller", fields: [sellerId], references: [id])
+  fulfillmentType     fulfillmentType
+  preferredLocationId String?         @db.ObjectId
+  actualLocationId    String?         @db.ObjectId
   deliveryNotes       String?
 
   location   Location? @relation(fields: [locationId], references: [id])
@@ -445,13 +452,13 @@ model Conversation {
 }
 
 model Message {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   body         String?
   image        String?
-  createdAt    DateTime @default(now())
-  messageOrder String?
-  listingId    String?  @db.ObjectId
-  seen         Boolean  @default(false)
+  createdAt    DateTime    @default(now())
+  messageOrder OrderStatus
+  listingId    String?     @db.ObjectId
+  seen         Boolean     @default(false)
 
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

@@ -79,13 +79,12 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   }, [conversation.messages]);
 
   const userEmail = useMemo(() => user?.email, [user?.email]);
-  const isOwn = user?.fullName?.first === lastMessage?.sender?.fullName?.first;
+  const isOwn = user?.email === lastMessage?.sender?.email;
   const notOwn = !isOwn;
 
   const hasSeen = useMemo(() => {
     if (!lastMessage || !userEmail) return false;
-    const seenArray = lastMessage.seen || [];
-    return seenArray.some((seenUser) => seenUser.email === userEmail);
+    return lastMessage.seen;
   }, [userEmail, lastMessage]);
 
   return (
@@ -101,12 +100,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       <div className={`${outfit.className} min-w-0 flex-1`}>
         <div className="focus:outline-none">
           <span className="absolute inset-0" aria-hidden="true" />
-          {(notOwn &&
-            lastMessage?.messageOrder !== "2" &&
-            lastMessage?.messageOrder !== "14") ||
-          (isOwn &&
-            (lastMessage?.messageOrder === "2" ||
-              lastMessage?.messageOrder === "14")) ? (
+          {(notOwn && lastMessage?.messageOrder !== "SELLER_ACCEPTED") ||
+          (isOwn && lastMessage?.messageOrder === "SELLER_ACCEPTED") ? (
             <span
               className=" bg-white w-3 h-3 rounded-[40px] absolute left-[40px] top-[43px] md:left-[50px] md:top-[45px] group"
               aria-label="Your turn to respond"
