@@ -10,8 +10,8 @@ import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
 import { User } from "@prisma/client";
 import { UserInfo } from "next-auth";
-import { useWishlist } from "@/hooks/listing/use-wishlist";
 import { Loader2 } from "lucide-react";
+import { useBasket } from "@/hooks/listing/use-basket";
 
 interface ListingClientProps {
   listing: FinalListing & { description: string };
@@ -38,23 +38,23 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const {
     isLoading: isListLoading,
     checkExistingItem,
-    isInWishlist,
+    isInBasket,
     quantity,
-  } = useWishlist({
+  } = useBasket({
     listingId: listing.id,
     user,
     initialQuantity: listing.minOrder || 1,
   });
 
   useEffect(() => {
-    const initializeWishlistState = async () => {
+    const initializeBasketState = async () => {
       if (user) {
         await checkExistingItem();
       }
       setIsInitialized(true);
     };
 
-    initializeWishlistState();
+    initializeBasketState();
   }, [user, checkExistingItem]);
 
   const adjustedListing = {

@@ -10,7 +10,7 @@ import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
 import { outfitFont, zillaFont } from "@/components/fonts";
-import { useWishlist } from "@/hooks/listing/use-wishlist";
+import { useBasket } from "@/hooks/listing/use-basket";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
 
@@ -49,23 +49,23 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   const [selectedTime, setSelectedTime] = useState<Date>();
   const [existingItem, setExistingItem] = useState<any>(null);
 
-  // Initialize wishlist hook
+  // Initialize basket hook
   const {
     isLoading,
     quantity,
     setQuantity,
-    toggleWishlist,
+    toggleBasket,
     checkExistingItem,
-    isInWishlist,
-  } = useWishlist({
+    isInBasket,
+  } = useBasket({
     listingId,
     user,
     initialQuantity: product.minOrder || 1,
   });
 
-  // Check for existing wishlist item on mount
+  // Check for existing basket item on mount
   useEffect(() => {
-    const checkWishlist = async () => {
+    const checkBasket = async () => {
       if (user) {
         const item = await checkExistingItem();
         setExistingItem(item);
@@ -74,7 +74,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         }
       }
     };
-    checkWishlist();
+    checkBasket();
   }, [user, checkExistingItem, setQuantity]);
 
   // Product details
@@ -113,7 +113,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     }
   };
 
-  // wish list handlers
+  // basket handlers
   const handleToggleWishList = async (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -123,8 +123,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     }
 
     try {
-      await toggleWishlist(e);
-      if (!isInWishlist) {
+      await toggleBasket(e);
+      if (!isInBasket) {
         const item = await checkExistingItem();
         setExistingItem(item);
       } else {
@@ -214,8 +214,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     );
   };
 
-  // Render wish list button text
-  const renderWishlistButtonText = () => {
+  // Render basket button text
+  const renderBasketButtonText = () => {
     if (isLoading) {
       return (
         <div className="flex items-center gap-2">
@@ -225,11 +225,11 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       );
     }
 
-    if (isInWishlist) {
+    if (isInBasket) {
       return (
         <div className="flex items-center justify-center gap-2">
           <Trash className="h-4 w-4" />
-          Remove from Wish List
+          Remove from Basket
         </div>
       );
     }
@@ -237,7 +237,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     return (
       <div className="flex items-center justify-center gap-2">
         <ShoppingCart className="h-4 w-4" />
-        Add {quantity} {quantityType} to Wish List
+        Add {quantity} {quantityType} to Basket
       </div>
     );
   };
@@ -314,30 +314,27 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               </>
             )}
 
-            {/* Show existing cwishlist info if item exists */}
+            {/* Show existing cbasket info if item exists */}
             {existingItem && (
               <div className="p-2 bg-gray-50 rounded-md mb-2">
                 <h3 className="font-medium text-sm mb-1">
-                  Currently on Wish List:
+                  Currently on Basket:
                 </h3>
                 <ul className="text-sm text-gray-600">
                   <li>
                     Quantity: {existingItem.quantity} {quantityType}
                   </li>
-                  {existingItem.wishlistGroup?.pickupDate && (
+                  {existingItem.basket?.pickupDate && (
                     <li>
                       Pickup:{" "}
-                      {format(
-                        new Date(existingItem.wishlistGroup.pickupDate),
-                        "PPp"
-                      )}
+                      {format(new Date(existingItem.basket.pickupDate), "PPp")}
                     </li>
                   )}
                 </ul>
               </div>
             )}
             <div className="flex flex-col items-center gap-2">
-              {!isInWishlist && (
+              {!isInBasket && (
                 <div className="flex flex-row justify-center items-center mt-2">
                   Set Quantity
                   <div
@@ -395,12 +392,12 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                 onClick={handleToggleWishList}
                 disabled={isLoading}
                 className={`w-full shadow-xl mb-[2px] ${
-                  isInWishlist
+                  isInBasket
                     ? "bg-red-400 hover:bg-red-500"
                     : "bg-green-400 hover:bg-green-500"
                 }`}
               >
-                {renderWishlistButtonText()}
+                {renderBasketButtonText()}
               </Button>
             </div>
             <div>
