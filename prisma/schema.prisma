@@ -145,25 +145,25 @@ type fullName {
 }
 
 model Location {
-  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId              String        @db.ObjectId
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @db.ObjectId
   displayName         String?
-  user                User          @relation(fields: [userId], references: [id])
+  user                User      @relation(fields: [userId], references: [id])
   listings            Listing[]
   orders              Order[]
   type                String
   coordinates         Float[]
   address             String[]
   hours               Hours?
-  role                UserRole      @default(PRODUCER)
+  role                UserRole  @default(PRODUCER)
   SODT                Int?
   bio                 String?
   image               String?
-  isDefault           Boolean       @default(false)
-  showPreciseLocation Boolean       @default(false)
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
-  basket              BasketGroup[]
+  isDefault           Boolean   @default(false)
+  showPreciseLocation Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  baskets             Basket[]
 }
 
 model User {
@@ -186,7 +186,7 @@ model User {
   favoriteIds           String[]               @db.ObjectId
   accounts              Account[]
   listings              Listing[]
-  basket                BasketGroup[]
+  baskets               Basket[]
   following             Following?
   buyerOrders           Order[]                @relation("buyer")
   sellerOrders          Order[]                @relation("seller")
@@ -330,17 +330,17 @@ model RecentlyViewedItem {
 }
 
 model BasketItem {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  basketGroupId String      @db.ObjectId
-  basketGroup   BasketGroup @relation(fields: [basketGroupId], references: [id], onDelete: Cascade)
-  listingId     String      @db.ObjectId
-  listing       Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  quantity      Int         @default(1)
-  price         Int // price in cents  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  basketId  String   @db.ObjectId
+  basket    Basket   @relation(fields: [basketId], references: [id], onDelete: Cascade)
+  listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  price     Int // price in cents  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([basketGroupId, listingId])
+  @@unique([basketId, listingId])
 }
 
 type proposedLoc {
@@ -348,7 +348,7 @@ type proposedLoc {
   address     String[]
 }
 
-model BasketGroup {
+model Basket {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
   userId       String       @db.ObjectId
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)

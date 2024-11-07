@@ -19,7 +19,7 @@ export async function PATCH(request: Request, { params }: { params: IParams }) {
     const { status, pickupDate, deliveryDate, notes, proposedLoc } = body;
 
     // Only check existence and ownership
-    const existingGroup = await prisma.basketGroup.findFirst({
+    const existingGroup = await prisma.basket.findFirst({
       where: {
         id: groupId,
         userId: user.id,
@@ -41,7 +41,7 @@ export async function PATCH(request: Request, { params }: { params: IParams }) {
     if (proposedLoc !== undefined) updateData.proposedLoc = proposedLoc;
 
     // Update with only changed fields
-    const updatedGroup = await prisma.basketGroup.update({
+    const updatedGroup = await prisma.basket.update({
       where: { id: groupId },
       data: updateData,
       select: {

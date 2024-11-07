@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: { params: IParams }) {
     const basketItem = await prisma.basketItem.findFirst({
       where: {
         listingId,
-        basketGroup: {
+        basket: {
           userId: user.id,
           status: "ACTIVE",
         },
@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: { params: IParams }) {
       select: {
         id: true,
         quantity: true,
-        basketGroup: {
+        basket: {
           select: {
             pickupDate: true,
             status: true,

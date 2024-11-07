@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     // Check for existing group with minimal data
-    let basketGroup = await prisma.basketGroup.findFirst({
+    let basketGroup = await prisma.basket.findFirst({
       where: {
         userId: user.id,
         locationId: listing.locationId,
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     });
 
     if (!basketGroup) {
-      basketGroup = await prisma.basketGroup.create({
+      basketGroup = await prisma.basket.create({
         data: {
           userId: user.id,
           locationId: listing.locationId,
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     // Create basket item with only necessary data
     const basketItem = await prisma.basketItem.create({
       data: {
-        basketGroupId: basketGroup.id,
+        basketId: basketGroup.id,
         listingId,
         quantity,
         price: listing.price,
@@ -82,7 +82,7 @@ export async function GET(request: Request) {
 
     const basketItems = await prisma.basketItem.findMany({
       where: {
-        basketGroup: {
+        basket: {
           userId: user.id,
           status: "ACTIVE",
         },
@@ -92,7 +92,7 @@ export async function GET(request: Request) {
         quantity: true,
         price: true,
         listingId: true,
-        basketGroup: {
+        basket: {
           select: {
             pickupDate: true,
             locationId: true,

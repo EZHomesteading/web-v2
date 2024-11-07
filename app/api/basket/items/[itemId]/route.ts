@@ -27,13 +27,13 @@ export async function DELETE(
     const basketItem = await prisma.basketItem.findFirst({
       where: {
         id: itemId,
-        basketGroup: {
+        basket: {
           userId: user.id,
         },
       },
       select: {
         id: true,
-        basketGroupId: true,
+        basketId: true,
       },
     });
 
@@ -50,13 +50,13 @@ export async function DELETE(
 
       // Check remaining items count
       const remainingCount = await tx.basketItem.count({
-        where: { basketGroupId: basketItem.basketGroupId },
+        where: { basketId: basketItem.basketId },
       });
 
       // If no items remain, delete the group
       if (remainingCount === 0) {
-        await tx.basketGroup.delete({
-          where: { id: basketItem.basketGroupId },
+        await tx.basket.delete({
+          where: { id: basketItem.basketId },
         });
       }
     });
@@ -67,3 +67,4 @@ export async function DELETE(
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+
