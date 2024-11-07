@@ -50,7 +50,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
     "Update stock to current expected quantity and disable future harvest projections",
     "Remove projected harvest for this month from the listing",
   ];
-  console.log(messageId);
+  //console.log(messageId);
   const harvestSet = async (harvestType: string) => {
     setIsLoading(true);
     try {

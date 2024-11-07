@@ -42,6 +42,7 @@ import { RiExchangeDollarLine } from "react-icons/ri";
 import { MdOutlineRateReview } from "react-icons/md";
 import { UserInfo } from "next-auth";
 import { ChatMessage, ChatOrder, ChatUser, OtherUserChat } from "chat-types";
+import { usePageVisibility } from "@/hooks/messenger/visibilityState";
 
 interface BodyProps {
   initialMessages: ChatMessage[];
@@ -118,9 +119,9 @@ const Body: React.FC<BodyProps> = ({
     [order];
   useEffect(() => {
     if (
-      lastMessage.messageOrder === "1" ||
-      lastMessage.messageOrder === "2" ||
-      lastMessage.messageOrder === "3" ||
+      lastMessage.messageOrder === "BUYER_PROPOSED_TIME" ||
+      lastMessage.messageOrder === "SELLER_ACCEPTED" ||
+      lastMessage.messageOrder === "SELLER_RESCHEDULED" ||
       lastMessage.messageOrder === "4" ||
       lastMessage.messageOrder === "5" ||
       lastMessage.messageOrder === "7" ||
@@ -151,24 +152,32 @@ const Body: React.FC<BodyProps> = ({
   }),
     [order];
   //handle seen messages
-  // const seenList = (lastMessage.seen || [])
-  //   .filter((user) => user.email !== lastMessage?.sender?.email)
-  //   .map((user) => user.name)
-  //   .join(", ");
+
   if (!user?.id) {
     return null;
   }
-  // useEffect(() => {
-  //   axios.post(`/api/chat/conversations/${conversationId}/seen`);
-  // }, [conversationId]);
+
   const router = useRouter();
+  const isVisible = usePageVisibility();
+  useEffect(() => {
+    if (
+      isVisible &&
+      messages[messages.length - 1].seen !== true &&
+      messages[messages.length - 1].sender.email !== user.email
+    )
+      axios.post(`/api/chat/conversations/${conversationId}/seen`, {
+        seen: true,
+      });
+  }, [conversationId, messages, isVisible]);
   useEffect(() => {
     bottomRef?.current?.scrollIntoView();
   }, [initialMessages, conversationId]);
   useEffect(() => {
     const messageHandler = async (message: FullMessageType) => {
       try {
-        await axios.post(`/api/chat/conversations/${conversationId}/seen`);
+        await axios.post(`/api/chat/conversations/${conversationId}/seen`, {
+          seen: false,
+        });
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages, message];
           // Check if the new message is the last one in the updated messages array
@@ -209,6 +218,7 @@ const Body: React.FC<BodyProps> = ({
       pusherClient.unbind("message:update", updateMessageHandler);
     };
   }, [conversationId, messages]);
+
   const formattedPickupDate = order?.pickupDate
     ? formatPickupDate(order.pickupDate)
     : "No pickup date set";
@@ -495,7 +505,9 @@ const Body: React.FC<BodyProps> = ({
       {messages.map((message, i) => (
         <MessageBox
           messagesLength={messages.length}
-          listing={messages !== adminMessages ? adminMessages[i].listing : null}
+          listing={
+            message.messageOrder === "HARVEST" ? adminMessages[i].listing : null
+          }
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}

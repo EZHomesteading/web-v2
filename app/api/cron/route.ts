@@ -82,21 +82,15 @@ export async function GET(request: Request) {
       }
       const newConversation = await prisma.conversation.create({
         data: {
-          users: {
-            connect: [
-              { id: filteredHarvests[0].userId },
-              { id: "66fc429f3f6c8d3180c628f0" },
-            ],
-          },
-        },
-        include: {
-          users: true,
+          participantIds: [
+            filteredHarvests[0].userId,
+            "66fc429f3f6c8d3180c628f0",
+          ],
         },
       });
       filteredHarvests.map(async (harvestListing: any) => {
         const newMessage = await prisma.message.create({
           include: {
-            seen: true,
             sender: true,
           },
           data: {
@@ -106,7 +100,7 @@ export async function GET(request: Request) {
               harvestListing.projectedStock,
               harvestListing.quantityType
             )} available this month. Please select an option.`,
-            messageOrder: "100",
+            messageOrder: "HARVEST",
             listingId: harvestListing.id,
             conversation: {
               connect: { id: newConversation.id },
@@ -114,11 +108,7 @@ export async function GET(request: Request) {
             sender: {
               connect: { id: "66fc429f3f6c8d3180c628f0" },
             },
-            seen: {
-              connect: {
-                id: "66fc429f3f6c8d3180c628f0",
-              },
-            },
+            seen: false,
           },
         });
       });

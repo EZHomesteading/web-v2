@@ -10,6 +10,8 @@ declare module "chat-types" {
     | "REFUND_ORDER"
     | "COMPLETE_ORDER"
     | "CANCEL_ORDER";
+  export type fulfillmentType = "DELIVERY" | "PICKUP";
+
   interface ListingQuantity {
     id: string;
     quantity: number;
@@ -111,6 +113,7 @@ declare module "chat-types" {
     id: string;
     sellerId: string;
     userId: string;
+    fulfillmentType: fulfillmentType;
     pickupDate: Date | null;
     totalPrice: number;
     conversationId: string | null;
