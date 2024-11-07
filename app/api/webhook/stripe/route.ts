@@ -222,7 +222,10 @@ export async function POST(request: NextRequest) {
         id: order.conversationId,
         messages: [lastMessage],
       });
-
+      pusherServer.trigger(buyer?.email!, "conversation:update", {
+        id: order.conversationId,
+        messages: [lastMessage],
+      });
       const recipients = await prisma.user.findUnique({
         where: {
           id: seller.id,

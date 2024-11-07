@@ -194,6 +194,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       order?.fulfillmentType === "DELIVERY"
     ) {
       message = "Yes, That time works. Your delivery Fee will be";
+    } else if (status === "IN_TRANSIT") {
+      message = "Your order is on the way!";
     }
     return message;
   };
@@ -228,19 +230,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       //coop has set out the order
       await axios.post("/api/chat/messages", {
         message: img,
-        messageOrder: "img",
+        messageOrder: "IMG",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
         message: `Your order is ready to be picked up at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}!`,
-        messageOrder: "6",
+        messageOrder: "READY_FOR_PICKUP",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
       await axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
-        status: 8,
+        status: "READY_FOR_PICKUP",
       });
     } catch (error) {
       console.error(error);
@@ -255,19 +257,19 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       //early returns are handles in image upload function, cannot click submit without uploading an image.
       await axios.post("/api/chat/messages", {
         message: img,
-        messageOrder: "img",
+        messageOrder: "IMG",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
       await axios.post("/api/chat/messages", {
         message: "Your item has been delivered.",
-        messageOrder: "6",
+        messageOrder: "DELIVERED",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
       await axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
-        status: 16,
+        status: "DELIVERED",
       });
     } catch (error) {
       console.error(error);
@@ -1003,7 +1005,30 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       )}
     </div>
   );
-
+  const resp12 = (
+    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
+      <button
+        type="submit"
+        onClick={async () => {
+          setIsLoading(true);
+          try {
+            await onSubmit("IN_TRANSIT");
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
+          isLoading ? "cursor-not-allowed opacity-50" : ""
+        }`}
+        disabled={isLoading}
+      >
+        <PiCalendarCheckLight />
+        {isLoading ? "Loading..." : "Order On the way"}
+      </button>
+    </div>
+  );
   return (
     <div>
       {/* {user.id === order?.sellerId ? (
@@ -1085,7 +1110,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             </div>
           </div>
           {/* handle displaying images V.S. regular messages */}
-          {data.messageOrder === "img" ? (
+          {data.messageOrder === "IMG" ? (
             <>
               <div className={notMessage}>
                 <div className="m-5 relative">
@@ -1209,8 +1234,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <PopoverTrigger asChild>
               <Button
                 variant={
-                  (notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
-                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
+                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
+                  (isOwn && data.messageOrder === "IN_TRANSIT")
                     ? "default"
                     : "secondary"
                 }
@@ -1219,14 +1244,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             hover:scale-105
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
                 style={
-                  (notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
-                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
+                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
+                  (isOwn && data.messageOrder === "IN_TRANSIT")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
               >
-                {(notOwn && data.messageOrder !== "SELLER_ACCEPTED") ||
-                (isOwn && data.messageOrder === "SELLER_ACCEPTED") ? (
+                {(notOwn && data.messageOrder !== "IN_TRANSIT") ||
+                (isOwn && data.messageOrder === "IN_TRANSIT") ? (
                   <>
                     <BiMessageSquareEdit className="w-6 h-6" />
                     <span className="text-lg">Choose Response</span>
@@ -1272,9 +1297,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     resp7
                   ) : notOwn && data.messageOrder === "10" ? (
                     resp8
-                  ) : notOwn && data.messageOrder === "11" ? (
-                    resp9
-                  ) : notOwn && data.messageOrder === "12" ? (
+                  ) : notOwn &&
+                    data.messageOrder === "SCHEDULE_CONFIRMED_PAID" ? (
+                    resp12
+                  ) : isOwn && data.messageOrder === "IN_TRANSIT" ? (
                     resp10
                   ) : notOwn && data.messageOrder === "13" ? (
                     resp11

@@ -56,11 +56,11 @@ const PaymentForm = ({ clientSecret }: { clientSecret: string }) => {
     if (!stripe || !elements) return;
 
     setIsLoading(true);
-
+    const currentUrl = window.location.href;
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "https://ezhomesteading.com/dashboard/orders/buyer",
+        return_url: currentUrl,
         shipping: null,
       },
     });
