@@ -11,7 +11,7 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
 import toast from "react-hot-toast";
 import CancelModal from "./CancelModal";
-import { Listing, UserRole } from "@prisma/client";
+import { Listing, OrderStatus, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
 import {
   PiCalendarBlankLight,
@@ -78,7 +78,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [HarvestOpen, setHarvestOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [newStatus, setStatus] = useState("");
+  const [newStatus, setStatus] = useState<OrderStatus>("PENDING");
   const [isLoading, setIsLoading] = useState(false);
   const [currentSubmitFunction, setCurrentSubmitFunction] =
     useState<SubmitFunction | null>(null);
@@ -125,18 +125,14 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     setIsLoading(false);
   };
 
-  let onConfirm = async (status: string, updatedMessage?: string) => {
-    console.log("ONCONFIRM", updatedMessage, status);
-    if (updatedMessage) {
-      setIsLoading(true);
-      try {
-        console.log("Submitting message:", updatedMessage); // Debug log
-        await trySubmit(status, updatedMessage);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
+  let onConfirm = async (status: OrderStatus, skip?: boolean) => {
+    console.log("ONCONFIRM", status);
+    if (SetFee === true) {
+      setSetFee(false);
+    }
+    if (skip) {
+      setIsModalOpen(false);
+      return;
     } else {
       setIsLoading(true);
       try {
@@ -144,12 +140,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       } catch (error) {
         console.error(error);
       } finally {
+        setIsModalOpen(false);
         setIsLoading(false);
       }
     }
   };
 
-  const handleConfirm = (status: string): Promise<boolean> => {
+  const handleConfirm = (status: OrderStatus): Promise<boolean> => {
     return new Promise(async (resolve) => {
       const message = await getMessageByStatus(status);
       console.log("HANDLECONFIRM", status, message);
@@ -164,7 +161,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       };
     });
   };
-  const getMessageByStatus = async (status: string) => {
+  const getMessageByStatus = async (status: OrderStatus) => {
     let message = "";
     if (status === "SELLER_ACCEPTED" && order?.fulfillmentType === "PICKUP") {
       message = `Yes, That time works, Your order will be ready at that time. at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}.`;
@@ -196,14 +193,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     return message;
   };
   // all onsubmit options dependent on messages in chat.
-  const trySubmit = async (status: string, updatedMessage?: string) => {
-    let message = "";
-    if (!updatedMessage) {
-      message = await getMessageByStatus(status);
-    }
+  const trySubmit = async (status: OrderStatus) => {
+    const message = await getMessageByStatus(status);
+
     //coop seller confirms order pickup time
     await axios.post("/api/chat/messages", {
-      message: updatedMessage || message,
+      message: message,
       messageOrder: status,
       conversationId: convoId,
       otherUserId: otherUsersId,
@@ -213,8 +208,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       status: status,
     });
   };
-
-  const onSubmit = async (status: string) => {
+  console.log(order?.fee?.delivery);
+  const onSubmit = async (status: OrderStatus) => {
     console.log("ONSUBMIT", status);
     const confirmed = await handleConfirm(status);
     if (confirmed) {
@@ -1044,7 +1039,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         open={isModalOpen}
         modalMessage={modalMessage}
         SetFee={SetFee}
+        orderId={order?.id}
         newStatus={newStatus}
+        convoId={convoId}
+        otherUsersId={otherUsersId}
         onConfirm={onConfirm}
         onCancel={onCancel}
       />

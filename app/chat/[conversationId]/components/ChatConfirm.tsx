@@ -7,13 +7,18 @@ import { CommonInputProps } from "@/types/create.types";
 import { FieldValues, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Input from "@/app/(no-nav_layout)/create/components/listing-input";
+import { OrderStatus } from "@prisma/client";
+import axios from "axios";
 
 interface ConfirmModalProps {
   open: boolean;
   modalMessage: string;
   SetFee: boolean;
-  newStatus: string;
-  onConfirm: (status: string, message?: string) => void;
+  newStatus: OrderStatus;
+  convoId: string;
+  otherUsersId: string | undefined;
+  orderId: string | undefined;
+  onConfirm: (status: OrderStatus, skip?: boolean) => void;
   onCancel: () => void;
 }
 
@@ -22,6 +27,9 @@ const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
   SetFee,
   modalMessage,
   newStatus,
+  convoId,
+  otherUsersId,
+  orderId,
   onConfirm,
   onCancel,
 }) => {
@@ -59,12 +67,31 @@ const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
     //setIsLoading(true);
     try {
       // Create the complete message here
-      const completeMessage = SetFee
-        ? `${modalMessage} ${fee ? `$${Number(fee).toFixed(2)}` : "$0.00"}`
-        : modalMessage;
-      console.log("COMPLETEMESSAGE", completeMessage, newStatus);
+      if (fee > 0) {
+        const numericFee = parseFloat(Number(fee).toFixed(2));
+        const completeMessage = SetFee
+          ? `${modalMessage} ${fee ? `$${Number(fee).toFixed(2)}` : "$0.00"}`
+          : modalMessage;
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: orderId,
+          status: newStatus,
+          deliveryFee: numericFee * 100,
+        });
+        await axios.post("/api/chat/messages", {
+          message: completeMessage,
+          messageOrder: newStatus,
+          conversationId: convoId,
+          otherUserId: otherUsersId,
+          fee: numericFee * 100,
+        });
+        const skip = true;
+        onConfirm(newStatus, skip);
+        return;
+      }
+
+      //console.log("COMPLETEMESSAGE", completeMessage, newStatus);
       // Pass the complete message directly to onConfirm without setting state
-      onConfirm(newStatus, completeMessage);
+      onConfirm(newStatus);
     } catch (error) {
       console.error("Error in confirmation:", error);
     } finally {
