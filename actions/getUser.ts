@@ -120,7 +120,7 @@ const getUserWithBuyOrders = async (params: Params) => {
           select: {
             id: true,
             userId: true,
-            listingIds: true,
+            // listingIds: true,
             sellerId: true,
             pickupDate: true,
             quantity: true,
@@ -156,7 +156,7 @@ const getUserWithSellOrders = async (params: Params) => {
           select: {
             id: true,
             userId: true,
-            listingIds: true,
+            // listingIds: true,
             sellerId: true,
             pickupDate: true,
             quantity: true,
@@ -191,7 +191,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
           select: {
             id: true,
             userId: true,
-            listingIds: true,
+            // listingIds: true,
             sellerId: true,
             pickupDate: true,
             quantity: true,
@@ -207,7 +207,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
           select: {
             id: true,
             userId: true,
-            listingIds: true,
+            // listingIds: true,
             sellerId: true,
             pickupDate: true,
             quantity: true,
@@ -462,7 +462,7 @@ const getUserLocations = async ({
     );
   }
 };
-export interface WishlistLocation {
+export interface BasketLocation {
   id: string;
   coordinates: number[] | null;
   address: string[] | null;
@@ -470,7 +470,7 @@ export interface WishlistLocation {
     id: string;
   };
 }
-const getUserLocationsWishList = async (): Promise<WishlistLocation[] | null> => {
+const getUserLocationsBasket = async (): Promise<BasketLocation[] | null> => {
   const session = await authCache()
   try {
     const locations = await prisma.location.findMany({
@@ -829,7 +829,7 @@ export {
   getCurrentUser,
   getNavUser,
   getRoleGate,
-  getUserLocationsWishList,
+  getUserLocationsBasket,
   getRole,
   getLocationByIndex,
   getUserLocations,

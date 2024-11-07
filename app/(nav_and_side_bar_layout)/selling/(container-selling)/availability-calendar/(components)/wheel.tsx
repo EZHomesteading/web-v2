@@ -114,7 +114,7 @@ const Wheel: React.FC<WheelProps> = ({
 
   return (
     <div
-      className={`relative h-full w-24 overflow-hidden shadow-md border rounded-xl ${
+      className={`relative h-full sm:w-24 w-[4.5rem] overflow-hidden shadow-md border rounded-xl ${
         isFocused ? "shadow-lg" : ""
       }`}
       tabIndex={0}
