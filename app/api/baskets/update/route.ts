@@ -3,13 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { id, proposedLoc, deliveryDate, pickupDate, orderMethod, items } = await req.json();
-  console.log(id, proposedLoc, deliveryDate, pickupDate, orderMethod, items)
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
   console.log(deliveryDate)
   try {
-    const updatedWishlist = await prisma.basket.update({
+    const updatedBasket = await prisma.basket.update({
       where: { id },
       data: {
         proposedLoc:proposedLoc,
@@ -23,8 +22,9 @@ export async function POST(req: NextRequest) {
           })),
         },
       },
-    });
-    return NextResponse.json(updatedWishlist);
+    })
+    console.log(updatedBasket)
+    return NextResponse.json(updatedBasket);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update basket" },

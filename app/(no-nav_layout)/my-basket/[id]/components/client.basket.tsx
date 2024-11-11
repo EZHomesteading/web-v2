@@ -101,22 +101,16 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
         quantity: item.quantity,
       })),
     };
+
     try {
       const res = await axios.post("/api/baskets/update", updatedData);
       if (res.status === 200) {
         toast.success("Basket was updated");
-        setBasketState((prev) => ({
-          ...prev,
-          deliveryDate: basketState.deliveryDate,
-          pickupDate: basketState.pickupDate,
-          proposedLoc: basketState.proposedLoc,
-          orderMethod: basketState.orderMethod,
-        }));
-
         router.refresh();
       }
-    } catch {
+    } catch (error) {
       toast.error("Failed to update basket");
+      console.error("Update error:", error);
     }
   };
 

@@ -76,7 +76,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, mode }) => {
        flex flex-col items-center w-full`}
     >
       <div className={`flex w-full px-3 pb-2 justify-evenly items-center`}>
-        <div>
+        <div className={`text-lg font-semibold w-fit`}>
           {mode === DeliveryPickupToggleMode.PICKUP
             ? "Pickup Time"
             : "Delivery Time"}
