@@ -6,7 +6,6 @@ import { Basket_Selected_Time_Type } from "@/types/basket";
 import { Availability, Hours, orderMethod } from "@prisma/client";
 import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import SetCustomPickupDeliveryCalendar from "./calendar.basket";
-import { outfitFont } from "@/components/fonts";
 import { week_day_mmm_dd_yy_time } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import useMediaQuery from "@/hooks/media-query";
 
@@ -24,19 +23,20 @@ const DateOverlay = ({
   onOpenChange: (open: boolean) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [basketState, setBasketState] = useState<Basket_Selected_Time_Type>({
+    ...basket,
+    orderMethod: basket.orderMethod || initialOrderMethod,
+    selected_time_type: null,
+  });
 
-  const over_640px = useMediaQuery("(min-width: 640px)");
+  const over_640px = useMediaQuery("(min-width: 750px )");
 
   useEffect(() => {
     onOpenChange(isOpen);
   }, [isOpen, onOpenChange]);
   const [time_type, set_time_type] = useState("ASAP");
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const [basketState, setBasketState] = useState<Basket_Selected_Time_Type>({
-    ...basket,
-    orderMethod: basket.orderMethod || initialOrderMethod,
-    selected_time_type: null,
-  });
+
   const getInitialPosition = () => {
     if (!triggerRef.current) return { top: 0, left: 0, width: 0, height: 0 };
     const rect = triggerRef.current.getBoundingClientRect();
@@ -56,9 +56,9 @@ const DateOverlay = ({
     if (over_640px) {
       return {
         top: rect.bottom + 8,
-        left: rect.left,
+        left: -20,
         width: 700,
-        height: `calc(100vh - ${rect.bottom + 24}px)`, // 24px for additional padding
+        height: 475,
         opacity: 1,
       };
     }
@@ -145,6 +145,13 @@ const DateOverlay = ({
       return newState;
     });
   };
+
+  const getDisplayTime = (dateValue: Date | null): string => {
+    if (!dateValue) return "When?";
+    const { time, date } = week_day_mmm_dd_yy_time(0, dateValue);
+    return time;
+  };
+
   return (
     <>
       <button
@@ -156,13 +163,10 @@ const DateOverlay = ({
             : ""
         }`}
       >
-        {basket.orderMethod === orderMethod.DELIVERY
-          ? basket.deliveryDate
-            ? basket.deliveryDate.toString()
-            : "When?"
-          : basket.pickupDate
-          ? basket.pickupDate.toString()
-          : "When?"}
+        {/* {basketState.orderMethod === orderMethod.DELIVERY
+          ? getDisplayTime(basketState.deliveryDate)
+          : getDisplayTime(basketState.pickupDate)} */}
+        {basket.deliveryDate?.toString()}
       </button>
 
       <AnimatePresence>
@@ -189,91 +193,68 @@ const DateOverlay = ({
                 ease: [0.32, 0.72, 0, 1],
                 width: { duration: 0.2 },
               }}
-              className="bg-white rounded-3xl border shadow-xl z-[101] fixed w-full max-w-[700px] mx-auto inset-0 h-fit overflow-hidden"
+              className="bg-white rounded-3xl border shadow-xl z-[101] fixed w-full max-w-[700px] mx-auto inset-0 h-[550px] overflow-y-auto"
             >
-              <div className="relative h-full bg-white rounded-3xl flex flex-col p-4 pt-14">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="absolute top-2 right-2 text-black bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors"
-                >
-                  <X size={24} />
-                </button>
+              <div className="relative h-full bg-white rounded-3xl flex flex-col  px-2 pb-1 pt-14">
+                <div className={`flex flex-col justify-start `}>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="absolute top-2 right-2 text-black bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <X size={24} />
+                  </button>
 
-                <div className="flex justify-center mb-4">
-                  <div className="bg-slate-300 rounded-full p-1 flex space-x-2 text-xs font-semibold">
-                    <button
-                      className={`py-2 px-4 rounded-full ${
-                        time_type === "ASAP" ? "bg-white" : ""
-                      }`}
-                      onClick={() => set_time_type("ASAP")}
-                    >
-                      As Soon as Possible
-                    </button>
-                    <button
-                      className={`py-2 px-4 rounded-full ${
-                        time_type === "CUSTOM" ? "bg-white" : ""
-                      }`}
-                      onClick={() => set_time_type("CUSTOM")}
-                    >
-                      Custom Time
-                    </button>
-                  </div>
-                </div>
-
-                {/* Conditional Render for ASAP vs Custom Time */}
-                <div className="flex flex-col gap-y-4 items-center justify-center">
-                  {time_type === "ASAP" ? (
-                    <div className="flex flex-col items-center justify-center w-full">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-slate-300 rounded-full p-1 flex space-x-2 text-xs font-semibold">
                       <button
-                        className={`p-6 border shadow-md w-[400px] max-w-full rounded-xl flex flex-col items-center justify-center ${
-                          isSelected ? "bg-emerald-700/20" : "bg-white"
+                        className={`py-2 px-4 rounded-full ${
+                          time_type === "ASAP" ? "bg-white" : ""
                         }`}
-                        onClick={handleAsapClick}
+                        onClick={() => set_time_type("ASAP")}
                       >
-                        <div>
-                          {basket.orderMethod === orderMethod.DELIVERY
-                            ? "The earliest time seller can deliver to you"
-                            : "The earliest time you can pick up from the seller"}
-                        </div>
-                        <div className="text-2xl underline">{time}</div>
+                        As Soon as Possible
+                      </button>
+                      <button
+                        className={`py-2 px-4 rounded-full ${
+                          time_type === "CUSTOM" ? "bg-white" : ""
+                        }`}
+                        onClick={() => set_time_type("CUSTOM")}
+                      >
+                        Custom Time
                       </button>
                     </div>
-                  ) : (
-                    <SetCustomPickupDeliveryCalendar
-                      mode={
-                        basket.orderMethod === orderMethod.DELIVERY
-                          ? DeliveryPickupToggleMode.DELIVERY
-                          : DeliveryPickupToggleMode.PICKUP
-                      }
-                      location={basket.location}
-                    />
-                  )}
-                </div>
+                  </div>
 
-                {/* Save and Reset Buttons */}
-                <div className="flex w-full justify-between mt-4 border-t pt-2">
-                  <button
-                    className={`underline text-neutral-500 ${
-                      !basket.pickupDate &&
-                      !basket.deliveryDate &&
-                      "cursor-not-allowed"
-                    }`}
-                    onClick={() =>
-                      setBasketState((prev) => ({
-                        ...prev,
-                        deliveryDate: null,
-                        pickupDate: null,
-                      }))
-                    }
-                  >
-                    Reset
-                  </button>
-                  <button
-                    className="text-white bg-black px-3 py-2 rounded-xl"
-                    onClick={saveChanges}
-                  >
-                    Save Changes
-                  </button>
+                  <div className="flex flex-col gap-y-4 items-center justify-start h-fit ">
+                    {time_type === "ASAP" ? (
+                      <div className="flex flex-col items-center justify-center w-full">
+                        <button
+                          className={`p-6 border shadow-md w-[400px] max-w-full rounded-xl flex flex-col items-center justify-center ${
+                            isSelected ? "bg-emerald-700/20" : "bg-white"
+                          }`}
+                          onClick={handleAsapClick}
+                        >
+                          <div>
+                            {basket.orderMethod === orderMethod.DELIVERY
+                              ? "The earliest time seller can deliver to you"
+                              : "The earliest time you can pick up from the seller"}
+                          </div>
+                          <div className="text-2xl underline">{time}</div>
+                        </button>
+                      </div>
+                    ) : (
+                      <SetCustomPickupDeliveryCalendar
+                        mode={
+                          basket.orderMethod === orderMethod.DELIVERY
+                            ? DeliveryPickupToggleMode.DELIVERY
+                            : DeliveryPickupToggleMode.PICKUP
+                        }
+                        basket={basket}
+                        location={basket.location}
+                        onClose={() => setIsOpen(false)}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
