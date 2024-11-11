@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { format } from "date-fns";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
@@ -39,9 +39,18 @@ import { BiMessageSquareEdit } from "react-icons/bi";
 import ChatConfirmModal from "./ChatConfirm";
 
 import HarvestModal from "./HarvestModal";
-import { ChatListing, ChatMessage, ChatOrder, ChatUser } from "chat-types";
+import {
+  ChatListing,
+  ChatMessage,
+  ChatOrder,
+  ChatUser,
+  MessageOption,
+} from "chat-types";
 import { outfitFont, zillaFont } from "@/components/fonts";
 import CheckoutModal from "./CheckoutModal";
+import { getMessageOptions } from "./messageOptions";
+import { MessageActions } from "./message-actions";
+import { ImageUpload } from "./imageUpload";
 
 type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
@@ -71,7 +80,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
   stripeAccountId,
 }) => {
-  const [image, setImage] = useState("");
   const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<string>("(select your time)");
   const [dateTime, setDateTime] = useState<Date | string>("");
@@ -83,14 +91,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [modalMessage, setModalMessage] = useState("");
   const [newStatus, setStatus] = useState<OrderStatus>("PENDING");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [imageUploadType, setImageUploadType] = useState<"pickup" | "delivery">(
+    "pickup"
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [currentSubmitFunction, setCurrentSubmitFunction] =
-    useState<SubmitFunction | null>(null);
-
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
-
   const pulseAnimation = `
   @keyframes pulse {
     0% {
@@ -104,12 +111,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
   }
 `;
-  //dependent on message order allow or dont allow the cancel button to be visible
-  //handle seen messages
-  // const seenList = (data.seen || [])
-  //   .filter((user) => user.email !== data?.sender?.email)
-  //   .map((user) => user.name)
-  //   .join(", ");
+
   if (!user?.id) {
     return null;
   }
@@ -195,7 +197,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     ) {
       message = "Yes, That time works. Your delivery Fee will be";
     } else if (status === "IN_TRANSIT") {
-      message = "Your order is on the way!We are Preparing your Order";
+      message = "Your order is on the way!";
     } else if (status === "SELLER_PREPARING") {
       message = "We are Preparing your Order!";
     }
@@ -234,835 +236,91 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     }
   };
 
-  const onSubmit5 = async (img: string) => {
+  const isSeller = user.id === order?.sellerId;
+  const messageOptions = order
+    ? getMessageOptions(
+        data.messageOrder as OrderStatus,
+        order.fulfillmentType,
+        user.role,
+        isSeller,
+        setCustomTimeOpen,
+        setCancelOpen,
+        setDisputeOpen,
+        setSetFee
+        //message?.dateTime, // Add the dateTime from message
+      )
+    : [];
+  const handleImageUpload = async (imageUrl: string) => {
     setIsLoading(true);
     try {
-      //coop has set out the order
       await axios.post("/api/chat/messages", {
-        message: img,
+        message: imageUrl,
         messageOrder: "IMG",
         conversationId: convoId,
         otherUserId: otherUsersId,
       });
-      await axios.post("/api/chat/messages", {
-        message: `Your order is ready to be picked up at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}!`,
-        messageOrder: "READY_FOR_PICKUP",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: "READY_FOR_PICKUP",
-      });
+      if (imageUploadType === "delivery") {
+        //producer delivers item and attaches an image.
+        //early returns are handles in image upload function, cannot click submit without uploading an image.
+        await axios.post("/api/chat/messages", {
+          message: "Your item has been delivered.",
+          messageOrder: "DELIVERED",
+          conversationId: convoId,
+          otherUserId: otherUsersId,
+        });
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order?.id,
+          status: "DELIVERED",
+        });
+      } else {
+        await axios.post("/api/chat/messages", {
+          message: `Your order is ready to be picked up at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}!`,
+          messageOrder: "READY_FOR_PICKUP",
+          conversationId: convoId,
+          otherUserId: otherUsersId,
+        });
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order?.id,
+          status: "READY_FOR_PICKUP",
+        });
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
+      setShowImageUpload(false);
     }
   };
-  const onSubmit12 = async (img: string) => {
-    setIsLoading(true);
-    try {
-      //producer delivers item and attaches an image.
-      //early returns are handles in image upload function, cannot click submit without uploading an image.
-      await axios.post("/api/chat/messages", {
-        message: img,
-        messageOrder: "IMG",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/chat/messages", {
-        message: "Your item has been delivered.",
-        messageOrder: "DELIVERED",
-        conversationId: convoId,
-        otherUserId: otherUsersId,
-      });
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: "DELIVERED",
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleMessageAction = useCallback(
+    async (option: MessageOption) => {
+      if (option.onClick) {
+        option.onClick();
+        return;
+      }
 
-  //Seller receives Order
-  const resp1 = (
-    <div className="flex flex-col  items-start  md:text-xl gap-0  py-1">
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("SELLER_ACCEPTED");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Agree to Time"}
-      </button>
-      {dateTime ? (
-        <>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("SELLER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Reschedule Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set New Reschedule Time"}
-          </button>
-        </>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Reschedule Time"}
-        </button>
-      )}
+      if (option.requiresPhoto) {
+        setImageUploadType(
+          order?.fulfillmentType === "DELIVERY" ? "delivery" : "pickup"
+        );
+        setShowImageUpload(true);
+        return;
+      }
 
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            setCancelOpen(true);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarXLight />
-        {isLoading ? "Loading..." : "Cancel Order"}
-      </button>
-    </div>
-  );
-  const resp2 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
-      <div className="">
-        <div>
-          {!image && (
-            <div>
-              <div className=" py-2 rounded-lg">
-                Send a photo of the produce to confirm that it is ready to be
-                picked up.
-              </div>
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res: { url: string }[]) => {
-                  setImage(res[0].url);
-                  setIsLoading(true);
-                  try {
-                    onSubmit5(res[0].url);
-                  } catch (error) {
-                    console.error(error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  container: "h-full w-max",
-                }}
-                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                  isLoading ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                content={{
-                  button({ ready }) {
-                    if (ready) return <div>Send a photo of the produce</div>;
-                    return isLoading ? "Loading..." : "Getting ready...";
-                  },
-                }}
-              />
-            </div>
-          )}
-          {image && (
-            <>
-              <div>
-                <div className="m-5 relative">
-                  <AlertDialog>
-                    <AlertDialogTrigger>
-                      <Image
-                        src={image}
-                        height={180}
-                        width={180}
-                        alt="a"
-                        className="aspect-square rounded-lg object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                        Click to Enlarge
-                      </div>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="xl:flex xl:justify-center">
-                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                        {" "}
-                        <div>
-                          <Image
-                            src={image}
-                            fill
-                            className="object-cover w-full"
-                            alt="a"
-                          />
-                        </div>
-                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                          Close
-                        </AlertDialogCancel>
-                      </div>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-  const resp3 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("BUYER_ACCEPTED");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1  ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Agree to Time"}
-      </button>
-      {dateTime ? (
-        <div>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("BUYER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Reschedule Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set New Reschedule Time"}
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Reschedule Time"}
-        </button>
-      )}
-    </div>
-  );
-  const resp4 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      {" "}
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("BUYER_ACCEPTED");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Agree to Time"}
-      </button>
-      {dateTime ? (
-        <div>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("BUYER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Reschedule Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set New Reschedule Time"}
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Reschedule Time"}
-        </button>
-      )}
-    </div>
-  );
-  const resp5 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
-      <div className="">
-        <div className=" p-2 rounded-lg">
-          {!image && (
-            <div>
-              <div className=" pb-2 rounded-lg">
-                Upload an image to confirm item is ready for pickup.
-              </div>
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res: { url: string }[]) => {
-                  setImage(res[0].url);
-                  setIsLoading(true);
-                  try {
-                    onSubmit5(res[0].url);
-                  } catch (error) {
-                    console.error(error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  container: "h-full w-max",
-                }}
-                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                  isLoading ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                content={{
-                  button({ ready }) {
-                    if (ready) return <div>Send a photo of the produce</div>;
-                    return isLoading ? "Loading..." : "Getting ready...";
-                  },
-                }}
-              />
-            </div>
-          )}
-          {image && (
-            <>
-              <div>
-                <div className="m-5 relative">
-                  <AlertDialog>
-                    <AlertDialogTrigger>
-                      <Image
-                        src={image}
-                        height={180}
-                        width={180}
-                        alt="a"
-                        className="aspect-square rounded-lg object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                        Click to Enlarge
-                      </div>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="xl:flex xl:justify-center">
-                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                        {" "}
-                        <div>
-                          <Image
-                            src={image}
-                            fill
-                            className="object-cover w-full"
-                            alt="a"
-                          />
-                        </div>
-                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                          Close
-                        </AlertDialogCancel>
-                      </div>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-  // buyer receives their item or can choose to dispute
-  const resp6 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      {" "}
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("PICKED_UP");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Confirm Order"}
-      </button>
-      <button
-        onClick={() => setDisputeOpen(true)}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarPlusLight />
-        {isLoading ? "Loading..." : "Dispute Transaction"}
-      </button>
-    </div>
-  );
-  const resp7 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      {" "}
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("COMPLETED");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Thank Buyer"}
-      </button>
-    </div>
-  );
-  const resp8 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      {" "}
-      {dateTime ? (
-        <>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("BUYER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set Different Time"}
-          </button>
-        </>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Set Delivery Time"}
-        </button>
-      )}
-    </div>
-  );
-  const resp9 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      {" "}
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
+      setIsLoading(true);
+      try {
+        if (option.status === OrderStatus.SELLER_PROPOSED_DELIVERY_FEE) {
           setSetFee(true);
-          try {
-            await onSubmit("SELLER_PROPOSED_DELIVERY_FEE");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-            setSetFee(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Accept Time and Set Fee"}
-      </button>
-      {dateTime ? (
-        <div>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("SELLER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set Different Time"}
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Set Delivery Time"}
-        </button>
-      )}
-    </div>
+        }
+        await onSubmit(option.status);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [order]
   );
-  const resp10 = (
-    <div className="flex flex-col text-xs md:text-sm max-w-[90%] gap-y-1 items-end  py-1">
-      <div className="">
-        <div className=" p-2 rounded-lg">
-          {!image && (
-            <div>
-              <div className=" pb-2 rounded-lg">
-                Upload an image to confirm delivery.
-              </div>
-              <UploadButton
-                endpoint="imageUploader"
-                onClientUploadComplete={(res: { url: string }[]) => {
-                  setImage(res[0].url);
-                  setIsLoading(true);
-                  try {
-                    onSubmit12(res[0].url);
-                  } catch (error) {
-                    console.error(error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                onUploadError={(error: Error) => {
-                  alert(`ERROR! ${error.message}`);
-                }}
-                appearance={{
-                  container: "h-full w-max",
-                }}
-                className={`ut-allowed-content:hidden ut-button:bg-blue-800 ut-button: ut-button:w-fit ut-button:px-2 ut-button:p-3 ${
-                  isLoading ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                content={{
-                  button({ ready }) {
-                    if (ready) return <div>Send a photo of the delivery</div>;
-                    return isLoading ? "Loading..." : "Getting ready...";
-                  },
-                }}
-              />
-            </div>
-          )}
-          {image && (
-            <>
-              <div>
-                <div className="m-5 relative">
-                  <AlertDialog>
-                    <AlertDialogTrigger>
-                      <Image
-                        src={image}
-                        height={180}
-                        width={180}
-                        alt="a"
-                        className="aspect-square rounded-lg object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 hover:cursor-pointer">
-                        Click to Enlarge
-                      </div>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="xl:flex xl:justify-center">
-                      <div className="lg:w-1/2 h-[60vh] overflow-hidden rounded-xl relative">
-                        {" "}
-                        <div>
-                          <Image
-                            src={image}
-                            fill
-                            className="object-cover w-full"
-                            alt="a"
-                          />
-                        </div>
-                        <AlertDialogCancel className="absolute top-3 right-3 bg-transpart border-none bg px-2 m-0">
-                          Close
-                        </AlertDialogCancel>
-                      </div>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-  const resp11 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("BUYER_ACCEPTED");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Accept Delivery Time"}
-      </button>
-      {dateTime ? (
-        <>
-          <button
-            type="submit"
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await onSubmit("BUYER_RESCHEDULED");
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarBlankLight />
-            {isLoading ? "Loading..." : "Send Delivery Time Offer"}
-          </button>
-          <button
-            onClick={() => setCustomTimeOpen(true)}
-            className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-              isLoading ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            disabled={isLoading}
-          >
-            <PiCalendarPlusLight />
-            {isLoading ? "Loading..." : "Set Different Time"}
-          </button>
-        </>
-      ) : (
-        <button
-          onClick={() => setCustomTimeOpen(true)}
-          className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 focus:outline-none ${
-            isLoading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          disabled={isLoading}
-        >
-          <PiCalendarPlusLight />
-          {isLoading ? "Loading..." : "Set Delivery Time"}
-        </button>
-      )}
-    </div>
-  );
-  const resp12 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("IN_TRANSIT");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Order On the way"}
-      </button>
-    </div>
-  );
-  const resp13 = (
-    <div className="flex flex-col items-start t md:text-xl gap-0 ! py-1">
-      <button
-        type="submit"
-        onClick={async () => {
-          setIsLoading(true);
-          try {
-            await onSubmit("SELLER_PREPARING");
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        className={`w-[100%] bg-transparent shadow-none  font-extralight border-black rounded-none hover:shadow-sm  text-start p-2 flex items-center gap-x-1 ${
-          isLoading ? "cursor-not-allowed opacity-50" : ""
-        }`}
-        disabled={isLoading}
-      >
-        <PiCalendarCheckLight />
-        {isLoading ? "Loading..." : "Preparing Order"}
-      </button>
-    </div>
-  );
+
   return (
     <div>
       {/* {user.id === order?.sellerId ? (
@@ -1254,8 +512,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
       {/* COOP receives order responce options */}
       {isLast &&
-      (data.messageOrder === "1.6" || data.messageOrder === "1.1") ? (
-        data.messageOrder === "1.1" ? (
+      (data.messageOrder === "DISPUTED" ||
+        data.messageOrder === "COMPLETED") ? (
+        data.messageOrder === "COMPLETED" ? (
           <Button
             variant={"secondary"}
             className={`fixed bottom-5 right-5 flex items-center gap-2 transition-all duration-300
@@ -1324,54 +583,24 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   Your Response Options
                 </h3>
                 <div className="flex flex-col p-4 pt-0 bg-[#F1EFE7] rounded-b-md">
-                  {notOwn &&
-                  order?.fulfillmentType === "DELIVERY" &&
-                  data.messageOrder === "BUYER_PROPOSED_TIME" ? (
-                    resp9
-                  ) : notOwn && data.messageOrder === "BUYER_PROPOSED_TIME" ? (
-                    resp1
-                  ) : isOwn &&
-                    order?.fulfillmentType === "DELIVERY" &&
-                    data.messageOrder === "SELLER_ACCEPTED" ? (
-                    resp10
-                  ) : // : notOwn &&
-                  //   order?.fulfillmentType === "PICKUP" &&
-                  //   data.messageOrder === "SELLER_ACCEPTED" ? (
-                  //   resp2
-                  // )
-                  notOwn && data.messageOrder === "SELLER_RESCHEDULED" ? (
-                    resp3
-                  ) : notOwn && data.messageOrder === "4" ? (
-                    resp4
-                  ) : notOwn && data.messageOrder === "5" ? (
-                    resp5
-                  ) : (notOwn && data.messageOrder === "DELIVERED") ||
-                    (notOwn && data.messageOrder === "READY_FOR_PICKUP") ? (
-                    resp6
-                  ) : notOwn && data.messageOrder === "PICKED_UP" ? (
-                    resp7
-                  ) : notOwn && data.messageOrder === "10" ? (
-                    resp8
-                  ) : notOwn &&
-                    order?.fulfillmentType === "DELIVERY" &&
-                    data.messageOrder === "SCHEDULE_CONFIRMED_PAID" ? (
-                    resp12
-                  ) : notOwn &&
-                    order?.fulfillmentType === "PICKUP" &&
-                    data.messageOrder === "SCHEDULE_CONFIRMED_PAID" ? (
-                    resp13
-                  ) : isOwn && data.messageOrder === "IN_TRANSIT" ? (
-                    resp10
-                  ) : isOwn && data.messageOrder === "SELLER_PREPARING" ? (
-                    resp5
-                  ) : notOwn && data.messageOrder === "DELIVERED" ? (
-                    resp11
-                  ) : isOwn && data.messageOrder === "14" ? (
-                    resp10
-                  ) : (
-                    <div className="px-2 text-slate-500 font-light text-md">
-                      No response options available
-                    </div>
+                  {isLast && (
+                    <>
+                      {showImageUpload ? (
+                        <ImageUpload
+                          onImageUpload={handleImageUpload}
+                          isLoading={isLoading}
+                          messageType={imageUploadType}
+                        />
+                      ) : (
+                        messageOptions.length > 0 && (
+                          <MessageActions
+                            options={messageOptions}
+                            onSelect={handleMessageAction}
+                            isLoading={isLoading}
+                          />
+                        )
+                      )}
+                    </>
                   )}
                   <div className="text-xs">
                     Not seeing a good response? Check out the more options
@@ -1419,198 +648,3 @@ const formatTime = (timeString: Date) => {
 
   return `${formattedHours}:${formattedMinutes}${ampm} on ${month} ${day}${ordinalSuffix}`;
 };
-// const tryone = async (message: string) => {
-//   //coop seller confirms order pickup time
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "SELLER_ACCEPTED",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: "SELLER_ACCEPTED",
-//   });
-// };
-// const trytwo = async (message: string) => {
-//   // coop chooses new delivery/pickup time
-//   if (validTime === "(select your time)") {
-//     toast.error("You must select a time before choosing this option");
-//     return;
-//   }
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "SELLER_RESCHEDULED",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: "SELLER_RESCHEDULED",
-//     pickupDate: dateTime,
-//   });
-// };
-// const tryfour = async (message: string) => {
-//   //buyer confirms new pickup time set by seller
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "5",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: 5,
-//   });
-// };
-// const trysix = async (message: string) => {
-//   //buyer picks up/ receives delivery of the order, stripe transfer initiated
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "7",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   if (user.role === UserRole.COOP && otherUserRole != UserRole.COOP) {
-//     //if buyer is coop buying from producer set status 17
-//     await axios.post("/api/useractions/checkout/update-order", {
-//       orderId: order?.id,
-//       status: 17,
-//     });
-//   } else {
-//     //if buyer is not coop buying from producer set status to 9
-//     await axios.post("/api/useractions/checkout/update-order", {
-//       orderId: order?.id,
-//       status: 9,
-//     });
-//   }
-//   const TotalPrice = order?.totalPrice ? order.totalPrice * 100 : 0;
-//   const stripeFee = Math.ceil(TotalPrice * 0.029 + 30);
-//   await axios.post("/api/stripe/transfer", {
-//     //finalise stripe transaction
-//     total: TotalPrice - stripeFee,
-//     stripeAccountId: stripeAccountId,
-//     orderId: order?.id,
-//     status: order?.status,
-//   });
-// };
-// const tryseven = async (message: string) => {
-//   //seller marks order as complete.
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "1.1",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: 18,
-//   });
-// };
-// const tryeight = async (message: string) => {
-//   //early return if no time selected.
-//   if (validTime === "(select your time)") {
-//     toast.error("You must select a time before choosing this option");
-//     return;
-//   }
-//   //handle producer reschedule or consumer reschedule
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "4",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   if (user.role === UserRole.PRODUCER) {
-//     //pretty sure this is not needed, will keep just in case
-//     await axios.post("/api/useractions/checkout/update-order", {
-//       orderId: order?.id,
-//       status: 11,
-//       pickupDate: dateTime,
-//     });
-//   } else {
-//     await axios.post("/api/useractions/checkout/update-order", {
-//       orderId: order?.id,
-//       status: 6,
-//       pickupDate: dateTime,
-//     });
-//   }
-// };
-// const trynine = async (message: string) => {
-//   //handle producer reschedule
-//   if (validTime === "(select your time)") {
-//     toast.error("You must select a time before choosing this option");
-//     return;
-//   }
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "11",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: 11,
-//     pickupDate: dateTime,
-//   });
-// };
-// const tryten = async (message: string) => {
-//   //handle producer accepts drop off time or producer accepts drop off time.
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "SELLER_PROPOSED_DELIVERY_FEE",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: "SELLER_PROPOSED_DELIVERY_FEE",
-//   });
-// };
-// const tryeleven = async (message: string) => {
-//   //early return if time is not selected
-//   if (validTime === "(select your time)") {
-//     toast.error("You must select a time before choosing this option");
-//     return;
-//   }
-//   //coop declares new drop off time for producer deliveries
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "13",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: 14,
-//     pickupDate: dateTime,
-//   });
-// };
-// const tryfourteen = async (message: string) => {
-//   //producer confirms delivery time
-//   await axios.post("/api/chat/messages", {
-//     message: message,
-//     messageOrder: "14",
-//     conversationId: convoId,
-//     otherUserId: otherUsersId,
-//   });
-//   await axios.post("/api/useractions/checkout/update-order", {
-//     orderId: order?.id,
-//     status: 10,
-//   });
-// };  //receive data from child and set date time based on user inputs in modal
-// const handleTime = (childTime: ValidTime) => {
-//   setDateTime(childTime.pickupTime);
-//   const date = formatTime(childTime.pickupTime);
-//   setValidTime(date);
-// };
-
-// const anyhours: ExtendedHours = {
-//   0: [{ open: 0, close: 1439 }],
-//   1: [{ open: 0, close: 1439 }],
-//   2: [{ open: 0, close: 1439 }],
-//   3: [{ open: 0, close: 1439 }],
-//   4: [{ open: 0, close: 1439 }],
-//   5: [{ open: 0, close: 1439 }],
-//   6: [{ open: 0, close: 1439 }],
-// };

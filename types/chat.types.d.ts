@@ -20,10 +20,10 @@ declare module "chat-types" {
     icon: ReactNode;
     label: string;
 
-    action: MessageActionType;
+    //action: MessageActionType;
     status: OrderStatus;
-
-    requiresImage?: boolean;
+    onClick?: () => any;
+    requiresPhoto?: boolean;
     requiresConfirmation?: boolean;
     confirmationMessage?: string;
 
