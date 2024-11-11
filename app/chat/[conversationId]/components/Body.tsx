@@ -508,6 +508,7 @@ const Body: React.FC<BodyProps> = ({
           listing={
             message.messageOrder === "HARVEST" ? adminMessages[i].listing : null
           }
+          listings={listings}
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}

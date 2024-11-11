@@ -75,14 +75,14 @@ const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
         await axios.post("/api/useractions/checkout/update-order", {
           orderId: orderId,
           status: newStatus,
-          deliveryFee: numericFee * 100,
+          deliveryFee: numericFee,
         });
         await axios.post("/api/chat/messages", {
           message: completeMessage,
           messageOrder: newStatus,
           conversationId: convoId,
           otherUserId: otherUsersId,
-          fee: numericFee * 100,
+          fee: numericFee,
         });
         const skip = true;
         onConfirm(newStatus, skip);
