@@ -8,22 +8,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
-  const { totalSum, userId, orderTotals, body, email, orderIds } =
+  const { totalSum, userId, orderTotals, body, email, orderId } =
     await request.json();
 
   try {
-    if (orderIds === null) {
+    if (orderId === null) {
       console.error("Error creating PaymentIntent:");
       return NextResponse.json(
         { error: "Internal Server Error" },
         { status: 500 }
       );
     }
-    const b = orderIds.replace(/,(?=[^,]*$)/, "");
-    const orderIdsArray = JSON.parse(b);
-    orderIdsArray.map(async (orderId: string) => {
-      const order = await getOrderById({ orderId });
-    });
+    //const order = await getOrderById(orderId);
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalSum,
       currency: "usd",
@@ -32,7 +29,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId,
         orderTotals: JSON.stringify(orderTotals),
-        orderIds,
+        orderId,
       },
       receipt_email: email,
     });

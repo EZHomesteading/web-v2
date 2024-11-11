@@ -1,4 +1,3 @@
-// server side layout for conversation open chat page
 import Header from "@/app/chat/[conversationId]/components/Header";
 import Body from "@/app/chat/[conversationId]/components/Body";
 import EmptyState from "@/components/EmptyState";
@@ -9,7 +8,18 @@ interface IParams {
   conversationId: string;
 }
 
-const ChatId = async ({ params }: { params: IParams }) => {
+const ChatId = async ({
+  params,
+  searchParams,
+}: {
+  params: IParams;
+  searchParams: { redirect_status?: string; payment_intent?: string };
+}) => {
+  // If there's a successful payment, redirect to the clean URL
+  if (searchParams.redirect_status === "succeeded") {
+    redirect(`/chat/${params.conversationId}`);
+  }
+
   const chatData = await getFullChatData(params.conversationId);
 
   if (!chatData) {
