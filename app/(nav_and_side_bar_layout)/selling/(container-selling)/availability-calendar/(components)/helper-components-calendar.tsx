@@ -461,43 +461,31 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
   };
 
   return (
-    <div
+    <button
       onMouseDown={handleMouseDown}
       className={`relative flex items-center justify-center  ${
-        day !== null ? " cursor-pointer p-1" : ""
-      } ${
-        isSelected && day !== null ? "border-blue-500" : "border-transparent"
-      }`}
+        day !== null ? " cursor-pointer p-1 text-xs" : ""
+      } ${isSelected && day !== null ? "" : "border-transparent"}`}
     >
       {day !== null && (
         <div
-          className={`text-sm font-light text-center ${outfitFont.className} ${
+          className={`!text-xs font-medium text-center ${
+            outfitFont.className
+          } ${
             isSelected
               ? "underline "
               : timeSlots?.length === 0
               ? "line-through text-neutral-600"
-              : "text-blue-500"
+              : "text-blue-500/60"
           }`}
         >
           {day}
         </div>
       )}
-    </div>
+    </button>
   );
 };
 
-{
-  /* {timeSlots?.map((slot, index) => (
-            <div
-              key={index}
-              className={`${zillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
-            >
-              {`${convertMinutesToTimeString(
-                slot.open
-              )} - ${convertMinutesToTimeString(slot.close)}`}
-            </div>
-          ))} */
-}
 export {
   DeliveryPickupToggle,
   CalendarDayCart,

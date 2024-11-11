@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Availability, Hours } from "@prisma/client";
 import { TimeSlot } from "@prisma/client";
-import { isThisYear, format } from "date-fns";
+import { isThisYear, format, parseISO } from "date-fns";
 
 const convertMinutesToTimeString = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -34,7 +34,13 @@ const week_day_mmm_dd_yy_time = (
 
   return { time: `${dateString} at ${timeString}`, date: combinedDateTime };
 };
+function formatDateToMMMDDAtHourMin(date: Date): string {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new Error("Invalid date provided");
+  }
 
+  return format(date, "MMM d 'at' h:mma");
+}
 const hasAvailableHours = (hours: Availability[] | null): boolean => {
   if (!hours) return false;
 
@@ -49,7 +55,27 @@ const convertTimeStringToMinutes = (timeString: string): number => {
   else if (period === "AM" && hours === 12) totalMinutes = 0;
   return totalMinutes;
 };
+type DateSelection = {
+  [key: string]: boolean;
+};
 
+const convertSelectedDayToDate = (
+  selectedDay: DateSelection,
+  time: number
+): { state_date: Date; state_time: number } | null => {
+  const dateKey = Object.keys(selectedDay)[0];
+
+  if (!dateKey) {
+    return null;
+  }
+
+  const date = parseISO(dateKey);
+
+  return {
+    state_date: date,
+    state_time: time,
+  };
+};
 const createDateKey = (year: number, month: number, day: number): string => {
   return `${year}-${month.toString().padStart(2, "0")}-${day
     .toString()
@@ -113,4 +139,7 @@ export {
   checkOverlap,
   week_day_mmm_dd_yy_time,
   panelVariants,
+  formatDateToMMMDDAtHourMin,
+  convertSelectedDayToDate,
 };
+export type { DateSelection };

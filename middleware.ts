@@ -24,7 +24,10 @@ export default auth(async (req) => {
     nextUrl.pathname.startsWith("/listings/") ||
     nextUrl.pathname.startsWith("/api/cron");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
+  console.log("Path:", nextUrl.pathname);
+  console.log("Is Logged In:", isLoggedIn);
+  console.log("Is Public Route:", isPublicRoute);
+  
   if (isApiAuthRoute) {
     return null as unknown as void;
   }

@@ -63,7 +63,7 @@ enum OrderStatus {
   ADMIN_MESSAGE
   HARVEST
   IMG
-  
+
   DISPUTEE_RESPONDED
   DISPUTER_RESPONDED
 
@@ -318,6 +318,11 @@ enum basketStatus {
   CONVERTED_TO_ORDER
 }
 
+enum basket_time_type {
+  ASAP
+  CUSTOM
+}
+
 model RecentlyViewedItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   listingId String   @db.ObjectId
@@ -350,20 +355,21 @@ type proposedLoc {
 }
 
 model Basket {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String       @db.ObjectId
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  locationId   String       @db.ObjectId
-  location     Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String           @db.ObjectId
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId   String           @db.ObjectId
+  location     Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
   proposedLoc  proposedLoc?
   items        BasketItem[]
   pickupDate   DateTime?
   deliveryDate DateTime?
-  orderMethod  orderMethod  @default(UNDECIDED)
-  status       basketStatus @default(ACTIVE)
+  orderMethod  orderMethod      @default(UNDECIDED)
+  status       basketStatus     @default(ACTIVE)
   notes        String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  time_type    basket_time_type @default(ASAP)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
   @@unique([userId, locationId])
 }

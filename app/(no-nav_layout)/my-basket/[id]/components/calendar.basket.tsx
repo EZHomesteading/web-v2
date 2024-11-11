@@ -1,6 +1,6 @@
 // export default SetCustomPickupDeliveryCalendar;
 "use client";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Key } from "react";
 import {
   format,
   addMonths,
@@ -12,28 +12,43 @@ import {
 } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Location, TimeSlot } from "@prisma/client";
-import axios from "axios";
+import { basket_time_type, orderMethod, TimeSlot } from "@prisma/client";
 import {
+  convertMinutesToTimeString,
   convertTimeStringToMinutes,
   createDateKey,
   daysOfWeek,
+  week_day_mmm_dd_yy_time,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import { outfitFont } from "@/components/fonts";
 import {
   CalendarDayCart,
   DeliveryPickupToggleMode,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
-import SetCustomPickupDeliveryPanel from "./panel.basket";
 import { PiArrowLeftThin, PiArrowRightThin } from "react-icons/pi";
-import useMediaQuery from "@/hooks/media-query";
 import TimePicker from "./time.basket";
+import { Basket_Selected_Time_Type } from "basket";
+import axios from "axios";
 
 interface p {
   location: any;
   mode?: DeliveryPickupToggleMode;
+  onClose: () => void;
+  basket: Basket_Selected_Time_Type;
 }
-const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
+
+const SetCustomPickupDeliveryCalendar = ({
+  location,
+  mode,
+  onClose,
+  basket,
+}: p) => {
+  const [basketState, setBasketState] = useState<Basket_Selected_Time_Type>({
+    ...basket,
+    orderMethod: basket.orderMethod,
+    selected_time_type: null,
+  });
+
   const hours = {
     delivery:
       location?.hours?.delivery?.map((ex: any) => ({
@@ -47,25 +62,29 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
       })) || [],
   };
   const [startMonth, setStartMonth] = useState(new Date());
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 
-  const [userClosedPanel, setUserClosedPanel] = useState(false);
   const [showModifyButton, setShowModifyButton] = useState(false);
   const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const currentDate = new Date();
-  const containerRef = useRef<HTMLDivElement | null>(null);
   type DaySelection = { [key: string]: boolean };
   const [selectedDay, setSelectedDay] = useState<DaySelection>({});
+
   const [isBasePanelOpen, setIsBasePanelOpen] = useState(false);
   const [time, setTime] = useState<number>(540);
-  const [windowDimensions, setWindowDimensions] = useState<{
-    width: number;
-    height: number;
-  }>({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
-  });
-  const panelSide = windowDimensions.width > 1150;
+  const getTimeSlotsForSelectedDay = () => {
+    const selectedDateKey = Object.keys(selectedDay)[0];
+    if (!selectedDateKey) return [];
+
+    const currentDate = parseISO(selectedDateKey);
+    const { currentHours } = getSellerHours();
+
+    const matchingHours = currentHours.find((hourSet: any) =>
+      isSameDay(parseISO(hourSet.date.toISOString()), currentDate)
+    );
+
+    return matchingHours?.timeSlots || [];
+  };
 
   const handleMouseDown = (day: number | null, month: number, year: number) => {
     if (day !== null) {
@@ -75,6 +94,7 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
 
       if (selectedDay[key]) {
         setSelectedDay({});
+        setSelectedDateTime(null);
         return;
       }
 
@@ -93,14 +113,11 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
       }
 
       setSelectedDay({ [key]: true });
+
+      const newDateTime = new Date(date.getTime() + time * 60000);
+      setSelectedDateTime(newDateTime);
     }
   };
-
-  const mainContentVariants = {
-    open: { width: "100%" },
-    closed: { width: "100%" },
-  };
-
   const getSelectionDescription = useMemo(() => {
     const selectedDateKey = Object.keys(selectedDay)[0];
     if (!selectedDateKey) return "";
@@ -152,6 +169,68 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
   const handleTimeSlotChange = (newTime: string) => {
     const minutes = convertTimeStringToMinutes(newTime);
     setTime(minutes);
+
+    const selectedDateKey = Object.keys(selectedDay)[0];
+    if (selectedDateKey) {
+      const selectedDate = parseISO(selectedDateKey);
+      const newDateTime = new Date(selectedDate.getTime() + minutes * 60000);
+      setSelectedDateTime(newDateTime);
+    }
+    console.log(selectedDateTime);
+  };
+
+  const saveChanges = async () => {
+    if (!selectedDateTime) {
+      toast.error("Please select both a date and a time");
+      return;
+    }
+
+    const timeSlots = getTimeSlotsForSelectedDay();
+    if (timeSlots.length === 0) {
+      toast.error("No available time slots for selected date");
+      return;
+    }
+
+    const currentTime = time;
+    const isTimeValid = timeSlots.some(
+      (slot: { open: number; close: number }) =>
+        currentTime >= slot.open && currentTime <= slot.close
+    );
+
+    if (!isTimeValid) {
+      toast.error("Selected time is outside of available hours");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: basketState.id,
+        deliveryDate:
+          basketState.orderMethod === orderMethod.DELIVERY
+            ? selectedDateTime.toISOString()
+            : null,
+        pickupDate:
+          basketState.orderMethod === orderMethod.PICKUP
+            ? selectedDateTime.toISOString()
+            : null,
+        orderMethod: basketState.orderMethod,
+        proposedLoc: basketState.proposedLoc,
+        items: basketState.items,
+        time_type: basket_time_type.CUSTOM,
+      };
+
+      console.log("Payload being sent to backend:", payload);
+
+      const res = await axios.post("/api/baskets/update", payload);
+
+      if (res.status === 200) {
+        toast.success("Basket was updated");
+        onClose();
+      }
+    } catch (error) {
+      toast.error("Failed to update basket");
+      console.error("Update error:", error);
+    }
   };
 
   const getDaysInMonth = (year: number, month: number): number => {
@@ -197,37 +276,20 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
         data-month={format(new Date(year, month), "MMM yyyy")}
         className={`sm:px-1 ${outfitFont.className}`}
       >
-        <div className="text-lg font-semibold mb-2  w-fit">
+        <div className="text-lg font-semibold mb-2 w-fit">
           {format(new Date(year, month), "MMM yyyy")}
         </div>
-        <div className="  grid grid-cols-7 w-full gap-x-4">
+        <div className="grid grid-cols-7 w-full gap-x-4">
           {daysOfWeek.map((day: string, index: number) => (
             <div key={index} className="mr-2 text-center">
               {day}
             </div>
           ))}
         </div>
-        <div className="  grid grid-cols-7 w-full gap-2">{calendarDays}</div>
+        <div className="grid grid-cols-7 w-full gap-2">{calendarDays}</div>
       </div>
     );
   };
-
-  useEffect(() => {
-    const handleResize = () =>
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (selectedDay) {
-      setUserClosedPanel(false);
-    }
-  }, [selectedDay]);
-
   const renderMonths = (): JSX.Element[] => {
     const month1 = startMonth;
     const month2 = addMonths(startMonth, 1);
@@ -238,47 +300,105 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode }: p) => {
     months.push();
     return months;
   };
-  const over_600px = useMediaQuery("(min-width: 600px)");
-  let num: number = 2;
-  const handleBack = () => setStartMonth((prev) => subMonths(prev, num));
-  const handleForward = () => setStartMonth((prev) => addMonths(prev, num));
+  const handleBack = () => setStartMonth((prev) => subMonths(prev, 2));
+  const handleForward = () => setStartMonth((prev) => addMonths(prev, 2));
   return (
-    <div className="relative select-none">
-      <div className="flex justify-between items-center mb-4 w-full">
+    <div className="relative select-none h-[100%]">
+      <div className="flex justify-between items-center mw-full mb-2">
         <PiArrowLeftThin
           onClick={handleBack}
-          className={`hover:cursor-pointer text-[2rem] rounded-full p-1 border shadow-md`}
+          className="hover:cursor-pointer text-[2rem] rounded-full p-1 border shadow-md"
         />
         {showModifyButton && selectedDay && (
           <button
-            className={`${
-              !selectedDay && "!hidden"
-            } z-50 bg-slate-900 text-white md:text-md p-4 font-semibold md:w-[250px] w-fit text-xs absolute top-[-10] left-1/2 -translate-x-1/2 hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg`}
-            onClick={() => {
-              setIsBasePanelOpen(true);
-              setShowModifyButton(false);
-            }}
+            className="z-50 bg-slate-900 text-white md:text-md p-2 font-semibold md:w-[250px] w-fit text-xs absolute top-[-10] left-1/2 -translate-x-1/2 hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg"
+            onClick={() => setIsBasePanelOpen(true)}
           >
             {getSelectionDescription}
           </button>
         )}
         <PiArrowRightThin
           onClick={handleForward}
-          className={`hover:cursor-pointer text-[2rem]  rounded-full p-1 border shadow-md`}
+          className="hover:cursor-pointer text-[2rem] rounded-full p-1 border shadow-md"
         />
       </div>
 
-      <SetCustomPickupDeliveryPanel
-        mode={mode}
-        isBasePanelOpen={isBasePanelOpen}
-        setIsBasePanelOpen={setIsBasePanelOpen}
-        handleTimeChange={handleTimeSlotChange}
-        over_600px={over_600px}
-      >
-        <div className="flex flex-col md:flex-row md:space-x-8 space-y-3 md:space-y-0 pt-3">
-          {renderMonths()}
+      <div className="flex flex-col md:flex-row md:space-x-8 space-y-0 md:space-y-0 pt- h-[calc(100%)] !overflow-y-auto">
+        {renderMonths()}
+      </div>
+
+      {isBasePanelOpen && (
+        <div className="absolute inset-0 z-[102] bg-white rounded-xl  pointer-events-auto">
+          <Button
+            onClick={() => setIsBasePanelOpen(false)}
+            className="z-50 bg-slate-900 text-white md:text-md h-8 px-4 font-semibold w-[150px] md:w-[250px] text-xs absolute top-[-10] left-1/2 -translate-x-1/2 hover:bg-slate-500 transition-colors duration-200 rounded-full shadow-lg"
+          >
+            Back to Calendar
+          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 w-full ">
+            <div
+              className={`w-full text-start pt-2 flex flex-col items-center justify-start`}
+            >
+              {" "}
+              <div className={`text-lg font-semibold mb-2 w-fit`}>
+                Available Times
+              </div>
+              <div>
+                {getTimeSlotsForSelectedDay().length > 0 ? (
+                  getTimeSlotsForSelectedDay().map(
+                    (
+                      slot: { open: number; close: number },
+                      index: number | null
+                    ) => (
+                      <div
+                        key={index}
+                        className="text-xs lg:text-sm text-black mt-1 overflow-y-auto"
+                      >
+                        {`${convertMinutesToTimeString(
+                          slot.open
+                        )} - ${convertMinutesToTimeString(slot.close)}`}
+                      </div>
+                    )
+                  )
+                ) : (
+                  <div>No available times</div>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col space-y-4">
+              <TimePicker
+                value={convertMinutesToTimeString(time)}
+                onChange={(time) => handleTimeSlotChange(time)}
+                mode={mode}
+              />
+            </div>{" "}
+          </div>{" "}
+          <div className="flex w-full px-2 justify-between border-t pt-2 mt-6 ">
+            <button
+              className={`underline text-black ${
+                !basketState.pickupDate &&
+                !basketState.deliveryDate &&
+                "cursor-not-allowed pointer-events-none text-neutral-500"
+              }`}
+              onClick={() =>
+                setBasketState((prev) => ({
+                  ...prev,
+                  deliveryDate: null,
+                  pickupDate: null,
+                }))
+              }
+            >
+              Reset
+            </button>
+            <button
+              className="text-white bg-black px-3 py-2 rounded-3xl"
+              onClick={saveChanges}
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
-      </SetCustomPickupDeliveryPanel>
+      )}
     </div>
   );
 };

@@ -4,14 +4,17 @@ import { BasketLocation } from "@/actions/getUser";
 import Map from "./map.basket";
 import useMediaQuery from "@/hooks/media-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import {
+  formatDateToMMMDDAtHourMin,
+  hasAvailableHours,
+} from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import { outfitFont } from "@/components/fonts";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { orderMethod } from "@prisma/client";
+import { basket_time_type, orderMethod } from "@prisma/client";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,11 +34,11 @@ type ProposedLocation = {
   coordinates: number[];
 };
 const BasketClient = ({ basket, userLocs, mk }: p) => {
-  const [time_type, set_time_type] = useState("ASAP");
   const over_768px = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [isDateOverlayOpen, setIsDateOverlayOpen] = useState(false);
+
   const { hasPickup, hasDelivery, initialOrderMethod } = useMemo(() => {
     const hasPickup = hasAvailableHours(basket.location.hours?.pickup || []);
     const hasDelivery = hasAvailableHours(
@@ -61,6 +64,9 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
     orderMethod: basket.orderMethod || initialOrderMethod,
     selected_time_type: null,
   });
+  const [time_type, set_time_type] = useState(
+    basketState.time_type || basket_time_type.ASAP
+  );
   const [errorType, setErrorType] = useState<
     "undecided" | "location" | "deliveryDate" | "pickupDate" | null
   >(null);
@@ -101,22 +107,16 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
         quantity: item.quantity,
       })),
     };
+
     try {
       const res = await axios.post("/api/baskets/update", updatedData);
       if (res.status === 200) {
         toast.success("Basket was updated");
-        setBasketState((prev) => ({
-          ...prev,
-          deliveryDate: basketState.deliveryDate,
-          pickupDate: basketState.pickupDate,
-          proposedLoc: basketState.proposedLoc,
-          orderMethod: basketState.orderMethod,
-        }));
-
         router.refresh();
       }
-    } catch {
+    } catch (error) {
       toast.error("Failed to update basket");
+      console.error("Update error:", error);
     }
   };
 
@@ -133,7 +133,7 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
         preferredLocationId: "67292cfa5f7005d487c47c46",
       },
       sellerId: "6729165df65c1ba881baa489",
-      type: "delivery",
+      type: basketState.orderMethod,
     };
     try {
       const OrderResponse = await axios.post("/api/chat/createOrder", params);
@@ -194,11 +194,17 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
       </>
     );
   };
+  const formattedDate =
+    (basket.deliveryDate &&
+      formatDateToMMMDDAtHourMin(new Date(basket.deliveryDate))) ||
+    (basket.pickupDate &&
+      formatDateToMMMDDAtHourMin(new Date(basket.pickupDate))) ||
+    "When?";
 
   return (
     <>
       <div
-        className={`fixed top-2 md:w-[calc(100%/2)] w-[100%] sm:top-20 left-0 ml-1  2xl:ml-[7.75rem] bg-white`}
+        className={`fixed top-2 md:w-[calc(100%/2)] w-[100%] md:top-20 left-0 ml-1  2xl:ml-[7.75rem] bg-white`}
       >
         <>
           <Link
@@ -226,20 +232,20 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
                       {[
                         {
                           label: "Proposed Pickup Date",
-                          value: basket?.pickupDate?.toString() || "Not Set",
+                          value: formattedDate,
                           display:
                             basket?.orderMethod === orderMethod.PICKUP && true,
                         },
                         {
                           label: "Proposed Delivery Location",
-                          value: basket?.proposedLoc?.address[0],
+                          value: formattedDate,
                           display:
                             basket?.orderMethod === orderMethod.DELIVERY &&
                             true,
                         },
                         {
                           label: "Proposed Delivery Date",
-                          value: basket?.pickupDate?.toString() || "Not Set",
+                          value: basket.deliveryDate?.toString() || "Not Set",
                           display:
                             basket?.orderMethod === orderMethod.DELIVERY &&
                             true,
@@ -463,7 +469,6 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
               <DateOverlay
                 basket={basketState}
                 errorType={errorType}
-                saveChanges={saveChanges}
                 initialOrderMethod={initialOrderMethod}
                 onOpenChange={setIsDateOverlayOpen}
               />
@@ -482,24 +487,24 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
               {[
                 {
                   label: "Proposed Pickup Date",
-                  value: basket?.pickupDate?.toString() || "Not Set",
+                  value: formattedDate,
                   display: basket?.orderMethod === orderMethod.PICKUP && true,
                   info_title: "Why do I need to enter this?",
-                  info: "After choosing a pickup time and messaging the seller, they'll review your order details and can either accept, reschedule, or decline your request.",
+                  info: "Just fill in your info - no commitment yet! Once you select when you'd like to pick up your order, they'll take a look and can accept, suggest another time, or decline. You'll only have the option pay after you've both agreed on the details.",
                 },
                 {
                   label: "Proposed Delivery Location",
                   value: basket?.proposedLoc?.address[0] || "Not Set",
                   display: basket?.orderMethod === orderMethod.DELIVERY && true,
                   info_title: "Why do I need to enter this?",
-                  info: "Just fill in your info - no commitment yet! Once you pick when and where you'd like your delivery, they'll take a look and can accept, suggest another time, or decline. You'll only pay after you've both agreed on the details.",
+                  info: "Just fill in your info - no commitment yet! Once you pick when and where you'd like your delivery, they'll take a look and can accept, suggest another time, or decline. You'll only have the option to pay after you've both agreed on the details.",
                 },
                 {
                   label: "Proposed Delivery Date",
-                  value: basket?.pickupDate?.toString() || "Not Set",
+                  value: formattedDate,
                   display: basket?.orderMethod === orderMethod.DELIVERY && true,
                   info_title: "",
-                  info: "Just fill in your info - no commitment yet! Once you pick when and where you'd like your delivery, they'll take a look and can accept, suggest another time, or decline. You'll only pay after you've both agreed on the details.",
+                  info: "Just fill in your info - no commitment yet! Once you pick when and where you'd like your delivery, they'll take a look and can accept, suggest another time, or decline. You'll only have the option to pay after you've both agreed on the details.",
                 },
                 {
                   label: "Notes",

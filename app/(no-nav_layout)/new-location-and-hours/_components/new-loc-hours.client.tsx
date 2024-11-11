@@ -62,7 +62,7 @@ const NewLocHoursClient = ({
           newData.location &&
           JSON.stringify(prevData.location) === JSON.stringify(newData.location)
         ) {
-          return prevData; // No change, return the same object
+          return prevData;
         }
         return {
           ...prevData,
@@ -329,7 +329,7 @@ const NewLocHoursClient = ({
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen overflow-y-auto">
         {/* header */}
         <div className="w-full fixed top-0 left-0 zmax">
           <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
