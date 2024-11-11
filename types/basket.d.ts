@@ -1,4 +1,4 @@
-import { Hours, orderMethod, proposedLoc, UserRole } from "@prisma/client"
+import { basket_time_type, Hours, orderMethod, proposedLoc, UserRole } from "@prisma/client"
 
 declare module "basket" {
     // in use in /api/basket/get/unique and /basket/[id]
@@ -8,6 +8,7 @@ declare module "basket" {
         pickupDate: Date | null
         deliveryDate: Date | null
         orderMethod: orderMethod
+        time_type:basket_time_type,
         items: {
           quantity:number,
           price:number,

@@ -6,13 +6,8 @@ import Google from "next-auth/providers/google";
 import { LoginSchema } from "@/schemas";
 import { getUserByEmail } from "@/data/user";
 
-export default {
+const authConfig: NextAuthConfig = {
   providers: [
-    // Auth0Provider({
-    //   clientId: process.env.AUTH0_CLIENT_ID,
-    //   clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    //   issuer: process.env.AUTH0_ISSUER_BASE_URL
-    // }),
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -29,11 +24,32 @@ export default {
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
-          if (passwordsMatch) return user;
+          if (passwordsMatch) return user; 
         }
 
         return null;
       },
     }),
   ],
-} satisfies NextAuthConfig;
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user && user.id) { 
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id; 
+      return session;
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/auth/login", 
+  },
+};
+
+export default authConfig;
+

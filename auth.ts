@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import {  fullName, Notification,  UserRole } from "@prisma/client";
-
+import { Session } from "next-auth";
 export const {
   handlers: { GET, POST },
   auth,
@@ -43,14 +43,9 @@ export const {
         session.user.url = token.url as string;
         session.user.createdAt = token.createdAt as Date | undefined;
         session.user.updatedAt = token.updatedAt as Date | undefined;
-        session.user.conversationIds = token.conversationIds as string[];
-        session.user.seenMessageIds = token.seenMessageIds as string[];
         session.user.subscriptions = token.subscriptions as string | undefined;
         session.user.totalPaidOut = token.totalPaidOut as number;
         session.user.notifications = token.notifications as Notification[];
-        session.user.SODT = token.SODT as number | undefined;
-        session.user.bio = token.bio as string | undefined;
-        session.user.banner = token.banner as string | undefined;
         session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
         session.user.openClosedTemplates = token.openClosedTemplates as unknown as any
         session.user.canRecievePayouts = token.canRecievePayouts as boolean
@@ -75,14 +70,9 @@ export const {
       token.stripeAccountId = existingUser.stripeAccountId ?? undefined
       token.createdAt = existingUser.createdAt;
       token.updatedAt = existingUser.updatedAt;
-      token.conversationIds = existingUser.conversationIds;
-      token.seenMessageIds = existingUser.seenMessageIds;
       token.subscriptions = existingUser.subscriptions ?? undefined
       token.totalPaidOut = existingUser.totalPaidOut ?? 0;
       token.notifications = existingUser.notifications;
-      token.SODT = existingUser.SODT ?? undefined;
-      token.bio = existingUser.bio ?? undefined
-      token.banner = existingUser.banner ?? undefined
       token.openClosedTemplates = existingUser.openCloseTemplates
       token.canRecievePayouts = existingUser.canRecievePayouts ?? undefined
       return token;

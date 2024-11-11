@@ -43,7 +43,7 @@ const Page = async () => {
 
   return (
     <>
-      {locations && Array.isArray(locations) && locations?.length !== 1000 ? (
+      {locations && Array.isArray(locations) && locations?.length < 3 ? (
         // > 3
         <>
           {session?.user && (

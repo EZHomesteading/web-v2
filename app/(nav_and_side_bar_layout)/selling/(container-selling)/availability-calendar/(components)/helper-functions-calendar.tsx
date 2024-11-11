@@ -34,7 +34,13 @@ const week_day_mmm_dd_yy_time = (
 
   return { time: `${dateString} at ${timeString}`, date: combinedDateTime };
 };
+function formatDateToMMMDDAtHourMin(date: Date): string {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new Error("Invalid date provided");
+  }
 
+  return format(date, "MMM d 'at' h:mma");
+}
 const hasAvailableHours = (hours: Availability[] | null): boolean => {
   if (!hours) return false;
 
@@ -133,6 +139,7 @@ export {
   checkOverlap,
   week_day_mmm_dd_yy_time,
   panelVariants,
+  formatDateToMMMDDAtHourMin,
   convertSelectedDayToDate,
 };
 export type { DateSelection };
