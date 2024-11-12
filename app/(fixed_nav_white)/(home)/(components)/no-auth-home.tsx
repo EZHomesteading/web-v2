@@ -19,7 +19,10 @@ const footerNavigation = {
     { name: "Settings", href: "/dashboard/account-settings/general" },
   ],
 };
-export default function Home() {
+interface Props {
+  user: any;
+}
+const Home = ({ user }: Props) => {
   return (
     <>
       <main className="min-h-screen w-full gradient">
@@ -99,7 +102,13 @@ export default function Home() {
                 />
               </Link>
               <Link
-                href={`/auth/register?callBackURL=/create-new-location`}
+                href={`${
+                  !user
+                    ? "/auth/register?callBackURL=/create-new-location"
+                    : user.locations.length === 0
+                    ? "/new-location-and-hours"
+                    : "/create"
+                }`}
                 className="
                   border-none
                   bg-transparent
@@ -258,4 +267,5 @@ export default function Home() {
       </footer>
     </>
   );
-}
+};
+export default Home;

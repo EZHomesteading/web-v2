@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   GiAppleCore,
   GiCandyCanes,
+  GiJellyBeans,
   GiOlive,
   GiRopeCoil,
   GiWheat,
@@ -56,7 +57,9 @@ interface SubCategoryCardProps {
 
 interface CategorySelectionProps {
   category: Category;
+
   setCategory: (category: Category) => void;
+  onGoBack: () => void;
 }
 
 interface SubCategorySelectionProps {
@@ -71,6 +74,7 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
   nuts: <GiCoconuts size={30} />,
   herbs: <GiHerbsBundle size={30} />,
   grains: <GiWheat size={30} />,
+  legumes: <GiJellyBeans size={30} />,
   crafts: <GiWoodCabin size={30} />,
   "baked-goods": <GiCupcake size={30} />,
   jams: <GiHoneypot size={30} />,
@@ -93,7 +97,14 @@ const subCategoryIcons: Record<string, React.ReactNode> = {
 };
 
 const subCategories: Record<Exclude<Category, "">, string[]> = {
-  "unprocessed-produce": ["fruit", "vegetables", "nuts", "herbs", "grains"],
+  "unprocessed-produce": [
+    "fruit",
+    "vegetables",
+    "nuts",
+    "herbs",
+    "grains",
+    "legumes",
+  ],
   homemade: [
     "crafts",
     "baked-goods",
@@ -179,7 +190,7 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
 const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <Button
     onClick={onClick}
-    className="absolute bottom-5 left-5 text-xl hover:cursor-pointer"
+    className="fixed bottom-6 left-5 text-xl hover:cursor-pointer"
   >
     Back
   </Button>
@@ -188,32 +199,36 @@ const GoBackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 const CategorySelection: React.FC<CategorySelectionProps> = ({
   category,
   setCategory,
+  onGoBack,
 }) => (
-  <div className="flex flex-col space-y-4 w-full  max-w-[1000px] min-w-[280px]">
-    <CategoryCard
-      icon={<CiApple size={40} />}
-      title="Unprocessed Produce"
-      description="Apples, Peaches & Tomatoes"
-      onClick={() => setCategory("unprocessed-produce")}
-    />
-    <CategoryCard
-      icon={<CiHome size={40} />}
-      title="Homemade"
-      description="Apple Pie & Beeswax Candles"
-      onClick={() => setCategory("homemade")}
-    />
-    <CategoryCard
-      icon={<GiRopeCoil size={40} />}
-      title="Durables"
-      description="Canned Food & Solar Panels"
-      onClick={() => setCategory("durables")}
-    />
-    <CategoryCard
-      icon={<LuBeef size={40} />}
-      title="Dairy & Meat"
-      description="Milk Shares & Free-Range Chicken"
-      onClick={() => setCategory("dairy-meat")}
-    />
+  <div className="w-full max-w-[1000px] mx-auto">
+    <GoBackButton onClick={onGoBack} />
+    <div className="flex flex-col space-y-4 w-full  max-w-[1000px] min-w-[280px]">
+      <CategoryCard
+        icon={<CiApple size={40} />}
+        title="Unprocessed Produce"
+        description="Apples, Peaches & Tomatoes"
+        onClick={() => setCategory("unprocessed-produce")}
+      />
+      <CategoryCard
+        icon={<CiHome size={40} />}
+        title="Homemade"
+        description="Apple Pie & Beeswax Candles"
+        onClick={() => setCategory("homemade")}
+      />
+      <CategoryCard
+        icon={<GiRopeCoil size={40} />}
+        title="Durables"
+        description="Canned Food & Solar Panels"
+        onClick={() => setCategory("durables")}
+      />
+      <CategoryCard
+        icon={<LuBeef size={40} />}
+        title="Dairy & Meat"
+        description="Milk Shares & Free-Range Chicken"
+        onClick={() => setCategory("dairy-meat")}
+      />
+    </div>
   </div>
 );
 
@@ -248,6 +263,7 @@ const SubCategorySelection: React.FC<SubCategorySelectionProps> = ({
 interface ProductCategorySelectionProps {
   step: number;
   category: Category;
+  handlePrevious: () => void;
   setCategory: (category: Category) => void;
   subCategory: SubCategory;
   setSubCategory: (subCategory: SubCategory) => void;
@@ -258,6 +274,7 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   category,
   setCategory,
   subCategory,
+  handlePrevious,
   setSubCategory,
 }) => {
   if (step !== 2) return null;
@@ -266,12 +283,18 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
     <div className="flex justify-center items-start min-h-screen w-full">
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[700px] px-4">
         <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
-          Select a {category ? <>Subcategory</> : <>Category</>} for your
+          Select a {category !== "" ? <>Subcategory</> : <>Category</>} for your
           Product
         </Label>
         <div className="w-full px-2">
           {category === "" ? (
-            <CategorySelection category={category} setCategory={setCategory} />
+            <CategorySelection
+              category={category}
+              setCategory={setCategory}
+              onGoBack={() => {
+                handlePrevious();
+              }}
+            />
           ) : (
             <SubCategorySelection
               category={category}
