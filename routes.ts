@@ -14,10 +14,10 @@ export const publicRoutes = [
   "/api/user/marker-info",
   "/api/uploadthing",
   "/api/cron",
-  "/api/baskets/active", //why does this need to be public for route to work
-  "/api/baskets/get/unique",
-  "/api/baskets/update",
-  
+
+  // "/api/baskets/active", //why does this need to be public for route to work
+  // "/api/baskets/get/unique",
+  // "/api/baskets/update",
 ];
 /**
  * An array of routes that are used for authentication
