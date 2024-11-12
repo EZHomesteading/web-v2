@@ -89,7 +89,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
       } flex flex-col items-center w-full`}
     >
       {!top && <hr className="border-b my-4 w-full" />}
-      <div className="flex items-center justify-evenly w-full mb-4">
+      <div className="flex items-center justify-evenly w-full mb-4 gap-px">
         <div>
           <div className="text-2xl pt-2">{top ? "Open" : "Close"}</div>
         </div>

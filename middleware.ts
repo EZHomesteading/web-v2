@@ -6,15 +6,18 @@ import {
   authRoutes,
   publicRoutes,
 } from "@/routes";
-const { auth } = NextAuth(authConfig);
+
+export const { auth } = NextAuth(authConfig);
+
 export default auth(async (req) => {
   const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
+
   const path = nextUrl.pathname;
   const firstIndex = path.indexOf("/");
   const index = path.indexOf("/", firstIndex + 1);
   const filteredString = index !== -1 ? path.substring(0, index) : path;
-  const isLoggedIn = !!req.auth;
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  // Check route types
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
     publicRoutes.includes(filteredString) ||
@@ -23,36 +26,41 @@ export default auth(async (req) => {
     nextUrl.pathname.startsWith("/store/") ||
     nextUrl.pathname.startsWith("/listings/") ||
     nextUrl.pathname.startsWith("/api/cron");
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(path);
 
-  if (isApiAuthRoute) {
-    return null as unknown as void;
+  // Allow all API routes to pass through - we'll protect them individually
+  if (path.startsWith("/api/")) {
+    return;
   }
 
-  if (isApiAuthRoute) {
-    return null as unknown as void;
-  }
-
+  // Handle auth routes
   if (isAuthRoute) {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
-    return null as unknown as void;
+    return;
   }
 
-  if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL(`/auth/login`, nextUrl));
+  // Public routes
+  if (isPublicRoute) {
+    return;
   }
 
-  return null as unknown as void;
+  // Protected routes
+  if (!isLoggedIn) {
+    return Response.redirect(new URL("/auth/login", nextUrl));
+  }
 });
 
 export const config = {
   matcher: [
-    "/((?!.+\\.[\\w]+$|_next).*)",
-    "/",
-    "/(api|trpc)(.*)",
-    "/conversations/:path*",
-    "/users/:path*",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };

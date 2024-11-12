@@ -12,12 +12,13 @@ import {
 } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { orderMethod, TimeSlot } from "@prisma/client";
+import { basket_time_type, orderMethod, TimeSlot } from "@prisma/client";
 import {
   convertMinutesToTimeString,
   convertTimeStringToMinutes,
   createDateKey,
   daysOfWeek,
+  week_day_mmm_dd_yy_time,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import { outfitFont } from "@/components/fonts";
 import {
@@ -33,7 +34,7 @@ interface p {
   location: any;
   mode?: DeliveryPickupToggleMode;
   onClose: () => void;
-  basket: any;
+  basket: Basket_Selected_Time_Type;
 }
 
 const SetCustomPickupDeliveryCalendar = ({
@@ -61,6 +62,7 @@ const SetCustomPickupDeliveryCalendar = ({
       })) || [],
   };
   const [startMonth, setStartMonth] = useState(new Date());
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 
   const [showModifyButton, setShowModifyButton] = useState(false);
   const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -83,6 +85,7 @@ const SetCustomPickupDeliveryCalendar = ({
 
     return matchingHours?.timeSlots || [];
   };
+
   const handleMouseDown = (day: number | null, month: number, year: number) => {
     if (day !== null) {
       const key = createDateKey(year, month + 1, day);
@@ -91,6 +94,7 @@ const SetCustomPickupDeliveryCalendar = ({
 
       if (selectedDay[key]) {
         setSelectedDay({});
+        setSelectedDateTime(null);
         return;
       }
 
@@ -109,9 +113,11 @@ const SetCustomPickupDeliveryCalendar = ({
       }
 
       setSelectedDay({ [key]: true });
+
+      const newDateTime = new Date(date.getTime() + time * 60000);
+      setSelectedDateTime(newDateTime);
     }
   };
-
   const getSelectionDescription = useMemo(() => {
     const selectedDateKey = Object.keys(selectedDay)[0];
     if (!selectedDateKey) return "";
@@ -163,6 +169,68 @@ const SetCustomPickupDeliveryCalendar = ({
   const handleTimeSlotChange = (newTime: string) => {
     const minutes = convertTimeStringToMinutes(newTime);
     setTime(minutes);
+
+    const selectedDateKey = Object.keys(selectedDay)[0];
+    if (selectedDateKey) {
+      const selectedDate = parseISO(selectedDateKey);
+      const newDateTime = new Date(selectedDate.getTime() + minutes * 60000);
+      setSelectedDateTime(newDateTime);
+    }
+    console.log(selectedDateTime);
+  };
+
+  const saveChanges = async () => {
+    if (!selectedDateTime) {
+      toast.error("Please select both a date and a time");
+      return;
+    }
+
+    const timeSlots = getTimeSlotsForSelectedDay();
+    if (timeSlots.length === 0) {
+      toast.error("No available time slots for selected date");
+      return;
+    }
+
+    const currentTime = time;
+    const isTimeValid = timeSlots.some(
+      (slot: { open: number; close: number }) =>
+        currentTime >= slot.open && currentTime <= slot.close
+    );
+
+    if (!isTimeValid) {
+      toast.error("Selected time is outside of available hours");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: basketState.id,
+        deliveryDate:
+          basketState.orderMethod === orderMethod.DELIVERY
+            ? selectedDateTime.toISOString()
+            : null,
+        pickupDate:
+          basketState.orderMethod === orderMethod.PICKUP
+            ? selectedDateTime.toISOString()
+            : null,
+        orderMethod: basketState.orderMethod,
+        proposedLoc: basketState.proposedLoc,
+        items: basketState.items,
+        time_type: basket_time_type.CUSTOM,
+      };
+
+      console.log("Payload being sent to backend:", payload);
+
+      const res = await axios.post("/api/baskets/update", payload);
+
+      if (res.status === 200) {
+        toast.success("Basket was updated");
+        onClose();
+      }
+    } catch (error) {
+      toast.error("Failed to update basket");
+      console.error("Update error:", error);
+    }
   };
 
   const getDaysInMonth = (year: number, month: number): number => {
@@ -222,65 +290,6 @@ const SetCustomPickupDeliveryCalendar = ({
       </div>
     );
   };
-  const saveChanges = async () => {
-    const selectedDateKey = Object.keys(selectedDay)[0];
-    if (!selectedDateKey || !time) {
-      toast.error("Please select both a date and a time");
-      return;
-    }
-
-    const timeSlots = getTimeSlotsForSelectedDay();
-    if (timeSlots.length === 0) {
-      toast.error("No available time slots for selected date");
-      return;
-    }
-
-    const isTimeValid = timeSlots.some(
-      (slot: { open: number; close: number }) =>
-        time >= slot.open && time <= slot.close
-    );
-    if (!isTimeValid) {
-      toast.error("Selected time is outside of available hours");
-      return;
-    }
-
-    const selectedDate = parseISO(selectedDateKey);
-
-    setBasketState((prev) => ({
-      ...prev,
-      deliveryDate:
-        basket.orderMethod === orderMethod.DELIVERY ? selectedDate : null,
-      pickupDate:
-        basket.orderMethod === orderMethod.PICKUP ? selectedDate : null,
-      proposedLoc:
-        basket.orderMethod === orderMethod.DELIVERY
-          ? basketState.proposedLoc
-          : null,
-    }));
-    console.log(basketState, "b");
-    const updatedData = {
-      id: basketState.id,
-      proposedLoc: basketState.proposedLoc,
-      deliveryDate: basketState.deliveryDate,
-      pickupDate: basketState.pickupDate,
-      orderMethod: basketState.orderMethod,
-      items: basketState.items.map((item) => ({
-        listingId: item.listing.id,
-        quantity: item.quantity,
-      })),
-    };
-
-    try {
-      const res = await axios.post("/api/baskets/update", updatedData);
-      if (res.status === 200) {
-        toast.success("Basket was updated");
-      }
-    } catch (error) {
-      toast.error("Failed to update basket");
-      console.error("Update error:", error);
-    }
-  };
-
   const renderMonths = (): JSX.Element[] => {
     const month1 = startMonth;
     const month2 = addMonths(startMonth, 1);
@@ -364,12 +373,12 @@ const SetCustomPickupDeliveryCalendar = ({
               />
             </div>{" "}
           </div>{" "}
-          <div className="flex w-full justify-between border-t pt-1 mt-4">
+          <div className="flex w-full px-2 justify-between border-t pt-2 mt-6 ">
             <button
-              className={`underline text-neutral-500 ${
-                !basket.pickupDate &&
-                !basket.deliveryDate &&
-                "cursor-not-allowed"
+              className={`underline text-black ${
+                !basketState.pickupDate &&
+                !basketState.deliveryDate &&
+                "cursor-not-allowed pointer-events-none text-neutral-500"
               }`}
               onClick={() =>
                 setBasketState((prev) => ({

@@ -14,19 +14,15 @@ declare module "next-auth" {
     image?: string;
     createdAt?: Date;
     updatedAt?: Date;
-    conversationIds: string[];
-    seenMessageIds: string[];
     subscriptions?: string;
     totalPaidOut: number;
     notifications: Notification[];
-    SODT?: number;
-    bio?: string;
-    banner?: string;
     hasPickedRole?: boolean;
     openClosedTemplates?: any;
+    SODT: number;
     role: UserRole;
     location: Location[];
-    canRecievePayouts?: boolean
+    canRecievePayouts?: boolean;
   }
 
   interface Session {
@@ -46,17 +42,12 @@ declare module "next-auth/jwt" {
     url: string;
     createdAt?: Date;
     updatedAt?: Date;
-    conversationIds: string[];
-    seenMessageIds: string[];
     subscriptions?: string;
     totalPaidOut: number;
     notifications: Notification[];
-    SODT?: number;
-    bio?: string;
-    banner?: string;
     hasPickedRole?: boolean;
     openClosedTemplates?: any;
     role: UserRole;
-    canRecievePayouts?:boolean
+    canRecievePayouts?: boolean;
   }
 }

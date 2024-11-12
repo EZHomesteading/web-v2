@@ -3,23 +3,32 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Basket_Selected_Time_Type } from "@/types/basket";
-import { Availability, Hours, orderMethod } from "@prisma/client";
+import {
+  Availability,
+  basket_time_type,
+  Hours,
+  orderMethod,
+} from "@prisma/client";
 import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import SetCustomPickupDeliveryCalendar from "./calendar.basket";
-import { week_day_mmm_dd_yy_time } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import {
+  formatDateToMMMDDAtHourMin,
+  week_day_mmm_dd_yy_time,
+} from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import useMediaQuery from "@/hooks/media-query";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const DateOverlay = ({
   errorType,
   basket,
   initialOrderMethod,
-  saveChanges,
   onOpenChange,
 }: {
   errorType: any;
   basket: Basket_Selected_Time_Type;
   initialOrderMethod: any;
-  saveChanges: () => void;
   onOpenChange: (open: boolean) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +43,7 @@ const DateOverlay = ({
   useEffect(() => {
     onOpenChange(isOpen);
   }, [isOpen, onOpenChange]);
-  const [time_type, set_time_type] = useState("ASAP");
+  const [time_type, set_time_type] = useState(basket.time_type);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const getInitialPosition = () => {
@@ -145,11 +154,28 @@ const DateOverlay = ({
       return newState;
     });
   };
+  const router = useRouter();
+  const saveChanges = async () => {
+    try {
+      const res = await axios.post("/api/baskets/update", {
+        id: basketState.id,
+        deliveryDate: basketState.deliveryDate,
+        pickupDate: basketState.pickupDate,
+        orderMethod: basketState.orderMethod,
+        proposedLoc: basketState.proposedLoc,
+        items: basketState.items,
+        time_type: "ASAP",
+      });
 
-  const getDisplayTime = (dateValue: Date | null): string => {
-    if (!dateValue) return "When?";
-    const { time, date } = week_day_mmm_dd_yy_time(0, dateValue);
-    return time;
+      if (res.status === 200) {
+        toast.success("Basket was updated");
+        setIsOpen(false);
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Failed to update basket");
+      console.error("Update error:", error);
+    }
   };
 
   return (
@@ -163,10 +189,11 @@ const DateOverlay = ({
             : ""
         }`}
       >
-        {/* {basketState.orderMethod === orderMethod.DELIVERY
-          ? getDisplayTime(basketState.deliveryDate)
-          : getDisplayTime(basketState.pickupDate)} */}
-        {basket.deliveryDate?.toString()}
+        {(basket.deliveryDate &&
+          formatDateToMMMDDAtHourMin(new Date(basket.deliveryDate))) ||
+          (basket.pickupDate &&
+            formatDateToMMMDDAtHourMin(new Date(basket.pickupDate))) ||
+          "When?"}
       </button>
 
       <AnimatePresence>
@@ -216,7 +243,7 @@ const DateOverlay = ({
                       </button>
                       <button
                         className={`py-2 px-4 rounded-full ${
-                          time_type === "CUSTOM" ? "bg-white" : ""
+                          time_type === "ASAP" ? "" : "bg-white"
                         }`}
                         onClick={() => set_time_type("CUSTOM")}
                       >
@@ -240,7 +267,33 @@ const DateOverlay = ({
                               : "The earliest time you can pick up from the seller"}
                           </div>
                           <div className="text-2xl underline">{time}</div>
-                        </button>
+                        </button>{" "}
+                        <div className={`absolute bottom-2   w-full`}>
+                          <div className="flex w-full px-2 justify-between border-t pt-2 mt-4">
+                            <button
+                              className={`underline text-black ${
+                                !basketState.pickupDate &&
+                                !basketState.deliveryDate &&
+                                "cursor-not-allowed pointer-events-none text-neutral-500"
+                              }`}
+                              onClick={() =>
+                                setBasketState((prev) => ({
+                                  ...prev,
+                                  deliveryDate: null,
+                                  pickupDate: null,
+                                }))
+                              }
+                            >
+                              Reset
+                            </button>
+                            <button
+                              className={`text-white  px-3 py-2 rounded-3xl bg-black`}
+                              onClick={saveChanges}
+                            >
+                              Save Changes
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <SetCustomPickupDeliveryCalendar

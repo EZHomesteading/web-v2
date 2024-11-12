@@ -33,7 +33,7 @@ const CoopHome = ({ user, canReceivePayouts }: Props) => {
     ) {
       router.push("/create");
     } else {
-      router.push("/onboard");
+      router.push("/new-location-and-hours");
     }
   };
   return (

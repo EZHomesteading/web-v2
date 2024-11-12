@@ -31,6 +31,7 @@ const outfit = Outfit({
 });
 
 interface StepThreeProps {
+  role: string;
   quantityType: QuantityTypeValue | undefined;
   setQuantityType: (value: QuantityTypeValue | undefined) => void;
   postSODT: boolean;
@@ -47,6 +48,7 @@ interface StepThreeProps {
 }
 
 const StepThree: React.FC<StepThreeProps> = ({
+  role,
   title,
   quantityType,
   setQuantityType,
@@ -253,18 +255,49 @@ const StepThree: React.FC<StepThreeProps> = ({
                     )}
                   </div>
                   <SelectContent className="">
-                    <SelectGroup
-                      className={`${outfit.className} text-xs font-light`}
-                    >
-                      <SelectItem value="15">15 Minutes</SelectItem>
-                      <SelectItem value="30">30 Minutes</SelectItem>
-                      <SelectItem value="45">45 Minutes</SelectItem>
-                      <SelectItem value="60">1 Hour</SelectItem>
-                      <SelectItem value="75">1 Hour 15 Minutes</SelectItem>
-                      <SelectItem value="90">1 Hour 30 Minutes</SelectItem>
-                      <SelectItem value="105">1 Hour 45 Minutes</SelectItem>
-                      <SelectItem value="120">2 Hours</SelectItem>
-                    </SelectGroup>
+                    {role === "PRODUCER" ? (
+                      <SelectGroup
+                        className={`${outfit.className} text-xs font-light`}
+                      >
+                        <SelectItem value="60">1 Hour</SelectItem>
+                        <SelectItem value="120">2 Hours</SelectItem>
+                        <SelectItem value="180">3 Hours</SelectItem>
+                        <SelectItem value="240">4 Hours</SelectItem>
+                        <SelectItem value="300">5 Hours</SelectItem>
+                        <SelectItem value="360">6 Hours</SelectItem>
+                        <SelectItem value="420">7 Hours</SelectItem>
+                        <SelectItem value="480">8 Hours</SelectItem>
+                        <SelectItem value="540">9 Hours</SelectItem>
+                        <SelectItem value="600">10 Hours</SelectItem>
+                        <SelectItem value="660">11 Hours</SelectItem>
+                        <SelectItem value="720">12 Hours</SelectItem>
+                        <SelectItem value="780">13 Hours</SelectItem>
+                        <SelectItem value="840">14 Hours</SelectItem>
+                        <SelectItem value="900">15 Hours</SelectItem>
+                        <SelectItem value="960">16 Hours</SelectItem>
+                        <SelectItem value="1020">17 Hours</SelectItem>
+                        <SelectItem value="1080">18 Hours</SelectItem>
+                        <SelectItem value="1140">19 Hours</SelectItem>
+                        <SelectItem value="1200">20 Hours</SelectItem>
+                        <SelectItem value="1260">21 Hours</SelectItem>
+                        <SelectItem value="1320">22 Hours</SelectItem>
+                        <SelectItem value="1380">23 Hours</SelectItem>
+                        <SelectItem value="1440">24 Hours</SelectItem>
+                      </SelectGroup>
+                    ) : (
+                      <SelectGroup
+                        className={`${outfit.className} text-xs font-light`}
+                      >
+                        <SelectItem value="15">15 Minutes</SelectItem>
+                        <SelectItem value="30">30 Minutes</SelectItem>
+                        <SelectItem value="45">45 Minutes</SelectItem>
+                        <SelectItem value="60">1 Hour</SelectItem>
+                        <SelectItem value="75">1 Hour 15 Minutes</SelectItem>
+                        <SelectItem value="90">1 Hour 30 Minutes</SelectItem>
+                        <SelectItem value="105">1 Hour 45 Minutes</SelectItem>
+                        <SelectItem value="120">2 Hours</SelectItem>
+                      </SelectGroup>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
