@@ -179,7 +179,7 @@ const postconversations = async (
       await prisma.message.create({
         data: {
           body: deliveryBody,
-          messageOrder: "1",
+          messageOrder: "BUYER_PROPOSED_TIME",
           conversationId: newConversation.id,
           senderId: buyer.id,
         },
@@ -224,7 +224,7 @@ const postconversations = async (
       await prisma.message.create({
         data: {
           body: pickupBody,
-          messageOrder: "10",
+          messageOrder: "BUYER_PROPOSED_TIME",
           conversationId: newConversation.id,
           senderId: buyer.id,
         },
@@ -295,10 +295,10 @@ export async function POST(request: Request) {
       return new NextResponse("fullfilment type is required", { status: 400 });
     }
 
-    await prisma.wishlistItem.deleteMany({
-      where: { wishlistGroupId: itemId },
+    await prisma.basketItem.deleteMany({
+      where: { basketId: itemId },
     });
-    await prisma.wishlistGroup.deleteMany({
+    await prisma.basket.deleteMany({
       where: { id: itemId },
     });
 
@@ -310,6 +310,7 @@ export async function POST(request: Request) {
         pickupDate,
         quantity,
         totalPrice,
+        fulfillmentType: type,
         status,
         locationId: preferredLocationId,
       },
