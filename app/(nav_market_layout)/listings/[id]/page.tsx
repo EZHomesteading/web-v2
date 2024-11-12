@@ -18,6 +18,7 @@ import ListingHead from "@/components/listings/ListingHead";
 import { outfitFont } from "@/components/fonts";
 import Link from "next/link";
 import { PiArrowLeftThin } from "react-icons/pi";
+import { auth } from "@/auth";
 
 export default async function ListingPage({
   params,
@@ -30,7 +31,8 @@ export default async function ListingPage({
       getCurrentUser(),
       getFollows(),
     ]);
-
+    const session = await auth();
+    console.log(session?.user);
     if (!listing) {
       return (
         <div className="flex h-screen items-center justify-center">

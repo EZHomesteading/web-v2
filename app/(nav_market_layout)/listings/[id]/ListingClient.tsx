@@ -77,11 +77,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     <div className="max-w-screen-lg mx-auto mt-8 px-2     ">
       <div className="flex flex-wrap">
         <div className="w-full lg:w-2/3">
-          <ListingHead
-            title={listing.title}
-            location={listing.location}
-            imageSrc={listing.imageSrc}
-          />
+          <ListingHead listing={listing} />
           <div className="flex flex-col h-full">
             <ListingInfo
               listingUser={listing.user as unknown as UserInfo}
