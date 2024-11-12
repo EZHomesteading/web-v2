@@ -1,22 +1,32 @@
 //listing page server side layout, getting users and their carts to display toggle cart options.
-import { getListingById } from "@/actions/getListings";
+import { getUnique } from "@/actions/getListings";
 import { Suspense } from "react";
 import ClientOnly from "@/components/client/ClientOnly";
-import ListingClient from "./ListingClient";
 import { getCurrentUser } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/components/sessionStorageManager";
 import { FinalListing } from "@/actions/getListings";
+import ListingClient from "./ListingClient";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import ListingHead from "@/components/listings/ListingHead";
+import { outfitFont } from "@/components/fonts";
+import Link from "next/link";
+import { PiArrowLeftThin } from "react-icons/pi";
 
 export default async function ListingPage({
   params,
 }: {
-  params: { listingId: string };
+  params: { id: string };
 }) {
   try {
-    // Fetch all data in parallel
     const [listing, user, following] = await Promise.all([
-      getListingById({ listingId: params.listingId }),
+      getUnique({ id: params.id }),
       getCurrentUser(),
       getFollows(),
     ]);
@@ -32,7 +42,6 @@ export default async function ListingPage({
         </div>
       );
     }
-    console.log(listing);
     return (
       <ClientOnly>
         <Suspense fallback={<div>Loading...</div>}>
@@ -41,10 +50,32 @@ export default async function ListingPage({
             listing={listing as FinalListing & { description: string }}
             following={following}
             user={user}
-            apiKey={process.env.MAPS_KEY || ""}
+            apiKey={process.env.MAPS_KEY}
           />
         </Suspense>
       </ClientOnly>
+      // <>
+      //   <div className={`w-full max-w-5xl mx-auto`}>
+      //     <div
+      //       className={`h-16 px-2 sm:px-0 flex justify-between items-center w-full`}
+      //     >
+      //       <div
+      //         className={`${outfitFont.className} text-3xl font-medium sm:block hidden`}
+      //       >
+      //         {listing.title}
+      //       </div>
+      //       <Link
+      //         href={`/market`}
+      //         className={`rounded-full border text-black p-3`}
+      //       >
+      //         <PiArrowLeftThin />
+      //       </Link>
+      //       <div></div>
+      //       <div></div>
+      //     </div>
+      //     <ListingHead listing={listing} />
+      //   </div>
+      // </>
     );
   } catch (error) {
     console.error("Error in ListingPage:", error);

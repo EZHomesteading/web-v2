@@ -67,50 +67,47 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   if (!isInitialized || isListLoading) {
     return (
-      <Container>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <Loader2 className="h-12 w-12 animate-spin text-gray-900" />
-        </div>
-      </Container>
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <Loader2 className="h-12 w-12 animate-spin text-gray-900" />
+      </div>
     );
   }
 
   return (
-    <Container>
-      <div className="max-w-screen-lg mx-auto mt-8">
-        <div className="flex flex-wrap">
-          <div className="w-full lg:w-2/3">
-            <ListingHead
-              title={listing.title}
-              location={listing.location}
-              imageSrc={listing.imageSrc}
+    <div className="max-w-screen-lg mx-auto mt-8 px-2     ">
+      <div className="flex flex-wrap">
+        <div className="w-full lg:w-2/3">
+          <ListingHead
+            title={listing.title}
+            location={listing.location}
+            imageSrc={listing.imageSrc}
+          />
+          <div className="flex flex-col h-full">
+            <ListingInfo
+              listingUser={listing.user as unknown as UserInfo}
+              description={listing.description}
+              followUserId={listing.userId}
+              following={following}
             />
-            <div className="flex flex-col h-full">
-              <ListingInfo
-                listingUser={listing.user as unknown as UserInfo}
-                description={listing.description}
-                followUserId={listing.userId}
-                following={following}
-              />
-            </div>
-          </div>
-          <div className="w-full lg:w-1/3 px-4">
-            <ListingData
-              listingId={adjustedListing.id}
-              user={user}
-              product={adjustedListing}
-              sodt={[listing.SODT, listing.user.SODT]}
-              rating={listing.rating}
-            />
-            {apiKey && (
-              <div className="mt-5">
-                <ListingMap location={listing.location} apiKey={apiKey} />
-              </div>
-            )}
           </div>
         </div>
+        <div className="w-full lg:w-1/3 px-4">
+          <ListingData
+            hours={listing.location?.hours}
+            listingId={adjustedListing.id}
+            user={user}
+            product={adjustedListing}
+            sodt={[listing.SODT, listing.user.SODT]}
+            rating={listing.rating}
+          />
+          {apiKey && (
+            <div className="mt-5">
+              <ListingMap location={listing.location} apiKey={apiKey} />
+            </div>
+          )}
+        </div>
       </div>
-    </Container>
+    </div>
   );
 };
 

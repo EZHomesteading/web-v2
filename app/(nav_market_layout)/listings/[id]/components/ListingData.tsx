@@ -2,10 +2,10 @@
 
 import { addDays, format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DateState2 from "./DateState2";
 import NotifyModal from "./NotifyModal";
-import { User } from "@prisma/client";
+import { Availability, Hours, orderMethod, User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
@@ -13,6 +13,7 @@ import { outfitFont, zillaFont } from "@/components/fonts";
 import { useBasket } from "@/hooks/listing/use-basket";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
+import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 
 interface ListingInfoProps {
   listingId: string;
@@ -20,6 +21,7 @@ interface ListingInfoProps {
   product: FinalListing & { description: string };
   sodt: (number | null)[];
   rating: number[];
+  hours?: Hours | null;
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
@@ -28,6 +30,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   user,
   sodt,
   rating,
+  hours,
 }) => {
   const ratingMeanings: { [key: number]: string } = {
     1: "Not Genetically Modified",
@@ -61,6 +64,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     listingId,
     user,
     initialQuantity: product.minOrder || 1,
+    hours,
   });
 
   // Check for existing basket item on mount
@@ -114,9 +118,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   };
 
   // basket handlers
-  const handleToggleWishList = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
       toast.error("Please login to add items to your Wish List");
       return;
@@ -131,7 +133,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         setExistingItem(null);
       }
     } catch (error) {
-      toast.error("Failed to update Wish List");
+      toast.error("Failed to update basket");
     }
   };
 
@@ -389,7 +391,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
               )}
 
               <Button
-                onClick={handleToggleWishList}
+                onClick={handleToggleBasket}
                 disabled={isLoading}
                 className={`w-full shadow-xl mb-[2px] ${
                   isInBasket

@@ -465,17 +465,27 @@ const GetListingsByIds = async (params: Params) => {
 //   }
 // }
 // get a single listing by id
-export async function getListingById(params: { listingId?: string }) {
+export async function getUnique(params: { id?: string }) {
   try {
-    const { listingId } = params;
+    const { id } = params;
 
-    if (!listingId) return null;
+    if (!id) return null;
 
     const listing = await prisma.listing.findUnique({
       where: {
-        id: listingId,
+        id: id,
       },
-      include: {
+
+      select: {
+        title: true,
+        id: true,
+        description: true,
+        imageSrc: true,
+        shelfLife: true,
+        stock: true,
+        quantityType: true,
+        price: true,
+        rating: true,
         user: {
           select: {
             id: true,
@@ -487,7 +497,40 @@ export async function getListingById(params: { listingId?: string }) {
             url: true,
           },
         },
-        location: true,
+        location: {
+          select: { id: true, hours: true, address: true, coordinates: true },
+        },
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    // Ensure dates are serializable
+    return JSON.parse(JSON.stringify(listing));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error:", error.response?.data || error.message);
+    } else {
+      console.error("Error fetching listing:", error);
+    }
+    return null;
+  }
+}
+export async function getListingByIdMetaData(params: { listingId?: string }) {
+  try {
+    const { listingId } = params;
+
+    if (!listingId) return null;
+
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
+      select: {
+        title: true,
+        description: true,
       },
     });
 
