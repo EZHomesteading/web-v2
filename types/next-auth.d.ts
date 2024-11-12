@@ -19,9 +19,10 @@ declare module "next-auth" {
     notifications: Notification[];
     hasPickedRole?: boolean;
     openClosedTemplates?: any;
+    SODT: number;
     role: UserRole;
     location: Location[];
-    canRecievePayouts?: boolean
+    canRecievePayouts?: boolean;
   }
 
   interface Session {
@@ -47,6 +48,6 @@ declare module "next-auth/jwt" {
     hasPickedRole?: boolean;
     openClosedTemplates?: any;
     role: UserRole;
-    canRecievePayouts?:boolean
+    canRecievePayouts?: boolean;
   }
 }
