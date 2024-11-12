@@ -12,7 +12,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     <>
       <Navbar
         user={user as unknown as NavUser}
-        bg="sm:bg-black/30 bg-white sm:!text-white !fixed "
+        className="sm:bg-black/30 bg-white sm:!text-white !fixed "
       />
       {children}
     </>
