@@ -48,7 +48,7 @@ const Navbar = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const homeNavClass = `${isChat ? "absolute" : "sticky"} w-full z-10 ${
+  const homeNavClass = `${isChat ? "fixed" : "sticky"} w-full z-10 ${
     className || ""
   } select-none !text-black`;
 

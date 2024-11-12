@@ -20,7 +20,7 @@ const Navbar = async ({
   user,
   className = "bg-inherit",
   isMarketPage = false,
-  isChat = false,
+  isChat,
 }: p) => {
   let uniqueUrl = "";
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
