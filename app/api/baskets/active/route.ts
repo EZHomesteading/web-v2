@@ -1,52 +1,60 @@
 import prisma from "@/lib/prisma";
 import { basketStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { cookies } from "next/headers";
 
-export async function GET(req:NextRequest) {
-  const {searchParams} = new URL(req.url)
-  const userId = searchParams.get("userId")
-
-  if (!userId) {
-    return null
-  }
+export async function GET(req: NextRequest) {
   try {
+    const cookieStore = cookies();
+    const session = await auth();
+    console.log("session", session);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const requestedUserId = searchParams.get("userId");
+
+    if (!requestedUserId || requestedUserId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const baskets = await prisma.basket.findMany({
       where: {
-        userId: userId,
-        status: basketStatus.ACTIVE
+        userId: session.user.id,
+        status: basketStatus.ACTIVE,
       },
       select: {
-        id:true,
-        createdAt:true,
-        items:{
-          select:{
+        id: true,
+        createdAt: true,
+        items: {
+          select: {
             listing: {
               select: {
-                imageSrc: true
-              }
-            }
-          }
-        },
-        
-        location: {
-          select:{
-            displayName:true,
-            image:true,
-            user:{
-              select:{
-                name:true,
-                image:true,
-              }
+                imageSrc: true,
+              },
             },
-          }
-        }
-      }
+          },
+        },
+        location: {
+          select: {
+            displayName: true,
+            image: true,
+            user: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
     });
+
     return NextResponse.json(baskets);
   } catch (error) {
-    return NextResponse.json(
-      { error: "" },
-      { status: 500 }
-    );
+    console.error("[BASKETS_GET]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

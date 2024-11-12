@@ -1,7 +1,7 @@
 import { getUserLocationsBasket } from "@/actions/getUser";
 import BasketNotFound from "../[...not-found]/page";
 import BasketServer from "./components/server.basket";
-import { getUniqueBasket } from "@/actions/basket/get/active";
+import { getUnique } from "@/actions/basket/get/active";
 
 interface p {
   params: { id: string };
@@ -9,7 +9,7 @@ interface p {
 
 const BasketPage = async ({ params }: p) => {
   try {
-    const { basket } = await getUniqueBasket({ id: params.id });
+    const { basket } = await getUnique({ id: params.id });
 
     if (!basket) {
       throw new Error("Basket not found");

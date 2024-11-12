@@ -1,12 +1,11 @@
-import bcrypt from "bcryptjs";
-import type { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
+import bcrypt from "bcryptjs"
+import type { NextAuthConfig } from "next-auth"
+import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
+import { LoginSchema } from "@/schemas"
+import { getUserByEmail } from "@/data/user"
 
-import { LoginSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
-
-const authConfig: NextAuthConfig = {
+export default {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -14,42 +13,25 @@ const authConfig: NextAuthConfig = {
     }),
     Credentials({
       async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials);
+        const validatedFields = LoginSchema.safeParse(credentials)
 
         if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
+          const { email, password } = validatedFields.data
 
-          const user = await getUserByEmail(email);
-          if (!user || !user.password) return null;
+          const user = await getUserByEmail(email)
+          if (!user || !user.password) return null
 
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+          const passwordsMatch = await bcrypt.compare(password, user.password)
 
-          if (passwordsMatch) return user; 
+          if (passwordsMatch) return user
         }
 
-        return null;
+        return null
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user && user.id) { 
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.id; 
-      return session;
-    },
-  },
-  session: {
-    strategy: "jwt",
-  },
   pages: {
-    signIn: "/auth/login", 
+    signIn: "/auth/login",
+    error: "/auth/error", 
   },
-};
-
-export default authConfig;
-
+} satisfies NextAuthConfig

@@ -2,6 +2,8 @@ import { currentUser } from "@/lib/auth";
 import BasketCard from "./basket.cards";
 import { getActiveBaskets } from "@/actions/basket/get/active";
 import { outfitFont } from "@/components/fonts";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 export interface Basket {
   id: string;
@@ -22,12 +24,12 @@ export interface Basket {
 }
 
 const BasketPage = async () => {
-  const user = await currentUser();
-  if (!user) {
-    return null;
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/auth/login");
   }
-  const response = await getActiveBaskets();
-  const { baskets } = response;
+  const { baskets } = await getActiveBaskets();
   return (
     <div
       className={`${outfitFont.className} px-2 sm:px-8 md:px-16 lg:px-24 2xl:px-32 pt-6 max-w-screen-2xl mx-auto`}
