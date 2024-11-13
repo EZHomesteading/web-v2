@@ -9,6 +9,7 @@ import {
   UserRole,
   Location,
   User,
+  Prisma,
 } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
 import { currentUser } from "@/lib/auth";
@@ -26,7 +27,6 @@ const sesClient = new SESClient({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
   },
 });
-
 const postconversations = async (
   newOrder: OrderWithRelations,
   type: string
@@ -36,7 +36,7 @@ const postconversations = async (
 
     if (!newOrder) {
       console.log("No order provided");
-      return;
+      throw new Error("No order provided");
     }
 
     const seller = newOrder.seller;
@@ -47,7 +47,7 @@ const postconversations = async (
         seller: !!seller,
         buyer: !!buyer,
       });
-      return "one of users is missing";
+      throw new Error("Missing seller or buyer");
     }
 
     console.log("Processing quantities:", newOrder.quantity);
@@ -75,14 +75,21 @@ const postconversations = async (
     const titles = t.filter(Boolean).join(", ");
     console.log("Generated titles:", titles);
 
+    // Create conversation first so we have the ID for all subsequent operations
     console.log("Creating conversation between:", buyer.id, "and", seller.id);
     const newConversation = await prisma.conversation.create({
       data: {
         participantIds: [buyer.id, seller.id],
       },
     });
+
+    if (!newConversation) {
+      throw new Error("Failed to create conversation");
+    }
+
     console.log("Created conversation:", newConversation.id);
 
+    // Update order with conversation ID
     console.log("Updating order with conversation ID");
     await prisma.order.update({
       where: { id: newOrder.id },
@@ -92,16 +99,18 @@ const postconversations = async (
       },
     });
 
-    if (seller.notifications.includes("EMAIL_NEW_ORDERS")) {
-      const emailParams = {
-        Destination: {
-          ToAddresses: [seller.email || "shortzach396@gmail.com"],
-        },
-        Message: {
-          Body: {
-            Html: {
-              Data: ` 
-                <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
+    // Handle email notifications
+    if (seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
+      try {
+        const emailParams = {
+          Destination: {
+            ToAddresses: [seller.email || "shortzach396@gmail.com"],
+          },
+          Message: {
+            Body: {
+              Html: {
+                Data: ` 
+                 <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
                   <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
                     <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
                       <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
@@ -150,53 +159,56 @@ const postconversations = async (
                   </div>
                 </div>
                 `,
+              },
+            },
+            Subject: {
+              Data: "New Order Received",
             },
           },
-          Subject: {
-            Data: "New Order Received",
-          },
-        },
-        Source: "disputes@ezhomesteading.com",
-      };
+          Source: "disputes@ezhomesteading.com",
+        };
 
-      try {
         await sesClient.send(new SendEmailCommand(emailParams));
         console.log("Email sent to the seller");
       } catch (error) {
         console.error("Error sending email to the seller:", error);
+        // Don't throw here - continue even if email fails
       }
     }
 
-    if (type === "delivery") {
-      console.log("Creating delivery message");
-      const deliveryBody = `Hi ${
-        seller.name
-      }! I just ordered ${titles} from you, please drop them off at ${
-        newOrder.location &&
-        `${newOrder.location?.address[0]}, ${newOrder.location?.address[1]}, ${newOrder.location?.address[2]}. ${newOrder.location?.address[3]}`
-      } during my open hours. My hours can be viewed in More Options.`;
+    // Handle message creation and push notifications based on type
+    const messageBody =
+      type === "DELIVERY"
+        ? `Hi ${
+            seller.name
+          }! I would like to order ${titles} from you, can they be dropped off  at ${
+            newOrder.location &&
+            `${newOrder.location?.address[0]}, ${newOrder.location?.address[1]}, ${newOrder.location?.address[2]}. ${newOrder.location?.address[3]}`
+          } sometime around ${newOrder.pickupDate.toLocaleTimeString()} on ${newOrder.pickupDate.toLocaleDateString()} . Please let me know if that time works for you.`
+        : `Hi ${
+            seller.name
+          }! I would like to order ${titles} from you and would like to pick them up from you sometime around ${newOrder.pickupDate.toLocaleDateString()}  on ${newOrder.pickupDate.toLocaleDateString()}. Please let me know if that time works for you.`;
 
-      await prisma.message.create({
-        data: {
-          body: deliveryBody,
-          messageOrder: "1",
-          conversationId: newConversation.id,
-          senderId: buyer.id,
-        },
-      });
+    // Create message
+    await prisma.message.create({
+      data: {
+        body: messageBody,
+        messageOrder: "BUYER_PROPOSED_TIME",
+        conversationId: newConversation.id,
+        senderId: buyer.id,
+      },
+    });
 
+    // Handle push notifications
+    if (seller.subscriptions) {
       try {
-        if (!seller.subscriptions) {
-          console.error("A users Push subscription has expired.");
-          return;
-        }
         const formatrecipients = JSON.parse(seller.subscriptions);
         const send = formatrecipients.map((subscription: PushSubscription) =>
           webPush.sendNotification(
             subscription,
             JSON.stringify({
               title: "You have a new order!",
-              body: deliveryBody,
+              body: messageBody,
               id: newConversation.id,
             }),
             {
@@ -211,57 +223,16 @@ const postconversations = async (
         );
         await Promise.all(send);
       } catch (error) {
-        console.error("A users Push subscription has expired.");
+        console.error("Push notification error:", error);
+        // Don't throw here - continue even if push notification fails
       }
     }
 
-    if (type === "pickup") {
-      console.log("Creating pickup message");
-      const pickupBody = `Hi ${
-        seller.name
-      }! I just ordered ${titles} from you and would like to pick them up at ${newOrder.pickupDate.toLocaleTimeString()} on ${newOrder.pickupDate.toLocaleDateString()}. Please let me know when my order is ready or if that time doesn't work.`;
-
-      await prisma.message.create({
-        data: {
-          body: pickupBody,
-          messageOrder: "10",
-          conversationId: newConversation.id,
-          senderId: buyer.id,
-        },
-      });
-
-      try {
-        if (!seller.subscriptions) {
-          console.error("A users Push subscription has expired.");
-          return;
-        }
-        const formatrecipients = JSON.parse(seller.subscriptions);
-        const send = formatrecipients.map((subscription: PushSubscription) =>
-          webPush.sendNotification(
-            subscription,
-            JSON.stringify({
-              title: "You have a new order!",
-              body: pickupBody,
-              id: newConversation.id,
-            }),
-            {
-              vapidDetails: {
-                subject: "mailto:ezhomesteading@gmail.com",
-                publicKey: process.env
-                  .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string,
-                privateKey: process.env.WEB_PUSH_PRIVATE_KEY as string,
-              },
-            }
-          )
-        );
-        await Promise.all(send);
-      } catch (error) {
-        console.error("A users Push subscription has expired.");
-      }
-    }
+    // Always return the conversation ID at the end
+    return newConversation.id;
   } catch (error) {
     console.error("Error in postconversations:", error);
-    throw error;
+    throw error; // Re-throw to handle in the caller
   }
 };
 
@@ -295,53 +266,52 @@ export async function POST(request: Request) {
       return new NextResponse("fullfilment type is required", { status: 400 });
     }
 
-    await prisma.wishlistItem.deleteMany({
-      where: { wishlistGroupId: itemId },
-    });
-    await prisma.wishlistGroup.deleteMany({
-      where: { id: itemId },
-    });
-
     console.log("Creating new order");
-    const newOrder = (await prisma.order.create({
+    // First create the order
+    console.log("USERID", user.id);
+    const orderData = await prisma.order.create({
       data: {
         userId: user.id,
         sellerId,
         pickupDate,
         quantity,
         totalPrice,
+        fulfillmentType: type as any,
         status,
-        locationId: preferredLocationId,
+        preferredLocationId,
+      },
+    });
+
+    // Then fetch it with all relations
+    const newOrder = (await prisma.order.findUnique({
+      where: {
+        id: orderData.id,
       },
       include: {
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-
-            phoneNumber: true,
-
-            notifications: true,
-
-            subscriptions: true,
-          },
-        },
-        buyer: {
-          select: {
-            id: true,
-          },
-        },
+        seller: true,
+        buyer: true,
         location: true,
       },
     })) as OrderWithRelations;
 
+    if (!newOrder) {
+      throw new Error("Failed to create order");
+    }
     console.log("Order created:", newOrder);
-    await postconversations(newOrder, type);
 
+    await prisma.basketItem.deleteMany({
+      where: { basketId: itemId },
+    });
+    await prisma.basket.deleteMany({
+      where: { id: itemId },
+    });
+
+    const postResp = await postconversations(newOrder, type);
+    console.log("POOOOOOOOST", postResp);
     return NextResponse.json({
       message: "Order created successfully",
       orderId: newOrder.id,
+      conversationId: postResp,
     });
   } catch (error) {
     console.error("Error in POST handler:", error);

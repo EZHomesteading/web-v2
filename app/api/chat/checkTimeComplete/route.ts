@@ -2,6 +2,7 @@
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
 import { pusherServer } from "@/lib/pusher";
+import { getUserById } from "@/data/user";
 
 export async function POST() {
   try {
@@ -15,7 +16,7 @@ export async function POST() {
           lt: threeDaysAgo,
         },
         status: {
-          in: [19, 4, 7, 12, 15, 20, 21, 22],
+          in: ["COMPLETED"],
         },
       },
       select: {
@@ -39,9 +40,6 @@ export async function POST() {
             const existingConversation = await prisma.conversation.findUnique({
               where: {
                 id: order.conversationId as string,
-              },
-              include: {
-                users: true,
               },
             });
 
@@ -71,7 +69,11 @@ export async function POST() {
               }),
             ]);
 
-            existingConversation.users.forEach((user) => {
+            existingConversation.participantIds.forEach(async (userId) => {
+              const user = await getUserById(userId);
+              if (!user) {
+                return;
+              }
               if (user.email) {
                 pusherServer.trigger(
                   user.email,

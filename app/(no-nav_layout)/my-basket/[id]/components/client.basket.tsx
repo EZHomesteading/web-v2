@@ -80,7 +80,6 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
       initialOrderMethod.slice(1).toLowerCase()
     );
   };
-
   const resetForm = () => {
     if (hasPickup && hasDelivery) {
       setBasketState((prev) => ({
@@ -127,21 +126,25 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
 
   const messageSellers = async () => {
     if (handleErrors()) return;
-    const now = new Date();
     const params = {
-      itemId: "672a5995ec6fff7a57cec43b",
+      itemId: basketState.id,
       order: {
-        pickupDate: now,
-        quantity: { id: "672954ba1bb88919c84687da", quantity: 10 },
+        pickupDate: basketState.deliveryDate || basketState.pickupDate,
+        quantity: basketState.items.map((item) => ({
+          id: item.listing.id,
+          quantity: item.quantity,
+        })),
         totalPrice: 400,
         status: "PENDING",
-        preferredLocationId: "67292cfa5f7005d487c47c46",
+        preferredLocationId: basket.location.id,
       },
-      sellerId: "6729165df65c1ba881baa489",
+      sellerId: basket.location.user.id,
       type: basketState.orderMethod,
     };
     try {
       const OrderResponse = await axios.post("/api/chat/createOrder", params);
+      console.log(OrderResponse.data);
+      router.push(`/chat/${OrderResponse.data.conversationId}`);
     } catch (error) {
       console.error("Error in the overall process:", error);
       if (error instanceof Error) {

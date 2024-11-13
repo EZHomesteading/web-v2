@@ -11,7 +11,7 @@ import { FullConversationType, FullMessageType } from "@/types";
 import { Outfit } from "next/font/google";
 import { IoNotificationsCircle } from "react-icons/io5";
 import { UserInfo } from "next-auth";
-
+import placeholder from "@/public/images/website-images/placeholder.jpg";
 const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
@@ -86,7 +86,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     if (!lastMessage || !userEmail) return false;
     return lastMessage.seen;
   }, [userEmail, lastMessage]);
-
   return (
     <div
       onClick={handleClick}
@@ -95,7 +94,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
         selected ? "" : "hover:cursor-pointer"
       )}
     >
-      <Avatar image={otherUser.image} />
+      <Avatar image={otherUser?.image} />
 
       <div className={`${outfit.className} min-w-0 flex-1`}>
         <div className="focus:outline-none">
@@ -117,7 +116,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
             </span>
           ) : null}
           <div className="flex justify-between items-center mb-1">
-            <p className="text-md font-normal">{otherUser.name}</p>
+            <p className="text-md font-normal">{otherUser?.name}</p>
 
             {lastMessage?.createdAt && (
               <p className="text-xs text-gray-400 font-extralight">

@@ -16,6 +16,7 @@ const getFullChatData = async (
 ): Promise<FullChatData | null> => {
   try {
     const user = await currentUser();
+    console.log(user);
     if (!user) {
       return null;
     }
@@ -40,7 +41,7 @@ const getFullChatData = async (
         },
       },
     });
-
+    console.log(conversation);
     if (!conversation) {
       return null;
     }
@@ -48,6 +49,7 @@ const getFullChatData = async (
     const otherUserId = conversation.participantIds.find(
       (id) => id !== user.id
     );
+    console.log(otherUserId);
     if (!otherUserId) {
       return null;
     }
