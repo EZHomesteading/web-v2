@@ -93,7 +93,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             listingId={adjustedListing.id}
             user={user}
             product={adjustedListing}
-            sodt={[listing.SODT, listing.user.SODT]}
+            sodt={[listing.SODT]}
             rating={listing.rating}
           />
           {apiKey && (
