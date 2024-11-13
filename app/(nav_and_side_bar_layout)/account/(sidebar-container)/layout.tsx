@@ -10,7 +10,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       </div>
       <BackArrow />
       <div
-        className={`sm:pt-0 pt-10 w-full px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit min-h-screen relative ${outfit.className} `}
+        className={`sm:pt-0 pt-10 w-full px-4 mb-8 sm:px-6 2xl:w-1/2 lg:px-8 bg-inherit min-h-screen relative ${outfitFont.className} `}
       >
         {children}
       </div>

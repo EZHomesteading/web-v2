@@ -1,5 +1,5 @@
-import Header from "@/app/chat/[conversationId]/components/Header";
-import Body from "@/app/chat/[conversationId]/components/Body";
+import Header from "./components/Header";
+import Body from "./components/Body";
 import EmptyState from "@/components/EmptyState";
 import { redirect } from "next/navigation";
 import { getFullChatData } from "@/actions/chat/getFullChatData";
@@ -21,7 +21,7 @@ const ChatId = async ({
   }
 
   const chatData = await getFullChatData(params.conversationId);
-
+  console.log("WHEREW ARE THEY!", chatData);
   if (!chatData) {
     return <EmptyState />;
   }
