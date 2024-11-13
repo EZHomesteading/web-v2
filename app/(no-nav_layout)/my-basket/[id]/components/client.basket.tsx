@@ -25,6 +25,7 @@ import { PiChatsCircleThin } from "react-icons/pi";
 import DateOverlay from "./when";
 
 interface p {
+  userId: string;
   basket: any;
   userLocs: BasketLocation[] | null;
   mk: string;
@@ -33,7 +34,7 @@ type ProposedLocation = {
   address: string[];
   coordinates: number[];
 };
-const BasketClient = ({ basket, userLocs, mk }: p) => {
+const BasketClient = ({ basket, userLocs, mk, userId }: p) => {
   const over_768px = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -128,7 +129,9 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
     if (handleErrors()) return;
     const params = {
       itemId: basketState.id,
+
       order: {
+        proposedLoc: basketState.proposedLoc,
         pickupDate: basketState.deliveryDate || basketState.pickupDate,
         quantity: basketState.items.map((item) => ({
           id: item.listing.id,
@@ -136,8 +139,12 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
         })),
         totalPrice: 400,
         status: "PENDING",
-        preferredLocationId: basket.location.id,
+        preferredLocationId: basketState.proposedLoc
+          ? null
+          : basket.location.id,
+        buyerId: userId,
       },
+
       sellerId: basket.location.user.id,
       type: basketState.orderMethod,
     };

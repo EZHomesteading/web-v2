@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
-import { getListingById } from "@/actions/getListings";
+import { getListingStockById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import {
   ListingQuantities,
@@ -35,7 +35,7 @@ const postconversations = async (
     if (!newOrder) {
       throw new Error("No order provided");
     }
-
+    console.log(newOrder);
     const seller = newOrder.seller;
     const buyer = newOrder.buyer;
 
@@ -46,7 +46,7 @@ const postconversations = async (
     const quantities = newOrder.quantity;
     const t = await Promise.all(
       quantities.map(async (item: ListingQuantities) => {
-        const listing = await getListingById({ listingId: item.id });
+        const listing = await getListingStockById({ listingId: item.id });
         if (!listing) {
           return "no listing with that ID";
         }
@@ -166,8 +166,8 @@ const postconversations = async (
         ? `Hi ${
             seller.name
           }! I would like to order ${titles} from you, can they be dropped off  at ${
-            newOrder.location &&
-            `${newOrder.location?.address[0]}, ${newOrder.location?.address[1]}, ${newOrder.location?.address[2]}. ${newOrder.location?.address[3]}`
+            newOrder.proposedLoc &&
+            `${newOrder.proposedLoc?.address[0]}, ${newOrder.proposedLoc?.address[1]}, ${newOrder.proposedLoc?.address[2]}. ${newOrder.proposedLoc?.address[3]}`
           } sometime around ${newOrder.pickupDate.toLocaleTimeString()} on ${newOrder.pickupDate.toLocaleDateString()} . Please let me know if that time works for you.`
         : `Hi ${
             seller.name
@@ -222,16 +222,18 @@ const postconversations = async (
 
 export async function POST(request: Request) {
   try {
-    const user = await currentUser();
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const data = await request.json();
 
     const { itemId, order, sellerId, type } = data;
-    const { pickupDate, quantity, totalPrice, status, preferredLocationId } =
-      order;
+    const {
+      pickupDate,
+      quantity,
+      totalPrice,
+      status,
+      preferredLocationId,
+      proposedLoc,
+      buyerId,
+    } = order;
 
     if (!itemId) {
       return new NextResponse("Item ID is required", { status: 400 });
@@ -239,20 +241,23 @@ export async function POST(request: Request) {
     if (!sellerId) {
       return new NextResponse("seller ID is required", { status: 400 });
     }
+    if (!buyerId) {
+      return new NextResponse("buyer ID is required", { status: 400 });
+    }
     if (!order) {
       return new NextResponse("order info is required", { status: 400 });
     }
-    if (!preferredLocationId) {
-      return new NextResponse("locationId is required", { status: 400 });
+    if (!preferredLocationId && !proposedLoc) {
+      return new NextResponse("location is required", { status: 400 });
     }
     if (!type) {
       return new NextResponse("fullfilment type is required", { status: 400 });
     }
-
+    console.log(order);
     // First create the order
     const orderData = await prisma.order.create({
       data: {
-        userId: user.id,
+        userId: buyerId,
         sellerId,
         pickupDate,
         quantity,
@@ -260,6 +265,7 @@ export async function POST(request: Request) {
         fulfillmentType: type as any,
         status,
         preferredLocationId,
+        proposedLoc,
       },
     });
 
@@ -268,10 +274,10 @@ export async function POST(request: Request) {
       where: {
         id: orderData.id,
       },
+
       include: {
         seller: true,
         buyer: true,
-        location: true,
       },
     })) as OrderWithRelations;
 
@@ -279,12 +285,12 @@ export async function POST(request: Request) {
       throw new Error("Failed to create order");
     }
 
-    await prisma.basketItem.deleteMany({
-      where: { basketId: itemId },
-    });
-    await prisma.basket.deleteMany({
-      where: { id: itemId },
-    });
+    // await prisma.basketItem.deleteMany({
+    //   where: { basketId: itemId },
+    // });
+    // await prisma.basket.deleteMany({
+    //   where: { id: itemId },
+    // });
 
     const postResp = await postconversations(newOrder, type);
     return NextResponse.json({

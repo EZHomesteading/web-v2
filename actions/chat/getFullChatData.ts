@@ -78,23 +78,29 @@ const getFullChatData = async (
         fulfillmentType: true,
         conversationId: true,
         paymentIntentId: true,
+        proposedLoc: true,
         fee: true,
         quantity: true,
         status: true,
         preferredLocationId: true,
       },
     });
-    const location = order?.preferredLocationId
-      ? await prisma.location.findUnique({
-          where: {
-            id: order.preferredLocationId,
-          },
-          select: {
-            hours: true,
-            address: true,
-          },
-        })
-      : null;
+    let location = null;
+    if (!order?.proposedLoc) {
+      location = order?.preferredLocationId
+        ? await prisma.location.findUnique({
+            where: {
+              id: order.preferredLocationId,
+            },
+            select: {
+              hours: true,
+              address: true,
+            },
+          })
+        : null;
+    } else {
+      location = order.proposedLoc;
+    }
     const transformedOrder: ChatOrder | null = order
       ? {
           id: order.id,

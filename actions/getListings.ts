@@ -511,6 +511,7 @@ export async function getUnique(params: { id?: string }) {
         imageSrc: true,
         shelfLife: true,
         stock: true,
+        createdAt: true,
         quantityType: true,
         price: true,
         rating: true,
@@ -528,6 +529,38 @@ export async function getUnique(params: { id?: string }) {
         location: {
           select: { id: true, hours: true, address: true, coordinates: true },
         },
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    // Ensure dates are serializable
+    return JSON.parse(JSON.stringify(listing));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error:", error.response?.data || error.message);
+    } else {
+      console.error("Error fetching listing:", error);
+    }
+    return null;
+  }
+}
+export async function getListingStockById(params: { listingId?: string }) {
+  try {
+    const { listingId } = params;
+
+    if (!listingId) return null;
+
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
+      select: {
+        stock: true,
+        quantityType: true,
+        title: true,
       },
     });
 

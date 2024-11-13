@@ -436,6 +436,7 @@ model Order {
   buyer               User            @relation(name: "buyer", fields: [userId], references: [id])
   seller              User            @relation(name: "seller", fields: [sellerId], references: [id])
   fulfillmentType     fulfillmentType
+  proposedLoc         OrderLoc?
   preferredLocationId String?         @db.ObjectId
   actualLocationId    String?         @db.ObjectId
   deliveryNotes       String?

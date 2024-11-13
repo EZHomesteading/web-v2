@@ -93,8 +93,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   } = product;
 
   // Calculate end date
+  console.log(startDate);
   const endDate =
     shelfLife !== -1 ? addDays(new Date(startDate), shelfLife) : null;
+  console.log(endDate);
   const endDateString = endDate
     ? format(endDate, "MMM dd, yyyy")
     : "No expiry date";
