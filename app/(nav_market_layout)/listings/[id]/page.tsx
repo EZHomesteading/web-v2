@@ -25,6 +25,8 @@ import {
 import { auth } from "@/auth";
 import ListingClient from "./ListingClient";
 import Avatar from "@/components/Avatar";
+import SendMessageSection from "./components/send-messge-section";
+import SendMessageComponent from "./components/send-message-component";
 
 export default async function ListingPage({
   params,
@@ -68,6 +70,7 @@ export default async function ListingPage({
         </div>
       );
     }
+    const session = await auth();
     return (
       <ClientOnly>
         <Suspense fallback={<div>Loading...</div>}>
@@ -85,8 +88,10 @@ export default async function ListingPage({
       //     className={`w-full max-w-5xl relative mx-auto  ${outfitFont.className}`}
       //   >
       //     <div className={`fixed top-0 w-full max-w-5xl zmax bg-white`}>
-      //       <div className={`h-16  flex justify-between items-center w-full`}>
-      //         <div className={`flex items-center justify-start space-x-3`}>
+      //       <div
+      //         className={`h-16  flex justify-between items-center w-full  pr-2 lg:pr-0 pl-1 lg:pl-0`}
+      //       >
+      //         <div className={`flex items-center justify-start space-x-3 `}>
       //           <Link
       //             href={`/market`}
       //             prefetch={true}
@@ -113,9 +118,9 @@ export default async function ListingPage({
       //     </div>
 
       //     <div
-      //       className={`grid grid-cols-1 sm:grid-cols-2 px-2 sm:px-0 mt-2 sm:space-x-2`}
+      //       className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 px-2 lg:px-0 mt-2 sm:space-x-2`}
       //     >
-      //       <div>
+      //       <div className={`col-span-1 lg:col-span-3 `}>
       //         <div className={` `}>
       //           <div className={` text-3xl block sm:hidden font-medium `}>
       //             {listing.title}
@@ -135,20 +140,22 @@ export default async function ListingPage({
       //             </div>
       //           </div>
       //           <Link
-      //             className={`border-y py-3 flex items-start justify-start`}
+      //             className={`border-y py-3 flex items-start justify-start gap-x-2  `}
       //             href={`/store/${listing.user.url}`}
       //           >
       //             <Avatar
       //               image={listing.location.image || listing.user.image}
+      //               h="12"
+      //               h2="16"
       //             />
-      //             <div className={`flex flex-col items`}>
-      //               <div>
+      //             <div className={`flex flex-col items-center `}>
+      //               <div className={`text-xl`}>
       //                 {listing.location.displayName || listing.user.name}
       //               </div>
-      //               <div></div>
+      //               <div>{listing.user?.fullName?.first}</div>
       //             </div>
       //           </Link>
-      //           <ul className="list-none list-inside my-3 space-y-4">
+      //           <ul className="list-none list-inside my-3 space-y-4 border-b pb-3">
       //             {applicableRatings.map((ratingIndex: number) => (
       //               <li
       //                 key={ratingIndex}
@@ -172,10 +179,11 @@ export default async function ListingPage({
       //               </li>
       //             ))}
       //           </ul>
+      //           <div className={`h-[50vh]`}>{listing.description}</div>
       //         </div>
       //       </div>
-      //       <div>
-      //         <div className={`border rounded-md h-64`}> </div>
+      //       <div className={`col-span-1 lg:col-span-2 relative`}>
+      //         <SendMessageComponent listing={listing} user={user} />
       //       </div>
       //     </div>
       //   </div>

@@ -58,7 +58,6 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
 
     return { hasPickup, hasDelivery, initialOrderMethod };
   }, [basket.location.hours]);
-  console.log(basket.location.hours, initialOrderMethod, hasPickup);
 
   const [basketState, setBasketState] = useState<Basket_Selected_Time_Type>({
     ...basket,

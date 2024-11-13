@@ -514,6 +514,7 @@ export async function getUnique(params: { id?: string }) {
         quantityType: true,
         price: true,
         rating: true,
+        minOrder: true,
         user: {
           select: {
             id: true,
