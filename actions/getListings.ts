@@ -35,7 +35,6 @@ export type FinalListing = {
   review: boolean | null;
   user: {
     id: string;
-    SODT: number | null;
     name: string;
     role: UserRole;
   };
@@ -48,7 +47,39 @@ export type FinalListing1 = {
   rating: number[];
   quantityType: string | null;
   createdAt: Date;
-  location: Location | null;
+  location: {
+    id: string;
+    userId: string;
+    displayName: string | null;
+    type: string;
+    coordinates: number[];
+    address: string[];
+    role: UserRole;
+    isDefault: boolean;
+    showPreciseLocation: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    hours: {
+      delivery: ({
+        date: Date;
+        capacity: number | null;
+      } & {
+        timeSlots: {
+          open: number;
+          close: number;
+        }[];
+      })[];
+      pickup: ({
+        date: Date;
+        capacity: number | null;
+      } & {
+        timeSlots: {
+          open: number;
+          close: number;
+        }[];
+      })[];
+    } | null;
+  } | null;
   keyWords: string[];
   imageSrc: string[];
   subCategory: string;
@@ -125,7 +156,6 @@ const GetListingsMarket = async (
       createdAt: true,
       rating: true,
       stock: true,
-      description: true,
       location: {
         select: {
           id: true,
@@ -398,7 +428,6 @@ const GetListingsByIds = async (params: Params) => {
             emailVerified: true,
             role: true,
             url: true,
-            SODT: true,
           },
         },
         location: true,
@@ -525,7 +554,6 @@ const getListingByIdUpdate = async (params: IParams) => {
             emailVerified: true,
             role: true,
             url: true,
-            SODT: true,
             locations: true,
           },
         },
@@ -567,7 +595,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
         createdAt: "desc",
       },
       include: {
-        user: { select: { id: true, name: true, SODT: true, role: true } },
+        user: { select: { id: true, name: true, role: true } },
         location: true,
       },
     });
