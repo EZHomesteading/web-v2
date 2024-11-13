@@ -14,19 +14,23 @@ const ListingHead = ({ listing }: ListingHeadProps) => {
           h-[60vh]
           overflow-hidden 
           relative
+          sm:rounded-md
         "
       >
-        <Carousel className="">
-          <CarouselContent className="h-[60vh] ">
+        <Carousel
+          className={`sm:rounded-md
+          `}
+        >
+          <CarouselContent className="h-[60vh] sm:rounded-md ">
             {listing.imageSrc.map((_: any, index: number) => (
               <CarouselItem
                 key={index}
-                className="flex items-center justify-center relative aspect-sqaure h-[60vh] "
+                className="flex items-center justify-center relative aspect-sqaure h-[60vh] sm:rounded-md"
               >
                 <Image
                   src={listing.imageSrc[index]}
                   fill
-                  className="object-cover w-full"
+                  className="object-cover w-full sm:rounded-md"
                   alt={listing.title}
                 />
               </CarouselItem>
@@ -51,11 +55,6 @@ const ListingHead = ({ listing }: ListingHeadProps) => {
             right-5
           "
         />
-      </div>
-      <div className={`px-2 sm:px-0`}>
-        <div className={`${outfitFont.className} text-3xl font-medium my-3`}>
-          {listing.title}
-        </div>
       </div>
     </>
   );

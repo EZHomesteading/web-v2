@@ -1,6 +1,5 @@
 //action to get listings based on search params in the market pages.
 import prisma from "@/lib/prismadb";
-import haversine from "haversine-distance";
 import Fuse from "fuse.js";
 import { Location, UserRole } from "@prisma/client";
 import { currentUser } from "@/lib/auth";
@@ -568,7 +567,6 @@ const getListingByIdUpdate = async (params: IParams) => {
             emailVerified: true,
             role: true,
             url: true,
-            SODT: true,
             locations: true,
           },
         },
@@ -610,7 +608,7 @@ const GetListingsByUserId = async (params: IListingsOrderParams) => {
         createdAt: "desc",
       },
       include: {
-        user: { select: { id: true, name: true, SODT: true, role: true } },
+        user: { select: { id: true, name: true, role: true } },
         location: true,
       },
     });
