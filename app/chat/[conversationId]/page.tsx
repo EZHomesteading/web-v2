@@ -21,7 +21,7 @@ const ChatId = async ({
   }
 
   const chatData = await getFullChatData(params.conversationId);
-
+  console.log("WHEREW ARE THEY!", chatData);
   if (!chatData) {
     return <EmptyState />;
   }

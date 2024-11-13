@@ -86,7 +86,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     if (!lastMessage || !userEmail) return false;
     return lastMessage.seen;
   }, [userEmail, lastMessage]);
-  console.log("CHATSHIT", otherUser);
   return (
     <div
       onClick={handleClick}
