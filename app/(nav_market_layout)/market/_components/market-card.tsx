@@ -7,11 +7,12 @@ import {
 import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
-import Link from "next/link";
+import { Link } from "@/components/ui/custom-link";
 
 interface ListingCardProps {
   listing: MarketListing;
   user?: UserInfo;
+  imageCount: number;
 }
 
 const StarRating = ({
@@ -87,10 +88,11 @@ const MarketGrid = ({ children }: { children: any }) => {
   );
 };
 
-const MarketCard = ({ listing }: ListingCardProps) => {
+const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
   return (
     <Link
       href={`/listings/${listing.id}`}
+      prefetch={true}
       className="block w-full cursor-pointer group mx-auto"
     >
       <div className="flex flex-col relative w-full">
@@ -104,7 +106,8 @@ const MarketCard = ({ listing }: ListingCardProps) => {
                 >
                   <Image
                     src={src}
-                    alt={`Carousel Image ${index + 1}`}
+                    alt={`Image ${index + 1} of ${listing.title}`}
+                    loading={imageCount++ < 9 ? "eager" : "lazy"}
                     fill
                     className="object-cover rounded-md hover:scale-105 transition-transform duration-200"
                     sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"

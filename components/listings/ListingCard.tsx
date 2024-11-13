@@ -2,8 +2,7 @@
 //listing card component, can be mapped over to create multiple cards on same page.
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
-import CartIcon from "@/components/listings/cart-icon";
+import { Key, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -29,8 +28,9 @@ import ReactStars from "react-stars";
 import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-import { outfitFont, workFont} from "@/components/fonts";
+import { outfitFont, workFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
+import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 
 interface ListingCardProps {
   data: MarketListing;
@@ -101,7 +101,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         >
           <Carousel className="relative rounded-lg">
             <CarouselContent>
-              {data.imageSrc.map((_, index) => (
+              {data.imageSrc.map((_: any, index: number) => (
                 <CarouselItem key={index}>
                   <Card>
                     <CardContent className="flex items-center justify-center relative aspect-sqaure h-[16.5rem]">
@@ -123,7 +123,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
             {data.imageSrc.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {data.imageSrc.map((_, index) => (
+                {data.imageSrc.map((_: any, index: Key | null | undefined) => (
                   <div
                     key={index}
                     className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
@@ -155,21 +155,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </Popover>
             </div>
           )}
-          <div className="absolute top-3 right-3">
-            {data.stock <= 0 && (
-              <CartIcon
-                listingId={data.id}
-                user={user}
-                listingMin={data.minOrder}
-                storeUserInfo={{ id: storeUser.id, role: storeUser.role }}
-              />
-            )}
-          </div>
         </div>
         <div className="font-semibold text-lg">
           <div className={`${outfitFont.className} text-lg`}>{data.title}</div>
           <div
-            className={`font-light text-neutral-500 text-xs ${work.className}`}
+            className={`font-light text-neutral-500 text-xs ${workFont.className}`}
           >
             {data?.location?.address && (
               <>
@@ -191,7 +181,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         <div className="w-full flex justify-between">
           <div className="flex w-full justify-start">
             <div
-              className={`flex flex-row items-center gap-1 text-sm ${work.className}`}
+              className={`flex flex-row items-center gap-1 text-sm ${workFont.className}`}
             >
               <div className="font-semibold"> ${data.price}</div>
 
