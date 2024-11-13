@@ -97,6 +97,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
+  console.log(notOwn, isOwn);
   const pulseAnimation = `
   @keyframes pulse {
     0% {
@@ -534,8 +535,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <PopoverTrigger asChild>
               <Button
                 variant={
-                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (notOwn &&
+                    data.messageOrder !== "IN_TRANSIT" &&
+                    data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? "default"
@@ -546,16 +548,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             hover:scale-105
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
                 style={
-                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (notOwn &&
+                    data.messageOrder !== "IN_TRANSIT" &&
+                    data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
               >
-                {(notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                {(notOwn &&
+                  data.messageOrder !== "IN_TRANSIT" &&
+                  data.messageOrder !== "SELLER_PREPARING") ||
                 (isOwn && data.messageOrder === "IN_TRANSIT") ||
                 (isOwn && data.messageOrder === "SELLER_PREPARING") ? (
                   <>

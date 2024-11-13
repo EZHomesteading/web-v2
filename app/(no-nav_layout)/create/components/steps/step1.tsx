@@ -33,6 +33,7 @@ import {
 } from "react-icons/gi";
 import { FaTools } from "react-icons/fa";
 import { IoFastFoodOutline } from "react-icons/io5";
+import { toast } from "sonner";
 export type Category =
   | "unprocessed-produce"
   | "homemade"
@@ -268,7 +269,29 @@ interface ProductCategorySelectionProps {
   subCategory: SubCategory;
   setSubCategory: (subCategory: SubCategory) => void;
 }
+const NotSureButton: React.FC = () => {
+  const showRainbowToast = () => {
+    const toastId = toast("Go Google It!", {
+      duration: 2000,
+      className:
+        "animate-rainbow w-screen h-screen fixed inset-0 flex items-center justify-center text-6xl font-bold text-white cursor-pointer",
+      position: "top-left",
+    });
 
+    setTimeout(() => {
+      toast.dismiss(toastId);
+    }, 2000);
+  };
+
+  return (
+    <Button
+      onClick={showRainbowToast}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2  text-white font-medium"
+    >
+      Not Sure?
+    </Button>
+  );
+};
 const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   step,
   category,
@@ -308,6 +331,21 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
           )}
         </div>
       </div>
+      <NotSureButton />
+      <style>{`
+        @keyframes rainbow {
+          0% { background-color: #ff0000; }
+          17% { background-color: #ff8000; }
+          33% { background-color: #ffff00; }
+          50% { background-color: #00ff00; }
+          67% { background-color: #0000ff; }
+          83% { background-color: #8000ff; }
+          100% { background-color: #ff0000; }
+        }
+        .animate-rainbow {
+          animation: rainbow 2s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

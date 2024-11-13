@@ -100,57 +100,62 @@ const Body: React.FC<BodyProps> = ({
   //dependent on message order allow or dont allow the cancel button to be visible
   useEffect(() => {
     if (
-      lastMessage.messageOrder === "4" ||
-      lastMessage.messageOrder === "7" ||
-      lastMessage.messageOrder === "15" ||
-      lastMessage.messageOrder === "9" ||
-      lastMessage.messageOrder === "18" ||
-      lastMessage.messageOrder === "19" ||
-      lastMessage.messageOrder === "17" ||
-      (user.id !== order?.sellerId && lastMessage.messageOrder === "14") ||
-      lastMessage.messageOrder === "12" ||
-      lastMessage.messageOrder === "6" ||
-      lastMessage.messageOrder === "1.1" ||
-      lastMessage.messageOrder === "1.6"
+      lastMessage.messageOrder === "BUYER_ACCEPTED" ||
+      lastMessage.messageOrder === "PICKED_UP" ||
+      lastMessage.messageOrder === "COMPLETED" ||
+      lastMessage.messageOrder === "IN_TRANSIT" ||
+      lastMessage.messageOrder === "SELLER_PREPARING" ||
+      lastMessage.messageOrder === "DISPUTED" ||
+      lastMessage.messageOrder === "READY_FOR_PICKUP" ||
+      lastMessage.messageOrder === "DELIVERED" ||
+      lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID"
     ) {
       setCancel(false);
     }
   }),
-    [order];
+    [order, messages];
   useEffect(() => {
     if (
       lastMessage.messageOrder === "BUYER_PROPOSED_TIME" ||
       lastMessage.messageOrder === "SELLER_ACCEPTED" ||
       lastMessage.messageOrder === "SELLER_RESCHEDULED" ||
-      lastMessage.messageOrder === "4" ||
-      lastMessage.messageOrder === "5" ||
-      lastMessage.messageOrder === "7" ||
-      lastMessage.messageOrder === "8" ||
-      lastMessage.messageOrder === "9" ||
-      lastMessage.messageOrder === "10" ||
-      lastMessage.messageOrder === "1.1" ||
-      lastMessage.messageOrder === "11" ||
-      lastMessage.messageOrder === "1.6"
+      lastMessage.messageOrder === "BUYER_RESCHEDULED" ||
+      lastMessage.messageOrder === "BUYER_ACCEPTED" ||
+      lastMessage.messageOrder === "COMPLETED" ||
+      lastMessage.messageOrder === "IN_TRANSIT" ||
+      lastMessage.messageOrder === "SELLER_PREPARING" ||
+      lastMessage.messageOrder === "DISPUTED" ||
+      lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID"
     ) {
       setDispute(false);
     }
   }),
-    [order];
+    [order, messages];
   useEffect(() => {
-    if (lastMessage.messageOrder === "1.6") {
-      setEscalate(true);
+    if (
+      (lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID" &&
+        user.id === order?.sellerId) ||
+      (lastMessage.messageOrder === "IN_TRANSIT" &&
+        user.id === order?.sellerId) ||
+      (lastMessage.messageOrder === "SELLER_PREPARING" &&
+        user.id === order?.sellerId) ||
+      (lastMessage.messageOrder === "DISPUTED" && user.id === order?.sellerId)
+    ) {
       setRefund(true);
       setReview(true);
     }
+    if (lastMessage.messageOrder === "DISPUTED") {
+      setEscalate(true);
+    }
   }),
-    [order];
+    [order, messages];
   useEffect(() => {
-    if (lastMessage.messageOrder === "1.1") {
+    if (lastMessage.messageOrder === "COMPLETED") {
       setReview(true);
       setConfirm(true);
     }
   }),
-    [order];
+    [order, messages];
   //handle seen messages
 
   if (!user?.id) {
@@ -339,9 +344,9 @@ const Body: React.FC<BodyProps> = ({
             </div>
 
             {user.id === order?.sellerId ? (
-              user.role === "PRODUCER" ? (
+              order?.fulfillmentType === "PICKUP" ? (
                 <div className="flex flex-col items-center justify-center space-y-1 w-full ">
-                  <Sheet>
+                  {/* <Sheet>
                     <SheetTrigger asChild>
                       <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
                         <div>View Hours</div> <IoStorefront />
@@ -351,10 +356,10 @@ const Body: React.FC<BodyProps> = ({
                     <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
                       {/* <HoursDisplay
                         coOpHours={order.location.hours as ExtendedHours}
-                      /> */}
+                      /> *
                     </SheetContent>
-                  </Sheet>
-                  <Button
+                  </Sheet> */}
+                  {/* <Button
                     onClick={() =>
                       window.open(
                         `http://maps.apple.com/?address=${order?.location?.address}`,
@@ -364,7 +369,7 @@ const Body: React.FC<BodyProps> = ({
                     className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
                   >
                     <div>Get Directions</div> <IoMapOutline />
-                  </Button>
+                  </Button> */}
                   <Button
                     className="
       w-full flex items-center gap-x-2 justify-between font-light text-sm "
@@ -377,16 +382,29 @@ const Body: React.FC<BodyProps> = ({
               ) : (
                 <div className="flex flex-col items-center justify-center space-y-1 w-full ">
                   <Button
-                    className="
-      w-full flex items-center gap-x-2 justify-between font-light text-sm "
-                    onClick={() => router.push(`/profile/${order.userId}`)}
-                    title="View reviews of this buyer"
+                    onClick={() =>
+                      window.open(
+                        `http://maps.apple.com/?address=${order?.location?.address}`,
+                        "_ blank"
+                      )
+                    }
+                    className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
                   >
-                    <div>View Reviews</div> <IoStar />
+                    <div>Get Directions</div> <IoMapOutline />
                   </Button>
+                  <div className="flex flex-col items-center justify-center space-y-1 w-full ">
+                    <Button
+                      className="
+      w-full flex items-center gap-x-2 justify-between font-light text-sm "
+                      onClick={() => router.push(`/profile/${order.userId}`)}
+                      title="View reviews of this buyer"
+                    >
+                      <div>View Reviews</div> <IoStar />
+                    </Button>
+                  </div>
                 </div>
               )
-            ) : otherUser?.role === "PRODUCER" ? (
+            ) : order?.fulfillmentType === "DELIVERY" ? (
               <Button
                 onClick={() => router.push(`/store/${otherUser?.url}`)}
                 className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
@@ -409,6 +427,7 @@ const Body: React.FC<BodyProps> = ({
                     /> */}
                   </SheetContent>
                 </Sheet>
+
                 <Button
                   onClick={() =>
                     window.open(
@@ -420,6 +439,7 @@ const Body: React.FC<BodyProps> = ({
                 >
                   <div>Get Directions</div> <IoMapOutline />
                 </Button>
+
                 <Button
                   onClick={() => router.push(`/store/${otherUser?.url}`)}
                   className="w-full flex gap-x-2 items-center justify-between font-light text-sm"
