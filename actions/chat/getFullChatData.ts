@@ -16,7 +16,6 @@ const getFullChatData = async (
 ): Promise<FullChatData | null> => {
   try {
     const user = await currentUser();
-    console.log(user);
     if (!user) {
       return null;
     }
@@ -41,7 +40,6 @@ const getFullChatData = async (
         },
       },
     });
-    console.log(conversation);
     if (!conversation) {
       return null;
     }
@@ -49,7 +47,7 @@ const getFullChatData = async (
     const otherUserId = conversation.participantIds.find(
       (id) => id !== user.id
     );
-    console.log(otherUserId);
+
     if (!otherUserId) {
       return null;
     }
@@ -83,12 +81,20 @@ const getFullChatData = async (
         fee: true,
         quantity: true,
         status: true,
-        location: {
-          select: { hours: true, address: true },
-        },
+        preferredLocationId: true,
       },
     });
-
+    const location = order?.preferredLocationId
+      ? await prisma.location.findUnique({
+          where: {
+            id: order.preferredLocationId,
+          },
+          select: {
+            hours: true,
+            address: true,
+          },
+        })
+      : null;
     const transformedOrder: ChatOrder | null = order
       ? {
           id: order.id,
@@ -102,7 +108,7 @@ const getFullChatData = async (
           paymentIntentId: order.paymentIntentId,
           quantity: order.quantity as ListingQuantities[],
           status: order.status,
-          location: order.location,
+          location: location,
         }
       : null;
 

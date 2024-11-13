@@ -7,7 +7,7 @@ export default async function getHarvestMessages(userId: string | undefined) {
   try {
     const conversations = await prisma.conversation.findMany({
       where: {
-        userIds: {
+        participantIds: {
           has: userId,
         },
       },
@@ -22,7 +22,7 @@ export default async function getHarvestMessages(userId: string | undefined) {
         const convoIdWithHarvest = await prisma.message.findMany({
           where: {
             conversationId: conversation.id,
-            messageOrder: "100",
+            messageOrder: "HARVEST",
           },
           select: {
             conversationId: true,

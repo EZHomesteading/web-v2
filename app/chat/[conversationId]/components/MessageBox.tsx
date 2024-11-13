@@ -52,7 +52,6 @@ import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
 
-type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
   listings: ChatListing[];
   data: ChatMessage;
@@ -133,7 +132,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   let onConfirm = async (status: OrderStatus, skip?: boolean) => {
-    console.log("ONCONFIRM", status);
     if (SetFee === true) {
       setSetFee(false);
     }
@@ -156,7 +154,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const handleConfirm = (status: OrderStatus): Promise<boolean> => {
     return new Promise(async (resolve) => {
       const message = await getMessageByStatus(status);
-      console.log("HANDLECONFIRM", status, message);
       setModalMessage(message); // Set initial message
       setStatus(status);
       setIsModalOpen(true);
@@ -227,12 +224,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       });
     }
   };
-  console.log(order?.fee?.delivery);
   const onSubmit = async (status: OrderStatus) => {
-    console.log("ONSUBMIT", status);
     const confirmed = await handleConfirm(status);
     if (confirmed) {
-      console.log("CONFIRMED SUCCESFULLY");
     }
   };
 

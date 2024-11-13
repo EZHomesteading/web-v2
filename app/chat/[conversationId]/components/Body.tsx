@@ -226,7 +226,6 @@ const Body: React.FC<BodyProps> = ({
   if (order?.quantity?.length === 1) {
     item = "item";
   }
-  console.log(adminMessages);
   return (
     <div className="flex-1 overflow-y-auto">
       {user.id === order?.sellerId ? (

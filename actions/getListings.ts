@@ -184,7 +184,7 @@ const GetListingsMarket = async (
     // Case 1: If the user is a consumer or there are no extra search params
     if (!user || user?.role === UserRole.CONSUMER) {
       // Fetch listings from cooperatives only
-      console.log("entered case 1");
+      //console.log("entered case 1");
       listings = await prisma.listing.findMany({
         where: {
           user: {
@@ -205,7 +205,7 @@ const GetListingsMarket = async (
     ) {
       // Case 2: If the user is a cooperative, producer, or admin
       if (c === "t" && p === "t") {
-        console.log("entered case 2");
+        // console.log("entered case 2");
         // Fetch listings from coops and producers
         listings = await prisma.listing.findMany({
           where: {
@@ -224,7 +224,7 @@ const GetListingsMarket = async (
         });
       } else if (c === "t") {
         // Case 3: Fetch listings from cooperatives only
-        console.log("entered case 3");
+        //console.log("entered case 3");
         listings = await prisma.listing.findMany({
           where: {
             user: {
@@ -239,7 +239,7 @@ const GetListingsMarket = async (
           },
         });
       } else if (p === "t") {
-        console.log("entered case 4");
+        //console.log("entered case 4");
         // Case 4: Fetch listings from producers only
         listings = await prisma.listing.findMany({
           where: {
@@ -256,7 +256,7 @@ const GetListingsMarket = async (
         });
       } else {
         // Case 5: Fetch all listings
-        console.log("entered case 5");
+        //console.log("entered case 5");
         listings = await prisma.listing.findMany({
           where: {
             ...query,

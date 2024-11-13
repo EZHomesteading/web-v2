@@ -45,7 +45,6 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
       return;
     }
     setIsLoading(true);
-    console.log(order?.paymentIntentId);
     axios.post("/api/stripe/refund-payment", {
       paymentId: order?.paymentIntentId,
     });

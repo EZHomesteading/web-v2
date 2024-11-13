@@ -36,7 +36,7 @@ const getLocationByIndex = async ({
       },
     });
 
-    console.log("userwithLocations", user);
+    //console.log("userwithLocations", user);
 
     if (!user || !user.locations) {
       return null;
@@ -471,22 +471,22 @@ export interface BasketLocation {
   };
 }
 const getUserLocationsBasket = async (): Promise<BasketLocation[] | null> => {
-  const session = await authCache()
+  const session = await authCache();
   try {
     const locations = await prisma.location.findMany({
       where: {
         userId: session?.user?.id,
       },
       select: {
-        id:true,
-        coordinates:true,
-        address:true,
-        user:{
-          select:{
-            id:true,
-          }
-        }
-      }
+        id: true,
+        coordinates: true,
+        address: true,
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     return locations;
@@ -868,4 +868,3 @@ export type StoreUser = {
     };
   }[];
 };
-

@@ -138,7 +138,6 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
     };
     try {
       const OrderResponse = await axios.post("/api/chat/createOrder", params);
-      console.log(OrderResponse.data);
       router.push(`/chat/${OrderResponse.data.conversationId}`);
     } catch (error) {
       console.error("Error in the overall process:", error);
