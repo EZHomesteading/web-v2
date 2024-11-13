@@ -114,10 +114,8 @@ const Page = () => {
       <p>This is dummy content for Linux devices.</p>
     </div>
   );
-  const user = useCurrentUser();
   return (
     <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen relative">
-      <Navbar user={user as unknown as NavUser} />
       <div className="lg:col-span-1 hidden lg:block"></div>
       <div className="col-span-3 lg:col-span-2 xl:col-span-2">
         <h2 className={`${outfitFont.className} pt-10 lg:text-5xl text-2xl`}>
