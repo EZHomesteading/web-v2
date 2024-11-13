@@ -19,6 +19,7 @@ declare module "next-auth" {
     notifications: Notification[];
     hasPickedRole?: boolean;
     openClosedTemplates?: any;
+    SODT: number;
     role: UserRole;
     location: Location[];
     canRecievePayouts?: boolean;

@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -8,6 +7,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: "https",

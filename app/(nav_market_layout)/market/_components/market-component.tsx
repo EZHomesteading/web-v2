@@ -45,6 +45,7 @@ const Shop = ({
   pageNumbers,
   currentPage,
 }: ShopProps) => {
+  let imageCount = 0;
   return (
     <ClientOnly>
       <SessionStorageManager />
@@ -52,7 +53,12 @@ const Shop = ({
         {emptyState || (
           <MarketGrid>
             {listings.map((listing, index) => (
-              <MarketCard user={user} key={index} listing={listing} />
+              <MarketCard
+                user={user}
+                key={index}
+                listing={listing}
+                imageCount={imageCount}
+              />
             ))}
           </MarketGrid>
         )}

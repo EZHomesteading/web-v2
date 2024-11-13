@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { listingId, quantity, status = "ACTIVE" } = body;
+    const { listingId, quantity, status = "ACTIVE", initialOrderMethod } = body;
 
     if (!listingId) {
       return new NextResponse("Listing ID is required", { status: 400 });
@@ -46,6 +46,7 @@ export async function POST(request: Request) {
           userId: user.id,
           locationId: listing.locationId,
           status: status,
+          orderMethod: initialOrderMethod,
         },
         select: { id: true },
       });
