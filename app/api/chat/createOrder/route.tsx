@@ -285,12 +285,12 @@ export async function POST(request: Request) {
       throw new Error("Failed to create order");
     }
 
-    // await prisma.basketItem.deleteMany({
-    //   where: { basketId: itemId },
-    // });
-    // await prisma.basket.deleteMany({
-    //   where: { id: itemId },
-    // });
+    await prisma.basketItem.deleteMany({
+      where: { basketId: itemId },
+    });
+    await prisma.basket.deleteMany({
+      where: { id: itemId },
+    });
 
     const postResp = await postconversations(newOrder, type);
     return NextResponse.json({
