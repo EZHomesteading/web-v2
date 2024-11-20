@@ -7,7 +7,7 @@ import {
 import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
-import { Link } from "@/components/ui/custom-link";
+import Link from "next/link";
 
 interface ListingCardProps {
   listing: MarketListing;

@@ -144,7 +144,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const hasNotifications =
     (user?.sellerOrders?.length ?? 0) > 0 ||
     (user?.buyerOrders?.length ?? 0) > 0;
-  const isCartEmpty = (user?.cart?.length ?? 0) === 0;
+  // const isCartEmpty = (user?.cart?.length ?? 0) === 0;
 
   const renderIcons = () => {
     const icons: MenuIconItem[] = [
@@ -175,12 +175,12 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
     ];
 
     if (user) {
-      if (!isCartEmpty) {
-        icons.push({
-          key: "cart",
-          component: <CartIcon key="cart" cart={user.cart} />,
-        });
-      }
+      // if (!isCartEmpty) {
+      //   icons.push({
+      //     key: "cart",
+      //     component: <CartIcon key="cart" cart={user.cart} />,
+      //   });
+      // }
       if (hasNotifications) {
         icons.push({
           key: "alerts",
@@ -335,7 +335,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
           ) : (
             <>
               <Sheet>
-                <SheetTrigger className="flex justify-between items-center">
+                <SheetTrigger asChild>
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
@@ -401,9 +401,12 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               />
               <MenuItem label="Market" onClick={() => router.push("/market")} />
               <MenuItem label="Map" onClick={() => router.push("/map")} />
-              <Button onClick={() => router.push("/get-ezh-app")}>
+              {/* <Button
+                className={`w-full rounded-none`}
+                onClick={() => router.push("/get-ezh-app")}
+              >
                 Install the EZH App
-              </Button>
+              </Button> */}
             </>
           )}
         </PopoverContent>

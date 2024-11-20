@@ -183,7 +183,7 @@ export default async function ListingPage({
               </div>
             </div>
             <div className={`col-span-1 lg:col-span-2 relative`}>
-              <SendMessageComponent listing={listing} user={user} />
+              <SendMessageComponent listing={listing} />
             </div>
           </div>
         </div>

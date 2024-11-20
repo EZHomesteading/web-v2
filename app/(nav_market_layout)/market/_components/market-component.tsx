@@ -47,48 +47,45 @@ const Shop = ({
 }: ShopProps) => {
   let imageCount = 0;
   return (
-    <ClientOnly>
-      <SessionStorageManager />
-      <Container>
-        {emptyState || (
-          <MarketGrid>
-            {listings.map((listing, index) => (
-              <MarketCard
-                user={user}
-                key={index}
-                listing={listing}
-                imageCount={imageCount}
-              />
-            ))}
-          </MarketGrid>
-        )}
-        {totalPages > 1 && (
-          <>
-            {isPageOutOfRange && (
-              <div
-                className={`flex justify-center items-end my-4 ${outfitFont.className}`}
-              >
-                <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
-                  {pageNumbers.map((pageNumber, index) => (
-                    <Link
-                      key={index}
-                      className={
-                        currentPage === pageNumber
-                          ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
-                          : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
-                      }
-                      href={`?page=${pageNumber}`}
-                    >
-                      {pageNumber}
-                    </Link>
-                  ))}
-                </div>
+    <>
+      {emptyState || (
+        <MarketGrid>
+          {listings.map((listing, index) => (
+            <MarketCard
+              user={user}
+              key={index}
+              listing={listing}
+              imageCount={imageCount}
+            />
+          ))}
+        </MarketGrid>
+      )}
+      {totalPages > 1 && (
+        <>
+          {isPageOutOfRange && (
+            <div
+              className={`flex justify-center items-end my-4 ${outfitFont.className}`}
+            >
+              <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
+                {pageNumbers.map((pageNumber, index) => (
+                  <Link
+                    key={index}
+                    className={
+                      currentPage === pageNumber
+                        ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
+                        : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
+                    }
+                    href={`?page=${pageNumber}`}
+                  >
+                    {pageNumber}
+                  </Link>
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </Container>
-    </ClientOnly>
+            </div>
+          )}
+        </>
+      )}
+    </>
   );
 };
 

@@ -3,6 +3,7 @@ import connectMongoose from "@/lib/mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
+import Fuse from "fuse.js";
 
 let mongoConnection: mongoose.Connection | null = null;
 
@@ -12,11 +13,11 @@ export async function GET(req: NextRequest) {
       await connectMongoose();
       mongoConnection = mongoose.connection;
     }
-
     const { searchParams } = new URL(req.url);
     const lat = parseFloat(searchParams.get("lat") || "0");
     const lng = parseFloat(searchParams.get("lng") || "0");
-    const radius = parseInt(searchParams.get("radius") || "10000");
+    const radius = parseInt(searchParams.get("radius") || "30");
+    const q = searchParams.get("q");
     let listings: MarketListing[] = [];
 
     if (lat && lng && radius) {
@@ -39,11 +40,10 @@ export async function GET(req: NextRequest) {
           { status: 500 }
         );
       }
-
       const geoQuery = {
         coordinates: {
           $geoWithin: {
-            $centerSphere: [[lng, lat], radius / 6378137],
+            $centerSphere: [[lng, lat], (radius * 1609.34) / 6378137],
           },
         },
       };
@@ -109,7 +109,24 @@ export async function GET(req: NextRequest) {
         },
       });
     }
-
+    if (q) {
+      const fuseOptions = {
+        includeScore: true,
+        keys: [
+          "user.name",
+          "title",
+          "category",
+          "subCategory",
+          "description",
+          "keyWords",
+        ],
+        threshold: 0.3,
+      };
+      const fuse = new Fuse(listings, fuseOptions);
+      const results = fuse.search(q);
+      console.log(results);
+      listings = results.map((result) => result.item);
+    }
     return NextResponse.json(listings);
   } catch (error) {
     console.error("Error:", error);

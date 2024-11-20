@@ -10,7 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import useMediaQuery from "@/hooks/media-query";
 import {
   Availability,
   Hours,

@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import axios from "axios";
 import { toast } from "sonner";
@@ -14,8 +13,8 @@ const locationHeadings = [
 interface LocationProps {
   locations?: Location[];
   apiKey: string;
-  role: UserRole;
-  id: string;
+  role?: UserRole;
+  id?: string;
 }
 
 const HoursLocationContainer = ({ locations, apiKey, role }: LocationProps) => {
@@ -65,37 +64,7 @@ const HoursLocationContainer = ({ locations, apiKey, role }: LocationProps) => {
     );
   };
 
-  const getLatLngFromAddress = async (address: string) => {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
-
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return { lat, lng };
-      } else {
-        throw new Error("Geocoding failed");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
-
   return <>{renderLocationCards()}</>;
 };
 
 export default HoursLocationContainer;
-
-const post = async (data: Location | undefined) => {
-  try {
-    const response = await axios.post("/api/useractions/update", {
-      location: data,
-    });
-    return response.data;
-  } catch (error) {
-    toast.error("There was an error updating your location or hours");
-  }
-};
