@@ -17,36 +17,17 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { outfitFont } from "@/components/fonts";
-import { UserRole } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 
 // Constants
 const AVERAGE_STOP_TIME = 10 * 60; // 10 minutes in seconds
 const BUFFER_TIME = 5 * 60; // 5 minutes buffer between stops
 const libraries: ("places" | "geometry")[] = ["places", "geometry"];
-
-// Interfaces
-interface Location {
-  id: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-  name: string;
-  address: string[];
-  hours: {
-    delivery: Array<{
-      date: string;
-      timeSlots: Array<{
-        open: number;
-        close: number;
-      }>;
-    }>;
-  };
-}
 
 interface RouteOptimizerProps {
   locations: Location[];
@@ -74,6 +55,7 @@ interface OptimalRoute {
   locations: Location[];
   suggestedPickupTimes: { [key: string]: string };
   totalDuration: number;
+  totalDistance: number;
 }
 
 interface RouteSegment {
@@ -83,6 +65,12 @@ interface RouteSegment {
   departureTime: number;
   travelTime: number;
   waitTime: number;
+}
+
+interface RouteResult {
+  route: Location[];
+  totalTime: number;
+  totalDistance: number;
 }
 
 const RouteOptimizer = ({
@@ -119,23 +107,31 @@ const RouteOptimizer = ({
 
   // Refs
   const mapRef = useRef<google.maps.Map | null>(null);
-
   const searchBoxRef = useRef<google.maps.places.Autocomplete | null>(null);
-
+  const kilometersToMiles = (kilometers: number): number => {
+    return kilometers * 0.621371;
+  };
+  const clearMap = () => {
+    setOptimizedRoute([]);
+  };
   // Load Google Maps
   const { isLoaded } = useLoadScript({
     googleMapsApiKey,
     libraries,
   });
+
+  // Map Event Handlers
   const onMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
     setZoom(map.getZoom() || 12);
   };
+
   const onZoomChanged = () => {
     if (mapRef.current) {
       setZoom(mapRef.current.getZoom() || 12);
     }
   };
+
   // Time Utility Functions
   const formatTime = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
@@ -183,13 +179,66 @@ const RouteOptimizer = ({
     return result;
   };
 
+  const calculateRouteMetrics = (
+    matrix: google.maps.DistanceMatrixResponse,
+    route: Location[],
+    startIdx: number,
+    endIdx: number
+  ): { totalTime: number; totalDistance: number } => {
+    let totalTime = 0;
+    let totalDistance = 0;
+    let currentIdx = startIdx;
+
+    // Add distance/time from start location to first location
+    if (route.length > 0) {
+      const firstLocationIdx = locations.findIndex(
+        (loc) => loc.id === route[0].id
+      );
+      totalTime +=
+        matrix.rows[startIdx].elements[firstLocationIdx].duration.value;
+      totalDistance +=
+        matrix.rows[startIdx].elements[firstLocationIdx].distance.value;
+    }
+
+    // Calculate between locations
+    for (let i = 0; i < route.length - 1; i++) {
+      const currentLocIdx = locations.findIndex(
+        (loc) => loc.id === route[i].id
+      );
+      const nextLocIdx = locations.findIndex(
+        (loc) => loc.id === route[i + 1].id
+      );
+
+      totalTime +=
+        matrix.rows[currentLocIdx + 1].elements[nextLocIdx].duration.value;
+      totalDistance +=
+        matrix.rows[currentLocIdx + 1].elements[nextLocIdx].distance.value;
+    }
+
+    // Add distance/time to end location if there are locations in the route
+    if (route.length > 0) {
+      const lastLocationIdx = locations.findIndex(
+        (loc) => loc.id === route[route.length - 1].id
+      );
+      totalTime +=
+        matrix.rows[lastLocationIdx + 1].elements[endIdx].duration.value;
+      totalDistance +=
+        matrix.rows[lastLocationIdx + 1].elements[endIdx].distance.value;
+    }
+
+    return { totalTime, totalDistance };
+  };
+
   const isLocationOpen = (
     location: Location,
     timeInSeconds: number
   ): boolean => {
     const today = new Date().toISOString().split("T")[0];
+
+    if (!location.hours?.delivery) return false;
+
     const todaySlots = location.hours.delivery.find(
-      (slot) => slot.date.split("T")[0] === today
+      (slot) => new Date(slot.date).toISOString().split("T")[0] === today
     );
 
     if (!todaySlots?.timeSlots[0]) return false;
@@ -202,10 +251,310 @@ const RouteOptimizer = ({
 
   const getLocationOpenTime = (location: Location): number => {
     const today = new Date().toISOString().split("T")[0];
+
+    if (!location.hours?.delivery) return 0;
+
     const todaySlots = location.hours.delivery.find(
-      (slot) => slot.date.split("T")[0] === today
+      (slot) => new Date(slot.date).toISOString().split("T")[0] === today
     );
+
     return todaySlots?.timeSlots[0]?.open ?? 0;
+  };
+
+  const findDynamicNearestNeighborRoute = async (
+    startLocation: google.maps.LatLng,
+    locations: Location[],
+    endLocation: google.maps.LatLng | null
+  ): Promise<RouteResult> => {
+    const service = new google.maps.DistanceMatrixService();
+
+    const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
+      (resolve, reject) => {
+        service.getDistanceMatrix(
+          {
+            origins: [
+              startLocation,
+              ...locations.map(
+                (loc) =>
+                  new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+              ),
+            ],
+            destinations: [
+              ...locations.map(
+                (loc) =>
+                  new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+              ),
+              endLocation || startLocation,
+            ],
+            travelMode: google.maps.TravelMode.DRIVING,
+            drivingOptions: {
+              departureTime: new Date(),
+              trafficModel: google.maps.TrafficModel.BEST_GUESS,
+            },
+          },
+          (response, status) => {
+            if (status === "OK" && response !== null) {
+              resolve(response);
+            } else {
+              reject(status);
+            }
+          }
+        );
+      }
+    );
+
+    let unvisited = [...locations];
+    let route: Location[] = [];
+    let currentPos = startLocation;
+    let currentIdx = 0;
+
+    while (unvisited.length > 0) {
+      let bestNextIdx = -1;
+      let bestScore = Infinity;
+
+      for (let i = 0; i < unvisited.length; i++) {
+        const locIdx = locations.findIndex((loc) => loc.id === unvisited[i].id);
+        const timeToLocation =
+          matrix.rows[currentIdx].elements[locIdx].duration.value;
+
+        if (unvisited.length > 1) {
+          let avgTimeToRemaining = 0;
+          const remainingLocs = unvisited.filter((_, index) => index !== i);
+
+          for (const remainingLoc of remainingLocs) {
+            const remainingIdx = locations.findIndex(
+              (loc) => loc.id === remainingLoc.id
+            );
+            avgTimeToRemaining +=
+              matrix.rows[locIdx + 1].elements[remainingIdx].duration.value;
+          }
+          avgTimeToRemaining /= remainingLocs.length;
+
+          const score = timeToLocation + avgTimeToRemaining * 0.5;
+
+          if (score < bestScore) {
+            bestScore = score;
+            bestNextIdx = i;
+          }
+        } else {
+          if (timeToLocation < bestScore) {
+            bestScore = timeToLocation;
+            bestNextIdx = i;
+          }
+        }
+      }
+
+      if (bestNextIdx !== -1) {
+        const chosenLocation = unvisited[bestNextIdx];
+        route.push(chosenLocation);
+        currentIdx =
+          locations.findIndex((loc) => loc.id === chosenLocation.id) + 1;
+        currentPos = new google.maps.LatLng(
+          chosenLocation.coordinates[1],
+          chosenLocation.coordinates[0]
+        );
+        unvisited.splice(bestNextIdx, 1);
+      }
+    }
+
+    // Calculate final destination index (last location in matrix)
+    const finalDestinationIdx = matrix.rows[0].elements.length - 1;
+
+    const metrics = calculateRouteMetrics(
+      matrix,
+      route,
+      0,
+      finalDestinationIdx
+    );
+
+    return {
+      route,
+      totalTime: metrics.totalTime,
+      totalDistance: metrics.totalDistance,
+    };
+  };
+
+  const findPermutationRoute = async (
+    startLocation: google.maps.LatLng,
+    locations: Location[],
+    endLocation: google.maps.LatLng | null
+  ): Promise<RouteResult> => {
+    const service = new google.maps.DistanceMatrixService();
+
+    const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
+      (resolve, reject) => {
+        service.getDistanceMatrix(
+          {
+            origins: [
+              startLocation,
+              ...locations.map(
+                (loc) =>
+                  new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+              ),
+            ],
+            destinations: [
+              ...locations.map(
+                (loc) =>
+                  new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+              ),
+              endLocation || startLocation,
+            ],
+            travelMode: google.maps.TravelMode.DRIVING,
+            drivingOptions: {
+              departureTime: new Date(),
+              trafficModel: google.maps.TrafficModel.BEST_GUESS,
+            },
+          },
+          (response, status) => {
+            if (status === "OK" && response !== null) {
+              resolve(response);
+            } else {
+              reject(status);
+            }
+          }
+        );
+      }
+    );
+
+    let bestRoute: Location[] = [];
+    let bestTotalTime = Infinity;
+    let bestTotalDistance = Infinity;
+
+    const permutations = getPermutations(locations);
+    // Calculate final destination index (last location in matrix)
+    const finalDestinationIdx = matrix.rows[0].elements.length - 1;
+
+    for (const perm of permutations) {
+      const metrics = calculateRouteMetrics(
+        matrix,
+        perm,
+        0,
+        finalDestinationIdx
+      );
+
+      if (metrics.totalTime < bestTotalTime) {
+        bestRoute = perm;
+        bestTotalTime = metrics.totalTime;
+        bestTotalDistance = metrics.totalDistance;
+      }
+    }
+
+    return {
+      route: bestRoute,
+      totalTime: bestTotalTime,
+      totalDistance: bestTotalDistance,
+    };
+  };
+
+  const calculateSimpleRoute = async () => {
+    if (!userLocation || locations.length === 0) return;
+    clearMap();
+    try {
+      let bestRoute: RouteResult;
+
+      if (locations.length <= 8) {
+        bestRoute = await findPermutationRoute(
+          userLocation,
+          locations,
+          endLocation
+        );
+      } else {
+        bestRoute = await findDynamicNearestNeighborRoute(
+          userLocation,
+          locations,
+          endLocation
+        );
+      }
+
+      // Store the route metrics
+      localStorage.setItem("totalTime", bestRoute.totalTime.toString());
+      localStorage.setItem("totalDistance", bestRoute.totalDistance.toString());
+
+      // Calculate and store individual travel times
+      const service = new google.maps.DistanceMatrixService();
+      const routeTimes: { [key: string]: number } = {};
+
+      // Calculate times between stops
+      for (let i = 0; i < bestRoute.route.length; i++) {
+        const isLastStop = i === bestRoute.route.length - 1;
+        const origin = new google.maps.LatLng(
+          bestRoute.route[i].coordinates[1],
+          bestRoute.route[i].coordinates[0]
+        );
+
+        let destination;
+        if (isLastStop) {
+          // For the last stop, use the end location or return to start
+          destination = endLocation || userLocation;
+        } else {
+          destination = new google.maps.LatLng(
+            bestRoute.route[i + 1].coordinates[1],
+            bestRoute.route[i + 1].coordinates[0]
+          );
+        }
+
+        const result = await service.getDistanceMatrix({
+          origins: [origin],
+          destinations: [destination],
+          travelMode: google.maps.TravelMode.DRIVING,
+        });
+
+        if (result.rows[0]?.elements[0]?.duration) {
+          if (isLastStop) {
+            // Store the return time separately
+            localStorage.setItem(
+              "returnTime",
+              result.rows[0].elements[0].duration.value.toString()
+            );
+          } else {
+            routeTimes[bestRoute.route[i].id] =
+              result.rows[0].elements[0].duration.value;
+          }
+        }
+      }
+
+      localStorage.setItem("routeTimes", JSON.stringify(routeTimes));
+
+      setOptimizedRoute(bestRoute.route);
+      setPickupTimes({});
+      setRouteSegments([]);
+
+      showNotification(
+        "Optimized Route Created",
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">Best Route Found:</p>
+            <p className="text-sm text-gray-600">
+              Total drive time: {formatDuration(bestRoute.totalTime)}
+              <br />
+              Total distance:{" "}
+              {kilometersToMiles(bestRoute.totalDistance / 1000).toFixed(
+                1
+              )}{" "}
+              miles
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="font-medium">Route Order:</p>
+            {bestRoute.route.map((location, index) => (
+              <div key={location.id} className="text-sm ml-4">
+                {index + 1}. {location.displayName}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      // Force a re-render
+      setOptimizedRoute([...bestRoute.route]);
+    } catch (error) {
+      console.error("Route calculation error:", error);
+      showNotification(
+        "Route Creation Error",
+        "Unable to create route. Please try again.",
+        "destructive"
+      );
+    }
   };
 
   const calculateOptimalRoute = async (
@@ -218,7 +567,6 @@ const RouteOptimizer = ({
     const currentTimeInSeconds = (now.getHours() * 60 + now.getMinutes()) * 60;
 
     try {
-      // Get distance matrix
       const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
         (resolve, reject) => {
           service.getDistanceMatrix(
@@ -228,8 +576,8 @@ const RouteOptimizer = ({
                 ...locations.map(
                   (loc) =>
                     new google.maps.LatLng(
-                      loc.coordinates.lat,
-                      loc.coordinates.lng
+                      loc.coordinates[1],
+                      loc.coordinates[0]
                     )
                 ),
               ],
@@ -237,8 +585,8 @@ const RouteOptimizer = ({
                 ...locations.map(
                   (loc) =>
                     new google.maps.LatLng(
-                      loc.coordinates.lat,
-                      loc.coordinates.lng
+                      loc.coordinates[1],
+                      loc.coordinates[0]
                     )
                 ),
                 endLoc || startLocation,
@@ -260,74 +608,84 @@ const RouteOptimizer = ({
         }
       );
 
-      // Initialize tracking variables
       let bestRoute: Location[] = [];
       let bestTotalTime = Infinity;
+      let bestTotalDistance = Infinity;
       let bestPickupTimes: { [key: string]: string } = {};
       let bestSegments: RouteSegment[] = [];
 
-      // Calculate times for each permutation
-      const permutations = getPermutations(locations);
-      for (const route of permutations) {
-        let currentTime = currentTimeInSeconds;
-        let currentLocation = 0;
-        let totalTime = 0;
-        let isValidRoute = true;
-        let segments: RouteSegment[] = [];
-        let pickupTimes: { [key: string]: string } = {};
+      // Try both optimization methods for time-constrained routes
+      const routeResults = await Promise.all([
+        findPermutationRoute(startLocation, locations, endLoc),
+        findDynamicNearestNeighborRoute(startLocation, locations, endLoc),
+      ]);
 
-        // Process each location in the route
-        for (const location of route) {
-          const travelTime =
-            matrix.rows[currentLocation].elements[currentLocation + 1].duration
-              .value;
-          currentTime += travelTime;
+      // Use the better route as starting point
+      const initialRoute =
+        routeResults[0].totalTime < routeResults[1].totalTime
+          ? routeResults[0]
+          : routeResults[1];
 
-          // Check if location is open
-          if (!isLocationOpen(location, currentTime)) {
-            const openTime = getLocationOpenTime(location) * 60;
-            if (currentTime < openTime) {
-              const waitTime = openTime - currentTime;
-              currentTime += waitTime;
-              totalTime += waitTime;
-            } else {
-              isValidRoute = false;
-              break;
-            }
+      // Validate and adjust times for the best route
+      let currentTime = currentTimeInSeconds;
+      let currentLocation = 0;
+      let totalTime = 0;
+      let totalDistance = 0;
+      let segments: RouteSegment[] = [];
+      let pickupTimes: { [key: string]: string } = {};
+      let isValidRoute = true;
+
+      for (const location of initialRoute.route) {
+        const travelTime =
+          matrix.rows[currentLocation].elements[currentLocation + 1].duration
+            .value;
+        const distance =
+          matrix.rows[currentLocation].elements[currentLocation + 1].distance
+            .value;
+
+        currentTime += travelTime;
+        totalDistance += distance;
+
+        // Check if location is open
+        if (!isLocationOpen(location, currentTime)) {
+          const openTime = getLocationOpenTime(location) * 60;
+          if (currentTime < openTime) {
+            const waitTime = openTime - currentTime;
+            currentTime += waitTime;
+            totalTime += waitTime;
+          } else {
+            isValidRoute = false;
+            break;
           }
-
-          // Record segment information
-          segments.push({
-            location,
-            arrivalTime: currentTime,
-            pickupTime: currentTime + BUFFER_TIME,
-            departureTime: currentTime + BUFFER_TIME + AVERAGE_STOP_TIME,
-            travelTime,
-            waitTime: 0,
-          });
-
-          pickupTimes[location.id] = secondsToTimeString(
-            currentTime + BUFFER_TIME
-          );
-
-          // Add processing and buffer time
-          currentTime += AVERAGE_STOP_TIME + BUFFER_TIME;
-          totalTime += travelTime + AVERAGE_STOP_TIME + BUFFER_TIME;
-          currentLocation++;
         }
 
-        // Update best route if current route is valid and faster
-        if (isValidRoute && totalTime < bestTotalTime) {
-          bestRoute = route;
-          bestTotalTime = totalTime;
-          bestPickupTimes = pickupTimes;
-          bestSegments = segments;
-        }
+        segments.push({
+          location,
+          arrivalTime: currentTime,
+          pickupTime: currentTime + BUFFER_TIME,
+          departureTime: currentTime + BUFFER_TIME + AVERAGE_STOP_TIME,
+          travelTime,
+          waitTime: 0,
+        });
+
+        pickupTimes[location.id] = secondsToTimeString(
+          currentTime + BUFFER_TIME
+        );
+
+        currentTime += AVERAGE_STOP_TIME + BUFFER_TIME;
+        totalTime += travelTime + AVERAGE_STOP_TIME + BUFFER_TIME;
+        currentLocation++;
       }
 
-      if (bestRoute.length === 0) {
+      if (!isValidRoute) {
         throw new Error("No valid route found within operating hours");
       }
+
+      bestRoute = initialRoute.route;
+      bestTotalTime = totalTime;
+      bestTotalDistance = totalDistance;
+      bestPickupTimes = pickupTimes;
+      bestSegments = segments;
 
       setRouteSegments(bestSegments);
 
@@ -335,6 +693,7 @@ const RouteOptimizer = ({
         locations: bestRoute,
         suggestedPickupTimes: bestPickupTimes,
         totalDuration: bestTotalTime,
+        totalDistance: bestTotalDistance, // Add this line
       };
     } catch (error) {
       console.error("Error calculating optimal route:", error);
@@ -342,7 +701,6 @@ const RouteOptimizer = ({
     }
   };
 
-  // Time Validation
   const validatePickupTime = (
     locationId: string,
     time: string
@@ -373,16 +731,12 @@ const RouteOptimizer = ({
     }
 
     if (!isLocationOpen(location, selectedSeconds)) {
-      return {
-        isValid: false,
-        message: "Location is closed at this time",
-      };
+      return { isValid: false, message: "Location is closed at this time" };
     }
 
     return { isValid: true, message: "" };
   };
 
-  // Map and Location Handlers
   const onPlaceSelected = (place: google.maps.places.PlaceResult) => {
     if (place.geometry?.location) {
       const newLocation = {
@@ -406,7 +760,84 @@ const RouteOptimizer = ({
     }
   };
 
-  // Initialize map and location
+  const calculateRoute = async () => {
+    if (!userLocation || locations.length === 0) return;
+    clearMap();
+    try {
+      const optimizedResult = await calculateOptimalRoute(
+        userLocation,
+        locations,
+        endLocation || userLocation
+      );
+
+      setOptimizedRoute(optimizedResult.locations);
+      setPickupTimes(optimizedResult.suggestedPickupTimes);
+
+      showNotification(
+        "Route Optimized",
+        <div className="space-y-4">
+          <div>
+            <p className="font-medium">
+              Total Route Time: {formatDuration(optimizedResult.totalDuration)}
+              <br />
+              Total distance:{" "}
+              {kilometersToMiles(optimizedResult.totalDistance / 1000).toFixed(
+                1
+              )}{" "}
+              miles
+            </p>
+            <p className="text-sm text-gray-600">
+              (Includes travel time, {formatDuration(AVERAGE_STOP_TIME)} per
+              stop, and {formatDuration(BUFFER_TIME)} buffers)
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="font-medium">Suggested Schedule:</p>
+            {routeSegments.map((segment, index) => (
+              <div key={segment.location.id} className="text-sm">
+                <div className="font-medium">
+                  {index + 1}. {segment.location.displayName}
+                </div>
+                <div className="ml-4 text-gray-600">
+                  <div>Arrival: {secondsToTimeString(segment.arrivalTime)}</div>
+                  <div>
+                    Suggested Pickup: {secondsToTimeString(segment.pickupTime)}
+                  </div>
+                  <div>Travel time: {formatDuration(segment.travelTime)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm font-medium">
+            You can adjust the suggested pickup times within each location's
+            operating hours.
+          </p>
+        </div>
+      );
+    } catch (error) {
+      showNotification(
+        "Route Optimization Error",
+        <div className="space-y-4">
+          <p>
+            Unable to find a valid route that meets all time constraints. Please
+            try different locations or time windows.
+          </p>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setModalState({ isOpen: false, title: "", description: "" });
+                calculateSimpleRoute();
+              }}
+            >
+              Create Route Without Time Constraints
+            </Button>
+          </DialogFooter>
+        </div>,
+        "destructive"
+      );
+    }
+  };
+
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -434,66 +865,6 @@ const RouteOptimizer = ({
     }
   }, [isLoaded, initialLocation]);
 
-  // Route Calculation
-  const calculateRoute = async () => {
-    if (!userLocation || locations.length === 0) return;
-
-    try {
-      // Calculate optimal route first
-      const optimizedResult = await calculateOptimalRoute(
-        userLocation,
-        locations,
-        endLocation || userLocation
-      );
-
-      setOptimizedRoute(optimizedResult.locations);
-      setPickupTimes(optimizedResult.suggestedPickupTimes);
-
-      // Show route summary
-      showNotification(
-        "Route Optimized",
-        <div className="space-y-4">
-          <div>
-            <p className="font-medium">
-              Total Route Time: {formatDuration(optimizedResult.totalDuration)}
-            </p>
-            <p className="text-sm text-gray-600">
-              (Includes travel time, {formatDuration(AVERAGE_STOP_TIME)} per
-              stop, and {formatDuration(BUFFER_TIME)} buffers)
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="font-medium">Suggested Schedule:</p>
-            {routeSegments.map((segment, index) => (
-              <div key={segment.location.id} className="text-sm">
-                <div className="font-medium">
-                  {index + 1}. {segment.location.name}
-                </div>
-                <div className="ml-4 text-gray-600">
-                  <div>Arrival: {secondsToTimeString(segment.arrivalTime)}</div>
-                  <div>
-                    Suggested Pickup: {secondsToTimeString(segment.pickupTime)}
-                  </div>
-                  <div>Travel time: {formatDuration(segment.travelTime)}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-sm font-medium">
-            You can adjust the suggested pickup times within each location's
-            operating hours.
-          </p>
-        </div>
-      );
-    } catch (error) {
-      showNotification(
-        "Route Optimization Error",
-        "Unable to find a valid route that meets all time constraints. Please try different locations or time windows.",
-        "destructive"
-      );
-    }
-  };
-  // Notification Handler
   const showNotification = (
     title: string,
     description: React.ReactNode,
@@ -506,7 +877,9 @@ const RouteOptimizer = ({
       variant,
     });
   };
+
   if (!isLoaded) return <div>Loading...</div>;
+
   return (
     <div className="relative h-[calc(100vh-64px)]">
       <Card className="absolute top-4 left-4 z-10 w-96">
@@ -514,7 +887,6 @@ const RouteOptimizer = ({
           <CardTitle className={outfitFont.className}>Route Planner</CardTitle>
         </CardHeader>
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
-          {/* Selected Locations */}
           <div className="space-y-2">
             <h3 className={`${outfitFont.className} font-medium`}>
               Selected Locations ({locations.length})
@@ -526,7 +898,7 @@ const RouteOptimizer = ({
               >
                 <div className="flex items-center justify-between">
                   <span className={`${outfitFont.className} font-medium`}>
-                    {location.name}
+                    {location.displayName}
                   </span>
                 </div>
                 <span
@@ -534,15 +906,13 @@ const RouteOptimizer = ({
                 >
                   {location.address[0]}
                 </span>
-                {/* Operating Hours */}
-                {location.hours.delivery[0]?.timeSlots[0] && (
+                {location?.hours?.delivery[0]?.timeSlots[0] && (
                   <div className="text-xs text-gray-600">
                     Operating Hours:{" "}
                     {formatTime(location.hours.delivery[0].timeSlots[0].open)} -{" "}
                     {formatTime(location.hours.delivery[0].timeSlots[0].close)}
                   </div>
                 )}
-                {/* Pickup Time Input */}
                 <div className="mt-2">
                   <Label htmlFor={`pickup-${location.id}`}>
                     Pickup Time
@@ -586,7 +956,7 @@ const RouteOptimizer = ({
                 </div>
               </div>
             ))}
-            {/* End Location Selection */}
+
             <div className="space-y-2">
               <label
                 className={`${outfitFont.className} flex items-center gap-2`}
@@ -634,7 +1004,6 @@ const RouteOptimizer = ({
               )}
             </div>
 
-            {/* Calculate Route Button */}
             <Button
               className="w-full"
               onClick={calculateRoute}
@@ -643,25 +1012,115 @@ const RouteOptimizer = ({
               Optimize Route
             </Button>
 
-            {/* Route Summary */}
             {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md space-y-2">
-                <p className={`${outfitFont.className} font-medium`}>
-                  Optimized Route:
-                </p>
-                {optimizedRoute.map((location, index) => (
-                  <div
-                    key={location.id}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span>
-                      {index + 1}. {location.name}
-                    </span>
-                    <span className="text-gray-600">
-                      {pickupTimes[location.id]}
-                    </span>
+              <div className="p-2 bg-slate-100 rounded-md space-y-4">
+                <div className="border-b pb-2">
+                  <p className={`${outfitFont.className} font-medium text-lg`}>
+                    {routeSegments.length > 0
+                      ? "Time-Optimized Route"
+                      : "Distance-Optimized Route"}
+                  </p>
+                  <div className="mt-2 space-y-1 text-sm text-gray-600">
+                    {routeSegments.length > 0 ? (
+                      <>
+                        <p>
+                          Total Distance:{" "}
+                          {kilometersToMiles(
+                            routeSegments.reduce(
+                              (acc, segment) => acc + segment.travelTime,
+                              0
+                            ) / 1000
+                          ).toFixed(1)}{" "}
+                          miles
+                        </p>
+                        <p>
+                          Total Travel Time:{" "}
+                          {formatDuration(
+                            routeSegments.reduce(
+                              (acc, segment) => acc + segment.travelTime,
+                              0
+                            )
+                          )}
+                        </p>
+                        <p>
+                          Suggested Departure:{" "}
+                          {routeSegments[0]
+                            ? secondsToTimeString(
+                                routeSegments[0].arrivalTime -
+                                  routeSegments[0].travelTime
+                              )
+                            : "N/A"}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p>
+                          Total Distance:{" "}
+                          {localStorage.getItem("totalDistance")
+                            ? `${kilometersToMiles(
+                                Number(localStorage.getItem("totalDistance")) /
+                                  1000
+                              ).toFixed(1)} miles`
+                            : "Calculating..."}
+                        </p>
+                        <p>
+                          Total Travel Time:{" "}
+                          {localStorage.getItem("totalTime")
+                            ? formatDuration(
+                                Number(localStorage.getItem("totalTime"))
+                              )
+                            : "Calculating..."}
+                        </p>
+                      </>
+                    )}
                   </div>
-                ))}
+                </div>
+
+                <div className="space-y-3">
+                  <p className={`${outfitFont.className} font-medium`}>
+                    Stop Details:
+                  </p>
+                  {optimizedRoute.map((location, index) => {
+                    const segment = routeSegments[index];
+                    const times = JSON.parse(
+                      localStorage.getItem("routeTimes") || "{}"
+                    );
+                    const isLastStop = index === optimizedRoute.length - 1;
+                    const returnTime = localStorage.getItem("returnTime");
+
+                    return (
+                      <div
+                        key={location.id}
+                        className="flex flex-col space-y-1 pb-2 border-b last:border-b-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">
+                            {index + 1}. {location.displayName}
+                          </span>
+                        </div>
+
+                        <div className="text-sm text-gray-600 pl-6 space-y-0.5">
+                          <div className="flex justify-between">
+                            <span>
+                              {isLastStop
+                                ? "Time to Return:"
+                                : "Travel Time to Next Stop:"}
+                            </span>
+                            <span>
+                              {isLastStop
+                                ? returnTime
+                                  ? formatDuration(parseInt(returnTime))
+                                  : "Not available"
+                                : times[location.id]
+                                ? formatDuration(times[location.id])
+                                : "Not available"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -684,7 +1143,6 @@ const RouteOptimizer = ({
           mapTypeControl: false,
           scaleControl: true,
           fullscreenControl: false,
-
           styles: [
             {
               featureType: "poi",
@@ -710,7 +1168,12 @@ const RouteOptimizer = ({
         {locations.map((location) => (
           <Circle
             key={location.id}
-            center={location.coordinates}
+            center={
+              new google.maps.LatLng(
+                location.coordinates[1],
+                location.coordinates[0]
+              )
+            }
             radius={
               zoom >= 16
                 ? 60
@@ -775,8 +1238,8 @@ const RouteOptimizer = ({
                 path={[
                   { lat: userLocation.lat(), lng: userLocation.lng() },
                   {
-                    lat: optimizedRoute[0].coordinates.lat,
-                    lng: optimizedRoute[0].coordinates.lng,
+                    lat: optimizedRoute[0].coordinates[1],
+                    lng: optimizedRoute[0].coordinates[0],
                   },
                 ]}
                 options={{
@@ -800,8 +1263,8 @@ const RouteOptimizer = ({
             {/* Lines between locations */}
             <Polyline
               path={optimizedRoute.map((location) => ({
-                lat: location.coordinates.lat,
-                lng: location.coordinates.lng,
+                lat: location.coordinates[1],
+                lng: location.coordinates[0],
               }))}
               options={{
                 strokeColor: "#4A90E2",
@@ -820,15 +1283,15 @@ const RouteOptimizer = ({
               }}
             />
 
-            {/* Line from last location to "final" location */}
+            {/* Line from last location to final location */}
             {endLocation ? (
               <Polyline
                 path={[
                   {
-                    lat: optimizedRoute[optimizedRoute.length - 1].coordinates
-                      .lat,
-                    lng: optimizedRoute[optimizedRoute.length - 1].coordinates
-                      .lng,
+                    lat: optimizedRoute[optimizedRoute.length - 1]
+                      .coordinates[1],
+                    lng: optimizedRoute[optimizedRoute.length - 1]
+                      .coordinates[0],
                   },
                   { lat: endLocation.lat(), lng: endLocation.lng() },
                 ]}
@@ -853,10 +1316,10 @@ const RouteOptimizer = ({
                 <Polyline
                   path={[
                     {
-                      lat: optimizedRoute[optimizedRoute.length - 1].coordinates
-                        .lat,
-                      lng: optimizedRoute[optimizedRoute.length - 1].coordinates
-                        .lng,
+                      lat: optimizedRoute[optimizedRoute.length - 1]
+                        .coordinates[1],
+                      lng: optimizedRoute[optimizedRoute.length - 1]
+                        .coordinates[0],
                     },
                     { lat: userLocation.lat(), lng: userLocation.lng() },
                   ]}
@@ -905,4 +1368,5 @@ const RouteOptimizer = ({
     </div>
   );
 };
+
 export default RouteOptimizer;
