@@ -442,15 +442,15 @@ interface GetUserLocationParams {
 const getUserLocations = async ({
   userId,
 }: {
-  userId: string;
+  userId?: string;
 }): Promise<Location[] | null> => {
+  if (!userId) {
+    return null;
+  }
   try {
     const locations = await prisma.location.findMany({
       where: {
         userId: userId,
-      },
-      include: {
-        user: true,
       },
     });
 
