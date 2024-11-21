@@ -19,16 +19,19 @@ export default async function ConversationsLayout({
   const navUser = await getNavUser();
   return (
     <div className="min-h-screen bg-chat">
-      <Navbar user={navUser as unknown as NavUser} isChat={true} />
+      <Navbar user={navUser as unknown as NavUser} />
 
-      <ConversationList
-        title="Messages"
-        initialItems={
-          conversations.conversations as unknown as FullConversationType[]
-        }
-        user={conversations.user}
-      />
-      {children}
+      <div className={`pt-32`}>
+        {/* pt subject to change */}
+        <ConversationList
+          title="Messages"
+          initialItems={
+            conversations.conversations as unknown as FullConversationType[]
+          }
+          user={conversations.user}
+        />
+        {children}
+      </div>
     </div>
   );
 }

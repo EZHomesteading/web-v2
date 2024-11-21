@@ -2,7 +2,7 @@
 import { getUnique } from "@/actions/getListings";
 import { Key, Suspense } from "react";
 import ClientOnly from "@/components/client/ClientOnly";
-import { getCurrentUser } from "@/actions/getUser";
+import { getCurrentUser, getUserLocations } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
 import SessionStorageManager from "@/components/sessionStorageManager";
 import { FinalListing } from "@/actions/getListings";
@@ -25,7 +25,6 @@ import {
 import { auth } from "@/auth";
 import ListingClient from "./ListingClient";
 import Avatar from "@/components/Avatar";
-import SendMessageSection from "./components/send-messge-section";
 import SendMessageComponent from "./components/send-message-component";
 
 export default async function ListingPage({
@@ -33,10 +32,11 @@ export default async function ListingPage({
 }: {
   params: { id: string };
 }) {
+  const session = await auth();
   try {
-    const [listing, user, following] = await Promise.all([
+    const [listing, locations, following] = await Promise.all([
       getUnique({ id: params.id }),
-      getCurrentUser(),
+      getUserLocations({ userId: session?.user?.id }),
       getFollows(),
     ]);
     const ratingMeanings: { [key: number]: string } = {
@@ -70,7 +70,6 @@ export default async function ListingPage({
         </div>
       );
     }
-    const session = await auth();
     return (
       // <ClientOnly>
       //   <Suspense fallback={<div>Loading...</div>}>
@@ -85,9 +84,10 @@ export default async function ListingPage({
       // </ClientOnly>
       <>
         <div
-          className={`w-full max-w-5xl relative mx-auto  ${outfitFont.className}`}
+          id="modal-root"
+          className={`w-full max-w-5xl relative mx-auto ${outfitFont.className}`}
         >
-          <div className={`fixed top-0 w-full max-w-5xl zmax bg-white`}>
+          <div className={`fixed top-0 w-full max-w-5xl z-10 bg-white`}>
             <div
               className={`h-16  flex justify-between items-center w-full  pr-2 lg:pr-0 pl-1 lg:pl-0`}
             >
@@ -183,7 +183,7 @@ export default async function ListingPage({
               </div>
             </div>
             <div className={`col-span-1 lg:col-span-2 relative`}>
-              <SendMessageComponent listing={listing} />
+              <SendMessageComponent listing={listing} locations={locations} />
             </div>
           </div>
         </div>

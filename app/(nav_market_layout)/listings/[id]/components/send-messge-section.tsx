@@ -13,6 +13,7 @@ import {
 import {
   Availability,
   Hours,
+  Location,
   orderMethod,
   proposedLoc,
   UserRole,
@@ -21,13 +22,16 @@ import { UserInfo } from "next-auth";
 import { useState } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { toast } from "sonner";
+import DateOverlay from "./select.date.time.lisitng";
+import MotionDiv from "@/components/ui/custom-motion-div";
 
 interface p {
   listing: any;
   user?: UserInfo;
+  locations: Location[] | null;
 }
 
-const SendMessageSection = ({ listing, user }: p) => {
+const SendMessageSection = ({ listing, user, locations }: p) => {
   const hasPickup = hasAvailableHours(listing.location.hours?.pickup || []);
   const hasDelivery = hasAvailableHours(listing.location.hours?.delivery || []);
   let initialOrderMethod: orderMethod;
@@ -142,6 +146,13 @@ const SendMessageSection = ({ listing, user }: p) => {
   const isPickupWithoutDate = () =>
     method === orderMethod.PICKUP && !selectedDateTime;
   method === orderMethod.PICKUP && !selectedDateTime;
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [motionDivOpen, setMotionDivOpen] = useState(false);
+
+  const closeAll = () => {
+    setPopoverOpen(false);
+    setMotionDivOpen(false);
+  };
   return (
     <>
       <div className={`border border-black shadow-md rounded-md h-fit p-3 `}>
@@ -154,6 +165,7 @@ const SendMessageSection = ({ listing, user }: p) => {
         <div
           className={`grid grid-cols-2 grid-rows-2 my-8 shadow-sm rounded-xl border border-custom`}
         >
+          {/* quantity  */}
           <div
             className={` p-0 relative hover:cursor-pointer rounded-tl-xl h-14       `}
           >
@@ -174,7 +186,7 @@ const SendMessageSection = ({ listing, user }: p) => {
               }}
             />
           </div>
-
+          {/* how  */}
           <Popover>
             <PopoverTrigger asChild>
               <div
@@ -260,23 +272,119 @@ const SendMessageSection = ({ listing, user }: p) => {
               )}
             </PopoverContent>
           </Popover>
-
+          {/* when */}
+          <DateOverlay
+            listing={listing}
+            method={method}
+            formatOrderMethodText={formatOrderMethodText}
+            time={time}
+            selectedDateTime={selectedDateTime}
+            setSelectedDateTime={setSelectedDateTime}
+            errorType={errorType}
+            date={date}
+          />
+          {/* where */}
           {method === orderMethod.DELIVERY && (
-            <div
-              className={` pt-5 pl-1  pr-8 border-l relative border-t border-custom hover:cursor-pointer rounded-br-xl`}
+            <Popover
+              open={popoverOpen} // Keep the popover technically open
+              onOpenChange={(open) => {
+                if (!open) {
+                  closeAll(); // Close both popover and MotionDiv
+                } else {
+                  setPopoverOpen(true);
+                }
+              }}
             >
-              <div
-                className={`absolute top-1 text-xs text-neutral-700 left-1 font-medium`}
+              <PopoverTrigger asChild>
+                <div
+                  className={`pt-5 pl-1 pr-8 border-l relative border-t border-custom hover:cursor-pointer rounded-br-xl`}
+                >
+                  <div
+                    className={`absolute top-1 text-xs text-neutral-700 left-1 font-medium`}
+                  >
+                    Where?
+                  </div>
+                  <button className={`text-sm font-semibold`}>
+                    {proposedLoc?.address[0] || "Not Set"}
+                  </button>
+                  <div
+                    className={`absolute bottom-1/2 transform translate-y-1/2 right-2`}
+                  >
+                    <RiArrowDropDownLine />
+                  </div>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className={`w-[400px] transition-opacity duration-200 ${
+                  motionDivOpen
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100"
+                }`}
               >
-                Where?
-              </div>
-              <button className={`text-sm font-semibold`}></button>
-              <div
-                className={`absolute bottom-1/2 transform translate-y-1/2 right-2`}
-              >
-                <RiArrowDropDownLine />
-              </div>
-            </div>
+                <div
+                  className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
+                >
+                  Delivery Location
+                </div>
+                <div
+                  className={`text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
+                >
+                  {locations?.map((userLoc, index) => (
+                    <>
+                      {userLoc.coordinates &&
+                        userLoc.address &&
+                        userLoc.address.length >= 4 && (
+                          <button
+                            key={index}
+                            className="truncate flex justify-start items-center w-full"
+                            onClick={() => {
+                              setProposedLoc({
+                                address: userLoc.address,
+                                coordinates: userLoc.coordinates,
+                              });
+                              closeAll();
+                            }}
+                          >
+                            <div
+                              className={`rounded-full border p-[.4rem] ${
+                                userLoc?.address &&
+                                proposedLoc?.address[0] === userLoc.address[0]
+                                  ? "bg-black"
+                                  : "bg-white"
+                              }`}
+                            >
+                              <div className="rounded-full border bg-white p-1" />
+                            </div>
+                            <div className="ml-2 text-sm font-semibold">
+                              {userLoc && userLoc.address && userLoc.address[0]}
+                            </div>
+                          </button>
+                        )}
+                    </>
+                  ))}
+                  <MotionDiv
+                    buttonChildren={
+                      <button
+                        className="flex justify-start items-center w-full"
+                        onClick={() => setMotionDivOpen(true)}
+                      >
+                        <div
+                          className={`rounded-full border p-[.4rem] bg-white`}
+                        >
+                          <div className="rounded-full border bg-white p-1" />
+                        </div>
+                        <div className="ml-2 text-sm font-semibold">
+                          Custom Address
+                        </div>
+                      </button>
+                    }
+                    className={`fixed inset-2 m-auto bg-white rounded-lg px-4 h-calc(100vw-.5rem) md:max-h-[28rem] max-w-2xl zmax w-calc(100vw-.5rem) border p-0 ${outfitFont.className}`}
+                  >
+                    <></>
+                  </MotionDiv>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
         <div className={`text-xs text-center mt-3 mb-1`}>

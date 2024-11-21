@@ -1,3 +1,4 @@
+// needs refactor based on new order status enum
 const statusTextMap: Record<
   number,
   (params: { isSeller: boolean; bName: string; sName: string }) => string
