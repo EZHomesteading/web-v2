@@ -670,6 +670,7 @@ const RouteOptimizer = ({
 
       {/* Map */}
       <GoogleMap
+        key={locations.length}
         onLoad={onMapLoad}
         onZoomChanged={onZoomChanged}
         mapContainerClassName="w-full h-full"
@@ -698,8 +699,8 @@ const RouteOptimizer = ({
           <MarkerF
             position={userLocation}
             icon={{
-              url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              scaledSize: new google.maps.Size(32, 32),
+              url: "/icons/clipart2825061.png",
+              scaledSize: new google.maps.Size(64, 76),
             }}
             title="Start Location"
           />
@@ -707,35 +708,34 @@ const RouteOptimizer = ({
 
         {/* Location Circles */}
         {locations.map((location) => (
-          <div key={location.id}>
-            <Circle
-              center={location.coordinates}
-              radius={
-                zoom >= 16
-                  ? 60
-                  : zoom >= 15
-                  ? 120
-                  : zoom >= 14
-                  ? 240
-                  : zoom >= 13
-                  ? 500
-                  : zoom >= 12
-                  ? 1000
-                  : zoom >= 11
-                  ? 2000
-                  : zoom >= 10
-                  ? 4000
-                  : 8000
-              }
-              options={{
-                strokeColor: "lightblue",
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: "lightblue",
-                fillOpacity: 0.35,
-              }}
-            />
-          </div>
+          <Circle
+            key={location.id}
+            center={location.coordinates}
+            radius={
+              zoom >= 16
+                ? 60
+                : zoom >= 15
+                ? 120
+                : zoom >= 14
+                ? 240
+                : zoom >= 13
+                ? 500
+                : zoom >= 12
+                ? 1000
+                : zoom >= 11
+                ? 2000
+                : zoom >= 10
+                ? 4000
+                : 8000
+            }
+            options={{
+              strokeColor: "lightblue",
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: "lightblue",
+              fillOpacity: 0.35,
+            }}
+          />
         ))}
 
         {/* End Location Marker */}
