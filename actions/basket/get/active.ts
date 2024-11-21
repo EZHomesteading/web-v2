@@ -1,7 +1,6 @@
 import { Basket } from "@/app/(white_nav_layout)/my-baskets/page";
 import { auth } from "@/auth";
 import { authenticatedFetch } from "@/lib/api-utils";
-import { Basket_ID_Page } from "basket";
 import { headers } from "next/headers";
 
 export default async function getActiveBaskets(): Promise<{

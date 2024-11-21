@@ -21,11 +21,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CartItem } from "@/actions/getCart";
 import { FinalListing } from "@/actions/getListings";
-import DateState from "./components/dateStates";
 import SpCounter from "./components/counter";
 import { outfitFont } from "@/components/fonts";
+import { CartItem } from "cart-types";
+import DateState2 from "@/app/(nav_market_layout)/listings/[id]/components/DateState2";
 
 interface CartProps {
   cartItems?: CartItem[];
@@ -311,7 +311,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                           >
                             {cartItem.listing.user.name}
                           </p>
-                          <DateState
+                          {/* <DateState2
                             role={cartItem.listing.user.role}
                             hours={
                               null
@@ -324,7 +324,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                               mappedCartItems,
                               index
                             )}
-                          />
+                          /> */}
                         </li>
                       ) : null}
                       <li

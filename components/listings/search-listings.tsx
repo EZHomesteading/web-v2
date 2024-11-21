@@ -335,7 +335,7 @@ const SearchLocation = ({ apiKey }: p) => {
   };
   return (
     <div
-      className={`flex items-center border rounded-full shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full max-w-[600px] sm:max-w-[768px] lg:max-w-[700px] ${outfitFont.className}`}
+      className={`flex items-center border rounded-full bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full  ${outfitFont.className}`}
     >
       <PlacesAutocomplete
         value={address}
@@ -369,15 +369,15 @@ const SearchLocation = ({ apiKey }: p) => {
               })}
             />
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute mt-1 text-black shadow-lg z-10 max-w-full rounded-full">
+              <div className="absolute mt-1 text-black shadow-lg zmax max-w-full rounded-xl py-3 bg-white border ">
                 {suggestions.map((suggestion, index) => {
                   const className = suggestion.active
-                    ? "cursor-pointer bg-gray-100"
+                    ? "cursor-pointer bg-gray-200"
                     : "cursor-pointer";
                   return (
                     <div
                       {...getSuggestionItemProps(suggestion, {
-                        className: `px-4 py-2 bg-white text-black flex items-center text-xs ${className} text-black rounded-sm mb-[]`,
+                        className: `px-4 py-3 flex items-center text-sm ${className} hover:cursor-pointer hover:bg-gray-200`,
                         onClick: () => {
                           handleSelect(suggestion.description);
                           setShowSuggestions(false);
@@ -424,8 +424,8 @@ const SearchLocation = ({ apiKey }: p) => {
           tabIndex={0}
         />
         {showListingSuggestions && items.length > 0 && (
-          <div className="absolute bg-white max-w-[910px] h-auto w-full z-20 left-0 top-12 border p-1">
-            {items.map((item: Listing) => (
+          <div className="absolute bg-white max-w-[910px] h-auto w-full zmax left-0 top-16 rounded-xl border py-3">
+            {items.slice(0, 5).map((item: Listing) => (
               <div
                 className="p-1 cursor-pointer hover:bg-gray-200"
                 key={item.title}
@@ -447,7 +447,9 @@ const SearchLocation = ({ apiKey }: p) => {
       </button>
 
       <button
-        className={`absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full ${
+        className={`${
+          address !== "" && "!hidden"
+        } absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full zmax ${
           focus.left ? "visible" : "hidden"
         }`}
         onMouseDown={handleNearMeClick}

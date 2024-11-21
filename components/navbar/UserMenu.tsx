@@ -144,7 +144,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const hasNotifications =
     (user?.sellerOrders?.length ?? 0) > 0 ||
     (user?.buyerOrders?.length ?? 0) > 0;
-  const isCartEmpty = (user?.cart?.length ?? 0) === 0;
+  // const isCartEmpty = (user?.cart?.length ?? 0) === 0;
 
   const renderIcons = () => {
     const icons: MenuIconItem[] = [
@@ -175,12 +175,12 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
     ];
 
     if (user) {
-      if (!isCartEmpty) {
-        icons.push({
-          key: "cart",
-          component: <CartIcon key="cart" cart={user.cart} />,
-        });
-      }
+      // if (!isCartEmpty) {
+      //   icons.push({
+      //     key: "cart",
+      //     component: <CartIcon key="cart" cart={user.cart} />,
+      //   });
+      // }
       if (hasNotifications) {
         icons.push({
           key: "alerts",
@@ -220,10 +220,8 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   return (
     <>
       <Popover>
-        <div className="flex flex-row items-center justify-evenly sm:justify-end p-2 min-w-screen gap-x-3 md:gap-x-4">
-          {renderIcons()}
-          <MenuIcon image={user?.image} />
-        </div>
+        {renderIcons()}
+        <MenuIcon image={user?.image} />
         <PopoverContent
           className={`${outfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
           align="end"
@@ -335,7 +333,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
           ) : (
             <>
               <Sheet>
-                <SheetTrigger className="flex justify-between items-center">
+                <SheetTrigger asChild>
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
@@ -401,9 +399,12 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               />
               <MenuItem label="Market" onClick={() => router.push("/market")} />
               <MenuItem label="Map" onClick={() => router.push("/map")} />
-              <Button onClick={() => router.push("/get-ezh-app")}>
+              {/* <Button
+                className={`w-full rounded-none`}
+                onClick={() => router.push("/get-ezh-app")}
+              >
                 Install the EZH App
-              </Button>
+              </Button> */}
             </>
           )}
         </PopoverContent>

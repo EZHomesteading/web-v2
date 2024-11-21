@@ -7,7 +7,7 @@ import {
 import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
-import { Link } from "@/components/ui/custom-link";
+import Link from "next/link";
 
 interface ListingCardProps {
   listing: MarketListing;
@@ -70,11 +70,10 @@ const StarRating = ({
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
-    <div className="w-full px-4 mx-auto max-w-[1920px]">
+    <div className="w-full px-4 mx-auto max-w-[1920px] !z-0 mb-20 ">
       <div
         className="
-        pt-36
-        sm:pt-0
+        pt-[6.5rem]
         grid gap-6
         grid-cols-1
         sm:grid-cols-2 
@@ -93,12 +92,12 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
     <Link
       href={`/listings/${listing.id}`}
       prefetch={true}
-      className="block w-full cursor-pointer group mx-auto"
+      className="block w-full cursor-pointer group mx-auto !z-0"
     >
-      <div className="flex flex-col relative w-full">
-        <div className="relative overflow-hidden rounded-xl w-full aspect-square">
-          <Carousel className="h-full w-full relative rounded-lg">
-            <CarouselContent className="h-full">
+      <div className="flex flex-col relative w-full z-0">
+        <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
+          <Carousel className="h-full w-full relative rounded-lg z-0">
+            <CarouselContent className="h-full z-0">
               {listing.imageSrc.map((src, index) => (
                 <CarouselItem
                   key={index}
@@ -109,7 +108,7 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
                     alt={`Image ${index + 1} of ${listing.title}`}
                     loading={imageCount++ < 9 ? "eager" : "lazy"}
                     fill
-                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200"
+                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
                     sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
                     placeholder="blur"
                     blurDataURL="/images/website-images/grey.jpg"
