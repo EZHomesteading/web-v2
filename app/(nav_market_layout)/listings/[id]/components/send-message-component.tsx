@@ -1,0 +1,50 @@
+"use client";
+
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import useMediaQuery from "@/hooks/media-query";
+import SendMessageSection from "./send-messge-section";
+import { UserInfo } from "next-auth";
+import { outfitFont } from "@/components/fonts";
+
+interface p {
+  listing: any;
+  user?: UserInfo;
+}
+const SendMessageComponent = ({ user, listing }: p) => {
+  const over_640px = useMediaQuery("(min-width: 640px)");
+
+  return (
+    <>
+      {over_640px ? (
+        <SendMessageSection listing={listing} user={user} />
+      ) : (
+        <Sheet>
+          <SheetTrigger asChild>
+            <button
+              className={`fixed bottom-0 w-screen h-20 bg-white border-t`}
+            >
+              <div className={`flex justify-between pr-4 items-center w-full`}>
+                <div>
+                  ${listing.price} per {listing.quantityType}
+                </div>
+                <div
+                  className={`w-full max-w-[150px] font-semibold rounded-md py-3 text-sm shadow-sm bg-sky-100 `}
+                >
+                  Send Inquiry
+                </div>
+              </div>
+            </button>
+          </SheetTrigger>
+          <SheetContent
+            side="bottom"
+            className={`rounded-t-xl py-16 px-2 ${outfitFont.className}`}
+          >
+            <SendMessageSection listing={listing} user={user} />
+          </SheetContent>
+        </Sheet>
+      )}
+    </>
+  );
+};
+
+export default SendMessageComponent;

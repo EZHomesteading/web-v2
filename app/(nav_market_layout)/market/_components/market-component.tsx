@@ -7,6 +7,7 @@ import { UserInfo } from "next-auth";
 import { outfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
+import Categories from "./categories";
 
 export interface MarketListing {
   id: string;
@@ -47,10 +48,12 @@ const Shop = ({
 }: ShopProps) => {
   let imageCount = 0;
   return (
-    <ClientOnly>
-      <SessionStorageManager />
-      <Container>
-        {emptyState || (
+    <>
+      {emptyState || (
+        <>
+          <div className={`sticky top-20 w-full border-b pb-2 bg-white z-10`}>
+            <Categories />
+          </div>
           <MarketGrid>
             {listings.map((listing, index) => (
               <MarketCard
@@ -61,34 +64,34 @@ const Shop = ({
               />
             ))}
           </MarketGrid>
-        )}
-        {totalPages > 1 && (
-          <>
-            {isPageOutOfRange && (
-              <div
-                className={`flex justify-center items-end my-4 ${outfitFont.className}`}
-              >
-                <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
-                  {pageNumbers.map((pageNumber, index) => (
-                    <Link
-                      key={index}
-                      className={
-                        currentPage === pageNumber
-                          ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
-                          : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
-                      }
-                      href={`?page=${pageNumber}`}
-                    >
-                      {pageNumber}
-                    </Link>
-                  ))}
-                </div>
+        </>
+      )}
+      {totalPages > 1 && (
+        <>
+          {isPageOutOfRange && (
+            <div
+              className={`flex justify-center items-end my-4 ${outfitFont.className}`}
+            >
+              <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
+                {pageNumbers.map((pageNumber, index) => (
+                  <Link
+                    key={index}
+                    className={
+                      currentPage === pageNumber
+                        ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
+                        : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
+                    }
+                    href={`?page=${pageNumber}`}
+                  >
+                    {pageNumber}
+                  </Link>
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </Container>
-    </ClientOnly>
+            </div>
+          )}
+        </>
+      )}
+    </>
   );
 };
 

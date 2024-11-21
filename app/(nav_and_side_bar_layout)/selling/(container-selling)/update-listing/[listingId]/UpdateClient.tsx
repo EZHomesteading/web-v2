@@ -97,38 +97,38 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       console.log(listing.rating);
     }
   }, []);
-  useEffect(() => {
-    if (listing.location.id != "") {
-      listing.user.locations?.map((location, index) => {
-        if (location.id === listing.location.id) {
-          console.log("Found default location at index:", index);
+  // useEffect(() => {
+  //   if (listing?.location?.id != "") {
+  //     listing?.user?.locations?.map((location, index) => {
+  //       if (location?.id === listing.location?.id) {
+  //         console.log("Found default location at index:", index);
 
-          switch (index) {
-            case 0:
-              setClicked(true);
-              setClicked1(false);
-              setClicked2(false);
+  //         switch (index) {
+  //           case 0:
+  //             setClicked(true);
+  //             setClicked1(false);
+  //             setClicked2(false);
 
-              break;
-            case 1:
-              setClicked(false);
-              setClicked1(true);
-              setClicked2(false);
+  //             break;
+  //           case 1:
+  //             setClicked(false);
+  //             setClicked1(true);
+  //             setClicked2(false);
 
-              break;
-            case 2:
-              setClicked(false);
-              setClicked1(false);
-              setClicked2(true);
+  //             break;
+  //           case 2:
+  //             setClicked(false);
+  //             setClicked1(false);
+  //             setClicked2(true);
 
-              break;
-            default:
-              break;
-          }
-        }
-      });
-    }
-  }, []);
+  //             break;
+  //           default:
+  //             break;
+  //         }
+  //       }
+  //     });
+  //   }
+  // }, []);
   const handleCheckboxChange = (checked: boolean, index: number) => {
     setRating((prevRating) => {
       let newRating = [...prevRating];
@@ -168,10 +168,8 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
           return [0, ...prevRating];
         }
       } else {
-        console.log(prevRating.filter((value) => value !== 0));
         return prevRating.filter((value) => value !== 0);
       }
-      console.log(prevRating);
       return prevRating;
     });
   };
@@ -195,7 +193,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
       emailList: listing?.emailList,
       minOrder: listing?.minOrder,
       sodt: listing?.SODT,
-      location: listing?.location.id,
+      location: listing?.location?.id || "",
       harvestFeatures: listing?.harvestFeatures,
       harvestDates: listing.harvestDates,
       projectedStock: listing.projectedStock,
@@ -302,7 +300,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
     } else {
       axios
         .post("/api/listing/updateListing", {
-          id: listing.id,
+          id: listing?.id,
           harvestDates: [],
           harvestFeatures: true,
           projectedStock: listing.stock,

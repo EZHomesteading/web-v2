@@ -10,7 +10,11 @@ const MarketLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
     <>
-      <Navbar user={user as unknown as NavUser} isMarketPage={true} />
+      <Navbar
+        user={user as unknown as NavUser}
+        isMarketPage={true}
+        className="bg-white"
+      />
       {children}
     </>
   );

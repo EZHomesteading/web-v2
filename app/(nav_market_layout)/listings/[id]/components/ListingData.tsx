@@ -93,13 +93,11 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   } = product;
 
   // Calculate end date
-  console.log(startDate);
-  const endDate =
-    shelfLife !== -1 ? addDays(new Date(startDate), shelfLife) : null;
-  console.log(endDate);
-  const endDateString = endDate
-    ? format(endDate, "MMM dd, yyyy")
-    : "No expiry date";
+  // const endDate =
+  //   shelfLife !== -1 ? addDays(new Date(startDate), shelfLife) : null;
+  // const endDateString = endDate
+  //   ? format(endDate, "MMM dd, yyyy")
+  //   : "No expiry date";
 
   // Quantity handlers
   const increaseQuantity = () => {
@@ -295,7 +293,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           </li>
         </ul>
         <hr />
-        <div className="p-2">Expected Expiry Date: {endDateString}</div>
+        {/* <div className="p-2">Expected Expiry Date: {endDateString}</div> */}
         <hr />
         {stock <= 0 ? (
           <div>
@@ -404,7 +402,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                 {renderBasketButtonText()}
               </Button>
             </div>
-            <div>
+            {/* <div>
               <DateState2
                 sodt={sodt}
                 onSetTime={handleTimer}
@@ -413,7 +411,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
                 listing={product}
                 user={user?.name}
               />
-            </div>
+            </div> */}
           </>
         )}
       </div>
