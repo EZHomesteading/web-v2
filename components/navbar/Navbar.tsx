@@ -11,7 +11,6 @@ interface p {
   user?: NavUser;
   className?: string;
   isMarketPage?: boolean;
-  isChat?: boolean;
 }
 
 const apiKey = process.env.MAPS_KEY as string;
@@ -20,7 +19,6 @@ const Navbar = async ({
   user,
   className = "bg-inherit",
   isMarketPage = false,
-  isChat,
 }: p) => {
   let uniqueUrl = "";
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -48,10 +46,9 @@ const Navbar = async ({
   return (
     <>
       <NavbarClient
-        isChat={isChat}
         user={user}
         apiKey={apiKey}
-        canReceivePayouts={canReceivePayouts}
+        // canReceivePayouts={canReceivePayouts}
         isMarketPage={isMarketPage}
         uniqueUrl={uniqueUrl}
         harvestMessages={[]} //havestMessages

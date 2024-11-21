@@ -25,19 +25,13 @@ import { LuBeef, LuBean, LuMilk } from "react-icons/lu";
 import { CiApple, CiForkAndKnife } from "react-icons/ci";
 import { FaAppleAlt } from "react-icons/fa";
 
-import { Outfit } from "next/font/google";
 import { TbCheese, TbEggs, TbMeat, TbPig } from "react-icons/tb";
 import { IoFishOutline } from "react-icons/io5";
 import { MdOutlineSolarPower } from "react-icons/md";
 import { UserRole } from "@prisma/client";
 import Container from "@/components/Container";
 import Filters from "./filter.client";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["200"],
-});
+import { outfitFont } from "@/components/fonts";
 
 export const categories = [
   {
@@ -127,13 +121,16 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-2 px-3 pt-2 hover:text-neutral-800 transition cursor-pointer ${
+      className={`flex flex-col items-center justify-center gap-2 px-3 pt-2 hover:text-neutral-800 transition cursor-pointer flex-shrink-0 ${
         selected ? "border-b-neutral-800" : "border-transparent"
-      } ${selected ? "text-neutral-800" : "text-neutral-500"}
-      `}
+      } ${selected ? "text-neutral-800" : "text-neutral-500"}`}
     >
       <Icon size={25} />
-      <div className={`${outfit.className} font-medium text-sm `}>{label}</div>
+      <div
+        className={`${outfitFont.className} font-light text-xs whitespace-nowrap text-center`}
+      >
+        {label}
+      </div>
     </div>
   );
 };
@@ -200,7 +197,7 @@ const Categories = ({ role }: Props) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex flex-row items-center justify-evenly w-full"
+        className="flex flex-row items-center justify-evenly w-full overflow-x-auto"
       >
         {categories.map((item) => (
           <CategoryBox
@@ -246,25 +243,20 @@ const Categories = ({ role }: Props) => {
     return { mainCategories, subcategoryElements };
   };
 
-  const marketPathName = "/market";
-  const isMarket = pathname === marketPathName;
-
   return (
     <Container>
-      {isMarket ? (
-        <div className="flex items-center justify-center">
-          <div className="pt-2">
-            <Filters role={role} />
-          </div>
-          <div className="w-full p-0">
-            <AnimatePresence mode="wait">
-              {showSubcategories
-                ? renderCategories().subcategoryElements
-                : renderCategories().mainCategories}
-            </AnimatePresence>
-          </div>
+      <div
+        className={`${outfitFont.className} flex items-center justify-center`}
+      >
+        <Filters role={role} />
+        <div className="w-full overflow-x-auto">
+          <AnimatePresence mode="wait">
+            {showSubcategories
+              ? renderCategories().subcategoryElements
+              : renderCategories().mainCategories}
+          </AnimatePresence>
         </div>
-      ) : null}
+      </div>
     </Container>
   );
 };
