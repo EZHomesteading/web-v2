@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       const geoQuery = {
         coordinates: {
           $geoWithin: {
-            $centerSphere: [[lng, lat], (radius * 1609.34) / 6378137],
+            $centerSphere: [[lng, lat], radius / 3958.8],
           },
         },
       };

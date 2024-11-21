@@ -68,6 +68,12 @@
 .border-custom {
   border-color: #b0b0b0 !important;
 }
+.z-1000 {
+  z-index: 1000 !important;
+}
+.z-500 {
+  z-index: 500 !important;
+}
 .borderRed {
   border-color: #fd5c63 !important;
 }

@@ -220,10 +220,8 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   return (
     <>
       <Popover>
-        <div className="flex flex-row items-center justify-evenly sm:justify-end p-2 min-w-screen gap-x-3 md:gap-x-4">
-          {renderIcons()}
-          <MenuIcon image={user?.image} />
-        </div>
+        {renderIcons()}
+        <MenuIcon image={user?.image} />
         <PopoverContent
           className={`${outfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
           align="end"

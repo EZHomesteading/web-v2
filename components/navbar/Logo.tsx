@@ -6,7 +6,6 @@ import { outfitFont } from "@/components/fonts";
 
 const Logo = () => {
   const pathname = usePathname();
-  const white = pathname === "/";
   const href = pathname?.startsWith("/selling")
     ? "/selling"
     : pathname?.startsWith("/account")
@@ -14,7 +13,7 @@ const Logo = () => {
     : "/";
   return (
     <div
-      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 hidden sm:block`}
+      className={`hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 `}
     >
       <Link href={href}>
         <h1

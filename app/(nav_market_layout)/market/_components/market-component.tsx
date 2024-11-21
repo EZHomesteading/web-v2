@@ -7,6 +7,7 @@ import { UserInfo } from "next-auth";
 import { outfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
+import Categories from "./categories";
 
 export interface MarketListing {
   id: string;
@@ -49,16 +50,21 @@ const Shop = ({
   return (
     <>
       {emptyState || (
-        <MarketGrid>
-          {listings.map((listing, index) => (
-            <MarketCard
-              user={user}
-              key={index}
-              listing={listing}
-              imageCount={imageCount}
-            />
-          ))}
-        </MarketGrid>
+        <>
+          <div className={`sticky top-20 w-full border-b pb-2 bg-white z-10`}>
+            <Categories />
+          </div>
+          <MarketGrid>
+            {listings.map((listing, index) => (
+              <MarketCard
+                user={user}
+                key={index}
+                listing={listing}
+                imageCount={imageCount}
+              />
+            ))}
+          </MarketGrid>
+        </>
       )}
       {totalPages > 1 && (
         <>
