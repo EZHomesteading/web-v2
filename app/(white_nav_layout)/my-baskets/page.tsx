@@ -1,9 +1,10 @@
 import { currentUser } from "@/lib/auth";
 import BasketCard from "./basket.cards";
-import { getActiveBaskets } from "@/actions/basket/get/active";
+
 import { outfitFont } from "@/components/fonts";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import getActiveBaskets from "@/actions/basket/get/active";
 
 export interface Basket {
   id: string;

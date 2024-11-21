@@ -18,7 +18,6 @@ const HomePage = async () => {
   }
   const role = await currentRole();
   let uniqueUrl = "";
-  console.log("homeuser", fullUser);
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2023-10-16",
   });

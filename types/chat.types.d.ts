@@ -126,21 +126,35 @@ declare module "chat-types" {
       site: number | null;
       other: number[];
     } | null;
-    location: {
-      address: string[];
-      hours: {
-        delivery: {
-          date: Date;
-          capacity: number | null;
-          timeSlots: { open: number; close: number }[];
-        }[];
-        pickup: {
-          date: Date;
-          capacity: number | null;
-          timeSlots: { open: number; close: number }[];
-        }[];
-      } | null;
-    } | null;
+    location:
+      | {
+          address: string[];
+          coordinates: number[];
+        }
+      | {
+          address: string[];
+          hours: {
+            delivery: ({
+              date: Date;
+              capacity: number | null;
+            } & {
+              timeSlots: {
+                open: number;
+                close: number;
+              }[];
+            })[];
+            pickup: ({
+              date: Date;
+              capacity: number | null;
+            } & {
+              timeSlots: {
+                open: number;
+                close: number;
+              }[];
+            })[];
+          } | null;
+        }
+      | null;
   }
 
   interface ChatListing {
