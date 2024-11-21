@@ -26,9 +26,12 @@ export type item = {
   };
 };
 
-const BasketServer = ({ basket, userLocs }: p) => {
+const BasketServer = async ({ basket, userLocs }: p) => {
   const mk = process.env.MAPS_KEY!;
-  const user = getNavUser();
+  const user = await getNavUser();
+  if (!user) {
+    return;
+  }
   return (
     <>
       <Navbar user={user as unknown as NavUser} className="hidden md:block" />
@@ -41,7 +44,12 @@ const BasketServer = ({ basket, userLocs }: p) => {
           ))}
         </div>
         <div className={`w-full h-full col-span-1 px-1`}>
-          <BasketClient basket={basket} userLocs={userLocs} mk={mk} />
+          <BasketClient
+            userId={user?.id}
+            basket={basket}
+            userLocs={userLocs}
+            mk={mk}
+          />
         </div>
       </div>
     </>

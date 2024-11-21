@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   GiAppleCore,
@@ -33,6 +33,8 @@ import {
 } from "react-icons/gi";
 import { FaTools } from "react-icons/fa";
 import { IoFastFoodOutline } from "react-icons/io5";
+import { toast } from "sonner";
+import NotSureModal from "../notSureModal";
 export type Category =
   | "unprocessed-produce"
   | "homemade"
@@ -269,6 +271,19 @@ interface ProductCategorySelectionProps {
   setSubCategory: (subCategory: SubCategory) => void;
 }
 
+const showRainbowToast = () => {
+  const toastId = toast("Go Google It!", {
+    duration: 2000,
+    className:
+      "animate-rainbow w-screen h-screen fixed inset-0 flex items-center justify-center text-6xl font-bold text-white cursor-pointer",
+    position: "top-left",
+  });
+
+  setTimeout(() => {
+    toast.dismiss(toastId);
+  }, 2000);
+};
+
 const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   step,
   category,
@@ -278,9 +293,13 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   setSubCategory,
 }) => {
   if (step !== 2) return null;
-
+  const [NotSureOpen, setNotSureOpen] = useState(false);
   return (
     <div className="flex justify-center items-start min-h-screen w-full">
+      <NotSureModal
+        isOpen={NotSureOpen}
+        onClose={() => setNotSureOpen(false)}
+      />
       <div className="flex flex-col gap-5 fade-in pt-[10%] w-full max-w-[700px] px-4">
         <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
           Select a {category !== "" ? <>Subcategory</> : <>Category</>} for your
@@ -308,6 +327,26 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
           )}
         </div>
       </div>
+      <Button
+        onClick={() => setNotSureOpen(true)}
+        className="fixed top-[65%] left-1/2 -translate-x-1/2  text-white font-medium"
+      >
+        Not Sure?
+      </Button>
+      <style>{`
+        @keyframes rainbow {
+          0% { background-color: #ff0000; }
+          17% { background-color: #ff8000; }
+          33% { background-color: #ffff00; }
+          50% { background-color: #00ff00; }
+          67% { background-color: #0000ff; }
+          83% { background-color: #8000ff; }
+          100% { background-color: #ff0000; }
+        }
+        .animate-rainbow {
+          animation: rainbow 2s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

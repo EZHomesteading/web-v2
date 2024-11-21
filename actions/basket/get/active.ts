@@ -11,7 +11,7 @@ export default async function getActiveBaskets(): Promise<{
     const session = await auth();
 
     if (!session?.user?.id) {
-      console.log("No session available in getActiveBaskets");
+      // console.log("No session available in getActiveBaskets");
       return { baskets: [] };
     }
 

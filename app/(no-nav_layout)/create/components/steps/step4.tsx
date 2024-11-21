@@ -24,7 +24,7 @@ const StepFour = ({
   return (
     <>
       <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%] px-4">
-        <div className="flex flex-row justify-center items-start gap-2">
+        <div className="flex flex-row justify-center items-start gap-2 select-none">
           <div className="w-full sm:max-w-[500px]">
             <div className="flex flex-col ">
               <Label className="text-xl w-full font-light m-0 !leading-0">

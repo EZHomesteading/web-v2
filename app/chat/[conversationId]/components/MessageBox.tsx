@@ -52,7 +52,6 @@ import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
 
-type SubmitFunction = () => Promise<void>;
 interface MessageBoxProps {
   listings: ChatListing[];
   data: ChatMessage;
@@ -98,6 +97,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const isOwn = user?.email === data?.sender?.email;
   const notOwn = user?.email !== data?.sender?.email;
+  console.log(notOwn, isOwn);
   const pulseAnimation = `
   @keyframes pulse {
     0% {
@@ -133,7 +133,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   let onConfirm = async (status: OrderStatus, skip?: boolean) => {
-    console.log("ONCONFIRM", status);
     if (SetFee === true) {
       setSetFee(false);
     }
@@ -156,7 +155,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const handleConfirm = (status: OrderStatus): Promise<boolean> => {
     return new Promise(async (resolve) => {
       const message = await getMessageByStatus(status);
-      console.log("HANDLECONFIRM", status, message);
       setModalMessage(message); // Set initial message
       setStatus(status);
       setIsModalOpen(true);
@@ -227,12 +225,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       });
     }
   };
-  console.log(order?.fee?.delivery);
   const onSubmit = async (status: OrderStatus) => {
-    console.log("ONSUBMIT", status);
     const confirmed = await handleConfirm(status);
     if (confirmed) {
-      console.log("CONFIRMED SUCCESFULLY");
     }
   };
 
@@ -540,8 +535,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             <PopoverTrigger asChild>
               <Button
                 variant={
-                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (notOwn &&
+                    data.messageOrder !== "IN_TRANSIT" &&
+                    data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? "default"
@@ -552,16 +548,18 @@ const MessageBox: React.FC<MessageBoxProps> = ({
             hover:scale-105
             focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75`}
                 style={
-                  (notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                  (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                  (notOwn &&
+                    data.messageOrder !== "IN_TRANSIT" &&
+                    data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
               >
-                {(notOwn && data.messageOrder !== "IN_TRANSIT") ||
-                (notOwn && data.messageOrder !== "SELLER_PREPARING") ||
+                {(notOwn &&
+                  data.messageOrder !== "IN_TRANSIT" &&
+                  data.messageOrder !== "SELLER_PREPARING") ||
                 (isOwn && data.messageOrder === "IN_TRANSIT") ||
                 (isOwn && data.messageOrder === "SELLER_PREPARING") ? (
                   <>
