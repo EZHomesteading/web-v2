@@ -144,7 +144,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
     if (listing?.harvestDates) {
       newMonths = removeCurrentMonth(listing?.harvestDates);
     }
-    console.log(newMonths);
+    //console.log(newMonths);
     setIsLoading(true);
     try {
       axios.post("/api/listing/updateListing", {

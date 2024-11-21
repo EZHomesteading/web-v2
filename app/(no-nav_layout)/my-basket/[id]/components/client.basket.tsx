@@ -25,6 +25,7 @@ import { PiChatsCircleThin } from "react-icons/pi";
 import DateOverlay from "./when";
 
 interface p {
+  userId: string;
   basket: any;
   userLocs: BasketLocation[] | null;
   mk: string;
@@ -33,7 +34,7 @@ type ProposedLocation = {
   address: string[];
   coordinates: number[];
 };
-const BasketClient = ({ basket, userLocs, mk }: p) => {
+const BasketClient = ({ basket, userLocs, mk, userId }: p) => {
   const over_768px = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -58,6 +59,7 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
 
     return { hasPickup, hasDelivery, initialOrderMethod };
   }, [basket.location.hours]);
+  console.log(basket.location.hours, initialOrderMethod, hasPickup);
 
   const [basketState, setBasketState] = useState<Basket_Selected_Time_Type>({
     ...basket,
@@ -72,8 +74,12 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
   >(null);
 
   const formatOrderMethodText = (method: orderMethod) => {
-    if (method === orderMethod.UNDECIDED) return "How?";
-    return method.charAt(0).toUpperCase() + method.slice(1).toLowerCase();
+    if (method === orderMethod.UNDECIDED && hasDelivery && hasPickup)
+      return "How?";
+    return (
+      initialOrderMethod.charAt(0).toUpperCase() +
+      initialOrderMethod.slice(1).toLowerCase()
+    );
   };
   const resetForm = () => {
     if (hasPickup && hasDelivery) {
@@ -123,7 +129,9 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
     if (handleErrors()) return;
     const params = {
       itemId: basketState.id,
+
       order: {
+        proposedLoc: basketState.proposedLoc,
         pickupDate: basketState.deliveryDate || basketState.pickupDate,
         quantity: basketState.items.map((item) => ({
           id: item.listing.id,
@@ -131,14 +139,17 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
         })),
         totalPrice: 400,
         status: "PENDING",
-        preferredLocationId: basket.location.id,
+        preferredLocationId: basketState.proposedLoc
+          ? null
+          : basket.location.id,
+        buyerId: userId,
       },
+
       sellerId: basket.location.user.id,
       type: basketState.orderMethod,
     };
     try {
       const OrderResponse = await axios.post("/api/chat/createOrder", params);
-      console.log(OrderResponse.data);
       router.push(`/chat/${OrderResponse.data.conversationId}`);
     } catch (error) {
       console.error("Error in the overall process:", error);
@@ -310,21 +321,22 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
                 </SheetContent>
               </Sheet>
             )}
-            {hasPickup && hasDelivery && (
-              <Popover>
-                <PopoverTrigger
-                  className={`flex items-center justify-center rounded-full border px-3 py-2 ${
-                    errorType === "undecided" ? "borderRed" : ""
-                  }`}
+
+            <Popover>
+              <PopoverTrigger
+                className={`flex items-center justify-center rounded-full border px-3 py-2 ${
+                  errorType === "undecided" ? "borderRed" : ""
+                }`}
+              >
+                {formatOrderMethodText(basketState.orderMethod)}
+              </PopoverTrigger>
+              <PopoverContent className="w-full max-w-[600px]">
+                <div
+                  className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
                 >
-                  {formatOrderMethodText(basketState.orderMethod)}
-                </PopoverTrigger>
-                <PopoverContent className="w-full max-w-[600px]">
-                  <div
-                    className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
-                  >
-                    Order Type
-                  </div>
+                  Order Type
+                </div>
+                {hasPickup && hasDelivery ? (
                   <div
                     className={` text-lg w-full flex flex-col gap-y-3 items-start justify-start text-start pt-3`}
                   >
@@ -382,9 +394,22 @@ const BasketClient = ({ basket, userLocs, mk }: p) => {
                       <SaveChangesButton />
                     </div>
                   </div>
-                </PopoverContent>
-              </Popover>
-            )}
+                ) : hasPickup ? (
+                  <div className="mt-2">
+                    Orders from this location are only available for pickup due
+                    to seller hours
+                  </div>
+                ) : (
+                  hasDelivery && (
+                    <div className="mt-2">
+                      Orders from this location are only available for delivery
+                      due to seller hours
+                    </div>
+                  )
+                )}
+              </PopoverContent>
+            </Popover>
+
             {basket.orderMethod === orderMethod.DELIVERY && (
               <Popover>
                 <PopoverTrigger

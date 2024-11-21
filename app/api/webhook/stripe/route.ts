@@ -5,7 +5,7 @@ import Stripe from "stripe";
 import { pusherServer } from "@/lib/pusher";
 import { getUserById } from "@/actions/getUser";
 import { getOrderById } from "@/actions/getOrder";
-import { getListingById } from "@/actions/getListings";
+import { getListingStockById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { UserRole } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       const quantities = order.quantity;
       const t = await Promise.all(
         quantities.map(async (item: { id: string; quantity: number }) => {
-          const listing = await getListingById({ listingId: item.id });
+          const listing = await getListingStockById({ listingId: item.id });
           if (!listing) {
             return "no listing with that ID";
           }

@@ -1,25 +1,46 @@
 // hooks/listing/use-cart.ts
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import axios from "axios";
+import { Hours, orderMethod } from "@prisma/client";
+import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 
-interface props{
+interface props {
   listingId: string;
   user?: any | null;
   initialQuantity?: number;
+  hours?: Hours | null;
 }
 
 export const useBasket = ({
   listingId,
   user,
   initialQuantity = 1,
+  hours,
 }: props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(initialQuantity);
   const [isInBasket, setIsInBasket] = useState(false);
+  const { initialOrderMethod } = useMemo(() => {
+    const hasPickup = hasAvailableHours(hours?.pickup || []);
+    const hasDelivery = hasAvailableHours(hours?.delivery || []);
 
+    let initialOrderMethod: orderMethod;
+    if (hasPickup && hasDelivery) {
+      initialOrderMethod = orderMethod.UNDECIDED;
+    } else if (hasPickup) {
+      initialOrderMethod = orderMethod.PICKUP;
+    } else if (hasDelivery) {
+      initialOrderMethod = orderMethod.DELIVERY;
+    } else {
+      initialOrderMethod = orderMethod.UNDECIDED;
+    }
+
+    return { initialOrderMethod };
+  }, [hours]);
+  console.log(hours, initialOrderMethod);
   const checkExistingItem = useCallback(async () => {
     if (!user) return null;
 
@@ -48,9 +69,10 @@ export const useBasket = ({
           listingId,
           quantity,
           status,
+          initialOrderMethod: initialOrderMethod,
         });
         setIsInBasket(true);
-        toast.success("Added to cart!");
+        toast.success("Added to baskets!");
         router.refresh();
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Something went wrong");

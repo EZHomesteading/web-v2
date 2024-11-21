@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
-import { getListingById } from "@/actions/getListings";
+import { getListingStockById } from "@/actions/getListings";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import {
   ListingQuantities,
@@ -32,32 +32,22 @@ const postconversations = async (
   type: string
 ) => {
   try {
-    console.log("Starting postconversations with order:", newOrder.id);
-
     if (!newOrder) {
-      console.log("No order provided");
       throw new Error("No order provided");
     }
-
+    console.log(newOrder);
     const seller = newOrder.seller;
     const buyer = newOrder.buyer;
 
     if (!seller || !buyer) {
-      console.log("Missing seller or buyer:", {
-        seller: !!seller,
-        buyer: !!buyer,
-      });
       throw new Error("Missing seller or buyer");
     }
 
-    console.log("Processing quantities:", newOrder.quantity);
     const quantities = newOrder.quantity;
     const t = await Promise.all(
       quantities.map(async (item: ListingQuantities) => {
-        console.log("Processing item:", item.id);
-        const listing = await getListingById({ listingId: item.id });
+        const listing = await getListingStockById({ listingId: item.id });
         if (!listing) {
-          console.log("No listing found for ID:", item.id);
           return "no listing with that ID";
         }
         await prisma.listing.update({
@@ -73,10 +63,8 @@ const postconversations = async (
     );
 
     const titles = t.filter(Boolean).join(", ");
-    console.log("Generated titles:", titles);
 
     // Create conversation first so we have the ID for all subsequent operations
-    console.log("Creating conversation between:", buyer.id, "and", seller.id);
     const newConversation = await prisma.conversation.create({
       data: {
         participantIds: [buyer.id, seller.id],
@@ -87,10 +75,7 @@ const postconversations = async (
       throw new Error("Failed to create conversation");
     }
 
-    console.log("Created conversation:", newConversation.id);
-
     // Update order with conversation ID
-    console.log("Updating order with conversation ID");
     await prisma.order.update({
       where: { id: newOrder.id },
       data: {
@@ -169,7 +154,6 @@ const postconversations = async (
         };
 
         await sesClient.send(new SendEmailCommand(emailParams));
-        console.log("Email sent to the seller");
       } catch (error) {
         console.error("Error sending email to the seller:", error);
         // Don't throw here - continue even if email fails
@@ -182,12 +166,12 @@ const postconversations = async (
         ? `Hi ${
             seller.name
           }! I would like to order ${titles} from you, can they be dropped off  at ${
-            newOrder.location &&
-            `${newOrder.location?.address[0]}, ${newOrder.location?.address[1]}, ${newOrder.location?.address[2]}. ${newOrder.location?.address[3]}`
+            newOrder.proposedLoc &&
+            `${newOrder.proposedLoc?.address[0]}, ${newOrder.proposedLoc?.address[1]}, ${newOrder.proposedLoc?.address[2]}. ${newOrder.proposedLoc?.address[3]}`
           } sometime around ${newOrder.pickupDate.toLocaleTimeString()} on ${newOrder.pickupDate.toLocaleDateString()} . Please let me know if that time works for you.`
         : `Hi ${
             seller.name
-          }! I would like to order ${titles} from you and would like to pick them up from you sometime around ${newOrder.pickupDate.toLocaleDateString()}  on ${newOrder.pickupDate.toLocaleDateString()}. Please let me know if that time works for you.`;
+          }! I would like to order ${titles} from you and would like to pick them up from you sometime around ${newOrder.pickupDate.toLocaleTimeString()}   on ${newOrder.pickupDate.toLocaleDateString()}. Please let me know if that time works for you.`;
 
     // Create message
     await prisma.message.create({
@@ -238,17 +222,18 @@ const postconversations = async (
 
 export async function POST(request: Request) {
   try {
-    const user = await currentUser();
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const data = await request.json();
-    console.log("Received request data:", data);
 
     const { itemId, order, sellerId, type } = data;
-    const { pickupDate, quantity, totalPrice, status, preferredLocationId } =
-      order;
+    const {
+      pickupDate,
+      quantity,
+      totalPrice,
+      status,
+      preferredLocationId,
+      proposedLoc,
+      buyerId,
+    } = order;
 
     if (!itemId) {
       return new NextResponse("Item ID is required", { status: 400 });
@@ -256,22 +241,23 @@ export async function POST(request: Request) {
     if (!sellerId) {
       return new NextResponse("seller ID is required", { status: 400 });
     }
+    if (!buyerId) {
+      return new NextResponse("buyer ID is required", { status: 400 });
+    }
     if (!order) {
       return new NextResponse("order info is required", { status: 400 });
     }
-    if (!preferredLocationId) {
-      return new NextResponse("locationId is required", { status: 400 });
+    if (!preferredLocationId && !proposedLoc) {
+      return new NextResponse("location is required", { status: 400 });
     }
     if (!type) {
       return new NextResponse("fullfilment type is required", { status: 400 });
     }
-
-    console.log("Creating new order");
+    console.log(order);
     // First create the order
-    console.log("USERID", user.id);
     const orderData = await prisma.order.create({
       data: {
-        userId: user.id,
+        userId: buyerId,
         sellerId,
         pickupDate,
         quantity,
@@ -279,6 +265,7 @@ export async function POST(request: Request) {
         fulfillmentType: type as any,
         status,
         preferredLocationId,
+        proposedLoc,
       },
     });
 
@@ -287,17 +274,16 @@ export async function POST(request: Request) {
       where: {
         id: orderData.id,
       },
+
       include: {
         seller: true,
         buyer: true,
-        location: true,
       },
     })) as OrderWithRelations;
 
     if (!newOrder) {
       throw new Error("Failed to create order");
     }
-    console.log("Order created:", newOrder);
 
     await prisma.basketItem.deleteMany({
       where: { basketId: itemId },
@@ -307,7 +293,6 @@ export async function POST(request: Request) {
     });
 
     const postResp = await postconversations(newOrder, type);
-    console.log("POOOOOOOOST", postResp);
     return NextResponse.json({
       message: "Order created successfully",
       orderId: newOrder.id,

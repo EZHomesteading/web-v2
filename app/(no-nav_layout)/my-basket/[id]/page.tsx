@@ -1,7 +1,7 @@
 import { getUserLocationsBasket } from "@/actions/getUser";
 import BasketNotFound from "../[...not-found]/page";
 import BasketServer from "./components/server.basket";
-import { getUnique } from "@/actions/basket/get/active";
+import getUnique from "@/actions/basket/get/unique";
 
 interface p {
   params: { id: string };

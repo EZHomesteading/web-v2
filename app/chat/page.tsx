@@ -19,9 +19,6 @@ const Home = () => {
     const timer = setTimeout(() => {
       axios
         .post("/api/chat/checkTimeComplete")
-        .then(() => {
-          console.log("API call successful");
-        })
         .catch((error) => {
           console.error("Error calling API:", error);
         })

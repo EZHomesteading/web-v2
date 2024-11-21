@@ -150,7 +150,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="flex flex-col w-full relative">
         <div
           onClick={() => {
-            handleCardClick();
+            if (!hasError) {
+              handleCardClick();
+            }
           }}
           className="w-full relative overflow-hidden rounded-xl"
         >
