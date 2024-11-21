@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/popover";
 import { CartItem } from "@/actions/getCart";
 import { FinalListing } from "@/actions/getListings";
-import DateState from "./components/dateStates";
+//import DateState from "./components/dateStates";
 import SpCounter from "./components/counter";
 import { outfitFont } from "@/components/fonts";
 
@@ -311,7 +311,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                           >
                             {cartItem.listing.user.name}
                           </p>
-                          <DateState
+                          {/* <DateState
                             role={cartItem.listing.user.role}
                             hours={
                               null
@@ -324,7 +324,7 @@ const Cart = ({ cartItems = [] }: CartProps) => {
                               mappedCartItems,
                               index
                             )}
-                          />
+                          /> */}
                         </li>
                       ) : null}
                       <li

@@ -1,6 +1,6 @@
 //admin only disputes page parent element
 import getDisputes from "@/actions/getDisputes";
-import DisputeComponent from "./dispute.client";
+import DisputeComponent from "./(components)/dispute.client";
 import authCache from "@/auth-cache";
 import { UserRole } from "@prisma/client";
 
