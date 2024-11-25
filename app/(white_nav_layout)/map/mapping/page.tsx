@@ -39,7 +39,8 @@ const RouteOptimizerPage = async ({
     "673e41f45171bd1ce1271356",
     "67292cfa5f7005d487c47c46",
   ]; //searchParams.ids?.split(",") || [];
-  // const { locations } = await getLocationsById(locationIds);
+  //const { locations } = await getLocationsById(locationIds);
+  //console.log(locations[0].hours?.delivery[0].timeSlots[0]);
   // console.log("locations", locations);
   const locations: Location[] = [
     {
@@ -64,8 +65,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 540,
-                close: 1020,
+                open: 360,
+                close: 1120,
               },
             ],
           },
@@ -76,8 +77,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 540, // 9:00 AM in minutes
-                close: 1920, // 5:00 PM in minutes
+                open: 360,
+                close: 1120,
               },
             ],
           },
@@ -106,8 +107,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 600, // 10:00 AM in minutes
-                close: 1960, // 4:00 PM in minutes
+                open: 600,
+                close: 1220,
               },
             ],
           },
@@ -119,7 +120,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 600,
-                close: 1960,
+                close: 1220,
               },
             ],
           },
@@ -149,7 +150,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 660,
-                close: 1920,
+                close: 1210,
               },
             ],
           },
@@ -161,7 +162,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 660, // 11:00 AM in minutes
-                close: 1820, // 10:00 PM in minutes
+                close: 1120, // 10:00 PM in minutes
               },
             ],
           },
