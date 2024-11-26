@@ -66,7 +66,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 360,
-                close: 1120,
+                close: 1440,
               },
             ],
           },
@@ -78,7 +78,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 360,
-                close: 1120,
+                close: 1440,
               },
             ],
           },
@@ -108,7 +108,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 600,
-                close: 1220,
+                close: 1440,
               },
             ],
           },
@@ -120,7 +120,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 600,
-                close: 1220,
+                close: 1440,
               },
             ],
           },
@@ -149,8 +149,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 660,
-                close: 1210,
+                open: 600,
+                close: 660,
               },
             ],
           },
@@ -161,8 +161,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 660, // 11:00 AM in minutes
-                close: 1120, // 10:00 PM in minutes
+                open: 600, // 11:00 AM in minutes
+                close: 600, // 10:00 PM in minutes
               },
             ],
           },
