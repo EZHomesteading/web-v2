@@ -93,41 +93,36 @@ export const generateRouteNotification = (optimizedResult: OptimalRoute) => {
 
       <div className="space-y-2">
         <div className="font-medium">Stops:</div>
-        {optimizedResult.segments.map((segment, index) => {
-          const prevSegment =
-            index > 0 ? optimizedResult.segments[index - 1] : null;
-
-          return (
-            <div key={segment.location.id} className="ml-4 space-y-1">
-              <div className="font-medium">
-                {index + 1}. {segment.location.displayName}
-              </div>
-              <div className="text-gray-600 ml-4">
-                <div className="font-medium">
-                  Pickup Time: {secondsToTimeString(segment.pickupTime)}
-                </div>
-                <div>
-                  {index === 0
-                    ? "Travel Time from start: "
-                    : "Travel Time from last stop: "}
-                  {formatDuration(segment.travelTime)}
-                </div>
-                <div>
-                  Distance from last stop:{" "}
-                  {metersToMiles(segment.distance).toFixed(1)} miles
-                </div>
-                {segment.waitTime > 0 && (
-                  <div>Wait Time: {formatDuration(segment.waitTime)}</div>
-                )}
-              </div>
+        {optimizedResult.segments.map((segment, index) => (
+          <div key={segment.location.id} className="ml-4 space-y-1">
+            <div className="font-medium">
+              {index + 1}. {segment.location.displayName}
             </div>
-          );
-        })}
+            <div className="text-gray-600 ml-4">
+              <div>
+                Estimated Arrival: {secondsToTimeString(segment.arrivalTime)}
+              </div>
+              <div>Pickup Time: {secondsToTimeString(segment.pickupTime)}</div>
+              <div>
+                {index === 0
+                  ? "Travel Time from start: "
+                  : "Travel Time from last stop: "}
+                {formatDuration(segment.travelTime)}
+              </div>
+              <div>
+                Distance from last stop:{" "}
+                {metersToMiles(segment.distance).toFixed(1)} miles
+              </div>
+              {segment.waitTime > 0 && (
+                <div>Wait Time: {formatDuration(segment.waitTime)}</div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
-
 export const generateSimpleRouteNotification = (bestRoute: RouteResult) => {
   return (
     <div className="space-y-4">
@@ -149,8 +144,8 @@ export const generateSimpleRouteNotification = (bestRoute: RouteResult) => {
         <div className="font-medium">Stops:</div>
         {bestRoute.route.map((location, index) => {
           const segmentTime = bestRoute.timings.segmentTimes[location.id];
-          const isLastStop = index === bestRoute.route.length - 1;
-          const nextLocation = !isLastStop ? bestRoute.route[index + 1] : null;
+          const segmentDistance =
+            bestRoute.timings.distanceSegments[location.id];
 
           return (
             <div key={location.id} className="ml-4 space-y-1">
@@ -164,15 +159,10 @@ export const generateSimpleRouteNotification = (bestRoute: RouteResult) => {
                     : "Travel Time from last stop: "}
                   {formatDuration(segmentTime || 0)}
                 </div>
-                {nextLocation && (
-                  <div>
-                    Distance to next stop:{" "}
-                    {metersToMiles(
-                      bestRoute.totalDistance / bestRoute.route.length
-                    ).toFixed(1)}{" "}
-                    miles
-                  </div>
-                )}
+                <div>
+                  Distance from last stop:{" "}
+                  {metersToMiles(segmentDistance || 0).toFixed(1)} miles
+                </div>
               </div>
             </div>
           );

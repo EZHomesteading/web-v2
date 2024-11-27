@@ -48,16 +48,14 @@ export interface RouteResult {
   route: Location[];
   totalTime: number;
   totalDistance: number;
-  timings: {
-    segmentTimes: { [key: string]: number };
-    returnTime: number;
-    totalTime: number;
-    totalDistance: number;
-  };
+  timings: RouteTimings;
 }
 export interface RouteTimings {
   segmentTimes: { [key: string]: number };
   returnTime: number;
   totalTime: number;
   totalDistance: number;
+  distanceSegments: {
+    [k: string]: number;
+  };
 }

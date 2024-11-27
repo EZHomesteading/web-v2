@@ -31,12 +31,9 @@ import {
   generateSimpleRouteNotification,
 } from "./utils";
 // Import the separated functions and types
+import { optimizeRoute } from "./calcsimple";
 import {
-  findPermutationRoute,
-  findDynamicNearestNeighborRoute,
-} from "./calcsimple";
-import {
-  calculateOptimalRoute,
+  optimizeTimeRoute,
   timeStringToSeconds,
   secondsToTimeString,
   formatDuration,
@@ -51,6 +48,7 @@ import {
   RouteSegment,
   RouteTimings,
 } from "./types";
+import RouteSegmentDisplay from "./routsegment";
 interface LocationStatus {
   isOpen: boolean;
   willBeOpen: boolean;
@@ -77,6 +75,7 @@ const RouteOptimizer = ({
     returnTime: 0,
     totalTime: 0,
     totalDistance: 0,
+    distanceSegments: {},
   });
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(
     null
@@ -158,6 +157,7 @@ const RouteOptimizer = ({
       returnTime: 0,
       totalTime: 0,
       totalDistance: 0,
+      distanceSegments: {},
     });
   };
 
@@ -323,25 +323,72 @@ const RouteOptimizer = ({
 
     calculateAllStatuses();
   }, [userLocation, locations]);
+  const AVERAGE_STOP_TIME = 5 * 60;
+  const BUFFER_TIME = 5 * 60;
+  const MIN_DEPARTURE_BUFFER = 15 * 60;
   const calculateRoute = async () => {
     if (!userLocation || locations.length === 0) return;
     clearMap();
 
     try {
-      const optimizedResult = await calculateOptimalRoute(
+      const optimizedResult = await optimizeTimeRoute(
         userLocation,
         locations,
-        endLocation,
+        endLocation || userLocation,
         pickupTimes
       );
 
-      setOptimizedRoute(optimizedResult.locations);
-      setPickupTimes(optimizedResult.suggestedPickupTimes);
-      setRouteSegments(optimizedResult.segments);
+      setOptimizedRoute(optimizedResult.route);
+      setRouteTimings(optimizedResult.timings);
 
+      // Create route segments with cumulative time calculations
+      const now = new Date();
+      let currentTime =
+        (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
+      const segments: RouteSegment[] = [];
+
+      optimizedResult.route.forEach((location, index) => {
+        const travelTime = optimizedResult.timings.segmentTimes[location.id];
+        const distance = optimizedResult.timings.distanceSegments[location.id];
+
+        // Add travel time to get arrival time
+        const arrivalTime = currentTime + travelTime;
+
+        // Calculate pickup time
+        const pickupTime = pickupTimes[location.id]
+          ? timeStringToSeconds(pickupTimes[location.id])
+          : arrivalTime + BUFFER_TIME;
+
+        // Calculate wait time if any
+        const waitTime = Math.max(0, pickupTime - (arrivalTime + BUFFER_TIME));
+
+        // Calculate departure time
+        const departureTime = pickupTime + AVERAGE_STOP_TIME;
+
+        segments.push({
+          location,
+          arrivalTime,
+          pickupTime,
+          departureTime,
+          travelTime,
+          distance,
+          waitTime,
+        });
+
+        // Update current time to departure time for next segment
+        currentTime = departureTime;
+      });
+
+      setRouteSegments(segments);
       showNotification(
         "Route Optimized",
-        generateRouteNotification(optimizedResult)
+        generateRouteNotification({
+          locations: optimizedResult.route,
+          suggestedPickupTimes: pickupTimes,
+          totalDuration: optimizedResult.timings.totalTime,
+          totalDistance: optimizedResult.timings.totalDistance,
+          segments,
+        })
       );
     } catch (error) {
       handleRouteError(error);
@@ -421,18 +468,14 @@ const RouteOptimizer = ({
   const calculateSimpleRoute = async () => {
     if (!userLocation || locations.length === 0) return;
     clearMap();
-
     try {
-      const bestRoute = await (locations.length <= 8
-        ? findPermutationRoute(userLocation, locations, endLocation)
-        : findDynamicNearestNeighborRoute(
-            userLocation,
-            locations,
-            endLocation
-          ));
-
+      const bestRoute = await optimizeRoute(
+        userLocation,
+        locations,
+        endLocation || userLocation
+      );
       setOptimizedRoute(bestRoute.route);
-      setRouteTimings(bestRoute.timings); // Update with new timings
+      setRouteTimings(bestRoute.timings);
       showNotification(
         "Route Created",
         generateSimpleRouteNotification(bestRoute)
@@ -727,64 +770,11 @@ const RouteOptimizer = ({
                   <p className={`${outfitFont.className} font-medium`}>
                     Stops:
                   </p>
-                  {optimizedRoute.map((location, index) => {
-                    const segment = routeSegments[index];
-                    return (
-                      <div
-                        key={location.id}
-                        className="border-b last:border-b-0 pb-3"
-                      >
-                        <div className="font-medium">
-                          {index + 1}. {location.displayName}
-                        </div>
-                        <div className="pl-4 space-y-1 mt-1">
-                          {routeSegments.length > 0 &&
-                            pickupTimes[location.id] && (
-                              <div className="flex gap-2">
-                                <span className="font-medium">
-                                  Pickup Time:
-                                </span>
-                                <span>{pickupTimes[location.id]}</span>
-                              </div>
-                            )}
-
-                          {index === 0 ? (
-                            <div className="text-gray-600">
-                              Travel Time from start:{" "}
-                              {formatDuration(
-                                segment
-                                  ? segment.travelTime
-                                  : routeTimings.segmentTimes[location.id] || 0
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-gray-600">
-                              Travel Time from last stop:{" "}
-                              {formatDuration(
-                                segment
-                                  ? segment.travelTime
-                                  : routeTimings.segmentTimes[location.id] || 0
-                              )}
-                            </div>
-                          )}
-
-                          <div className="text-gray-600">
-                            Distance from last stop:{" "}
-                            {metersToMiles(
-                              segment ? segment.distance : 0
-                            ).toFixed(1)}{" "}
-                            miles
-                          </div>
-
-                          {segment?.waitTime > 0 && (
-                            <div className="text-gray-600">
-                              Wait Time: {formatDuration(segment.waitTime)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <RouteSegmentDisplay
+                    optimizedRoute={optimizedRoute}
+                    routeTimings={routeTimings}
+                    routeSegments={routeSegments}
+                  />
 
                   {useCustomEndLocation &&
                     customEndLocation &&
@@ -793,22 +783,17 @@ const RouteOptimizer = ({
                         <div className="font-medium">Final Destination:</div>
                         <div className="pl-4 space-y-1 mt-1">
                           <p className="text-gray-600">{addressSearch}</p>
-                          {routeSegments.length > 0 ? (
-                            <p className="text-gray-600">
-                              Estimated Arrival:{" "}
-                              {secondsToTimeString(
-                                routeSegments[routeSegments.length - 1]
-                                  .arrivalTime +
-                                  routeSegments[routeSegments.length - 1]
-                                    .travelTime
-                              )}
-                            </p>
-                          ) : (
-                            <p className="text-gray-600">
-                              Travel Time from Last Stop:{" "}
-                              {formatDuration(routeTimings.returnTime)}
-                            </p>
-                          )}
+                          <p className="text-gray-600">
+                            Travel Time from Last Stop:{" "}
+                            {formatDuration(routeTimings.returnTime)}
+                          </p>
+                          <p className="text-gray-600">
+                            Estimated Arrival:{" "}
+                            {secondsToTimeString(
+                              routeSegments[routeSegments.length - 1]
+                                .departureTime + routeTimings.returnTime
+                            )}
+                          </p>
                         </div>
                       </div>
                     )}
