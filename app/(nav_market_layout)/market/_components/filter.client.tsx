@@ -28,10 +28,11 @@ interface Props {
 const Filters = ({ role }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   let r = searchParams?.get("radius")
     ? parseInt(searchParams.get("radius") || "")
     : null;
-
+  console.log(r);
   const [radius, setRadius] = useState(r);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -42,7 +43,7 @@ const Filters = ({ role }: Props) => {
     router.push(`/market?${params.toString()}`);
     setIsOpen(false);
   };
-
+  console.log(radius);
   return (
     <>
       <button

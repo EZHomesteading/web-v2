@@ -67,7 +67,7 @@ const Map = ({
   const getApproximatePosition = useCallback(
     (position: google.maps.LatLngLiteral) => {
       const angle = Math.random() * 2 * Math.PI;
-      const radius = Math.random() * 0.005; // Adjust this value to control the maximum distance
+      const radius = Math.random() * 0.005;
       const lat = position.lat + radius * Math.cos(angle);
       const lng = position.lng + radius * Math.sin(angle);
       return { lat, lng };

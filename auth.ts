@@ -1,56 +1,58 @@
-import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import prisma from "@/lib/prisma"
-import authConfig from "@/auth.config"
-import { getUserById } from "@/data/user"
-import { fullName, Notification, UserRole } from "@prisma/client"
-import { JWT } from "next-auth/jwt"
-import { Session } from "next-auth"
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import prisma from "@/lib/prisma";
+import authConfig from "@/auth.config";
+import { getUserById } from "@/data/user";
+import { fullName, Notification, UserRole } from "@prisma/client";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ account }) {
-      if (account?.provider !== "credentials") return true
-      return true
+      if (account?.provider !== "credentials") return true;
+      return true;
     },
-    
+
     async session({ token, session }: { token: JWT; session: Session }) {
       if (session.user) {
         // Basic user info
-        session.user.id = token.sub ?? token.id as string
-        session.user.name = token.name
-        session.user.email = token.email ?? ""
+        session.user.id = token.sub ?? (token.id as string);
+        session.user.name = token.name;
+        session.user.email = token.email ?? "";
 
         // Extended user info
-        session.user.fullName = token.fullName as fullName
-        session.user.phoneNumber = token.phoneNumber as string | undefined
-        session.user.image = token.image as string | undefined
-        session.user.stripeAccountId = token.stripeAccountId as string | undefined
-        session.user.url = token.url as string
-        session.user.role = token.role as UserRole
+        session.user.fullName = token.fullName as fullName;
+        session.user.phoneNumber = token.phoneNumber as string | undefined;
+        session.user.image = token.image as string | undefined;
+        session.user.stripeAccountId = token.stripeAccountId as
+          | string
+          | undefined;
+        session.user.url = token.url as string;
+        session.user.role = token.role as UserRole;
 
         // Timestamps and metadata
-        session.user.createdAt = token.createdAt as Date | undefined
-        session.user.updatedAt = token.updatedAt as Date | undefined
-        session.user.hasPickedRole = token.hasPickedRole as boolean | undefined
+        session.user.createdAt = token.createdAt as Date | undefined;
+        session.user.updatedAt = token.updatedAt as Date | undefined;
+        session.user.hasPickedRole = token.hasPickedRole as boolean | undefined;
 
         // Business logic
-        session.user.subscriptions = token.subscriptions as string | undefined
-        session.user.totalPaidOut = token.totalPaidOut as number
-        session.user.notifications = token.notifications as Notification[]
-        session.user.openClosedTemplates = token.openClosedTemplates as any
-        session.user.canRecievePayouts = token.canRecievePayouts as boolean
+        session.user.subscriptions = token.subscriptions as string | undefined;
+        session.user.totalPaidOut = token.totalPaidOut as number;
+        session.user.notifications = token.notifications as Notification[];
+        session.user.openClosedTemplates = token.openClosedTemplates as any;
+        session.user.canRecievePayouts = token.canRecievePayouts as boolean;
       }
-      return session
+      return session;
     },
 
     async jwt({ token }) {
-      if (!token.sub) return token
+      if (!token.sub) return token;
 
-      const existingUser = await getUserById(token.sub)
-      if (!existingUser) return token
+      const existingUser = await getUserById(token.sub);
+      if (!existingUser) return token;
 
       return {
         ...token,
@@ -72,12 +74,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         totalPaidOut: existingUser.totalPaidOut ?? 0,
         notifications: existingUser.notifications,
         openClosedTemplates: existingUser.openCloseTemplates,
-        canRecievePayouts: existingUser.canRecievePayouts ?? undefined
-      }
+        canRecievePayouts: existingUser.canRecievePayouts ?? undefined,
+      };
     },
   },
   jwt: {
-    maxAge: 3 * 24 * 60 * 60, // 3 days
+    maxAge: 14 * 24 * 60 * 60, // 3 days
   },
   ...authConfig,
-})
+});
