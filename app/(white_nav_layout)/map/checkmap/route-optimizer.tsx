@@ -5,7 +5,6 @@ import {
   GoogleMap,
   MarkerF,
   useLoadScript,
-  Circle,
   DirectionsRenderer,
   Autocomplete,
 } from "@react-google-maps/api";
@@ -17,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { outfitFont } from "@/components/fonts";
 import { OrderMap } from "./page";
 import { Navigation } from "lucide-react"; // Import navigation icon
-
+import { OverlayView } from "@react-google-maps/api";
 const libraries: ("places" | "geometry")[] = ["places", "geometry"];
 
 interface FixedRouteOptimizerProps {
@@ -541,20 +540,33 @@ const RouteOptimizer = ({
         )}
 
         {orders.map((order) => (
-          <MarkerF
-            key={order.id}
-            position={
-              new google.maps.LatLng(
-                order.location.coordinates[1],
-                order.location.coordinates[0]
-              )
-            }
-            icon={{
-              url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-              scaledSize: new google.maps.Size(32, 32),
-            }}
-            title={order.location.displayName}
-          />
+          <React.Fragment key={order.id}>
+            <MarkerF
+              position={
+                new google.maps.LatLng(
+                  order.location.coordinates[1],
+                  order.location.coordinates[0]
+                )
+              }
+              icon={{
+                url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                scaledSize: new google.maps.Size(32, 32),
+              }}
+            />
+            <OverlayView
+              position={
+                new google.maps.LatLng(
+                  order.location.coordinates[1],
+                  order.location.coordinates[0]
+                )
+              }
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <div className="x-2 py-1 rounded -mt-12 text-sm font-medium whitespace-nowrap max-w-[200px] text-center absolute transform -translate-x-1/2">
+                {order.location.displayName}
+              </div>
+            </OverlayView>
+          </React.Fragment>
         ))}
 
         {/* Render the actual road routes */}

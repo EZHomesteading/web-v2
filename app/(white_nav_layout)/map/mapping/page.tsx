@@ -161,8 +161,8 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 600, // 11:00 AM in minutes
-                close: 600, // 10:00 PM in minutes
+                open: 800, // 11:00 AM in minutes
+                close: 890, // 10:00 PM in minutes
               },
             ],
           },

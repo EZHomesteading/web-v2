@@ -9,6 +9,9 @@ import {
   Circle,
   Polyline,
 } from "@react-google-maps/api";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { StrictMode } from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -108,11 +111,26 @@ const RouteOptimizer = ({
     title: "",
     description: "",
   });
+  const [usePickupOrder, setUsePickupOrder] = useState(false);
+  const [orderedLocations, setOrderedLocations] =
+    useState<Location[]>(locations);
+  const onDragEnd = (result: any) => {
+    if (!result.destination || !usePickupOrder) return;
+
+    const items = Array.from(orderedLocations);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setOrderedLocations(items);
+  };
   const generateRandomOffset = () => {
     // 0.5 miles is approximately 0.007 degrees of lat/lng
     const maxOffset = 0.007;
     return (Math.random() - 0.5) * maxOffset;
   };
+  useEffect(() => {
+    setOrderedLocations(locations);
+  }, [locations]);
   useEffect(() => {
     const newRandomPositions: { [key: string]: RandomizedLocation } = {};
 
@@ -333,9 +351,10 @@ const RouteOptimizer = ({
     try {
       const optimizedResult = await optimizeTimeRoute(
         userLocation,
-        locations,
+        usePickupOrder ? orderedLocations : locations,
         endLocation || userLocation,
-        pickupTimes
+        pickupTimes,
+        usePickupOrder
       );
 
       setOptimizedRoute(optimizedResult.route);
@@ -398,20 +417,30 @@ const RouteOptimizer = ({
     console.error("Route calculation error:", error);
 
     let errorMessage: React.ReactNode;
-    let problemLocation = null;
 
     if (error.type === "LOCATION_CLOSED") {
+      const openTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.open;
+      const closeTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.close;
+      const formattedOpen = openTime ? formatTime(openTime) : "N/A";
+      const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
+      const estimatedArrival =
+        error.details?.pickupTime || error.details?.startTime
+          ? secondsToTimeString(
+              error.details.pickupTime || error.details.startTime
+            )
+          : "N/A";
+
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Cannot route to {error.location.displayName}
+            Cannot route to {error.location?.displayName || "location"}
           </p>
           <p>
-            This location would be closed when we arrive. Their hours are:
-            {error.details.openTime} - {error.details.closeTime}
+            This location would be closed when we arrive. Their hours are:{" "}
+            {formattedOpen} - {formattedClose}
           </p>
           <p className="text-sm text-gray-600">
-            Estimated arrival: {error.details.estimatedArrival}
+            Estimated arrival: {estimatedArrival}
           </p>
         </div>
       );
@@ -419,19 +448,18 @@ const RouteOptimizer = ({
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Excessive wait time for {error.location.displayName}
+            Excessive wait time for {error.location?.displayName || "location"}
           </p>
           <p>
-            Would arrive at {error.details.arrivalTime} but pickup isn't until{" "}
-            {error.details.requestedPickup}
+            Would arrive at {error.details?.arrivalTime || "N/A"} but pickup
+            isn't until {error.details?.requestedPickup || "N/A"}
           </p>
           <p className="text-sm text-gray-600">
-            Wait time would be {error.details.waitTime}
+            Wait time would be {error.details?.waitTime || "N/A"}
           </p>
         </div>
       );
     } else {
-      // Default error message
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
@@ -583,80 +611,134 @@ const RouteOptimizer = ({
             <h3 className={`${outfitFont.className} font-medium`}>
               Locations are not exact but are somewhere within their circles
             </h3>
-            {locations.map((location) => (
-              <div
-                key={location.id}
-                className="flex flex-col gap-1 p-2 bg-slate-50 rounded-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`${outfitFont.className} font-medium`}>
-                    {location.displayName}
-                  </span>
-                </div>
-                <span
-                  className={`${outfitFont.className} text-xs text-gray-500`}
-                >
-                  {location.address[0]}
-                </span>
-                {location?.hours?.delivery[0]?.timeSlots[0] && (
-                  <div className="text-xs text-gray-600">
-                    Operating Hours:{" "}
-                    {formatTime(location.hours.delivery[0].timeSlots[0].open)} -{" "}
-                    {formatTime(location.hours.delivery[0].timeSlots[0].close)}
-                  </div>
-                )}
-                <div className="mt-2">
-                  <Label htmlFor={`pickup-${location.id}`}>
-                    Pickup Time
-                    {pickupTimes[location.id] && (
-                      <span className="text-xs text-gray-500 ml-2">
-                        (Suggested: {pickupTimes[location.id]})
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id={`pickup-${location.id}`}
-                    type="time"
-                    value={pickupTimes[location.id] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      console.log(
-                        location?.hours?.delivery[0].timeSlots[0].close
-                      );
-
-                      const validation = validatePickupTime(
-                        location.id,
-                        e.target.value
-                      );
-                      setTimeValidations((prev) => ({
-                        ...prev,
-                        [location.id]: validation || {
-                          isValid: false,
-                          message: "",
-                        },
-                      }));
-                      if (validation?.isValid) {
-                        setPickupTimes((prev) => ({
-                          ...prev,
-                          [location.id]: e.target.value,
-                        }));
-                      }
-                    }}
-                    className={
-                      timeValidations[location.id]?.isValid === false
-                        ? "border-red-500"
-                        : ""
-                    }
-                  />
-                  {timeValidations[location.id]?.isValid === false && (
-                    <div className="text-xs text-red-500 mt-1">
-                      {timeValidations[location.id].message}
+            {/* Add this above the locations section */}
+            <div className="flex items-center gap-2 mb-4">
+              <Switch
+                checked={usePickupOrder}
+                onCheckedChange={setUsePickupOrder}
+              />
+              <Label className="cursor-pointer">
+                Enable drag & drop reordering
+              </Label>
+            </div>
+            <StrictMode>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="locations" type="location">
+                  {(provided) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {orderedLocations.map((location, index) => (
+                        <Draggable
+                          key={location.id}
+                          draggableId={location.id}
+                          index={index}
+                          isDragDisabled={!usePickupOrder}
+                        >
+                          {(dragProvided, snapshot) => (
+                            <div
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              {...dragProvided.dragHandleProps}
+                              className="flex flex-col gap-1 p-2 bg-slate-50 rounded-lg mb-2 select-none border-2 border-transparent hover:border-blue-500 active:border-blue-700"
+                              style={{
+                                ...dragProvided.draggableProps.style,
+                                cursor: usePickupOrder ? "grab" : "default",
+                                backgroundColor: snapshot.isDragging
+                                  ? "#e2e8f0"
+                                  : "",
+                                boxShadow: snapshot.isDragging
+                                  ? "0 5px 15px rgba(0,0,0,0.3)"
+                                  : "none",
+                              }}
+                            >
+                              {" "}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  {usePickupOrder && (
+                                    <div className="text-gray-400 cursor-grab hover:text-gray-600">
+                                      ⣿
+                                    </div>
+                                  )}
+                                  <span
+                                    className={`${outfitFont.className} font-medium`}
+                                  >
+                                    {index + 1}. {location.displayName}
+                                  </span>
+                                </div>
+                              </div>
+                              <span
+                                className={`${outfitFont.className} text-xs text-gray-500`}
+                              >
+                                {location.address[0]}
+                              </span>
+                              {location?.hours?.delivery[0]?.timeSlots[0] && (
+                                <div className="text-xs text-gray-600">
+                                  Operating Hours:{" "}
+                                  {formatTime(
+                                    location.hours.delivery[0].timeSlots[0].open
+                                  )}{" "}
+                                  -{" "}
+                                  {formatTime(
+                                    location.hours.delivery[0].timeSlots[0]
+                                      .close
+                                  )}
+                                </div>
+                              )}
+                              <div className="mt-2">
+                                <Label htmlFor={`pickup-${location.id}`}>
+                                  Pickup Time
+                                  {pickupTimes[location.id] && (
+                                    <span className="text-xs text-gray-500 ml-2">
+                                      (Suggested: {pickupTimes[location.id]})
+                                    </span>
+                                  )}
+                                </Label>
+                                <Input
+                                  id={`pickup-${location.id}`}
+                                  type="time"
+                                  value={pickupTimes[location.id] || ""}
+                                  onChange={(e) => {
+                                    const validation = validatePickupTime(
+                                      location.id,
+                                      e.target.value
+                                    );
+                                    setTimeValidations((prev) => ({
+                                      ...prev,
+                                      [location.id]: validation || {
+                                        isValid: false,
+                                        message: "",
+                                      },
+                                    }));
+                                    if (validation?.isValid) {
+                                      setPickupTimes((prev) => ({
+                                        ...prev,
+                                        [location.id]: e.target.value,
+                                      }));
+                                    }
+                                  }}
+                                  className={
+                                    timeValidations[location.id]?.isValid ===
+                                    false
+                                      ? "border-red-500"
+                                      : ""
+                                  }
+                                />
+                                {timeValidations[location.id]?.isValid ===
+                                  false && (
+                                  <div className="text-xs text-red-500 mt-1">
+                                    {timeValidations[location.id].message}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
                     </div>
                   )}
-                </div>
-              </div>
-            ))}
-
+                </Droppable>
+              </DragDropContext>
+            </StrictMode>
             <div className="space-y-2">
               <label
                 className={`${outfitFont.className} flex items-center gap-2`}
@@ -787,13 +869,20 @@ const RouteOptimizer = ({
                             Travel Time from Last Stop:{" "}
                             {formatDuration(routeTimings.returnTime)}
                           </p>
-                          <p className="text-gray-600">
-                            Estimated Arrival:{" "}
-                            {secondsToTimeString(
-                              routeSegments[routeSegments.length - 1]
-                                .departureTime + routeTimings.returnTime
+                          {routeSegments.length > 0 &&
+                            routeSegments[routeSegments.length - 1]
+                              .departureTime !== undefined && (
+                              <p className="text-gray-600">
+                                Estimated Arrival:{" "}
+                                {secondsToTimeString(
+                                  routeSegments[routeSegments.length - 1]
+                                    .departureTime
+                                    ? routeSegments[routeSegments.length - 1]
+                                        .departureTime + routeTimings.returnTime
+                                    : routeTimings.returnTime
+                                )}
+                              </p>
                             )}
-                          </p>
                         </div>
                       </div>
                     )}
@@ -856,39 +945,58 @@ const RouteOptimizer = ({
           if (!randomPosition) return null;
 
           return (
-            <Circle
-              key={location.id}
-              center={
-                new google.maps.LatLng(
-                  randomPosition.randomLat,
-                  randomPosition.randomLng
-                )
-              }
-              radius={
-                zoom >= 16
-                  ? 60
-                  : zoom >= 15
-                  ? 120
-                  : zoom >= 14
-                  ? 240
-                  : zoom >= 13
-                  ? 500
-                  : zoom >= 12
-                  ? 1000
-                  : zoom >= 11
-                  ? 2000
-                  : zoom >= 10
-                  ? 4000
-                  : 8000
-              }
-              options={{
-                strokeColor: colors.strokeColor,
-                strokeOpacity: 0.8,
-                strokeWeight: colors.strokeWeight || 2,
-                fillColor: colors.fillColor,
-                fillOpacity: 0.35,
-              }}
-            />
+            <React.Fragment key={location.id}>
+              <Circle
+                center={
+                  new google.maps.LatLng(
+                    randomPosition.randomLat,
+                    randomPosition.randomLng
+                  )
+                }
+                radius={
+                  zoom >= 16
+                    ? 60
+                    : zoom >= 15
+                    ? 120
+                    : zoom >= 14
+                    ? 240
+                    : zoom >= 13
+                    ? 500
+                    : zoom >= 12
+                    ? 1000
+                    : zoom >= 11
+                    ? 2000
+                    : zoom >= 10
+                    ? 4000
+                    : 8000
+                }
+                options={{
+                  strokeColor: colors.strokeColor,
+                  strokeOpacity: 0.8,
+                  strokeWeight: colors.strokeWeight || 2,
+                  fillColor: colors.fillColor,
+                  fillOpacity: 0.35,
+                }}
+              />
+              <MarkerF
+                position={
+                  new google.maps.LatLng(
+                    randomPosition.randomLat,
+                    randomPosition.randomLng
+                  )
+                }
+                label={{
+                  text: location.displayName || "no name found",
+                  color: "black",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+                icon={{
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 0,
+                }}
+              />
+            </React.Fragment>
           );
         })}
         {/* End Location Marker */}

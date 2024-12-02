@@ -9,20 +9,30 @@ export const optimizeTimeRoute = async (
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng,
-  pickupTimes: { [key: string]: string } = {}
+  pickupTimes: { [key: string]: string } = {},
+  usePickupOrder: boolean = false
 ): Promise<RouteResult> => {
   const service = new google.maps.DistanceMatrixService();
   let shortestTime = Infinity;
-  let bestRoute: Location[] = [];
-  let bestTimings: RouteTimings = {
-    segmentTimes: {},
-    distanceSegments: {},
-    returnTime: 0,
-    totalTime: 0,
-    totalDistance: 0,
-  };
+  let bestRoute: Location[] | null = null;
+  let bestTimings: RouteTimings | null = null;
 
-  // Sort by pickup times if provided
+  // Check if any locations are closed before attempting routes
+  const now = new Date();
+  const currentTimeInSeconds = (now.getHours() * 60 + now.getMinutes()) * 60;
+  let startTime = currentTimeInSeconds + MIN_DEPARTURE_BUFFER;
+
+  for (const location of locations) {
+    if (!isLocationOpen(location, startTime)) {
+      throw {
+        type: "LOCATION_CLOSED",
+        message: `${location.displayName} would be closed`,
+        location,
+        details: { startTime },
+      };
+    }
+  }
+
   const routeLocations =
     Object.keys(pickupTimes).length > 0
       ? [...locations].sort((a, b) => {
@@ -35,11 +45,27 @@ export const optimizeTimeRoute = async (
           return timeA - timeB;
         })
       : locations;
-
+  if (usePickupOrder) {
+    const matrix = await getDistanceMatrix(
+      startLocation,
+      locations,
+      endLocation,
+      service
+    );
+    const metrics = await calculateRouteMetrics(
+      matrix,
+      locations,
+      startTime,
+      pickupTimes
+    );
+    return {
+      route: locations,
+      totalTime: metrics.totalTime,
+      totalDistance: metrics.totalDistance,
+      timings: metrics,
+    };
+  }
   const permutations = permute(routeLocations);
-  const now = new Date();
-  const currentTimeInSeconds = (now.getHours() * 60 + now.getMinutes()) * 60;
-  let startTime = currentTimeInSeconds + MIN_DEPARTURE_BUFFER;
 
   for (const route of permutations) {
     try {
@@ -50,29 +76,25 @@ export const optimizeTimeRoute = async (
         service
       );
 
-      const {
-        segmentTimes,
-        distanceSegments,
-        totalTime,
-        totalDistance,
-        returnTime,
-      } = await calculateRouteMetrics(matrix, route, startTime, pickupTimes);
+      const metrics = await calculateRouteMetrics(
+        matrix,
+        route,
+        startTime,
+        pickupTimes
+      );
 
-      if (totalTime < shortestTime) {
-        shortestTime = totalTime;
+      if (metrics.totalTime < shortestTime) {
+        shortestTime = metrics.totalTime;
         bestRoute = route;
-        bestTimings = {
-          segmentTimes,
-          distanceSegments,
-          returnTime,
-          totalTime,
-          totalDistance,
-        };
+        bestTimings = metrics;
       }
     } catch (error) {
-      console.error("Error calculating route:", error);
-      continue;
+      throw error;
     }
+  }
+
+  if (!bestRoute || !bestTimings) {
+    throw new Error("No valid routes found");
   }
 
   return {
@@ -81,43 +103,6 @@ export const optimizeTimeRoute = async (
     totalDistance: bestTimings.totalDistance,
     timings: bestTimings,
   };
-};
-
-const getDistanceMatrix = async (
-  startLocation: google.maps.LatLng,
-  route: Location[],
-  endLocation: google.maps.LatLng,
-  service: google.maps.DistanceMatrixService
-): Promise<google.maps.DistanceMatrixResponse> => {
-  return new Promise((resolve, reject) => {
-    service.getDistanceMatrix(
-      {
-        origins: [
-          startLocation,
-          ...route.map(
-            (loc) =>
-              new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
-          ),
-        ],
-        destinations: [
-          ...route.map(
-            (loc) =>
-              new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
-          ),
-          endLocation,
-        ],
-        travelMode: google.maps.TravelMode.DRIVING,
-        drivingOptions: {
-          departureTime: new Date(),
-          trafficModel: google.maps.TrafficModel.BEST_GUESS,
-        },
-      },
-      (response, status) => {
-        if (status === "OK" && response) resolve(response);
-        else reject(status);
-      }
-    );
-  });
 };
 
 const calculateRouteMetrics = async (
@@ -189,6 +174,7 @@ const calculateRouteMetrics = async (
     currentTime = pickupTime + AVERAGE_STOP_TIME;
   }
 
+  // Calculate final leg to end location (last row to last column)
   const returnTime =
     matrix.rows[route.length].elements[route.length].duration.value;
   const returnDistance =
@@ -197,11 +183,49 @@ const calculateRouteMetrics = async (
   return {
     segmentTimes,
     distanceSegments,
+    returnTime,
     totalTime: totalTime + returnTime,
     totalDistance: totalDistance + returnDistance,
-    returnTime,
   };
 };
+
+const getDistanceMatrix = async (
+  startLocation: google.maps.LatLng,
+  route: Location[],
+  endLocation: google.maps.LatLng,
+  service: google.maps.DistanceMatrixService
+): Promise<google.maps.DistanceMatrixResponse> => {
+  return new Promise((resolve, reject) => {
+    service.getDistanceMatrix(
+      {
+        origins: [
+          startLocation,
+          ...route.map(
+            (loc) =>
+              new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+          ),
+        ],
+        destinations: [
+          ...route.map(
+            (loc) =>
+              new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
+          ),
+          endLocation,
+        ],
+        travelMode: google.maps.TravelMode.DRIVING,
+        drivingOptions: {
+          departureTime: new Date(),
+          trafficModel: google.maps.TrafficModel.BEST_GUESS,
+        },
+      },
+      (response, status) => {
+        if (status === "OK" && response) resolve(response);
+        else reject(status);
+      }
+    );
+  });
+};
+
 const permute = <T>(arr: T[]): T[][] => {
   if (arr.length <= 1) return [arr];
   const result: T[][] = [];
