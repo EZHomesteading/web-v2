@@ -15,7 +15,7 @@ import { useBasket } from "@/hooks/listing/use-basket";
 
 interface ListingClientProps {
   listing: FinalListing & { description: string };
-  user?: User | null;
+  user?: any;
   following:
     | {
         id: string;
