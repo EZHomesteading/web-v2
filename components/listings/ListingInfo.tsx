@@ -54,7 +54,7 @@ const ListingData: React.FC<ListingDataProps> = ({
           </span>
           <span>{listingUser?.name}</span>
         </span>
-        <FollowButton followUserId={followUserId} following={following} />
+        {/* <FollowButton followUserId={followUserId} following={following} /> */}
 
         <Link
           href={`/store/${listingUser.url}`}

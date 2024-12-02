@@ -124,7 +124,6 @@ export async function GET(req: NextRequest) {
       };
       const fuse = new Fuse(listings, fuseOptions);
       const results = fuse.search(q);
-      console.log(results);
       listings = results.map((result) => result.item);
     }
     return NextResponse.json(listings);

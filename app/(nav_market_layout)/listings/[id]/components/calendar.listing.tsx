@@ -26,17 +26,23 @@ import {
   DeliveryPickupToggleMode,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { PiArrowLeftThin, PiArrowRightThin } from "react-icons/pi";
-import { Basket_Selected_Time_Type } from "basket";
-import axios from "axios";
 import TimePicker from "@/app/(no-nav_layout)/my-basket/[id]/components/time.basket";
 
 interface p {
   location: any;
   mode?: DeliveryPickupToggleMode;
   onClose: () => void;
+  selectedDateTime: any;
+  setSelectedDateTime: any;
 }
 
-const SetCustomPickupDeliveryCalendar = ({ location, mode, onClose }: p) => {
+const SetCustomPickupDeliveryCalendar = ({
+  setSelectedDateTime,
+  selectedDateTime,
+  location,
+  mode,
+  onClose,
+}: p) => {
   const hours = {
     delivery:
       location?.hours?.delivery?.map((ex: any) => ({
@@ -50,7 +56,6 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, onClose }: p) => {
       })) || [],
   };
   const [startMonth, setStartMonth] = useState(new Date());
-  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 
   const [showModifyButton, setShowModifyButton] = useState(false);
   const modifyButtonTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -286,7 +291,7 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, onClose }: p) => {
                     ) => (
                       <div
                         key={index}
-                        className="text-xs lg:text-sm text-black mt-1 overflow-y-auto"
+                        className="text-xs lg:text-sm text-black mt-1 overflow-y"
                       >
                         {`${convertMinutesToTimeString(
                           slot.open
@@ -310,8 +315,7 @@ const SetCustomPickupDeliveryCalendar = ({ location, mode, onClose }: p) => {
           <div className="flex w-full px-2 justify-between border-t pt-2 mt-6 ">
             <button
               className={`underline text-black ${
-                !basketState.pickupDate &&
-                !basketState.deliveryDate &&
+                !date &&
                 "cursor-not-allowed pointer-events-none text-neutral-500"
               }`}
               onClick={() =>
