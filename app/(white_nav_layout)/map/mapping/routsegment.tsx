@@ -25,47 +25,47 @@ const RouteSegmentDisplay = ({
   routeSegments,
 }: RouteSegmentDisplayProps) => {
   return (
-    <div className="space-y-3">
+    <div className=" trunc">
       {optimizedRoute.map((location, index) => {
         const segment = routeSegments[index];
 
         return (
-          <div key={location.id} className="border-b last:border-b-0 pb-3">
+          <div key={location.id} className="border-b last:border-b-0">
             <div className="font-medium">
               {index + 1}. {location.displayName}
             </div>
-            <div className="pl-4 space-y-1 mt-1">
-              {segment && (
-                <>
-                  <div className="text-gray-600">
-                    Estimated Arrival:{" "}
-                    {secondsToTimeString(segment.arrivalTime)}
-                  </div>
-                  <div className="text-gray-600">
-                    Pickup Time: {secondsToTimeString(segment.pickupTime)}
-                  </div>
-                </>
-              )}
+            <div className="pl-4 ">
               {index === 0 ? (
                 <div className="text-gray-600">
-                  Travel Time from start:{" "}
+                  Dist{" "}
+                  {metersToMiles(
+                    routeTimings.distanceSegments[location.id] || 0
+                  ).toFixed(1)}{" "}
+                  miles -{" "}
                   {formatDuration(routeTimings.segmentTimes[location.id] || 0)}
                 </div>
               ) : (
                 <div className="text-gray-600">
-                  Travel Time from last stop:{" "}
+                  Dist{" "}
+                  {metersToMiles(
+                    routeTimings.distanceSegments[location.id] || 0
+                  ).toFixed(1)}{" "}
+                  miles -{" "}
                   {formatDuration(routeTimings.segmentTimes[location.id] || 0)}
                 </div>
               )}
-              <div className="text-gray-600">
-                Distance from last stop:{" "}
-                {metersToMiles(
-                  routeTimings.distanceSegments[location.id] || 0
-                ).toFixed(1)}{" "}
-                miles
-              </div>
+
+              {segment && (
+                <>
+                  <div className="text-gray-600">
+                    Arr: {secondsToTimeString(segment.arrivalTime)} - Dep:{" "}
+                    {secondsToTimeString(segment.pickupTime + 10 * 60)}
+                  </div>
+                </>
+              )}
+
               {segment?.waitTime > 0 && (
-                <div className="text-gray-600">
+                <div className="text-red-600">
                   Wait Time: {formatDuration(segment.waitTime)}
                 </div>
               )}

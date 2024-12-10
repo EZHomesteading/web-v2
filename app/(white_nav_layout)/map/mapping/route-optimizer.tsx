@@ -252,98 +252,98 @@ const RouteOptimizer = ({
   };
 
   // Calculate single location status
-  const calculateLocationStatus = async (
-    location: Location,
-    userLoc: google.maps.LatLng
-  ) => {
-    const service = new google.maps.DistanceMatrixService();
+  // const calculateLocationStatus = async (
+  //   location: Location,
+  //   userLoc: google.maps.LatLng
+  // ) => {
+  //   const service = new google.maps.DistanceMatrixService();
 
-    try {
-      const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
-        (resolve, reject) => {
-          service.getDistanceMatrix(
-            {
-              origins: [userLoc],
-              destinations: [
-                new google.maps.LatLng(
-                  location.coordinates[1],
-                  location.coordinates[0]
-                ),
-              ],
-              travelMode: google.maps.TravelMode.DRIVING,
-              drivingOptions: {
-                departureTime: new Date(),
-                trafficModel: google.maps.TrafficModel.BEST_GUESS,
-              },
-            },
-            (response, status) => {
-              if (status === "OK" && response !== null) resolve(response);
-              else reject(status);
-            }
-          );
-        }
-      );
+  //   try {
+  //     const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
+  //       (resolve, reject) => {
+  //         service.getDistanceMatrix(
+  //           {
+  //             origins: [userLoc],
+  //             destinations: [
+  //               new google.maps.LatLng(
+  //                 location.coordinates[1],
+  //                 location.coordinates[0]
+  //               ),
+  //             ],
+  //             travelMode: google.maps.TravelMode.DRIVING,
+  //             drivingOptions: {
+  //               departureTime: new Date(),
+  //               trafficModel: google.maps.TrafficModel.BEST_GUESS,
+  //             },
+  //           },
+  //           (response, status) => {
+  //             if (status === "OK" && response !== null) resolve(response);
+  //             else reject(status);
+  //           }
+  //         );
+  //       }
+  //     );
 
-      const now = new Date();
-      const currentTimeInSeconds =
-        (now.getHours() * 60 + now.getMinutes()) * 60;
+  //     const now = new Date();
+  //     const currentTimeInSeconds =
+  //       (now.getHours() * 60 + now.getMinutes()) * 60;
 
-      const travelTime = matrix.rows[0].elements[0].duration.value;
-      const estimatedArrival = currentTimeInSeconds + travelTime;
+  //     const travelTime = matrix.rows[0].elements[0].duration.value;
+  //     const estimatedArrival = currentTimeInSeconds + travelTime;
 
-      const openTime = getLocationOpenTime(location) * 60;
-      const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
-        ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
-        : 0;
+  //     const openTime = getLocationOpenTime(location) * 60;
+  //     const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
+  //       ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+  //       : 0;
 
-      const isCurrentlyOpen = isLocationOpen(location, currentTimeInSeconds);
-      const willBeOpenOnArrival = isLocationOpen(location, estimatedArrival);
-      const timeUntilClose = closeTime - estimatedArrival;
-      const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 30 minutes
+  //     const isCurrentlyOpen = isLocationOpen(location, currentTimeInSeconds);
+  //     const willBeOpenOnArrival = isLocationOpen(location, estimatedArrival);
+  //     const timeUntilClose = closeTime - estimatedArrival;
+  //     const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 30 minutes
 
-      return {
-        isOpen: isCurrentlyOpen,
-        willBeOpen: willBeOpenOnArrival,
-        closesSoon: closesSoon,
-        estimatedArrival,
-      };
-    } catch (error) {
-      console.error(
-        `Error calculating status for location ${location.id}:`,
-        error
-      );
-      return {
-        isOpen: true, // Default to open if we can't calculate
-        willBeOpen: true,
-        closesSoon: false,
-        estimatedArrival: null,
-      };
-    }
-  };
+  //     return {
+  //       isOpen: isCurrentlyOpen,
+  //       willBeOpen: willBeOpenOnArrival,
+  //       closesSoon: closesSoon,
+  //       estimatedArrival,
+  //     };
+  //   } catch (error) {
+  //     console.error(
+  //       `Error calculating status for location ${location.id}:`,
+  //       error
+  //     );
+  //     return {
+  //       isOpen: true, // Default to open if we can't calculate
+  //       willBeOpen: true,
+  //       closesSoon: false,
+  //       estimatedArrival: null,
+  //     };
+  //   }
+  // };
 
-  // Calculate initial statuses
-  useEffect(() => {
-    if (!userLocation || locations.length === 0) return;
+  // // Calculate initial statuses
+  // useEffect(() => {
+  //   if (!userLocation || locations.length === 0) return;
 
-    const calculateAllStatuses = async () => {
-      const newStatuses: { [key: string]: LocationStatus } = {};
+  //   const calculateAllStatuses = async () => {
+  //     const newStatuses: { [key: string]: LocationStatus } = {};
 
-      // Calculate status for each location independently
-      await Promise.all(
-        locations.map(async (location) => {
-          const status = await calculateLocationStatus(location, userLocation);
-          newStatuses[location.id] = status;
-        })
-      );
+  //     // Calculate status for each location independently
+  //     await Promise.all(
+  //       locations.map(async (location) => {
+  //         const status = await calculateLocationStatus(location, userLocation);
+  //         newStatuses[location.id] = status;
+  //       })
+  //     );
 
-      setLocationStatuses(newStatuses);
-    };
+  //     setLocationStatuses(newStatuses);
+  //   };
 
-    calculateAllStatuses();
-  }, [userLocation, locations]);
-  const AVERAGE_STOP_TIME = 5 * 60;
-  const BUFFER_TIME = 5 * 60;
-  const MIN_DEPARTURE_BUFFER = 15 * 60;
+  //   calculateAllStatuses();
+  // }, [userLocation, locations]);
+  const AVERAGE_STOP_TIME = 10 * 60;
+  const BUFFER_TIME = 0 * 60;
+  const MIN_DEPARTURE_BUFFER = 30 * 60;
   const calculateRoute = async () => {
     if (!userLocation || locations.length === 0) return;
     clearMap();
@@ -399,16 +399,6 @@ const RouteOptimizer = ({
       });
 
       setRouteSegments(segments);
-      showNotification(
-        "Route Optimized",
-        generateRouteNotification({
-          locations: optimizedResult.route,
-          suggestedPickupTimes: pickupTimes,
-          totalDuration: optimizedResult.timings.totalTime,
-          totalDistance: optimizedResult.timings.totalDistance,
-          segments,
-        })
-      );
     } catch (error) {
       handleRouteError(error);
     }
@@ -589,15 +579,16 @@ const RouteOptimizer = ({
         </CardHeader>
 
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
-          <div className="space-y-2">
+          <div className="">
+            <Input></Input>
             <Button
               className="w-full"
               onClick={() => clearMap()}
               disabled={locations.length === 0}
             >
-              Reset
+              Set Departure time
             </Button>
-            <h3 className={`${outfitFont.className} font-medium`}>
+            {/* <h3 className={`${outfitFont.className} font-medium`}>
               Selected Locations ({locations.length})
             </h3>
             <h3 className={`${outfitFont.className} font-medium`}>
@@ -610,15 +601,15 @@ const RouteOptimizer = ({
             </h3>
             <h3 className={`${outfitFont.className} font-medium`}>
               Locations are not exact but are somewhere within their circles
-            </h3>
+            </h3> */}
             {/* Add this above the locations section */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-1 ">
               <Switch
                 checked={usePickupOrder}
                 onCheckedChange={setUsePickupOrder}
               />
               <Label className="cursor-pointer">
-                Enable drag & drop reordering
+                Enable drag & drop reordering & custom times
               </Label>
             </div>
             <StrictMode>
@@ -659,17 +650,12 @@ const RouteOptimizer = ({
                                     </div>
                                   )}
                                   <span
-                                    className={`${outfitFont.className} font-medium`}
+                                    className={`${outfitFont.className} font-medium truncate`}
                                   >
                                     {index + 1}. {location.displayName}
                                   </span>
                                 </div>
                               </div>
-                              <span
-                                className={`${outfitFont.className} text-xs text-gray-500`}
-                              >
-                                {location.address[0]}
-                              </span>
                               {location?.hours?.delivery[0]?.timeSlots[0] && (
                                 <div className="text-xs text-gray-600">
                                   Operating Hours:{" "}
@@ -683,52 +669,54 @@ const RouteOptimizer = ({
                                   )}
                                 </div>
                               )}
-                              <div className="mt-2">
-                                <Label htmlFor={`pickup-${location.id}`}>
-                                  Pickup Time
-                                  {pickupTimes[location.id] && (
-                                    <span className="text-xs text-gray-500 ml-2">
-                                      (Suggested: {pickupTimes[location.id]})
-                                    </span>
-                                  )}
-                                </Label>
-                                <Input
-                                  id={`pickup-${location.id}`}
-                                  type="time"
-                                  value={pickupTimes[location.id] || ""}
-                                  onChange={(e) => {
-                                    const validation = validatePickupTime(
-                                      location.id,
-                                      e.target.value
-                                    );
-                                    setTimeValidations((prev) => ({
-                                      ...prev,
-                                      [location.id]: validation || {
-                                        isValid: false,
-                                        message: "",
-                                      },
-                                    }));
-                                    if (validation?.isValid) {
-                                      setPickupTimes((prev) => ({
+                              {usePickupOrder && (
+                                <div className="mt-2">
+                                  <Label htmlFor={`pickup-${location.id}`}>
+                                    Pickup Time
+                                    {pickupTimes[location.id] && (
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        (Suggested: {pickupTimes[location.id]})
+                                      </span>
+                                    )}
+                                  </Label>
+                                  <Input
+                                    id={`pickup-${location.id}`}
+                                    type="time"
+                                    value={pickupTimes[location.id] || ""}
+                                    onChange={(e) => {
+                                      const validation = validatePickupTime(
+                                        location.id,
+                                        e.target.value
+                                      );
+                                      setTimeValidations((prev) => ({
                                         ...prev,
-                                        [location.id]: e.target.value,
+                                        [location.id]: validation || {
+                                          isValid: false,
+                                          message: "",
+                                        },
                                       }));
+                                      if (validation?.isValid) {
+                                        setPickupTimes((prev) => ({
+                                          ...prev,
+                                          [location.id]: e.target.value,
+                                        }));
+                                      }
+                                    }}
+                                    className={
+                                      timeValidations[location.id]?.isValid ===
+                                      false
+                                        ? "border-red-500"
+                                        : ""
                                     }
-                                  }}
-                                  className={
-                                    timeValidations[location.id]?.isValid ===
-                                    false
-                                      ? "border-red-500"
-                                      : ""
-                                  }
-                                />
-                                {timeValidations[location.id]?.isValid ===
-                                  false && (
-                                  <div className="text-xs text-red-500 mt-1">
-                                    {timeValidations[location.id].message}
-                                  </div>
-                                )}
-                              </div>
+                                  />
+                                  {timeValidations[location.id]?.isValid ===
+                                    false && (
+                                    <div className="text-xs text-red-500 mt-1">
+                                      {timeValidations[location.id].message}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </Draggable>
@@ -795,23 +783,22 @@ const RouteOptimizer = ({
             </Button>
 
             {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md space-y-4">
-                <div className="border-b pb-2">
-                  <p className={`${outfitFont.className} font-medium text-lg`}>
+              <div className="p-2 bg-slate-100 rounded-md ">
+                <div className="border-b">
+                  {/* <p className={`${outfitFont.className} font-medium text-lg`}>
                     {routeSegments.length > 0
                       ? "Time-Optimized Route"
                       : "Distance-Optimized Route"}
-                  </p>
+                  </p> */}
 
-                  <div className="mt-2 space-y-2 text-sm">
-                    <div className="font-medium">Start Location:</div>
+                  <div className=" text-sm">
                     <p className="text-gray-600 pl-4">
-                      {addressSearch || "Current Location"}
+                      Start Location: {addressSearch || "Current Location"}
                     </p>
 
                     {routeSegments.length > 0 && (
                       <p className="text-gray-600 pl-4">
-                        Suggested Departure:{" "}
+                        Departure:{" "}
                         {routeSegments[0]
                           ? secondsToTimeString(
                               routeSegments[0].arrivalTime -
@@ -822,7 +809,7 @@ const RouteOptimizer = ({
                     )}
 
                     <p className="text-gray-600 pl-4">
-                      Total Distance:{" "}
+                      Distance:{" "}
                       {metersToMiles(
                         routeSegments.length > 0
                           ? routeSegments.reduce(
@@ -831,11 +818,7 @@ const RouteOptimizer = ({
                             )
                           : routeTimings.totalDistance
                       ).toFixed(1)}{" "}
-                      miles
-                    </p>
-
-                    <p className="text-gray-600 pl-4">
-                      Total Travel Time:{" "}
+                      miles, Time:{" "}
                       {formatDuration(
                         routeSegments.length > 0
                           ? routeSegments.reduce(
@@ -848,10 +831,7 @@ const RouteOptimizer = ({
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <p className={`${outfitFont.className} font-medium`}>
-                    Stops:
-                  </p>
+                <div className="">
                   <RouteSegmentDisplay
                     optimizedRoute={optimizedRoute}
                     routeTimings={routeTimings}
@@ -861,9 +841,9 @@ const RouteOptimizer = ({
                   {useCustomEndLocation &&
                     customEndLocation &&
                     addressSearch && (
-                      <div className="border-t pt-3">
+                      <div className="border-t ">
                         <div className="font-medium">Final Destination:</div>
-                        <div className="pl-4 space-y-1 mt-1">
+                        <div className="pl-4 ">
                           <p className="text-gray-600">{addressSearch}</p>
                           <p className="text-gray-600">
                             Travel Time from Last Stop:{" "}

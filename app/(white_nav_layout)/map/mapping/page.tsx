@@ -150,7 +150,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 600,
-                close: 660,
+                close: 1440,
               },
             ],
           },
@@ -162,7 +162,7 @@ const RouteOptimizerPage = async ({
             timeSlots: [
               {
                 open: 800, // 11:00 AM in minutes
-                close: 890, // 10:00 PM in minutes
+                close: 800, // 10:00 PM in minutes
               },
             ],
           },
