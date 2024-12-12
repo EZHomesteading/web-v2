@@ -2,160 +2,83 @@
 import { Location } from "@prisma/client";
 import { RouteResult, RouteTimings } from "./types";
 
-export const permute = <T>(arr: T[]): T[][] => {
-  if (arr.length <= 1) return [arr];
-  const result: T[][] = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
-    const permutations = permute(rest);
-    permutations.forEach((perm) => {
-      result.push([arr[i], ...perm]);
-    });
-  }
-  return result;
-};
-
 export const optimizeRoute = async (
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng
 ): Promise<RouteResult> => {
-  const service = new google.maps.DistanceMatrixService();
-  let shortestTime = Infinity;
-  let bestRoute: Location[] = [];
-  let bestTimings: RouteTimings = {
-    segmentTimes: {},
-    distanceSegments: {},
-    returnTime: 0,
-    totalTime: 0,
-    totalDistance: 0,
-  };
+  const directionsService = new google.maps.DirectionsService();
 
-  const permutations = permute(locations);
+  // Convert locations to waypoints
+  const waypoints = locations.map((loc) => ({
+    location: new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0]),
+    stopover: true,
+  }));
 
-  for (const route of permutations) {
-    try {
-      // First matrix for main segments
-      const origins = [
-        startLocation,
-        ...route
-          .slice(0, -1)
-          .map(
-            (loc) =>
-              new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
-          ),
-      ];
-
-      const destinations = [
-        ...route.map(
-          (loc) =>
-            new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0])
-        ),
-      ];
-
-      const mainMatrix = await new Promise<google.maps.DistanceMatrixResponse>(
-        (resolve, reject) => {
-          service.getDistanceMatrix(
-            {
-              origins: origins,
-              destinations: destinations,
-              travelMode: google.maps.TravelMode.DRIVING,
-              drivingOptions: {
-                departureTime: new Date(),
-                trafficModel: google.maps.TrafficModel.BEST_GUESS,
-              },
+  try {
+    const result = await new Promise<google.maps.DirectionsResult>(
+      (resolve, reject) => {
+        directionsService.route(
+          {
+            origin: startLocation,
+            destination: endLocation,
+            waypoints: waypoints,
+            optimizeWaypoints: true, // Let Google optimize the route
+            travelMode: google.maps.TravelMode.DRIVING,
+            drivingOptions: {
+              departureTime: new Date(),
+              trafficModel: google.maps.TrafficModel.BEST_GUESS,
             },
-            (response, status) => {
-              if (status === "OK" && response) resolve(response);
-              else reject(status);
-            }
-          );
-        }
-      );
-
-      // Second matrix for final leg
-      const lastLocationMatrix =
-        await new Promise<google.maps.DistanceMatrixResponse>(
-          (resolve, reject) => {
-            service.getDistanceMatrix(
-              {
-                origins: [
-                  new google.maps.LatLng(
-                    route[route.length - 1].coordinates[1],
-                    route[route.length - 1].coordinates[0]
-                  ),
-                ],
-                destinations: [endLocation],
-                travelMode: google.maps.TravelMode.DRIVING,
-                drivingOptions: {
-                  departureTime: new Date(),
-                  trafficModel: google.maps.TrafficModel.BEST_GUESS,
-                },
-              },
-              (response, status) => {
-                if (status === "OK" && response) resolve(response);
-                else reject(status);
-              }
-            );
+          },
+          (response, status) => {
+            if (status === "OK" && response) resolve(response);
+            else reject(status);
           }
         );
-
-      // Add debug log here
-      console.log("Last location:", route[route.length - 1].displayName);
-      console.log("End location:", endLocation.toString());
-      console.log("Final leg matrix response:", lastLocationMatrix);
-
-      // Rest of the function remains the same...
-
-      const segmentTimes: { [key: string]: number } = {};
-      const distanceSegments: { [key: string]: number } = {};
-      let totalTime = 0;
-      let totalDistance = 0;
-
-      for (let i = 0; i < route.length; i++) {
-        const element = mainMatrix.rows[i].elements[i];
-        if (!element || element.status !== "OK") {
-          throw new Error(`Invalid route segment at index ${i}`);
-        }
-
-        segmentTimes[route[i].id] = element.duration.value;
-        distanceSegments[route[i].id] = element.distance.value;
-        totalTime += element.duration.value;
-        totalDistance += element.distance.value;
       }
+    );
 
-      const returnElement = lastLocationMatrix.rows[0].elements[0];
-      const returnTime = returnElement.duration.value;
-      const returnDistance = returnElement.distance.value;
+    const legs = result.routes[0].legs;
+    const waypointOrder = result.routes[0].waypoint_order;
+    const optimizedRoute = waypointOrder.map((index) => locations[index]);
 
-      totalTime += returnTime;
-      totalDistance += returnDistance;
+    const segmentTimes: { [key: string]: number } = {};
+    const distanceSegments: { [key: string]: number } = {};
+    let totalTime = 0;
+    let totalDistance = 0;
 
-      if (totalTime < shortestTime) {
-        shortestTime = totalTime;
-        bestRoute = route;
-        bestTimings = {
-          segmentTimes,
-          distanceSegments,
-          returnTime,
-          totalTime,
-          totalDistance,
-        };
-      }
-    } catch (error) {
-      console.error("Error calculating route:", error);
-      continue;
+    // Process all legs except the last one
+    for (let i = 0; i < optimizedRoute.length; i++) {
+      const leg = legs[i];
+      segmentTimes[optimizedRoute[i].id] = leg.duration?.value || 0;
+      distanceSegments[optimizedRoute[i].id] = leg.distance?.value || 0;
+      totalTime += leg.duration?.value || 0;
+      totalDistance += leg.distance?.value || 0;
     }
-  }
 
-  if (Object.keys(bestTimings.segmentTimes).length === 0) {
+    // Process the final leg (return to end location)
+    const returnLeg = legs[legs.length - 1];
+    const returnTime = returnLeg.duration?.value || 0;
+    const returnDistance = returnLeg.distance?.value || 0;
+    totalTime += returnTime;
+    totalDistance += returnDistance;
+
+    const timings: RouteTimings = {
+      segmentTimes,
+      distanceSegments,
+      returnTime,
+      totalTime,
+      totalDistance,
+    };
+
+    return {
+      route: optimizedRoute,
+      totalTime,
+      totalDistance,
+      timings,
+    };
+  } catch (error) {
+    console.error("Error calculating route:", error);
     throw new Error("No valid route found");
   }
-
-  return {
-    route: bestRoute,
-    totalTime: bestTimings.totalTime,
-    totalDistance: bestTimings.totalDistance,
-    timings: bestTimings,
-  };
 };

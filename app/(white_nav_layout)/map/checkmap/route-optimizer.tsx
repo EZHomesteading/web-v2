@@ -103,8 +103,21 @@ const RouteOptimizer = ({
     let mapsUrl;
     if (isIOS) {
       // Format URL for Apple Maps
-      // Note: Apple Maps has limited waypoint support, so we'll just use start and end
-      mapsUrl = `http://maps.apple.com/?saddr=${origin}&daddr=${destination}`;
+      // Uses daddr for first stop and +to: for additional stops
+      const stops = waypoints.split("|");
+      let appleMapsUrl = `http://maps.apple.com/?saddr=${origin}&daddr=${stops[0]}`;
+
+      // Add all remaining stops
+      for (let i = 1; i < stops.length; i++) {
+        appleMapsUrl += `+to:${stops[i]}`;
+      }
+
+      // Add final destination if different from last stop
+      if (destination !== stops[stops.length - 1]) {
+        appleMapsUrl += `+to:${destination}`;
+      }
+
+      mapsUrl = appleMapsUrl;
     } else {
       // Format URL for Google Maps
       mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;

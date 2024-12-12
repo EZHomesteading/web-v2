@@ -55,6 +55,7 @@ export interface RouteTimings {
   returnTime: number;
   totalTime: number;
   totalDistance: number;
+  suggestedPickupTimes: { [key: string]: string };
   distanceSegments: {
     [k: string]: number;
   };
