@@ -80,6 +80,9 @@ export async function GET(
         },
       },
     });
+    fullBasketGroup?.items.map((item) => {
+      console.log(item.listing);
+    });
     return NextResponse.json(fullBasketGroup);
   } catch (error) {
     return NextResponse.json(

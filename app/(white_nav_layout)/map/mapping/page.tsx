@@ -161,7 +161,7 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 800,
+                open: 600,
                 close: 1440,
               },
             ],

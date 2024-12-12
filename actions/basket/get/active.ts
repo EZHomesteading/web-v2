@@ -1,4 +1,4 @@
-import { Basket } from "@/app/(white_nav_layout)/my-baskets/page";
+import { Basket } from "@prisma/client";
 import { auth } from "@/auth";
 import { authenticatedFetch } from "@/lib/api-utils";
 import { headers } from "next/headers";

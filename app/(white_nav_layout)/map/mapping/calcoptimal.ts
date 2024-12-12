@@ -17,7 +17,6 @@ interface RouteError {
   details?: unknown;
 }
 
-type OptimizationError = LocationClosedError | RouteError;
 const AVERAGE_STOP_TIME = 5 * 60;
 const BUFFER_TIME = 5 * 60;
 const permute = <T>(arr: T[]): T[][] => {
@@ -263,10 +262,25 @@ const calculateRouteWithTimings = async (
     );
     const serviceEndTime = earliestServiceStart + AVERAGE_STOP_TIME;
 
-    if (
-      !isLocationOpen(location, earliestServiceStart) ||
-      serviceEndTime > closeTime
-    ) {
+    // Check if we're arriving before opening time
+    if (expectedArrival + BUFFER_TIME < openTime) {
+      throw {
+        type: "LOCATION_CLOSED",
+        message: `${location.displayName} will not be open yet when we arrive`,
+        location,
+        details: {
+          expectedArrival: secondsToTimeString(expectedArrival),
+          serviceStart: secondsToTimeString(earliestServiceStart),
+          serviceEnd: secondsToTimeString(serviceEndTime),
+          openTime: secondsToTimeString(openTime),
+          closeTime: secondsToTimeString(closeTime),
+          willOpen: true, // Add this flag to indicate it's a "not open yet" scenario
+        },
+      };
+    }
+
+    // Existing closing time check
+    if (serviceEndTime > closeTime) {
       throw {
         type: "LOCATION_CLOSED",
         message: `${location.displayName} would be closed at arrival or during service`,
@@ -277,6 +291,7 @@ const calculateRouteWithTimings = async (
           serviceEnd: secondsToTimeString(serviceEndTime),
           closeTime: secondsToTimeString(closeTime),
           openTime: secondsToTimeString(openTime),
+          willOpen: false, // Add this flag to indicate it's a "closed" scenario
         },
       };
     }
