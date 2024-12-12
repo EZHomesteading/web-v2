@@ -26,13 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { outfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
-import {
-  formatTime,
-  secondsToInputTimeString,
-  storeRouteMetrics,
-  generateRouteNotification,
-  generateSimpleRouteNotification,
-} from "./utils";
+import { formatTime } from "./utils";
 // Import the separated functions and types
 import { optimizeRoute } from "./calcsimple";
 import {
@@ -52,6 +46,7 @@ import {
   RouteTimings,
 } from "./types";
 import RouteSegmentDisplay from "./routsegment";
+import DepartureTimePicker from "./departureTime";
 interface LocationStatus {
   isOpen: boolean;
   willBeOpen: boolean;
@@ -73,12 +68,16 @@ const RouteOptimizer = ({
   userRole,
 }: RouteOptimizerProps) => {
   // State Management
+  const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
+  const [selectedDepartureTime, setSelectedDepartureTime] =
+    useState<Date | null>(null);
   const [routeTimings, setRouteTimings] = useState<RouteTimings>({
     segmentTimes: {},
     returnTime: 0,
     totalTime: 0,
     totalDistance: 0,
     distanceSegments: {},
+    suggestedPickupTimes: {},
   });
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(
     null
@@ -122,6 +121,10 @@ const RouteOptimizer = ({
     items.splice(result.destination.index, 0, reorderedItem);
 
     setOrderedLocations(items);
+  };
+  const handleDepartureTimeSet = (date: Date) => {
+    setSelectedDepartureTime(date);
+    clearMap();
   };
   const generateRandomOffset = () => {
     // 0.5 miles is approximately 0.007 degrees of lat/lng
@@ -176,6 +179,7 @@ const RouteOptimizer = ({
       totalTime: 0,
       totalDistance: 0,
       distanceSegments: {},
+      suggestedPickupTimes: {},
     });
   };
 
@@ -341,6 +345,49 @@ const RouteOptimizer = ({
 
   //   calculateAllStatuses();
   // }, [userLocation, locations]);
+  const updateLocationStatuses = (
+    locations: Location[],
+    routeSegments: RouteSegment[],
+    startTime: number
+  ): { [key: string]: LocationStatus } => {
+    const statuses: { [key: string]: LocationStatus } = {};
+
+    locations.forEach((location) => {
+      // Find this location's segment in the route
+      const segment = routeSegments.find(
+        (seg) => seg.location.id === location.id
+      );
+
+      if (segment) {
+        const arrivalTime = segment.arrivalTime;
+        const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
+          ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+          : 0;
+
+        const isCurrentlyOpen = isLocationOpen(location, startTime);
+        const willBeOpenOnArrival = isLocationOpen(location, arrivalTime);
+        const timeUntilClose = closeTime - arrivalTime;
+        const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 30 minutes
+
+        statuses[location.id] = {
+          isOpen: isCurrentlyOpen,
+          willBeOpen: willBeOpenOnArrival,
+          closesSoon: closesSoon,
+          estimatedArrival: arrivalTime,
+        };
+      } else {
+        // Default status for locations not in the route
+        statuses[location.id] = {
+          isOpen: isLocationOpen(location, startTime),
+          willBeOpen: true,
+          closesSoon: false,
+          estimatedArrival: null,
+        };
+      }
+    });
+
+    return statuses;
+  };
   const AVERAGE_STOP_TIME = 10 * 60;
   const BUFFER_TIME = 0 * 60;
   const MIN_DEPARTURE_BUFFER = 30 * 60;
@@ -349,39 +396,38 @@ const RouteOptimizer = ({
     clearMap();
 
     try {
+      // Calculate start time based on selected departure time or current time + buffer
+      const now = selectedDepartureTime || new Date();
+      const startTime = selectedDepartureTime
+        ? (selectedDepartureTime.getHours() * 60 +
+            selectedDepartureTime.getMinutes()) *
+          60
+        : (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
+
       const optimizedResult = await optimizeTimeRoute(
         userLocation,
         usePickupOrder ? orderedLocations : locations,
         endLocation || userLocation,
-        pickupTimes,
-        usePickupOrder
+        usePickupOrder,
+        startTime
       );
 
       setOptimizedRoute(optimizedResult.route);
       setRouteTimings(optimizedResult.timings);
 
-      // Create route segments with cumulative time calculations
-      const now = new Date();
-      let currentTime =
-        (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
+      // Update this line to use the same startTime
+      let currentTime = startTime; // Remove the buffer calculation here
       const segments: RouteSegment[] = [];
 
       optimizedResult.route.forEach((location, index) => {
         const travelTime = optimizedResult.timings.segmentTimes[location.id];
         const distance = optimizedResult.timings.distanceSegments[location.id];
 
-        // Add travel time to get arrival time
         const arrivalTime = currentTime + travelTime;
-
-        // Calculate pickup time
         const pickupTime = pickupTimes[location.id]
           ? timeStringToSeconds(pickupTimes[location.id])
           : arrivalTime + BUFFER_TIME;
-
-        // Calculate wait time if any
         const waitTime = Math.max(0, pickupTime - (arrivalTime + BUFFER_TIME));
-
-        // Calculate departure time
         const departureTime = pickupTime + AVERAGE_STOP_TIME;
 
         segments.push({
@@ -394,11 +440,18 @@ const RouteOptimizer = ({
           waitTime,
         });
 
-        // Update current time to departure time for next segment
         currentTime = departureTime;
       });
 
       setRouteSegments(segments);
+
+      // Update location statuses based on the calculated route
+      const newStatuses = updateLocationStatuses(
+        locations,
+        segments,
+        startTime
+      );
+      setLocationStatuses(newStatuses);
     } catch (error) {
       handleRouteError(error);
     }
@@ -413,12 +466,9 @@ const RouteOptimizer = ({
       const closeTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.close;
       const formattedOpen = openTime ? formatTime(openTime) : "N/A";
       const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
-      const estimatedArrival =
-        error.details?.pickupTime || error.details?.startTime
-          ? secondsToTimeString(
-              error.details.pickupTime || error.details.startTime
-            )
-          : "N/A";
+
+      // Use error.details.expectedArrival which is already in the correct format
+      const estimatedArrival = error.details.expectedArrival || "N/A";
 
       errorMessage = (
         <div className="space-y-2">
@@ -432,6 +482,16 @@ const RouteOptimizer = ({
           <p className="text-sm text-gray-600">
             Estimated arrival: {estimatedArrival}
           </p>
+          {error.details.serviceStart && (
+            <p className="text-sm text-gray-600">
+              Service would start at: {error.details.serviceStart}
+            </p>
+          )}
+          {error.details.serviceEnd && (
+            <p className="text-sm text-gray-600">
+              Service would end at: {error.details.serviceEnd}
+            </p>
+          )}
         </div>
       );
     } else if (error.type === "EXCESSIVE_WAIT") {
@@ -456,7 +516,7 @@ const RouteOptimizer = ({
             Unable to find a valid route
           </p>
           <p className="text-sm text-gray-600">
-            Please try adjusting your pickup times or route order.
+            Please try adjusting your route order.
           </p>
         </div>
       );
@@ -473,7 +533,7 @@ const RouteOptimizer = ({
               setModalState((prev) => ({ ...prev, isOpen: false }))
             }
           >
-            Adjust Times
+            Close
           </Button>
           <Button onClick={() => calculateSimpleRoute()}>
             Create Route Without Time Constraints
@@ -494,10 +554,6 @@ const RouteOptimizer = ({
       );
       setOptimizedRoute(bestRoute.route);
       setRouteTimings(bestRoute.timings);
-      showNotification(
-        "Route Created",
-        generateSimpleRouteNotification(bestRoute)
-      );
     } catch (error) {
       handleRouteError(error);
     }
@@ -572,36 +628,25 @@ const RouteOptimizer = ({
 
   return (
     <div className="relative h-[calc(100vh-64px)]">
+      <DepartureTimePicker
+        isOpen={departureTimePickerOpen}
+        onClose={() => setDepartureTimePickerOpen(false)}
+        onSubmit={handleDepartureTimeSet}
+        currentTime={selectedDepartureTime || new Date()}
+      />
       {/* Left Panel */}
-      <Card className="absolute top-4 left-4 z-10 w-96">
-        <CardHeader>
-          <CardTitle className={outfitFont.className}>Route Planner</CardTitle>
-        </CardHeader>
-
+      <Card className="absolute top-4 left-4 z-10 w-96 pt-6">
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
           <div className="">
-            <Input></Input>
             <Button
-              className="w-full"
-              onClick={() => clearMap()}
+              className="w-full mb-4"
+              onClick={() => setDepartureTimePickerOpen(true)}
               disabled={locations.length === 0}
             >
-              Set Departure time
+              {selectedDepartureTime
+                ? `Departure: ${selectedDepartureTime.toLocaleString()}`
+                : "Set Departure Time"}
             </Button>
-            {/* <h3 className={`${outfitFont.className} font-medium`}>
-              Selected Locations ({locations.length})
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              If you enter a time in one location you will always go to that
-              location first
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              Arrival times are calculated as though you leave after 10 minutes
-              of arrival.
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              Locations are not exact but are somewhere within their circles
-            </h3> */}
             {/* Add this above the locations section */}
             <div className="flex items-center gap-1 ">
               <Switch
@@ -609,7 +654,7 @@ const RouteOptimizer = ({
                 onCheckedChange={setUsePickupOrder}
               />
               <Label className="cursor-pointer">
-                Enable drag & drop reordering & custom times
+                Enable drag & drop reordering
               </Label>
             </div>
             <StrictMode>
@@ -666,54 +711,6 @@ const RouteOptimizer = ({
                                   {formatTime(
                                     location.hours.delivery[0].timeSlots[0]
                                       .close
-                                  )}
-                                </div>
-                              )}
-                              {usePickupOrder && (
-                                <div className="mt-2">
-                                  <Label htmlFor={`pickup-${location.id}`}>
-                                    Pickup Time
-                                    {pickupTimes[location.id] && (
-                                      <span className="text-xs text-gray-500 ml-2">
-                                        (Suggested: {pickupTimes[location.id]})
-                                      </span>
-                                    )}
-                                  </Label>
-                                  <Input
-                                    id={`pickup-${location.id}`}
-                                    type="time"
-                                    value={pickupTimes[location.id] || ""}
-                                    onChange={(e) => {
-                                      const validation = validatePickupTime(
-                                        location.id,
-                                        e.target.value
-                                      );
-                                      setTimeValidations((prev) => ({
-                                        ...prev,
-                                        [location.id]: validation || {
-                                          isValid: false,
-                                          message: "",
-                                        },
-                                      }));
-                                      if (validation?.isValid) {
-                                        setPickupTimes((prev) => ({
-                                          ...prev,
-                                          [location.id]: e.target.value,
-                                        }));
-                                      }
-                                    }}
-                                    className={
-                                      timeValidations[location.id]?.isValid ===
-                                      false
-                                        ? "border-red-500"
-                                        : ""
-                                    }
-                                  />
-                                  {timeValidations[location.id]?.isValid ===
-                                    false && (
-                                    <div className="text-xs text-red-500 mt-1">
-                                      {timeValidations[location.id].message}
-                                    </div>
                                   )}
                                 </div>
                               )}
@@ -781,98 +778,91 @@ const RouteOptimizer = ({
             >
               Optimize Route
             </Button>
-
-            {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md ">
-                <div className="border-b">
-                  {/* <p className={`${outfitFont.className} font-medium text-lg`}>
-                    {routeSegments.length > 0
-                      ? "Time-Optimized Route"
-                      : "Distance-Optimized Route"}
-                  </p> */}
-
-                  <div className=" text-sm">
-                    <p className="text-gray-600 pl-4">
-                      Start Location: {addressSearch || "Current Location"}
-                    </p>
-
-                    {routeSegments.length > 0 && (
-                      <p className="text-gray-600 pl-4">
-                        Departure:{" "}
-                        {routeSegments[0]
-                          ? secondsToTimeString(
-                              routeSegments[0].arrivalTime -
-                                routeSegments[0].travelTime
-                            )
-                          : "N/A"}
-                      </p>
-                    )}
-
-                    <p className="text-gray-600 pl-4">
-                      Distance:{" "}
-                      {metersToMiles(
-                        routeSegments.length > 0
-                          ? routeSegments.reduce(
-                              (acc, segment) => acc + segment.distance,
-                              0
-                            )
-                          : routeTimings.totalDistance
-                      ).toFixed(1)}{" "}
-                      miles, Time:{" "}
-                      {formatDuration(
-                        routeSegments.length > 0
-                          ? routeSegments.reduce(
-                              (acc, segment) => acc + segment.travelTime,
-                              0
-                            )
-                          : routeTimings.totalTime
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="">
-                  <RouteSegmentDisplay
-                    optimizedRoute={optimizedRoute}
-                    routeTimings={routeTimings}
-                    routeSegments={routeSegments}
-                  />
-
-                  {useCustomEndLocation &&
-                    customEndLocation &&
-                    addressSearch && (
-                      <div className="border-t ">
-                        <div className="font-medium">Final Destination:</div>
-                        <div className="pl-4 ">
-                          <p className="text-gray-600">{addressSearch}</p>
-                          <p className="text-gray-600">
-                            Travel Time from Last Stop:{" "}
-                            {formatDuration(routeTimings.returnTime)}
-                          </p>
-                          {routeSegments.length > 0 &&
-                            routeSegments[routeSegments.length - 1]
-                              .departureTime !== undefined && (
-                              <p className="text-gray-600">
-                                Estimated Arrival:{" "}
-                                {secondsToTimeString(
-                                  routeSegments[routeSegments.length - 1]
-                                    .departureTime
-                                    ? routeSegments[routeSegments.length - 1]
-                                        .departureTime + routeTimings.returnTime
-                                    : routeTimings.returnTime
-                                )}
-                              </p>
-                            )}
-                        </div>
-                      </div>
-                    )}
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
+      <Card className="absolute top-4 right-4 z-10 w-96">
+        <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)] mt-6">
+          <div className="p-2 bg-slate-100 rounded-md">
+            <div className="border-b">
+              <div className="text-sm">
+                <p className="text-gray-600 pl-4">
+                  Start Location: {addressSearch || "Current Location"}
+                </p>
 
+                {routeSegments.length > 0 && (
+                  <p className="text-gray-600 pl-4">
+                    Departure:{" "}
+                    {routeSegments[0]
+                      ? secondsToTimeString(
+                          routeSegments[0].arrivalTime -
+                            routeSegments[0].travelTime
+                        )
+                      : "N/A"}
+                  </p>
+                )}
+
+                <p className="text-gray-600 pl-4">
+                  Distance:{" "}
+                  {metersToMiles(
+                    routeSegments.length > 0
+                      ? routeSegments.reduce(
+                          (acc, segment) => acc + segment.distance,
+                          0
+                        )
+                      : routeTimings.totalDistance
+                  ).toFixed(1)}{" "}
+                  miles, Time:{" "}
+                  {formatDuration(
+                    routeSegments.length > 0
+                      ? routeSegments.reduce(
+                          (acc, segment) => acc + segment.travelTime,
+                          0
+                        )
+                      : routeTimings.totalTime
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="">
+              <RouteSegmentDisplay
+                optimizedRoute={optimizedRoute}
+                routeTimings={routeTimings}
+                routeSegments={routeSegments}
+                useCustomEndLocation={useCustomEndLocation}
+              />
+
+              {useCustomEndLocation && customEndLocation && addressSearch && (
+                <div className="border-t">
+                  <div className="font-medium">Final Destination:</div>
+                  <div className="pl-4">
+                    <p className="text-gray-600">{addressSearch}</p>
+                    <p className="text-gray-600">
+                      Travel Time from Last Stop:{" "}
+                      {formatDuration(routeTimings.returnTime)}
+                    </p>
+                    {routeSegments.length > 0 &&
+                      routeSegments[routeSegments.length - 1].departureTime !==
+                        undefined && (
+                        <p className="text-gray-600">
+                          Estimated Arrival:{" "}
+                          {secondsToTimeString(
+                            routeSegments[routeSegments.length - 1]
+                              .departureTime
+                              ? routeSegments[routeSegments.length - 1]
+                                  .departureTime + routeTimings.returnTime
+                              : routeTimings.returnTime
+                          )}
+                        </p>
+                      )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       {/* Map */}
       <GoogleMap
         key={mapKey}

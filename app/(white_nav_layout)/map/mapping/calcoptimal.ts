@@ -1,5 +1,5 @@
 import { Location } from "@prisma/client";
-import { RouteResult, RouteTimings } from "./types";
+import { RouteResult } from "./types";
 // First, let's define our error types
 interface LocationClosedError {
   type: "LOCATION_CLOSED";
@@ -20,7 +20,6 @@ interface RouteError {
 type OptimizationError = LocationClosedError | RouteError;
 const AVERAGE_STOP_TIME = 5 * 60;
 const BUFFER_TIME = 5 * 60;
-const MIN_DEPARTURE_BUFFER = 15 * 60;
 const permute = <T>(arr: T[]): T[][] => {
   if (arr.length <= 1) return [arr];
   const result: T[][] = [];
@@ -37,107 +36,158 @@ export const optimizeTimeRoute = async (
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng,
-  pickupTimes: { [key: string]: string } = {},
-  usePickupOrder: boolean = false
+  usePickupOrder: boolean = false,
+  departureTime: number
 ): Promise<RouteResult> => {
   const directionsService = new google.maps.DirectionsService();
-
-  // Check if any locations are closed before attempting routes
   const now = new Date();
   const currentTimeInSeconds = (now.getHours() * 60 + now.getMinutes()) * 60;
-  let startTime = currentTimeInSeconds + MIN_DEPARTURE_BUFFER;
-
-  // Validate all locations are open
-  for (const location of locations) {
-    if (!isLocationOpen(location, startTime)) {
-      throw {
-        type: "LOCATION_CLOSED",
-        message: `${location.displayName} would be closed`,
-        location,
-        details: { startTime },
-      };
-    }
-  }
-
-  // If using pickup times, sort locations by requested pickup time
-  const routeLocations =
-    Object.keys(pickupTimes).length > 0
-      ? [...locations].sort((a, b) => {
-          const timeA = pickupTimes[a.id]
-            ? timeStringToSeconds(pickupTimes[a.id])
-            : Infinity;
-          const timeB = pickupTimes[b.id]
-            ? timeStringToSeconds(pickupTimes[b.id])
-            : Infinity;
-          return timeA - timeB;
-        })
-      : locations;
-
-  // If usePickupOrder is true, don't optimize, just use the sorted order
-  if (usePickupOrder) {
-    return await calculateRouteWithTimings(
-      directionsService,
-      startLocation,
-      routeLocations,
-      endLocation,
-      startTime,
-      pickupTimes
-    );
-  }
+  //const departureTime = currentTimeInSeconds + MIN_DEPARTURE_BUFFER;
 
   try {
-    // Let Google optimize the route if we're not using pickup times
-    if (Object.keys(pickupTimes).length === 0) {
+    if (usePickupOrder) {
+      // If using manual order, just calculate with end location
       return await calculateRouteWithTimings(
         directionsService,
         startLocation,
         locations,
         endLocation,
-        startTime,
-        pickupTimes,
-        true // Use Google's optimization
+        departureTime,
+        false
       );
     }
 
-    // If we have pickup times, we need to try different permutations
-    const permutations = permute(routeLocations);
-    let bestRoute: RouteResult | null = null;
+    // Sort locations by time constraints
+    const sortedLocations = [...locations].sort((a, b) => {
+      const aWindow = getServiceWindow(a);
+      const bWindow = getServiceWindow(b);
 
-    for (const route of permutations) {
-      try {
-        const result = await calculateRouteWithTimings(
-          directionsService,
-          startLocation,
-          route,
-          endLocation,
-          startTime,
-          pickupTimes
-        );
-
-        if (!bestRoute || result.totalTime < bestRoute.totalTime) {
-          bestRoute = result;
-        }
-      } catch (error: unknown) {
-        if (
-          error &&
-          typeof error === "object" &&
-          "type" in error &&
-          error.type === "LOCATION_CLOSED"
-        ) {
-          throw error;
-        }
-        continue;
+      // If time windows are significantly different, sort by window size
+      if (Math.abs(aWindow.windowSize - bWindow.windowSize) > 60) {
+        return aWindow.windowSize - bWindow.windowSize; // Smaller window first
       }
-    }
 
-    if (!bestRoute) {
-      throw new Error("No valid routes found");
-    }
+      // If windows are similar, sort by closing time
+      return aWindow.closeTime - bWindow.closeTime;
+    });
 
-    return bestRoute;
+    // Check if we have any tight time windows
+    const hasTightWindows = sortedLocations.some((location) => {
+      const window = getServiceWindow(location);
+      return window.windowSize < 360; // Consider windows less than 6 hours as "tight"
+    });
+
+    if (hasTightWindows) {
+      // Use two-phase routing for tight windows
+      const lastLocation = sortedLocations[sortedLocations.length - 1];
+      const lastLocationLatLng = new google.maps.LatLng(
+        lastLocation.coordinates[1],
+        lastLocation.coordinates[0]
+      );
+
+      // First phase: Route through time-constrained locations
+      const intermediateResult = await calculateRouteWithTimings(
+        directionsService,
+        startLocation,
+        sortedLocations,
+        lastLocationLatLng,
+        departureTime,
+        false, // Don't optimize order since we sorted by time windows
+        true // Skip end location optimization
+      );
+
+      // Second phase: Add final leg to custom end location
+      const finalResult = await calculateFinalLeg(
+        directionsService,
+        intermediateResult,
+        endLocation
+      );
+
+      return finalResult;
+    } else {
+      // If no tight windows, let Google optimize the entire route including end location
+      return await calculateRouteWithTimings(
+        directionsService,
+        startLocation,
+        locations,
+        endLocation,
+        departureTime,
+        true // Use Google's optimization
+      );
+    }
   } catch (error) {
     throw error;
   }
+};
+
+const getServiceWindow = (
+  location: Location
+): {
+  openTime: number;
+  closeTime: number;
+  windowSize: number;
+} => {
+  const openTime = location.hours?.delivery[0]?.timeSlots[0]?.open || 0;
+  const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close || 1440;
+
+  return {
+    openTime,
+    closeTime,
+    windowSize: closeTime - openTime,
+  };
+};
+
+const calculateFinalLeg = async (
+  directionsService: google.maps.DirectionsService,
+  intermediateResult: RouteResult,
+  endLocation: google.maps.LatLng
+): Promise<RouteResult> => {
+  const lastLocation =
+    intermediateResult.route[intermediateResult.route.length - 1];
+  const lastLocationLatLng = new google.maps.LatLng(
+    lastLocation.coordinates[1],
+    lastLocation.coordinates[0]
+  );
+
+  const finalLeg = await new Promise<google.maps.DirectionsResult>(
+    (resolve, reject) => {
+      directionsService.route(
+        {
+          origin: lastLocationLatLng,
+          destination: endLocation,
+          travelMode: google.maps.TravelMode.DRIVING,
+          drivingOptions: {
+            departureTime: new Date(),
+            trafficModel: google.maps.TrafficModel.BEST_GUESS,
+          },
+        },
+        (response, status) => {
+          if (status === "OK" && response) resolve(response);
+          else reject(status);
+        }
+      );
+    }
+  );
+
+  return {
+    route: intermediateResult.route,
+    totalTime:
+      intermediateResult.totalTime +
+      (finalLeg.routes[0].legs[0].duration?.value || 0),
+    totalDistance:
+      intermediateResult.totalDistance +
+      (finalLeg.routes[0].legs[0].distance?.value || 0),
+    timings: {
+      ...intermediateResult.timings,
+      returnTime: finalLeg.routes[0].legs[0].duration?.value || 0,
+      totalTime:
+        intermediateResult.timings.totalTime +
+        (finalLeg.routes[0].legs[0].duration?.value || 0),
+      totalDistance:
+        intermediateResult.timings.totalDistance +
+        (finalLeg.routes[0].legs[0].distance?.value || 0),
+    },
+  };
 };
 
 const calculateRouteWithTimings = async (
@@ -145,15 +195,19 @@ const calculateRouteWithTimings = async (
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng,
-  startTime: number,
-  pickupTimes: { [key: string]: string },
-  optimize: boolean = false
+  departureTime: number,
+  optimize: boolean = false,
+  skipEndOptimization: boolean = false
 ): Promise<RouteResult> => {
-  // Convert locations to waypoints
   const waypoints = locations.map((loc) => ({
     location: new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0]),
     stopover: true,
   }));
+
+  // If we're skipping end optimization, remove the last waypoint
+  if (skipEndOptimization && waypoints.length > 0) {
+    waypoints.pop();
+  }
 
   const result = await new Promise<google.maps.DirectionsResult>(
     (resolve, reject) => {
@@ -162,10 +216,10 @@ const calculateRouteWithTimings = async (
           origin: startLocation,
           destination: endLocation,
           waypoints: waypoints,
-          optimizeWaypoints: optimize,
+          optimizeWaypoints: optimize && !skipEndOptimization,
           travelMode: google.maps.TravelMode.DRIVING,
           drivingOptions: {
-            departureTime: new Date(Date.now() + startTime * 1000),
+            departureTime: new Date(Date.now() + departureTime * 1000),
             trafficModel: google.maps.TrafficModel.BEST_GUESS,
           },
         },
@@ -178,76 +232,89 @@ const calculateRouteWithTimings = async (
   );
 
   const legs = result.routes[0].legs;
-  const optimizedOrder = optimize ? result.routes[0].waypoint_order : undefined;
-  const route = optimizedOrder
-    ? optimizedOrder.map((index) => locations[index])
-    : locations;
+  const route =
+    optimize && !skipEndOptimization && result.routes[0].waypoint_order
+      ? result.routes[0].waypoint_order.map((index) => locations[index])
+      : locations;
 
-  let currentTime = startTime;
+  let currentTime = departureTime;
   const segmentTimes: { [key: string]: number } = {};
   const distanceSegments: { [key: string]: number } = {};
+  const suggestedPickupTimes: { [key: string]: string } = {};
   let totalTime = 0;
   let totalDistance = 0;
 
-  // Process each leg except the last one (return to end)
+  // Process each location
   for (let i = 0; i < route.length; i++) {
     const location = route[i];
     const leg = legs[i];
     const travelTime = leg.duration?.value || 0;
     const distance = leg.distance?.value || 0;
 
-    let arrivalTime = currentTime + travelTime;
-    let pickupTime = arrivalTime + BUFFER_TIME;
-    let waitTime = 0;
+    const expectedArrival = currentTime + travelTime;
+    const openTime = getLocationOpenTime(location) * 60;
+    const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
+      ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+      : Infinity;
 
-    if (pickupTimes[location.id]) {
-      const requestedTime = timeStringToSeconds(pickupTimes[location.id]);
-      if (requestedTime > arrivalTime + BUFFER_TIME) {
-        waitTime = requestedTime - (arrivalTime + BUFFER_TIME);
-        pickupTime = requestedTime;
-      }
-    }
+    const earliestServiceStart = Math.max(
+      expectedArrival + BUFFER_TIME,
+      openTime
+    );
+    const serviceEndTime = earliestServiceStart + AVERAGE_STOP_TIME;
 
-    if (!isLocationOpen(location, pickupTime)) {
+    if (
+      !isLocationOpen(location, earliestServiceStart) ||
+      serviceEndTime > closeTime
+    ) {
       throw {
         type: "LOCATION_CLOSED",
-        message: `${location.displayName} would be closed`,
+        message: `${location.displayName} would be closed at arrival or during service`,
         location,
-        details: { pickupTime },
+        details: {
+          expectedArrival: secondsToTimeString(expectedArrival),
+          serviceStart: secondsToTimeString(earliestServiceStart),
+          serviceEnd: secondsToTimeString(serviceEndTime),
+          closeTime: secondsToTimeString(closeTime),
+          openTime: secondsToTimeString(openTime),
+        },
       };
     }
 
+    const waitTime = Math.max(0, openTime - expectedArrival);
+
     segmentTimes[location.id] = travelTime;
     distanceSegments[location.id] = distance;
+    suggestedPickupTimes[location.id] =
+      secondsToTimeString(earliestServiceStart);
 
     totalTime += travelTime + waitTime + AVERAGE_STOP_TIME;
     totalDistance += distance;
-    currentTime = pickupTime + AVERAGE_STOP_TIME;
+
+    currentTime = serviceEndTime;
   }
 
-  // Add final leg to end location
+  // Add final leg if not skipping end optimization
   const returnLeg = legs[legs.length - 1];
   const returnTime = returnLeg.duration?.value || 0;
   const returnDistance = returnLeg.distance?.value || 0;
   totalTime += returnTime;
   totalDistance += returnDistance;
 
-  const timings: RouteTimings = {
-    segmentTimes,
-    distanceSegments,
-    returnTime,
-    totalTime,
-    totalDistance,
-  };
-
   return {
     route,
     totalTime,
     totalDistance,
-    timings,
+    timings: {
+      segmentTimes,
+      distanceSegments,
+      suggestedPickupTimes,
+      returnTime,
+      totalTime,
+      totalDistance,
+    },
   };
 };
-
 // Utility functions remain the same
 export const timeStringToSeconds = (timeString: string): number => {
   const [hours, minutes] = timeString.split(":").map(Number);

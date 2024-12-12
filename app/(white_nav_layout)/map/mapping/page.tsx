@@ -88,7 +88,7 @@ const RouteOptimizerPage = async ({
     {
       id: "taste-of-smithfield",
       userId: "default-user",
-      coordinates: [-76.63274256984961, 36.981172763915765],
+      coordinates: [-76.732, 36.881],
       displayName: "Taste of Smithfield",
       type: "business",
       address: ["217 Main St", "Smithfield", "VA", "23430"],
@@ -161,8 +161,92 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 800, // 11:00 AM in minutes
-                close: 800, // 10:00 PM in minutes
+                open: 800,
+                close: 1440,
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "spring-grove",
+      userId: "default-user",
+      coordinates: [-76.87526, 37.0171],
+      displayName: "Spring Grove Store",
+      type: "business",
+      address: ["18400 Swanns Point Rd", "Spring Grove", "VA", "23881"],
+      role: "USER" as UserRole,
+      SODT: null,
+      bio: null,
+      image: null,
+      isDefault: false,
+      showPreciseLocation: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      hours: {
+        pickup: [
+          {
+            date: new Date(),
+            capacity: 0,
+            timeSlots: [
+              {
+                open: 480,
+                close: 1200,
+              },
+            ],
+          },
+        ],
+        delivery: [
+          {
+            date: new Date(),
+            capacity: 0,
+            timeSlots: [
+              {
+                open: 480, // 8:00 AM
+                close: 1200, // 8:00 PM
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "rushmere",
+      userId: "default-user",
+      coordinates: [-76.6863, 37.0523],
+      displayName: "Rushmere Store",
+      type: "business",
+      address: ["4500 Old Stage Hwy", "Smithfield", "VA", "23430"],
+      role: "USER" as UserRole,
+      SODT: null,
+      bio: null,
+      image: null,
+      isDefault: false,
+      showPreciseLocation: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      hours: {
+        pickup: [
+          {
+            date: new Date(),
+            capacity: 0,
+            timeSlots: [
+              {
+                open: 660,
+                close: 1320,
+              },
+            ],
+          },
+        ],
+        delivery: [
+          {
+            date: new Date(),
+            capacity: 0,
+            timeSlots: [
+              {
+                open: 660, // 11:00 AM
+                close: 1320, // 10:00 PM
               },
             ],
           },
