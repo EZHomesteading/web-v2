@@ -781,7 +781,7 @@ const RouteOptimizer = ({
         zoom={12}
         options={{
           zoomControl: true,
-          maxZoom: 10,
+          maxZoom: 13,
           minZoom: 9,
           streetViewControl: false,
           mapTypeControl: false,
