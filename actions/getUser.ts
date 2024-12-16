@@ -466,6 +466,7 @@ export interface BasketLocation {
   id: string;
   coordinates: number[] | null;
   address: string[] | null;
+  role: UserRole;
   user: {
     id: string;
   };
@@ -481,6 +482,7 @@ const getUserLocationsBasket = async (): Promise<BasketLocation[] | null> => {
         id: true,
         coordinates: true,
         address: true,
+        role: true,
         user: {
           select: {
             id: true,
