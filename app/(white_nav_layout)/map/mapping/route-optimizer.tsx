@@ -62,15 +62,15 @@ interface RandomizedLocation {
 }
 
 const RouteOptimizer = ({
+  initialTime,
   locations,
   googleMapsApiKey,
   initialLocation,
-  userRole,
 }: RouteOptimizerProps) => {
   // State Management
   const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
   const [selectedDepartureTime, setSelectedDepartureTime] =
-    useState<Date | null>(null);
+    useState<Date | null>(initialTime || null);
   const [routeTimings, setRouteTimings] = useState<RouteTimings>({
     segmentTimes: {},
     returnTime: 0,
@@ -80,11 +80,12 @@ const RouteOptimizer = ({
     suggestedPickupTimes: {},
   });
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(
-    null
+    new google.maps.LatLng(initialLocation[1], initialLocation[0]) || null
   );
   const [endLocation, setEndLocation] = useState<google.maps.LatLng | null>(
     null
   );
+
   const [randomizedPositions, setRandomizedPositions] = useState<{
     [key: string]: RandomizedLocation;
   }>({});
@@ -99,8 +100,16 @@ const RouteOptimizer = ({
     lat: number;
     lng: number;
   } | null>(null);
+  const [customStartLocation, setCustomStartLocation] = useState<{} | null>(
+    initialLocation || null
+  );
+  const [useCustomStartLocation, setUseCustomStartLocation] = useState(false);
+  const [startLocation, setStartLocation] = useState<google.maps.LatLng | null>(
+    new google.maps.LatLng(initialLocation[1], initialLocation[0]) || null
+  );
   const [mapKey, setMapKey] = useState(0);
   const [useCustomEndLocation, setUseCustomEndLocation] = useState(false);
+
   const [addressSearch, setAddressSearch] = useState("");
   const [timeValidations, setTimeValidations] = useState<{
     [key: string]: TimeValidation;
@@ -111,8 +120,7 @@ const RouteOptimizer = ({
     description: "",
   });
   const [usePickupOrder, setUsePickupOrder] = useState(false);
-  const [orderedLocations, setOrderedLocations] =
-    useState<Location[]>(locations);
+  const [orderedLocations, setOrderedLocations] = useState<any[]>(locations);
   const onDragEnd = (result: any) => {
     if (!result.destination || !usePickupOrder) return;
 
@@ -160,7 +168,10 @@ const RouteOptimizer = ({
   }, [locations]);
   // Refs
   const mapRef = useRef<google.maps.Map | null>(null);
-  const searchBoxRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const startSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(
+    null
+  );
+  const endSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   // Load Google Maps
   const { isLoaded } = useLoadScript({
@@ -302,7 +313,8 @@ const RouteOptimizer = ({
   const BUFFER_TIME = 0 * 60;
   const MIN_DEPARTURE_BUFFER = 30 * 60;
   const calculateRoute = async () => {
-    if (!userLocation || locations.length === 0) return;
+    const startingPoint = startLocation;
+    if (!startingPoint || locations.length === 0) return;
     clearMap();
 
     try {
@@ -315,9 +327,9 @@ const RouteOptimizer = ({
         : (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
 
       const optimizedResult = await optimizeTimeRoute(
-        userLocation,
+        startingPoint,
         usePickupOrder ? orderedLocations : locations,
-        endLocation || userLocation,
+        endLocation || startingPoint,
         usePickupOrder,
         startTime
       );
@@ -469,29 +481,42 @@ const RouteOptimizer = ({
     }
   };
 
-  const onPlaceSelected = (place: google.maps.places.PlaceResult) => {
+  const onStartPlaceSelected = (place: google.maps.places.PlaceResult) => {
     if (place.geometry?.location) {
       const newLocation = {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng(),
       };
-
-      setCustomEndLocation(newLocation);
-      setEndLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
-      setAddressSearch(place.formatted_address || "");
+      setCustomStartLocation(newLocation);
+      setUserLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+      setStartLocation(
+        new google.maps.LatLng(newLocation.lat, newLocation.lng)
+      );
 
       if (mapRef.current) {
         mapRef.current.panTo(newLocation);
         mapRef.current.setZoom(15);
       }
 
-      showNotification(
-        "End Location Set",
-        `End location set to: ${place.formatted_address}`
-      );
+      clearMap();
     }
   };
 
+  const onEndPlaceSelected = (place: google.maps.places.PlaceResult) => {
+    if (place.geometry?.location) {
+      const newLocation = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setCustomEndLocation(newLocation);
+      setEndLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+      setAddressSearch(place.formatted_address || "");
+      if (mapRef.current) {
+        mapRef.current.panTo(newLocation);
+        mapRef.current.setZoom(15);
+      }
+    }
+  };
   // Notification helpers
   const showNotification = (
     title: string,
@@ -510,29 +535,31 @@ const RouteOptimizer = ({
   useEffect(() => {
     if (!isLoaded) return;
 
-    setUserLocation(
-      new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-    );
+    // Only set initial location if no custom start location is set
+    if (!customStartLocation) {
+      setUserLocation(
+        new google.maps.LatLng(initialLocation[1], initialLocation[0])
+      );
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation(
-            new google.maps.LatLng(
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = new google.maps.LatLng(
               position.coords.latitude,
               position.coords.longitude
-            )
-          );
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setUserLocation(
-            new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-          );
-        }
-      );
+            );
+            setUserLocation(newLocation);
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            setUserLocation(
+              new google.maps.LatLng(initialLocation[1], initialLocation[0])
+            );
+          }
+        );
+      }
     }
-  }, [isLoaded, initialLocation]);
+  }, [isLoaded, initialLocation, customStartLocation]);
 
   if (!isLoaded) return <div>Loading...</div>;
 
@@ -544,7 +571,15 @@ const RouteOptimizer = ({
         onSubmit={handleDepartureTimeSet}
         currentTime={selectedDepartureTime || new Date()}
       />
-      {/* Left Panel */}
+      {!userLocation && (
+        <Card className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] w-[500px] p-6 text-center">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-gray-800">
+              Set a Start Location to Continue
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      )}
       <Card className="absolute top-4 left-4 z-10 w-96 pt-6">
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
           <div className="">
@@ -607,7 +642,8 @@ const RouteOptimizer = ({
                                   <span
                                     className={`${outfitFont.className} font-medium truncate`}
                                   >
-                                    {index + 1}. {location.displayName}
+                                    {index + 1}.{" "}
+                                    {location.displayName || location.user.name}
                                   </span>
                                 </div>
                               </div>
@@ -639,6 +675,56 @@ const RouteOptimizer = ({
                 className={`${outfitFont.className} flex items-center gap-2`}
               >
                 <Switch
+                  checked={useCustomStartLocation}
+                  onCheckedChange={(checked1) => {
+                    setUseCustomStartLocation(checked1);
+                    if (!checked1) {
+                      setStartLocation(null);
+                      setCustomStartLocation(null);
+                      setAddressSearch("");
+                    }
+                  }}
+                />
+                <span>
+                  {!userLocation
+                    ? "Set Start Location"
+                    : "Different Start Location"}
+                </span>
+              </label>
+              {useCustomStartLocation && (
+                <div className="space-y-2">
+                  <Label>Start Location Address</Label>
+                  <div className="relative" style={{ zIndex: 9999998 }}>
+                    <Autocomplete
+                      onLoad={(autocomplete) => {
+                        startSearchBoxRef.current = autocomplete;
+                      }}
+                      onPlaceChanged={() => {
+                        if (startSearchBoxRef.current) {
+                          const place = startSearchBoxRef.current.getPlace();
+                          onStartPlaceSelected(place);
+                        }
+                      }}
+                      options={{
+                        componentRestrictions: { country: "us" },
+                        fields: ["formatted_address", "geometry", "name"],
+                        types: ["address"],
+                      }}
+                    >
+                      <Input
+                        type="text"
+                        placeholder="Enter start address..."
+                        className="w-full google-maps-input"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Autocomplete>
+                  </div>
+                </div>
+              )}
+              <label
+                className={`${outfitFont.className} flex items-center gap-2`}
+              >
+                <Switch
                   checked={useCustomEndLocation}
                   onCheckedChange={(checked) => {
                     setUseCustomEndLocation(checked);
@@ -653,30 +739,34 @@ const RouteOptimizer = ({
               </label>
 
               {useCustomEndLocation && (
-                <div className="space-y-2">
+                <div className="autocomplete-wrapper">
                   <Label>End Location Address</Label>
-                  <Autocomplete
-                    onLoad={(autocomplete) => {
-                      searchBoxRef.current = autocomplete;
-                    }}
-                    onPlaceChanged={() => {
-                      if (searchBoxRef.current) {
-                        const place = searchBoxRef.current.getPlace();
-                        onPlaceSelected(place);
-                      }
-                    }}
-                    options={{
-                      componentRestrictions: { country: "us" },
-                      fields: ["formatted_address", "geometry", "name"],
-                      types: ["address"],
-                    }}
-                  >
-                    <Input
-                      type="text"
-                      placeholder="Enter an address..."
-                      className="w-full"
-                    />
-                  </Autocomplete>
+                  <div className="relative isolate">
+                    <div className="relative" style={{ zIndex: 9999998 }}>
+                      <Autocomplete
+                        onLoad={(autocomplete) => {
+                          endSearchBoxRef.current = autocomplete;
+                        }}
+                        onPlaceChanged={() => {
+                          if (endSearchBoxRef.current) {
+                            const place = endSearchBoxRef.current.getPlace();
+                            onEndPlaceSelected(place);
+                          }
+                        }}
+                        options={{
+                          componentRestrictions: { country: "us" },
+                          fields: ["formatted_address", "geometry", "name"],
+                          types: ["address"],
+                        }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Enter end address..."
+                          className="w-full"
+                        />
+                      </Autocomplete>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -797,9 +887,15 @@ const RouteOptimizer = ({
         }}
       >
         {/* Starting Location Marker */}
-        {userLocation && (
+        {(startLocation || userLocation) && (
           <MarkerF
-            position={userLocation}
+            position={
+              startLocation?.toJSON() ||
+              userLocation?.toJSON() || {
+                lat: initialLocation[1],
+                lng: initialLocation[0],
+              }
+            }
             icon={{
               url: "/icons/clipart2825061.png",
               scaledSize: new google.maps.Size(64, 76),
@@ -864,7 +960,10 @@ const RouteOptimizer = ({
                   )
                 }
                 label={{
-                  text: location.displayName || "no name found",
+                  text:
+                    location.displayName ||
+                    location.user.name ||
+                    "no name found",
                   color: "black",
                   fontSize: "14px",
                   fontWeight: "bold",
@@ -906,7 +1005,7 @@ const RouteOptimizer = ({
         )}
 
         {/* Connect locations with straight lines and arrows */}
-        {optimizedRoute.length > 1 && (
+        {optimizedRoute.length > 0 && (
           <>
             {/* Line from starting location to first location */}
             {userLocation && randomizedPositions[optimizedRoute[0].id] && (

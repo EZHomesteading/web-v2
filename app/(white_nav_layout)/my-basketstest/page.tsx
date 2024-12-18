@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import getActiveBaskets from "@/actions/basket/get/active";
-import { getUserLocationsBasket } from "@/actions/getUser";
+import { getUserLocations, getUserLocationsBasket } from "@/actions/getUser";
 import getUnique from "@/actions/basket/get/unique";
 import DetailedBasketGrid from "./components/DetailedBasketGrid";
 
@@ -26,6 +26,7 @@ const BasketPage = async () => {
   const detailedBaskets = (await Promise.all(detailedBasketsPromises)).filter(
     Boolean
   );
+  const userLoc = await getUserLocations({ userId: session.user.id });
 
   return (
     <DetailedBasketGrid
@@ -34,6 +35,7 @@ const BasketPage = async () => {
       userLocs={userLocs}
       mk={mk}
       userId={session.user.id}
+      userLoc={userLoc || null}
     />
   );
 };

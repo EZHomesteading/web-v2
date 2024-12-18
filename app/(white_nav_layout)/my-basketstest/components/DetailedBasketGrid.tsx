@@ -54,6 +54,7 @@ interface DetailedBasketGridProps {
   userLocs: BasketLocation[] | null;
   mk: string | undefined;
   userId: string;
+  userLoc: any;
 }
 
 interface DetailedBasketCardProps {
@@ -79,6 +80,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
   baskets,
   mapsKey,
   userLocs,
+  userLoc,
   mk,
   userId,
 }) => {
@@ -97,29 +99,26 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
 
   // Filter locations based on their current mode
   const locations = useMemo(() => {
-    console.log("Recalculating locations with basketModes:", basketModes);
+    //console.log("Recalculating locations with basketModes:", basketModes);
 
     const filteredLocations = baskets.reduce(
       (acc: BasketLocation[], basket) => {
         if (basket.location) {
           const basketMode = basketModes[basket.id];
-          const isCoopLocation = basket.location.role === "COOP";
 
-          console.log("Checking location:", {
-            basketId: basket.id,
-            mode: basketMode,
-            isCoop: isCoopLocation,
-            locationId: basket.location.id,
-            role: basket.location.role,
-          });
+          // console.log("Checking location:", {
+          //   basketId: basket.id,
+          //   mode: basketMode,
+          //   isCoop: isCoopLocation,
+          //   locationId: basket.location.id,
+          //   role: basket.location.role,
+          // });
 
           // Include location if:
-          // - It's a COOP and in PICKUP mode
-          // OR
-          // - It's not a COOP and in PICKUP mode
+          // - It's in PICKUP mode
           if (basketMode === DeliveryPickupToggleMode.PICKUP) {
             acc.push(basket.location);
-            console.log("Adding location:", basket.location.id);
+            // console.log("Adding location:", basket.location.id);
           }
         }
         return acc;
@@ -127,7 +126,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
       []
     );
 
-    console.log("Filtered locations:", filteredLocations);
+    //console.log("Filtered locations:", filteredLocations);
     return filteredLocations;
   }, [baskets, basketModes]);
 
@@ -135,13 +134,13 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
     basketId: string,
     mode: DeliveryPickupToggleMode
   ) => {
-    console.log("Mode change requested:", { basketId, mode });
+    //console.log("Mode change requested:", { basketId, mode });
     setBasketModes((prev) => {
       const newModes = {
         ...prev,
         [basketId]: mode,
       };
-      console.log("New basket modes:", newModes);
+      // console.log("New basket modes:", newModes);
       return newModes;
     });
   };
@@ -211,21 +210,13 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
               />
             ))}
           </div>
-
-          <div className="lg:hidden mt-8">
-            <OrderSummaryCard />
-            <AvailabilityMap
-              locations={locations}
-              mapsKey={mapsKey}
-              key={locations.length} // Add key to force re-render
-            />
-          </div>
         </div>
 
         <div className="hidden lg:block w-[35%] pt-6">
           <div className="fixed w-[calc(35%-2rem)]">
             <OrderSummaryCard />
             <AvailabilityMap
+              userLoc={userLoc}
               locations={locations}
               mapsKey={mapsKey}
               key={locations.length} // Add key to force re-render
@@ -239,9 +230,6 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
 
 const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
   basket,
-  userLocs,
-  mk,
-  userId,
   onModeChange,
 }) => {
   const over_768px = useMediaQuery("(min-width: 768px)");

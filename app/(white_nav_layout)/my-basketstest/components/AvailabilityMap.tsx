@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import useMediaQuery from "@/hooks/media-query";
 import { Calendar } from "@/components/ui/calendar";
 import TimePicker from "./time.picker";
+import RouteOptimizerModal from "./map/route-optimizer";
 
 interface LocationStatus {
   isOpen: boolean;
@@ -49,38 +50,11 @@ interface DateTimePickerProps {
   triggerRef: React.RefObject<HTMLButtonElement>;
 }
 interface AvailabilityMapProps {
+  userLoc: any;
   mapsKey: string;
   locations: any[];
 }
-const convertTimeStringToMinutes = (timeString: string): number => {
-  const [time, period] = timeString.split(" ");
-  const [hours, minutes] = time.split(":").map(Number);
-  let totalMinutes = hours * 60 + minutes;
 
-  if (period === "PM" && hours !== 12) {
-    totalMinutes += 12 * 60;
-  } else if (period === "AM" && hours === 12) {
-    totalMinutes -= 12 * 60;
-  }
-
-  return totalMinutes;
-};
-
-const convertMinutesToTimeString = (minutes: number): string => {
-  let hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  const period = hours >= 12 ? "PM" : "AM";
-
-  if (hours > 12) {
-    hours -= 12;
-  } else if (hours === 0) {
-    hours = 12;
-  }
-
-  return `${hours.toString().padStart(2, "0")}:${mins
-    .toString()
-    .padStart(2, "0")} ${period}`;
-};
 const DateTimePicker: React.FC<DateTimePickerProps> = ({
   selectedDate,
   selectedTime,
@@ -154,9 +128,8 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     if (over_640px) {
       return {
         top: rect.bottom + 8,
-        left: -20,
-        width: 700,
-        height: 550,
+        width: 450,
+        height: 450,
         opacity: 1,
       };
     }
@@ -235,7 +208,10 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                       selected={tempDate}
                       onSelect={handleDateSelect}
                       className="rounded-md border shadow"
-                      disabled={(date) => date < new Date()}
+                      disabled={(date) => {
+                        const today = new Date();
+                        return date < new Date(today.setHours(0, 0, 0, 0));
+                      }}
                     />
                   </div>
                 ) : (
@@ -275,6 +251,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
   );
 };
 const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
+  userLoc,
   locations,
   mapsKey,
 }) => {
@@ -291,6 +268,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   const [locationStatuses, setLocationStatuses] = useState<LocationStatuses>(
     {}
   );
+  const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
   const [showUnavailableDialog, setShowUnavailableDialog] = useState(false);
   const [unavailableLocations, setUnavailableLocations] = useState<
     Array<{
@@ -413,19 +391,6 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   useEffect(() => {
     // Get current date and time
     const now = new Date();
-
-    // Format date for input field
-    const formattedDate = now.toISOString().split("T")[0];
-
-    // Format time for input field (HH:mm)
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-
-    // Set the input fields
-    setSelectedDate(formattedDate);
-    setSelectedTime(formattedTime);
-
     // Calculate minutes since midnight
     const timeInMinutes = now.getHours() * 60 + now.getMinutes();
 
@@ -482,8 +447,22 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   if (!isLoaded) {
     return <div>Loading maps...</div>;
   }
+  const createDateFromStrings = (dateStr: string, timeStr: string): Date => {
+    // timeStr is in format "HH:mm" (24-hour)
+    // dateStr is in format "YYYY-MM-DD"
+    return new Date(`${dateStr}T${timeStr}`);
+  };
+  console.log(userLoc);
   return (
     <div className="mt-8">
+      <RouteOptimizerModal
+        selectedTime={createDateFromStrings(selectedDate, selectedTime)}
+        isOpen={isRouteModalOpen}
+        onClose={() => setIsRouteModalOpen(false)}
+        locations={locations}
+        googleMapsApiKey={mapsKey}
+        initialLocation={userLoc[0].coordinates || null}
+      />
       <Card className="p-4 mb-4">
         <div className="flex justify-between items-center">
           <button
@@ -538,78 +517,87 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
           </div>
         </DialogContent>
       </Dialog>
+      <div className="h-[400px] rounded-lg overflow-hidden relative">
+        {selectedDate && selectedTime && (
+          <Button
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-blue-600 hover:bg-blue-700 shadow-lg"
+            onClick={() => setIsRouteModalOpen(true)}
+          >
+            Create a Route for {getDisplayText()}
+          </Button>
+        )}
+        <div className="h-[400px] rounded-lg overflow-hidden">
+          <GoogleMap
+            key={mapsKey}
+            mapContainerClassName="w-full h-full"
+            center={mapCenter}
+            zoom={9}
+            onLoad={(map) => {
+              mapRef.current = map;
+              setZoom(map.getZoom() || 9);
+            }}
+            onZoomChanged={() => {
+              if (mapRef.current) {
+                setZoom(mapRef.current.getZoom() || 9);
+              }
+            }}
+            options={{
+              zoomControl: true,
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+              minZoom: 6,
+              maxZoom: 10,
+              scaleControl: true, // Enable scale control
+            }}
+          >
+            {locations.map((location) => {
+              const status = locationStatuses[location.id] || {
+                isOpen: true,
+                willOpen: false,
+                closesSoon: false,
+              };
+              const colors = getLocationStatusColor(status);
+              const position = randomizedPositions[location.id];
 
-      <div className="h-[400px] rounded-lg overflow-hidden">
-        <GoogleMap
-          key={mapsKey}
-          mapContainerClassName="w-full h-full"
-          center={mapCenter}
-          zoom={9}
-          onLoad={(map) => {
-            mapRef.current = map;
-            setZoom(map.getZoom() || 9);
-          }}
-          onZoomChanged={() => {
-            if (mapRef.current) {
-              setZoom(mapRef.current.getZoom() || 9);
-            }
-          }}
-          options={{
-            zoomControl: true,
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: false,
-            minZoom: 6,
-            maxZoom: 10,
-            scaleControl: true, // Enable scale control
-          }}
-        >
-          {locations.map((location) => {
-            const status = locationStatuses[location.id] || {
-              isOpen: true,
-              willOpen: false,
-              closesSoon: false,
-            };
-            const colors = getLocationStatusColor(status);
-            const position = randomizedPositions[location.id];
+              if (!position) return null;
 
-            if (!position) return null;
-
-            return (
-              <Circle
-                key={location.id}
-                center={{
-                  lat: position.randomLat,
-                  lng: position.randomLng,
-                }}
-                radius={
-                  zoom >= 16
-                    ? 60
-                    : zoom >= 15
-                    ? 120
-                    : zoom >= 14
-                    ? 240
-                    : zoom >= 13
-                    ? 500
-                    : zoom >= 12
-                    ? 1000
-                    : zoom >= 11
-                    ? 2000
-                    : zoom >= 10
-                    ? 4000
-                    : 8000
-                }
-                options={{
-                  strokeColor: colors.strokeColor,
-                  strokeOpacity: 0.8,
-                  strokeWeight: colors.strokeWeight || 2,
-                  fillColor: colors.fillColor,
-                  fillOpacity: 0.35,
-                }}
-              />
-            );
-          })}
-        </GoogleMap>
+              return (
+                <Circle
+                  key={location.id}
+                  center={{
+                    lat: position.randomLat,
+                    lng: position.randomLng,
+                  }}
+                  radius={
+                    zoom >= 16
+                      ? 60
+                      : zoom >= 15
+                      ? 120
+                      : zoom >= 14
+                      ? 240
+                      : zoom >= 13
+                      ? 500
+                      : zoom >= 12
+                      ? 1000
+                      : zoom >= 11
+                      ? 2000
+                      : zoom >= 10
+                      ? 4000
+                      : 8000
+                  }
+                  options={{
+                    strokeColor: colors.strokeColor,
+                    strokeOpacity: 0.8,
+                    strokeWeight: colors.strokeWeight || 2,
+                    fillColor: colors.fillColor,
+                    fillOpacity: 0.35,
+                  }}
+                />
+              );
+            })}
+          </GoogleMap>
+        </div>{" "}
       </div>
       <div className="mt-4 flex gap-4 justify-center">
         <div className="flex items-center gap-2">

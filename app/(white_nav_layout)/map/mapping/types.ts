@@ -2,13 +2,10 @@
 import { Location, UserRole } from "@prisma/client";
 
 export interface RouteOptimizerProps {
-  locations: Location[];
+  initialTime: Date;
+  locations: any[];
   googleMapsApiKey: string;
-  initialLocation: {
-    lat: number;
-    lng: number;
-  };
-  userRole: UserRole;
+  initialLocation: number[];
 }
 export interface initialLocation {
   lat: number;
