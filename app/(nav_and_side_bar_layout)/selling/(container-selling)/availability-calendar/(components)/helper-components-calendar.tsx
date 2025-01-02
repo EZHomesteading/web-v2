@@ -52,7 +52,7 @@ const DeliveryPickupToggle = ({
             <>
               {mode === DeliveryPickupToggleMode.DELIVERY
                 ? "Delivery"
-                : "Pickup & Dropoff"}
+                : "Pickup"}
             </>
           )}
           <div className="border-r h-full pl-1" />
@@ -69,8 +69,10 @@ const DeliveryPickupToggle = ({
           <DropdownMenuRadioItem value={DeliveryPickupToggleMode.DELIVERY}>
             <div className="flex items-center justify-between w-full pb-3 p-1">
               <div className="flex flex-col items-start">
-                <div className="text-xl font-medium">Delivery Hours</div>
-                <div className="text-xs">Times you are able to deliver</div>
+                <div className="text-xl font-medium">Delivery</div>
+                <div className="text-xs">
+                  Times this seller is able to deliver
+                </div>
               </div>
               <div
                 className={`rounded-full border p-[.4rem] ml-20 ${
@@ -87,15 +89,9 @@ const DeliveryPickupToggle = ({
           <DropdownMenuRadioItem value={DeliveryPickupToggleMode.PICKUP}>
             <div className="flex items-center justify-between w-full p-1">
               <div className="flex flex-col items-start">
-                <div className="text-xl font-medium">
-                  Pickup & Dropoff Hours
-                </div>
+                <div className="text-xl font-medium">Pickup</div>
                 <div className="text-xs">
-                  Times for accepting deliveries or pickups
-                  <div>
-                    You may not need to be present <div></div>depending on
-                    item(s) perishability
-                  </div>
+                  Set this item for pickup and set up a route
                 </div>
               </div>
               <div
@@ -110,9 +106,6 @@ const DeliveryPickupToggle = ({
             </div>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
-        <div className="px-2 w-full mt-2">
-          <Button className="w-full">More Info</Button>
-        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -21,7 +21,6 @@ declare module "next-auth" {
     openClosedTemplates?: any;
     SODT: number;
     role: UserRole;
-    location: Location[];
     canRecievePayouts?: boolean;
   }
 
