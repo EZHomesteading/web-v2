@@ -126,8 +126,8 @@ const getServiceWindow = (
   closeTime: number;
   windowSize: number;
 } => {
-  const openTime = location.hours?.delivery[0]?.timeSlots[0]?.open || 0;
-  const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close || 1440;
+  const openTime = location.hours?.pickup[0]?.timeSlots[0]?.open || 0;
+  const closeTime = location.hours?.pickup[0]?.timeSlots[0]?.close || 1440;
 
   return {
     openTime,
@@ -252,8 +252,8 @@ const calculateRouteWithTimings = async (
 
     const expectedArrival = currentTime + travelTime;
     const openTime = getLocationOpenTime(location) * 60;
-    const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
-      ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+    const closeTime = location.hours?.pickup[0]?.timeSlots[0]?.close
+      ? location.hours?.pickup[0]?.timeSlots[0]?.close * 60
       : Infinity;
 
     const earliestServiceStart = Math.max(
@@ -357,7 +357,7 @@ export const metersToMiles = (meters: number): number => {
 // Location validation functions remain the same
 export const getLocationOpenTime = (location: Location): number => {
   const today = new Date().toISOString().split("T")[0];
-  const todayDeliverySlot = location.hours?.delivery?.find((slot) => {
+  const todayDeliverySlot = location.hours?.pickup?.find((slot) => {
     if (!slot) return false;
     return new Date(slot.date).toISOString().split("T")[0] === today;
   });
@@ -378,7 +378,7 @@ export const isLocationOpen = (
   timeInSeconds: number
 ): boolean => {
   const today = new Date().toISOString().split("T")[0];
-  const todayDeliverySlot = location.hours?.delivery?.find((slot) => {
+  const todayDeliverySlot = location.hours?.pickup?.find((slot) => {
     if (!slot) return false;
     return new Date(slot.date).toISOString().split("T")[0] === today;
   });

@@ -52,6 +52,7 @@ interface DateTimePickerProps {
 interface AvailabilityMapProps {
   userLoc: any;
   mapsKey: string;
+  setPickupTimes: any;
   locations: any[];
 }
 
@@ -254,6 +255,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   userLoc,
   locations,
   mapsKey,
+  setPickupTimes,
 }) => {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -318,32 +320,46 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   }, [locations]);
 
   const findNextOpenTime = (location: any, selectedDateTime: Date): string => {
-    if (!location.hours?.delivery?.[0]?.timeSlots?.[0]) {
-      return "No schedule available";
-    }
+    const hours = location.hours?.pickup;
+    if (!hours?.length) return "No schedule available";
 
-    const openHour = location.hours.delivery[0].timeSlots[0].open;
-    const closeHour = location.hours.delivery[0].timeSlots[0].close;
-    let nextDate = new Date(selectedDateTime);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
 
-    // If current time is after closing, move to next day
-    if (selectedDateTime.getHours() >= closeHour) {
-      nextDate.setDate(nextDate.getDate() + 1);
-      nextDate.setHours(openHour, 0, 0, 0);
-    } else if (selectedDateTime.getHours() < openHour) {
-      // If current time is before opening, set to opening time today
-      nextDate.setHours(openHour, 0, 0, 0);
-    }
-
-    return nextDate.toLocaleString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
+    // Find today's or next available schedule
+    const currentSchedule = hours.find((day: any) => {
+      const scheduleDate = new Date(day.date);
+      return scheduleDate.getTime() >= now.getTime();
     });
-  };
 
+    if (!currentSchedule) return "No upcoming availability";
+
+    const formatTime = (minutes: number) => {
+      const hour = Math.floor(minutes / 60);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:00${ampm}`;
+    };
+
+    const formatDate = (date: Date) => {
+      const day = date.getDate();
+      const suffix = ["th", "st", "nd", "rd"][day % 10 > 3 ? 0 : day % 10];
+      return `${date.toLocaleString("en-US", {
+        month: "short",
+      })} ${day}${suffix}`;
+    };
+
+    const scheduleDate = new Date(currentSchedule.date);
+    const { open } = currentSchedule.timeSlots[0];
+
+    if (scheduleDate.getTime() === now.getTime()) {
+      return `Opens today at ${formatTime(open)}`;
+    }
+
+    return `Opens on ${scheduleDate.toLocaleString("en-US", {
+      weekday: "long",
+    })} on ${formatDate(scheduleDate)}, at ${formatTime(open)}`;
+  };
   const checkLocationAvailability = (): void => {
     if (!selectedDate || !selectedTime) {
       alert("Please select both date and time");
@@ -357,64 +373,82 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
     const newStatuses: LocationStatuses = {};
 
     locations.forEach((location) => {
-      let isOpen = false;
-      let willOpen = false;
-      let closesSoon = false;
+      const selectedDateSchedule = location.hours?.pickup?.find((day: any) => {
+        const scheduleDate = new Date(day.date);
+        return (
+          scheduleDate.getDate() === selectedDateTime.getDate() &&
+          scheduleDate.getMonth() === selectedDateTime.getMonth() &&
+          scheduleDate.getFullYear() === selectedDateTime.getFullYear()
+        );
+      });
 
-      if (location.hours?.delivery?.[0]?.timeSlots?.[0]) {
-        const openTime = location.hours.delivery[0].timeSlots[0].open * 60;
-        const closeTime = location.hours.delivery[0].timeSlots[0].close * 60;
+      const isOpen = selectedDateSchedule?.timeSlots[0]
+        ? timeInMinutes >= selectedDateSchedule.timeSlots[0].open &&
+          timeInMinutes <= selectedDateSchedule.timeSlots[0].close
+        : false;
 
-        isOpen = timeInMinutes >= openTime && timeInMinutes <= closeTime;
-        willOpen = timeInMinutes < openTime;
-        closesSoon = isOpen && closeTime - timeInMinutes <= 30;
+      newStatuses[location.id] = {
+        isOpen,
+        willOpen:
+          selectedDateSchedule?.timeSlots[0] &&
+          timeInMinutes < selectedDateSchedule.timeSlots[0].open,
+        closesSoon:
+          isOpen &&
+          selectedDateSchedule?.timeSlots[0] &&
+          selectedDateSchedule.timeSlots[0].close - timeInMinutes <= 30,
+      };
 
-        if (!isOpen) {
-          unavailable.push({
-            name:
-              location.displayName || location.user?.name || "Unknown Location",
-            nextOpenTime: findNextOpenTime(location, selectedDateTime),
-          });
-        }
+      if (!isOpen) {
+        unavailable.push({
+          name:
+            location.displayName || location.user?.name || "Unknown Location",
+          nextOpenTime: findNextOpenTime(location, selectedDateTime),
+        });
       }
-
-      newStatuses[location.id] = { isOpen, willOpen, closesSoon };
     });
 
     setLocationStatuses(newStatuses);
-
     if (unavailable.length > 0) {
       setUnavailableLocations(unavailable);
       setShowUnavailableDialog(true);
     }
   };
   useEffect(() => {
-    // Get current date and time
     const now = new Date();
-    // Calculate minutes since midnight
     const timeInMinutes = now.getHours() * 60 + now.getMinutes();
 
-    // Check each location's availability
     const initialStatuses: LocationStatuses = {};
     locations.forEach((location) => {
-      let isOpen = false;
-      let willOpen = false;
-      let closesSoon = false;
+      const hours = location.hours?.pickup;
+      const todaySchedule = hours?.find((day: any) => {
+        const scheduleDate = new Date(day.date);
+        const today = new Date();
+        return (
+          scheduleDate.getDate() === today.getDate() &&
+          scheduleDate.getMonth() === today.getMonth() &&
+          scheduleDate.getFullYear() === today.getFullYear()
+        );
+      });
 
-      if (location.hours?.delivery?.[0]?.timeSlots?.[0]) {
-        const openTime = location.hours.delivery[0].timeSlots[0].open * 60;
-        const closeTime = location.hours.delivery[0].timeSlots[0].close * 60;
+      const isOpen = todaySchedule?.timeSlots[0]
+        ? timeInMinutes >= todaySchedule.timeSlots[0].open &&
+          timeInMinutes <= todaySchedule.timeSlots[0].close
+        : false;
 
-        isOpen = timeInMinutes >= openTime && timeInMinutes <= closeTime;
-        willOpen = timeInMinutes < openTime;
-        closesSoon = isOpen && closeTime - timeInMinutes <= 30;
-      }
-
-      initialStatuses[location.id] = { isOpen, willOpen, closesSoon };
+      initialStatuses[location.id] = {
+        isOpen,
+        willOpen:
+          todaySchedule?.timeSlots[0] &&
+          timeInMinutes < todaySchedule.timeSlots[0].open,
+        closesSoon:
+          isOpen &&
+          todaySchedule?.timeSlots[0] &&
+          todaySchedule.timeSlots[0].close - timeInMinutes <= 30,
+      };
     });
 
     setLocationStatuses(initialStatuses);
-  }, []);
+  }, [locations]);
   const getLocationStatusColor = (
     status: LocationStatus
   ): {
@@ -462,6 +496,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         locations={locations}
         googleMapsApiKey={mapsKey}
         initialLocation={userLoc[0].coordinates || null}
+        setPickupTimes={setPickupTimes}
       />
       <Card className="p-4 mb-4">
         <div className="flex justify-between items-center">

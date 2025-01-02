@@ -45,8 +45,8 @@ import {
   RouteSegment,
   RouteTimings,
 } from "./types";
-import RouteSegmentDisplay from "./routsegment";
 import DepartureTimePicker from "./departureTime";
+import { toast } from "sonner";
 interface LocationStatus {
   isOpen: boolean;
   willBeOpen: boolean;
@@ -60,12 +60,15 @@ interface RandomizedLocation {
   randomLat: number;
   randomLng: number;
 }
+type ExtendedLocation = Location & { user?: { name: string } };
 
 const RouteOptimizer = ({
   initialTime,
   locations,
   googleMapsApiKey,
   initialLocation,
+  onClose,
+  setCartPickupTimes,
 }: RouteOptimizerProps) => {
   // State Management
   const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
@@ -93,7 +96,7 @@ const RouteOptimizer = ({
     [key: string]: LocationStatus;
   }>({});
   const [zoom, setZoom] = useState(12);
-  const [optimizedRoute, setOptimizedRoute] = useState<Location[]>([]);
+  const [optimizedRoute, setOptimizedRoute] = useState<ExtendedLocation[]>([]);
   const [routeSegments, setRouteSegments] = useState<RouteSegment[]>([]);
   const [pickupTimes, setPickupTimes] = useState<{ [key: string]: string }>({});
   const [customEndLocation, setCustomEndLocation] = useState<{
@@ -242,7 +245,25 @@ const RouteOptimizer = ({
 
     return { isValid: true, message: "" };
   };
-  const getLocationStatusColor = (status: LocationStatus) => {
+  const getLocationStatusColor = (
+    location: Location,
+    status: LocationStatus
+  ) => {
+    if (selectedDepartureTime) {
+      const departureDate = new Date(selectedDepartureTime);
+      const matchingSlot = location.hours?.pickup?.find(
+        (daySlot: any) =>
+          new Date(daySlot.date).toDateString() === departureDate.toDateString()
+      );
+
+      if (!matchingSlot?.timeSlots?.[0]) {
+        return {
+          fillColor: "red",
+          strokeColor: "red",
+        };
+      }
+    }
+
     if (!status.isOpen && status.willBeOpen) {
       return {
         fillColor: "red",
@@ -274,21 +295,26 @@ const RouteOptimizer = ({
     const statuses: { [key: string]: LocationStatus } = {};
 
     locations.forEach((location) => {
-      // Find this location's segment in the route
       const segment = routeSegments.find(
         (seg) => seg.location.id === location.id
       );
 
       if (segment) {
         const arrivalTime = segment.arrivalTime;
-        const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
-          ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+        const currentDate = new Date();
+        const nextAvailableSlot = location.hours?.pickup?.find((slot) => {
+          if (!slot?.timeSlots?.length) return false;
+          return new Date(slot.date) >= currentDate;
+        });
+
+        const closeTime = nextAvailableSlot?.timeSlots[0]?.close
+          ? nextAvailableSlot.timeSlots[0].close * 60
           : 0;
 
         const isCurrentlyOpen = isLocationOpen(location, startTime);
         const willBeOpenOnArrival = isLocationOpen(location, arrivalTime);
         const timeUntilClose = closeTime - arrivalTime;
-        const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 0-30 minutes
+        const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0;
 
         statuses[location.id] = {
           isOpen: isCurrentlyOpen,
@@ -297,7 +323,6 @@ const RouteOptimizer = ({
           estimatedArrival: arrivalTime,
         };
       } else {
-        // Default status for locations not in the route
         statuses[location.id] = {
           isOpen: isLocationOpen(location, startTime),
           willBeOpen: true,
@@ -384,8 +409,8 @@ const RouteOptimizer = ({
     let errorMessage: React.ReactNode;
 
     if (error.type === "LOCATION_CLOSED") {
-      const openTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.open;
-      const closeTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.close;
+      const openTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.open;
+      const closeTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.close;
       const formattedOpen = openTime ? formatTime(openTime) : "N/A";
       const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
 
@@ -565,6 +590,38 @@ const RouteOptimizer = ({
 
   return (
     <div className="relative h-[calc(100vh-64px)]">
+      {routeSegments.length > 0 && (
+        <Button
+          className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-6 text-lg font-semibold shadow-lg rounded-lg z-50"
+          onClick={() => {
+            setCartPickupTimes(
+              routeSegments.reduce(
+                (acc: { [key: string]: Date }, segment) => {
+                  if (selectedDepartureTime) {
+                    const departureTimeWithPickupTime = new Date(
+                      selectedDepartureTime
+                    );
+                    const hours = Math.floor(segment.pickupTime / 3600);
+                    const minutes = Math.floor(
+                      (segment.pickupTime % 3600) / 60
+                    );
+                    departureTimeWithPickupTime.setHours(hours, minutes);
+
+                    acc[segment.location.id] = departureTimeWithPickupTime;
+                  }
+                  return acc;
+                },
+
+                {}
+              )
+            );
+            onClose();
+            toast.success("Route exported successfully");
+          }}
+        >
+          Use these Pickup Times?
+        </Button>
+      )}
       <DepartureTimePicker
         isOpen={departureTimePickerOpen}
         onClose={() => setDepartureTimePickerOpen(false)}
@@ -647,19 +704,68 @@ const RouteOptimizer = ({
                                   </span>
                                 </div>
                               </div>
-                              {location?.hours?.delivery[0]?.timeSlots[0] && (
-                                <div className="text-xs text-gray-600">
-                                  Operating Hours:{" "}
-                                  {formatTime(
-                                    location.hours.delivery[0].timeSlots[0].open
-                                  )}{" "}
-                                  -{" "}
-                                  {formatTime(
-                                    location.hours.delivery[0].timeSlots[0]
-                                      .close
-                                  )}
-                                </div>
-                              )}
+                              {location?.hours?.pickup?.length > 0 &&
+                                selectedDepartureTime && (
+                                  <div className="text-xs text-gray-600">
+                                    {(() => {
+                                      const departureDate = new Date(
+                                        selectedDepartureTime
+                                      );
+                                      const matchingSlot =
+                                        location.hours.pickup.find(
+                                          (daySlot: any) =>
+                                            new Date(
+                                              daySlot.date
+                                            ).toDateString() ===
+                                            departureDate.toDateString()
+                                        );
+
+                                      // Find next available date after selected date
+                                      const nextAvailableSlot =
+                                        location.hours.pickup.find(
+                                          (daySlot: any) =>
+                                            new Date(daySlot.date) >
+                                              departureDate &&
+                                            daySlot.timeSlots?.[0]
+                                        );
+
+                                      if (matchingSlot?.timeSlots?.[0]) {
+                                        return `Operating Hours: ${formatTime(
+                                          matchingSlot.timeSlots[0].open
+                                        )} - ${formatTime(
+                                          matchingSlot.timeSlots[0].close
+                                        )}`;
+                                      }
+
+                                      return (
+                                        <>
+                                          Location Closed on{" "}
+                                          {departureDate.toLocaleDateString(
+                                            "en-US",
+                                            {
+                                              weekday: "long",
+                                              month: "short",
+                                              day: "numeric",
+                                            }
+                                          )}
+                                          {nextAvailableSlot && (
+                                            <>
+                                              <br />
+                                              Next Available:{" "}
+                                              {new Date(
+                                                nextAvailableSlot.date
+                                              ).toLocaleDateString("en-US", {
+                                                weekday: "long",
+                                                month: "short",
+                                                day: "numeric",
+                                              })}
+                                            </>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
                             </div>
                           )}
                         </Draggable>
@@ -679,7 +785,12 @@ const RouteOptimizer = ({
                   onCheckedChange={(checked1) => {
                     setUseCustomStartLocation(checked1);
                     if (!checked1) {
-                      setStartLocation(null);
+                      setStartLocation(
+                        new google.maps.LatLng(
+                          initialLocation[1],
+                          initialLocation[0]
+                        )
+                      );
                       setCustomStartLocation(null);
                       setAddressSearch("");
                     }
@@ -729,7 +840,12 @@ const RouteOptimizer = ({
                   onCheckedChange={(checked) => {
                     setUseCustomEndLocation(checked);
                     if (!checked) {
-                      setEndLocation(null);
+                      setEndLocation(
+                        new google.maps.LatLng(
+                          initialLocation[1],
+                          initialLocation[0]
+                        )
+                      );
                       setCustomEndLocation(null);
                       setAddressSearch("");
                     }
@@ -774,9 +890,35 @@ const RouteOptimizer = ({
             <Button
               className="w-full"
               onClick={calculateRoute}
-              disabled={locations.length === 0}
+              disabled={
+                !!(
+                  locations.length === 0 ||
+                  (selectedDepartureTime &&
+                    orderedLocations.some((location) => {
+                      const departureDate = new Date(selectedDepartureTime);
+                      const matchingSlot = location.hours?.pickup?.find(
+                        (daySlot: any) =>
+                          new Date(daySlot.date).toDateString() ===
+                          departureDate.toDateString()
+                      );
+                      return !matchingSlot?.timeSlots?.[0];
+                    }))
+                )
+              }
             >
-              Optimize Route
+              {!selectedDepartureTime
+                ? "Optimize Route"
+                : orderedLocations.some((location) => {
+                    const departureDate = new Date(selectedDepartureTime);
+                    const matchingSlot = location.hours?.pickup?.find(
+                      (daySlot: any) =>
+                        new Date(daySlot.date).toDateString() ===
+                        departureDate.toDateString()
+                    );
+                    return !matchingSlot?.timeSlots?.[0];
+                  })
+                ? "Pick a day when all locations are open"
+                : "Optimize Route"}
             </Button>
           </div>
           {routeSegments.length > 0 && (
@@ -802,61 +944,127 @@ const RouteOptimizer = ({
                   <p className="text-gray-600 pl-4">
                     Distance:{" "}
                     {metersToMiles(
-                      routeSegments.length > 0
-                        ? routeSegments.reduce(
-                            (acc, segment) => acc + segment.distance,
-                            0
-                          )
-                        : routeTimings.totalDistance
+                      routeSegments.reduce(
+                        (acc, segment) => acc + segment.distance,
+                        0
+                      ) +
+                        (!useCustomEndLocation
+                          ? routeTimings.totalDistance -
+                            Object.values(routeTimings.distanceSegments).reduce(
+                              (sum, d) => sum + d,
+                              0
+                            )
+                          : 0)
                     ).toFixed(1)}{" "}
                     miles, Time:{" "}
                     {formatDuration(
-                      routeSegments.length > 0
-                        ? routeSegments.reduce(
-                            (acc, segment) => acc + segment.travelTime,
-                            0
-                          )
-                        : routeTimings.totalTime
+                      routeSegments.reduce(
+                        (acc, segment) => acc + segment.travelTime,
+                        0
+                      ) +
+                        (!useCustomEndLocation
+                          ? routeTimings.returnTime
+                          : routeTimings.returnTime)
                     )}
                   </p>
                 </div>
               </div>
 
-              <div className="">
-                <RouteSegmentDisplay
-                  optimizedRoute={optimizedRoute}
-                  routeTimings={routeTimings}
-                  routeSegments={routeSegments}
-                  useCustomEndLocation={useCustomEndLocation}
-                />
+              <div className="trunc">
+                {optimizedRoute.map((location, index) => {
+                  const segment = routeSegments[index];
+                  const isLastLocation = index === optimizedRoute.length - 1;
 
-                {useCustomEndLocation && customEndLocation && addressSearch && (
-                  <div className="border-t">
-                    <div className="font-medium">Final Destination:</div>
-                    <div className="pl-4">
-                      <p className="text-gray-600">{addressSearch}</p>
-                      <p className="text-gray-600">
-                        Travel Time from Last Stop:{" "}
-                        {formatDuration(routeTimings.returnTime)}
-                      </p>
-                      {routeSegments.length > 0 &&
-                        routeSegments[routeSegments.length - 1]
-                          .departureTime !== undefined && (
-                          <p className="text-gray-600">
-                            Estimated Arrival:{" "}
-                            {secondsToTimeString(
-                              routeSegments[routeSegments.length - 1]
-                                .departureTime
-                                ? routeSegments[routeSegments.length - 1]
-                                    .departureTime + routeTimings.returnTime
-                                : routeTimings.returnTime
-                            )}
-                          </p>
+                  return (
+                    <div key={location.id} className="border-b last:border-b-0">
+                      <div className="font-medium">
+                        {index + 1}.{" "}
+                        {location.displayName || location?.user?.name}
+                      </div>
+                      <div className="pl-4">
+                        <div className="text-gray-600">
+                          Dist{" "}
+                          {metersToMiles(
+                            routeTimings.distanceSegments[location.id] || 0
+                          ).toFixed(1)}{" "}
+                          miles -{" "}
+                          {formatDuration(
+                            routeTimings.segmentTimes[location.id] || 0
+                          )}
+                        </div>
+
+                        {segment && (
+                          <div className="text-gray-600">
+                            Arr: {secondsToTimeString(segment.arrivalTime)} -
+                            Dep:{" "}
+                            {secondsToTimeString(segment.pickupTime + 10 * 60)}
+                          </div>
                         )}
+
+                        {segment?.waitTime > 0 && (
+                          <div className="text-red-600">
+                            Wait Time: {formatDuration(segment.waitTime)}
+                          </div>
+                        )}
+
+                        {isLastLocation &&
+                          routeTimings.returnTime > 0 &&
+                          !useCustomEndLocation && (
+                            <div className="border-t mt-2 pt-2">
+                              <div className="text-gray-600">
+                                Return to Start:{" "}
+                                {metersToMiles(
+                                  routeTimings.totalDistance -
+                                    Object.values(
+                                      routeTimings.distanceSegments
+                                    ).reduce((sum, d) => sum + d, 0)
+                                ).toFixed(1)}{" "}
+                                miles -{" "}
+                                {formatDuration(routeTimings.returnTime)}
+                              </div>
+                              {segment && (
+                                <div className="text-gray-600">
+                                  Estimated Return:{" "}
+                                  {secondsToTimeString(
+                                    segment.departureTime +
+                                      routeTimings.returnTime
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })}
               </div>
+
+              {useCustomEndLocation && customEndLocation && addressSearch && (
+                <div className="border-t">
+                  <div className="font-medium">Final Destination:</div>
+                  <div className="pl-4">
+                    <p className="text-gray-600">{addressSearch}</p>
+                    <p className="text-gray-600">
+                      Travel Time from Last Stop:{" "}
+                      {formatDuration(routeTimings.returnTime)}
+                    </p>
+                    {routeSegments.length > 0 &&
+                      routeSegments[routeSegments.length - 1].departureTime !==
+                        undefined && (
+                        <p className="text-gray-600">
+                          Estimated Arrival:{" "}
+                          {secondsToTimeString(
+                            routeSegments[routeSegments.length - 1]
+                              .departureTime
+                              ? routeSegments[routeSegments.length - 1]
+                                  .departureTime + routeTimings.returnTime
+                              : routeTimings.returnTime
+                          )}
+                        </p>
+                      )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -913,7 +1121,7 @@ const RouteOptimizer = ({
             closesSoon: false,
             estimatedArrival: null,
           };
-          const colors = getLocationStatusColor(status);
+          const colors = getLocationStatusColor(location, status);
           const randomPosition = randomizedPositions[location.id];
 
           if (!randomPosition) return null;

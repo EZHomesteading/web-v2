@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, use, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -63,6 +63,7 @@ interface DetailedBasketCardProps {
   mk: string | undefined;
   userId: string;
   onModeChange: any;
+  pickupTimes: any;
 }
 
 interface PriceBreakdownProps {
@@ -85,14 +86,29 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
   userId,
 }) => {
   // Track delivery/pickup mode for each basket
+  const [pickupTimes, setPickupTimes] = useState(null);
+  useEffect(() => {
+    console.log("PICKUPTIMEMEES", pickupTimes);
+  }, [pickupTimes]);
   const [basketModes, setBasketModes] = useState<
     Record<string, DeliveryPickupToggleMode>
   >(() =>
     baskets.reduce((acc, basket) => {
+      const hasDeliveryHours = basket.location?.hours?.delivery?.length > 0;
+      const hasPickupHours = basket.location?.hours?.pickup?.length > 0;
+      const isCoop = basket.location.role === "COOP";
+
       acc[basket.id] =
-        basket?.location.role === "COOP"
+        !hasDeliveryHours && hasPickupHours
           ? DeliveryPickupToggleMode.PICKUP
+          : hasDeliveryHours && !hasPickupHours
+          ? DeliveryPickupToggleMode.DELIVERY
+          : hasDeliveryHours && hasPickupHours
+          ? isCoop
+            ? DeliveryPickupToggleMode.PICKUP
+            : DeliveryPickupToggleMode.DELIVERY
           : DeliveryPickupToggleMode.DELIVERY;
+
       return acc;
     }, {} as Record<string, DeliveryPickupToggleMode>)
   );
@@ -207,6 +223,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
                 mk={mk}
                 userId={userId}
                 onModeChange={handleBasketModeChange}
+                pickupTimes={pickupTimes}
               />
             ))}
           </div>
@@ -220,6 +237,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
               locations={locations}
               mapsKey={mapsKey}
               key={locations.length} // Add key to force re-render
+              setPickupTimes={setPickupTimes}
             />
           </div>
         </div>
@@ -231,6 +249,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
 const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
   basket,
   onModeChange,
+  pickupTimes,
 }) => {
   const over_768px = useMediaQuery("(min-width: 768px)");
   const [errorType, setErrorType] = useState<
@@ -239,12 +258,23 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
 
   const [deliveryPickupMode, setDeliveryPickupMode] =
     useState<DeliveryPickupToggleMode>(() => {
-      if (basket?.location.role === "COOP") {
+      const hasDeliveryHours = basket.location?.hours?.delivery?.length > 0;
+      const hasPickupHours = basket.location?.hours?.pickup?.length > 0;
+      const isCoop = basket.location.role === "COOP";
+
+      if (!hasDeliveryHours && hasPickupHours) {
         return DeliveryPickupToggleMode.PICKUP;
       }
-      return DeliveryPickupToggleMode.DELIVERY;
+      if (hasDeliveryHours && !hasPickupHours) {
+        return DeliveryPickupToggleMode.DELIVERY;
+      }
+      if (hasDeliveryHours && hasPickupHours) {
+        return isCoop
+          ? DeliveryPickupToggleMode.PICKUP
+          : DeliveryPickupToggleMode.DELIVERY;
+      }
+      return DeliveryPickupToggleMode.NOHOURS;
     });
-
   const [basketState, setBasketState] = useState<any>({
     ...basket,
     orderMethod: basket.orderMethod || orderMethod.UNDECIDED,
@@ -256,7 +286,66 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
       return sum + item.listing.price * item.quantity;
     }, 0);
   }, [basket.items]);
+  const getNextOpenHours = () => {
+    const hours = basket.location.hours?.[deliveryPickupMode.toLowerCase()];
+    if (!hours) return null;
 
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const currentHour = new Date().getHours() * 60 + new Date().getMinutes();
+
+    // Find today's schedule
+    const todaySchedule = hours.find(
+      (day: any) => new Date(day.date).getTime() === now.getTime()
+    );
+
+    const formatTimeFromMinutes = (minutes: number) => {
+      const hour = Math.floor(minutes / 60);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:00${ampm}`;
+    };
+
+    const formatDate = (date: Date) => {
+      const day = date.getDate();
+      const suffix = ["th", "st", "nd", "rd"][day % 10] || "th";
+      return `${date.toLocaleString("en-US", {
+        month: "short",
+      })} ${day}${suffix}`;
+    };
+
+    if (todaySchedule) {
+      const { open, close } = todaySchedule.timeSlots[0];
+      if (currentHour >= open && currentHour < close) return null;
+
+      if (currentHour >= close) {
+        const nextDay = hours.find(
+          (day: any) => new Date(day.date).getTime() > now.getTime()
+        );
+        if (nextDay) {
+          const nextDate = new Date(nextDay.date);
+          return `Opens on ${nextDate.toLocaleString("en-US", {
+            weekday: "long",
+          })}, ${formatDate(nextDate)}, at ${formatTimeFromMinutes(
+            nextDay.timeSlots[0].open
+          )}`;
+        }
+      }
+      return `Opens today at ${formatTimeFromMinutes(open)}`;
+    }
+
+    const nextDay = hours.find(
+      (day: any) => new Date(day.date).getTime() > now.getTime()
+    );
+    return nextDay
+      ? `Opens on ${new Date(nextDay.date).toLocaleString("en-US", {
+          weekday: "long",
+        })}, ${formatDate(new Date(nextDay.date))}, at ${formatTimeFromMinutes(
+          nextDay.timeSlots[0].open
+        )}`
+      : null;
+  };
+  const nextOpenHours = getNextOpenHours();
   const handleDeliveryPickupModeChange = (
     newMode: DeliveryPickupToggleMode
   ) => {
@@ -295,6 +384,46 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
     });
   };
 
+  const formatDate = (date: Date) => {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const dayName = days[date.getDay()];
+    const monthName = months[date.getMonth()];
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const daySuffix =
+      day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th";
+
+    const amPm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+
+    return `${dayName}, ${monthName} ${day}${daySuffix}, at ${formattedHours}:${formattedMinutes}${amPm}`;
+  };
   return (
     <div className="border rounded-xl shadow-lg p-4 bg-white">
       <div className="flex justify-between items-start mb-4">
@@ -305,12 +434,14 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
           <span className="text-lg text-gray-600">
             ${basketTotal.toFixed(2)}
           </span>
+          <span>{nextOpenHours}</span>
         </div>
         <div className="flex justify-between items-start mb-4">
           <DeliveryPickupToggle
             panelSide={true}
             mode={deliveryPickupMode}
             onModeChange={handleDeliveryPickupModeChange}
+            basket={basketState as any}
           ></DeliveryPickupToggle>
           {deliveryPickupMode === "DELIVERY" && (
             <DateOverlay
@@ -320,6 +451,12 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
               onOpenChange={() => {}}
             />
           )}
+
+          {pickupTimes && pickupTimes[basket.location.id] ? (
+            <div className="flex items-center text-xs sm:text-sm justify-center rounded-full border px-3 py-2">
+              Pickup set for {formatDate(pickupTimes[basket.location.id])}
+            </div>
+          ) : null}
         </div>
       </div>
 

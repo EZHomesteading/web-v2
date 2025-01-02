@@ -22,19 +22,33 @@ import { RiArrowDownSLine } from "react-icons/ri";
 export enum DeliveryPickupToggleMode {
   DELIVERY = "DELIVERY",
   PICKUP = "PICKUP",
+  NOHOURS = "NOHOURS",
 }
 
 interface DeliveryPickupToggleProps {
   panelSide: boolean;
   mode: DeliveryPickupToggleMode;
   onModeChange: (mode: DeliveryPickupToggleMode) => void;
+  basket: any;
 }
 
 const DeliveryPickupToggle = ({
   panelSide,
   mode,
   onModeChange,
+  basket,
 }: DeliveryPickupToggleProps) => {
+  // Add check for available hours
+  const hasDeliveryHours = basket?.location?.hours?.delivery?.length > 0;
+  const hasPickupHours = basket?.location?.hours?.pickup?.length > 0;
+  const handleModeChange = (value: string) => {
+    if (
+      (value === DeliveryPickupToggleMode.DELIVERY && hasDeliveryHours) ||
+      (value === DeliveryPickupToggleMode.PICKUP && hasPickupHours)
+    ) {
+      onModeChange(value as DeliveryPickupToggleMode);
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -50,7 +64,9 @@ const DeliveryPickupToggle = ({
 
           {panelSide && (
             <>
-              {mode === DeliveryPickupToggleMode.DELIVERY
+              {mode === DeliveryPickupToggleMode.NOHOURS
+                ? "No hours available"
+                : mode === DeliveryPickupToggleMode.DELIVERY
                 ? "Delivery"
                 : "Pickup"}
             </>
@@ -60,23 +76,24 @@ const DeliveryPickupToggle = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className={`w-full ${outfitFont.className} p-4`}>
-        <DropdownMenuRadioGroup
-          value={mode}
-          onValueChange={(value: string) =>
-            onModeChange(value as DeliveryPickupToggleMode)
-          }
-        >
-          <DropdownMenuRadioItem value={DeliveryPickupToggleMode.DELIVERY}>
+        <DropdownMenuRadioGroup value={mode} onValueChange={handleModeChange}>
+          <DropdownMenuRadioItem
+            value={DeliveryPickupToggleMode.DELIVERY}
+            disabled={!hasDeliveryHours}
+            className={!hasDeliveryHours ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <div className="flex items-center justify-between w-full pb-3 p-1">
               <div className="flex flex-col items-start">
                 <div className="text-xl font-medium">Delivery</div>
                 <div className="text-xs">
-                  Times this seller is able to deliver
+                  {hasDeliveryHours
+                    ? "Times this seller is able to deliver"
+                    : "No delivery hours available"}
                 </div>
               </div>
               <div
                 className={`rounded-full border p-[.4rem] ml-20 ${
-                  mode === DeliveryPickupToggleMode.DELIVERY
+                  mode === DeliveryPickupToggleMode.DELIVERY && hasDeliveryHours
                     ? "bg-black"
                     : "bg-white"
                 }`}
@@ -86,17 +103,23 @@ const DeliveryPickupToggle = ({
             </div>
           </DropdownMenuRadioItem>
           <hr className="w-full pt-2" />
-          <DropdownMenuRadioItem value={DeliveryPickupToggleMode.PICKUP}>
+          <DropdownMenuRadioItem
+            value={DeliveryPickupToggleMode.PICKUP}
+            disabled={!hasPickupHours}
+            className={!hasPickupHours ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <div className="flex items-center justify-between w-full p-1">
               <div className="flex flex-col items-start">
                 <div className="text-xl font-medium">Pickup</div>
                 <div className="text-xs">
-                  Set this item for pickup and set up a route
+                  {hasPickupHours
+                    ? "Set this item for pickup and set up a route"
+                    : "No pickup hours available"}
                 </div>
               </div>
               <div
                 className={`rounded-full border p-[.4rem] ml-20 ${
-                  mode === DeliveryPickupToggleMode.PICKUP
+                  mode === DeliveryPickupToggleMode.PICKUP && hasPickupHours
                     ? "bg-black"
                     : "bg-white"
                 }`}

@@ -74,6 +74,7 @@ export async function GET(
                 id: true,
                 url: true,
                 name: true,
+                role: true,
               },
             },
           },

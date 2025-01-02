@@ -185,7 +185,7 @@ export const DateOverlay: React.FC<DateOverlayProps> = ({
       <button
         ref={triggerRef}
         onClick={() => setIsOpen(true)}
-        className={`flex items-center justify-center rounded-full border px-3 py-2 ${
+        className={`flex items-center text-xs sm:text-sm justify-center rounded-full border px-3 py-2 ${
           errorType === "deliveryDate" || errorType === "pickupDate"
             ? "borderRed"
             : ""

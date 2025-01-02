@@ -6,6 +6,8 @@ export interface RouteOptimizerProps {
   locations: any[];
   googleMapsApiKey: string;
   initialLocation: number[];
+  onClose: () => void;
+  setCartPickupTimes: any;
 }
 export interface initialLocation {
   lat: number;
