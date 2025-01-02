@@ -21,8 +21,8 @@ const StarRating = ({
   color = "#000",
 }: {
   value: number;
-  size: number;
-  color: string;
+  size?: number;
+  color?: string;
 }) => {
   const totalStars = 4;
   const roundedValue = Math.round(value * 2) / 2;
