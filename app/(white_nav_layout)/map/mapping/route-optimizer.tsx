@@ -9,6 +9,9 @@ import {
   Circle,
   Polyline,
 } from "@react-google-maps/api";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { StrictMode } from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -23,13 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { outfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
-import {
-  formatTime,
-  secondsToInputTimeString,
-  storeRouteMetrics,
-  generateRouteNotification,
-  generateSimpleRouteNotification,
-} from "./utils";
+import { formatTime } from "./utils";
 // Import the separated functions and types
 import { optimizeRoute } from "./calcsimple";
 import {
@@ -49,6 +46,7 @@ import {
   RouteTimings,
 } from "./types";
 import RouteSegmentDisplay from "./routsegment";
+import DepartureTimePicker from "./departureTime";
 interface LocationStatus {
   isOpen: boolean;
   willBeOpen: boolean;
@@ -64,25 +62,30 @@ interface RandomizedLocation {
 }
 
 const RouteOptimizer = ({
+  initialTime,
   locations,
   googleMapsApiKey,
   initialLocation,
-  userRole,
 }: RouteOptimizerProps) => {
   // State Management
+  const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
+  const [selectedDepartureTime, setSelectedDepartureTime] =
+    useState<Date | null>(initialTime || null);
   const [routeTimings, setRouteTimings] = useState<RouteTimings>({
     segmentTimes: {},
     returnTime: 0,
     totalTime: 0,
     totalDistance: 0,
     distanceSegments: {},
+    suggestedPickupTimes: {},
   });
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(
-    null
+    new google.maps.LatLng(initialLocation[1], initialLocation[0]) || null
   );
   const [endLocation, setEndLocation] = useState<google.maps.LatLng | null>(
     null
   );
+
   const [randomizedPositions, setRandomizedPositions] = useState<{
     [key: string]: RandomizedLocation;
   }>({});
@@ -97,8 +100,16 @@ const RouteOptimizer = ({
     lat: number;
     lng: number;
   } | null>(null);
+  const [customStartLocation, setCustomStartLocation] = useState<{} | null>(
+    initialLocation || null
+  );
+  const [useCustomStartLocation, setUseCustomStartLocation] = useState(false);
+  const [startLocation, setStartLocation] = useState<google.maps.LatLng | null>(
+    new google.maps.LatLng(initialLocation[1], initialLocation[0]) || null
+  );
   const [mapKey, setMapKey] = useState(0);
   const [useCustomEndLocation, setUseCustomEndLocation] = useState(false);
+
   const [addressSearch, setAddressSearch] = useState("");
   const [timeValidations, setTimeValidations] = useState<{
     [key: string]: TimeValidation;
@@ -108,11 +119,29 @@ const RouteOptimizer = ({
     title: "",
     description: "",
   });
+  const [usePickupOrder, setUsePickupOrder] = useState(false);
+  const [orderedLocations, setOrderedLocations] = useState<any[]>(locations);
+  const onDragEnd = (result: any) => {
+    if (!result.destination || !usePickupOrder) return;
+
+    const items = Array.from(orderedLocations);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setOrderedLocations(items);
+  };
+  const handleDepartureTimeSet = (date: Date) => {
+    setSelectedDepartureTime(date);
+    clearMap();
+  };
   const generateRandomOffset = () => {
     // 0.5 miles is approximately 0.007 degrees of lat/lng
     const maxOffset = 0.007;
     return (Math.random() - 0.5) * maxOffset;
   };
+  useEffect(() => {
+    setOrderedLocations(locations);
+  }, [locations]);
   useEffect(() => {
     const newRandomPositions: { [key: string]: RandomizedLocation } = {};
 
@@ -139,7 +168,10 @@ const RouteOptimizer = ({
   }, [locations]);
   // Refs
   const mapRef = useRef<google.maps.Map | null>(null);
-  const searchBoxRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const startSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(
+    null
+  );
+  const endSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   // Load Google Maps
   const { isLoaded } = useLoadScript({
@@ -158,6 +190,7 @@ const RouteOptimizer = ({
       totalTime: 0,
       totalDistance: 0,
       distanceSegments: {},
+      suggestedPickupTimes: {},
     });
   };
 
@@ -233,136 +266,90 @@ const RouteOptimizer = ({
     };
   };
 
-  // Calculate single location status
-  const calculateLocationStatus = async (
-    location: Location,
-    userLoc: google.maps.LatLng
-  ) => {
-    const service = new google.maps.DistanceMatrixService();
+  const updateLocationStatuses = (
+    locations: Location[],
+    routeSegments: RouteSegment[],
+    startTime: number
+  ): { [key: string]: LocationStatus } => {
+    const statuses: { [key: string]: LocationStatus } = {};
 
-    try {
-      const matrix = await new Promise<google.maps.DistanceMatrixResponse>(
-        (resolve, reject) => {
-          service.getDistanceMatrix(
-            {
-              origins: [userLoc],
-              destinations: [
-                new google.maps.LatLng(
-                  location.coordinates[1],
-                  location.coordinates[0]
-                ),
-              ],
-              travelMode: google.maps.TravelMode.DRIVING,
-              drivingOptions: {
-                departureTime: new Date(),
-                trafficModel: google.maps.TrafficModel.BEST_GUESS,
-              },
-            },
-            (response, status) => {
-              if (status === "OK" && response !== null) resolve(response);
-              else reject(status);
-            }
-          );
-        }
+    locations.forEach((location) => {
+      // Find this location's segment in the route
+      const segment = routeSegments.find(
+        (seg) => seg.location.id === location.id
       );
 
-      const now = new Date();
-      const currentTimeInSeconds =
-        (now.getHours() * 60 + now.getMinutes()) * 60;
+      if (segment) {
+        const arrivalTime = segment.arrivalTime;
+        const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
+          ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
+          : 0;
 
-      const travelTime = matrix.rows[0].elements[0].duration.value;
-      const estimatedArrival = currentTimeInSeconds + travelTime;
+        const isCurrentlyOpen = isLocationOpen(location, startTime);
+        const willBeOpenOnArrival = isLocationOpen(location, arrivalTime);
+        const timeUntilClose = closeTime - arrivalTime;
+        const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 0-30 minutes
 
-      const openTime = getLocationOpenTime(location) * 60;
-      const closeTime = location.hours?.delivery[0]?.timeSlots[0]?.close
-        ? location.hours?.delivery[0]?.timeSlots[0]?.close * 60
-        : 0;
+        statuses[location.id] = {
+          isOpen: isCurrentlyOpen,
+          willBeOpen: willBeOpenOnArrival,
+          closesSoon: closesSoon,
+          estimatedArrival: arrivalTime,
+        };
+      } else {
+        // Default status for locations not in the route
+        statuses[location.id] = {
+          isOpen: isLocationOpen(location, startTime),
+          willBeOpen: true,
+          closesSoon: false,
+          estimatedArrival: null,
+        };
+      }
+    });
 
-      const isCurrentlyOpen = isLocationOpen(location, currentTimeInSeconds);
-      const willBeOpenOnArrival = isLocationOpen(location, estimatedArrival);
-      const timeUntilClose = closeTime - estimatedArrival;
-      const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0; // 30 minutes
-
-      return {
-        isOpen: isCurrentlyOpen,
-        willBeOpen: willBeOpenOnArrival,
-        closesSoon: closesSoon,
-        estimatedArrival,
-      };
-    } catch (error) {
-      console.error(
-        `Error calculating status for location ${location.id}:`,
-        error
-      );
-      return {
-        isOpen: true, // Default to open if we can't calculate
-        willBeOpen: true,
-        closesSoon: false,
-        estimatedArrival: null,
-      };
-    }
+    return statuses;
   };
-
-  // Calculate initial statuses
-  useEffect(() => {
-    if (!userLocation || locations.length === 0) return;
-
-    const calculateAllStatuses = async () => {
-      const newStatuses: { [key: string]: LocationStatus } = {};
-
-      // Calculate status for each location independently
-      await Promise.all(
-        locations.map(async (location) => {
-          const status = await calculateLocationStatus(location, userLocation);
-          newStatuses[location.id] = status;
-        })
-      );
-
-      setLocationStatuses(newStatuses);
-    };
-
-    calculateAllStatuses();
-  }, [userLocation, locations]);
-  const AVERAGE_STOP_TIME = 5 * 60;
-  const BUFFER_TIME = 5 * 60;
-  const MIN_DEPARTURE_BUFFER = 15 * 60;
+  const AVERAGE_STOP_TIME = 10 * 60;
+  const BUFFER_TIME = 0 * 60;
+  const MIN_DEPARTURE_BUFFER = 30 * 60;
   const calculateRoute = async () => {
-    if (!userLocation || locations.length === 0) return;
+    const startingPoint = startLocation;
+    if (!startingPoint || locations.length === 0) return;
     clearMap();
 
     try {
+      // Calculate start time based on selected departure time or current time + buffer
+      const now = selectedDepartureTime || new Date();
+      const startTime = selectedDepartureTime
+        ? (selectedDepartureTime.getHours() * 60 +
+            selectedDepartureTime.getMinutes()) *
+          60
+        : (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
+
       const optimizedResult = await optimizeTimeRoute(
-        userLocation,
-        locations,
-        endLocation || userLocation,
-        pickupTimes
+        startingPoint,
+        usePickupOrder ? orderedLocations : locations,
+        endLocation || startingPoint,
+        usePickupOrder,
+        startTime
       );
 
       setOptimizedRoute(optimizedResult.route);
       setRouteTimings(optimizedResult.timings);
 
-      // Create route segments with cumulative time calculations
-      const now = new Date();
-      let currentTime =
-        (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
+      // Update this line to use the same startTime
+      let currentTime = startTime; // Remove the buffer calculation here
       const segments: RouteSegment[] = [];
 
       optimizedResult.route.forEach((location, index) => {
         const travelTime = optimizedResult.timings.segmentTimes[location.id];
         const distance = optimizedResult.timings.distanceSegments[location.id];
 
-        // Add travel time to get arrival time
         const arrivalTime = currentTime + travelTime;
-
-        // Calculate pickup time
         const pickupTime = pickupTimes[location.id]
           ? timeStringToSeconds(pickupTimes[location.id])
           : arrivalTime + BUFFER_TIME;
-
-        // Calculate wait time if any
         const waitTime = Math.max(0, pickupTime - (arrivalTime + BUFFER_TIME));
-
-        // Calculate departure time
         const departureTime = pickupTime + AVERAGE_STOP_TIME;
 
         segments.push({
@@ -375,21 +362,18 @@ const RouteOptimizer = ({
           waitTime,
         });
 
-        // Update current time to departure time for next segment
         currentTime = departureTime;
       });
 
       setRouteSegments(segments);
-      showNotification(
-        "Route Optimized",
-        generateRouteNotification({
-          locations: optimizedResult.route,
-          suggestedPickupTimes: pickupTimes,
-          totalDuration: optimizedResult.timings.totalTime,
-          totalDistance: optimizedResult.timings.totalDistance,
-          segments,
-        })
+
+      // Update location statuses based on the calculated route
+      const newStatuses = updateLocationStatuses(
+        locations,
+        segments,
+        startTime
       );
+      setLocationStatuses(newStatuses);
     } catch (error) {
       handleRouteError(error);
     }
@@ -398,47 +382,63 @@ const RouteOptimizer = ({
     console.error("Route calculation error:", error);
 
     let errorMessage: React.ReactNode;
-    let problemLocation = null;
 
     if (error.type === "LOCATION_CLOSED") {
+      const openTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.open;
+      const closeTime = error.location?.hours?.delivery[0]?.timeSlots[0]?.close;
+      const formattedOpen = openTime ? formatTime(openTime) : "N/A";
+      const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
+
+      // Use error.details.expectedArrival which is already in the correct format
+      const estimatedArrival = error.details.expectedArrival || "N/A";
+
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Cannot route to {error.location.displayName}
+            Cannot route to {error.location?.displayName || "location"}
           </p>
           <p>
-            This location would be closed when we arrive. Their hours are:
-            {error.details.openTime} - {error.details.closeTime}
+            This location would be closed when we arrive. Their hours are:{" "}
+            {formattedOpen} - {formattedClose}
           </p>
           <p className="text-sm text-gray-600">
-            Estimated arrival: {error.details.estimatedArrival}
+            Estimated arrival: {estimatedArrival}
           </p>
+          {error.details.serviceStart && (
+            <p className="text-sm text-gray-600">
+              Service would start at: {error.details.serviceStart}
+            </p>
+          )}
+          {error.details.serviceEnd && (
+            <p className="text-sm text-gray-600">
+              Service would end at: {error.details.serviceEnd}
+            </p>
+          )}
         </div>
       );
     } else if (error.type === "EXCESSIVE_WAIT") {
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Excessive wait time for {error.location.displayName}
+            Excessive wait time for {error.location?.displayName || "location"}
           </p>
           <p>
-            Would arrive at {error.details.arrivalTime} but pickup isn't until{" "}
-            {error.details.requestedPickup}
+            Would arrive at {error.details?.arrivalTime || "N/A"} but pickup
+            isn't until {error.details?.requestedPickup || "N/A"}
           </p>
           <p className="text-sm text-gray-600">
-            Wait time would be {error.details.waitTime}
+            Wait time would be {error.details?.waitTime || "N/A"}
           </p>
         </div>
       );
     } else {
-      // Default error message
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
             Unable to find a valid route
           </p>
           <p className="text-sm text-gray-600">
-            Please try adjusting your pickup times or route order.
+            Please try adjusting your route order.
           </p>
         </div>
       );
@@ -455,7 +455,7 @@ const RouteOptimizer = ({
               setModalState((prev) => ({ ...prev, isOpen: false }))
             }
           >
-            Adjust Times
+            Close
           </Button>
           <Button onClick={() => calculateSimpleRoute()}>
             Create Route Without Time Constraints
@@ -476,38 +476,47 @@ const RouteOptimizer = ({
       );
       setOptimizedRoute(bestRoute.route);
       setRouteTimings(bestRoute.timings);
-      showNotification(
-        "Route Created",
-        generateSimpleRouteNotification(bestRoute)
-      );
     } catch (error) {
       handleRouteError(error);
     }
   };
 
-  const onPlaceSelected = (place: google.maps.places.PlaceResult) => {
+  const onStartPlaceSelected = (place: google.maps.places.PlaceResult) => {
     if (place.geometry?.location) {
       const newLocation = {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng(),
       };
-
-      setCustomEndLocation(newLocation);
-      setEndLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
-      setAddressSearch(place.formatted_address || "");
+      setCustomStartLocation(newLocation);
+      setUserLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+      setStartLocation(
+        new google.maps.LatLng(newLocation.lat, newLocation.lng)
+      );
 
       if (mapRef.current) {
         mapRef.current.panTo(newLocation);
         mapRef.current.setZoom(15);
       }
 
-      showNotification(
-        "End Location Set",
-        `End location set to: ${place.formatted_address}`
-      );
+      clearMap();
     }
   };
 
+  const onEndPlaceSelected = (place: google.maps.places.PlaceResult) => {
+    if (place.geometry?.location) {
+      const newLocation = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setCustomEndLocation(newLocation);
+      setEndLocation(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+      setAddressSearch(place.formatted_address || "");
+      if (mapRef.current) {
+        mapRef.current.panTo(newLocation);
+        mapRef.current.setZoom(15);
+      }
+    }
+  };
   // Notification helpers
   const showNotification = (
     title: string,
@@ -526,138 +535,192 @@ const RouteOptimizer = ({
   useEffect(() => {
     if (!isLoaded) return;
 
-    setUserLocation(
-      new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-    );
+    // Only set initial location if no custom start location is set
+    if (!customStartLocation) {
+      setUserLocation(
+        new google.maps.LatLng(initialLocation[1], initialLocation[0])
+      );
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation(
-            new google.maps.LatLng(
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = new google.maps.LatLng(
               position.coords.latitude,
               position.coords.longitude
-            )
-          );
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setUserLocation(
-            new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-          );
-        }
-      );
+            );
+            setUserLocation(newLocation);
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            setUserLocation(
+              new google.maps.LatLng(initialLocation[1], initialLocation[0])
+            );
+          }
+        );
+      }
     }
-  }, [isLoaded, initialLocation]);
+  }, [isLoaded, initialLocation, customStartLocation]);
 
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className="relative h-[calc(100vh-64px)]">
-      {/* Left Panel */}
-      <Card className="absolute top-4 left-4 z-10 w-96">
-        <CardHeader>
-          <CardTitle className={outfitFont.className}>Route Planner</CardTitle>
-        </CardHeader>
-
+      <DepartureTimePicker
+        isOpen={departureTimePickerOpen}
+        onClose={() => setDepartureTimePickerOpen(false)}
+        onSubmit={handleDepartureTimeSet}
+        currentTime={selectedDepartureTime || new Date()}
+      />
+      {!userLocation && (
+        <Card className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] w-[500px] p-6 text-center">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-gray-800">
+              Set a Start Location to Continue
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      )}
+      <Card className="absolute top-4 left-4 z-10 w-96 pt-6">
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
-          <div className="space-y-2">
+          <div className="">
             <Button
-              className="w-full"
-              onClick={() => clearMap()}
+              className="w-full mb-4"
+              onClick={() => setDepartureTimePickerOpen(true)}
               disabled={locations.length === 0}
             >
-              Reset
+              {selectedDepartureTime
+                ? `Departure: ${selectedDepartureTime.toLocaleString()}`
+                : "Set Departure Time"}
             </Button>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              Selected Locations ({locations.length})
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              If you enter a time in one location you will always go to that
-              location first
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              Arrival times are calculated as though you leave after 10 minutes
-              of arrival.
-            </h3>
-            <h3 className={`${outfitFont.className} font-medium`}>
-              Locations are not exact but are somewhere within their circles
-            </h3>
-            {locations.map((location) => (
-              <div
-                key={location.id}
-                className="flex flex-col gap-1 p-2 bg-slate-50 rounded-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`${outfitFont.className} font-medium`}>
-                    {location.displayName}
-                  </span>
-                </div>
-                <span
-                  className={`${outfitFont.className} text-xs text-gray-500`}
-                >
-                  {location.address[0]}
-                </span>
-                {location?.hours?.delivery[0]?.timeSlots[0] && (
-                  <div className="text-xs text-gray-600">
-                    Operating Hours:{" "}
-                    {formatTime(location.hours.delivery[0].timeSlots[0].open)} -{" "}
-                    {formatTime(location.hours.delivery[0].timeSlots[0].close)}
-                  </div>
-                )}
-                <div className="mt-2">
-                  <Label htmlFor={`pickup-${location.id}`}>
-                    Pickup Time
-                    {pickupTimes[location.id] && (
-                      <span className="text-xs text-gray-500 ml-2">
-                        (Suggested: {pickupTimes[location.id]})
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id={`pickup-${location.id}`}
-                    type="time"
-                    value={pickupTimes[location.id] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      console.log(
-                        location?.hours?.delivery[0].timeSlots[0].close
-                      );
-
-                      const validation = validatePickupTime(
-                        location.id,
-                        e.target.value
-                      );
-                      setTimeValidations((prev) => ({
-                        ...prev,
-                        [location.id]: validation || {
-                          isValid: false,
-                          message: "",
-                        },
-                      }));
-                      if (validation?.isValid) {
-                        setPickupTimes((prev) => ({
-                          ...prev,
-                          [location.id]: e.target.value,
-                        }));
-                      }
-                    }}
-                    className={
-                      timeValidations[location.id]?.isValid === false
-                        ? "border-red-500"
-                        : ""
-                    }
-                  />
-                  {timeValidations[location.id]?.isValid === false && (
-                    <div className="text-xs text-red-500 mt-1">
-                      {timeValidations[location.id].message}
+            {/* Add this above the locations section */}
+            <div className="flex items-center gap-1 ">
+              <Switch
+                checked={usePickupOrder}
+                onCheckedChange={setUsePickupOrder}
+              />
+              <Label className="cursor-pointer">
+                Enable drag & drop reordering
+              </Label>
+            </div>
+            <StrictMode>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="locations" type="location">
+                  {(provided) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {orderedLocations.map((location, index) => (
+                        <Draggable
+                          key={location.id}
+                          draggableId={location.id}
+                          index={index}
+                          isDragDisabled={!usePickupOrder}
+                        >
+                          {(dragProvided, snapshot) => (
+                            <div
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              {...dragProvided.dragHandleProps}
+                              className="flex flex-col gap-1 p-2 bg-slate-50 rounded-lg mb-2 select-none border-2 border-transparent hover:border-blue-500 active:border-blue-700"
+                              style={{
+                                ...dragProvided.draggableProps.style,
+                                cursor: usePickupOrder ? "grab" : "default",
+                                backgroundColor: snapshot.isDragging
+                                  ? "#e2e8f0"
+                                  : "",
+                                boxShadow: snapshot.isDragging
+                                  ? "0 5px 15px rgba(0,0,0,0.3)"
+                                  : "none",
+                              }}
+                            >
+                              {" "}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  {usePickupOrder && (
+                                    <div className="text-gray-400 cursor-grab hover:text-gray-600">
+                                      ⣿
+                                    </div>
+                                  )}
+                                  <span
+                                    className={`${outfitFont.className} font-medium truncate`}
+                                  >
+                                    {index + 1}.{" "}
+                                    {location.displayName || location.user.name}
+                                  </span>
+                                </div>
+                              </div>
+                              {location?.hours?.delivery[0]?.timeSlots[0] && (
+                                <div className="text-xs text-gray-600">
+                                  Operating Hours:{" "}
+                                  {formatTime(
+                                    location.hours.delivery[0].timeSlots[0].open
+                                  )}{" "}
+                                  -{" "}
+                                  {formatTime(
+                                    location.hours.delivery[0].timeSlots[0]
+                                      .close
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
                     </div>
                   )}
-                </div>
-              </div>
-            ))}
-
+                </Droppable>
+              </DragDropContext>
+            </StrictMode>
             <div className="space-y-2">
+              <label
+                className={`${outfitFont.className} flex items-center gap-2`}
+              >
+                <Switch
+                  checked={useCustomStartLocation}
+                  onCheckedChange={(checked1) => {
+                    setUseCustomStartLocation(checked1);
+                    if (!checked1) {
+                      setStartLocation(null);
+                      setCustomStartLocation(null);
+                      setAddressSearch("");
+                    }
+                  }}
+                />
+                <span>
+                  {!userLocation
+                    ? "Set Start Location"
+                    : "Different Start Location"}
+                </span>
+              </label>
+              {useCustomStartLocation && (
+                <div className="space-y-2">
+                  <Label>Start Location Address</Label>
+                  <div className="relative" style={{ zIndex: 9999998 }}>
+                    <Autocomplete
+                      onLoad={(autocomplete) => {
+                        startSearchBoxRef.current = autocomplete;
+                      }}
+                      onPlaceChanged={() => {
+                        if (startSearchBoxRef.current) {
+                          const place = startSearchBoxRef.current.getPlace();
+                          onStartPlaceSelected(place);
+                        }
+                      }}
+                      options={{
+                        componentRestrictions: { country: "us" },
+                        fields: ["formatted_address", "geometry", "name"],
+                        types: ["address"],
+                      }}
+                    >
+                      <Input
+                        type="text"
+                        placeholder="Enter start address..."
+                        className="w-full google-maps-input"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Autocomplete>
+                  </div>
+                </div>
+              )}
               <label
                 className={`${outfitFont.className} flex items-center gap-2`}
               >
@@ -676,30 +739,34 @@ const RouteOptimizer = ({
               </label>
 
               {useCustomEndLocation && (
-                <div className="space-y-2">
+                <div className="autocomplete-wrapper">
                   <Label>End Location Address</Label>
-                  <Autocomplete
-                    onLoad={(autocomplete) => {
-                      searchBoxRef.current = autocomplete;
-                    }}
-                    onPlaceChanged={() => {
-                      if (searchBoxRef.current) {
-                        const place = searchBoxRef.current.getPlace();
-                        onPlaceSelected(place);
-                      }
-                    }}
-                    options={{
-                      componentRestrictions: { country: "us" },
-                      fields: ["formatted_address", "geometry", "name"],
-                      types: ["address"],
-                    }}
-                  >
-                    <Input
-                      type="text"
-                      placeholder="Enter an address..."
-                      className="w-full"
-                    />
-                  </Autocomplete>
+                  <div className="relative isolate">
+                    <div className="relative" style={{ zIndex: 9999998 }}>
+                      <Autocomplete
+                        onLoad={(autocomplete) => {
+                          endSearchBoxRef.current = autocomplete;
+                        }}
+                        onPlaceChanged={() => {
+                          if (endSearchBoxRef.current) {
+                            const place = endSearchBoxRef.current.getPlace();
+                            onEndPlaceSelected(place);
+                          }
+                        }}
+                        options={{
+                          componentRestrictions: { country: "us" },
+                          fields: ["formatted_address", "geometry", "name"],
+                          types: ["address"],
+                        }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Enter end address..."
+                          className="w-full"
+                        />
+                      </Autocomplete>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -711,99 +778,89 @@ const RouteOptimizer = ({
             >
               Optimize Route
             </Button>
-
-            {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md space-y-4">
-                <div className="border-b pb-2">
-                  <p className={`${outfitFont.className} font-medium text-lg`}>
-                    {routeSegments.length > 0
-                      ? "Time-Optimized Route"
-                      : "Distance-Optimized Route"}
+          </div>
+          {routeSegments.length > 0 && (
+            <div className="p-2 bg-slate-100 rounded-md">
+              <div className="border-b">
+                <div className="text-sm">
+                  <p className="text-gray-600 pl-4">
+                    Start Location: {addressSearch || "Current Location"}
                   </p>
 
-                  <div className="mt-2 space-y-2 text-sm">
-                    <div className="font-medium">Start Location:</div>
+                  {routeSegments.length > 0 && (
                     <p className="text-gray-600 pl-4">
-                      {addressSearch || "Current Location"}
+                      Departure:{" "}
+                      {routeSegments[0]
+                        ? secondsToTimeString(
+                            routeSegments[0].arrivalTime -
+                              routeSegments[0].travelTime
+                          )
+                        : "N/A"}
                     </p>
+                  )}
 
-                    {routeSegments.length > 0 && (
-                      <p className="text-gray-600 pl-4">
-                        Suggested Departure:{" "}
-                        {routeSegments[0]
-                          ? secondsToTimeString(
-                              routeSegments[0].arrivalTime -
-                                routeSegments[0].travelTime
-                            )
-                          : "N/A"}
-                      </p>
+                  <p className="text-gray-600 pl-4">
+                    Distance:{" "}
+                    {metersToMiles(
+                      routeSegments.length > 0
+                        ? routeSegments.reduce(
+                            (acc, segment) => acc + segment.distance,
+                            0
+                          )
+                        : routeTimings.totalDistance
+                    ).toFixed(1)}{" "}
+                    miles, Time:{" "}
+                    {formatDuration(
+                      routeSegments.length > 0
+                        ? routeSegments.reduce(
+                            (acc, segment) => acc + segment.travelTime,
+                            0
+                          )
+                        : routeTimings.totalTime
                     )}
-
-                    <p className="text-gray-600 pl-4">
-                      Total Distance:{" "}
-                      {metersToMiles(
-                        routeSegments.length > 0
-                          ? routeSegments.reduce(
-                              (acc, segment) => acc + segment.distance,
-                              0
-                            )
-                          : routeTimings.totalDistance
-                      ).toFixed(1)}{" "}
-                      miles
-                    </p>
-
-                    <p className="text-gray-600 pl-4">
-                      Total Travel Time:{" "}
-                      {formatDuration(
-                        routeSegments.length > 0
-                          ? routeSegments.reduce(
-                              (acc, segment) => acc + segment.travelTime,
-                              0
-                            )
-                          : routeTimings.totalTime
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <p className={`${outfitFont.className} font-medium`}>
-                    Stops:
                   </p>
-                  <RouteSegmentDisplay
-                    optimizedRoute={optimizedRoute}
-                    routeTimings={routeTimings}
-                    routeSegments={routeSegments}
-                  />
+                </div>
+              </div>
 
-                  {useCustomEndLocation &&
-                    customEndLocation &&
-                    addressSearch && (
-                      <div className="border-t pt-3">
-                        <div className="font-medium">Final Destination:</div>
-                        <div className="pl-4 space-y-1 mt-1">
-                          <p className="text-gray-600">{addressSearch}</p>
-                          <p className="text-gray-600">
-                            Travel Time from Last Stop:{" "}
-                            {formatDuration(routeTimings.returnTime)}
-                          </p>
+              <div className="">
+                <RouteSegmentDisplay
+                  optimizedRoute={optimizedRoute}
+                  routeTimings={routeTimings}
+                  routeSegments={routeSegments}
+                  useCustomEndLocation={useCustomEndLocation}
+                />
+
+                {useCustomEndLocation && customEndLocation && addressSearch && (
+                  <div className="border-t">
+                    <div className="font-medium">Final Destination:</div>
+                    <div className="pl-4">
+                      <p className="text-gray-600">{addressSearch}</p>
+                      <p className="text-gray-600">
+                        Travel Time from Last Stop:{" "}
+                        {formatDuration(routeTimings.returnTime)}
+                      </p>
+                      {routeSegments.length > 0 &&
+                        routeSegments[routeSegments.length - 1]
+                          .departureTime !== undefined && (
                           <p className="text-gray-600">
                             Estimated Arrival:{" "}
                             {secondsToTimeString(
                               routeSegments[routeSegments.length - 1]
-                                .departureTime + routeTimings.returnTime
+                                .departureTime
+                                ? routeSegments[routeSegments.length - 1]
+                                    .departureTime + routeTimings.returnTime
+                                : routeTimings.returnTime
                             )}
                           </p>
-                        </div>
-                      </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
-      </Card>
-
+      </Card>{" "}
       {/* Map */}
       <GoogleMap
         key={mapKey}
@@ -830,9 +887,15 @@ const RouteOptimizer = ({
         }}
       >
         {/* Starting Location Marker */}
-        {userLocation && (
+        {(startLocation || userLocation) && (
           <MarkerF
-            position={userLocation}
+            position={
+              startLocation?.toJSON() ||
+              userLocation?.toJSON() || {
+                lat: initialLocation[1],
+                lng: initialLocation[0],
+              }
+            }
             icon={{
               url: "/icons/clipart2825061.png",
               scaledSize: new google.maps.Size(64, 76),
@@ -856,39 +919,61 @@ const RouteOptimizer = ({
           if (!randomPosition) return null;
 
           return (
-            <Circle
-              key={location.id}
-              center={
-                new google.maps.LatLng(
-                  randomPosition.randomLat,
-                  randomPosition.randomLng
-                )
-              }
-              radius={
-                zoom >= 16
-                  ? 60
-                  : zoom >= 15
-                  ? 120
-                  : zoom >= 14
-                  ? 240
-                  : zoom >= 13
-                  ? 500
-                  : zoom >= 12
-                  ? 1000
-                  : zoom >= 11
-                  ? 2000
-                  : zoom >= 10
-                  ? 4000
-                  : 8000
-              }
-              options={{
-                strokeColor: colors.strokeColor,
-                strokeOpacity: 0.8,
-                strokeWeight: colors.strokeWeight || 2,
-                fillColor: colors.fillColor,
-                fillOpacity: 0.35,
-              }}
-            />
+            <React.Fragment key={location.id}>
+              <Circle
+                center={
+                  new google.maps.LatLng(
+                    randomPosition.randomLat,
+                    randomPosition.randomLng
+                  )
+                }
+                radius={
+                  zoom >= 16
+                    ? 60
+                    : zoom >= 15
+                    ? 120
+                    : zoom >= 14
+                    ? 240
+                    : zoom >= 13
+                    ? 500
+                    : zoom >= 12
+                    ? 1000
+                    : zoom >= 11
+                    ? 2000
+                    : zoom >= 10
+                    ? 4000
+                    : 8000
+                }
+                options={{
+                  strokeColor: colors.strokeColor,
+                  strokeOpacity: 0.8,
+                  strokeWeight: colors.strokeWeight || 2,
+                  fillColor: colors.fillColor,
+                  fillOpacity: 0.35,
+                }}
+              />
+              <MarkerF
+                position={
+                  new google.maps.LatLng(
+                    randomPosition.randomLat,
+                    randomPosition.randomLng
+                  )
+                }
+                label={{
+                  text:
+                    location.displayName ||
+                    location.user.name ||
+                    "no name found",
+                  color: "black",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+                icon={{
+                  path: google.maps.SymbolPath.CIRCLE,
+                  scale: 0,
+                }}
+              />
+            </React.Fragment>
           );
         })}
         {/* End Location Marker */}
@@ -920,7 +1005,7 @@ const RouteOptimizer = ({
         )}
 
         {/* Connect locations with straight lines and arrows */}
-        {optimizedRoute.length > 1 && (
+        {optimizedRoute.length > 0 && (
           <>
             {/* Line from starting location to first location */}
             {userLocation && randomizedPositions[optimizedRoute[0].id] && (
@@ -1047,7 +1132,6 @@ const RouteOptimizer = ({
           </>
         )}
       </GoogleMap>
-
       {/* Notification Modal */}
       <Dialog
         open={modalState.isOpen}
