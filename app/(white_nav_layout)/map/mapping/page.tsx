@@ -161,7 +161,7 @@ const RouteOptimizerPage = async ({
             capacity: 0,
             timeSlots: [
               {
-                open: 800,
+                open: 600,
                 close: 1440,
               },
             ],
@@ -257,10 +257,10 @@ const RouteOptimizerPage = async ({
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
       <RouteOptimizer
+        initialTime={new Date()}
         locations={locations}
         googleMapsApiKey={map_api_key}
         initialLocation={defaultLocation}
-        userRole={user.role}
       />
     </div>
   );

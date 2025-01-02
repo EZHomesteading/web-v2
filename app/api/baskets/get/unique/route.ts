@@ -80,6 +80,7 @@ export async function GET(
         },
       },
     });
+
     return NextResponse.json(fullBasketGroup);
   } catch (error) {
     return NextResponse.json(
