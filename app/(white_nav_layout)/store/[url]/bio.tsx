@@ -1,20 +1,19 @@
-//server side component for rendering users reviews, total rating and other information set up by the users.
-
-//import getUserById from "@/actions/user/getUserById";
 import { ReviewWithReviewer } from "@/actions/getUser";
 import Avatar from "@/components/Avatar";
 import { outfitFont } from "@/components/fonts";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, UserRole } from "@prisma/client";
+import { format } from "date-fns";
 import { UserInfo } from "next-auth";
 
 interface Props {
   reviews?: ReviewWithReviewer[];
   user?: UserInfo;
+  bio: string;
+  role: UserRole;
 }
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -28,6 +27,7 @@ function getReviewCounts(reviews: Reviews[]) {
 
   return counts;
 }
+
 function getAverageRating(reviews: Reviews[]) {
   if (reviews.length === 0) return 0;
 
@@ -35,25 +35,24 @@ function getAverageRating(reviews: Reviews[]) {
   const averageRating = totalRatings / reviews.length;
   return Math.round(averageRating * 2) / 2;
 }
-const Bio = ({ user, reviews }: Props) => {
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", options);
-  };
+
+const Bio = ({ user, reviews, role, bio }: Props) => {
   const counts = getReviewCounts(reviews || []);
   const total = reviews ? reviews.length : 0;
   const averageRating = getAverageRating(reviews || []);
   return (
     <Sheet>
-      <SheetTrigger>
-        <Button>More Info</Button>
+      <SheetTrigger asChild>
+        <button
+          className={`border border-grey px-3 py-2 my-2 rounded ${outfitFont.className}`}
+        >
+          More Info
+        </button>
       </SheetTrigger>
-      <SheetContent className="overflow-y-auto pt-10">
+      <SheetContent
+        className={`${outfitFont.className} overflow-y-auto pt-10 zmax w-full max-w-md`}
+        side={`left`}
+      >
         <div className="flex flex-col px-2 gap-y-2">
           <div className="flex flex-row items-center">
             <Avatar image={user?.image} />
@@ -64,35 +63,24 @@ const Bio = ({ user, reviews }: Props) => {
                 <div className="font-bold text-xl lg:text-2xl">
                   {user?.name}
                 </div>
-                {user?.createdAt && (
-                  <>
-                    {user.role === UserRole.COOP ? (
-                      <div>
-                        EZH Co-op Since {formatDate(user.createdAt.toString())}
-                      </div>
-                    ) : (
-                      <div>
-                        EZH Producer Since{" "}
-                        {formatDate(user.createdAt.toString())}
-                      </div>
-                    )}
-                  </>
-                )}
+                <div>
+                  EZH{" "}
+                  {role === UserRole.COOP
+                    ? "Co-op"
+                    : role === UserRole.PRODUCER
+                    ? "Producer"
+                    : "Member"}{" "}
+                  Since {format(user?.createdAt!, "MMM yyyy")}
+                </div>
               </div>
             </div>
           </div>
-          {user?.bio && (
-            <>
-              {!user?.fullName?.first ? (
-                <>Bio</>
-              ) : (
-                <h1>{user?.fullName?.first}&apos;s Bio</h1>
-              )}
-              <Card>
-                <CardContent className="py-2">{user?.bio}</CardContent>
-              </Card>
-            </>
-          )}
+          <h1 className={`text-xl`}>
+            {user?.fullName?.first && `${user?.fullName?.first}&apos;s`} Bio
+          </h1>
+          <p className={`h-[50vh] border border-grey p-3 px-4 rounded-xl`}>
+            {bio}
+          </p>
           {total === 0 ? (
             <div
               className={`${outfitFont.className} flex justify-center text-2xl mt-5`}

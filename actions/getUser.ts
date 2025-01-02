@@ -13,47 +13,10 @@ interface Params {
 interface IStoreParams {
   url?: string;
 }
-
-interface GetLocationByIndexParams {
-  userId: string;
-  index: 0 | 1 | 2;
+interface IStoreLocationParams {
+  id?: string;
 }
 
-const getLocationByIndex = async ({
-  userId,
-  index,
-}: GetLocationByIndexParams) => {
-  if (!userId) {
-    throw new Error("User ID is required");
-  }
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        locations: true,
-      },
-    });
-
-    //console.log("userwithLocations", user);
-
-    if (!user || !user.locations) {
-      return null;
-    }
-
-    const locationObject = user.locations;
-    const location = locationObject[index];
-
-    if (!location) {
-      return null;
-    }
-
-    return location;
-  } catch (error: any) {
-    throw new Error(`Error fetching location: ${error.message}`);
-  }
-};
 interface VendorLocation {
   id: string;
   coordinates: number[];
@@ -391,50 +354,31 @@ const getFavCardUser = async (params: Params): Promise<FavCardUser | null> => {
   }
 };
 
-// this gets the coop or producer on /store/[storeId] with their listings
-// interface Listing {
+// export type FinalListingShop = {
 //   id: string;
 //   title: string;
 //   price: number;
-//   minOrder: number | null;
+//   stock: number;
+//   rating: number[];
+//   quantityType: string | null;
+//   createdAt: string;
+//   location: Location;
 //   imageSrc: string[];
-//   quantityType: string;
-// }
-interface Listing1 {
-  id: string;
-  title: string;
-  price: number;
-  minOrder: number | null;
-  imageSrc: string[];
-  quantityType: string;
-  rating: number[];
-  location: number;
-}
-export type FinalListingShop = {
-  id: string;
-  title: string;
-  price: number;
-  stock: number;
-  rating: number[];
-  quantityType: string | null;
-  createdAt: string;
-  location: Location;
-  imageSrc: string[];
-  subCategory: string;
-  minOrder: number | null;
-  user: {
-    id: string;
-    name: string;
-    role: UserRole;
-  };
-};
+//   subCategory: string;
+//   minOrder: number | null;
+//   user: {
+//     id: string;
+//     name: string;
+//     role: UserRole;
+//   };
+// };
 
-export type StoreData = {
-  user: User1 & {
-    listings: FinalListingShop[];
-  };
-  reviews: any[];
-};
+// export type StoreData = {
+//   user: User1 & {
+//     listings: FinalListingShop[];
+//   };
+//   reviews: any[];
+// };
 interface GetUserLocationParams {
   userId: string;
   index: number;
@@ -497,35 +441,7 @@ const getUserLocationsBasket = async (): Promise<BasketLocation[] | null> => {
     );
   }
 };
-const getUserLocation = async ({
-  userId,
-  index,
-}: GetUserLocationParams): Promise<Location | null> => {
-  try {
-    const location = await prisma.location.findFirst({
-      where: {
-        userId: userId,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      skip: index,
-      take: 1,
-    });
 
-    return location;
-  } catch (error) {
-    console.error("Error fetching user location:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Unknown error occurred"
-    );
-  }
-};
-function filterListingsByLocation(listings: FinalListingShop[]) {
-  return listings.filter((listing: FinalListingShop) => {
-    return listing.location !== undefined && listing.location !== null;
-  });
-}
 // function filternullhours(listings: FinalListingShop[]) {
 //   return listings.filter(
 //     (listing: FinalListingShop) =>
@@ -536,9 +452,7 @@ function filterListingsByLocation(listings: FinalListingShop[]) {
 // }
 
 // Update the getUserStore function
-const getUserStore = async (
-  params: IStoreParams
-): Promise<StoreData | null> => {
+const getUserStore = async (params: IStoreParams): Promise<any | null> => {
   try {
     const { url } = params;
     const user = await prisma.user.findFirst({
@@ -568,22 +482,27 @@ const getUserStore = async (
             rating: true,
             id: true,
             quantityType: true,
-            location: true,
+            location: {
+              select: {
+                address: true,
+              },
+            },
             stock: true,
             subCategory: true,
-            createdAt: true,
+          },
+        },
+        locations: {
+          select: {
+            id: true,
+            displayName: true,
           },
         },
       },
     });
 
-    if (!user) {
-      return null;
-    }
-
     const reviews = await prisma.reviews.findMany({
       where: {
-        reviewedId: user.id,
+        reviewedId: user?.id,
         buyer: true,
       },
     });
@@ -608,37 +527,30 @@ const getUserStore = async (
       })
     );
 
-    const safeListings = await Promise.all(
-      user.listings.map(async (listing) => {
-        const location = listing.location;
-        return {
-          ...listing,
-          location,
-          quantityType: listing.quantityType || "", // Provide default empty string if null
-          minOrder: listing.minOrder || 0, // Provide default 0 if null
-          createdAt: listing.createdAt.toISOString(), // Convert Date to string
-          user: {
-            id: user.id,
-            name: user.name,
-            role: user.role,
-          },
-        } as FinalListingShop; // Type assertion to FinalListingShop
-      })
-    );
-
-    let resolvedSafeListings = safeListings.filter(
-      (listing) =>
-        listing.location !== null &&
-        listing.location.hours !== undefined &&
-        listing.location.hours !== null
-    );
-
     return {
-      user: { ...user, listings: resolvedSafeListings },
+      user: user,
       reviews: reviewsWithReviewer,
     };
   } catch (error: any) {
     throw new Error(error);
+  }
+};
+
+const GetStoreByLocation = async (params: IStoreLocationParams) => {
+  try {
+    const { id } = params;
+    const listings = await prisma.listing.findMany({
+      where: {
+        locationId: id,
+      },
+      include: {
+        user: true,
+        location: true,
+      },
+    });
+    return listings;
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -831,40 +743,6 @@ export {
   getRoleGate,
   getUserLocationsBasket,
   getRole,
-  getLocationByIndex,
   getUserLocations,
-};
-
-export type StoreUser = {
-  id: string;
-  name: string;
-  firstName: string | null;
-  image: string | null;
-  bio: string | null;
-  createdAt: Date;
-  role: string;
-  hours: Hours | undefined | null;
-  listings: {
-    imageSrc: string;
-    title: string;
-    price: number;
-    id: string;
-    minOrder: number | null;
-    rating: number[];
-    quantityType: string;
-    location: {
-      address: string;
-    } | null;
-  }[];
-  sellerReviews: {
-    id: string;
-    review: string;
-    rating: number;
-    buyer: {
-      id: string;
-      name: string;
-      firstName: string | null;
-      image: string | null;
-    };
-  }[];
+  GetStoreByLocation,
 };
