@@ -250,7 +250,7 @@ const StepThree: React.FC<StepThreeProps> = ({
                         onCheckedChange={(checked: boolean) =>
                           handleSODTCheckboxChange(checked, 0)
                         }
-                        label="Make this time to prepare, your Account Default?"
+                        label="Make this time to prepare your location default?"
                       />
                     )}
                   </div>
