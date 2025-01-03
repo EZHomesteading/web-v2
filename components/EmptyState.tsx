@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "./Button";
 import Heading from "./Heading";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface EmptyStateProps {
   title?: string;
@@ -44,7 +44,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   }
   return (
     <div
-      className={`${outfitFont.className}
+      className={`${OutfitFont.className}
         h-[60vh]
         flex 
         flex-col 

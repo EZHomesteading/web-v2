@@ -11,7 +11,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Navbar user={user as unknown as NavUser} className="bg-white !fixed" />
-      <div className={`lg:pt-20 pt-2`}>{children}</div>
+      <div className={`lg:pt-20 pt-2 mx-auto max-w-7xl pb-40`}>{children}</div>
     </>
   );
 };

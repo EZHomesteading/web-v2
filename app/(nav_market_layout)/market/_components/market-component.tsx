@@ -2,9 +2,8 @@
 import Container from "@/components/Container";
 import ClientOnly from "@/components/client/ClientOnly";
 import Link from "next/link";
-import SessionStorageManager from "@/components/sessionStorageManager";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
@@ -70,7 +69,7 @@ const Shop = ({
         <>
           {isPageOutOfRange && (
             <div
-              className={`flex justify-center items-end my-4 ${outfitFont.className}`}
+              className={`flex justify-center items-end my-4 ${OutfitFont.className}`}
             >
               <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
                 {pageNumbers.map((pageNumber, index) => (

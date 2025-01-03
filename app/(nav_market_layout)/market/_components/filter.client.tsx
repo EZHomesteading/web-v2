@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserRole } from "@prisma/client";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface Props {
   role?: UserRole;
@@ -70,7 +70,7 @@ const Filters = ({ role }: Props) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className={`fixed inset-y-40 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-1rem) sm:max-w-xl px-4 py-6 z-50 ${outfitFont.className}`}
+              className={`fixed inset-y-40 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-1rem) sm:max-w-xl px-4 py-6 z-50 ${OutfitFont.className}`}
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-semibold">Filters</h2>
@@ -129,13 +129,13 @@ const Filters = ({ role }: Props) => {
                     <SelectGroup>
                       <SelectItem
                         value="high"
-                        className={`${outfitFont.className}`}
+                        className={`${OutfitFont.className}`}
                       >
                         High to Low
                       </SelectItem>
                       <SelectItem
                         value="low"
-                        className={`${outfitFont.className}`}
+                        className={`${OutfitFont.className}`}
                       >
                         Low to High
                       </SelectItem>

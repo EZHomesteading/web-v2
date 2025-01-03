@@ -2,7 +2,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 const Logo = () => {
   const pathname = usePathname();
@@ -17,7 +17,7 @@ const Logo = () => {
     >
       <Link href={href}>
         <h1
-          className={`${outfitFont.className} font-light hover:text-green-800`}
+          className={`${OutfitFont.className} font-light hover:text-green-800`}
         >
           EZ Homesteading
         </h1>

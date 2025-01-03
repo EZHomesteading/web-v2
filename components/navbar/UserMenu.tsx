@@ -9,7 +9,6 @@ import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
 import MenuItem from "./MenuItem";
 import NotificationIcon from "./icons/notification";
-import CartIcon from "./icons/cart-icon";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { NavUser } from "@/actions/getUser";
@@ -18,7 +17,7 @@ import placeholder from "@/public/images/website-images/placeholder.jpg";
 import axios from "axios";
 import { toast } from "sonner";
 import { IconType } from "react-icons";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 type MenuIconItem = IconItem | ComponentItem;
 
@@ -223,7 +222,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
         {renderIcons()}
         <MenuIcon image={user?.image} />
         <PopoverContent
-          className={`${outfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
+          className={`${OutfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
           align="end"
           alignOffset={0}
         >
@@ -337,7 +336,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
-                  className={`${outfitFont.className} min-h-screen w-screen d1dbbf `}
+                  className={`${OutfitFont.className} min-h-screen w-screen d1dbbf `}
                 >
                   <div className="h-full flex flex-col items-center justify-center px-10">
                     <ul className="w-full max-w-3xl">
@@ -424,7 +423,7 @@ const IconWrapper: React.FC<{
       onClick={onClick}
     >
       <Icon className={`h-8 w-8  `} />
-      <div className={`text-xs ${outfitFont.className} `}>{label}</div>
+      <div className={`text-xs ${OutfitFont.className} `}>{label}</div>
     </button>
   );
 };

@@ -13,10 +13,9 @@ import qs from "query-string";
 import { useRouter } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
 import debounce from "debounce";
-import { Outfit } from "next/font/google";
 import { PiBasketThin, PiMapTrifoldThin } from "react-icons/pi";
 import Fuse from "fuse.js";
-import { outfitFont } from "../fonts";
+import { OutfitFont } from "../fonts";
 
 type Listing = {
   title: string;
@@ -335,7 +334,7 @@ const SearchLocation = ({ apiKey }: p) => {
   };
   return (
     <div
-      className={`flex items-center border rounded-full bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full  ${outfitFont.className}`}
+      className={`flex items-center border rounded-full bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] justify-center relative w-full  ${OutfitFont.className}`}
     >
       <PlacesAutocomplete
         value={address}

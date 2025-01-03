@@ -5,7 +5,7 @@ import FollowButton from "@/components/follow/followButton";
 import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "../fonts";
+import { OutfitFont } from "../fonts";
 interface ListingDataProps {
   description: string;
   followUserId: string;
@@ -41,7 +41,7 @@ const ListingData: React.FC<ListingDataProps> = ({
       >
         <span
           style={{ marginRight: "5px" }}
-          className={`${outfitFont.className}`}
+          className={`${OutfitFont.className}`}
         >
           Sold by
         </span>
