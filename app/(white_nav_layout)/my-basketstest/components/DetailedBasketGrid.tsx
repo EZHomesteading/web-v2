@@ -1,36 +1,38 @@
 "use client";
-import React, { useState, useMemo, use, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  use,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { outfitFont, workFont } from "@/components/fonts";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { outfitFont } from "@/components/fonts";
+
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import {
-  PiMinusCircleThin,
-  PiPlusCircleThin,
-  PiChatsCircleThin,
-} from "react-icons/pi";
+import { PiMinusCircleThin, PiPlusCircleThin } from "react-icons/pi";
 import { toast } from "sonner";
-import { formatDateToMMMDDAtHourMin } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
 import useMediaQuery from "@/hooks/media-query";
 import DateOverlay from "./when";
-import { orderMethod, UserRole } from "@prisma/client";
+import { orderMethod } from "@prisma/client";
 import { BasketLocation } from "@/actions/getUser";
 import AvailabilityMap from "./AvailabilityMap";
-import { mapKeys } from "lodash";
 import {
   DeliveryPickupToggle,
   DeliveryPickupToggleMode,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import SpCounter from "./counter";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { XMarkIcon } from "@heroicons/react/20/solid";
+import { Trash2Icon } from "lucide-react";
 // Keep specific types where they're well-defined
 interface ListingType {
   id: string;
@@ -41,12 +43,18 @@ interface ListingType {
   [key: string]: any; // Allow additional properties
 }
 
-interface BasketItem {
+export interface BasketItem {
   quantity: number;
   listing: ListingType;
   [key: string]: any;
 }
-
+interface BasketContextType {
+  basketTotals: {
+    total: number;
+    itemCount: number;
+  };
+  updateBasketTotals: (totals: { total: number; itemCount: number }) => void;
+}
 // Use any for complex nested types
 interface DetailedBasketGridProps {
   mapsKey: string;
@@ -76,7 +84,29 @@ interface PriceBreakdownProps {
 interface QuantityControlProps {
   item: BasketItem;
 }
+const BasketContext = createContext<BasketContextType | undefined>(undefined);
 
+export const BasketProvider = ({ children }: { children: React.ReactNode }) => {
+  const [basketTotals, setBasketTotals] = useState({ total: 0, itemCount: 0 });
+
+  const updateBasketTotals = (totals: { total: number; itemCount: number }) => {
+    setBasketTotals(totals);
+  };
+
+  return (
+    <BasketContext.Provider value={{ basketTotals, updateBasketTotals }}>
+      {children}
+    </BasketContext.Provider>
+  );
+};
+
+export const useBasket = () => {
+  const context = useContext(BasketContext);
+  if (context === undefined) {
+    throw new Error("useBasket must be used within a BasketProvider");
+  }
+  return context;
+};
 const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
   baskets,
   mapsKey,
@@ -85,7 +115,29 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
   mk,
   userId,
 }) => {
+  return (
+    <BasketProvider>
+      <DetailedBasketGridContent
+        baskets={baskets}
+        mapsKey={mapsKey}
+        userLocs={userLocs}
+        userLoc={userLoc}
+        mk={mk}
+        userId={userId}
+      />
+    </BasketProvider>
+  );
+};
+const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
+  baskets,
+  mapsKey,
+  userLocs,
+  userLoc,
+  mk,
+  userId,
+}) => {
   // Track delivery/pickup mode for each basket
+  const { updateBasketTotals } = useBasket();
   const [pickupTimes, setPickupTimes] = useState(null);
   useEffect(() => {
     console.log("PICKUPTIMEMEES", pickupTimes);
@@ -160,54 +212,59 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
       return newModes;
     });
   };
-  const calculateBasketTotals = useMemo(() => {
-    return baskets.reduce(
-      (acc, basket) => {
-        const basketTotal = basket.items.reduce((sum: number, item: any) => {
-          return sum + item.listing.price * item.quantity;
-        }, 0);
-        const itemCount = basket.items.reduce(
-          (sum: number, item: any) => sum + item.quantity,
-          0
-        );
-        return {
-          total: acc.total + basketTotal,
-          itemCount: acc.itemCount + itemCount,
-        };
-      },
-      { total: 0, itemCount: 0 }
-    );
-  }, [baskets]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const totals = baskets.reduce(
+        (acc, basket) => ({
+          total:
+            acc.total +
+            basket.items.reduce(
+              (sum: number, item: any) =>
+                sum + item.listing.price * item.quantity,
+              0
+            ),
+          itemCount:
+            acc.itemCount +
+            basket.items.reduce(
+              (sum: number, item: any) => sum + item.quantity,
+              0
+            ),
+        }),
+        { total: 0, itemCount: 0 }
+      );
+      updateBasketTotals(totals);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [baskets, updateBasketTotals]);
 
   const deliveryFee = 4.99;
 
-  const OrderSummaryCard = () => (
-    <Card className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-      <div className="space-y-4">
-        <div className="flex justify-between">
-          <span>Total Items:</span>
-          <span>{calculateBasketTotals.itemCount}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Subtotal:</span>
-          <span>${calculateBasketTotals.total.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Delivery Fee:</span>
-          <span>${deliveryFee.toFixed(2)}</span>
-        </div>
-        <div className="border-t pt-4">
-          <div className="flex justify-between font-semibold">
-            <span>Total:</span>
-            <span>
-              ${(calculateBasketTotals.total + deliveryFee).toFixed(2)}
-            </span>
+  const OrderSummaryCard = () => {
+    const { basketTotals } = useBasket();
+
+    return (
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <span>Total Items:</span>
+            <span>{basketTotals.itemCount}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Subtotal:</span>
+            <span>${basketTotals.total.toFixed(2)}</span>
+          </div>
+          <div className="border-t pt-4">
+            <div className="flex justify-between font-semibold">
+              <span>Total:</span>
+              <span>${basketTotals.total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
-  );
+      </Card>
+    );
+  };
 
   return (
     <div className={`${outfitFont.className} w-full pb-32`}>
@@ -353,23 +410,13 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
     onModeChange(basket.id, newMode); // Notify parent of mode change
   };
   const QuantityControl: React.FC<QuantityControlProps> = ({ item }) => {
-    const [quantity, setQuantity] = useState<number>(item.quantity);
-
     return (
       <div className="flex items-center gap-2">
-        <PiMinusCircleThin
-          className="text-2xl cursor-pointer"
-          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-        />
-        <span>{quantity}</span>
-        <PiPlusCircleThin
-          className="text-2xl cursor-pointer"
-          onClick={() => setQuantity((prev) => prev + 1)}
-        />
+        <SpCounter item={item} basketId={basket.id}></SpCounter>
       </div>
     );
   };
-
+  const router = useRouter();
   const calculateExpiryDate = (createdAt: Date, shelfLife: number) => {
     if (shelfLife === 365000) return "Never";
 
@@ -505,10 +552,43 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
                       parseInt(item.listing.shelfLife)
                     )}
                   </p>
+                  <p className="text-xs text-gray-600"></p>
+                </div>
+                <div className="mt-1 text-sm font-medium text-gray-900 flex flex-row">
+                  ${item.listing.price}{" "}
+                  {item.listing.quantityType ? (
+                    <span className="ml-1">
+                      {" "}
+                      per {item.listing.quantityType}
+                    </span>
+                  ) : (
+                    <span className="ml-1">
+                      {" "}
+                      per {item.listing.subCategory}
+                    </span>
+                  )}
                 </div>
                 <div className="mt-auto">
                   <QuantityControl item={item} />
                 </div>
+              </div>
+              <div className="flex flex-col  justify-between min-w-0">
+                <button
+                  type="button"
+                  className=" text-gray-400 hover:text-gray-500 z-50"
+                  onClick={async () => {
+                    await axios.delete(`/api/baskets/itemdelete`, {
+                      data: {
+                        id: basket.id,
+                        items: [item.listing.id],
+                      },
+                    });
+                    router.refresh();
+                  }}
+                >
+                  <span className="sr-only">Remove</span>
+                  <Trash2Icon className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </div>

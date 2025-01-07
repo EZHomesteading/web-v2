@@ -288,7 +288,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   });
   const getDisplayText = () => {
     if (!selectedDate || !selectedTime) {
-      return "Pick a date and time";
+      return "Desired Departure Date and Time";
     }
     return formatDateToMMMDDAtHourMin(
       new Date(`${selectedDate}T${selectedTime}`)
@@ -495,7 +495,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         onClose={() => setIsRouteModalOpen(false)}
         locations={locations}
         googleMapsApiKey={mapsKey}
-        initialLocation={userLoc[0].coordinates || null}
+        initialLocation={[-76.6381116, 37.0345267]}
         setPickupTimes={setPickupTimes}
       />
       <Card className="p-4 mb-4">

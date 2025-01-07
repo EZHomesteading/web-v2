@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
-
+  console.log(req);
   try {
     const updatedBasket = await prisma.basket.update({
       where: { id },
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         time_type: time_type,
       },
     });
-
+    console.log(updatedBasket);
     return NextResponse.json(updatedBasket);
   } catch (error) {
     console.error("Error updating basket:", error);
@@ -43,5 +43,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-

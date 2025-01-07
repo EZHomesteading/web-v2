@@ -51,6 +51,7 @@ export async function GET(
                 imageSrc: true,
                 stock: true,
                 price: true,
+                subCategory: true,
                 minOrder: true,
                 shelfLife: true,
                 rating: true,

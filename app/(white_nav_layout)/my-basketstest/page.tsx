@@ -11,7 +11,7 @@ const BasketPage = async () => {
   if (!session?.user) {
     redirect("/auth/login");
   }
-  const map_api_key = process.env.MAPS_KEY as string;
+  const map_api_key = "beans"; //process.env.MAPS_KEY as string;
   // Get the basic basket info first
   const { baskets: basicBaskets } = await getActiveBaskets();
   const userLocs = await getUserLocationsBasket();
