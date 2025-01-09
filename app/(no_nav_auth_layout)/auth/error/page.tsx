@@ -1,8 +1,15 @@
 //server layout for auth error
-import { ErrorCard } from "@/app/(no_nav_auth_layout)/auth/(components)/error-card";
+import { CardWrapper } from "../(components)/login/card-wrapper-login";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 const AuthErrorPage = () => {
-  return <ErrorCard />;
+  return (
+    <CardWrapper backButtonHref="/auth/login" backButtonLabel="Back to login">
+      <div className="w-full flex justify-center items-center">
+        <ExclamationTriangleIcon className="text-destructive" />
+      </div>
+    </CardWrapper>
+  );
 };
 
 export default AuthErrorPage;

@@ -12,7 +12,7 @@ import { StepFive } from "@/app/(no-nav_layout)/new-location-and-hours/_componen
 import StepSix from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step6";
 import StepSeven from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step7";
 import StepEight from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step8";
-import { HoverButton } from "@/components/ui/hoverButton";
+import { HoverButton } from "@/components/ui/hover-btn";
 import { Hours, Location, UserRole } from "@prisma/client";
 import { toast } from "sonner";
 import StepNine from "@/app/(no-nav_layout)/new-location-and-hours/_components/_steps/step9";

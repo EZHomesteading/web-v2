@@ -14,12 +14,14 @@ interface ListingCardProps {
   user?: UserInfo;
   imageCount: number;
 }
+
 interface StoreLocationCardProps {
   listing: MarketListing;
   user?: UserInfo;
   imageCount: number;
   location?: any;
 }
+
 const StarRating = ({
   value,
   size = 20,
@@ -145,12 +147,10 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
           </p>
         </div>
 
-        <div className="flex items-center justify-between mt-2 w-full">
-          <div
-            className={`${WorkFont.className} text-sm flex items-center gap-1`}
-          >
+        <div className="mt-1 text-xs flex justify-between w-full">
+          <div className={`${WorkFont.className} `}>
             <span className="font-semibold">${listing.price}</span>
-            <span className="font-light">per {listing.quantityType}</span>
+            <span className="font-light pl-1">per {listing.quantityType}</span>
           </div>
 
           <StarRating
@@ -220,12 +220,10 @@ const StoreLocationCard = ({
           </p>
         </div>
 
-        <div className="flex items-center justify-between mt-2 w-full">
-          <div
-            className={`${WorkFont.className} text-sm flex items-center gap-1`}
-          >
+        <div className="flex items-center justify-between mt-1 w-full">
+          <div className={`${WorkFont.className} text-xs`}>
             <span className="font-semibold">${listing.price}</span>
-            <span className="font-light">per {listing.quantityType}</span>
+            <span className="font-light pl-1">per {listing.quantityType}</span>
           </div>
 
           <StarRating

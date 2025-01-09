@@ -4,14 +4,7 @@ import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Outfit } from "next/font/google";
-import toast from "react-hot-toast";
-
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { toast } from "sonner";
 
 const SheetCartC = SheetPrimitive.Root;
 

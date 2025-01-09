@@ -22,6 +22,7 @@ export interface MarketListing {
     id: string;
   };
 }
+
 interface ShopProps {
   listings: MarketListing[];
   user?: UserInfo;

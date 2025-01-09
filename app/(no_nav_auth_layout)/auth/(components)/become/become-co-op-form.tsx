@@ -54,7 +54,6 @@ export const BecomeCoop = ({
       };
       await createStripeConnectedAccount();
 
-      console.log("Updating user information");
       await fetch("/api/useractions/update", {
         method: "POST",
         headers: {
