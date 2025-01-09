@@ -34,6 +34,7 @@ import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Trash2Icon } from "lucide-react";
 import LocationModal from "./LocSelect";
+import WeeklyHours from "./weeklyhours";
 // Keep specific types where they're well-defined
 interface ListingType {
   id: string;
@@ -343,6 +344,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
       }
       return DeliveryPickupToggleMode.NOHOURS;
     });
+
   const [basketState, setBasketState] = useState<any>({
     ...basket,
     orderMethod: basket.orderMethod || orderMethod.UNDECIDED,
@@ -354,72 +356,14 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
       return sum + item.listing.price * item.quantity;
     }, 0);
   }, [basket.items]);
-  const getNextOpenHours = () => {
-    const hours = basket.location.hours?.[deliveryPickupMode.toLowerCase()];
-    if (!hours) return null;
 
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const currentHour = new Date().getHours() * 60 + new Date().getMinutes();
-
-    // Find today's schedule
-    const todaySchedule = hours.find(
-      (day: any) => new Date(day.date).getTime() === now.getTime()
-    );
-
-    const formatTimeFromMinutes = (minutes: number) => {
-      const hour = Math.floor(minutes / 60);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const hour12 = hour % 12 || 12;
-      return `${hour12}:00${ampm}`;
-    };
-
-    const formatDate = (date: Date) => {
-      const day = date.getDate();
-      const suffix = ["th", "st", "nd", "rd"][day % 10] || "th";
-      return `${date.toLocaleString("en-US", {
-        month: "short",
-      })} ${day}${suffix}`;
-    };
-
-    if (todaySchedule) {
-      const { open, close } = todaySchedule.timeSlots[0];
-      if (currentHour >= open && currentHour < close) return null;
-
-      if (currentHour >= close) {
-        const nextDay = hours.find(
-          (day: any) => new Date(day.date).getTime() > now.getTime()
-        );
-        if (nextDay) {
-          const nextDate = new Date(nextDay.date);
-          return `Opens on ${nextDate.toLocaleString("en-US", {
-            weekday: "long",
-          })}, ${formatDate(nextDate)}, at ${formatTimeFromMinutes(
-            nextDay.timeSlots[0].open
-          )}`;
-        }
-      }
-      return `Opens today at ${formatTimeFromMinutes(open)}`;
-    }
-
-    const nextDay = hours.find(
-      (day: any) => new Date(day.date).getTime() > now.getTime()
-    );
-    return nextDay
-      ? `Opens on ${new Date(nextDay.date).toLocaleString("en-US", {
-          weekday: "long",
-        })}, ${formatDate(new Date(nextDay.date))}, at ${formatTimeFromMinutes(
-          nextDay.timeSlots[0].open
-        )}`
-      : null;
-  };
-  const nextOpenHours = getNextOpenHours();
   const handleDeliveryPickupModeChange = (
     newMode: DeliveryPickupToggleMode
   ) => {
     setDeliveryPickupMode(newMode);
-    onModeChange(basket.id, newMode); // Notify parent of mode change
+    onModeChange(basket.id, newMode);
   };
+
   const QuantityControl: React.FC<QuantityControlProps> = ({ item }) => {
     return (
       <div className="flex items-center gap-2">
@@ -427,6 +371,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
       </div>
     );
   };
+
   const router = useRouter();
   const calculateExpiryDate = (createdAt: Date, shelfLife: number) => {
     if (shelfLife === 365000) return "Never";
@@ -482,17 +427,20 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
 
     return `${dayName}, ${monthName} ${day}${daySuffix}, at ${formattedHours}:${formattedMinutes}${amPm}`;
   };
+
   return (
     <div className="border rounded-xl shadow-lg p-4 bg-white">
       <div className="flex justify-between items-start mb-4">
-        <div className="flex items-baseline gap-4">
-          <h2 className="text-xl font-semibold">
-            {basket.location.displayName || basket.location.user.name}
-          </h2>
-          <span className="text-lg text-gray-600">
-            ${basketTotal.toFixed(2)}
-          </span>
-          <span>{nextOpenHours}</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline gap-4">
+            <h2 className="text-xl font-semibold">
+              {basket.location.displayName || basket.location.user.name}
+            </h2>
+            <span className="text-lg text-gray-600">
+              ${basketTotal.toFixed(2)}
+            </span>
+            <WeeklyHours location={basket.location} mode={deliveryPickupMode} />
+          </div>
         </div>
         <div className="flex justify-between items-start mb-4">
           <DeliveryPickupToggle
@@ -500,7 +448,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
             mode={deliveryPickupMode}
             onModeChange={handleDeliveryPickupModeChange}
             basket={basketState as any}
-          ></DeliveryPickupToggle>
+          />
           {deliveryPickupMode === "DELIVERY" && (
             <DateOverlay
               basket={basketState as any}
@@ -525,7 +473,6 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
             className="p-3 border rounded-lg hover:shadow-md transition-shadow"
           >
             <div className="flex flex-row gap-4">
-              {/* Left side - Carousel */}
               <div className="w-32 h-32 flex-shrink-0 relative rounded-md overflow-hidden">
                 <Carousel className="w-full h-full">
                   <CarouselContent>
@@ -550,7 +497,6 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
                 </Carousel>
               </div>
 
-              {/* Right side - Information */}
               <div className="flex flex-col flex-1 justify-between min-w-0">
                 <div>
                   <h3 className="font-medium text-sm mb-1 line-clamp-2">
@@ -583,10 +529,10 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
                   <QuantityControl item={item} />
                 </div>
               </div>
-              <div className="flex flex-col  justify-between min-w-0">
+              <div className="flex flex-col justify-between min-w-0">
                 <button
                   type="button"
-                  className=" text-gray-400 hover:text-gray-500 z-10"
+                  className="text-gray-400 hover:text-gray-500 z-10"
                   onClick={async () => {
                     await axios.delete(`/api/baskets/itemdelete`, {
                       data: {

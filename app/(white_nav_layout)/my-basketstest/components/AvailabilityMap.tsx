@@ -6,6 +6,7 @@ import {
   Circle,
   useLoadScript,
   MarkerF,
+  Autocomplete,
 } from "@react-google-maps/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,11 @@ import useMediaQuery from "@/hooks/media-query";
 import { Calendar } from "@/components/ui/calendar";
 import TimePicker from "./time.picker";
 import RouteOptimizerModal from "./map/route-optimizer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface LocationStatus {
   isOpen: boolean;
@@ -265,6 +271,8 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isChangeLocationOpen, setIsChangeLocationOpen] = useState(false);
+  const [initLoc, setInitLoc] = useState(userLoc[0]);
   const datePickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [mapCenter, setMapCenter] = useState({
     lat: locations[0]?.coordinates[1] ?? 40.7128,
@@ -283,6 +291,10 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
       nextOpenTime: string;
     }>
   >([]);
+  const locationInputRef = useRef<HTMLInputElement>(null);
+  const locationSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(
+    null
+  );
   const googleMapsApiKey = mapsKey;
   const libraries: ("places" | "geometry")[] = ["places", "geometry"];
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -293,7 +305,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   });
   const getDisplayText = () => {
     if (!selectedDate || !selectedTime) {
-      return "Desired Departure Date and Time";
+      return "Enter Departure Date and Time";
     }
     return formatDateToMMMDDAtHourMin(
       new Date(`${selectedDate}T${selectedTime}`)
@@ -500,24 +512,95 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         onClose={() => setIsRouteModalOpen(false)}
         locations={locations}
         googleMapsApiKey={mapsKey}
-        initialLocation={userLoc[0].coordinates}
+        initialLocation={initLoc.coordinates}
         setPickupTimes={setPickupTimes}
       />
       <Card className="p-4 mb-4">
-        <div className="flex justify-between items-center">
-          <button
-            ref={datePickerTriggerRef}
-            onClick={() => setIsDatePickerOpen(true)}
-            className="flex items-center justify-center rounded-full border px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+        <div className="flex justify-center items-center gap-2">
+          <span>Departing from {initLoc.address}</span>
+          <Popover
+            open={isChangeLocationOpen}
+            onOpenChange={setIsChangeLocationOpen}
           >
-            {getDisplayText()}
-          </button>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                Change
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="center" className="w-[500px] p-6 shadow-xl">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-semibold mb-2">
+                    Change Departure Location
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Enter your new departure address
+                  </p>
+                </div>
+
+                <div>
+                  <Autocomplete
+                    onLoad={(autocomplete) => {
+                      locationSearchBoxRef.current = autocomplete;
+                    }}
+                    onPlaceChanged={() => {
+                      if (locationSearchBoxRef.current) {
+                        const place = locationSearchBoxRef.current.getPlace();
+                        if (
+                          place.geometry?.location &&
+                          place.formatted_address
+                        ) {
+                          setInitLoc({
+                            address: place.formatted_address,
+                            coordinates: [
+                              place.geometry.location.lng(),
+                              place.geometry.location.lat(),
+                            ],
+                          });
+                          setIsChangeLocationOpen(false);
+                        }
+                      }
+                    }}
+                    options={{
+                      componentRestrictions: { country: "us" },
+                      fields: ["formatted_address", "geometry", "name"],
+                      types: ["address"],
+                    }}
+                  >
+                    <Input
+                      ref={locationInputRef}
+                      type="text"
+                      placeholder="Enter new address..."
+                      className="w-full text-lg p-4 h-12"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Autocomplete>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-row">
+            <button
+              ref={datePickerTriggerRef}
+              onClick={() => setIsDatePickerOpen(true)}
+              className="flex items-center justify-center rounded-full border px-3 py-2 text-sm  hover:bg-gray-50 transition-colors"
+            >
+              {getDisplayText()}
+            </button>
+            {(!selectedDate || !selectedTime) && (
+              <div className=" text-sm mt-2 pl-2 hover:bg-gray-50 transition-colors">
+                Defaults to current Date and Time
+              </div>
+            )}
+          </div>
           <Button
             onClick={checkLocationAvailability}
             className="w-32"
             disabled={!selectedDate || !selectedTime}
           >
-            Check
+            Check Availability
           </Button>
         </div>
       </Card>
@@ -651,6 +734,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
           </GoogleMap>
         </div>{" "}
       </div>
+
       <div className="mt-4 flex gap-4 justify-center">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-green-600"></div>
