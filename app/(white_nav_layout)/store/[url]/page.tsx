@@ -12,7 +12,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { RiUserFollowLine } from "react-icons/ri";
 
 interface StorePageProps {
   params: {

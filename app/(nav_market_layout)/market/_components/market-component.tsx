@@ -1,6 +1,4 @@
 //render market product cards on server, with toggle cart buttons
-import Container from "@/components/Container";
-import ClientOnly from "@/components/client/ClientOnly";
 import Link from "next/link";
 import { UserInfo } from "next-auth";
 import { OutfitFont } from "@/components/fonts";

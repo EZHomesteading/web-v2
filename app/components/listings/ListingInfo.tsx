@@ -1,11 +1,12 @@
 "use client";
 //listing information component, displays user selling and follow button
+
 import { useRouter } from "next/navigation";
 import FollowButton from "@/components/follow/followButton";
 import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface ListingInfoProps {
   description: string;
@@ -42,7 +43,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       >
         <span
           style={{ marginRight: "5px" }}
-          className={`${outfitFont.className}`}
+          className={`${OutfitFont.className}`}
         >
           Sold by
         </span>

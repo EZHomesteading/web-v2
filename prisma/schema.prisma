@@ -119,8 +119,6 @@ type Hours {
   pickup   Availability[]
 }
 
-
-
 type TimeSlot {
   open  Int
   close Int
@@ -131,14 +129,17 @@ type Availability {
   timeSlots TimeSlot[]
   capacity  Int?
 }
+
 type OpenCloseTemplates {
   title     String
   timeSlots TimeSlot[]
 }
+
 type pickupDate {
   date DateTime
   time Int
 }
+
 type fullName {
   first String?
   last  String?

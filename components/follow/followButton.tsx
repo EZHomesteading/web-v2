@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { RiUserFollowLine } from "react-icons/ri";
 import { RiUserUnfollowLine } from "react-icons/ri";
 import { toast } from "sonner";
-import { outfitFont } from "../fonts";
+import { OutfitFont } from "../fonts";
 
 interface FollowButtonProps {
   followUserId: string;
@@ -55,7 +55,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleFollow}
-        className={`${outfitFont.className} bg-slate-300  text-xl 
+        className={`${OutfitFont.className} bg-slate-300  text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
         <RiUserFollowLine size={24} />
@@ -78,7 +78,7 @@ const FollowButton = ({ followUserId, following }: FollowButtonProps) => {
     return (
       <div
         onClick={handleUnfollow}
-        className={`${outfitFont.className} bg-slate-300   text-xl 
+        className={`${OutfitFont.className} bg-slate-300   text-xl 
             font-semibold  rounded-full flex py-2 px-2 ml-1 hover:cursor-pointer items-center w-fit`}
       >
         <RiUserUnfollowLine size={24} />

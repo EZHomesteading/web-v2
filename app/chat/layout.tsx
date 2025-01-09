@@ -1,15 +1,16 @@
 // server side layour for chat page
 import ConversationList from "./components/ConversationList";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "@/components/navbar/navbar";
 import { getConversations } from "@/actions/chat/getChat";
-import type { Viewport } from "next";
 import { getNavUser, NavUser } from "@/actions/getUser";
-import { UserInfo } from "next-auth";
 import { FullConversationType } from "@/types";
+
+import type { Viewport } from "next";
 
 export const viewport: Viewport = {
   themeColor: "rgb(	241 239 231)",
 };
+
 export default async function ConversationsLayout({
   children,
 }: {

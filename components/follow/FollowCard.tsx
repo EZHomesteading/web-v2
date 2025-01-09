@@ -2,17 +2,11 @@
 //following card component
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import { Outfit } from "next/font/google";
 import FollowButton from "./followButton";
-import { $Enums, Location, Prisma } from "@prisma/client";
 import Avatar from "../Avatar";
 import { Card, CardContent } from "../ui/card";
+import { OutfitFont } from "../fonts";
 
-const outfit = Outfit({
-  display: "swap",
-  subsets: ["latin"],
-  weight: ["300"],
-});
 interface ListingCardProps {
   data: {
     name: string;
@@ -52,7 +46,7 @@ const FollowCard: React.FC<ListingCardProps> = ({ data, followarr }) => {
 
   return (
     <Card
-      className={`w-[215px] hover:shadow-lg transition-shadow duration-300 ${outfit.className}`}
+      className={`w-[215px] hover:shadow-lg transition-shadow duration-300 ${OutfitFont.className}`}
     >
       <CardContent className="p-4">
         <div className="flex items-center space-x-4">

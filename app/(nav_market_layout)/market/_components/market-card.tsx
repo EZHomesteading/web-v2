@@ -8,7 +8,6 @@ import { UserInfo } from "next-auth";
 import { OutfitFont, WorkFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
-import { Location } from "@prisma/client";
 
 interface ListingCardProps {
   listing: MarketListing;

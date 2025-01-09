@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
-import CartIcon from "@/components/listings/cart-icon";
 import { Button } from "@/components/ui/button";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -23,19 +22,18 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-import { Outfit } from "next/font/google";
 import { Work_Sans } from "next/font/google";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 //import { Popover, PopoverTrigger, PopoverContent } from "./error-popover";
 import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/listings/error-popover";
+import { OutfitFont } from "@/components/fonts";
 const work = Work_Sans({
   display: "block",
   subsets: ["latin"],
@@ -162,29 +160,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </Popover>
             </div>
           )}
-          <div className="absolute top-3 right-3">
-            {data.stock <= 0 ? (
-              <></>
-            ) : (
-              <CartIcon
-                listing={data}
-                user={user}
-                // listingRole={storeUser.role}
-                // listingUser={storeUser.id}
-                // listingMin={data.minOrder}
-              />
-            )}
-          </div>
         </div>
         <div className="font-semibold text-lg">
-          {" "}
-          <div className={`${outfitFont.className} text-lg`}>{data.title}</div>
+          <div className={`${OutfitFont.className} text-lg`}>{data.title}</div>
           <div
             className={`font-light text-neutral-500 text-xs ${work.className}`}
           >
             {data?.location?.address && (
               <>
-                {" "}
                 {data?.location?.address[1]}, {data?.location?.address[2]}
               </>
             )}

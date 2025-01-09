@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { addDays } from "date-fns";
-import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
 import ListingData from "./components/ListingData";
 import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
-import { User } from "@prisma/client";
 import { UserInfo } from "next-auth";
 import { Loader2 } from "lucide-react";
 import { useBasket } from "@/hooks/listing/use-basket";

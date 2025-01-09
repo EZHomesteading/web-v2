@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import getReports from "@/actions/getReports";
 import getDisputesLite from "@/actions/getDisputes";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;
@@ -17,7 +17,7 @@ const AdminHome = async ({ user }: Props) => {
     <main className="h-screen bg-black text-white flex flex-col items-center justify-center w-screen">
       <header className="py-12">
         <h1 className="2xl:text-5xl text-lg font-bold tracking-tight f">
-          <div className={`${outfitFont.className} `}>
+          <div className={`${OutfitFont.className} `}>
             <>
               <span className="text-green-200 tracking font-medium">
                 Welcome back,

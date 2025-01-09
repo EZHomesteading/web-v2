@@ -1,14 +1,9 @@
 //component to display a users reviews
 import Avatar from "@/components/Avatar";
+import { OutfitFont } from "@/components/fonts";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Reviews, User, UserRole } from "@prisma/client";
-import { Outfit } from "next/font/google";
 import Link from "next/link";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -62,7 +57,7 @@ export default function ProfileClient({ user, reviews }: ProfileClientProps) {
   const hasReviews = reviews && reviews.length > 0;
 
   return (
-    <div className={`${outfit.className} min-h-screen bg`}>
+    <div className={`${OutfitFont.className} min-h-screen bg`}>
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
         <div className="flex flex-col lg:col-span-4">
           <div className="flex flex-row items-center mb-2">

@@ -1,6 +1,5 @@
 //homepage displayed if user role is CONSUMER or none.
 import Link from "next/link";
-import { Outfit } from "next/font/google";
 import FindListingsComponent from "@/components/listings/search-listings";
 // import Image from "next/image";
 // import homebg from "@/public/images/website-images/fall-harvest-vegetable-market.webp";
@@ -9,6 +8,7 @@ import FindListingsComponent from "@/components/listings/search-listings";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { UserInfo } from "next-auth";
+import { OutfitFont } from "@/components/fonts";
 interface Props {
   user: UserInfo;
 }
@@ -27,12 +27,6 @@ const footerNavigation = {
     { name: "Settings", href: "/dashboard/account-settings/general" },
   ],
 };
-
-const outfit = Outfit({
-  style: ["normal"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export default function Home({ user }: Props) {
   const apiKey = process.env.MAPS_KEY;
@@ -53,7 +47,7 @@ export default function Home({ user }: Props) {
           <header className="py-12 z-[3]">
             <div className="flex flex-col">
               <div
-                className={`${outfit.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
+                className={`${OutfitFont.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
               >
                 Welcome {user.name}
               </div>
@@ -84,7 +78,7 @@ export default function Home({ user }: Props) {
               </div>
               <h2 className="2xl:text-5xl text-4xl font-bold tracking-tight outfit">
                 <div
-                  className={`${outfit.className} text-green-600 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
+                  className={`${OutfitFont.className} text-green-600 sm:text-7xl 2xl:text-[5rem] font-extrabold tracking-tight`}
                 >
                   EZ Homesteading
                 </div>

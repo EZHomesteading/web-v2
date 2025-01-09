@@ -13,7 +13,7 @@ import {
 } from "@/actions/chat/pushService";
 import axios from "axios";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -68,7 +68,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       >
         <div className="px-5">
           <div className="flex  mb-4 items-center justify-between">
-            <div className={`${outfitFont.className} text-2xl font-medium`}>
+            <div className={`${OutfitFont.className} text-2xl font-medium`}>
               Messages
             </div>
             <SubToggle />

@@ -5,6 +5,7 @@ import homebg3 from "@/public/images/website-images/home-bg-3.jpg";
 import homebg2 from "@/public/images/website-images/farmers-market-home.jpg";
 import { OutfitFont } from "@/components/fonts";
 import { PiArrowRightThin } from "react-icons/pi";
+
 const footerNavigation = {
   shop: [
     { name: "More Info", href: "/info" },
@@ -19,10 +20,11 @@ const footerNavigation = {
     { name: "Settings", href: "/dashboard/account-settings/general" },
   ],
 };
-interface Props {
+
+interface p {
   user: any;
 }
-const Home = ({ user }: Props) => {
+const Home = ({ user }: p) => {
   return (
     <>
       <main className="min-h-screen w-full gradient">
