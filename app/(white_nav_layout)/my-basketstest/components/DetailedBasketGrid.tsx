@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Trash2Icon } from "lucide-react";
+import LocationModal from "./LocSelect";
 // Keep specific types where they're well-defined
 interface ListingType {
   id: string;
@@ -140,7 +141,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   const { updateBasketTotals } = useBasket();
   const [pickupTimes, setPickupTimes] = useState(null);
   useEffect(() => {
-    console.log("PICKUPTIMEMEES", pickupTimes);
+    // console.log("PICKUPTIMEMEES", pickupTimes);
   }, [pickupTimes]);
   const [basketModes, setBasketModes] = useState<
     Record<string, DeliveryPickupToggleMode>
@@ -164,7 +165,13 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
       return acc;
     }, {} as Record<string, DeliveryPickupToggleMode>)
   );
+  const [showLocationModal, setShowLocationModal] = useState(!userLoc);
 
+  useEffect(() => {
+    if (!userLoc || userLoc.length === 0) {
+      setShowLocationModal(true);
+    }
+  }, [userLoc]);
   // Filter locations based on their current mode
   const locations = useMemo(() => {
     //console.log("Recalculating locations with basketModes:", basketModes);
@@ -268,6 +275,10 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
 
   return (
     <div className={`${outfitFont.className} w-full pb-32`}>
+      <LocationModal
+        open={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+      />
       <div className="flex flex-col lg:flex-row px-4 lg:px-0 gap-8">
         <div className="w-full lg:w-[65%] pt-6">
           <h1 className="text-4xl font-medium pb-6">My Market Baskets</h1>
@@ -575,7 +586,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
               <div className="flex flex-col  justify-between min-w-0">
                 <button
                   type="button"
-                  className=" text-gray-400 hover:text-gray-500 z-50"
+                  className=" text-gray-400 hover:text-gray-500 z-10"
                   onClick={async () => {
                     await axios.delete(`/api/baskets/itemdelete`, {
                       data: {

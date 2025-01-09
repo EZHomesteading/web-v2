@@ -1,7 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState, useRef, useEffect } from "react";
-import { GoogleMap, Circle, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Circle,
+  useLoadScript,
+  MarkerF,
+} from "@react-google-maps/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -495,7 +500,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         onClose={() => setIsRouteModalOpen(false)}
         locations={locations}
         googleMapsApiKey={mapsKey}
-        initialLocation={[-76.6381116, 37.0345267]}
+        initialLocation={userLoc[0].coordinates}
         setPickupTimes={setPickupTimes}
       />
       <Card className="p-4 mb-4">
@@ -586,6 +591,18 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
               scaleControl: true, // Enable scale control
             }}
           >
+            {" "}
+            <MarkerF
+              position={{
+                lat: userLoc[0].coordinates[1],
+                lng: userLoc[0].coordinates[0],
+              }}
+              icon={{
+                url: "/icons/clipart2825061.png",
+                scaledSize: new google.maps.Size(64, 76),
+              }}
+              title="Start Location"
+            />
             {locations.map((location) => {
               const status = locationStatuses[location.id] || {
                 isOpen: true,

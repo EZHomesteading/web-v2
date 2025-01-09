@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     const cookieStore = cookies();
     const session = await auth();
-    console.log("session", session);
+    // console.log("session", session);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
