@@ -1,7 +1,7 @@
-import Logo from "@/components/navbar/Logo";
-import UserMenu from "./UserMenu";
+import UserMenu from "./menu";
 import FindListingsComponent from "@/components/listings/search-listings";
 import { NavUser } from "@/actions/getUser";
+import Logo from "./Logo";
 
 interface NavbarProps {
   user?: NavUser;

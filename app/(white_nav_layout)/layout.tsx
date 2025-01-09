@@ -1,7 +1,7 @@
 //dashboard layout parent element
 import { getNavUser, NavUser } from "@/actions/getUser";
 import { Viewport } from "next";
-import Navbar from "@/components/navbar/Navbar";
+import Navbar from "@/components/navbar/navbar";
 export const viewport: Viewport = {
   themeColor: "#fff",
 };

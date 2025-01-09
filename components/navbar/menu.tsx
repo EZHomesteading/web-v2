@@ -4,21 +4,17 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { UserRole } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
-import MenuItem from "./MenuItem";
+import MenuItem from "./menu-item";
 import NotificationIcon from "./icons/notification";
-import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { NavUser } from "@/actions/getUser";
-import { iconMap } from "./icon-map";
-import placeholder from "@/public/images/website-images/placeholder.jpg";
+import { iconMap } from "./icons/icon-map";
 import axios from "axios";
 import { toast } from "sonner";
 import { IconType } from "react-icons";
 import { OutfitFont } from "@/components/fonts";
-import { IoSparkles } from "react-icons/io5";
 import { IoIosMenu } from "react-icons/io";
 
 type MenuIconItem = IconItem | ComponentItem;
@@ -296,7 +292,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               )}
               <div className={`border-t my-2`} />
               <MenuItem label="Sign Out" onClick={() => signOut()} />
-              {showInstallBtn &&
+              {/* {showInstallBtn &&
                 !window.matchMedia("(display-mode: standalone)").matches && (
                   <Button
                     className="w-full"
@@ -304,7 +300,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                   >
                     Install EZH App
                   </Button>
-                )}
+                )} */}
             </>
           ) : (
             <>

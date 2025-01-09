@@ -1,7 +1,7 @@
 import { getNavUser, NavUser, BasketLocation } from "@/actions/getUser";
 import BasketCard from "./card.basket";
 import BasketClient from "./client.basket";
-import Navbar from "@/components/navbar/Navbar";
+import Navbar from "@/components/navbar/navbar";
 import { Basket_ID_Page } from "basket";
 
 interface p {

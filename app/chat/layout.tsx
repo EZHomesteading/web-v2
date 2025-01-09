@@ -1,6 +1,6 @@
 // server side layour for chat page
 import ConversationList from "./components/ConversationList";
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/navbar/navbar";
 import { getConversations } from "@/actions/chat/getChat";
 import type { Viewport } from "next";
 import { getNavUser, NavUser } from "@/actions/getUser";

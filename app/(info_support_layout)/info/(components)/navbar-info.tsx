@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from "../../../../components/ui/sheet";
 import { AiOutlineMenu } from "react-icons/ai";
-import MenuItem from "../../../../components/navbar/MenuItem";
+import MenuItem from "../../../../components/navbar/menu-item";
 import { GiBarn } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import { CiShop } from "react-icons/ci";

@@ -1,5 +1,5 @@
 import { Outfit } from "next/font/google";
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/navbar/navbar";
 import { getNavUser, NavUser } from "@/actions/getUser";
 import { Viewport } from "next";
 const outfit = Outfit({
