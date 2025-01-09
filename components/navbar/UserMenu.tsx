@@ -18,6 +18,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import { IconType } from "react-icons";
 import { OutfitFont } from "@/components/fonts";
+import { IoSparkles } from "react-icons/io5";
+import { IoIosMenu } from "react-icons/io";
 
 type MenuIconItem = IconItem | ComponentItem;
 
@@ -48,37 +50,14 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const pathname = usePathname();
   const selling = pathname?.startsWith("/selling");
 
-  const MenuIcon = ({ image }: p) => {
+  const MenuIcon = () => {
     return (
       <>
-        {!isMdOrLarger ? (
-          <>
-            <PopoverTrigger
-              asChild
-              className="flex flex-col items-center sm:hidden hover:cursor-pointer"
-            >
-              <IconWrapper
-                icon={iconMap.CiMenuFries}
-                label="Menu"
-                onClick={() => {}}
-              />
-            </PopoverTrigger>
-          </>
-        ) : (
-          <>
-            {" "}
-            <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
-              <iconMap.IoIosMenu className={`w-8 h-8 mr-1 `} />
-              <Image
-                src={image || placeholder}
-                alt="Profile Image"
-                height={25}
-                width={25}
-                className="object-fit rounded-full"
-              />
-            </PopoverTrigger>
-          </>
-        )}
+        <>
+          <PopoverTrigger>
+            <IconWrapper icon={IoIosMenu} label="Menu" onClick={() => {}} />
+          </PopoverTrigger>
+        </>
       </>
     );
   };
@@ -119,8 +98,6 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
         }
 
         const stripeData = await stripeResponse.json();
-        console.log("Stripe connected account created:", stripeData);
-        console.log("User role updated successfully:", userUpdateResponse.data);
       } catch (error) {
         console.error("Error in consumer API calls:", error);
         toast.warning(
@@ -148,10 +125,10 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const renderIcons = () => {
     const icons: MenuIconItem[] = [
       {
-        key: "home",
-        icon: iconMap.Barn,
-        label: "Home",
-        onClick: () => router.push("/"),
+        key: "chat",
+        icon: iconMap.PiChatCircleThin,
+        label: "Chat",
+        onClick: () => router.push("/chat"),
       },
       {
         key: "map",
@@ -220,9 +197,9 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
     <>
       <Popover>
         {renderIcons()}
-        <MenuIcon image={user?.image} />
+        <MenuIcon />
         <PopoverContent
-          className={`${OutfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
+          className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
           align="end"
           alignOffset={0}
         >
@@ -336,7 +313,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
-                  className={`${OutfitFont.className} min-h-screen w-screen d1dbbf `}
+                  className={`${OutfitFont.className} min-h-screen w-screen `}
                 >
                   <div className="h-full flex flex-col items-center justify-center px-10">
                     <ul className="w-full max-w-3xl">
@@ -360,9 +337,8 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                         <li
                           key={item.href}
                           className={`w-full ${
-                            index === 1
-                              ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
-                              : ""
+                            index === 1 &&
+                            "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
                           }`}
                         >
                           <Link
@@ -398,12 +374,6 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               />
               <MenuItem label="Market" onClick={() => router.push("/market")} />
               <MenuItem label="Map" onClick={() => router.push("/map")} />
-              {/* <Button
-                className={`w-full rounded-none`}
-                onClick={() => router.push("/get-ezh-app")}
-              >
-                Install the EZH App
-              </Button> */}
             </>
           )}
         </PopoverContent>

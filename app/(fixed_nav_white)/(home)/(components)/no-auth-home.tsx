@@ -3,7 +3,7 @@ import Image from "next/image";
 import homebg from "@/public/images/website-images/vegetables_bg.webp";
 import homebg3 from "@/public/images/website-images/home-bg-3.jpg";
 import homebg2 from "@/public/images/website-images/farmers-market-home.jpg";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { PiArrowRightThin } from "react-icons/pi";
 const footerNavigation = {
   shop: [
@@ -29,7 +29,7 @@ const Home = ({ user }: Props) => {
         <div
           className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%]`}
         >
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <header className="!text-black">
               <p className="text-lg 2xl:text-3xl font-medium text-black drop-shadow-md">
                 Easily Find
@@ -159,7 +159,7 @@ const Home = ({ user }: Props) => {
               className="object-cover rounded-lg shadow-xl"
             />
           </section>
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <div
               id="h2"
               className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
@@ -182,12 +182,12 @@ const Home = ({ user }: Props) => {
         <div
           className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%] pb-40`}
         >
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <div
               id="h3"
               className="2xl:text-5xl text-sm font-bold tracking-tight"
             >
-              <h1 className={outfitFont.className}>Become an EZH Producer</h1>
+              <h1 className={OutfitFont.className}>Become an EZH Producer</h1>
               <ul className="2xl:text-lg text-sm font-medium mb-2">
                 <li>Never let your homegrown produce go to waste again</li>
                 <li>
