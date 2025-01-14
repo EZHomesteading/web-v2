@@ -499,11 +499,8 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
     return <div>Loading maps...</div>;
   }
   const createDateFromStrings = (dateStr: string, timeStr: string): Date => {
-    // timeStr is in format "HH:mm" (24-hour)
-    // dateStr is in format "YYYY-MM-DD"
     return new Date(`${dateStr}T${timeStr}`);
   };
-  console.log(userLoc);
   return (
     <div className="mt-8">
       <RouteOptimizerModal

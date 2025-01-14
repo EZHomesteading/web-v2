@@ -7,6 +7,7 @@ import React, {
   use,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import {
   Carousel,
@@ -21,7 +22,7 @@ import { PiMinusCircleThin, PiPlusCircleThin } from "react-icons/pi";
 import { toast } from "sonner";
 import useMediaQuery from "@/hooks/media-query";
 import DateOverlay from "./when";
-import { orderMethod } from "@prisma/client";
+import { Basket, orderMethod } from "@prisma/client";
 import { BasketLocation } from "@/actions/getUser";
 import AvailabilityMap from "./AvailabilityMap";
 import {
@@ -35,6 +36,9 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Trash2Icon } from "lucide-react";
 import LocationModal from "./LocSelect";
 import WeeklyHours from "./weeklyhours";
+import { Button } from "@/components/ui/button";
+import CheckoutButton from "./checkoutButton";
+
 // Keep specific types where they're well-defined
 interface ListingType {
   id: string;
@@ -74,13 +78,6 @@ interface DetailedBasketCardProps {
   userId: string;
   onModeChange: any;
   pickupTimes: any;
-}
-
-interface PriceBreakdownProps {
-  total: number;
-  price: number;
-  quantity: number;
-  quantityType: string;
 }
 
 interface QuantityControlProps {
@@ -141,6 +138,8 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   // Track delivery/pickup mode for each basket
   const { updateBasketTotals } = useBasket();
   const [pickupTimes, setPickupTimes] = useState(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [userActive, setUserActive] = useState(false);
   useEffect(() => {
     // console.log("PICKUPTIMEMEES", pickupTimes);
   }, [pickupTimes]);
@@ -244,11 +243,20 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [baskets, updateBasketTotals]);
+  }, [updateBasketTotals]);
 
-  const deliveryFee = 4.99;
+  interface SummaryCard {
+    baskets: any[];
+    pickupTimes: Record<string, Date> | null;
+  }
+  interface BasketState {
+    id: string;
+    locationId: string;
+    orderMethod: string;
+    deliveryDate: Date | null;
+  }
 
-  const OrderSummaryCard = () => {
+  const OrderSummaryCard = ({ baskets, pickupTimes }: SummaryCard) => {
     const { basketTotals } = useBasket();
 
     return (
@@ -269,11 +277,16 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
               <span>${basketTotals.total.toFixed(2)}</span>
             </div>
           </div>
+
+          <CheckoutButton
+            baskets={baskets}
+            pickupTimes={pickupTimes}
+            basketTotals={basketTotals}
+          />
         </div>
       </Card>
     );
   };
-
   return (
     <div className={`${outfitFont.className} w-full pb-32`}>
       <LocationModal
@@ -300,7 +313,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
 
         <div className="hidden lg:block w-[35%] pt-6">
           <div className="fixed w-[calc(35%-2rem)]">
-            <OrderSummaryCard />
+            <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
             <AvailabilityMap
               userLoc={userLoc}
               locations={locations}
@@ -350,6 +363,15 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
     orderMethod: basket.orderMethod || orderMethod.UNDECIDED,
     selected_time_type: null,
   });
+  useEffect(() => {
+    setBasketState((prevState: any) => ({
+      ...prevState,
+      orderMethod:
+        deliveryPickupMode === DeliveryPickupToggleMode.DELIVERY
+          ? "DELIVERY"
+          : "PICKUP",
+    }));
+  }, [deliveryPickupMode, basket.id, onModeChange]);
 
   const basketTotal = useMemo(() => {
     return basket.items.reduce((sum: number, item: any) => {
