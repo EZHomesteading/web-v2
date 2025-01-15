@@ -47,7 +47,7 @@ import {
   MessageOption,
 } from "chat-types";
 import { outfitFont, zillaFont } from "@/components/fonts";
-import CheckoutModal from "./CheckoutModal";
+
 import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
@@ -363,14 +363,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onConfirm={onConfirm}
         onCancel={onCancel}
       />
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        listings={listings}
-        order={order}
-        user={user}
-        deliveryFee={data.fee || null}
-      />
+
       <HarvestModal
         isOpen={HarvestOpen}
         onClose={() => setHarvestOpen(false)}

@@ -9,7 +9,6 @@ import type {
   ChatListing,
   OtherUserChat,
 } from "chat-types";
-import { ListingQuantities } from "@prisma/client";
 
 const getFullChatData = async (
   conversationId: string
@@ -80,7 +79,7 @@ const getFullChatData = async (
         paymentIntentId: true,
         proposedLoc: true,
         fee: true,
-        quantity: true,
+        items: true,
         status: true,
         preferredLocationId: true,
       },
@@ -112,14 +111,14 @@ const getFullChatData = async (
           totalPrice: order.totalPrice,
           conversationId: order.conversationId,
           paymentIntentId: order.paymentIntentId,
-          quantity: order.quantity as ListingQuantities[],
+          items: order.items as any[],
           status: order.status,
           location: location,
         }
       : null;
 
     // Extract listing IDs from the quantity array
-    const listingIds = order?.quantity?.map((item) => item.id) ?? [];
+    const listingIds = order?.items?.map((item: any) => item.listing.id) ?? [];
 
     const listings: ChatListing[] =
       listingIds.length > 0
@@ -155,7 +154,6 @@ const getFullChatData = async (
         phoneNumber: user.phoneNumber,
         email: user.email,
         url: user.url,
-        location: user.location ?? null,
       } as ChatUser,
       otherUser,
       order: transformedOrder,

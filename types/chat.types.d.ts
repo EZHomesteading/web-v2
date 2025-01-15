@@ -119,7 +119,7 @@ declare module "chat-types" {
     totalPrice: number;
     conversationId: string | null;
     paymentIntentId: string | null;
-    quantity: ListingQuantities[];
+    items: any[];
     status: OrderStatus;
     fee: {
       delivery: number | null;
