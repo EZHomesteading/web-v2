@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import Image from "next/image";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
@@ -44,6 +44,7 @@ import {
   ChatMessage,
   ChatOrder,
   ChatUser,
+  Hours,
   MessageOption,
 } from "chat-types";
 import { outfitFont, zillaFont } from "@/components/fonts";
@@ -51,6 +52,7 @@ import { outfitFont, zillaFont } from "@/components/fonts";
 import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
+import DateTimePicker from "./customtimemodal";
 
 interface MessageBoxProps {
   listings: ChatListing[];
@@ -79,17 +81,17 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
   stripeAccountId,
 }) => {
-  const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [validTime, setValidTime] = useState<string>("(select your time)");
-  const [dateTime, setDateTime] = useState<Date | string>("");
   const [disputeOpen, setDisputeOpen] = useState(false);
-  const [SetFee, setSetFee] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [HarvestOpen, setHarvestOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [newStatus, setStatus] = useState<OrderStatus>("PENDING");
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [imageUploadType, setImageUploadType] = useState<"pickup" | "delivery">(
     "pickup"
@@ -133,9 +135,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   };
 
   let onConfirm = async (status: OrderStatus, skip?: boolean) => {
-    if (SetFee === true) {
-      setSetFee(false);
-    }
     if (skip) {
       setIsModalOpen(false);
       return;
@@ -190,10 +189,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     ) {
       message = `I can deliver these items to you at ${validTime}, does that work?`;
     } else if (
-      status === "SELLER_PROPOSED_DELIVERY_FEE" &&
+      status === "SELLER_ACCEPTED" &&
       order?.fulfillmentType === "DELIVERY"
     ) {
-      message = "Yes, That time works. Your delivery Fee will be";
+      message =
+        "Yes, That time works. Your item will be delivered at that time.";
     } else if (status === "IN_TRANSIT") {
       message = "Your order is on the way!";
     } else if (status === "SELLER_PREPARING") {
@@ -240,8 +240,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         isSeller,
         setCustomTimeOpen,
         setCancelOpen,
-        setDisputeOpen,
-        setSetFee
+        setDisputeOpen
+
         //message?.dateTime, // Add the dateTime from message
       )
     : [];
@@ -303,9 +303,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
       setIsLoading(true);
       try {
-        if (option.status === OrderStatus.SELLER_PROPOSED_DELIVERY_FEE) {
-          setSetFee(true);
-        }
         await onSubmit(option.status);
       } catch (error) {
         console.error(error);
@@ -315,26 +312,43 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     },
     [order]
   );
+  const [isProcessingTime, setIsProcessingTime] = useState(false);
 
+  useEffect(() => {
+    // Only proceed with submission if we're processing a time selection
+    if (isProcessingTime && validTime !== "(select your time)") {
+      const submitOrder = async () => {
+        if (user.id === order?.sellerId) {
+          await onSubmit("SELLER_RESCHEDULED");
+        } else {
+          await onSubmit("BUYER_RESCHEDULED");
+        }
+        setIsProcessingTime(false);
+      };
+      submitOrder();
+    }
+  }, [validTime, isProcessingTime]);
+  console.log(order?.location);
+  const handleSelect = async (date: string, time: string) => {
+    setIsProcessingTime(true);
+    const dateObj = new Date(`${date}T${time}`);
+    const formattedTime = formatTime(dateObj);
+
+    setSelectedDate(date);
+    setSelectedTime(time);
+    setValidTime(formattedTime);
+  };
   return (
     <div>
-      {/* {user.id === order?.sellerId ? (
-        <CustomTimeModal2
-          isOpen={customTimeOpen}
-          onClose={() => setCustomTimeOpen(false)}
-          hours={anyhours}
-          onSetTime={handleTime}
-          isSeller={true}
-        />
-      ) : (
-        <CustomTimeModal2
-          isOpen={customTimeOpen}
-          onClose={() => setCustomTimeOpen(false)}
-          hours={order?.location.hours as unknown as ExtendedHours}
-          onSetTime={handleTime}
-          isSeller={false}
-        />
-      )} */}
+      <DateTimePicker
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        onSelect={handleSelect}
+        isOpen={customTimeOpen}
+        onClose={() => setCustomTimeOpen(false)}
+        hours={order?.location?.hours ?? null}
+        type={order?.fulfillmentType?.toLowerCase() as "pickup" | "delivery"}
+      />
       <CancelModal
         isOpen={cancelOpen}
         onClose={() => setCancelOpen(false)}
@@ -355,7 +369,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
       <ChatConfirmModal
         open={isModalOpen}
         modalMessage={modalMessage}
-        SetFee={SetFee}
         orderId={order?.id}
         newStatus={newStatus}
         convoId={convoId}
@@ -459,32 +472,6 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     Projected Harvest Options
                   </button>
                 </div>
-              ) : isLast &&
-                notOwn &&
-                data.messageOrder === "SELLER_PROPOSED_DELIVERY_FEE" ? (
-                <div>
-                  <div className={message}>{data.body}</div>
-
-                  <button
-                    onClick={() => setIsCheckoutOpen(true)}
-                    className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
-                  >
-                    Pay for your order to confirm Delivery
-                  </button>
-                </div>
-              ) : isLast &&
-                notOwn &&
-                data.messageOrder === "SELLER_ACCEPTED" ? (
-                <div>
-                  <div className={message}>{data.body}</div>
-
-                  <button
-                    onClick={() => setIsCheckoutOpen(true)}
-                    className="bg-transparent mt-2 inline-flex border !shadow-md !shadow-slate-700 !border-black text-black px-4 py-2 rounded hover:bg-white hover:text-black transition duration-300"
-                  >
-                    Pay for your order to Confirm
-                  </button>
-                </div>
               ) : (
                 <div className={message}>{data.body}</div>
               )}
@@ -532,7 +519,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     data.messageOrder !== "IN_TRANSIT" &&
                     data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
-                  (isOwn && data.messageOrder === "SELLER_PREPARING")
+                  (isOwn && data.messageOrder === "SELLER_PREPARING") ||
+                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
                     ? "default"
                     : "secondary"
                 }
@@ -545,7 +533,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                     data.messageOrder !== "IN_TRANSIT" &&
                     data.messageOrder !== "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
-                  (isOwn && data.messageOrder === "SELLER_PREPARING")
+                  (isOwn && data.messageOrder === "SELLER_PREPARING") ||
+                  (isOwn && data.messageOrder === "SELLER_ACCEPTED")
                     ? { animation: "pulse 2s infinite" }
                     : {}
                 }
@@ -554,7 +543,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                   data.messageOrder !== "IN_TRANSIT" &&
                   data.messageOrder !== "SELLER_PREPARING") ||
                 (isOwn && data.messageOrder === "IN_TRANSIT") ||
-                (isOwn && data.messageOrder === "SELLER_PREPARING") ? (
+                (isOwn && data.messageOrder === "SELLER_PREPARING") ||
+                (isOwn && data.messageOrder === "SELLER_ACCEPTED") ? (
                   <>
                     <BiMessageSquareEdit className="w-6 h-6" />
                     <span className="text-lg">Choose Response</span>

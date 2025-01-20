@@ -8,8 +8,31 @@ import type {
   ChatMessage,
   ChatListing,
   OtherUserChat,
+  Location,
 } from "chat-types";
+interface OrderItem {
+  listing: {
+    id: string;
+  };
+}
+const extractListingIds = (items: any): string[] => {
+  try {
+    // If items is a string, try to parse it
+    const parsedItems = typeof items === "string" ? JSON.parse(items) : items;
 
+    // Check if parsedItems is an array
+    if (!Array.isArray(parsedItems)) {
+      return [];
+    }
+
+    return parsedItems
+      .map((item: OrderItem) => item?.listing?.id)
+      .filter((id): id is string => Boolean(id));
+  } catch (e) {
+    console.error("Error parsing items:", e);
+    return [];
+  }
+};
 const getFullChatData = async (
   conversationId: string
 ): Promise<FullChatData | null> => {
@@ -75,6 +98,7 @@ const getFullChatData = async (
         pickupDate: true,
         totalPrice: true,
         fulfillmentType: true,
+        locationId: true,
         conversationId: true,
         paymentIntentId: true,
         proposedLoc: true,
@@ -84,22 +108,66 @@ const getFullChatData = async (
         preferredLocationId: true,
       },
     });
-    let location = null;
+
+    let location: Location | null = null;
     if (!order?.proposedLoc) {
-      location = order?.preferredLocationId
-        ? await prisma.location.findUnique({
-            where: {
-              id: order.preferredLocationId,
-            },
-            select: {
-              hours: true,
-              address: true,
-            },
-          })
-        : null;
+      if (order?.preferredLocationId) {
+        const locationData = await prisma.location.findUnique({
+          where: {
+            id: order.preferredLocationId,
+          },
+          select: {
+            id: true,
+            userId: true,
+            displayName: true,
+            type: true,
+            coordinates: true,
+            address: true,
+            role: true,
+            SODT: true,
+            bio: true,
+            isDefault: true,
+            showPreciseLocation: true,
+            createdAt: true,
+            updatedAt: true,
+            hours: true,
+          },
+        });
+
+        if (locationData) {
+          location = locationData as Location;
+        }
+      } else if (order?.locationId) {
+        const locationData = await prisma.location.findUnique({
+          where: {
+            id: order.locationId,
+          },
+          select: {
+            id: true,
+            userId: true,
+            displayName: true,
+            type: true,
+            coordinates: true,
+            address: true,
+            role: true,
+            SODT: true,
+            bio: true,
+            isDefault: true,
+            showPreciseLocation: true,
+            createdAt: true,
+            updatedAt: true,
+            hours: true,
+          },
+        });
+
+        if (locationData) {
+          location = locationData as Location;
+        }
+      }
     } else {
-      location = order.proposedLoc;
+      location = order.proposedLoc as Location;
     }
+
     const transformedOrder: ChatOrder | null = order
       ? {
           id: order.id,
@@ -111,14 +179,14 @@ const getFullChatData = async (
           totalPrice: order.totalPrice,
           conversationId: order.conversationId,
           paymentIntentId: order.paymentIntentId,
-          items: order.items as any[],
+          items: Array.isArray(order.items) ? order.items : [],
           status: order.status,
-          location: location,
+          location: location as Location,
         }
       : null;
 
     // Extract listing IDs from the quantity array
-    const listingIds = order?.items?.map((item: any) => item.listing.id) ?? [];
+    const listingIds = extractListingIds(order?.items);
 
     const listings: ChatListing[] =
       listingIds.length > 0
@@ -151,9 +219,10 @@ const getFullChatData = async (
         id: user.id,
         name: user.name,
         role: user.role,
-        phoneNumber: user.phoneNumber,
+        phoneNumber: user.phoneNumber || undefined,
         email: user.email,
-        url: user.url,
+        url: user.url || undefined,
+        location: null, // Add this if it's required by your ChatUser type
       } as ChatUser,
       otherUser,
       order: transformedOrder,

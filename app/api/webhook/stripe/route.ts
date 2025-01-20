@@ -121,7 +121,6 @@ export async function POST(request: NextRequest) {
                 : null,
               items: basket.items,
               totalPrice,
-
               status: "BUYER_PROPOSED_TIME",
               fulfillmentType: basket.orderMethod,
               fee: { site: totalPrice * 0.06 },

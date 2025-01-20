@@ -133,13 +133,8 @@ const Body: React.FC<BodyProps> = ({
     [order, messages];
   useEffect(() => {
     if (
-      (lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "IN_TRANSIT" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "SELLER_PREPARING" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "DISPUTED" && user.id === order?.sellerId)
+      lastMessage.messageOrder === "DISPUTED" &&
+      user.id === order?.sellerId
     ) {
       setRefund(true);
       setReview(true);
@@ -153,6 +148,7 @@ const Body: React.FC<BodyProps> = ({
     if (lastMessage.messageOrder === "COMPLETED") {
       setReview(true);
       setConfirm(true);
+      setRefund(false);
     }
   }),
     [order, messages];
