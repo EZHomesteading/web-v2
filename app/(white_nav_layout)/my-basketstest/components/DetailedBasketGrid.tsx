@@ -311,17 +311,15 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
           </div>
         </div>
 
-        <div className="hidden lg:block w-[35%] pt-6">
-          <div className="fixed w-[calc(35%-2rem)]">
-            <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
-            <AvailabilityMap
-              userLoc={userLoc}
-              locations={locations}
-              mapsKey={mapsKey}
-              key={locations.length} // Add key to force re-render
-              setPickupTimes={setPickupTimes}
-            />
-          </div>
+        <div className="w-full lg:w-[35%] lg:fixed lg:right-0 lg:mt-10 lg:top-6 lg:pr-4 pt-6 space-y-6">
+          <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
+          <AvailabilityMap
+            userLoc={userLoc}
+            locations={locations}
+            mapsKey={mapsKey}
+            key={locations.length} // Add key to force re-render
+            setPickupTimes={setPickupTimes}
+          />
         </div>
       </div>
     </div>
@@ -360,7 +358,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
 
   const [basketState, setBasketState] = useState<any>({
     ...basket,
-    orderMethod: basket.orderMethod || orderMethod.UNDECIDED,
+    orderMethod: basket.orderMethod || null,
     selected_time_type: null,
   });
   useEffect(() => {
@@ -461,6 +459,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
             <span className="text-lg text-gray-600">
               ${basketTotal.toFixed(2)}
             </span>
+
             <WeeklyHours location={basket.location} mode={deliveryPickupMode} />
           </div>
         </div>

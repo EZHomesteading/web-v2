@@ -66,7 +66,6 @@ const WeeklyHours: React.FC<WeeklyHoursProps> = ({ location, mode }) => {
     hours.map((day) => [new Date(day.date).toDateString(), day])
   );
 
-  // Get the month range for display
   const firstDate = weekDates[0];
   const lastDate = weekDates[6];
   const monthRange =
@@ -141,7 +140,11 @@ const WeeklyHours: React.FC<WeeklyHoursProps> = ({ location, mode }) => {
           View Hours
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-4" align="start">
+      <PopoverContent
+        className="w-auto p-4 max-sm:left-1/2 max-sm:-translate-x-1/2"
+        align="center"
+        side="bottom"
+      >
         <WeeklyHoursContent />
       </PopoverContent>
     </Popover>
