@@ -28,7 +28,7 @@ import { outfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
 import { formatTime } from "./utils";
 // Import the separated functions and types
-import { optimizeRoute } from "./calcsimple";
+//import { optimizeRoute } from "./calcreverse";
 import {
   optimizeTimeRoute,
   timeStringToSeconds,
@@ -47,6 +47,7 @@ import {
 } from "./types";
 import DepartureTimePicker from "./departureTime";
 import { toast } from "sonner";
+import { optimizeArrivalTimeRoute, optimizeRoute } from "./calcreverse";
 interface LocationStatus {
   isOpen: boolean;
   willBeOpen: boolean;
@@ -99,6 +100,7 @@ const RouteOptimizer = ({
   const [optimizedRoute, setOptimizedRoute] = useState<ExtendedLocation[]>([]);
   const [routeSegments, setRouteSegments] = useState<RouteSegment[]>([]);
   const [pickupTimes, setPickupTimes] = useState<{ [key: string]: string }>({});
+  const [calcFromEnd, setCalcFromEnd] = useState(false);
   const [customEndLocation, setCustomEndLocation] = useState<{
     lat: number;
     lng: number;
@@ -209,42 +211,42 @@ const RouteOptimizer = ({
     }
   };
 
-  const validatePickupTime = (
-    locationId: string,
-    time: string
-  ): TimeValidation => {
-    const location = locations.find((loc) => loc.id === locationId);
-    if (!location) return { isValid: false, message: "Location not found" };
+  // const validatePickupTime = (
+  //   locationId: string,
+  //   time: string
+  // ): TimeValidation => {
+  //   const location = locations.find((loc) => loc.id === locationId);
+  //   if (!location) return { isValid: false, message: "Location not found" };
 
-    const selectedSeconds = timeStringToSeconds(time);
+  //   const selectedSeconds = timeStringToSeconds(time);
 
-    // Check if location is open
-    if (!isLocationOpen(location, selectedSeconds)) {
-      return {
-        isValid: false,
-        message: "Location would be closed at this time",
-      };
-    }
+  //   // Check if location is open
+  //   if (!isLocationOpen(location, selectedSeconds)) {
+  //     return {
+  //       isValid: false,
+  //       message: "Location would be closed at this time",
+  //     };
+  //   }
 
-    // Check time constraints with adjacent stops
-    const locIndex = optimizedRoute.findIndex((loc) => loc.id === locationId);
-    if (locIndex > 0) {
-      const prevLocation = optimizedRoute[locIndex - 1];
-      const prevPickupTime = pickupTimes[prevLocation.id];
-      if (prevPickupTime) {
-        const prevPickupSeconds = timeStringToSeconds(prevPickupTime);
-        const travelTime = routeSegments[locIndex - 1]?.travelTime ?? 0;
-        if (selectedSeconds - prevPickupSeconds < travelTime + 600) {
-          return {
-            isValid: false,
-            message: "Insufficient travel time from previous stop",
-          };
-        }
-      }
-    }
+  //   // Check time constraints with adjacent stops
+  //   const locIndex = optimizedRoute.findIndex((loc) => loc.id === locationId);
+  //   if (locIndex > 0) {
+  //     const prevLocation = optimizedRoute[locIndex - 1];
+  //     const prevPickupTime = pickupTimes[prevLocation.id];
+  //     if (prevPickupTime) {
+  //       const prevPickupSeconds = timeStringToSeconds(prevPickupTime);
+  //       const travelTime = routeSegments[locIndex - 1]?.travelTime ?? 0;
+  //       if (selectedSeconds - prevPickupSeconds < travelTime + 600) {
+  //         return {
+  //           isValid: false,
+  //           message: "Insufficient travel time from previous stop",
+  //         };
+  //       }
+  //     }
+  //   }
 
-    return { isValid: true, message: "" };
-  };
+  //   return { isValid: true, message: "" };
+  // };
   const getLocationStatusColor = (
     location: Location,
     status: LocationStatus
@@ -338,6 +340,125 @@ const RouteOptimizer = ({
   const BUFFER_TIME = 0 * 60;
   const MIN_DEPARTURE_BUFFER = 30 * 60;
   const calculateRoute = async () => {
+    const startingPoint = startLocation;
+    if (!startingPoint || locations.length === 0) return;
+    clearMap();
+
+    try {
+      const targetDate = selectedDepartureTime || new Date();
+      const targetTimeInSeconds =
+        (targetDate.getHours() * 60 + targetDate.getMinutes()) * 60;
+
+      let optimizedResult;
+      if (calcFromEnd) {
+        optimizedResult = await optimizeArrivalTimeRoute(
+          startingPoint,
+          usePickupOrder ? orderedLocations : locations,
+          endLocation || startingPoint,
+          usePickupOrder,
+          targetTimeInSeconds
+        );
+      } else {
+        optimizedResult = await optimizeTimeRoute(
+          startingPoint,
+          usePickupOrder ? orderedLocations : locations,
+          endLocation || startingPoint,
+          usePickupOrder,
+          targetTimeInSeconds
+        );
+      }
+
+      setOptimizedRoute(optimizedResult.route);
+      setRouteTimings(optimizedResult.timings);
+
+      const segments: RouteSegment[] = [];
+      let currentTime: number;
+
+      if (calcFromEnd) {
+        // For arrival-based calculation, need to account for final return leg
+        const finalReturnTime = optimizedResult.timings.returnTime;
+        currentTime = targetTimeInSeconds - finalReturnTime;
+
+        // Process locations backwards from final return time
+        for (let i = optimizedResult.route.length - 1; i >= 0; i--) {
+          const location = optimizedResult.route[i];
+          const travelTime = optimizedResult.timings.segmentTimes[location.id];
+          const distance =
+            optimizedResult.timings.distanceSegments[location.id];
+
+          // First account for the stop time at this location
+          currentTime -= AVERAGE_STOP_TIME;
+          const departureTime = currentTime + AVERAGE_STOP_TIME;
+          const arrivalTime = currentTime;
+          const pickupTime = arrivalTime;
+
+          // Then account for travel time to this location
+          currentTime -= travelTime;
+
+          // Add buffer time before this location (except for first location)
+          if (i > 0) {
+            currentTime -= BUFFER_TIME;
+          }
+
+          // Insert at beginning of array to maintain forward order
+          segments.unshift({
+            location,
+            arrivalTime,
+            pickupTime,
+            departureTime,
+            travelTime,
+            distance,
+            waitTime: 0,
+          });
+        }
+      } else {
+        // Forward calculation starting from departure time
+        currentTime = targetTimeInSeconds;
+
+        for (let i = 0; i < optimizedResult.route.length; i++) {
+          const location = optimizedResult.route[i];
+          const travelTime = optimizedResult.timings.segmentTimes[location.id];
+          const distance =
+            optimizedResult.timings.distanceSegments[location.id];
+
+          // Add travel time to reach this location
+          currentTime += travelTime;
+          const arrivalTime = currentTime;
+          const pickupTime = arrivalTime;
+          const departureTime = pickupTime + AVERAGE_STOP_TIME;
+
+          segments.push({
+            location,
+            arrivalTime,
+            pickupTime,
+            departureTime,
+            travelTime,
+            distance,
+            waitTime: 0,
+          });
+
+          // Update current time to departure and add buffer if not last location
+          currentTime = departureTime;
+          if (i < optimizedResult.route.length - 1) {
+            currentTime += BUFFER_TIME;
+          }
+        }
+      }
+
+      setRouteSegments(segments);
+
+      // Update location statuses based on the first segment's start time
+      const newStatuses = updateLocationStatuses(
+        locations,
+        segments,
+        segments[0].arrivalTime - segments[0].travelTime
+      );
+      setLocationStatuses(newStatuses);
+    } catch (error) {
+      handleRouteError(error);
+    }
+  };
+  const calculateRouteOld = async () => {
     const startingPoint = startLocation;
     if (!startingPoint || locations.length === 0) return;
     clearMap();
@@ -646,7 +767,9 @@ const RouteOptimizer = ({
               disabled={locations.length === 0}
             >
               {selectedDepartureTime
-                ? `Departure: ${selectedDepartureTime.toLocaleString()}`
+                ? calcFromEnd
+                  ? `Arrival: ${selectedDepartureTime.toLocaleString()}`
+                  : `Departure: ${selectedDepartureTime.toLocaleString()}`
                 : "Set Departure Time"}
             </Button>
             {/* Add this above the locations section */}
@@ -657,6 +780,12 @@ const RouteOptimizer = ({
               />
               <Label className="cursor-pointer">
                 Enable drag & drop reordering
+              </Label>
+            </div>
+            <div className="flex items-center gap-1 ">
+              <Switch checked={calcFromEnd} onCheckedChange={setCalcFromEnd} />
+              <Label className="cursor-pointer">
+                Calculate Route based on final arrival time
               </Label>
             </div>
             <StrictMode>
