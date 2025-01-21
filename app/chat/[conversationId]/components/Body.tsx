@@ -425,12 +425,7 @@ const Body: React.FC<BodyProps> = ({
                 </Sheet>
 
                 <Button
-                  onClick={() =>
-                    window.open(
-                      `http://maps.apple.com/?address=${order?.location?.address}`,
-                      "_ blank"
-                    )
-                  }
+                  onClick={() => router.push("/map/checkmap")}
                   className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
                 >
                   <div>Get Directions</div> <IoMapOutline />
