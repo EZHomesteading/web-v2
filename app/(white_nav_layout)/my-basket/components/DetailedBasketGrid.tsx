@@ -140,6 +140,8 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   const [pickupTimes, setPickupTimes] = useState(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [userActive, setUserActive] = useState(false);
+  const [startLoc, setStartLoc] = useState<any[]>([]);
+  const [endLoc, setEndLoc] = useState<any[]>([]);
   useEffect(() => {
     // console.log("PICKUPTIMEMEES", pickupTimes);
   }, [pickupTimes]);
@@ -279,6 +281,8 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
           </div>
 
           <CheckoutButton
+            startLoc={startLoc}
+            endLoc={endLoc}
             baskets={baskets}
             pickupTimes={pickupTimes}
             basketTotals={basketTotals}
@@ -314,6 +318,8 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
         <div className="w-full lg:w-[35%] lg:fixed lg:right-0 lg:mt-10 lg:top-6 lg:pr-4 pt-6 space-y-6">
           <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
           <AvailabilityMap
+            setStartLoc={setStartLoc}
+            setEndLoc={setEndLoc}
             userLoc={userLoc}
             locations={locations}
             mapsKey={mapsKey}

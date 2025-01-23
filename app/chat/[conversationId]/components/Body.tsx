@@ -51,6 +51,7 @@ interface BodyProps {
   order: ChatOrder | null;
   user: ChatUser;
   conversationId: string;
+  orderGroupId: string | null;
   listings: any;
   //reviews: Reviews[];
 }
@@ -64,6 +65,7 @@ const Body: React.FC<BodyProps> = ({
   adminMessages,
   order,
   user,
+  orderGroupId,
   conversationId,
   listings,
   //reviews,
@@ -425,7 +427,9 @@ const Body: React.FC<BodyProps> = ({
                 </Sheet>
 
                 <Button
-                  onClick={() => router.push("/map/checkmap")}
+                  onClick={() =>
+                    router.push(`/map/checkmap?orderGroupId=${orderGroupId}`)
+                  }
                   className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
                 >
                   <div>Get Directions</div> <IoMapOutline />

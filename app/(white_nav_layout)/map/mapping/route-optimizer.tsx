@@ -64,6 +64,8 @@ interface RandomizedLocation {
 type ExtendedLocation = Location & { user?: { name: string } };
 
 const RouteOptimizer = ({
+  setEndLoc,
+  setStartLoc,
   initialTime,
   locations,
   googleMapsApiKey,
@@ -715,6 +717,17 @@ const RouteOptimizer = ({
         <Button
           className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-6 text-lg font-semibold shadow-lg rounded-lg z-50"
           onClick={() => {
+            setStartLoc(
+              startLocation
+                ? [startLocation.lat(), startLocation.lng()]
+                : userLocation
+                ? [userLocation.lat(), userLocation.lng()]
+                : initialLocation
+            );
+
+            setEndLoc(
+              endLocation ? [endLocation.lat(), endLocation.lng()] : []
+            );
             setCartPickupTimes(
               routeSegments.reduce(
                 (acc: { [key: string]: Date }, segment) => {

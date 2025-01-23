@@ -61,6 +61,8 @@ interface DateTimePickerProps {
   triggerRef: React.RefObject<HTMLButtonElement>;
 }
 interface AvailabilityMapProps {
+  setStartLoc: React.Dispatch<React.SetStateAction<any[]>>;
+  setEndLoc: React.Dispatch<React.SetStateAction<any[]>>;
   userLoc: any;
   mapsKey: string;
   setPickupTimes: any;
@@ -263,6 +265,8 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
   );
 };
 const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
+  setStartLoc,
+  setEndLoc,
   userLoc,
   locations,
   mapsKey,
@@ -271,12 +275,15 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [hereCoordinates, setHereCoordinates] = useState(
+    userLoc[0].coordinates
+  );
   const [isChangeLocationOpen, setIsChangeLocationOpen] = useState(false);
   const [initLoc, setInitLoc] = useState(userLoc[0]);
   const datePickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [mapCenter, setMapCenter] = useState({
-    lat: locations[0]?.coordinates[1] ?? 40.7128,
-    lng: locations[0]?.coordinates[0] ?? -74.006,
+    lat: hereCoordinates[1] ?? 40.7128,
+    lng: hereCoordinates[0] ?? -74.006,
   });
   const [randomizedPositions, setRandomizedPositions] =
     useState<RandomizedPositions>({});
@@ -504,6 +511,8 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   return (
     <div className="mt-8">
       <RouteOptimizerModal
+        setEndLoc={setEndLoc}
+        setStartLoc={setStartLoc}
         selectedTime={createDateFromStrings(selectedDate, selectedTime)}
         isOpen={isRouteModalOpen}
         onClose={() => setIsRouteModalOpen(false)}
@@ -553,6 +562,14 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
                               place.geometry.location.lng(),
                               place.geometry.location.lat(),
                             ],
+                          });
+                          setHereCoordinates([
+                            place.geometry.location.lng(),
+                            place.geometry.location.lat(),
+                          ]);
+                          setMapCenter({
+                            lng: place.geometry.location.lng(),
+                            lat: place.geometry.location.lat(),
                           });
                           setIsChangeLocationOpen(false);
                         }
@@ -674,8 +691,8 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
             {" "}
             <MarkerF
               position={{
-                lat: userLoc[0].coordinates[1],
-                lng: userLoc[0].coordinates[0],
+                lat: hereCoordinates[1],
+                lng: hereCoordinates[0],
               }}
               icon={{
                 url: "/icons/clipart2825061.png",

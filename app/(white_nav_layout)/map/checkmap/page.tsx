@@ -15,10 +15,23 @@ export type OrderMap = {
   };
 };
 
-const RouteOptimizerPage = async () => {
-  const map_api_key = process.env.MAPS_KEY as string;
-  const user = await getNavUser();
+import { redirect } from "next/navigation";
+import { getOrderGroupWithOrders } from "@/actions/gerOrderGroupOrders";
 
+const RouteOptimizerPage = async ({
+  searchParams,
+}: {
+  searchParams: { orderGroupId?: string };
+}) => {
+  if (!searchParams.orderGroupId) {
+    redirect("/dashboard");
+  }
+  const { orderGroupId } = searchParams;
+  if (!orderGroupId) {
+    redirect("/dashboard");
+  }
+
+  const user = await getNavUser();
   if (!user) {
     return (
       <div className="h-[calc(100vh-64px)] flex items-center justify-center">
@@ -34,25 +47,27 @@ const RouteOptimizerPage = async () => {
     );
   }
 
-  // Fetch active pickup orders for the current user
-  const { orders } = await getActivePickupOrders(user.id);
-
-  // Get default location from user's first location
-  let defaultLocation = { lat: 37.0345267, lng: -76.6381116 }; // Fallback location
-
-  if (user.locations && user.locations.length > 0) {
+  const { orders, startLoc, endLoc } = await getOrderGroupWithOrders(
+    searchParams.orderGroupId
+  );
+  if (!orders.length) {
+    redirect("/dashboard");
+  }
+  let defaultLocation = { lat: 37.0345267, lng: -76.6381116 };
+  if (user.locations?.length > 0) {
     const firstLocation = user.locations[0];
     defaultLocation = {
-      lat: firstLocation.coordinates[1], // coordinates are [lng, lat]
+      lat: firstLocation.coordinates[1],
       lng: firstLocation.coordinates[0],
     };
   }
-
+  const apiKey = process.env.MAPS_KEY as string;
   return (
     <LocationProvider
       orders={orders}
-      googleMapsApiKey={map_api_key}
-      defaultLocation={defaultLocation}
+      googleMapsApiKey={apiKey}
+      startLoc={startLoc}
+      endLoc={endLoc}
     />
   );
 };

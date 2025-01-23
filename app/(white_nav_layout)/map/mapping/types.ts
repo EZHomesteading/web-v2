@@ -2,6 +2,8 @@
 import { Location, UserRole } from "@prisma/client";
 
 export interface RouteOptimizerProps {
+  setStartLoc: React.Dispatch<React.SetStateAction<any[]>>;
+  setEndLoc: React.Dispatch<React.SetStateAction<any[]>>;
   initialTime: Date;
   locations: any[];
   googleMapsApiKey: string;

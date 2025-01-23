@@ -143,6 +143,12 @@ type fullName {
   first String?
   last  String?
 }
+model OrderGroup{
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderids   String[]
+  startLoc   Float[]
+  endLoc     Float[]
+}
 
 model Location {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId

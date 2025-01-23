@@ -152,6 +152,7 @@ export async function POST(request: NextRequest) {
             { status: 500 }
           );
         }
+
         // Loop through each order in the payment
         for (const order of createdOrders) {
           const postconversations = async () => {
@@ -426,6 +427,20 @@ export async function POST(request: NextRequest) {
         //delete previous basket or set it to inactive.(done)
         //remove stock from listings(done)
         //send messages and emails to all relevant users with information
+      }
+      try {
+        if (pi.orderGroupId) {
+          await prisma.orderGroup.update({
+            where: {
+              id: pi.orderGroupId.replace(/['"]+/g, ""),
+            },
+            data: {
+              orderids: createdOrders.map((order: any) => order.id.toString()), // Ensure IDs are strings
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error updating ordergroup:", error);
       }
 
       return NextResponse.json({ received: true }, { status: 200 });

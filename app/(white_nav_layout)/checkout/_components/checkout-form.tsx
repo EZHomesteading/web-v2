@@ -123,6 +123,9 @@ export default function CheckoutForm({
           userId,
           basketIds: baskets.map((basket) => basket.id),
           userLoc,
+          orderGroupId: new URLSearchParams(window.location.search).get(
+            "orderGroupId"
+          ),
         });
 
         setClientSecret(response.data.clientSecret);

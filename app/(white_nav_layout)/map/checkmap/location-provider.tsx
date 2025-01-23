@@ -8,24 +8,27 @@ import { OrderMap } from "./page";
 type LocationProviderProps = {
   orders: OrderMap[];
   googleMapsApiKey: string;
-  defaultLocation: { lat: number; lng: number };
+  startLoc: number[];
+  endLoc: number[];
 };
 
 export default function LocationProvider({
   orders,
   googleMapsApiKey,
-  defaultLocation,
+  startLoc,
+  endLoc,
 }: LocationProviderProps) {
   const { location, error, loading } = useCurrentLocation();
-
-  const initialLocation = location || defaultLocation;
+  const locationAsCoord = location ? [location?.lat, location?.lng] : null;
+  const initialLocation = locationAsCoord ? locationAsCoord : startLoc;
 
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden touch-none">
       <RouteOptimizer
         orders={orders}
         googleMapsApiKey={googleMapsApiKey}
-        initialLocation={initialLocation}
+        startLoc={initialLocation}
+        endLoc={endLoc}
       />
     </div>
   );

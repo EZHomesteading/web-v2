@@ -12,9 +12,13 @@ interface RouteOptimizerModalProps {
   initialLocation: number[];
   selectedTime: Date;
   setPickupTimes: any;
+  setStartLoc: React.Dispatch<React.SetStateAction<any[]>>;
+  setEndLoc: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
+  setStartLoc,
+  setEndLoc,
   isOpen,
   onClose,
   locations,
@@ -71,6 +75,8 @@ const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
         `}</style>
         <div className="w-full h-full relative">
           <RouteOptimizer
+            setEndLoc={setEndLoc}
+            setStartLoc={setStartLoc}
             initialTime={selectedTime}
             locations={locations}
             googleMapsApiKey={googleMapsApiKey}

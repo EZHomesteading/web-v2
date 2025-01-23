@@ -13,6 +13,8 @@ interface CheckoutButtonProps {
     total: number;
     itemCount: number;
   };
+  endLoc: any;
+  startLoc: any;
 }
 
 interface AdjustedListing {
@@ -27,6 +29,8 @@ const CheckoutButton = ({
   baskets,
   pickupTimes,
   basketTotals,
+  endLoc,
+  startLoc,
 }: CheckoutButtonProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [expiredArray, setExpiredArray] = useState<AdjustedListing[]>([]);
@@ -115,7 +119,15 @@ const CheckoutButton = ({
       console.log("Starting checkout process...");
       console.log("Initial baskets:", baskets);
       console.log("Pickup times:", pickupTimes);
+      const orderGroupResponse = await axios.post(
+        "/api/useractions/checkout/create-group",
+        {
+          startLoc: startLoc,
+          endLoc: endLoc,
+        }
+      );
 
+      const orderGroupId = orderGroupResponse.data.id;
       // Prepare updates for all baskets that need pickup times set
       const updates = baskets
         .filter((basket) => {
@@ -172,7 +184,7 @@ const CheckoutButton = ({
       }
 
       console.log("All updates successful, redirecting to checkout");
-      router.push("/checkout");
+      router.push(`/checkout?orderGroupId=${orderGroupId}`);
     } catch (error) {
       console.error("Error updating baskets:", error);
       if (axios.isAxiosError(error)) {
