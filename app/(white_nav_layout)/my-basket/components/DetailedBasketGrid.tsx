@@ -38,6 +38,8 @@ import LocationModal from "./LocSelect";
 import WeeklyHours from "./weeklyhours";
 import { Button } from "@/components/ui/button";
 import CheckoutButton from "./checkoutButton";
+import { useLoadScript } from "@react-google-maps/api";
+import { divIcon } from "leaflet";
 
 // Keep specific types where they're well-defined
 interface ListingType {
@@ -127,6 +129,17 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
     </BasketProvider>
   );
 };
+// const MapsWrapper: React.FC<{
+//   mapsKey: string;
+//   children: (isLoaded: boolean) => React.ReactNode;
+// }> = ({ mapsKey, children }) => {
+//   const { isLoaded } = useLoadScript({
+//     googleMapsApiKey: mapsKey,
+//     libraries: ["places", "geometry"],
+//   });
+
+//   return <>{children(isLoaded)}</>;
+// };
 const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   baskets,
   mapsKey,
@@ -139,6 +152,11 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   const { updateBasketTotals } = useBasket();
   const [pickupTimes, setPickupTimes] = useState(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: mapsKey,
+    libraries: ["places", "geometry"],
+  });
+  console.log(isLoaded);
   const [userActive, setUserActive] = useState(false);
   const [startLoc, setStartLoc] = useState<any[]>([]);
   const [endLoc, setEndLoc] = useState<any[]>([]);
@@ -293,41 +311,48 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   };
   return (
     <div className={`${outfitFont.className} w-full pb-32`}>
-      <LocationModal
-        open={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-      />
-      <div className="flex flex-col lg:flex-row px-4 lg:px-0 gap-8">
-        <div className="w-full lg:w-[65%] pt-6">
-          <h1 className="text-4xl font-medium pb-6">My Market Baskets</h1>
-          <div className="flex flex-col space-y-6">
-            {baskets.map((basket) => (
-              <DetailedBasketCard
-                key={basket.id}
-                basket={basket}
-                userLocs={userLocs}
-                mk={mk}
-                userId={userId}
-                onModeChange={handleBasketModeChange}
-                pickupTimes={pickupTimes}
+      {isLoaded ? (
+        <div>
+          <LocationModal
+            open={showLocationModal}
+            onClose={() => setShowLocationModal(false)}
+            isLoaded={isLoaded}
+          />
+          <div className="flex flex-col lg:flex-row px-4 lg:px-0 gap-8">
+            <div className="w-full lg:w-[65%] pt-6">
+              <h1 className="text-4xl font-medium pb-6">My Market Baskets</h1>
+              <div className="flex flex-col space-y-6">
+                {baskets.map((basket) => (
+                  <DetailedBasketCard
+                    key={basket.id}
+                    basket={basket}
+                    userLocs={userLocs}
+                    mk={mk}
+                    userId={userId}
+                    onModeChange={handleBasketModeChange}
+                    pickupTimes={pickupTimes}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="w-full lg:w-[35%] lg:fixed lg:right-0 lg:mt-10 lg:top-6 lg:pr-4 pt-6 space-y-6">
+              <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
+              <AvailabilityMap
+                setStartLoc={setStartLoc}
+                setEndLoc={setEndLoc}
+                userLoc={userLoc}
+                locations={locations}
+                mapsKey={mapsKey}
+                key={locations.length} // Add key to force re-render
+                setPickupTimes={setPickupTimes}
               />
-            ))}
+            </div>
           </div>
         </div>
-
-        <div className="w-full lg:w-[35%] lg:fixed lg:right-0 lg:mt-10 lg:top-6 lg:pr-4 pt-6 space-y-6">
-          <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
-          <AvailabilityMap
-            setStartLoc={setStartLoc}
-            setEndLoc={setEndLoc}
-            userLoc={userLoc}
-            locations={locations}
-            mapsKey={mapsKey}
-            key={locations.length} // Add key to force re-render
-            setPickupTimes={setPickupTimes}
-          />
-        </div>
-      </div>
+      ) : (
+        <div>loading?</div>
+      )}
     </div>
   );
 };

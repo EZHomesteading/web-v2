@@ -15,6 +15,7 @@ type GooglePlace = google.maps.places.Autocomplete;
 interface LocationModalProps {
   open: boolean;
   onClose?: () => void;
+  isLoaded: boolean;
 }
 
 interface Location {
@@ -23,7 +24,11 @@ interface Location {
   lng: number;
 }
 
-const LocationModal: React.FC<LocationModalProps> = ({ open }) => {
+const LocationModal: React.FC<LocationModalProps> = ({
+  open,
+  onClose,
+  isLoaded,
+}) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(open);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
@@ -64,6 +69,7 @@ const LocationModal: React.FC<LocationModalProps> = ({ open }) => {
         lng: selectedLocation.lng,
       });
       setIsOpen(false);
+      if (onClose) onClose();
       router.refresh();
     } catch (error) {
       console.error("Error saving location:", error);
@@ -72,100 +78,84 @@ const LocationModal: React.FC<LocationModalProps> = ({ open }) => {
     }
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    if (selectedLocation) {
-      setIsOpen(newOpen);
-    }
+  const handleClose = () => {
+    setIsOpen(false);
+    if (onClose) onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50" onClick={handleClose}>
       {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* Modal Container */}
       <div
-        className="absolute inset-0 bg-black/50"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] bg-white rounded-lg shadow-xl p-6"
         onClick={(e) => e.stopPropagation()}
-      />
-
-      {/* Popover Container */}
-      <div className="relative flex left-[50%]  w-full h-full">
-        <Popover open={true} onOpenChange={handleOpenChange}>
-          <PopoverAnchor asChild>
-            <div className="w-1 h-1" />
-          </PopoverAnchor>
-
-          <PopoverContent
-            align="center"
-            className="w-[500px] p-6 shadow-xl"
-            style={{ zIndex: 51 }}
-            onOpenAutoFocus={(e) => {
-              e.preventDefault();
-              autocompleteInputRef.current?.focus();
-            }}
-          >
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-2xl font-semibold mb-2">
-                  Set Your Location
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Please enter your address to use our routing features
-                </p>{" "}
-                <p className="text-sm text-gray-600">
-                  This will be saved to your profile for use with later orders.
-                </p>
-              </div>
-
-              <div>
-                <Autocomplete
-                  onLoad={(autocomplete: GooglePlace) => {
-                    startSearchBoxRef.current = autocomplete;
-                  }}
-                  onPlaceChanged={() => {
-                    if (startSearchBoxRef.current) {
-                      const place = startSearchBoxRef.current.getPlace();
-                      handlePlaceSelected(place);
-                    }
-                  }}
-                  options={{
-                    componentRestrictions: { country: "us" },
-                    fields: ["formatted_address", "geometry", "name"],
-                    types: ["address"],
-                  }}
-                >
-                  <Input
-                    ref={autocompleteInputRef}
-                    type="text"
-                    placeholder="Enter your address..."
-                    className="w-full text-lg p-4 h-12"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </Autocomplete>
-              </div>
-
-              {selectedLocation && (
-                <div className="space-y-3">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600 mb-1">
-                      Selected address:
-                    </p>
-                    <p className="text-base font-medium">
-                      {selectedLocation.address}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="w-full h-12 text-lg"
-                  >
-                    {isSaving ? "Saving..." : "Save Location"}
-                  </Button>
-                </div>
-              )}
+      >
+        {isLoaded ? (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-2xl font-semibold mb-2">Set Your Location</h3>
+              <p className="text-sm text-gray-600">
+                Please enter your address to use our routing features
+              </p>
+              <p className="text-sm text-gray-600">
+                This will be saved to your profile for use with later orders.
+              </p>
             </div>
-          </PopoverContent>
-        </Popover>
+
+            <div>
+              <Autocomplete
+                onLoad={(autocomplete: GooglePlace) => {
+                  startSearchBoxRef.current = autocomplete;
+                }}
+                onPlaceChanged={() => {
+                  if (startSearchBoxRef.current) {
+                    const place = startSearchBoxRef.current.getPlace();
+                    handlePlaceSelected(place);
+                  }
+                }}
+                options={{
+                  componentRestrictions: { country: "us" },
+                  fields: ["formatted_address", "geometry", "name"],
+                  types: ["address"],
+                }}
+              >
+                <Input
+                  ref={autocompleteInputRef}
+                  type="text"
+                  placeholder="Enter your address..."
+                  className="w-full text-lg p-4 h-12"
+                />
+              </Autocomplete>
+            </div>
+
+            {selectedLocation && (
+              <div className="space-y-3">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">
+                    Selected address:
+                  </p>
+                  <p className="text-base font-medium">
+                    {selectedLocation.address}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="w-full h-12 text-lg"
+                >
+                  {isSaving ? "Saving..." : "Save Location"}
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>Loading maps...</div>
+        )}
       </div>
     </div>
   );

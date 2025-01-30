@@ -272,18 +272,55 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   mapsKey,
   setPickupTimes,
 }) => {
+  // Early return if userLoc is invalid
+  if (
+    !userLoc ||
+    !Array.isArray(userLoc) ||
+    userLoc.length === 0 ||
+    !userLoc[0]?.coordinates
+  ) {
+    return null;
+  }
+
+  const defaultCoords = [40.7128, -74.006]; // NYC coordinates as fallback
+
+  // Safely access coordinates with fallback
+  const initialCoordinates = (() => {
+    try {
+      return userLoc[0]?.coordinates || defaultCoords;
+    } catch (error) {
+      return defaultCoords;
+    }
+  })();
+  const googleMapsApiKey = mapsKey;
+  //const libraries: ("places" | "geometry")[] = ["places", "geometry"];
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey,
+    libraries: ["places", "geometry"],
+  });
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [hereCoordinates, setHereCoordinates] = useState(
-    userLoc[0].coordinates
-  );
+  const [hereCoordinates, setHereCoordinates] = useState(initialCoordinates);
   const [isChangeLocationOpen, setIsChangeLocationOpen] = useState(false);
-  const [initLoc, setInitLoc] = useState(userLoc[0]);
+  const [initLoc, setInitLoc] = useState(() => {
+    try {
+      return (
+        userLoc[0] || {
+          coordinates: defaultCoords,
+          address: "Default Location",
+        }
+      );
+    } catch (error) {
+      return { coordinates: defaultCoords, address: "Default Location" };
+    }
+  });
+
   const datePickerTriggerRef = useRef<HTMLButtonElement>(null);
   const [mapCenter, setMapCenter] = useState({
-    lat: hereCoordinates[1] ?? 40.7128,
-    lng: hereCoordinates[0] ?? -74.006,
+    lat: hereCoordinates[1] ?? defaultCoords[1],
+    lng: hereCoordinates[0] ?? defaultCoords[0],
   });
   const [randomizedPositions, setRandomizedPositions] =
     useState<RandomizedPositions>({});
@@ -299,17 +336,56 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
     }>
   >([]);
   const locationInputRef = useRef<HTMLInputElement>(null);
-  const locationSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(
-    null
-  );
-  const googleMapsApiKey = mapsKey;
-  const libraries: ("places" | "geometry")[] = ["places", "geometry"];
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const LocationSearchBox = ({
+    onPlaceSelect,
+    isLoaded,
+  }: {
+    onPlaceSelect: (address: string, coordinates: [number, number]) => void;
+    isLoaded: boolean;
+  }) => {
+    const locationInputRef = useRef<HTMLInputElement>(null);
+    const locationSearchBoxRef = useRef<google.maps.places.Autocomplete | null>(
+      null
+    );
+
+    if (!isLoaded)
+      return <Input type="text" placeholder="Loading..." disabled />;
+
+    return (
+      <Autocomplete
+        onLoad={(autocomplete) => {
+          locationSearchBoxRef.current = autocomplete;
+        }}
+        onPlaceChanged={() => {
+          if (locationSearchBoxRef.current) {
+            const place = locationSearchBoxRef.current.getPlace();
+            if (place.geometry?.location && place.formatted_address) {
+              onPlaceSelect(place.formatted_address, [
+                place.geometry.location.lng(),
+                place.geometry.location.lat(),
+              ]);
+            }
+          }
+        }}
+        options={{
+          componentRestrictions: { country: "us" },
+          fields: ["formatted_address", "geometry", "name"],
+          types: ["address"],
+        }}
+      >
+        <Input
+          ref={locationInputRef}
+          type="text"
+          placeholder="Enter new address..."
+          className="w-full text-lg p-4 h-12"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </Autocomplete>
+    );
+  };
+
   const [zoom, setZoom] = useState<number>(20);
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey,
-    libraries,
-  });
+
   const getDisplayText = () => {
     if (!selectedDate || !selectedTime) {
       return "Enter Departure Date and Time";
@@ -327,6 +403,16 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
     setSelectedTime(time);
   };
   useEffect(() => {
+    if (userLoc?.[0]?.coordinates) {
+      setHereCoordinates(userLoc[0].coordinates);
+      setInitLoc(userLoc[0]);
+      setMapCenter({
+        lat: userLoc[0].coordinates[1],
+        lng: userLoc[0].coordinates[0],
+      });
+    }
+  }, [userLoc]);
+  useEffect(() => {
     const newRandomPositions: RandomizedPositions = {};
     locations.forEach((location) => {
       if (!randomizedPositions[location.id] && location.coordinates) {
@@ -342,7 +428,21 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
     });
     setRandomizedPositions((prev) => ({ ...prev, ...newRandomPositions }));
   }, [locations]);
-
+  const handlePlaceSelect = (
+    address: string,
+    coordinates: [number, number]
+  ) => {
+    setInitLoc({
+      address,
+      coordinates,
+    });
+    setHereCoordinates(coordinates);
+    setMapCenter({
+      lng: coordinates[0],
+      lat: coordinates[1],
+    });
+    setIsChangeLocationOpen(false);
+  };
   const findNextOpenTime = (location: any, selectedDateTime: Date): string => {
     const hours = location.hours?.pickup;
     if (!hours?.length) return "No schedule available";
@@ -545,50 +645,10 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
                 </div>
 
                 <div>
-                  <Autocomplete
-                    onLoad={(autocomplete) => {
-                      locationSearchBoxRef.current = autocomplete;
-                    }}
-                    onPlaceChanged={() => {
-                      if (locationSearchBoxRef.current) {
-                        const place = locationSearchBoxRef.current.getPlace();
-                        if (
-                          place.geometry?.location &&
-                          place.formatted_address
-                        ) {
-                          setInitLoc({
-                            address: place.formatted_address,
-                            coordinates: [
-                              place.geometry.location.lng(),
-                              place.geometry.location.lat(),
-                            ],
-                          });
-                          setHereCoordinates([
-                            place.geometry.location.lng(),
-                            place.geometry.location.lat(),
-                          ]);
-                          setMapCenter({
-                            lng: place.geometry.location.lng(),
-                            lat: place.geometry.location.lat(),
-                          });
-                          setIsChangeLocationOpen(false);
-                        }
-                      }
-                    }}
-                    options={{
-                      componentRestrictions: { country: "us" },
-                      fields: ["formatted_address", "geometry", "name"],
-                      types: ["address"],
-                    }}
-                  >
-                    <Input
-                      ref={locationInputRef}
-                      type="text"
-                      placeholder="Enter new address..."
-                      className="w-full text-lg p-4 h-12"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Autocomplete>
+                  <LocationSearchBox
+                    onPlaceSelect={handlePlaceSelect}
+                    isLoaded={isLoaded}
+                  />
                 </div>
               </div>
             </PopoverContent>
