@@ -15,18 +15,20 @@ export const getMessageOptions = (
   setCustomTimeOpen: (open: boolean) => void,
   setCancelOpen: (open: boolean) => void,
   setDisputeOpen: (open: boolean) => void,
-  setSetFee: (open: boolean) => void,
+
   dateTime?: boolean
 ): MessageOption[] => {
   switch (true) {
     // Seller-only actions
-    case isSeller && orderStatus === OrderStatus.BUYER_PROPOSED_TIME: {
+    case isSeller &&
+      (orderStatus === OrderStatus.BUYER_PROPOSED_TIME ||
+        orderStatus === OrderStatus.BUYER_RESCHEDULED): {
       if (fulfillmentType === "DELIVERY") {
         return [
           {
             icon: PiCalendarCheckLight,
-            label: "Accept Time and Set Fee",
-            status: OrderStatus.SELLER_PROPOSED_DELIVERY_FEE,
+            label: "Accept Time",
+            status: OrderStatus.SELLER_ACCEPTED,
           },
           {
             icon: PiCalendarBlankLight,
@@ -96,7 +98,7 @@ export const getMessageOptions = (
       ];
     }
 
-    case isSeller && orderStatus === OrderStatus.SCHEDULE_CONFIRMED_PAID: {
+    case isSeller && orderStatus === OrderStatus.SELLER_ACCEPTED: {
       if (fulfillmentType === "DELIVERY") {
         return [
           {

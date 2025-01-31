@@ -90,7 +90,39 @@ declare module "chat-types" {
     stripeAccountId?: string;
     location: Location[] | null;
   }
+  interface TimeSlot {
+    open: number;
+    close: number;
+  }
 
+  interface AvailabilityDay {
+    date: Date;
+    capacity: number | null;
+    timeSlots: TimeSlot[];
+  }
+
+  interface Hours {
+    delivery: AvailabilityDay[];
+    pickup: AvailabilityDay[];
+  }
+
+  // Then update your Location type to use these interfaces:
+  interface Location {
+    id: string;
+    userId: string;
+    displayName: string | null;
+    type: string;
+    coordinates: number[];
+    address: string[];
+    role: UserRole;
+    SODT: number | null;
+    bio: string | null;
+    isDefault: boolean;
+    showPreciseLocation: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    hours: Hours | null;
+  }
   interface ChatMessage {
     id: string;
     body: string | null;
@@ -119,42 +151,14 @@ declare module "chat-types" {
     totalPrice: number;
     conversationId: string | null;
     paymentIntentId: string | null;
-    quantity: ListingQuantities[];
+    items: any[];
     status: OrderStatus;
     fee: {
       delivery: number | null;
       site: number | null;
       other: number[];
     } | null;
-    location:
-      | {
-          address: string[];
-          coordinates: number[];
-        }
-      | {
-          address: string[];
-          hours: {
-            delivery: ({
-              date: Date;
-              capacity: number | null;
-            } & {
-              timeSlots: {
-                open: number;
-                close: number;
-              }[];
-            })[];
-            pickup: ({
-              date: Date;
-              capacity: number | null;
-            } & {
-              timeSlots: {
-                open: number;
-                close: number;
-              }[];
-            })[];
-          } | null;
-        }
-      | null;
+    location: Location;
   }
 
   interface ChatListing {

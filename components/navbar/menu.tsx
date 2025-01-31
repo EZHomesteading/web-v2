@@ -262,7 +262,10 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                       router.push("/orders?type=purchases&status=active")
                     }
                   />
-                  <MenuItem label="Cart" onClick={() => router.push("/cart")} />
+                  <MenuItem
+                    label="My Basket"
+                    onClick={() => router.push("/my-basket")}
+                  />
                   <MenuItem
                     label="Account"
                     onClick={() => router.push("/account")}

@@ -3,147 +3,154 @@
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
+import { outfitFont } from "@/components/fonts";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
-import { Outfit } from "next/font/google";
-import { JsonValue } from "@prisma/client/runtime/library";
-import { UserRole } from "@prisma/client";
 
-// Define CartItem type
-interface CartItem {
-  id: string;
-  quantity: number;
-  listing: {
-    id: string;
-    title: string;
-    price: number;
-    reports: number;
-    stock: number;
-    SODT: number | null;
-    quantityType: string | null;
-    shelfLife: number;
-    rating: number[];
-    createdAt: string;
-    location: {
-      type: string;
-      coordinates: number[];
-      address: string[];
-      hours: JsonValue;
-    };
-    imageSrc: string[];
-    userId: string;
-    subCategory: string;
-    minOrder: number;
-    user: {
-      id: string;
-      SODT: number | null;
-      name: string;
-      role: UserRole;
-    };
-  };
-}
-[];
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400"],
-});
-
-// Ensure NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is defined
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
 interface CheckoutFormProps {
-  cartItems: CartItem[];
+  baskets: any[];
+  userId: string;
+  userLoc: any;
 }
+const MobilePriceSummary = ({ formattedTotal }: { formattedTotal: number }) => {
+  return (
+    <Popover className="fixed inset-x-0 bottom-0 flex flex-col-reverse text-sm font-medium text-gray-900 lg:hidden">
+      <div className="relative z-10 border-t border-gray-200 bg-white px-4 sm:px-6">
+        <div className="mx-auto max-w-lg">
+          <Popover.Button className="flex w-full items-center py-6 font-medium">
+            <span className="mr-auto text-base">Total</span>
+            <span className="mr-2 text-base">${formattedTotal}</span>
+            <ChevronUpIcon
+              className="h-5 w-5 text-gray-500"
+              aria-hidden="true"
+            />
+          </Popover.Button>
+        </div>
+      </div>
 
-interface OrderTotals {
-  [coopId: string]: number;
-}
+      <Transition.Root as={Fragment}>
+        <div>
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Popover.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
 
-export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
-  const user = useCurrentUser();
+          <Transition.Child
+            as={Fragment}
+            enter="transition ease-in-out duration-300 transform"
+            enterFrom="translate-y-full"
+            enterTo="translate-y-0"
+            leave="transition ease-in-out duration-300 transform"
+            leaveFrom="translate-y-0"
+            leaveTo="translate-y-full"
+          >
+            <Popover.Panel className="relative bg-white px-4 py-6 sm:px-6">
+              <dl className="mx-auto max-w-lg space-y-6">
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-600">Subtotal</dt>
+                  <dd>${formattedTotal}</dd>
+                </div>
+              </dl>
+            </Popover.Panel>
+          </Transition.Child>
+        </div>
+      </Transition.Root>
+    </Popover>
+  );
+};
+export default function CheckoutForm({
+  baskets,
+  userId,
+  userLoc,
+}: CheckoutFormProps) {
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate item totals
-  const itemTotals = cartItems.map(
-    (cartItem: CartItem) => cartItem.quantity * cartItem.listing.price
-  );
+  // Calculate totals for all items across all baskets
+  const calculateTotals = () => {
+    return baskets.reduce((acc, basket) => {
+      const basketTotal = basket.items.reduce(
+        (sum: number, item: any) => sum + item.listing.price * item.quantity,
+        0
+      );
+      return acc + basketTotal;
+    }, 0);
+  };
 
-  // Ensure total is not NaN or undefined
-  const total = itemTotals.reduce((acc: number, item: number) => acc + item, 0);
-  const formattedTotal = total > 0 ? Round(total, 2) : 0;
+  const total = calculateTotals();
+  const formattedTotal = Round(total, 2);
 
   useEffect(() => {
-    const fetchPaymentIntents = async () => {
+    const fetchPaymentIntent = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const orderIds = await sessionStorage.getItem("ORDER");
-        if (!orderIds) {
-          throw new Error("No order IDs found");
-        }
-
-        const orderTotals = cartItems.reduce(
-          (acc: OrderTotals, cartItem: CartItem) => {
-            const coopId = cartItem.listing.userId;
-            if (!acc[coopId]) {
-              acc[coopId] = 0;
-            }
-            acc[coopId] += cartItem.listing.price * cartItem.quantity * 100;
-            return acc;
-          },
-          {}
-        );
-
-        let totalSum = Object.values(orderTotals).reduce(
-          (sum, value) => sum + value,
-          0
-        );
+        // Calculate totals per seller
+        const basketTotals = baskets.reduce((acc: any, basket) => {
+          const sellerId = basket.items[0]?.listing.userId;
+          if (!acc[sellerId]) {
+            acc[sellerId] = 0;
+          }
+          const basketTotal = basket.items.reduce(
+            (sum: number, item: any) =>
+              sum + item.listing.price * item.quantity * 100,
+            0
+          );
+          acc[sellerId] += basketTotal;
+          return acc;
+        }, {});
 
         const response = await axios.post("/api/stripe/create-payment-intent", {
-          totalSum,
-          userId: user?.id,
-          orderTotals,
-          email: user?.email,
-          orderIds,
+          totalSum: total * 100,
+          basketTotals,
+          userId,
+          basketIds: baskets.map((basket) => basket.id),
+          userLoc,
+          orderGroupId: new URLSearchParams(window.location.search).get(
+            "orderGroupId"
+          ),
         });
 
-        const clientSecret = response.data.clientSecret;
-        setClientSecret(clientSecret);
-        setIsLoading(false);
+        setClientSecret(response.data.clientSecret);
       } catch (error) {
-        console.error("Error fetching payment intents:", error);
+        console.error("Error fetching payment intent:", error);
         setError("Failed to load checkout. Please try refreshing the page.");
+      } finally {
         setIsLoading(false);
       }
     };
 
-    if (user) {
-      fetchPaymentIntents();
-    } else {
-      setIsLoading(false);
+    if (baskets.length > 0) {
+      fetchPaymentIntent();
     }
-  }, [cartItems, user]);
+  }, [baskets, total, userId, userLoc]);
 
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
   }
+
   if (isLoading) {
     return (
       <div
-        className={`${outfit.className} flex items-center justify-center h-screen`}
+        className={`${outfitFont.className} flex items-center justify-center h-screen`}
       >
         <p className="text-xl">Loading checkout...</p>
       </div>
@@ -153,23 +160,13 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
   if (error) {
     return (
       <div
-        className={`${outfit.className} flex items-center justify-center h-screen`}
+        className={`${outfitFont.className} flex items-center justify-center h-screen`}
       >
         <p className="text-xl text-red-500">{error}</p>
       </div>
     );
   }
-
-  if (!user) {
-    return (
-      <div
-        className={`${outfit.className} flex items-center justify-center h-screen`}
-      >
-        <p className="text-xl">Please log in to access the checkout.</p>
-      </div>
-    );
-  }
-
+  console.log(baskets);
   return (
     <div className="">
       <div
@@ -186,7 +183,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
 
         <section
           aria-labelledby="summary-heading"
-          className={`${outfit.className} bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16`}
+          className={`${outfitFont.className} bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16`}
         >
           <div className="mx-auto max-w-lg lg:max-w-none">
             <h2
@@ -200,113 +197,98 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
               role="list"
               className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
             >
-              {cartItems.map((cartItem: CartItem) => {
-                const itemTotal = cartItem.quantity * cartItem.listing.price;
-                return (
-                  <li
-                    key={cartItem.id}
-                    className="flex items-start space-x-4 py-6"
-                  >
-                    <Image
-                      src={cartItem.listing.imageSrc[0]}
-                      alt={cartItem.listing.title}
-                      width={80}
-                      height={80}
-                      className="h-20 w-20 flex-none rounded-md object-cover object-center"
-                      priority={true}
-                    />
-                    <div className="flex-auto space-y-1">
-                      <h3>{cartItem.listing.title}</h3>
-                      <p className="text-gray-500">
-                        {cartItem.listing.user.name}
-                      </p>
-                      <p className="text-gray-500">
-                        {cartItem.quantity} {cartItem.listing.quantityType}
-                      </p>
+              {/* Inside the OrderSummaryCard, replace the existing ul with: */}
+              {/* Inside the OrderSummaryCard, replace the existing ul with: */}
+              <div className="space-y-8">
+                {baskets.map((basket) => (
+                  <div key={basket.id} className="space-y-4">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-baseline gap-4">
+                        <h3 className="text-base font-semibold">
+                          {basket.location.displayName ||
+                            basket.location.user.name}
+                        </h3>
+                        <span className="text-sm text-gray-600">
+                          $
+                          {basket.items
+                            .reduce(
+                              (sum: number, item: any) =>
+                                sum + item.listing.price * item.quantity,
+                              0
+                            )
+                            .toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Show Pickup/Delivery Time */}
+                      <div className="text-sm text-gray-600">
+                        {basket.orderMethod === "PICKUP" &&
+                        basket.pickupDate ? (
+                          <div className="text-xs sm:text-sm">
+                            Pickup set for{" "}
+                            {formatDate(new Date(basket.pickupDate))}
+                          </div>
+                        ) : basket.orderMethod === "DELIVERY" &&
+                          basket.deliveryDate ? (
+                          <div className="text-xs sm:text-sm">
+                            Delivery scheduled for{" "}
+                            {formatDate(new Date(basket.deliveryDate))}
+                          </div>
+                        ) : (
+                          <div className="text-xs sm:text-sm text-yellow-600">
+                            No pickup/delivery time set
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="flex-none text-base font-medium">
-                      ${itemTotal}
-                    </p>
-                  </li>
-                );
-              })}
+
+                    <ul className="divide-y divide-gray-100">
+                      {basket.items.map((item: any) => (
+                        <li key={item.id} className="flex py-4 gap-4">
+                          <div className="h-20 w-20 flex-none relative">
+                            <Image
+                              src={item.listing.imageSrc[0]}
+                              alt={item.listing.title}
+                              fill
+                              className="rounded-md object-cover"
+                              sizes="80px"
+                              priority={true}
+                            />
+                          </div>
+                          <div className="flex flex-1 flex-col">
+                            <div className="flex justify-between gap-4">
+                              <div>
+                                <h4 className="font-medium">
+                                  {item.listing.title}
+                                </h4>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  {item.quantity}{" "}
+                                  {item.listing.quantityType ||
+                                    item.listing.subCategory}
+                                </p>
+                              </div>
+                              <p className="text-sm font-medium">
+                                $
+                                {(item.quantity * item.listing.price).toFixed(
+                                  2
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </ul>
 
-            <dl className="hidden space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-900 lg:block">
-              <div className="flex items-center justify-between">
-                <dt className="text-gray-600">Subtotal</dt>
-                <dd>${formattedTotal}</dd>
-              </div>
+            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+              <dt className="text-base">Total</dt>
+              <dd className="text-base">${formattedTotal}</dd>
+            </div>
 
-              <div className="flex items-center justify-between">
-                <dt className="text-gray-600">Processing Fees</dt>
-                <dd>$0.00</dd>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <dt className="text-gray-600">Taxes</dt>
-                <dd>$0.00</dd>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-                <dt className="text-base">Total</dt>
-                <dd className="text-base">${formattedTotal}</dd>
-              </div>
-            </dl>
-
-            <Popover className="fixed inset-x-0 bottom-0 flex flex-col-reverse text-sm font-medium text-gray-900 lg:hidden">
-              <div className="relative z-10 border-t border-gray-200 bg-white px-4 sm:px-6">
-                <div className="mx-auto max-w-lg">
-                  <Popover.Button className="flex w-full items-center py-6 font-medium">
-                    <span className="mr-auto text-base">Total</span>
-                    <span className="mr-2 text-base">${formattedTotal}</span>
-                    <ChevronUpIcon
-                      className="h-5 w-5 text-gray-500"
-                      aria-hidden="true"
-                    />
-                  </Popover.Button>
-                </div>
-              </div>
-
-              <Transition.Root as={Fragment}>
-                <div>
-                  <Transition.Child
-                    as={Fragment}
-                    enter="transition-opacity ease-linear duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="transition-opacity ease-linear duration-300"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Popover.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
-                  </Transition.Child>
-
-                  <Transition.Child
-                    as={Fragment}
-                    enter="transition ease-in-out duration-300 transform"
-                    enterFrom="translate-y-full"
-                    enterTo="translate-y-0"
-                    leave="transition ease-in-out duration-300 transform"
-                    leaveFrom="translate-y-0"
-                    leaveTo="translate-y-full"
-                  >
-                    <Popover.Panel className="relative bg-white px-4 py-6 sm:px-6">
-                      <dl className="mx-auto max-w-lg space-y-6">
-                        <div className="flex items-center justify-between">
-                          <dt className="text-gray-600">Subtotal</dt>
-                          <dd>${formattedTotal}</dd>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <dt className="text-gray-600">Taxes</dt>
-                          <dd>$0.00</dd>
-                        </div>
-                      </dl>
-                    </Popover.Panel>
-                  </Transition.Child>
-                </div>
-              </Transition.Root>
-            </Popover>
+            <MobilePriceSummary formattedTotal={formattedTotal} />
           </div>
         </section>
 
@@ -317,7 +299,7 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
                 <PaymentComponent />
               </Elements>
             ) : (
-              <div className={`${outfit.className} text-center`}>
+              <div className={`${outfitFont.className} text-center`}>
                 <p className="text-xl">
                   Payment processing is being set up. Please wait...
                 </p>
@@ -329,3 +311,43 @@ export default function CheckoutForm({ cartItems }: CheckoutFormProps) {
     </div>
   );
 }
+const formatDate = (date: Date) => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const dayName = days[date.getDay()];
+  const monthName = months[date.getMonth()];
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  const daySuffix =
+    day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th";
+
+  const amPm = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  return `${dayName}, ${monthName} ${day}${daySuffix}, at ${formattedHours}:${formattedMinutes}${amPm}`;
+};

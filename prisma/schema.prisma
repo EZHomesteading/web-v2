@@ -144,6 +144,12 @@ type fullName {
   first String?
   last  String?
 }
+model OrderGroup{
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderids   String[]
+  startLoc   Float[]
+  endLoc     Float[]
+}
 
 model Location {
   id                  String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -318,7 +324,6 @@ model Listing {
 }
 
 enum orderMethod {
-  UNDECIDED
   PICKUP
   DELIVERY
 }
@@ -350,7 +355,7 @@ model RecentlyViewedItem {
 model BasketItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   basketId  String   @db.ObjectId
-  basket    Basket   @relation(fields: [basketId], references: [id], onDelete: Cascade)
+  basket    Basket   @relation("BasketToItems",fields: [basketId], references: [id], onDelete: Cascade)
   listingId String   @db.ObjectId
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
   quantity  Int      @default(1)
@@ -373,10 +378,10 @@ model Basket {
   locationId   String           @db.ObjectId
   location     Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
   proposedLoc  proposedLoc?
-  items        BasketItem[]
+  items        BasketItem[]     @relation("BasketToItems") 
   pickupDate   DateTime?
   deliveryDate DateTime?
-  orderMethod  orderMethod      @default(UNDECIDED)
+  orderMethod  orderMethod      @default(PICKUP)
   status       basketStatus     @default(ACTIVE)
   notes        String?
   time_type    basket_time_type @default(ASAP)
@@ -403,11 +408,6 @@ type OrderLoc {
   coordinates Float[]
 }
 
-type ListingQuantities {
-  id       String @db.ObjectId
-  quantity Int
-}
-
 enum fulfillmentType {
   DELIVERY
   PICKUP
@@ -419,12 +419,13 @@ model Order {
 
   sellerId String @db.ObjectId
 
-  pickupDate      DateTime
+  pickupDate      DateTime?
+  deliveryDate    DateTime?
   paymentIntentId String?
-  quantity        ListingQuantities[]
+
   totalPrice      Float
   status          OrderStatus         @default(PENDING)
-
+  items           Json
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   completedAt DateTime?
