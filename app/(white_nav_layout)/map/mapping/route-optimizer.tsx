@@ -315,8 +315,16 @@ const RouteOptimizer = ({
           ? nextAvailableSlot.timeSlots[0].close * 60
           : 0;
 
-        const isCurrentlyOpen = isLocationOpen(location, startTime);
-        const willBeOpenOnArrival = isLocationOpen(location, arrivalTime);
+        const isCurrentlyOpen = isLocationOpen(
+          location,
+          startTime,
+          initialTime
+        );
+        const willBeOpenOnArrival = isLocationOpen(
+          location,
+          arrivalTime,
+          initialTime
+        );
         const timeUntilClose = closeTime - arrivalTime;
         const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0;
 
@@ -328,7 +336,7 @@ const RouteOptimizer = ({
         };
       } else {
         statuses[location.id] = {
-          isOpen: isLocationOpen(location, startTime),
+          isOpen: isLocationOpen(location, startTime, initialTime),
           willBeOpen: true,
           closesSoon: false,
           estimatedArrival: null,
@@ -358,7 +366,8 @@ const RouteOptimizer = ({
           usePickupOrder ? orderedLocations : locations,
           endLocation || startingPoint,
           usePickupOrder,
-          targetTimeInSeconds
+          targetTimeInSeconds,
+          initialTime
         );
       } else {
         optimizedResult = await optimizeTimeRoute(
@@ -366,7 +375,8 @@ const RouteOptimizer = ({
           usePickupOrder ? orderedLocations : locations,
           endLocation || startingPoint,
           usePickupOrder,
-          targetTimeInSeconds
+          targetTimeInSeconds,
+          initialTime
         );
       }
 
@@ -460,72 +470,7 @@ const RouteOptimizer = ({
       handleRouteError(error);
     }
   };
-  const calculateRouteOld = async () => {
-    const startingPoint = startLocation;
-    if (!startingPoint || locations.length === 0) return;
-    clearMap();
 
-    try {
-      // Calculate start time based on selected departure time or current time + buffer
-      const now = selectedDepartureTime || new Date();
-      const startTime = selectedDepartureTime
-        ? (selectedDepartureTime.getHours() * 60 +
-            selectedDepartureTime.getMinutes()) *
-          60
-        : (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
-
-      const optimizedResult = await optimizeTimeRoute(
-        startingPoint,
-        usePickupOrder ? orderedLocations : locations,
-        endLocation || startingPoint,
-        usePickupOrder,
-        startTime
-      );
-
-      setOptimizedRoute(optimizedResult.route);
-      setRouteTimings(optimizedResult.timings);
-
-      // Update this line to use the same startTime
-      let currentTime = startTime; // Remove the buffer calculation here
-      const segments: RouteSegment[] = [];
-
-      optimizedResult.route.forEach((location, index) => {
-        const travelTime = optimizedResult.timings.segmentTimes[location.id];
-        const distance = optimizedResult.timings.distanceSegments[location.id];
-
-        const arrivalTime = currentTime + travelTime;
-        const pickupTime = pickupTimes[location.id]
-          ? timeStringToSeconds(pickupTimes[location.id])
-          : arrivalTime + BUFFER_TIME;
-        const waitTime = Math.max(0, pickupTime - (arrivalTime + BUFFER_TIME));
-        const departureTime = pickupTime + AVERAGE_STOP_TIME;
-
-        segments.push({
-          location,
-          arrivalTime,
-          pickupTime,
-          departureTime,
-          travelTime,
-          distance,
-          waitTime,
-        });
-
-        currentTime = departureTime;
-      });
-
-      setRouteSegments(segments);
-
-      // Update location statuses based on the calculated route
-      const newStatuses = updateLocationStatuses(
-        locations,
-        segments,
-        startTime
-      );
-      setLocationStatuses(newStatuses);
-    } catch (error) {
-      handleRouteError(error);
-    }
-  };
   const handleRouteError = (error: any) => {
     console.error("Route calculation error:", error);
 

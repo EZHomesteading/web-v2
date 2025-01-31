@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import {
   Carousel,
@@ -9,6 +10,7 @@ import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
 import AvailabilityScore from "./availabilityScore";
+import CartToggle from "./carttoggle";
 
 interface ListingCardProps {
   listing: MarketListing;
@@ -117,9 +119,14 @@ interface ScoreResult {
   };
 }
 
-const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
+const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
+  const handleCartUpdate = (inCart: boolean, quantity: number) => {
+    console.log(
+      `Cart updated: ${inCart ? "Added" : "Removed"} ${quantity} items`
+    );
+  };
   const locHours = listing?.location?.hours;
-  console.log(locHours);
+  //console.log(locHours);
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
   ): ScoreResult {
@@ -231,7 +238,7 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
     return Math.min(1, totalCoverage); // Cap at 1 (100% coverage)
   }
   const scores = calculateAvailabilityScores(locHours);
-  console.log(scores);
+  // console.log(scores);
   return (
     <Link
       href={`/listings/${listing.id}`}
@@ -302,6 +309,16 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
             <AvailabilityScore scores={scores} type="pickup" />
             <AvailabilityScore scores={scores} type="delivery" />
           </div>
+          {/* <CartToggle
+            listingId={listing.id}
+            user={user}
+            initialQuantity={listing.minOrder}
+            stock={listing.stock}
+            minOrder={listing.minOrder}
+            quantityType="item"
+            price={listing.price}
+            onCartUpdate={handleCartUpdate}
+          /> */}
         </div>
       </div>
     </Link>
