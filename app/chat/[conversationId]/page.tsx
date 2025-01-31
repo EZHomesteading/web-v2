@@ -3,6 +3,7 @@ import Body from "./components/Body";
 import EmptyState from "@/components/EmptyState";
 import { redirect } from "next/navigation";
 import { getFullChatData } from "@/actions/chat/getFullChatData";
+import { getOrderGroupIdByOrderId } from "@/actions/getOrderGroupByOrderId";
 
 interface IParams {
   conversationId: string;
@@ -34,6 +35,9 @@ const ChatId = async ({
   ) {
     redirect("/chat");
   }
+  let orderGroupId = order?.id
+    ? await getOrderGroupIdByOrderId(order.id)
+    : null;
 
   const messagesWithListings = messages.map((message: any) => {
     if (message.listingId) {
@@ -49,6 +53,7 @@ const ChatId = async ({
       <Body
         initialMessages={messages}
         adminMessages={messagesWithListings}
+        orderGroupId={orderGroupId}
         user={currentUser}
         otherUser={otherUser}
         order={order}

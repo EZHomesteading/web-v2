@@ -13,7 +13,7 @@ import axios from "axios";
 interface ConfirmModalProps {
   open: boolean;
   modalMessage: string;
-  SetFee: boolean;
+
   newStatus: OrderStatus;
   convoId: string;
   otherUsersId: string | undefined;
@@ -24,7 +24,7 @@ interface ConfirmModalProps {
 
 const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
   open,
-  SetFee,
+
   modalMessage,
   newStatus,
   convoId,
@@ -67,27 +67,6 @@ const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
     //setIsLoading(true);
     try {
       // Create the complete message here
-      if (fee > 0) {
-        const numericFee = parseFloat(Number(fee).toFixed(2));
-        const completeMessage = SetFee
-          ? `${modalMessage} ${fee ? `$${Number(fee).toFixed(2)}` : "$0.00"}`
-          : modalMessage;
-        await axios.post("/api/useractions/checkout/update-order", {
-          orderId: orderId,
-          status: newStatus,
-          deliveryFee: numericFee,
-        });
-        await axios.post("/api/chat/messages", {
-          message: completeMessage,
-          messageOrder: newStatus,
-          conversationId: convoId,
-          otherUserId: otherUsersId,
-          fee: numericFee,
-        });
-        const skip = true;
-        onConfirm(newStatus, skip);
-        return;
-      }
 
       //console.log("COMPLETEMESSAGE", completeMessage, newStatus);
       // Pass the complete message directly to onConfirm without setting state
@@ -112,26 +91,10 @@ const ChatConfirmModal: React.FC<ConfirmModalProps> = ({
           <div className="mt-2">
             <p className="text-sm text-gray-500">
               This will send this message: {modalMessage}
-              {SetFee && ` ${fee ? `$${Number(fee).toFixed(2)}` : "$0.00"}`}
             </p>
           </div>
         </div>
       </div>
-
-      {SetFee && (
-        <div className="mt-4">
-          <Input
-            {...commonInputProps}
-            id="fee"
-            label="Delivery Fee"
-            type="number"
-            step="0.01"
-            formatPrice
-            maxlength={4}
-            inputmode="decimal"
-          />
-        </div>
-      )}
 
       <div className="mt-5 flex justify-between w-full">
         <Button danger onClick={onCancel} disabled={isLoading}>

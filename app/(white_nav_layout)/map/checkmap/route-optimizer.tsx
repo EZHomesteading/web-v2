@@ -22,12 +22,9 @@ const libraries: ("places" | "geometry")[] = ["places", "geometry"];
 interface FixedRouteOptimizerProps {
   orders: OrderMap[];
   googleMapsApiKey: string;
-  initialLocation: {
-    lat: number;
-    lng: number;
-  };
+  startLoc: number[];
+  endLoc: number[];
 }
-
 interface RouteSegment {
   order: OrderMap;
   travelTime: number;
@@ -37,25 +34,36 @@ interface RouteSegment {
 const RouteOptimizer = ({
   orders,
   googleMapsApiKey,
-  initialLocation,
+  startLoc,
+  endLoc,
 }: FixedRouteOptimizerProps) => {
-  // Previous state management code remains the same
-  const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(
-    null
-  );
-  const [endLocation, setEndLocation] = useState<google.maps.LatLng | null>(
-    null
-  );
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey,
+    libraries,
+  });
+
+  const [userLocation, setUserLocation] = useState<any>(null);
+  const [endLocation, setEndLocation] = useState<any>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    setUserLocation(new google.maps.LatLng(startLoc[0], startLoc[1]));
+    if (endLoc?.length === 2) {
+      setEndLocation(new google.maps.LatLng(endLoc[0], endLoc[1]));
+    }
+  }, [isLoaded, startLoc, endLoc]);
   const [zoom, setZoom] = useState(12);
   const [optimizedRoute, setOptimizedRoute] = useState<OrderMap[]>([]);
   const [routeSegments, setRouteSegments] = useState<RouteSegment[]>([]);
   const [mapKey, setMapKey] = useState(0);
-  const [useCustomEndLocation, setUseCustomEndLocation] = useState(false);
+  const [useCustomEndLocation, setUseCustomEndLocation] = useState(
+    endLoc.length > 0 ? true : false
+  );
   const [addressSearch, setAddressSearch] = useState("");
   const [customEndLocation, setCustomEndLocation] = useState<{
     lat: number;
     lng: number;
-  } | null>(null);
+  } | null>(endLoc ? { lat: endLoc[0], lng: endLoc[1] } : null);
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
   const [startLocationAddress, setStartLocationAddress] = useState<string>("");
@@ -138,10 +146,6 @@ const RouteOptimizer = ({
     }
     return "Address not found";
   };
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey,
-    libraries,
-  });
 
   useEffect(() => {
     if (!isLoaded || !userLocation) return;
@@ -254,9 +258,7 @@ const RouteOptimizer = ({
   useEffect(() => {
     if (!isLoaded) return;
 
-    setUserLocation(
-      new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-    );
+    setUserLocation(new google.maps.LatLng(startLoc[0], startLoc[1]));
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -270,13 +272,11 @@ const RouteOptimizer = ({
         },
         (error) => {
           console.error("Error getting location:", error);
-          setUserLocation(
-            new google.maps.LatLng(initialLocation.lat, initialLocation.lng)
-          );
+          setUserLocation(new google.maps.LatLng(startLoc[0], startLoc[1]));
         }
       );
     }
-  }, [isLoaded, initialLocation]);
+  }, [isLoaded, startLoc]);
 
   if (!isLoaded) return <div>Loading...</div>;
 

@@ -11,15 +11,21 @@ interface RouteOptimizerModalProps {
   googleMapsApiKey: string;
   initialLocation: number[];
   selectedTime: Date;
+  setPickupTimes: any;
+  setStartLoc: React.Dispatch<React.SetStateAction<any[]>>;
+  setEndLoc: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
+  setStartLoc,
+  setEndLoc,
   isOpen,
   onClose,
   locations,
   googleMapsApiKey,
   initialLocation,
   selectedTime,
+  setPickupTimes,
 }) => {
   // Handler to prevent closing when clicking outside
   const handleOpenChange = (open: boolean) => {
@@ -69,10 +75,14 @@ const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
         `}</style>
         <div className="w-full h-full relative">
           <RouteOptimizer
+            setEndLoc={setEndLoc}
+            setStartLoc={setStartLoc}
             initialTime={selectedTime}
             locations={locations}
             googleMapsApiKey={googleMapsApiKey}
             initialLocation={initialLocation}
+            onClose={onClose}
+            setCartPickupTimes={setPickupTimes}
           />
         </div>
       </DialogContent>

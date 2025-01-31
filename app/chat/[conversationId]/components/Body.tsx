@@ -51,6 +51,7 @@ interface BodyProps {
   order: ChatOrder | null;
   user: ChatUser;
   conversationId: string;
+  orderGroupId: string | null;
   listings: any;
   //reviews: Reviews[];
 }
@@ -64,17 +65,18 @@ const Body: React.FC<BodyProps> = ({
   adminMessages,
   order,
   user,
+  orderGroupId,
   conversationId,
   listings,
   //reviews,
 }) => {
   const sellerRole =
     otherUser?.id === order?.sellerId ? otherUser?.role : user.role;
-  const quantities = order?.quantity;
+  const items = order?.items;
   const getQuantitiy = (listingId: string) => {
     // Find the listing with the matching id
-    const foundListing = quantities?.find(
-      (quantity: any) => quantity.id === listingId
+    const foundListing = items?.find(
+      (item: any) => item.listing.id === listingId
     );
 
     // Return the found listing or null if not found
@@ -133,13 +135,8 @@ const Body: React.FC<BodyProps> = ({
     [order, messages];
   useEffect(() => {
     if (
-      (lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "IN_TRANSIT" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "SELLER_PREPARING" &&
-        user.id === order?.sellerId) ||
-      (lastMessage.messageOrder === "DISPUTED" && user.id === order?.sellerId)
+      lastMessage.messageOrder === "DISPUTED" &&
+      user.id === order?.sellerId
     ) {
       setRefund(true);
       setReview(true);
@@ -153,6 +150,7 @@ const Body: React.FC<BodyProps> = ({
     if (lastMessage.messageOrder === "COMPLETED") {
       setReview(true);
       setConfirm(true);
+      setRefund(false);
     }
   }),
     [order, messages];
@@ -228,7 +226,7 @@ const Body: React.FC<BodyProps> = ({
     ? formatPickupDate(order.pickupDate)
     : "No pickup date set";
   let item = "items";
-  if (order?.quantity?.length === 1) {
+  if (order?.items.length === 1) {
     item = "item";
   }
   return (
@@ -286,7 +284,7 @@ const Body: React.FC<BodyProps> = ({
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
-            {order?.quantity?.length} {item}
+            {order?.items.length} {item}
           </div>
           <div className="h-1 w-1 bg-neutral-600 rounded-full"></div>
           <div>
@@ -430,10 +428,7 @@ const Body: React.FC<BodyProps> = ({
 
                 <Button
                   onClick={() =>
-                    window.open(
-                      `http://maps.apple.com/?address=${order?.location?.address}`,
-                      "_ blank"
-                    )
+                    router.push(`/map/checkmap?orderGroupId=${orderGroupId}`)
                   }
                   className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
                 >

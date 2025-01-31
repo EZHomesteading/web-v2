@@ -8,6 +8,15 @@ import { outfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
+interface DayHours {
+  date: string;
+  timeSlots: TimeSlot[];
+  capacity: number;
+}
+interface TimeSlot {
+  open: number;
+  close: number;
+}
 
 export interface MarketListing {
   id: string;
@@ -19,6 +28,11 @@ export interface MarketListing {
   location: {
     address: string[];
     role: UserRole;
+    hours: {
+      pickup?: DayHours[];
+      delivery?: DayHours[];
+      [key: string]: DayHours[] | undefined;
+    };
   } | null;
   minOrder?: number;
   user: {

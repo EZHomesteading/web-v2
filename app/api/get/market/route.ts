@@ -4,8 +4,59 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import Fuse from "fuse.js";
+import { UserRole } from "@prisma/client";
 
 let mongoConnection: mongoose.Connection | null = null;
+
+// Prisma select object for consistent querying
+const listingSelect = {
+  id: true,
+  title: true,
+  imageSrc: true,
+  price: true,
+  rating: true,
+  quantityType: true,
+  location: {
+    select: {
+      address: true,
+      role: true,
+      hours: true,
+    },
+  },
+  minOrder: true,
+  user: {
+    select: {
+      id: true,
+    },
+  },
+} as const;
+
+// Transform Prisma result to match MarketListing interface
+function transformPrismaResult(prismaResults: any[]): MarketListing[] {
+  return prismaResults.map((listing) => ({
+    id: listing.id,
+    title: listing.title,
+    imageSrc: listing.imageSrc,
+    price: listing.price,
+    rating: listing.rating,
+    quantityType: listing.quantityType,
+    location: listing.location
+      ? {
+          address: listing.location.address,
+          role: listing.location.role as UserRole,
+          hours: {
+            pickup: listing.location.hours?.pickup || undefined,
+            delivery: listing.location.hours?.delivery || undefined,
+            ...listing.location.hours,
+          },
+        }
+      : null,
+    minOrder: listing.minOrder,
+    user: {
+      id: listing.user.id,
+    },
+  }));
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,6 +64,7 @@ export async function GET(req: NextRequest) {
       await connectMongoose();
       mongoConnection = mongoose.connection;
     }
+
     const { searchParams } = new URL(req.url);
     const lat = parseFloat(searchParams.get("lat") || "0");
     const lng = parseFloat(searchParams.get("lng") || "0");
@@ -40,6 +92,7 @@ export async function GET(req: NextRequest) {
           { status: 500 }
         );
       }
+
       const geoQuery = {
         coordinates: {
           $geoWithin: {
@@ -61,54 +114,25 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      listings = await prisma.listing.findMany({
+      const prismaResults = await prisma.listing.findMany({
         where: {
           locationId: { in: locationIds },
-          // user: {canRecievePayouts:true}
         },
-        select: {
-          id: true,
-          title: true,
-          imageSrc: true,
-          price: true,
-          rating: true,
-          quantityType: true,
-          location: {
-            select: { address: true, role: true },
-          },
-          minOrder: true,
-          user: {
-            select: {
-              id: true,
-            },
-          },
-        },
+        select: listingSelect,
       });
+
+      listings = transformPrismaResult(prismaResults);
     } else {
-      listings = await prisma.listing.findMany({
+      const prismaResults = await prisma.listing.findMany({
         where: {
           location: { isNot: null },
-          // user: {canRecievePayouts:true}
         },
-        select: {
-          id: true,
-          title: true,
-          imageSrc: true,
-          price: true,
-          rating: true,
-          quantityType: true,
-          location: {
-            select: { address: true, role: true },
-          },
-          minOrder: true,
-          user: {
-            select: {
-              id: true,
-            },
-          },
-        },
+        select: listingSelect,
       });
+
+      listings = transformPrismaResult(prismaResults);
     }
+
     if (q) {
       const fuseOptions = {
         includeScore: true,
@@ -126,6 +150,7 @@ export async function GET(req: NextRequest) {
       const results = fuse.search(q);
       listings = results.map((result) => result.item);
     }
+
     return NextResponse.json(listings);
   } catch (error) {
     console.error("Error:", error);
