@@ -14,10 +14,12 @@ interface p {
   isPending: boolean;
   toggleShowPassword: () => void;
   showPassword: boolean;
+  isReset?: boolean;
 }
 const PasswordInput = ({
   form,
   isPending,
+  isReset = false,
   showPassword,
   toggleShowPassword,
 }: p) => {
@@ -27,7 +29,7 @@ const PasswordInput = ({
       name="password"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Password</FormLabel>
+          <FormLabel>{isReset && "New"} Password</FormLabel>
           <div className="relative">
             <FormControl>
               <Input

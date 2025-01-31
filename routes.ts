@@ -28,11 +28,9 @@ export const publicRoutes = [
 export const authRoutes = [
   "/auth/login",
   "/auth/register",
+  "/auth/reset-password",
   "/auth/register-co-op",
   "/auth/register-producer",
-  "/auth/error",
-  "/auth/reset",
-  "/auth/new-password",
   "/api/stripe/create-connected-account",
 ];
 
