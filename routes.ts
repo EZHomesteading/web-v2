@@ -14,6 +14,7 @@ export const publicRoutes = [
   "/api/user/marker-info",
   "/api/uploadthing",
   "/api/cron",
+  "/auth/reset-password",
 
   // "/api/baskets/active", //why does this need to be public for route to work
   // "/api/baskets/get/unique",

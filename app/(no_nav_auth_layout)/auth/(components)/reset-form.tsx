@@ -45,7 +45,7 @@ export const ResetForm = () => {
   };
 
   return (
-    <CardWrapper backButtonLabel="Back to login" backButtonHref="/auth/login">
+    <CardWrapper backButtonLabel="Back to Login" backButtonHref="/auth/login">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
@@ -71,7 +71,7 @@ export const ResetForm = () => {
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button disabled={isPending} type="submit" className="w-full">
-            Send reset email
+            Send Reset Email
           </Button>
         </form>
       </Form>
