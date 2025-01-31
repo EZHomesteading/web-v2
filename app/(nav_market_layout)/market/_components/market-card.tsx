@@ -292,7 +292,7 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
 
           <div className="flex items-center justify-between mt-2 w-full">
             <div
-              className={`${workFont.className} text-sm flex items-center gap-1`}
+              className={`${WorkFont.className} text-sm flex items-center gap-1`}
             >
               <span className="font-semibold">${listing.price}</span>
               <span className="font-light">per {listing.quantityType}</span>
