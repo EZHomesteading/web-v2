@@ -22,6 +22,8 @@ import { OutfitFont } from "@/components/fonts";
 import { Button } from "@/components/ui/button";
 import { FormSuccess } from "@/components/form-success";
 import { FormError } from "@/components/form-error";
+import axios from "axios";
+import { newPassword } from "@/actions/auth/new-password";
 
 const ResetPasswordPage = () => {
   const params = useSearchParams();
@@ -45,8 +47,14 @@ const ResetPasswordPage = () => {
   });
 
   const onSubmit = () => {
-    setError("");
-    setSuccess("");
+    try {
+      const res = axios.get(
+        `http://localhost:8080/reset-password?token=${token}&password=${newPassword}`
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
