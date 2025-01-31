@@ -46,10 +46,10 @@ const ResetPasswordPage = () => {
     },
   });
 
-  const onSubmit = () => {
+  const onSubmit = async (values: z.infer<typeof ResetPasswordSchema>) => {
     try {
-      const res = axios.get(
-        `http://localhost:8080/reset-password?token=${token}&password=${newPassword}`
+      const res = await axios.get(
+        `http://localhost:8080/reset-password?token=${token}&password=${values.newPassword}`
       );
       console.log(res);
     } catch (error) {

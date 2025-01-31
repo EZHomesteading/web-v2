@@ -18,7 +18,11 @@ import { CardWrapper } from "./login/card-wrapper-login";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
+import axios from "axios";
+import { toast } from "sonner";
+import { OutfitFont } from "@/components/fonts";
 import { reset } from "@/actions/auth/reset";
+import { Outfit } from "next/font/google";
 
 export const ResetForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -32,49 +36,56 @@ export const ResetForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof ResetSchema>) => {
-    setError("");
-    setSuccess("");
-
-    startTransition(() => {
-      reset(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
+  const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/send-pw-reset-email?email=${values.email}`
+      );
+      if (res.status === 200) {
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occured, please try again later", {
+        className: `${OutfitFont.className}`,
+        duration: 5000,
       });
-    });
+    }
   };
 
   return (
-    <CardWrapper backButtonLabel="Back to Login" backButtonHref="/auth/login">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="john.doe@example.com"
-                      type="email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button disabled={isPending} type="submit" className="w-full">
-            Send Reset Email
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+    <div className={`${OutfitFont.className}`}>
+      <CardWrapper backButtonLabel="Back to Login" backButtonHref="/auth/login">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="john.doe@example.com"
+                        type="email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormError message={error} />
+            <FormSuccess message={success} />
+            <Button disabled={isPending} type="submit" className="w-full">
+              Send Reset Email
+            </Button>
+          </form>
+        </Form>
+      </CardWrapper>
+    </div>
   );
 };
