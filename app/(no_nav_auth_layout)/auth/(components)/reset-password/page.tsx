@@ -1,6 +1,5 @@
 "use client";
 
-import { PasswordResetToken } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -23,12 +22,10 @@ import { Button } from "@/components/ui/button";
 import { FormSuccess } from "@/components/form-success";
 import { FormError } from "@/components/form-error";
 import axios from "axios";
-import { newPassword } from "@/actions/auth/new-password";
 
 const ResetPasswordPage = () => {
   const params = useSearchParams();
   const token = params?.get("token");
-  const [fullToken, setFullToken] = useState<PasswordResetToken>();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -47,9 +44,10 @@ const ResetPasswordPage = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof ResetPasswordSchema>) => {
+    const apiUrl = GetApiUrl();
     try {
       const res = await axios.get(
-        `http://localhost:8080/reset-password?token=${token}&password=${values.newPassword}`
+        `${apiUrl}/?token=${token}&password=${values.newPassword}`
       );
       console.log(res);
     } catch (error) {

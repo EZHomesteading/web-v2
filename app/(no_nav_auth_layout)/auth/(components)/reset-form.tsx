@@ -21,8 +21,6 @@ import { FormSuccess } from "@/components/form-success";
 import axios from "axios";
 import { toast } from "sonner";
 import { OutfitFont } from "@/components/fonts";
-import { reset } from "@/actions/auth/reset";
-import { Outfit } from "next/font/google";
 
 export const ResetForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -37,10 +35,9 @@ export const ResetForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
+    const apiUrl = GetApiUrl();
     try {
-      const res = await axios.get(
-        `http://localhost:8080/send-pw-reset-email?email=${values.email}`
-      );
+      const res = await axios.get(`${apiUrl}/?email=${values.email}`);
       if (res.status === 200) {
         toast.success(res.data.message);
       }
