@@ -1,6 +1,7 @@
 import { Location } from "@prisma/client";
 import { RouteTimings } from "./types";
 import {
+  getLocationCloseTime,
   getLocationOpenTime,
   secondsToTimeString,
   timeStringToSeconds,
@@ -298,13 +299,7 @@ const calculateRouteWithArrivalTimings = async (
 
     // Validate time constraints with selected date
     const openTime = getLocationOpenTime(location, selectedDate) * 60;
-    const closeTime = location.hours?.pickup?.find(
-      (slot) =>
-        new Date(slot.date).toISOString().split("T")[0] ===
-        selectedDate.toISOString().split("T")[0]
-    )?.timeSlots[0]?.close
-      ? location.hours?.pickup[0]?.timeSlots[0]?.close * 60
-      : Infinity;
+    const closeTime = getLocationCloseTime(location, selectedDate) * 60;
 
     if (arrivalTime + AVERAGE_STOP_TIME > closeTime) {
       throw {

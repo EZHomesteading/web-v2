@@ -338,13 +338,7 @@ export const calculateRouteWithTimings = async (
 
     const expectedArrival = currentTime + travelTime;
     const openTime = getLocationOpenTime(location, selectedDate) * 60;
-    const closeTime = location.hours?.pickup?.find(
-      (slot) =>
-        new Date(slot.date).toISOString().split("T")[0] ===
-        selectedDate.toISOString().split("T")[0]
-    )?.timeSlots[0]?.close
-      ? location.hours?.pickup[0]?.timeSlots[0]?.close * 60
-      : Infinity;
+    const closeTime = getLocationCloseTime(location, selectedDate) * 60;
 
     const earliestServiceStart = Math.max(
       expectedArrival + BUFFER_TIME,
@@ -505,7 +499,22 @@ export const getLocationOpenTime = (
 
   return targetDeliverySlot.timeSlots[0].open;
 };
+export const getLocationCloseTime = (
+  location: Location,
+  targetDate: Date
+): number => {
+  const dateString = targetDate.toISOString().split("T")[0];
+  const targetDeliverySlot = location.hours?.pickup?.find((slot) => {
+    if (!slot) return false;
+    return new Date(slot.date).toISOString().split("T")[0] === dateString;
+  });
 
+  if (!targetDeliverySlot?.timeSlots?.[0]) {
+    return 0;
+  }
+
+  return targetDeliverySlot.timeSlots[0].close;
+};
 export const isLocationOpen = (
   location: Location,
   timeInSeconds: number,

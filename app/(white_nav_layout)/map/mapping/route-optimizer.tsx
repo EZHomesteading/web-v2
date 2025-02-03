@@ -76,7 +76,7 @@ const RouteOptimizer = ({
   // State Management
   const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
   const [selectedDepartureTime, setSelectedDepartureTime] =
-    useState<Date | null>(initialTime || null);
+    useState<Date>(initialTime);
   const [routeTimings, setRouteTimings] = useState<RouteTimings>({
     segmentTimes: {},
     returnTime: 0,
@@ -318,12 +318,12 @@ const RouteOptimizer = ({
         const isCurrentlyOpen = isLocationOpen(
           location,
           startTime,
-          initialTime
+          selectedDepartureTime
         );
         const willBeOpenOnArrival = isLocationOpen(
           location,
           arrivalTime,
-          initialTime
+          selectedDepartureTime
         );
         const timeUntilClose = closeTime - arrivalTime;
         const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0;
@@ -336,7 +336,7 @@ const RouteOptimizer = ({
         };
       } else {
         statuses[location.id] = {
-          isOpen: isLocationOpen(location, startTime, initialTime),
+          isOpen: isLocationOpen(location, startTime, selectedDepartureTime),
           willBeOpen: true,
           closesSoon: false,
           estimatedArrival: null,
@@ -367,7 +367,7 @@ const RouteOptimizer = ({
           endLocation || startingPoint,
           usePickupOrder,
           targetTimeInSeconds,
-          initialTime
+          selectedDepartureTime
         );
       } else {
         optimizedResult = await optimizeTimeRoute(
@@ -376,7 +376,7 @@ const RouteOptimizer = ({
           endLocation || startingPoint,
           usePickupOrder,
           targetTimeInSeconds,
-          initialTime
+          selectedDepartureTime
         );
       }
 
@@ -475,10 +475,17 @@ const RouteOptimizer = ({
     console.error("Route calculation error:", error);
 
     let errorMessage: React.ReactNode;
-
+    console.log(error.location.hours.pickup);
     if (error.type === "LOCATION_CLOSED") {
-      const openTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.open;
-      const closeTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.close;
+      const currentDate = selectedDepartureTime
+        ? new Date(selectedDepartureTime)
+        : new Date();
+      const matchingSlot = error.location?.hours?.pickup?.find(
+        (slot: any) =>
+          new Date(slot.date).toDateString() === currentDate.toDateString()
+      );
+      const openTime = matchingSlot?.timeSlots?.[0]?.open;
+      const closeTime = matchingSlot?.timeSlots?.[0]?.close;
       const formattedOpen = openTime ? formatTime(openTime) : "N/A";
       const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
 
@@ -488,7 +495,8 @@ const RouteOptimizer = ({
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Cannot route to {error.location?.displayName || "location"}
+            Cannot route to{" "}
+            {error.location?.displayName || error.location.user.name}
           </p>
           <p>
             This location would be closed when we arrive. Their hours are:{" "}
@@ -1132,8 +1140,15 @@ const RouteOptimizer = ({
                   <div className="pl-4">
                     <p className="text-gray-600">{addressSearch}</p>
                     <p className="text-gray-600">
-                      Travel Time from Last Stop:{" "}
-                      {formatDuration(routeTimings.returnTime)}
+                      Travel from Last Stop:{" "}
+                      {metersToMiles(
+                        routeTimings.totalDistance -
+                          Object.values(routeTimings.distanceSegments).reduce(
+                            (sum, d) => sum + d,
+                            0
+                          )
+                      ).toFixed(1)}{" "}
+                      miles - {formatDuration(routeTimings.returnTime)}
                     </p>
                     {routeSegments.length > 0 &&
                       routeSegments[routeSegments.length - 1].departureTime !==
