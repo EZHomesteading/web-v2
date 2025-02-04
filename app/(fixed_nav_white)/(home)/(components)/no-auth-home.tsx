@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import homebg from "@/public/images/website-images/vegetables_bg.webp";
@@ -5,6 +6,9 @@ import homebg3 from "@/public/images/website-images/home-bg-3.jpg";
 import homebg2 from "@/public/images/website-images/farmers-market-home.jpg";
 import { outfitFont } from "@/components/fonts";
 import { PiArrowRightThin } from "react-icons/pi";
+import { useRouter } from "next/navigation";
+import AskZipModal from "./AskZipModal";
+import { useState } from "react";
 const footerNavigation = {
   shop: [
     { name: "More Info", href: "/info" },
@@ -23,14 +27,37 @@ interface Props {
   user: any;
 }
 const Home = ({ user }: Props) => {
+  const router = useRouter();
+  const [isZipModalOpen, setIsZipModalOpen] = useState(false);
+
+  const openAskZipModal = () => setIsZipModalOpen(true);
+
+  const handleFindProduce = () => {
+    if (!user || user.locations.length === 0) {
+      openAskZipModal();
+    } else {
+      router.push(
+        `/market?lat=${user.locations[0].coordinates[1]}&lng=${user.locations[0].coordinates[0]}`
+      );
+    }
+  };
   return (
     <>
       <main className="min-h-screen w-full gradient">
+        <AskZipModal
+          isOpen={isZipModalOpen}
+          onClose={() => setIsZipModalOpen(false)}
+        />
         <div
           className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%]`}
         >
           <section className={`${outfitFont.className}`}>
             <header className="!text-black">
+              <div
+                className={`${outfitFont.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
+              >
+                {!user ? "Welcome" : `Welcome, ${user.name}`}
+              </div>
               <p className="text-lg 2xl:text-3xl font-medium text-black drop-shadow-md">
                 Easily Find
               </p>
@@ -73,8 +100,10 @@ const Home = ({ user }: Props) => {
             </p>
 
             <div className="flex gap-3">
-              <Link
-                href={`/market`}
+              <button
+                onClick={() => {
+                  handleFindProduce();
+                }}
                 className="
                   border 
                   border-white
@@ -100,7 +129,7 @@ const Home = ({ user }: Props) => {
         duration-300
         group-hover:translate-x-2"
                 />
-              </Link>
+              </button>
               <Link
                 href={`${
                   !user
