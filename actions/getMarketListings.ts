@@ -25,7 +25,7 @@ export async function getMarketListings(
     }).toString();
 
     const response = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/get/market?${queryString}`,
+      `${process.env.URL}/api/get/market?${queryString}`,
       {
         next: { revalidate: 60 },
       }

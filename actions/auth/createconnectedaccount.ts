@@ -10,7 +10,7 @@ export async function createStripeConnectedAccount() {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/create-connected-account`,
+    `${process.env.URL}/api/stripe/create-connected-account`,
     {
       method: "POST",
       headers: {

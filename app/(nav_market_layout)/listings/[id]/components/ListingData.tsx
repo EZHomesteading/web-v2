@@ -10,8 +10,9 @@ import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
 import { OutfitFont, ZillaFont } from "@/components/fonts";
 import { useBasket } from "@/hooks/listing/use-basket";
-import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
+import Toast from "@/components/ui/toast";
+import Link from "next/link";
 
 interface ListingInfoProps {
   listingId: string;
@@ -102,7 +103,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     if (stock && quantity < stock) {
       setQuantity(quantity + 1);
     } else {
-      toast.error("Cannot exceed available stock");
+      Toast({ message: "You cannot buy more than the available stock" });
     }
   };
 
@@ -111,14 +112,23 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     if (quantity > minQuantity) {
       setQuantity(quantity - 1);
     } else {
-      toast.error(`Minimum order is ${minQuantity} ${quantityType}`);
+      Toast({
+        type: "error",
+        message: `Minimum order is ${minQuantity} ${quantityType} for this item`,
+      });
     }
   };
 
-  // basket handlers
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
-      toast.error("Please login to add items to your Wish List");
+      Toast({
+        message: "Please sign in to add items to your wish list",
+        details: (
+          <Link href="/auth/login" className={`underline text-sky-200`}>
+            Go to sign in page
+          </Link>
+        ),
+      });
       return;
     }
 
@@ -131,13 +141,13 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         setExistingItem(null);
       }
     } catch (error) {
-      toast.error("Failed to update basket");
+      Toast({ message: "Failed to update basket" });
     }
   };
 
-  const handleTimer = (childTime: Date) => {
-    setSelectedTime(childTime);
-  };
+  // const handleTimer = (childTime: Date) => {
+  //   setSelectedTime(childTime);
+  // };
 
   // Utility function for pluralization
   function pluralizeQuantityType(quantity: number, type: string) {

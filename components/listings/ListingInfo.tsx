@@ -1,7 +1,6 @@
 "use client";
 //listing information component, displays user selling and follow button
 import { useRouter } from "next/navigation";
-import FollowButton from "@/components/follow/followButton";
 import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { UserInfo } from "next-auth";

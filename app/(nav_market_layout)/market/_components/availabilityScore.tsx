@@ -1,3 +1,4 @@
+import { OutfitFont } from "@/components/fonts";
 import { Clock } from "lucide-react";
 
 interface AvailabilityScoreProps {
@@ -19,11 +20,10 @@ interface AvailabilityScoreProps {
 const AvailabilityScore = ({ scores, type }: AvailabilityScoreProps) => {
   const typeScores = scores[type];
 
-  // Get color based on score
   const getColor = (score: number) => {
     switch (score) {
       case 3:
-        return "text-green-500"; // Adjusted to text color
+        return "text-green-500";
       case 2:
         return "text-yellow-500";
       case 1:
@@ -34,14 +34,14 @@ const AvailabilityScore = ({ scores, type }: AvailabilityScoreProps) => {
   };
 
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex items-center justify-between space-x-1">
       <div
         className={`flex items-center text-xs ${getColor(
           typeScores.combinedScore
         )}`}
       >
         <Clock size={14} className="mr-1" />
-        <span className="font-medium capitalize">
+        <span className={`${OutfitFont.className} font-medium`}>
           {type === "pickup" ? "Pickup Availability" : "Delivery Availability"}
         </span>
       </div>
@@ -49,9 +49,9 @@ const AvailabilityScore = ({ scores, type }: AvailabilityScoreProps) => {
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className={`w-1.5 h-1.5 rounded-full ${
+            className={`w-2 h-2 rounded-full ${
               i < typeScores.combinedScore
-                ? getColor(typeScores.combinedScore).replace("text-", "bg-") // Convert text color to background color
+                ? getColor(typeScores.combinedScore).replace("text-", "bg-")
                 : "bg-gray-200"
             }`}
           />

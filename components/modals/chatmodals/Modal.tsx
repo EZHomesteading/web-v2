@@ -51,7 +51,6 @@ const Modal: React.FC<ModalProps> = ({
               min-h-full 
               items-center 
               justify-center 
-              p-4 
               text-center 
               sm:p-0 h-[80%]
             "
@@ -70,10 +69,7 @@ const Modal: React.FC<ModalProps> = ({
     transform 
     overflow-y-auto 
     rounded-lg 
-    px-4 
-    ${!bgWhite ? `bg-green-100` : `bg-white`}
-    pb-4
-    pt-5 
+    bg-white
     text-left 
     shadow-xl 
     transition-all
@@ -83,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({
     flex
     flex-col
     items-center
-    sm:p-6`}
+    p-4 `}
               >
                 {showX && (
                   <div
@@ -106,7 +102,6 @@ const Modal: React.FC<ModalProps> = ({
                       text-gray-400
                       hover:text-gray-500
                
-                      absolute top-1 right-1
                     "
                       onClick={onClose}
                     >

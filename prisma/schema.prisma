@@ -144,11 +144,12 @@ type fullName {
   first String?
   last  String?
 }
-model OrderGroup{
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderids   String[]
-  startLoc   Float[]
-  endLoc     Float[]
+
+model OrderGroup {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderids String[]
+  startLoc Float[]
+  endLoc   Float[]
 }
 
 model Location {
@@ -355,7 +356,7 @@ model RecentlyViewedItem {
 model BasketItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   basketId  String   @db.ObjectId
-  basket    Basket   @relation("BasketToItems",fields: [basketId], references: [id], onDelete: Cascade)
+  basket    Basket   @relation("BasketToItems", fields: [basketId], references: [id], onDelete: Cascade)
   listingId String   @db.ObjectId
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
   quantity  Int      @default(1)
@@ -378,7 +379,7 @@ model Basket {
   locationId   String           @db.ObjectId
   location     Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
   proposedLoc  proposedLoc?
-  items        BasketItem[]     @relation("BasketToItems") 
+  items        BasketItem[]     @relation("BasketToItems")
   pickupDate   DateTime?
   deliveryDate DateTime?
   orderMethod  orderMethod      @default(PICKUP)
@@ -423,11 +424,11 @@ model Order {
   deliveryDate    DateTime?
   paymentIntentId String?
 
-  totalPrice      Float
-  status          OrderStatus         @default(PENDING)
-  items           Json
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  totalPrice  Float
+  status      OrderStatus @default(PENDING)
+  items       Json
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   completedAt DateTime?
 
   fee                 Fees?

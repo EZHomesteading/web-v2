@@ -126,7 +126,6 @@ interface ScoreResult {
 
 const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
   const locHours = listing?.location?.hours;
-  console.log(locHours);
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
   ): ScoreResult {
@@ -227,7 +226,6 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
     const targetHours = targetEnd - targetStart;
 
     timeSlots.forEach((slot) => {
-      // Calculate overlap
       const overlapStart = Math.max(slot.open, targetStart);
       const overlapEnd = Math.min(slot.close, targetEnd);
       if (overlapEnd > overlapStart) {
@@ -235,10 +233,11 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
       }
     });
 
-    return Math.min(1, totalCoverage); // Cap at 1 (100% coverage)
+    return Math.min(1, totalCoverage);
   }
+
   const scores = calculateAvailabilityScores(locHours);
-  console.log(scores);
+
   return (
     <Link
       href={`/listings/${listing.id}`}
@@ -290,9 +289,9 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
             {listing?.location?.address[1]}, {listing?.location?.address[2]}
           </p>
 
-          <div className="flex items-center justify-between mt-2 w-full">
+          <div className="flex items-center justify-between w-full">
             <div
-              className={`${WorkFont.className} text-sm flex items-center gap-1`}
+              className={`${OutfitFont.className} text-sm flex items-center gap-1`}
             >
               <span className="font-semibold">${listing.price}</span>
               <span className="font-light">per {listing.quantityType}</span>

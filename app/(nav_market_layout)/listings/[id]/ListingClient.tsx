@@ -85,7 +85,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             />
           </div>
         </div>
-        <div className="w-full lg:w-1/3 px-4">
+        <div className="w-full lg:w-1/3 sm:px-2 ">
           <ListingData
             hours={listing.location?.hours}
             listingId={adjustedListing.id}
