@@ -22,6 +22,7 @@ import { CardWrapper } from "./card-wrapper-login";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/auth/login";
+import { OutfitFont } from "@/components/fonts";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -67,7 +68,10 @@ export const LoginForm = () => {
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={`space-y-2 ${OutfitFont.className}`}
+        >
           <div className="space-y-4">
             <FormField
               control={form.control}
