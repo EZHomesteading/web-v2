@@ -1,8 +1,10 @@
 import { Location } from "@prisma/client";
 import { RouteTimings } from "./types";
 import {
+  getCurrentTimeInSeconds,
   getLocationCloseTime,
   getLocationOpenTime,
+  hasTimePassed,
   secondsToTimeString,
   timeStringToSeconds,
 } from "./calcoptimal";
@@ -220,6 +222,16 @@ const calculateRouteWithArrivalTimings = async (
   skipStartOptimization: boolean = false,
   adjustForInitialLeg: boolean = false
 ): Promise<RouteResult> => {
+  if (hasTimePassed(targetArrivalTime, selectedDate)) {
+    throw {
+      type: "TIME_PASSED",
+      message: "Target arrival time has already passed",
+      details: {
+        requestedTime: secondsToTimeString(targetArrivalTime),
+        currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+      },
+    };
+  }
   const waypoints = locations.map((loc) => ({
     location: new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0]),
     stopover: true,
@@ -279,6 +291,16 @@ const calculateRouteWithArrivalTimings = async (
     : targetArrivalTime - initialLegTime;
 
   const startTime = effectiveTargetTime - totalDuration;
+  if (hasTimePassed(startTime, selectedDate)) {
+    throw {
+      type: "TIME_PASSED",
+      message: "Required start time has already passed",
+      details: {
+        requestedTime: secondsToTimeString(startTime),
+        currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+      },
+    };
+  }
   let currentTime = startTime;
 
   const segmentTimes: { [key: string]: number } = {};
@@ -296,7 +318,17 @@ const calculateRouteWithArrivalTimings = async (
 
     currentTime += travelTime;
     const arrivalTime = currentTime;
-
+    if (hasTimePassed(arrivalTime, selectedDate)) {
+      throw {
+        type: "TIME_PASSED",
+        message: `Arrival time at ${location.displayName} has already passed`,
+        details: {
+          location,
+          expectedArrival: secondsToTimeString(arrivalTime),
+          currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        },
+      };
+    }
     // Validate time constraints with selected date
     const openTime = getLocationOpenTime(location, selectedDate) * 60;
     const closeTime = getLocationCloseTime(location, selectedDate) * 60;

@@ -16,6 +16,26 @@ interface RouteError {
   message: string;
   details?: unknown;
 }
+export const hasTimePassed = (
+  timeInSeconds: number,
+  selectedDate: Date
+): boolean => {
+  const now = new Date();
+  const timeDate = new Date(selectedDate);
+
+  // Set the hours and minutes from the seconds
+  const hours = Math.floor(timeInSeconds / 3600);
+  const minutes = Math.floor((timeInSeconds % 3600) / 60);
+  timeDate.setHours(hours, minutes, 0, 0);
+
+  return timeDate < now;
+};
+
+// Utility to get current time in seconds
+export const getCurrentTimeInSeconds = (): number => {
+  const now = new Date();
+  return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+};
 
 const AVERAGE_STOP_TIME = 5 * 60;
 const BUFFER_TIME = 5 * 60;
@@ -285,6 +305,16 @@ export const calculateRouteWithTimings = async (
   optimize: boolean = false,
   skipEndOptimization: boolean = false
 ): Promise<RouteResult> => {
+  if (hasTimePassed(departureTime, selectedDate)) {
+    throw {
+      type: "TIME_PASSED",
+      message: "Departure time has already passed",
+      details: {
+        requestedTime: secondsToTimeString(departureTime),
+        currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+      },
+    };
+  }
   const waypoints = locations.map((loc) => ({
     location: new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0]),
     stopover: true,
@@ -337,6 +367,19 @@ export const calculateRouteWithTimings = async (
     const distance = leg.distance?.value || 0;
 
     const expectedArrival = currentTime + travelTime;
+
+    if (hasTimePassed(expectedArrival, selectedDate)) {
+      throw {
+        type: "TIME_PASSED",
+        message: `Arrival time at ${location.displayName} has already passed`,
+        details: {
+          location,
+          expectedArrival: secondsToTimeString(expectedArrival),
+          currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        },
+      };
+    }
+
     const openTime = getLocationOpenTime(location, selectedDate) * 60;
     const closeTime = getLocationCloseTime(location, selectedDate) * 60;
 

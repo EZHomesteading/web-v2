@@ -213,42 +213,6 @@ const RouteOptimizer = ({
     }
   };
 
-  // const validatePickupTime = (
-  //   locationId: string,
-  //   time: string
-  // ): TimeValidation => {
-  //   const location = locations.find((loc) => loc.id === locationId);
-  //   if (!location) return { isValid: false, message: "Location not found" };
-
-  //   const selectedSeconds = timeStringToSeconds(time);
-
-  //   // Check if location is open
-  //   if (!isLocationOpen(location, selectedSeconds)) {
-  //     return {
-  //       isValid: false,
-  //       message: "Location would be closed at this time",
-  //     };
-  //   }
-
-  //   // Check time constraints with adjacent stops
-  //   const locIndex = optimizedRoute.findIndex((loc) => loc.id === locationId);
-  //   if (locIndex > 0) {
-  //     const prevLocation = optimizedRoute[locIndex - 1];
-  //     const prevPickupTime = pickupTimes[prevLocation.id];
-  //     if (prevPickupTime) {
-  //       const prevPickupSeconds = timeStringToSeconds(prevPickupTime);
-  //       const travelTime = routeSegments[locIndex - 1]?.travelTime ?? 0;
-  //       if (selectedSeconds - prevPickupSeconds < travelTime + 600) {
-  //         return {
-  //           isValid: false,
-  //           message: "Insufficient travel time from previous stop",
-  //         };
-  //       }
-  //     }
-  //   }
-
-  //   return { isValid: true, message: "" };
-  // };
   const getLocationStatusColor = (
     location: Location,
     status: LocationStatus
@@ -475,7 +439,7 @@ const RouteOptimizer = ({
     console.error("Route calculation error:", error);
 
     let errorMessage: React.ReactNode;
-    console.log(error.location.hours.pickup);
+
     if (error.type === "LOCATION_CLOSED") {
       const currentDate = selectedDepartureTime
         ? new Date(selectedDepartureTime)
@@ -530,6 +494,23 @@ const RouteOptimizer = ({
           <p className="text-sm text-gray-600">
             Wait time would be {error.details?.waitTime || "N/A"}
           </p>
+        </div>
+      );
+    } else if (error.type === "TIME_PASSED") {
+      errorMessage = (
+        <div className="space-y-2">
+          <p className="text-red-600 font-medium">{error.message}</p>
+          <p className="text-sm text-gray-600">
+            Current Time: {error.details.currentTime}
+          </p>
+          <p className="text-sm text-gray-600">
+            Requested Time: {error.details.requestedTime}
+          </p>
+          {error.details.location && (
+            <p className="text-sm text-gray-600">
+              Location: {error.details.location.displayName}
+            </p>
+          )}
         </div>
       );
     } else {
@@ -900,30 +881,34 @@ const RouteOptimizer = ({
               {useCustomStartLocation && (
                 <div className="space-y-2">
                   <Label>Start Location Address</Label>
-                  <div className="relative" style={{ zIndex: 9999998 }}>
-                    <Autocomplete
-                      onLoad={(autocomplete) => {
-                        startSearchBoxRef.current = autocomplete;
-                      }}
-                      onPlaceChanged={() => {
-                        if (startSearchBoxRef.current) {
-                          const place = startSearchBoxRef.current.getPlace();
-                          onStartPlaceSelected(place);
-                        }
-                      }}
-                      options={{
-                        componentRestrictions: { country: "us" },
-                        fields: ["formatted_address", "geometry", "name"],
-                        types: ["address"],
-                      }}
-                    >
-                      <Input
-                        type="text"
-                        placeholder="Enter start address..."
-                        className="w-full google-maps-input"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Autocomplete>
+                  <div className="relative">
+                    <div className="absolute inset-0" style={{ zIndex: 1000 }}>
+                      <Autocomplete
+                        onLoad={(autocomplete) => {
+                          startSearchBoxRef.current = autocomplete;
+                        }}
+                        onPlaceChanged={() => {
+                          if (startSearchBoxRef.current) {
+                            const place = startSearchBoxRef.current.getPlace();
+                            onStartPlaceSelected(place);
+                          }
+                        }}
+                        options={{
+                          componentRestrictions: { country: "us" },
+                          fields: ["formatted_address", "geometry", "name"],
+                          types: ["address"],
+                        }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Enter start address..."
+                          className="w-full"
+                          style={{ position: "relative", zIndex: 1000 }}
+                        />
+                      </Autocomplete>
+                    </div>
+                    <div style={{ height: "40px" }}></div>{" "}
+                    {/* Spacer to maintain layout */}
                   </div>
                 </div>
               )}
@@ -950,10 +935,10 @@ const RouteOptimizer = ({
               </label>
 
               {useCustomEndLocation && (
-                <div className="autocomplete-wrapper">
+                <div className="space-y-2">
                   <Label>End Location Address</Label>
-                  <div className="relative isolate">
-                    <div className="relative" style={{ zIndex: 9999998 }}>
+                  <div className="relative">
+                    <div className="absolute inset-0" style={{ zIndex: 1000 }}>
                       <Autocomplete
                         onLoad={(autocomplete) => {
                           endSearchBoxRef.current = autocomplete;
@@ -974,9 +959,12 @@ const RouteOptimizer = ({
                           type="text"
                           placeholder="Enter end address..."
                           className="w-full"
+                          style={{ position: "relative", zIndex: 1000 }}
                         />
                       </Autocomplete>
                     </div>
+                    <div style={{ height: "40px" }}></div>{" "}
+                    {/* Spacer to maintain layout */}
                   </div>
                 </div>
               )}
