@@ -1,6 +1,6 @@
 //dashboard layout parent element
 import { getNavUser, NavUser } from "@/actions/getUser";
-import Navbar from "@/components/navbar/Navbar";
+import Navbar from "@/components/navbar/navbar";
 import { Viewport } from "next";
 
 export const viewport: Viewport = {
