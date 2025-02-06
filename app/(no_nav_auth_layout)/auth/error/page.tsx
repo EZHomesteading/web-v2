@@ -1,5 +1,5 @@
 //server layout for auth error
-import { CardWrapper } from "../(components)/login/card-wrapper-login";
+import { CardWrapper } from "../(components)/login/auth-card-wrapper";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 const AuthErrorPage = () => {

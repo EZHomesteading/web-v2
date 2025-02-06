@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { CardWrapper } from "./card-wrapper-login";
+import { CardWrapper } from "./auth-card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/auth/login";
@@ -70,7 +70,7 @@ export const LoginForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={`space-y-2 ${OutfitFont.className}`}
+          className={`${OutfitFont.className}`}
         >
           <div className="space-y-4">
             <FormField
@@ -85,7 +85,6 @@ export const LoginForm = () => {
                       disabled={isPending}
                       placeholder="johnnyappleseed@gmail.com"
                       type="text"
-                      className="font-light"
                     />
                   </FormControl>
                   <FormMessage />
@@ -104,7 +103,6 @@ export const LoginForm = () => {
                       disabled={isPending}
                       placeholder="******"
                       type="password"
-                      className="font-light"
                     />
                   </FormControl>
                   <Button
@@ -122,7 +120,7 @@ export const LoginForm = () => {
           </div>
           <FormError message={error || urlError} />
           <FormSuccess message={success} />
-          <Button disabled={isPending} type="submit" className="w-full">
+          <Button disabled={isPending} type="submit" className={`w-full mt-2`}>
             {showTwoFactor ? "Confirm" : "Login"}
           </Button>
         </form>

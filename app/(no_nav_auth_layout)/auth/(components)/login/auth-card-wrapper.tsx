@@ -67,11 +67,7 @@ export const CardWrapper = ({
       </div>
       <Card className="relative rounded-xl d1dbbf shadow-md border-2 border-black w-full bg-inherit min-w-[320px] ">
         <CardContent className={`pb-3 pt-6`}>{children}</CardContent>
-        {showSocial && (
-          <CardFooter>
-            <Social />
-          </CardFooter>
-        )}
+        <CardFooter>{showSocial && <Social />}</CardFooter>
         <CardFooter>
           <BackButton label={backButtonLabel} href={backButtonHref} />
         </CardFooter>

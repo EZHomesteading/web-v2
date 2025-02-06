@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CardWrapper } from "../login/card-wrapper-login";
+import { CardWrapper } from "../login/auth-card-wrapper";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
@@ -89,7 +89,7 @@ const RegisterForm = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-2 flex flex-col items-center"
+              className="flex flex-col items-center"
             >
               {!showFullForm ? (
                 <>
@@ -103,7 +103,7 @@ const RegisterForm = () => {
                           <Input
                             {...field}
                             disabled={isPending}
-                            placeholder="john.doe@example.com"
+                            placeholder="johnnyappleseed@gmail.com"
                             type="email"
                             className={`w-full `}
                           />
@@ -115,12 +115,12 @@ const RegisterForm = () => {
 
                   <Button
                     type="button"
-                    className={`${OutfitFont.className} w-[280px] sm:w-[350px]`}
+                    className={`mt-4 w-[280px] sm:w-[350px]`}
                     onClick={handleContinueWithEmail}
                   >
                     Continue with Email
                   </Button>
-                  <div className={`${OutfitFont.className}`}>OR</div>
+                  <div className={`${OutfitFont.className} pt-3`}>OR</div>
                 </>
               ) : (
                 <>

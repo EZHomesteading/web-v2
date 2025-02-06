@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { CardWrapper } from "../login/card-wrapper-login";
+import { CardWrapper } from "../login/auth-card-wrapper";
 import {
   Form,
   FormControl,
