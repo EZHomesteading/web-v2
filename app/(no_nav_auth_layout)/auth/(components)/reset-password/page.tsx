@@ -124,34 +124,17 @@
 // export default ResetPasswordPage;
 "use client";
 //reset account form
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { useEffect, useState, useTransition } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ResetPasswordSchema, ResetSchema } from "@/schemas";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
 import axios from "axios";
-import { toast } from "sonner";
 import { OutfitFont } from "@/components/fonts";
 import { GetApiUrl } from "@/utils/get-url";
 import Toast from "@/components/ui/toast";
 import { CardWrapper } from "../login/auth-card-wrapper";
 import { useSearchParams } from "next/navigation";
-import PasswordInput from "../register/password-input";
 import { Label } from "@/components/ui/label";
 import { PiEye, PiEyeClosedThin } from "react-icons/pi";
 import Link from "next/link";
+import { useState } from "react";
 
 export const ResetForm = () => {
   const searchParams = useSearchParams();
