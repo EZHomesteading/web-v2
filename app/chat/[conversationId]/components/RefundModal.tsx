@@ -7,7 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
-import { toast } from "react-hot-toast";
+import Toast from "@/components/ui/toast";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
@@ -54,7 +54,7 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
         onClose();
         router.refresh();
       })
-      .catch(() => toast.error("Something went wrong!"))
+      .catch(() => Toast({ message: "Something went wrong!" }))
       .finally(() => setIsLoading(false));
   }, [router, orderId, onClose]);
 
