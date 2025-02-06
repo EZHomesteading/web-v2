@@ -299,7 +299,9 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
                 className={`${workFont.className} text-sm flex items-center gap-1`}
               >
                 <span className="font-semibold">${listing.price}</span>
-                <span className="font-light">per {listing.quantityType}</span>
+                <span className="font-light">
+                  per {listing.quantityType ? listing.quantityType : "item"}
+                </span>
               </div>
 
               <StarRating

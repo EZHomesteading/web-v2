@@ -47,7 +47,7 @@ const CartToggle: React.FC<CartToggleProps> = ({
   initialQuantity = 1,
   stock,
   minOrder,
-  quantityType = "item",
+  quantityType,
   price,
   onCartUpdate,
 }) => {
