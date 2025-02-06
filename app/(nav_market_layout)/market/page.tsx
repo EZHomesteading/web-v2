@@ -40,7 +40,6 @@ const ShopPage = async ({
 }) => {
   const page = Math.max(1, parseInt(searchParams?.page ?? "1"));
   const perPage = 36;
-
   const response = await getMarketListings(searchParams, page, perPage);
 
   const { listings = [], totalItems = 0 } = response || {};

@@ -4,3 +4,4 @@ function GetApiUrl() {
   }
   return "http://localhost:8080";
 }
+export { GetApiUrl };

@@ -21,6 +21,8 @@ import { FormSuccess } from "@/components/form-success";
 import axios from "axios";
 import { toast } from "sonner";
 import { OutfitFont } from "@/components/fonts";
+import { GetApiUrl } from "@/utils/get-url";
+import Toast from "@/components/ui/toast";
 
 export const ResetForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -37,10 +39,10 @@ export const ResetForm = () => {
   const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
     const apiUrl = GetApiUrl();
     try {
-      const res = await axios.get(`${apiUrl}/?email=${values.email}`);
-      if (res.status === 200) {
-        toast.success(res.data.message);
-      }
+      const res = await axios.get(
+        `${apiUrl}/send-pw-reset-email?email=${values.email}`
+      );
+      Toast({ message: res.data.message });
     } catch (error) {
       console.error(error);
       toast.error("An error occured, please try again later", {
