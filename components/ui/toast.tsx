@@ -9,6 +9,8 @@ interface ToastProps {
   icon?: ReactNode;
   subtitleClassName?: string;
   messageClassName?: string;
+  duration?: number;
+  iconClassName?: string;
 }
 
 const Toast = ({
@@ -18,10 +20,12 @@ const Toast = ({
   icon,
   messageClassName,
   subtitleClassName,
+  duration = 4000,
+  iconClassName,
 }: ToastProps) => {
   const toastContent = (
     <div className={`${OutfitFont.className} flex items-center gap-2`}>
-      {icon && <span className="icon">{icon}</span>}
+      {icon && <span className={`${iconClassName}`}>{icon}</span>}
       <div>
         <p className={`${messageClassName}`}>{message}</p>
         {details && (
@@ -35,16 +39,16 @@ const Toast = ({
 
   switch (type) {
     case "success":
-      toast.success(toastContent, { duration: 4000 });
+      toast.success(toastContent, { duration: duration });
       break;
     case "info":
-      toast.info(toastContent, { duration: 4000 });
+      toast.info(toastContent, { duration: duration });
       break;
     case "warning":
-      toast.warning(toastContent, { duration: 4000 });
+      toast.warning(toastContent, { duration: duration });
       break;
     default:
-      toast.error(toastContent, { duration: 4000 });
+      toast.error(toastContent, { duration: duration });
       break;
   }
 };

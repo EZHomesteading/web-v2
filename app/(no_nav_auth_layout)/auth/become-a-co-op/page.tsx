@@ -2,7 +2,7 @@
 import { BecomeCoop } from "@/app/(no_nav_auth_layout)/auth/(components)/become/become-co-op-form";
 import { currentUser } from "@/lib/auth";
 import { createStripeConnectedAccount } from "@/actions/auth/createConnectedAccount";
-import axios from "axios";
+
 export const metadata = {
   title: "Become an EZH Co-op",
   description:
@@ -26,18 +26,15 @@ export const metadata = {
     type: "website",
   },
 };
+
 const BecomeCoopPage = async () => {
   const user = await currentUser();
 
   return (
-    <>
-      <main>
-        <BecomeCoop
-          user={user}
-          createStripeConnectedAccount={createStripeConnectedAccount}
-        />
-      </main>
-    </>
+    <BecomeCoop
+      user={user}
+      createStripeConnectedAccount={createStripeConnectedAccount}
+    />
   );
 };
 

@@ -6,7 +6,7 @@ import { createStripeConnectedAccount } from "@/actions/auth/createConnectedAcco
 export const metadata = {
   title: "Become an EZH Co-op",
   description:
-    "Become an EZH Co-op to operate a Virtual Farmer's Market Store from anywhere. Sell your excess fresh and honestly organic produce you would otherwise be forced to throw away, can, or give away or buy produce from EZH Producers near you to sell to a community of EZH buyers.",
+    "Become an EZH Producer to operate a Virtual Farmer's Market Store from anywhere. Sell your excess fresh and honestly organic produce you would otherwise be forced to throw away, can, or give away or buy produce from EZH Producers near you to sell to a community of EZH buyers.",
   keywords: [
     "registration",
     "seller",
@@ -20,22 +20,19 @@ export const metadata = {
   openGraph: {
     title: "Become an EZH Co-op",
     description:
-      "Become an EZH Co-op to operate a Virtual Farmer's Market Store from anywhere. Sell your excess fresh and honestly organic produce you would otherwise be forced to throw away, can, or give away or buy produce from EZH Producers near you to sell to a community of EZH buyers.",
+      "Become an EZH Producer to operate a Virtual Farmer's Market Store from anywhere. Sell your excess fresh and honestly organic produce you would otherwise be forced to throw away, can, or give away or buy produce from EZH Producers near you to sell to a community of EZH buyers.",
     url: "https://www.ezhomesteading.com/auth/become-a-co-op",
     type: "website",
   },
 };
+
 const BecomeProducerPage = async () => {
   const user = await currentUser();
   return (
-    <>
-      <main>
-        <BecomeProducer
-          user={user}
-          createStripeConnectedAccount={createStripeConnectedAccount}
-        />
-      </main>
-    </>
+    <BecomeProducer
+      user={user}
+      createStripeConnectedAccount={createStripeConnectedAccount}
+    />
   );
 };
 
