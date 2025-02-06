@@ -11,9 +11,9 @@ import {
 import Modal from "@/components/modals/chatmodals/HarvestModal";
 import Button from "@/components/modals/chatmodals/Button";
 import axios from "axios";
-import { toast } from "sonner";
 import { Listing } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Toast from "@/components/ui/toast";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
@@ -60,7 +60,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
         stock: listing?.projectedStock,
       });
 
-      toast.success("Your Listing was Updated!");
+      Toast({ message: "Your listing was updated." });
 
       if (messagesLength === 1) {
         await axios.delete(`/api/chat/conversations/${conversationId}`);
@@ -69,7 +69,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
       }
     } catch (error: any) {
       console.error("Error:", error);
-      toast.error(error.response?.data?.message || "An error occurred");
+      Toast({ message: error.response?.data?.message || "An error occurred" });
     } finally {
       if (messagesLength === 1) {
         setIsLoading(false);
@@ -95,7 +95,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
         stock: listing?.projectedStock,
       });
 
-      toast.success("Your Listing was Updated!");
+      Toast({ message: "Your listing was updated." });
 
       if (messagesLength === 1) {
         await axios.delete(`/api/chat/conversations/${conversationId}`);
@@ -103,7 +103,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
         await axios.delete(`/api/chat/messages/${messageId}`);
       }
     } catch (error: any) {
-      toast.error(error);
+      Toast({ message: error });
     } finally {
       if (messagesLength === 1) {
         setIsLoading(false);
@@ -154,7 +154,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
         stock: 0,
       });
 
-      toast.success("Your Listing was Updated!");
+      Toast({ message: "Your listing was updated." });
 
       if (messagesLength === 1) {
         await axios.delete(`/api/chat/conversations/${conversationId}`);
@@ -162,7 +162,7 @@ const HarvestModal: React.FC<ConfirmModalProps> = ({
         await axios.delete(`/api/chat/messages/${messageId}`);
       }
     } catch (error: any) {
-      toast.error(error);
+      Toast({ message: error });
     } finally {
       if (messagesLength === 1) {
         setIsLoading(false);
