@@ -6,7 +6,7 @@ import { Viewport } from "next";
 export const viewport: Viewport = {
   themeColor: "#fff",
 };
-
+// test
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
