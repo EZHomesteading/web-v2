@@ -7,9 +7,8 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
-import { toast } from "react-hot-toast";
-import { Order } from "@prisma/client";
 import { ChatOrder } from "chat-types";
+import Toast from "@/components/ui/toast";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
@@ -41,13 +40,15 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   const onDelete = async () => {
     //early return if the user ahs not entered a message, tell the user why
     if (text === "") {
-      toast.error("no message entered");
+      Toast({ message: "No message entered" });
       return;
     }
+
     setIsLoading(true);
     axios.post("/api/stripe/refund-payment", {
       paymentId: order?.paymentIntentId,
     });
+
     if (isSeller === true) {
       axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
