@@ -69,7 +69,6 @@ export const CardWrapper = ({
         <CardContent className={`pb-3 pt-6`}>{children}</CardContent>
         {showSocial && (
           <CardFooter>
-            {" "}
             <Social />
           </CardFooter>
         )}
