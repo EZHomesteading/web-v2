@@ -76,7 +76,7 @@ const RouteOptimizer = ({
   // State Management
   const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
   const [selectedDepartureTime, setSelectedDepartureTime] =
-    useState<Date | null>(initialTime || null);
+    useState<Date>(initialTime);
   const [routeTimings, setRouteTimings] = useState<RouteTimings>({
     segmentTimes: {},
     returnTime: 0,
@@ -213,42 +213,6 @@ const RouteOptimizer = ({
     }
   };
 
-  // const validatePickupTime = (
-  //   locationId: string,
-  //   time: string
-  // ): TimeValidation => {
-  //   const location = locations.find((loc) => loc.id === locationId);
-  //   if (!location) return { isValid: false, message: "Location not found" };
-
-  //   const selectedSeconds = timeStringToSeconds(time);
-
-  //   // Check if location is open
-  //   if (!isLocationOpen(location, selectedSeconds)) {
-  //     return {
-  //       isValid: false,
-  //       message: "Location would be closed at this time",
-  //     };
-  //   }
-
-  //   // Check time constraints with adjacent stops
-  //   const locIndex = optimizedRoute.findIndex((loc) => loc.id === locationId);
-  //   if (locIndex > 0) {
-  //     const prevLocation = optimizedRoute[locIndex - 1];
-  //     const prevPickupTime = pickupTimes[prevLocation.id];
-  //     if (prevPickupTime) {
-  //       const prevPickupSeconds = timeStringToSeconds(prevPickupTime);
-  //       const travelTime = routeSegments[locIndex - 1]?.travelTime ?? 0;
-  //       if (selectedSeconds - prevPickupSeconds < travelTime + 600) {
-  //         return {
-  //           isValid: false,
-  //           message: "Insufficient travel time from previous stop",
-  //         };
-  //       }
-  //     }
-  //   }
-
-  //   return { isValid: true, message: "" };
-  // };
   const getLocationStatusColor = (
     location: Location,
     status: LocationStatus
@@ -315,8 +279,16 @@ const RouteOptimizer = ({
           ? nextAvailableSlot.timeSlots[0].close * 60
           : 0;
 
-        const isCurrentlyOpen = isLocationOpen(location, startTime);
-        const willBeOpenOnArrival = isLocationOpen(location, arrivalTime);
+        const isCurrentlyOpen = isLocationOpen(
+          location,
+          startTime,
+          selectedDepartureTime
+        );
+        const willBeOpenOnArrival = isLocationOpen(
+          location,
+          arrivalTime,
+          selectedDepartureTime
+        );
         const timeUntilClose = closeTime - arrivalTime;
         const closesSoon = timeUntilClose <= 1800 && timeUntilClose > 0;
 
@@ -328,7 +300,7 @@ const RouteOptimizer = ({
         };
       } else {
         statuses[location.id] = {
-          isOpen: isLocationOpen(location, startTime),
+          isOpen: isLocationOpen(location, startTime, selectedDepartureTime),
           willBeOpen: true,
           closesSoon: false,
           estimatedArrival: null,
@@ -358,7 +330,8 @@ const RouteOptimizer = ({
           usePickupOrder ? orderedLocations : locations,
           endLocation || startingPoint,
           usePickupOrder,
-          targetTimeInSeconds
+          targetTimeInSeconds,
+          selectedDepartureTime
         );
       } else {
         optimizedResult = await optimizeTimeRoute(
@@ -366,7 +339,8 @@ const RouteOptimizer = ({
           usePickupOrder ? orderedLocations : locations,
           endLocation || startingPoint,
           usePickupOrder,
-          targetTimeInSeconds
+          targetTimeInSeconds,
+          selectedDepartureTime
         );
       }
 
@@ -460,80 +434,22 @@ const RouteOptimizer = ({
       handleRouteError(error);
     }
   };
-  const calculateRouteOld = async () => {
-    const startingPoint = startLocation;
-    if (!startingPoint || locations.length === 0) return;
-    clearMap();
 
-    try {
-      // Calculate start time based on selected departure time or current time + buffer
-      const now = selectedDepartureTime || new Date();
-      const startTime = selectedDepartureTime
-        ? (selectedDepartureTime.getHours() * 60 +
-            selectedDepartureTime.getMinutes()) *
-          60
-        : (now.getHours() * 60 + now.getMinutes()) * 60 + MIN_DEPARTURE_BUFFER;
-
-      const optimizedResult = await optimizeTimeRoute(
-        startingPoint,
-        usePickupOrder ? orderedLocations : locations,
-        endLocation || startingPoint,
-        usePickupOrder,
-        startTime
-      );
-
-      setOptimizedRoute(optimizedResult.route);
-      setRouteTimings(optimizedResult.timings);
-
-      // Update this line to use the same startTime
-      let currentTime = startTime; // Remove the buffer calculation here
-      const segments: RouteSegment[] = [];
-
-      optimizedResult.route.forEach((location, index) => {
-        const travelTime = optimizedResult.timings.segmentTimes[location.id];
-        const distance = optimizedResult.timings.distanceSegments[location.id];
-
-        const arrivalTime = currentTime + travelTime;
-        const pickupTime = pickupTimes[location.id]
-          ? timeStringToSeconds(pickupTimes[location.id])
-          : arrivalTime + BUFFER_TIME;
-        const waitTime = Math.max(0, pickupTime - (arrivalTime + BUFFER_TIME));
-        const departureTime = pickupTime + AVERAGE_STOP_TIME;
-
-        segments.push({
-          location,
-          arrivalTime,
-          pickupTime,
-          departureTime,
-          travelTime,
-          distance,
-          waitTime,
-        });
-
-        currentTime = departureTime;
-      });
-
-      setRouteSegments(segments);
-
-      // Update location statuses based on the calculated route
-      const newStatuses = updateLocationStatuses(
-        locations,
-        segments,
-        startTime
-      );
-      setLocationStatuses(newStatuses);
-    } catch (error) {
-      handleRouteError(error);
-    }
-  };
   const handleRouteError = (error: any) => {
     console.error("Route calculation error:", error);
 
     let errorMessage: React.ReactNode;
 
     if (error.type === "LOCATION_CLOSED") {
-      const openTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.open;
-      const closeTime = error.location?.hours?.pickup[0]?.timeSlots[0]?.close;
+      const currentDate = selectedDepartureTime
+        ? new Date(selectedDepartureTime)
+        : new Date();
+      const matchingSlot = error.location?.hours?.pickup?.find(
+        (slot: any) =>
+          new Date(slot.date).toDateString() === currentDate.toDateString()
+      );
+      const openTime = matchingSlot?.timeSlots?.[0]?.open;
+      const closeTime = matchingSlot?.timeSlots?.[0]?.close;
       const formattedOpen = openTime ? formatTime(openTime) : "N/A";
       const formattedClose = closeTime ? formatTime(closeTime) : "N/A";
 
@@ -543,7 +459,8 @@ const RouteOptimizer = ({
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">
-            Cannot route to {error.location?.displayName || "location"}
+            Cannot route to{" "}
+            {error.location?.displayName || error.location.user.name}
           </p>
           <p>
             This location would be closed when we arrive. Their hours are:{" "}
@@ -577,6 +494,23 @@ const RouteOptimizer = ({
           <p className="text-sm text-gray-600">
             Wait time would be {error.details?.waitTime || "N/A"}
           </p>
+        </div>
+      );
+    } else if (error.type === "TIME_PASSED") {
+      errorMessage = (
+        <div className="space-y-2">
+          <p className="text-red-600 font-medium">{error.message}</p>
+          <p className="text-sm text-gray-600">
+            Current Time: {error.details.currentTime}
+          </p>
+          <p className="text-sm text-gray-600">
+            Requested Time: {error.details.requestedTime}
+          </p>
+          {error.details.location && (
+            <p className="text-sm text-gray-600">
+              Location: {error.details.location.displayName}
+            </p>
+          )}
         </div>
       );
     } else {
@@ -947,30 +881,34 @@ const RouteOptimizer = ({
               {useCustomStartLocation && (
                 <div className="space-y-2">
                   <Label>Start Location Address</Label>
-                  <div className="relative" style={{ zIndex: 9999998 }}>
-                    <Autocomplete
-                      onLoad={(autocomplete) => {
-                        startSearchBoxRef.current = autocomplete;
-                      }}
-                      onPlaceChanged={() => {
-                        if (startSearchBoxRef.current) {
-                          const place = startSearchBoxRef.current.getPlace();
-                          onStartPlaceSelected(place);
-                        }
-                      }}
-                      options={{
-                        componentRestrictions: { country: "us" },
-                        fields: ["formatted_address", "geometry", "name"],
-                        types: ["address"],
-                      }}
-                    >
-                      <Input
-                        type="text"
-                        placeholder="Enter start address..."
-                        className="w-full google-maps-input"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Autocomplete>
+                  <div className="relative">
+                    <div className="absolute inset-0" style={{ zIndex: 1000 }}>
+                      <Autocomplete
+                        onLoad={(autocomplete) => {
+                          startSearchBoxRef.current = autocomplete;
+                        }}
+                        onPlaceChanged={() => {
+                          if (startSearchBoxRef.current) {
+                            const place = startSearchBoxRef.current.getPlace();
+                            onStartPlaceSelected(place);
+                          }
+                        }}
+                        options={{
+                          componentRestrictions: { country: "us" },
+                          fields: ["formatted_address", "geometry", "name"],
+                          types: ["address"],
+                        }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Enter start address..."
+                          className="w-full"
+                          style={{ position: "relative", zIndex: 1000 }}
+                        />
+                      </Autocomplete>
+                    </div>
+                    <div style={{ height: "40px" }}></div>{" "}
+                    {/* Spacer to maintain layout */}
                   </div>
                 </div>
               )}
@@ -997,10 +935,10 @@ const RouteOptimizer = ({
               </label>
 
               {useCustomEndLocation && (
-                <div className="autocomplete-wrapper">
+                <div className="space-y-2">
                   <Label>End Location Address</Label>
-                  <div className="relative isolate">
-                    <div className="relative" style={{ zIndex: 9999998 }}>
+                  <div className="relative">
+                    <div className="absolute inset-0" style={{ zIndex: 1000 }}>
                       <Autocomplete
                         onLoad={(autocomplete) => {
                           endSearchBoxRef.current = autocomplete;
@@ -1021,9 +959,12 @@ const RouteOptimizer = ({
                           type="text"
                           placeholder="Enter end address..."
                           className="w-full"
+                          style={{ position: "relative", zIndex: 1000 }}
                         />
                       </Autocomplete>
                     </div>
+                    <div style={{ height: "40px" }}></div>{" "}
+                    {/* Spacer to maintain layout */}
                   </div>
                 </div>
               )}
@@ -1187,8 +1128,15 @@ const RouteOptimizer = ({
                   <div className="pl-4">
                     <p className="text-gray-600">{addressSearch}</p>
                     <p className="text-gray-600">
-                      Travel Time from Last Stop:{" "}
-                      {formatDuration(routeTimings.returnTime)}
+                      Travel from Last Stop:{" "}
+                      {metersToMiles(
+                        routeTimings.totalDistance -
+                          Object.values(routeTimings.distanceSegments).reduce(
+                            (sum, d) => sum + d,
+                            0
+                          )
+                      ).toFixed(1)}{" "}
+                      miles - {formatDuration(routeTimings.returnTime)}
                     </p>
                     {routeSegments.length > 0 &&
                       routeSegments[routeSegments.length - 1].departureTime !==

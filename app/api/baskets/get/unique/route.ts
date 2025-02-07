@@ -82,7 +82,23 @@ export async function GET(
         },
       },
     });
+    if (fullBasketGroup?.location?.hours) {
+      const hours = fullBasketGroup.location.hours as any;
 
+      if (hours.pickup) {
+        hours.pickup.sort(
+          (a: any, b: any) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+      }
+
+      if (hours.delivery) {
+        hours.delivery.sort(
+          (a: any, b: any) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+      }
+    }
     return NextResponse.json(fullBasketGroup);
   } catch (error) {
     return NextResponse.json(

@@ -44,13 +44,12 @@ const WeeklyHours: React.FC<WeeklyHoursProps> = ({ location, mode }) => {
 
   const getWeekDates = (offset: number): Date[] => {
     const today = new Date();
-    const currentDay = today.getDay();
-    const firstDayOfWeek = new Date(today);
-    firstDayOfWeek.setDate(today.getDate() - currentDay + offset * 7);
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() + offset * 7);
 
     return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(firstDayOfWeek);
-      date.setDate(firstDayOfWeek.getDate() + i);
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
       return date;
     });
   };

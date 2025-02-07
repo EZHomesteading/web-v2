@@ -64,7 +64,7 @@ const ListingMap = ({ location, apiKey }: MapProps) => {
       });
     };
 
-    initMap(11);
+    initMap(9);
 
     return null;
   }

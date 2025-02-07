@@ -44,7 +44,7 @@ const ShopPage = async ({
   const response = await getMarketListings(searchParams, page, perPage);
 
   const { listings = [], totalItems = 0 } = response || {};
-
+  console.log(listings);
   let user = await getCurrentUser();
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;

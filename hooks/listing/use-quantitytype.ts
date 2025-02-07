@@ -39,8 +39,12 @@ const quantityTypes = [
     quantityType: "dozen",
   },
   {
+    quantityType: "bulb",
+  },
+  {
     quantityType: "each",
   },
+
   {
     quantityType: "none",
   },

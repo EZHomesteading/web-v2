@@ -1,7 +1,5 @@
 //server side page layout for the homepage
-import Home from "@/app/(fixed_nav_white)/(home)/(components)/consumer-home";
-import CoopHome from "./coop-home";
-import ProducerHome from "./proucer-home";
+
 import { UserRole } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -40,19 +38,15 @@ const HomePage = async () => {
   }
   return (
     <>
-      {/* {user ? (
-        user?.role == UserRole.COOP ? (
-          <CoopHome user={user} canReceivePayouts={canReceivePayouts} />
-        ) : user?.role == UserRole.PRODUCER ? (
-          <ProducerHome user={user} canReceivePayouts={canReceivePayouts} />
-        ) : user?.role == UserRole.ADMIN ? (
+      {user ? (
+        user?.role == UserRole.ADMIN ? (
           <AdminHome user={user} />
         ) : (
-          <NoAuthHome />
+          <NoAuthHome user={fullUser} />
         )
-      ) : ( */}
-      <NoAuthHome user={fullUser} />
-      {/* )} */}
+      ) : (
+        <NoAuthHome user={fullUser} />
+      )}
     </>
   );
 };

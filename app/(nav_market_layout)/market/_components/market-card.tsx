@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import {
   Carousel,
@@ -9,6 +10,8 @@ import { outfitFont, workFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
 import AvailabilityScore from "./availabilityScore";
+import CartToggle from "./carttoggle";
+import { Clock } from "lucide-react";
 
 interface ListingCardProps {
   listing: MarketListing;
@@ -117,9 +120,14 @@ interface ScoreResult {
   };
 }
 
-const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
+const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
+  const handleCartUpdate = (inCart: boolean, quantity: number) => {
+    console.log(
+      `Cart updated: ${inCart ? "Added" : "Removed"} ${quantity} items`
+    );
+  };
   const locHours = listing?.location?.hours;
-  console.log(locHours);
+  //console.log(locHours);
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
   ): ScoreResult {
@@ -231,80 +239,115 @@ const MarketCard = ({ listing, imageCount }: ListingCardProps) => {
     return Math.min(1, totalCoverage); // Cap at 1 (100% coverage)
   }
   const scores = calculateAvailabilityScores(locHours);
-  console.log(scores);
+  // console.log(scores);
   return (
-    <Link
-      href={`/listings/${listing.id}`}
-      prefetch={true}
-      className="block w-full cursor-pointer group mx-auto !z-0"
-    >
-      <div className="flex flex-col relative w-full z-0">
-        <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
-          <Carousel className="h-full w-full relative rounded-lg z-0">
-            <CarouselContent className="h-full z-0">
-              {listing.imageSrc.map((src, index) => (
-                <CarouselItem
-                  key={index}
-                  className="flex items-center justify-center relative aspect-square h-full"
-                >
-                  <Image
-                    src={src}
-                    alt={`Image ${index + 1} of ${listing.title}`}
-                    loading={imageCount++ < 9 ? "eager" : "lazy"}
-                    fill
-                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
-                    sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
-                    placeholder="blur"
-                    blurDataURL="/images/website-images/grey.jpg"
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {listing.imageSrc.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {listing.imageSrc.map((_, index) => (
-                  <div
+    <div>
+      <Link
+        href={`/listings/${listing.id}`}
+        prefetch={true}
+        className="block w-full cursor-pointer group mx-auto !z-0"
+      >
+        <div className="flex flex-col relative w-full z-0">
+          <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
+            <Carousel className="h-full w-full relative rounded-lg z-0">
+              <CarouselContent className="h-full z-0">
+                {listing.imageSrc.map((src, index) => (
+                  <CarouselItem
                     key={index}
-                    className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
-                  />
+                    className="flex items-center justify-center relative aspect-square h-full"
+                  >
+                    <Image
+                      src={src}
+                      alt={`Image ${index + 1} of ${listing.title}`}
+                      loading={imageCount++ < 9 ? "eager" : "lazy"}
+                      fill
+                      className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
+                      sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
+                      placeholder="blur"
+                      blurDataURL="/images/website-images/grey.jpg"
+                    />
+                  </CarouselItem>
                 ))}
-              </div>
-            )}
-          </Carousel>
-        </div>
-        <div className="mt-2 w-full">
-          <h3 className={`${outfitFont.className} text-lg font-semibold`}>
-            {listing.title}
-          </h3>
-
-          <p
-            className={`${workFont.className} text-xs font-light text-neutral-500`}
-          >
-            {listing?.location?.address[1]}, {listing?.location?.address[2]}
-          </p>
-
-          <div className="flex items-center justify-between mt-2 w-full">
-            <div
-              className={`${workFont.className} text-sm flex items-center gap-1`}
+              </CarouselContent>
+              {listing.imageSrc.length > 1 && (
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {listing.imageSrc.map((_, index) => (
+                    <div
+                      key={index}
+                      className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                    />
+                  ))}
+                </div>
+              )}
+            </Carousel>
+          </div>
+          <div className="mt-2 w-full">
+            <h3 className={`${outfitFont.className} text-lg font-semibold`}>
+              {listing.title}
+            </h3>
+            <h2 className={`${outfitFont.className} text-md font-semibold`}>
+              Sold by: {listing.location?.displayName || listing.user.name}
+            </h2>
+            <p
+              className={`${workFont.className} text-xs font-light text-neutral-500`}
             >
-              <span className="font-semibold">${listing.price}</span>
-              <span className="font-light">per {listing.quantityType}</span>
+              {listing?.location?.address[1]}, {listing?.location?.address[2]}
+            </p>
+
+            <div className="flex items-center justify-between mt-2 w-full">
+              <div
+                className={`${workFont.className} text-sm flex items-center gap-1`}
+              >
+                <span className="font-semibold">${listing.price}</span>
+                <span className="font-light">
+                  per {listing.quantityType ? listing.quantityType : "item"}
+                </span>
+              </div>
+
+              <StarRating
+                value={listing.rating.length - 1}
+                size={20}
+                color="#000"
+              />
             </div>
 
-            <StarRating
-              value={listing.rating.length - 1}
-              size={20}
-              color="#000"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1 mt-2">
-            <AvailabilityScore scores={scores} type="pickup" />
-            <AvailabilityScore scores={scores} type="delivery" />
+            <div className="flex flex-col gap-1 mt-2">
+              {listing.location?.hours.pickup?.length === 0 ? (
+                <div className="text-red-500 font-medium flex items-center text-xs">
+                  <Clock size={14} className="mr-1" />{" "}
+                  <span className="font-medium capitalize">
+                    No Pickup Hours
+                  </span>
+                </div>
+              ) : (
+                <AvailabilityScore scores={scores} type="pickup" />
+              )}
+              {listing.location?.hours.delivery?.length === 0 ? (
+                <div className="text-red-500 font-medium flex items-center text-xs">
+                  <Clock size={14} className="mr-1" />{" "}
+                  <span className="font-medium capitalize">
+                    No Delivery Hours
+                  </span>
+                </div>
+              ) : (
+                <AvailabilityScore scores={scores} type="delivery" />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+      <CartToggle
+        listing={listing}
+        listingId={listing.id}
+        user={user}
+        initialQuantity={listing.minOrder}
+        stock={listing.stock}
+        minOrder={listing.minOrder}
+        quantityType="item"
+        price={listing.price}
+        onCartUpdate={handleCartUpdate}
+      />
+    </div>
   );
 };
 

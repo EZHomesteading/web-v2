@@ -58,7 +58,7 @@ export default function Home({ user }: Props) {
                 Welcome {user.name}
               </div>
               <div className={` 2xl:text-3xl text-lg font-light `}>
-                Easily Find
+                Easily Find eeee
               </div>
               <div className="flex flex-col sm:flex-row">
                 <div>
