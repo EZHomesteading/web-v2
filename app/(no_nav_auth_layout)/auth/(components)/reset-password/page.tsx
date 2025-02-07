@@ -225,7 +225,7 @@ export const ResetForm = () => {
           className={`${OutfitFont.className} mt-2 w-[280px] sm:w-[350px]`}
           onClick={() => onSubmit(newPassword)}
         >
-          Send Reset Email
+          Set New Password
         </Button>
       </div>
     </CardWrapper>

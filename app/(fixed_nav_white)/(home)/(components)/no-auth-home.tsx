@@ -149,7 +149,7 @@ const Home = ({ user }: p) => {
           </section>
         </div>
         <div
-          className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%]`}
+          className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[60%] sm:pt-[10%]`}
         >
           <section
             className={`bg-white sm:w-[30rem] sm:h-[30rem] rounded-lg relative`}

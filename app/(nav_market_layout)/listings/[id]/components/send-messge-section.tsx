@@ -3,7 +3,7 @@ import {
   hasAvailableHours,
   week_day_mmm_dd_yy_time,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -43,10 +43,8 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
     }
   } else if (hasPickup) {
     initialOrderMethod = orderMethod.PICKUP;
-  } else if (hasDelivery) {
-    initialOrderMethod = orderMethod.DELIVERY;
   } else {
-    initialOrderMethod = orderMethod.UNDECIDED;
+    initialOrderMethod = orderMethod.DELIVERY;
   }
 
   const [method, setMethod] = useState(initialOrderMethod);
@@ -103,13 +101,7 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
   const handleErrors = () => {
     if (!listing) return false;
 
-    if (isOrderMethodUndecided()) {
-      toast.error(
-        "Please select your preferred delivery method for this listing."
-      );
-      setErrorType("undecided");
-      return true;
-    } else if (isDeliveryWithoutLocation()) {
+    if (isDeliveryWithoutLocation()) {
       toast.error("Please specify a delivery location for this listing.");
       setErrorType("location");
       return true;
@@ -136,7 +128,6 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
     setErrorType(null);
     return false;
   };
-  const isOrderMethodUndecided = () => method === orderMethod.UNDECIDED;
   const quantityLessThanMinOrder = () => quantity < listing.minOrder;
   const isZeroQuantity = () => quantity <= 0;
   const isDeliveryWithoutLocation = () =>
@@ -209,7 +200,7 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
                 </div>
               </div>
             </PopoverTrigger>
-            <PopoverContent className={`w-full ${outfitFont.className}`}>
+            <PopoverContent className={`w-full ${OutfitFont.className}`}>
               <div className={`text-center font-semibold border-b pb-3 `}>
                 Order Type
               </div>
@@ -322,7 +313,7 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
                 }`}
               >
                 <div
-                  className={`text-center font-semibold border-b pb-3 ${outfitFont.className}`}
+                  className={`text-center font-semibold border-b pb-3 ${OutfitFont.className}`}
                 >
                   Delivery Location
                 </div>
@@ -378,7 +369,7 @@ const SendMessageSection = ({ listing, user, locations }: p) => {
                         </div>
                       </button>
                     }
-                    className={`fixed inset-2 m-auto bg-white rounded-lg px-4 h-calc(100vw-.5rem) md:max-h-[28rem] max-w-2xl zmax w-calc(100vw-.5rem) border p-0 ${outfitFont.className}`}
+                    className={`fixed inset-2 m-auto bg-white rounded-lg px-4 h-calc(100vw-.5rem) md:max-h-[28rem] max-w-2xl zmax w-calc(100vw-.5rem) border p-0 ${OutfitFont.className}`}
                   >
                     <></>
                   </MotionDiv>

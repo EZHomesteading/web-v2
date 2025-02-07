@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
-import { OutfitFont } from "../fonts";
 interface ListingHeadProps {
   listing: any;
 }

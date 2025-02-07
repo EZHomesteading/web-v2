@@ -17,7 +17,7 @@ import { MarkerClusterer } from "@react-google-maps/api";
 import { Libraries } from "@googlemaps/js-api-loader";
 import { Switch } from "@/components/ui/switch";
 import { UserRole } from "@prisma/client";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { NavUser } from "@/actions/getUser";
 
 interface MapUser {
@@ -345,13 +345,13 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
     >
       <Popover>
         <PopoverTrigger
-          className={`${outfitFont.className} absolute top-1 left-1 z-10 bg-slate-800 text-white shadow-md px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
+          className={`${OutfitFont.className} absolute top-1 left-1 z-10 bg-slate-800 text-white shadow-md px-1 py-2 rounded-lg text-xs sm:text-sm flex flex-row items-center`}
         >
           <CiCircleQuestion className="mr-1" size={20} />
           Drawing Tool
         </PopoverTrigger>
         <PopoverContent className=" bg-slate-800 text-white mt-1 ml-1 rounded-md z">
-          <ul className={`${outfitFont.className} p-2 rounded-md text-xs`}>
+          <ul className={`${OutfitFont.className} p-2 rounded-md text-xs`}>
             <li className="flex flex-row">
               - Click
               <button className="ml-1 text-xs bg-teal-600 hover:bg-teal-900 flex flex-row items-center rounded-md px-1 ">
@@ -385,7 +385,7 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
       <div>
         {user && user?.role !== "CONSUMER" && (
           <div
-            className={`${outfitFont.className} absolute top-11 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5`}
+            className={`${OutfitFont.className} absolute top-11 left-1 transform  z-10 bg-white bg-opacity-75 rounded-lg pr-5`}
           >
             <div className="flex flex-col items-start justify-start">
               <div className="flex items-center gap-x-2 text-md  font-medium mb-2 whitespace-nowrap">
@@ -537,10 +537,10 @@ const VendorsMap = ({ coops, producers, coordinates, mk, user }: MapProps) => {
             <header className="flex flex-row p-1 relative w-full">
               <Avatar image={selectedMarker.user.image} />
               <ul className="flex flex-col ml-1 pl-1">
-                <h1 className={`${outfitFont.className} text-sm `}>
+                <h1 className={`${OutfitFont.className} text-sm `}>
                   {selectedMarker.user.name}
                 </h1>
-                <p className={`${outfitFont.className} text-xs text-gray-600`}>
+                <p className={`${OutfitFont.className} text-xs text-gray-600`}>
                   {selectedMarker.user.firstName}
                 </p>
               </ul>

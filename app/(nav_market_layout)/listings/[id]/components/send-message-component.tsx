@@ -4,8 +4,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useMediaQuery from "@/hooks/media-query";
 import SendMessageSection from "./send-messge-section";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
+import { OutfitFont } from "@/components/fonts";
 
 interface p {
   listing: any;
@@ -36,14 +36,14 @@ const SendMessageComponent = ({ user, listing, locations }: p) => {
                 <div
                   className={`w-full max-w-[150px] font-semibold rounded-md py-3 text-sm shadow-sm bg-sky-100 `}
                 >
-                  Send Inquiry
+                  Add to Basket
                 </div>
               </div>
             </button>
           </SheetTrigger>
           <SheetContent
             side="bottom"
-            className={`rounded-t-xl py-16 px-2 ${outfitFont.className}`}
+            className={`rounded-t-xl py-16 px-2 ${OutfitFont.className}`}
           >
             <SendMessageSection
               listing={listing}
