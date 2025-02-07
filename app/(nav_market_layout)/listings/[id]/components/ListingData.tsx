@@ -145,10 +145,6 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     }
   };
 
-  // const handleTimer = (childTime: Date) => {
-  //   setSelectedTime(childTime);
-  // };
-
   // Utility function for pluralization
   function pluralizeQuantityType(quantity: number, type: string) {
     if (quantity === 1) return type;

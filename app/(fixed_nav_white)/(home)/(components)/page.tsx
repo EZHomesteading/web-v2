@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import NoAuthHome from "./no-auth-home";
 import Stripe from "stripe";
 import { getUserById } from "@/data/user";
+import AdminHome from "./admin-home";
 
 const HomePage = async () => {
   const user = await currentUser();
@@ -36,19 +37,15 @@ const HomePage = async () => {
   }
   return (
     <>
-      {/* {user ? (
-        user?.role == UserRole.COOP ? (
-          <CoopHome user={user} canReceivePayouts={canReceivePayouts} />
-        ) : user?.role == UserRole.PRODUCER ? (
-          <ProducerHome user={user} canReceivePayouts={canReceivePayouts} />
-        ) : user?.role == UserRole.ADMIN ? (
+      {user ? (
+        user?.role == UserRole.ADMIN ? (
           <AdminHome user={user} />
         ) : (
-          <NoAuthHome />
+          <NoAuthHome user={fullUser} />
         )
-      ) : ( */}
-      <NoAuthHome user={fullUser} />
-      {/* )} */}
+      ) : (
+        <NoAuthHome user={fullUser} />
+      )}
     </>
   );
 };

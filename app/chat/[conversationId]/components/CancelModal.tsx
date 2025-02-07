@@ -65,7 +65,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     //axios post is always the same. post a message with the users input text
     axios.post("/api/chat/messages", {
       message: `I have canceled this item, because: ${text}`,
-      messageOrder: "1.1",
+      messageOrder: "CANCELED",
       conversationId: convoId,
       otherUserId: otherUser,
     });

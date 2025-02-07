@@ -1,5 +1,4 @@
-"use server";
-
+// actions/getMarketListings.ts
 import { ShopProps } from "@/app/(nav_market_layout)/market/page";
 import { z } from "zod";
 
@@ -32,16 +31,19 @@ export async function getMarketListings(
     );
 
     if (!response.ok) {
+      console.error("Market listings response not OK:", await response.text());
       return { listings: [], totalItems: 0 };
     }
 
     const data = await response.json();
 
+    // Ensure we're returning an array of listings
     return {
-      listings: data || [],
-      totalItems: data.length || 0,
+      listings: Array.isArray(data.listings) ? data.listings : [],
+      totalItems: data.totalItems || 0,
     };
-  } catch {
+  } catch (error) {
+    console.error("Error fetching market listings:", error);
     return {
       listings: [],
       totalItems: 0,

@@ -1,8 +1,10 @@
-// calcsimple.ts
 import { Location } from "@prisma/client";
 import { RouteTimings } from "./types";
 import {
+  getCurrentTimeInSeconds,
+  getLocationCloseTime,
   getLocationOpenTime,
+  hasTimePassed,
   secondsToTimeString,
   timeStringToSeconds,
 } from "./calcoptimal";
@@ -17,12 +19,57 @@ interface RouteResult {
   timings: RouteTimings;
 }
 
+// Calculate basic distance matrix
+const calculateDistanceMatrix = async (
+  baseLocation: google.maps.LatLng,
+  locations: Location[]
+): Promise<{ [key: string]: number }> => {
+  const matrix: { [key: string]: number } = {};
+
+  for (const location of locations) {
+    const dest = new google.maps.LatLng(
+      location.coordinates[1],
+      location.coordinates[0]
+    );
+    const distance = google.maps.geometry.spherical.computeDistanceBetween(
+      baseLocation,
+      dest
+    );
+    matrix[location.id] = distance;
+  }
+
+  return matrix;
+};
+
+// Calculate priority score for arrival time optimization
+const calculateArrivalPriorityScore = (
+  location: Location,
+  window: { openTime: number; closeTime: number; windowSize: number },
+  matrix: { [key: string]: number }
+): number => {
+  const WINDOW_SIZE_WEIGHT = 0.5;
+  const DISTANCE_WEIGHT = 0.3;
+  const CLOSE_TIME_WEIGHT = 0.2;
+
+  const windowScore = window.windowSize / (24 * 60);
+  const distanceScore =
+    1 - matrix[location.id] / Math.max(...Object.values(matrix));
+  const closeTimeScore = window.closeTime / (24 * 60);
+
+  return (
+    windowScore * WINDOW_SIZE_WEIGHT +
+    distanceScore * DISTANCE_WEIGHT +
+    closeTimeScore * CLOSE_TIME_WEIGHT
+  );
+};
+
 export const optimizeArrivalTimeRoute = async (
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng,
   usePickupOrder: boolean = false,
-  targetArrivalTime: number
+  targetArrivalTime: number,
+  selectedDate: Date
 ): Promise<RouteResult> => {
   const directionsService = new google.maps.DirectionsService();
 
@@ -34,25 +81,40 @@ export const optimizeArrivalTimeRoute = async (
         locations,
         endLocation,
         targetArrivalTime,
+        selectedDate,
         false
       );
     }
 
-    // Sort locations by time constraints, prioritizing later closing times
+    // Calculate distance matrix and sort locations
+    const matrix = await calculateDistanceMatrix(endLocation, locations);
     const sortedLocations = [...locations].sort((a, b) => {
-      const aWindow = getServiceWindow(a);
-      const bWindow = getServiceWindow(b);
+      const aWindow = getServiceWindow(a, selectedDate);
+      const bWindow = getServiceWindow(b, selectedDate);
 
-      if (Math.abs(aWindow.windowSize - bWindow.windowSize) > 60) {
-        return bWindow.windowSize - aWindow.windowSize;
-      }
-      return bWindow.closeTime - aWindow.closeTime;
+      const aScore = calculateArrivalPriorityScore(a, aWindow, matrix);
+      const bScore = calculateArrivalPriorityScore(b, bWindow, matrix);
+
+      return bScore - aScore;
     });
 
+    // Check for tight windows
     const hasTightWindows = sortedLocations.some((location) => {
-      const window = getServiceWindow(location);
+      const window = getServiceWindow(location, selectedDate);
       return window.windowSize < 360;
     });
+
+    // For routes with more than 3 locations and tight windows, use chunk optimization
+    if (locations.length > 3 && hasTightWindows) {
+      return await optimizeInChunksForArrival(
+        directionsService,
+        startLocation,
+        sortedLocations,
+        endLocation,
+        targetArrivalTime,
+        selectedDate
+      );
+    }
 
     if (hasTightWindows) {
       const firstLocation = sortedLocations[0];
@@ -67,6 +129,7 @@ export const optimizeArrivalTimeRoute = async (
         sortedLocations.slice(1),
         endLocation,
         targetArrivalTime,
+        selectedDate,
         false,
         true
       );
@@ -74,7 +137,8 @@ export const optimizeArrivalTimeRoute = async (
       const finalResult = await calculateInitialLeg(
         directionsService,
         startLocation,
-        intermediateResult
+        intermediateResult,
+        selectedDate
       );
 
       return finalResult;
@@ -85,6 +149,7 @@ export const optimizeArrivalTimeRoute = async (
         locations,
         endLocation,
         targetArrivalTime,
+        selectedDate,
         true
       );
     }
@@ -93,16 +158,80 @@ export const optimizeArrivalTimeRoute = async (
   }
 };
 
+// Optimize route in chunks for arrival time
+const optimizeInChunksForArrival = async (
+  directionsService: google.maps.DirectionsService,
+  startLocation: google.maps.LatLng,
+  locations: Location[],
+  endLocation: google.maps.LatLng,
+  targetArrivalTime: number,
+  selectedDate: Date,
+  chunkSize: number = 3
+): Promise<RouteResult> => {
+  let currentEnd = endLocation;
+  let currentTime = targetArrivalTime;
+  let finalRoute: Location[] = [];
+  let remainingLocations = [...locations].reverse();
+
+  while (remainingLocations.length > 0) {
+    const chunk = remainingLocations.slice(0, chunkSize);
+    remainingLocations = remainingLocations.slice(chunkSize);
+
+    const chunkStart =
+      remainingLocations.length === 0
+        ? startLocation
+        : new google.maps.LatLng(
+            remainingLocations[0].coordinates[1],
+            remainingLocations[0].coordinates[0]
+          );
+
+    const chunkResult = await calculateRouteWithArrivalTimings(
+      directionsService,
+      chunkStart,
+      chunk,
+      currentEnd,
+      currentTime,
+      selectedDate,
+      true
+    );
+
+    finalRoute = [...chunkResult.route, ...finalRoute];
+    currentTime -= chunkResult.totalTime;
+    currentEnd = chunkStart;
+  }
+
+  return await calculateRouteWithArrivalTimings(
+    directionsService,
+    startLocation,
+    finalRoute,
+    endLocation,
+    targetArrivalTime,
+    selectedDate,
+    false
+  );
+};
+
 const calculateRouteWithArrivalTimings = async (
   directionsService: google.maps.DirectionsService,
   startLocation: google.maps.LatLng,
   locations: Location[],
   endLocation: google.maps.LatLng,
   targetArrivalTime: number,
+  selectedDate: Date,
   optimize: boolean = false,
   skipStartOptimization: boolean = false,
   adjustForInitialLeg: boolean = false
 ): Promise<RouteResult> => {
+  if (hasTimePassed(targetArrivalTime, selectedDate)) {
+    throw {
+      type: "TIME_PASSED",
+      message: "Target arrival time has already passed",
+      details: {
+        requestedTime: secondsToTimeString(targetArrivalTime),
+        currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+      },
+    };
+  }
   const waypoints = locations.map((loc) => ({
     location: new google.maps.LatLng(loc.coordinates[1], loc.coordinates[0]),
     stopover: true,
@@ -112,7 +241,6 @@ const calculateRouteWithArrivalTimings = async (
     waypoints.shift();
   }
 
-  // Get complete route
   const result = await new Promise<google.maps.DirectionsResult>(
     (resolve, reject) => {
       directionsService.route(
@@ -123,7 +251,9 @@ const calculateRouteWithArrivalTimings = async (
           optimizeWaypoints: optimize && !skipStartOptimization,
           travelMode: google.maps.TravelMode.DRIVING,
           drivingOptions: {
-            departureTime: new Date(),
+            departureTime: new Date(
+              selectedDate.getTime() + targetArrivalTime * 1000
+            ),
             trafficModel: google.maps.TrafficModel.BEST_GUESS,
           },
         },
@@ -147,24 +277,30 @@ const calculateRouteWithArrivalTimings = async (
     const legDuration = legs[i].duration?.value ?? 0;
     totalDuration += legDuration;
 
-    // Only add stop time and buffer for actual stops (not the final return leg)
     if (i < route.length) {
       totalDuration += AVERAGE_STOP_TIME;
-      // Add buffer time between stops, but not after the last stop
       if (i < route.length - 1) {
         totalDuration += BUFFER_TIME;
       }
     }
   }
 
-  // If this is part of a split calculation, don't subtract the initial leg time
   const initialLegTime = legs[0].duration?.value ?? 0;
   const effectiveTargetTime = adjustForInitialLeg
     ? targetArrivalTime
     : targetArrivalTime - initialLegTime;
 
-  // Calculate start time to hit target
   const startTime = effectiveTargetTime - totalDuration;
+  if (hasTimePassed(startTime, selectedDate)) {
+    throw {
+      type: "TIME_PASSED",
+      message: "Required start time has already passed",
+      details: {
+        requestedTime: secondsToTimeString(startTime),
+        currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+      },
+    };
+  }
   let currentTime = startTime;
 
   const segmentTimes: { [key: string]: number } = {};
@@ -182,12 +318,20 @@ const calculateRouteWithArrivalTimings = async (
 
     currentTime += travelTime;
     const arrivalTime = currentTime;
-
-    // Validate time constraints
-    const openTime = getLocationOpenTime(location) * 60;
-    const closeTime = location.hours?.pickup[0]?.timeSlots[0]?.close
-      ? location.hours?.pickup[0]?.timeSlots[0]?.close * 60
-      : Infinity;
+    if (hasTimePassed(arrivalTime, selectedDate)) {
+      throw {
+        type: "TIME_PASSED",
+        message: `Arrival time at ${location.displayName} has already passed`,
+        details: {
+          location,
+          expectedArrival: secondsToTimeString(arrivalTime),
+          currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        },
+      };
+    }
+    // Validate time constraints with selected date
+    const openTime = getLocationOpenTime(location, selectedDate) * 60;
+    const closeTime = getLocationCloseTime(location, selectedDate) * 60;
 
     if (arrivalTime + AVERAGE_STOP_TIME > closeTime) {
       throw {
@@ -253,7 +397,8 @@ const calculateRouteWithArrivalTimings = async (
 const calculateInitialLeg = async (
   directionsService: google.maps.DirectionsService,
   startLocation: google.maps.LatLng,
-  intermediateResult: RouteResult
+  intermediateResult: RouteResult,
+  selectedDate: Date
 ): Promise<RouteResult> => {
   const firstLocation = intermediateResult.route[0];
   const firstLocationLatLng = new google.maps.LatLng(
@@ -269,7 +414,7 @@ const calculateInitialLeg = async (
           destination: firstLocationLatLng,
           travelMode: google.maps.TravelMode.DRIVING,
           drivingOptions: {
-            departureTime: new Date(),
+            departureTime: new Date(selectedDate.getTime()),
             trafficModel: google.maps.TrafficModel.BEST_GUESS,
           },
         },
@@ -284,7 +429,6 @@ const calculateInitialLeg = async (
   const initialTime = initialLeg.routes[0].legs[0].duration?.value ?? 0;
   const initialDistance = initialLeg.routes[0].legs[0].distance?.value ?? 0;
 
-  // Adjust all timing information in suggestedPickupTimes
   const adjustedPickupTimes: { [key: string]: string } = {};
   for (const [locationId, time] of Object.entries(
     intermediateResult.timings.suggestedPickupTimes
@@ -315,15 +459,22 @@ const calculateInitialLeg = async (
     },
   };
 };
+
 const getServiceWindow = (
-  location: Location
+  location: Location,
+  selectedDate: Date
 ): {
   openTime: number;
   closeTime: number;
   windowSize: number;
 } => {
-  const openTime = location.hours?.pickup[0]?.timeSlots[0]?.open || 0;
-  const closeTime = location.hours?.pickup[0]?.timeSlots[0]?.close || 1440;
+  const dateString = selectedDate.toISOString().split("T")[0];
+  const pickupSlot = location.hours?.pickup?.find(
+    (slot) => new Date(slot.date).toISOString().split("T")[0] === dateString
+  );
+
+  const openTime = pickupSlot?.timeSlots[0]?.open || 0;
+  const closeTime = pickupSlot?.timeSlots[0]?.close || 1440;
 
   return {
     openTime,

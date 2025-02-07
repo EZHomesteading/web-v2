@@ -772,37 +772,61 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
               if (!position) return null;
 
               return (
-                <Circle
-                  key={location.id}
-                  center={{
-                    lat: position.randomLat,
-                    lng: position.randomLng,
-                  }}
-                  radius={
-                    zoom >= 16
-                      ? 60
-                      : zoom >= 15
-                      ? 120
-                      : zoom >= 14
-                      ? 240
-                      : zoom >= 13
-                      ? 500
-                      : zoom >= 12
-                      ? 1000
-                      : zoom >= 11
-                      ? 2000
-                      : zoom >= 10
-                      ? 4000
-                      : 8000
-                  }
-                  options={{
-                    strokeColor: colors.strokeColor,
-                    strokeOpacity: 0.8,
-                    strokeWeight: colors.strokeWeight || 2,
-                    fillColor: colors.fillColor,
-                    fillOpacity: 0.35,
-                  }}
-                />
+                <React.Fragment key={location.id}>
+                  <Circle
+                    center={
+                      new google.maps.LatLng(
+                        position.randomLat,
+                        position.randomLng
+                      )
+                    }
+                    radius={
+                      zoom >= 16
+                        ? 60
+                        : zoom >= 15
+                        ? 120
+                        : zoom >= 14
+                        ? 240
+                        : zoom >= 13
+                        ? 500
+                        : zoom >= 12
+                        ? 1000
+                        : zoom >= 11
+                        ? 2000
+                        : zoom >= 10
+                        ? 4000
+                        : 8000
+                    }
+                    options={{
+                      strokeColor: colors.strokeColor,
+                      strokeOpacity: 0.8,
+                      strokeWeight: colors.strokeWeight || 2,
+                      fillColor: colors.fillColor,
+                      fillOpacity: 0.35,
+                    }}
+                  />
+                  <MarkerF
+                    position={
+                      new google.maps.LatLng(
+                        position.randomLat,
+                        position.randomLng
+                      )
+                    }
+                    label={{
+                      text:
+                        location.displayName ||
+                        location.user.name ||
+                        "no name found",
+                      color: "black",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                    }}
+                    icon={{
+                      path: google.maps.SymbolPath.CIRCLE,
+                      scale: 0,
+                    }}
+                  />
+                </React.Fragment>
               );
             })}
           </GoogleMap>

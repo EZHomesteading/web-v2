@@ -11,8 +11,7 @@ import axios from "axios";
 import { XMarkIcon as XMarkIconMini } from "@heroicons/react/20/solid";
 import { usePathname, useRouter } from "next/navigation";
 import { PiBasketThin } from "react-icons/pi";
-import { CartItem } from "@/actions/getCart";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface c {
   cart: CartItem[];

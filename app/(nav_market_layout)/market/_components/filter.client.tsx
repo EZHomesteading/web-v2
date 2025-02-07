@@ -32,6 +32,10 @@ const Filters = ({ role }: Props) => {
   let r = searchParams?.get("radius")
     ? parseInt(searchParams.get("radius") || "")
     : null;
+
+  let lat = searchParams?.get("lat");
+  let lng = searchParams?.get("lng");
+
   console.log(r);
   const [radius, setRadius] = useState(r);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,17 +82,6 @@ const Filters = ({ role }: Props) => {
                   <FiltersIcon />
                 </button>
               </div>
-              {r && (
-                <div className="mt-4">
-                  <Slider
-                    min={1}
-                    max={50}
-                    step={0.5}
-                    value={[radius || 10]}
-                    onValueChange={(value: number[]) => setRadius(value[0])}
-                  />
-                </div>
-              )}
 
               {!role || role !== UserRole.CONSUMER ? (
                 <>
@@ -114,8 +107,20 @@ const Filters = ({ role }: Props) => {
               <div className="mt-4 flex items-center gap-x-2 font-medium">
                 <Switch />
                 <BsPersonWalking />
-                <span>Pick Produce Myself</span>
+                <span>Harvest Produce Myself</span>
               </div>
+              {lat !== null && lng !== null && (
+                <div className="mt-6 w-full">
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.5}
+                    defaultValue={[radius || 50]}
+                    value={[radius || 50]}
+                    onValueChange={(value: number[]) => setRadius(value[0])}
+                  />
+                </div>
+              )}
 
               <div className="mt-4">
                 <Select>

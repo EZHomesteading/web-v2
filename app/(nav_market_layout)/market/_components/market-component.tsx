@@ -22,7 +22,9 @@ export interface MarketListing {
   price: number;
   rating: number[];
   quantityType?: string;
+  stock: number;
   location: {
+    displayName: string;
     address: string[];
     role: UserRole;
     hours: {
@@ -34,6 +36,7 @@ export interface MarketListing {
   minOrder?: number;
   user: {
     id: string;
+    name: string;
   };
 }
 
