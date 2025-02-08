@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
-  manifest: "/manifest.ts",
+  manifest: "/manifest.json",
 };
 
 export default async function RootLayout({
