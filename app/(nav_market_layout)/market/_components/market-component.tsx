@@ -50,6 +50,7 @@ interface ShopProps {
   isPageOutOfRange: boolean;
   pageNumbers: number[];
   currentPage: number;
+  basketItemIds: string[];
 }
 
 const Shop = ({
@@ -60,6 +61,7 @@ const Shop = ({
   isPageOutOfRange,
   pageNumbers,
   currentPage,
+  basketItemIds,
 }: ShopProps) => {
   let imageCount = 0;
   return (
@@ -76,6 +78,7 @@ const Shop = ({
                 key={index}
                 listing={listing}
                 imageCount={imageCount}
+                basketItemIds={basketItemIds}
               />
             ))}
           </MarketGrid>

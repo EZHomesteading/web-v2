@@ -55,9 +55,9 @@ const Home = ({ user }: Props) => {
           <section className={`${OutfitFont.className}`}>
             <header className="!text-black">
               <div
-                className={`${OutfitFont.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
+                className={`${OutfitFont.className} text-green-600 text-2xl font-extrabold tracking-tight`}
               >
-                {!user ? "Welcome" : `Welcome, ${user.name}`}
+                {user && `Welcome, ${user.name}`}
               </div>
               <p className="text-lg 2xl:text-3xl font-medium text-black drop-shadow-md">
                 Easily Find

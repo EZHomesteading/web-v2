@@ -14,6 +14,7 @@ interface CardWrapperProps {
   backButtonLabel: string;
   backButtonHref: string;
   showSocial?: boolean;
+  className?: string;
 }
 
 const phrases = [
@@ -27,6 +28,7 @@ export const CardWrapper = ({
   backButtonLabel,
   backButtonHref,
   showSocial,
+  className,
 }: CardWrapperProps) => {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 
@@ -38,7 +40,9 @@ export const CardWrapper = ({
   }, []);
 
   return (
-    <div className="flex grow flex-col pt-10 w-full min-h-screen px-5">
+    <div
+      className={`flex grow flex-col pt-10 w-full min-h-screen px-5 ${className}`}
+    >
       <Link
         className="flex justify-center items-center hover:cursor-pointer"
         href={`/`}

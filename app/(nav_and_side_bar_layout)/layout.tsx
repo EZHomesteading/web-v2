@@ -1,6 +1,6 @@
-import Navbar from "../../components/navbar/navbar";
 import { getNavUser, NavUser } from "@/actions/getUser";
 import { OutfitFont } from "@/components/fonts";
+import Navbar from "@/components/navbar/navbar.server";
 import { Viewport } from "next";
 
 export const viewport: Viewport = {

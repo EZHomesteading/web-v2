@@ -1,10 +1,9 @@
 // hooks/listing/use-cart.ts
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useState } from "react";
 import axios from "axios";
 import { Hours, orderMethod } from "@prisma/client";
-import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import Toast from "@/components/ui/toast";
 
 interface props {
   listingId: string;
@@ -23,24 +22,12 @@ export const useBasket = ({
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(initialQuantity);
   const [isInBasket, setIsInBasket] = useState(false);
-  const { initialOrderMethod } = useMemo(() => {
-    const hasPickup = hasAvailableHours(hours?.pickup || []);
-    const hasDelivery = hasAvailableHours(hours?.delivery || []);
+  let initialOrderMethod: orderMethod = orderMethod.PICKUP;
 
-    let initialOrderMethod: orderMethod;
-    if (hasPickup && hasDelivery) {
-      initialOrderMethod = orderMethod.UNDECIDED;
-    } else if (hasPickup) {
-      initialOrderMethod = orderMethod.PICKUP;
-    } else if (hasDelivery) {
-      initialOrderMethod = orderMethod.DELIVERY;
-    } else {
-      initialOrderMethod = orderMethod.UNDECIDED;
-    }
+  if (!hours?.pickup && hours?.delivery) {
+    initialOrderMethod = orderMethod.DELIVERY;
+  }
 
-    return { initialOrderMethod };
-  }, [hours]);
-  console.log(hours, initialOrderMethod);
   const checkExistingItem = useCallback(async () => {
     if (!user) return null;
 
@@ -72,10 +59,12 @@ export const useBasket = ({
           initialOrderMethod: initialOrderMethod,
         });
         setIsInBasket(true);
-        toast.success("Added to baskets!");
+        Toast({ message: "Saved new basket item" });
         router.refresh();
       } catch (error: any) {
-        toast.error(error.response?.data?.message || "Something went wrong");
+        Toast({
+          message: error.response?.data?.message || "Something went wrong",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -88,20 +77,20 @@ export const useBasket = ({
 
     setIsLoading(true);
     try {
-      // First get the basket item ID
       const item = await checkExistingItem();
       if (!item?.id) {
         throw new Error("Item not found");
       }
 
-      // Then delete using the item ID
       await axios.delete(`/api/basket/items/${item.id}`);
       setIsInBasket(false);
-      toast.success("Removed from cart");
+      Toast({ message: "Basket item removed" });
       router.refresh();
     } catch (error: any) {
       console.error("Remove error:", error);
-      toast.error(error.response?.data?.message || "Failed to remove item");
+      Toast({
+        message: error.response?.data?.message || "Failed to remove item",
+      });
     } finally {
       setIsLoading(false);
     }

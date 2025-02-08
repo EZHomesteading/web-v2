@@ -17,6 +17,7 @@ interface ListingCardProps {
   listing: MarketListing;
   user?: UserInfo;
   imageCount: number;
+  basketItemIds?: string[];
 }
 
 interface StoreLocationCardProps {
@@ -127,14 +128,18 @@ interface ScoreResult {
   };
 }
 
-const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
+const MarketCard = ({
+  listing,
+  imageCount,
+  user,
+  basketItemIds,
+}: ListingCardProps) => {
   const handleCartUpdate = (inCart: boolean, quantity: number) => {
     console.log(
       `Cart updated: ${inCart ? "Added" : "Removed"} ${quantity} items`
     );
   };
   const locHours = listing?.location?.hours;
-  //console.log(locHours);
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
   ): ScoreResult {
@@ -159,7 +164,6 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
       return date.toISOString().split("T")[0];
     });
 
-    // Filter hours to only include next 7 days
     const relevantHours = hours.filter((hour) => {
       const hourDate = new Date(hour.date).toISOString().split("T")[0];
       return next7Days.includes(hourDate);
@@ -168,7 +172,6 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
     let workingmanScore = 0;
     let retireeScore = 0;
 
-    // Calculate coverage percentage for each time period
     next7Days.forEach((date) => {
       const dayHours = relevantHours.find(
         (h) => new Date(h.date).toISOString().split("T")[0] === date
@@ -180,41 +183,35 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       const isSunday = dayOfWeek === 0;
 
-      // Skip if no time slots
       if (!dayHours.timeSlots || dayHours.timeSlots.length === 0) return;
 
-      // Working person coverage (4 PM - 8 PM)
       const workingCoverage = calculateTimeSlotCoverage(
         dayHours.timeSlots,
-        960, // 4 PM
-        1200 // 8 PM
+        960,
+        1200
       );
 
-      // Retiree coverage (10 AM - 8 PM)
       const retireeCoverage = calculateTimeSlotCoverage(
         dayHours.timeSlots,
-        600, // 10 AM
-        1200 // 8 PM
+        600,
+        1200
       );
 
-      // Apply weekend modifiers
       const weekendModifier = isWeekend ? (isSunday ? 0.3 : 0.1) : 1;
 
       workingmanScore += workingCoverage * weekendModifier;
       retireeScore += retireeCoverage * weekendModifier;
     });
 
-    // Convert to 1-3 scale
     const normalizeScore = (score: number): number => {
-      const maxPossibleScore = 7; // perfect coverage for all 7 days
+      const maxPossibleScore = 7;
       const normalized = (score / maxPossibleScore) * 3;
-      return Math.max(1, Math.min(3, Math.ceil(normalized))); // Round up instead of rounding down
+      return Math.max(1, Math.min(3, Math.ceil(normalized)));
     };
 
     const finalWorkingmanScore = normalizeScore(workingmanScore);
     const finalRetireeScore = normalizeScore(retireeScore);
 
-    // Calculate combined score (rounded up)
     const combinedScore = Math.ceil(
       (finalWorkingmanScore + finalRetireeScore) / 2
     );
@@ -246,9 +243,8 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
   }
 
   const scores = calculateAvailabilityScores(locHours);
-  // console.log(scores);
   return (
-    <div>
+    <div className={`relative`}>
       <Link
         href={`/listings/${listing.id}`}
         prefetch={true}
@@ -288,12 +284,10 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
               )}
             </Carousel>
           </div>
-          <div className="mt-2 w-full">
-            <h3 className={`${OutfitFont.className} text-lg font-semibold`}>
-              {listing.title}
-            </h3>
-            <h2 className={`${OutfitFont.className} text-md font-semibold`}>
-              Sold by: {listing.location?.displayName || listing.user.name}
+          <div className={`mt-1 w-full ${OutfitFont.className}`}>
+            <h3 className={`font-semibold`}>{listing.title}</h3>
+            <h2 className={`text-xs font-normal`}>
+              {listing.location?.displayName || listing.user.name}
             </h2>
             <p className={` text-xs font-light text-neutral-500`}>
               {listing?.location?.address[1]}, {listing?.location?.address[2]}
@@ -351,6 +345,7 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
         quantityType="item"
         price={listing.price}
         onCartUpdate={handleCartUpdate}
+        basketItemIds={basketItemIds}
       />
     </div>
   );

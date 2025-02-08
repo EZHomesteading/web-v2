@@ -577,7 +577,6 @@ const getCurrentUser = async () => {
         where: {
           id: session?.user?.id,
         },
-        // include: { cart: true },
       });
 
       if (!user) {

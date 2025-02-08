@@ -1,4 +1,4 @@
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import type { Viewport } from "next";
 
 export const viewport: Viewport = {
@@ -12,7 +12,7 @@ export default async function Layout({
 }) {
   return (
     <>
-      <div className={`${outfitFont.className} relative pl-2 2xl:pl-32`}>
+      <div className={`${OutfitFont.className} relative pl-2 2xl:pl-32`}>
         {children}
       </div>
     </>

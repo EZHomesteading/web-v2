@@ -356,6 +356,7 @@ model RecentlyViewedItem {
 model BasketItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   basketId  String   @db.ObjectId
+  userId    String   @db.ObjectId
   basket    Basket   @relation("BasketToItems", fields: [basketId], references: [id], onDelete: Cascade)
   listingId String   @db.ObjectId
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)

@@ -24,6 +24,7 @@ import { register } from "@/actions/auth/register-vendor";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import PasswordInput from "./password-input";
+import { OutfitFont } from "@/components/fonts";
 
 export const CoOpRegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -59,10 +60,14 @@ export const CoOpRegisterForm = () => {
     <CardWrapper
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
+      className={`mb-4 sm:mb-0`}
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={`${OutfitFont.className}`}
+        >
+          <div className="space-y-2">
             <>
               <FormField
                 control={form.control}
@@ -70,12 +75,12 @@ export const CoOpRegisterForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
-                    <FormControl>
+                    <FormControl className={`mt-4`}>
                       <Input
                         {...field}
                         disabled={isPending}
                         placeholder="Johnny"
-                        className="font-light"
+                        className={`mt-4`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -93,7 +98,6 @@ export const CoOpRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Appleseed Co-op"
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -112,7 +116,6 @@ export const CoOpRegisterForm = () => {
                         disabled={isPending}
                         placeholder="johnny.appleseed@example.com"
                         type="email"
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,7 +143,7 @@ export const CoOpRegisterForm = () => {
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
-                        className="font-light"
+                        className="w-280px sm:w-[350px] h-9"
                       />
                     </FormControl>
                     <FormMessage />
@@ -165,7 +168,6 @@ export const CoOpRegisterForm = () => {
                         disabled={isPending}
                         placeholder="******"
                         type={showPassword ? "text" : "password"}
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />

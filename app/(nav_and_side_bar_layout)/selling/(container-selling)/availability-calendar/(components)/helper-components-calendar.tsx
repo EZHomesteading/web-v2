@@ -1,4 +1,4 @@
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -75,7 +75,7 @@ const DeliveryPickupToggle = ({
           <RiArrowDownSLine className="h-6 w-6 pl-1" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={`w-full ${outfitFont.className} p-4`}>
+      <DropdownMenuContent className={`w-full ${OutfitFont.className} p-4`}>
         <DropdownMenuRadioGroup value={mode} onValueChange={handleModeChange}>
           <DropdownMenuRadioItem
             value={DeliveryPickupToggleMode.DELIVERY}
@@ -162,7 +162,7 @@ const LocationSelector = ({
     <DropdownMenuRadioItem
       key={idx}
       value={location.id}
-      className={`${outfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+      className={`${OutfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
     >
       <div
         className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
@@ -185,7 +185,7 @@ const LocationSelector = ({
       <DropdownMenuRadioItem
         key={`new`}
         value={`new`}
-        className={`${outfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+        className={`${OutfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
       >
         <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
         Add New Location & Hours
@@ -331,7 +331,7 @@ const ViewEditToggle = ({
           <RiArrowDownSLine className="h-6 w-6 pl-1" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={`w-full p-4 ${outfitFont.className}`}>
+      <DropdownMenuContent className={`w-full p-4 ${OutfitFont.className}`}>
         <DropdownMenuRadioGroup
           value={mode}
           onValueChange={(value: string) => onModeChange(value as Mode)}
@@ -441,7 +441,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
           {timeSlots?.map((slot, index) => (
             <div
               key={index}
-              className={`${zillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
+              className={`${ZillaFont.className} text-[.5rem] lg:text-xs !text-black mt-1 overflow-y-auto `}
             >
               {`${convertMinutesToTimeString(
                 slot.open
@@ -486,7 +486,7 @@ const CalendarDayCart: React.FC<CalendarDayCartProps> = ({
       {day !== null && (
         <div
           className={`!text-xs font-medium text-center ${
-            outfitFont.className
+            OutfitFont.className
           } ${
             isSelected
               ? "underline "

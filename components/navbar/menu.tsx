@@ -33,25 +33,24 @@ type ComponentItem = {
 
 interface Props {
   user?: NavUser;
-  uniqueUrl: string;
+  // uniqueUrl: string;
   harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
 }
 interface p {
   image: string | null | undefined;
 }
-const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
+const UserMenu: React.FC<Props> = ({ user, harvestMessages }) => {
   const router = useRouter();
   const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
   const pathname = usePathname();
   const selling = pathname?.startsWith("/selling");
-
   const MenuIcon = () => {
     return (
       <>
         <>
           <PopoverTrigger>
-            <IconWrapper icon={IoIosMenu} label="Menu" onClick={() => {}} />
+            <MenuWrapper icon={IoIosMenu} label="Menu" />
           </PopoverTrigger>
         </>
       </>
@@ -85,7 +84,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
           axios.post("/api/useractions/update", {
             role: UserRole.PRODUCER,
             hasPickedRole: false,
-            url: uniqueUrl,
+            // url: uniqueUrl,
           }),
         ]);
 
@@ -384,7 +383,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
 const IconWrapper: React.FC<{
   icon: React.ElementType;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
 }> = ({ icon: Icon, label, onClick }) => {
   return (
     <button
@@ -394,6 +393,17 @@ const IconWrapper: React.FC<{
       <Icon className={`h-8 w-8  `} />
       <div className={`text-xs ${OutfitFont.className} `}>{label}</div>
     </button>
+  );
+};
+const MenuWrapper: React.FC<{
+  icon: React.ElementType;
+  label: string;
+}> = ({ icon: Icon, label }) => {
+  return (
+    <div className="flex flex-col pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer">
+      <Icon className={`h-8 w-8  `} />
+      <div className={`text-xs ${OutfitFont.className} `}>{label}</div>
+    </div>
   );
 };
 

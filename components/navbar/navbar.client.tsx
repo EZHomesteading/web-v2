@@ -9,7 +9,7 @@ interface NavbarProps {
   isMarketPage?: boolean;
   // isChat?: boolean;
   isHome?: boolean;
-  uniqueUrl: string;
+  // uniqueUrl?: string;
   className: string;
   harvestMessages:
     | {
@@ -26,7 +26,7 @@ const Navbar = ({
   isMarketPage = false,
   className,
   // canReceivePayouts,
-  uniqueUrl,
+  // uniqueUrl,
   harvestMessages,
 }: NavbarProps) => {
   return (
@@ -57,7 +57,7 @@ const Navbar = ({
           >
             <UserMenu
               user={user}
-              uniqueUrl={uniqueUrl}
+              // uniqueUrl={uniqueUrl}
               harvestMessages={harvestMessages}
             />
           </div>
