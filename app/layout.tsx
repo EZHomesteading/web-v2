@@ -11,8 +11,7 @@ export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
 export const metadata: Metadata = {
-  title:
-    "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
+  title: "EZHomesteading",
   description:
     "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
   keywords: [
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
-  manifest: "/manifest.json",
+  manifest: "/manifest.ts",
 };
 
 export default async function RootLayout({
