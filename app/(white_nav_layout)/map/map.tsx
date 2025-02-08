@@ -3,7 +3,6 @@
 import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useState, useEffect, useRef } from "react";
 import Loading from "@/components/secondary-loader";
-import InfoWindowCarousel from "./info-window-carousel";
 import Avatar from "@/components/Avatar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { UserRole } from "@prisma/client";
 import { OutfitFont } from "@/components/fonts";
 import { NavUser } from "@/actions/getUser";
+import InfoWindowCarousel from "./info-window-carousel";
 
 interface MapUser {
   coordinates: number[];

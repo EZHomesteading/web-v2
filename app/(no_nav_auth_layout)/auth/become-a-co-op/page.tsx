@@ -1,7 +1,7 @@
 //server layout for coop conversion
+import { createStripeConnectedAccount } from "@/actions/auth/new-stripe-acc";
 import { BecomeCoop } from "@/app/(no_nav_auth_layout)/auth/(components)/become/become-co-op-form";
 import { currentUser } from "@/lib/auth";
-import { createStripeConnectedAccount } from "@/actions/auth/createConnectedAccount";
 
 export const metadata = {
   title: "Become an EZH Co-op",

@@ -1,7 +1,7 @@
 //server layout for producer conversion
+import { createStripeConnectedAccount } from "@/actions/auth/new-stripe-acc";
 import { BecomeProducer } from "@/app/(no_nav_auth_layout)/auth/(components)/become/become-producer-form";
 import { currentUser } from "@/lib/auth";
-import { createStripeConnectedAccount } from "@/actions/auth/createConnectedAccount";
 
 export const metadata = {
   title: "Become an EZH Co-op",

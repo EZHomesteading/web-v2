@@ -1,6 +1,6 @@
 import { getNavUser, NavUser } from "@/actions/getUser";
+import Navbar from "@/components/navbar/navbar.server";
 import { Viewport } from "next";
-import Navbar from "@/components/navbar/navbar";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
