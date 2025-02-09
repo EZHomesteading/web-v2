@@ -31,6 +31,16 @@ export const metadata: Metadata = {
     type: "website",
   },
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "EZHomesteading",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "apple-touch-fullscreen": "yes",
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default async function RootLayout({
@@ -42,6 +52,11 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en">
+        <head>
+          <link rel="apple-touch-icon" href="/logo192.png" />
+          <link rel="apple-touch-icon" sizes="384x384" href="/logo384.png" />
+          <link rel="apple-touch-icon" sizes="512x512" href="/logo512.png" />
+        </head>
         <body>
           <ClientOnly>
             <SearchModal />
