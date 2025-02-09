@@ -287,7 +287,8 @@ const MarketCard = ({
           <div className={`mt-1 w-full ${OutfitFont.className}`}>
             <h3 className={`font-semibold`}>{listing.title}</h3>
             <h2 className={`text-xs font-normal`}>
-              {listing.location?.displayName || listing.user.name}
+              {listing.location?.displayName}
+              {/* // || listing.user.name} */}
             </h2>
             <p className={` text-xs font-light text-neutral-500`}>
               {listing?.location?.address[1]}, {listing?.location?.address[2]}
@@ -304,14 +305,14 @@ const MarketCard = ({
               </div>
 
               <StarRating
-                value={listing.rating.length - 1}
+                value={listing?.rating?.length - 1}
                 size={20}
                 color="#000"
               />
             </div>
 
             <div className="flex flex-col gap-1 mt-2">
-              {listing.location?.hours.pickup?.length === 0 ? (
+              {listing.location?.hours?.pickup?.length === 0 ? (
                 <div className="text-red-500 font-medium flex items-center text-xs">
                   <Clock size={14} className="mr-1" />{" "}
                   <span className="font-medium capitalize">
@@ -321,7 +322,7 @@ const MarketCard = ({
               ) : (
                 <AvailabilityScore scores={scores} type="pickup" />
               )}
-              {listing.location?.hours.delivery?.length === 0 ? (
+              {listing.location?.hours?.delivery?.length === 0 ? (
                 <div className="text-red-500 font-medium flex items-center text-xs">
                   <Clock size={14} className="mr-1" />{" "}
                   <span className="font-medium capitalize">
@@ -345,7 +346,6 @@ const MarketCard = ({
         quantityType="item"
         price={listing.price}
         onCartUpdate={handleCartUpdate}
-        basketItemIds={basketItemIds}
       />
     </div>
   );

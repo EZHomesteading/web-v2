@@ -9,6 +9,7 @@ import { getMarketListings } from "@/actions/getMarketListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import axios from "axios";
 import { Get } from "@/actions/getCart";
+import { GetMarketListingsV2 } from "@/actions/getMarketListingsV2";
 
 export interface ShopProps {
   userId?: string;
@@ -42,9 +43,13 @@ const ShopPage = async ({
 }) => {
   const page = Math.max(1, parseInt(searchParams?.page ?? "1"));
   const perPage = 36;
-  const response = await getMarketListings(searchParams, page, perPage);
+  const response = await GetMarketListingsV2(searchParams, page, perPage);
+  // const response = await getMarketListings(searchParams, page, perPage);
 
-  const { listings = [], totalItems = 0 } = response || {};
+  // const { listings = [], totalItems = 0 } = response || {};
+  const totalItems = response.totalCount;
+  const listings = response.items;
+
   let user = await getCurrentUser();
   let basketItemIds: string[] = [];
   if (user?.id) {
@@ -53,7 +58,6 @@ const ShopPage = async ({
     );
     basketItemIds = temp?.items;
   }
-  console.log("basket items", basketItemIds);
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;
