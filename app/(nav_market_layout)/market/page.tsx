@@ -42,12 +42,12 @@ const ShopPage = async ({
 }) => {
   const page = Math.max(1, parseInt(searchParams?.page ?? "1"));
   const perPage = 36;
-  const response = await GetMarketListingsV2(searchParams, page, perPage);
-  // const response = await getMarketListings(searchParams, page, perPage);
+ // const response = await GetMarketListingsV2(searchParams, page, perPage);
+  const response = await getMarketListings(searchParams, page, perPage);
 
-  // const { listings = [], totalItems = 0 } = response || {};
-  const totalItems = response.totalCount;
-  const listings = response.items;
+  const { listings = [], totalItems = 0 } = response || {};
+  // const totalItems = response.totalCount;
+  // const listings = response.items;
   for (let i = 0; i < listings.length; i++) {
     console.log(listings[i]?.imageSrc);
   }
