@@ -1,4 +1,5 @@
 import { ShopProps } from "@/app/(nav_market_layout)/market/page";
+import { GetApiUrl } from "@/utils/get-url";
 
 function buildQueryString(searchParams?: ShopProps["searchParams"]): string {
   if (!searchParams) return "";
@@ -23,8 +24,9 @@ export async function GetMarketListingsV2(
 ) {
   const queryString = buildQueryString(searchParams);
 
+  const apiUrl = GetApiUrl();
   try {
-    const response = await fetch(`http://localhost:8080/market${queryString}`, {
+    const response = await fetch(`${apiUrl}/${queryString}`, {
       next: { revalidate: 60 },
     });
 

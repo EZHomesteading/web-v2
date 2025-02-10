@@ -13,7 +13,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "EZHomesteading",
+  title:
+    "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
   description:
     "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
   keywords: [
@@ -30,6 +31,16 @@ export const metadata: Metadata = {
       "Easily find fresh, local, organic produce near you. Join a community of family scale farmers and gardeners. Sell your excess honestly organic produce that would otherwise get thrown away, canned, or given away.",
     url: "https://www.ezhomesteading.com/",
     type: "website",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "EZHomesteading",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "mobile-web-app-capable": "yes",
   },
 };
 
