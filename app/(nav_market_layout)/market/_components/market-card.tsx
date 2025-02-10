@@ -287,8 +287,7 @@ const MarketCard = ({
           <div className={`mt-1 w-full ${OutfitFont.className}`}>
             <h3 className={`font-semibold`}>{listing.title}</h3>
             <h2 className={`text-xs font-normal`}>
-              {listing.location?.displayName}
-              {/* // || listing.user.name} */}
+              {listing.location?.displayName || listing.user.name}
             </h2>
             <p className={` text-xs font-light text-neutral-500`}>
               {listing?.location?.address[1]}, {listing?.location?.address[2]}
