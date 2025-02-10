@@ -48,7 +48,7 @@ const ShopPage = async ({
   // const { listings = [], totalItems = 0 } = response || {};
   const totalItems = response.totalCount;
   const listings = response.items;
-  for (let i = 0; i < listings.length; i++) {
+  for (let i = 0; i < listings?.length; i++) {
     console.log(listings[i]?.imageSrc);
   }
   let user = await getCurrentUser();
@@ -77,7 +77,7 @@ const ShopPage = async ({
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
       emptyState={
-        listings.length === 0 ? (
+        listings?.length === 0 ? (
           <ClientOnly>
             <EmptyState showReset />
           </ClientOnly>

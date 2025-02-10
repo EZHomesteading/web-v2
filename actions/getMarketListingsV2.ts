@@ -1,32 +1,23 @@
 import { ShopProps } from "@/app/(nav_market_layout)/market/page";
 import { GetApiUrl } from "@/utils/get-url";
 
-function buildQueryString(searchParams?: ShopProps["searchParams"]): string {
-  if (!searchParams) return "";
-
-  const params = new URLSearchParams();
-
-  if (searchParams.lat) params.append("lat", searchParams.lat);
-  if (searchParams.lng) params.append("lng", searchParams.lng);
-  if (searchParams.radius) params.append("radius", searchParams.radius);
-  //   if (searchParams.cat) params.append("cat", searchParams.cat);
-  //   if (searchParams.subcat) params.append("subcat", searchParams.subcat);
-  //   if (searchParams.q) params.append("q", searchParams.q);
-
-  const queryString = params.toString();
-  return queryString ? `?${queryString}` : "";
-}
-
 export async function GetMarketListingsV2(
   searchParams?: ShopProps["searchParams"],
   page = 1,
   perPage = 36
 ) {
-  const queryString = buildQueryString(searchParams);
+  const params = new URLSearchParams({
+    page: String(page),
+    perPage: String(perPage),
+    ...(searchParams?.lat && { lat: searchParams.lat }),
+    ...(searchParams?.lng && { lng: searchParams.lng }),
+    ...(searchParams?.radius && { radius: searchParams.radius }),
+    ...(searchParams?.q && { q: searchParams.q }),
+  });
 
   const apiUrl = GetApiUrl();
   try {
-    const response = await fetch(`${apiUrl}/${queryString}`, {
+    const response = await fetch(`${apiUrl}/market?${params.toString()}`, {
       next: { revalidate: 60 },
     });
 

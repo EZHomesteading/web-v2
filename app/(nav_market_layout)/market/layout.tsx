@@ -1,6 +1,7 @@
 import { getNavUser, NavUser } from "@/actions/getUser";
 import Navbar from "@/components/navbar/navbar.server";
 import { Viewport } from "next";
+import { Suspense } from "react";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
