@@ -7,9 +7,11 @@ import SearchModal from "../components/modals/SearchModal";
 import CartModal from "../components/modals/cart-modal";
 import { Metadata } from "next";
 import { Viewport } from "next";
+
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
+
 export const metadata: Metadata = {
   title: "EZHomesteading",
   description:
@@ -29,7 +31,6 @@ export const metadata: Metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
-  manifest: "/manifest.json",
 };
 
 export default async function RootLayout({

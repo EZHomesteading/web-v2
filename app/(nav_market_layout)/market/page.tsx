@@ -7,7 +7,6 @@ import { getCurrentUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
 import { getMarketListings } from "@/actions/getMarketListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
-import axios from "axios";
 import { Get } from "@/actions/getCart";
 import { GetMarketListingsV2 } from "@/actions/getMarketListingsV2";
 
