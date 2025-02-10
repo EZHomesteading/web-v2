@@ -254,7 +254,7 @@ const MarketCard = ({
           <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
             <Carousel className="h-full w-full relative rounded-lg z-0">
               <CarouselContent className="h-full z-0">
-                {listing.imageSrc.map((src, index) => (
+                {listing?.imageSrc.map((src, index) => (
                   <CarouselItem
                     key={index}
                     className="flex items-center justify-center relative aspect-square h-full"
