@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { OrderMap } from "./page";
 import { Navigation } from "lucide-react"; // Import navigation icon
 import { OverlayView } from "@react-google-maps/api";
@@ -284,13 +284,13 @@ const RouteOptimizer = ({
     <div className="relative h-[calc(100vh-64px)]">
       <Card className="absolute top-4 left-4 z-10 w-96">
         <CardHeader>
-          <CardTitle className={outfitFont.className}>Route Overview</CardTitle>
+          <CardTitle className={OutfitFont.className}>Route Overview</CardTitle>
         </CardHeader>
         <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
           <div className="space-y-4">
             <div className="space-y-2">
               <label
-                className={`${outfitFont.className} flex items-center gap-2`}
+                className={`${OutfitFont.className} flex items-center gap-2`}
               >
                 <Switch
                   checked={useCustomEndLocation}
@@ -359,11 +359,11 @@ const RouteOptimizer = ({
             {optimizedRoute.length > 0 && (
               <div className="p-2 bg-slate-100 rounded-md space-y-4">
                 <div className="border-b pb-2">
-                  <p className={`${outfitFont.className} font-medium text-lg`}>
+                  <p className={`${OutfitFont.className} font-medium text-lg`}>
                     Route Details
                   </p>
                   <div className="mt-2 space-y-1 text-sm text-gray-600">
-                    <p className={`${outfitFont.className} font-medium`}>
+                    <p className={`${OutfitFont.className} font-medium`}>
                       Start Location:
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
@@ -406,7 +406,7 @@ const RouteOptimizer = ({
                 </div>
 
                 <div className="space-y-3">
-                  <p className={`${outfitFont.className} font-medium`}>
+                  <p className={`${OutfitFont.className} font-medium`}>
                     Stops:
                   </p>
                   {optimizedRoute.map((order, index) => (

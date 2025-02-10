@@ -1,7 +1,7 @@
 import { getNavUser } from "@/actions/getUser";
 import { Location, Order, UserRole } from "@prisma/client";
 import { Card } from "@/components/ui/card";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { getActivePickupOrders } from "@/actions/getOrdersMap";
 import LocationProvider from "./location-provider";
 
@@ -36,10 +36,10 @@ const RouteOptimizerPage = async ({
     return (
       <div className="h-[calc(100vh-64px)] flex items-center justify-center">
         <Card className="p-6 max-w-md">
-          <h1 className={`${outfitFont.className} text-xl font-semibold mb-4`}>
+          <h1 className={`${OutfitFont.className} text-xl font-semibold mb-4`}>
             Authentication Required
           </h1>
-          <p className={outfitFont.className}>
+          <p className={OutfitFont.className}>
             Please log in to use the route optimizer.
           </p>
         </Card>
