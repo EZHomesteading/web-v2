@@ -14,7 +14,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
@@ -129,17 +129,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
     </BasketProvider>
   );
 };
-// const MapsWrapper: React.FC<{
-//   mapsKey: string;
-//   children: (isLoaded: boolean) => React.ReactNode;
-// }> = ({ mapsKey, children }) => {
-//   const { isLoaded } = useLoadScript({
-//     googleMapsApiKey: mapsKey,
-//     libraries: ["places", "geometry"],
-//   });
 
-//   return <>{children(isLoaded)}</>;
-// };
 const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   baskets,
   mapsKey,
@@ -151,18 +141,14 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   // Track delivery/pickup mode for each basket
   const { updateBasketTotals } = useBasket();
   const [pickupTimes, setPickupTimes] = useState(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: mapsKey,
     libraries: ["places", "geometry"],
   });
-  console.log(isLoaded);
-  const [userActive, setUserActive] = useState(false);
+
   const [startLoc, setStartLoc] = useState<any[]>([]);
   const [endLoc, setEndLoc] = useState<any[]>([]);
-  useEffect(() => {
-    // console.log("PICKUPTIMEMEES", pickupTimes);
-  }, [pickupTimes]);
+  useEffect(() => {}, [pickupTimes]);
   const [basketModes, setBasketModes] = useState<
     Record<string, DeliveryPickupToggleMode>
   >(() =>
@@ -200,14 +186,6 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
       (acc: BasketLocation[], basket) => {
         if (basket.location) {
           const basketMode = basketModes[basket.id];
-
-          // console.log("Checking location:", {
-          //   basketId: basket.id,
-          //   mode: basketMode,
-          //   isCoop: isCoopLocation,
-          //   locationId: basket.location.id,
-          //   role: basket.location.role,
-          // });
 
           // Include location if:
           // - It's in PICKUP mode
@@ -310,7 +288,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
     );
   };
   return (
-    <div className={`${outfitFont.className} w-full pb-32`}>
+    <div className={`${OutfitFont.className} w-full  pb-32`}>
       {isLoaded ? (
         <div>
           <LocationModal
@@ -318,8 +296,8 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
             onClose={() => setShowLocationModal(false)}
             isLoaded={isLoaded}
           />
-          <div className="flex flex-col lg:flex-row px-4 lg:px-0 gap-8">
-            <div className="w-full lg:w-[65%] pt-6">
+          <div className="flex flex-col xl:flex-row px-4 xl:px-0 gap-8">
+            <div className="w-full xl:w-[65%] pt-6 xl:absolute xl:left-0 justify-start">
               <h1 className="text-4xl font-medium pb-6">My Market Baskets</h1>
               <div className="flex flex-col space-y-6">
                 {baskets.map((basket) => (
@@ -336,7 +314,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
               </div>
             </div>
 
-            <div className="w-full lg:w-[35%] lg:fixed lg:right-0 lg:mt-10 lg:top-6 lg:pr-4 pt-6 space-y-6">
+            <div className="w-full xl:w-[35%] xl:fixed xl:right-0 xl:mt-10 xl:top-6 xl:pr-4 pt-6 space-y-6">
               <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
               <AvailabilityMap
                 setStartLoc={setStartLoc}
@@ -518,7 +496,7 @@ const DetailedBasketCard: React.FC<DetailedBasketCardProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {basket.items.map((item: any, index: number) => (
           <div
             key={index}
