@@ -32,16 +32,6 @@ export const metadata: Metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "EZHomesteading",
-  },
-  other: {
-    "apple-mobile-web-app-capable": "yes",
-    "mobile-web-app-capable": "yes",
-  },
 };
 
 export default async function RootLayout({
