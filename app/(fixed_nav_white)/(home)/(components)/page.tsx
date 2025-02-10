@@ -1,13 +1,12 @@
 //server side page layout for the homepage
-
 import { UserRole } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-
-import AdminHome from "./admin-home";
 import NoAuthHome from "./no-auth-home";
 import Stripe from "stripe";
 import { getUserById } from "@/data/user";
+import AdminHome from "./admin-home";
+
 const HomePage = async () => {
   const user = await currentUser();
   let fullUser: any = user;

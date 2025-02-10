@@ -1,8 +1,8 @@
 import { getNavUser, NavUser, BasketLocation } from "@/actions/getUser";
 import BasketCard from "./card.basket";
 import BasketClient from "./client.basket";
-import Navbar from "@/components/navbar/Navbar";
 import { Basket_ID_Page } from "basket";
+import Navbar from "@/components/navbar/navbar.server";
 
 interface p {
   basket: Basket_ID_Page;

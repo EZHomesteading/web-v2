@@ -3,7 +3,7 @@ import { Viewport } from "next";
 import authCache from "@/auth-cache";
 import { getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
-import { outfitFont } from "../../../components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
 import NewLocHours from "@/app/(no-nav_layout)/new-location-and-hours/_components/new-loc-hours.client";
 
@@ -57,7 +57,7 @@ const Page = async () => {
         </>
       ) : (
         <div
-          className={`${outfitFont.className} flex flex-col items-center justify-center h-screen gap-y-2`}
+          className={`${OutfitFont.className} flex flex-col items-center justify-center h-screen gap-y-2`}
         >
           You have reached the maximum of 3 selling locations
           <Link

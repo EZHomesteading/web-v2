@@ -14,6 +14,7 @@ export const publicRoutes = [
   "/api/user/marker-info",
   "/api/uploadthing",
   "/api/cron",
+  "/auth/reset-password",
 
   // "/api/baskets/active", //why does this need to be public for route to work
   // "/api/baskets/get/unique",
@@ -27,11 +28,10 @@ export const publicRoutes = [
 export const authRoutes = [
   "/auth/login",
   "/auth/register",
+  "/auth/reset",
+  "/auth/reset-password",
   "/auth/register-co-op",
   "/auth/register-producer",
-  "/auth/error",
-  "/auth/reset",
-  "/auth/new-password",
   "/api/stripe/create-connected-account",
 ];
 

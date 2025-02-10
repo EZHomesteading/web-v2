@@ -1,13 +1,9 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { OutfitFont } from "@/components/fonts";
 
 interface Coordinates {
   lat: number;
@@ -68,7 +64,7 @@ const AskZipModal = ({ isOpen, onClose }: AskZipModalProps) => {
     setError("");
 
     if (!validateZipCode(zipCode)) {
-      setError("Please enter a valid 5-digit zip code");
+      setError("Please enter a valid ZIP code");
       return;
     }
 
@@ -82,7 +78,6 @@ const AskZipModal = ({ isOpen, onClose }: AskZipModalProps) => {
 
       localStorage.setItem("userLocation", JSON.stringify(locationData));
 
-      // Create the URL with search parameters
       const searchParams = new URLSearchParams({
         lat: coords.lat.toString(),
         lng: coords.lng.toString(),
@@ -103,17 +98,19 @@ const AskZipModal = ({ isOpen, onClose }: AskZipModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Enter Your Location</DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        className={`p-3 m-0 w-[calc(100%-1rem)] max-w-sm rounded-sm ${OutfitFont.className}`}
+      >
+        <DialogTitle className={`mt-1`}>
+          Help us find produce near you
+        </DialogTitle>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="zipCode"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-normal text-gray-700 mb-1"
             >
-              ZIP Code
+              Please enter your zip code to ensure results are local
             </label>
             <Input
               id="zipCode"
@@ -125,20 +122,19 @@ const AskZipModal = ({ isOpen, onClose }: AskZipModalProps) => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setZipCode(e.target.value)
               }
-              placeholder="Enter ZIP code"
-              className="w-full"
+              placeholder="ZIP Code"
+              className={`w-full rounded-sm h-12 border-custom shadow-sm font-normal`}
             />
             {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
           </div>
-          <div className="flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
+          <div className="flex justify-between">
+            <button
+              className={`border border-custom px-2 rounded-sm`}
               onClick={onClose}
               disabled={loading}
             >
               Cancel
-            </Button>
+            </button>
             <Button
               type="submit"
               disabled={loading}

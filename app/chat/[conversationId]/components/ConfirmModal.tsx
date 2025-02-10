@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
 import useConversation from "@/hooks/messenger/useConversation";
-import { toast } from "react-hot-toast";
+import Toast from "@/components/ui/toast";
 
 interface ConfirmModalProps {
   isOpen?: boolean;
@@ -40,7 +40,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         router.push("/chat");
         router.refresh();
       })
-      .catch(() => toast.error("Something went wrong!"))
+      .catch(() => Toast({ message: "Something went wrong!" }))
       .finally(() => setIsLoading(false));
   }, [router, conversationId, onClose]);
 

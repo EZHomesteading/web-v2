@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
-import toast from "react-hot-toast";
 
 interface IParams {}
 
@@ -18,7 +17,6 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   const { rating, review, reviewedId, reviewerId, buyer } =
     await request.json();
   if (user.id === reviewedId && buyer === true) {
-    toast.error("Can't review own products");
     return;
   }
   const newReview = await prisma.reviews.create({

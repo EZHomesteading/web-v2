@@ -1,19 +1,18 @@
 "use client";
 
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, useMemo } from "react";
-import DateState2 from "./DateState2";
+import { useState, useEffect } from "react";
 import NotifyModal from "./NotifyModal";
-import { Availability, Hours, orderMethod, User } from "@prisma/client";
+import { Hours, User } from "@prisma/client";
 import { FinalListing } from "@/actions/getListings";
 import ReactStars from "react-stars";
 import ConfirmModal from "./ConfirmModal";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 import { useBasket } from "@/hooks/listing/use-basket";
-import { toast } from "sonner";
 import { Loader2, ShoppingCart, Trash } from "lucide-react";
-import { hasAvailableHours } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
+import Toast from "@/components/ui/toast";
+import Link from "next/link";
 
 interface ListingInfoProps {
   listingId: string;
@@ -104,7 +103,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     if (stock && quantity < stock) {
       setQuantity(quantity + 1);
     } else {
-      toast.error("Cannot exceed available stock");
+      Toast({ message: "You cannot buy more than the available stock" });
     }
   };
 
@@ -113,14 +112,23 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     if (quantity > minQuantity) {
       setQuantity(quantity - 1);
     } else {
-      toast.error(`Minimum order is ${minQuantity} ${quantityType}`);
+      Toast({
+        type: "error",
+        message: `Minimum order is ${minQuantity} ${quantityType} for this item`,
+      });
     }
   };
 
-  // basket handlers
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
-      toast.error("Please login to add items to your Wish List");
+      Toast({
+        message: "Please sign in to add items to your wish list",
+        details: (
+          <Link href="/auth/login" className={`underline text-sky-200`}>
+            Go to sign in page
+          </Link>
+        ),
+      });
       return;
     }
 
@@ -133,7 +141,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         setExistingItem(null);
       }
     } catch (error) {
-      toast.error("Failed to update basket");
+      Toast({ message: "Failed to update basket" });
     }
   };
 
@@ -261,7 +269,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         border-neutral-200 
         overflow-hidden
         gap-1 
-        p-2 ${outfitFont.className}`}
+        p-2 ${OutfitFont.className}`}
       >
         <Button
           onClick={() => setConfirmmOpen(true)}
@@ -271,7 +279,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           Report Listing
         </Button>
         <div
-          className={`${zillaFont.className}
+          className={`${ZillaFont.className}
           text-lg font-light text-neutral-500 p-2`}
         >
           {renderRating()}

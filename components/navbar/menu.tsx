@@ -4,21 +4,18 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { UserRole } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover-navbar";
-import MenuItem from "./MenuItem";
+import MenuItem from "./menu-item";
 import NotificationIcon from "./icons/notification";
-import CartIcon from "./icons/cart-icon";
-import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { NavUser } from "@/actions/getUser";
-import { iconMap } from "./icon-map";
-import placeholder from "@/public/images/website-images/placeholder.jpg";
+import { iconMap } from "./icons/icon-map";
 import axios from "axios";
 import { toast } from "sonner";
 import { IconType } from "react-icons";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
+import { IoIosMenu } from "react-icons/io";
 
 type MenuIconItem = IconItem | ComponentItem;
 
@@ -36,50 +33,26 @@ type ComponentItem = {
 
 interface Props {
   user?: NavUser;
-  uniqueUrl: string;
+  // uniqueUrl: string;
   harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
 }
 interface p {
   image: string | null | undefined;
 }
-const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
+const UserMenu: React.FC<Props> = ({ user, harvestMessages }) => {
   const router = useRouter();
   const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
   const pathname = usePathname();
   const selling = pathname?.startsWith("/selling");
-
-  const MenuIcon = ({ image }: p) => {
+  const MenuIcon = () => {
     return (
       <>
-        {!isMdOrLarger ? (
-          <>
-            <PopoverTrigger
-              asChild
-              className="flex flex-col items-center sm:hidden hover:cursor-pointer"
-            >
-              <IconWrapper
-                icon={iconMap.CiMenuFries}
-                label="Menu"
-                onClick={() => {}}
-              />
-            </PopoverTrigger>
-          </>
-        ) : (
-          <>
-            {" "}
-            <PopoverTrigger className="relative shadow-md border-[1px] mb-2 py-1 px-2 rounded-full hidden sm:flex justify-center items-center hover:cursor-pointer">
-              <iconMap.IoIosMenu className={`w-8 h-8 mr-1 `} />
-              <Image
-                src={image || placeholder}
-                alt="Profile Image"
-                height={25}
-                width={25}
-                className="object-fit rounded-full"
-              />
-            </PopoverTrigger>
-          </>
-        )}
+        <>
+          <PopoverTrigger>
+            <MenuWrapper icon={IoIosMenu} label="Menu" />
+          </PopoverTrigger>
+        </>
       </>
     );
   };
@@ -111,7 +84,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
           axios.post("/api/useractions/update", {
             role: UserRole.PRODUCER,
             hasPickedRole: false,
-            url: uniqueUrl,
+            // url: uniqueUrl,
           }),
         ]);
 
@@ -120,8 +93,6 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
         }
 
         const stripeData = await stripeResponse.json();
-        console.log("Stripe connected account created:", stripeData);
-        console.log("User role updated successfully:", userUpdateResponse.data);
       } catch (error) {
         console.error("Error in consumer API calls:", error);
         toast.warning(
@@ -149,10 +120,10 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
   const renderIcons = () => {
     const icons: MenuIconItem[] = [
       {
-        key: "home",
-        icon: iconMap.Barn,
-        label: "Home",
-        onClick: () => router.push("/"),
+        key: "chat",
+        icon: iconMap.PiChatCircleThin,
+        label: "Chat",
+        onClick: () => router.push("/chat"),
       },
       {
         key: "map",
@@ -221,9 +192,9 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
     <>
       <Popover>
         {renderIcons()}
-        <MenuIcon image={user?.image} />
+        <MenuIcon />
         <PopoverContent
-          className={`${outfitFont.className} mb-1 w-screen sm:h-fit sm:mt-[.95rem] sm:rounded-xl rounded-none h-[calc(100vh-100px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] text-sm`}
+          className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
           align="end"
           alignOffset={0}
         >
@@ -323,7 +294,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               )}
               <div className={`border-t my-2`} />
               <MenuItem label="Sign Out" onClick={() => signOut()} />
-              {showInstallBtn &&
+              {/* {showInstallBtn &&
                 !window.matchMedia("(display-mode: standalone)").matches && (
                   <Button
                     className="w-full"
@@ -331,7 +302,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                   >
                     Install EZH App
                   </Button>
-                )}
+                )} */}
             </>
           ) : (
             <>
@@ -340,7 +311,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                   <MenuItem onClick={() => {}} label="Sign Up" />
                 </SheetTrigger>
                 <SheetContent
-                  className={`${outfitFont.className} min-h-screen w-screen d1dbbf `}
+                  className={`${OutfitFont.className} min-h-screen w-screen `}
                 >
                   <div className="h-full flex flex-col items-center justify-center px-10">
                     <ul className="w-full max-w-3xl">
@@ -364,9 +335,8 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
                         <li
                           key={item.href}
                           className={`w-full ${
-                            index === 1
-                              ? "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
-                              : ""
+                            index === 1 &&
+                            "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
                           }`}
                         >
                           <Link
@@ -402,12 +372,6 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
               />
               <MenuItem label="Market" onClick={() => router.push("/market")} />
               <MenuItem label="Map" onClick={() => router.push("/map")} />
-              {/* <Button
-                className={`w-full rounded-none`}
-                onClick={() => router.push("/get-ezh-app")}
-              >
-                Install the EZH App
-              </Button> */}
             </>
           )}
         </PopoverContent>
@@ -419,7 +383,7 @@ const UserMenu: React.FC<Props> = ({ user, uniqueUrl, harvestMessages }) => {
 const IconWrapper: React.FC<{
   icon: React.ElementType;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
 }> = ({ icon: Icon, label, onClick }) => {
   return (
     <button
@@ -427,8 +391,19 @@ const IconWrapper: React.FC<{
       onClick={onClick}
     >
       <Icon className={`h-8 w-8  `} />
-      <div className={`text-xs ${outfitFont.className} `}>{label}</div>
+      <div className={`text-xs ${OutfitFont.className} `}>{label}</div>
     </button>
+  );
+};
+const MenuWrapper: React.FC<{
+  icon: React.ElementType;
+  label: string;
+}> = ({ icon: Icon, label }) => {
+  return (
+    <div className="flex flex-col pb-4 sm:pb-2 items-center justify-center hover:cursor-pointer">
+      <Icon className={`h-8 w-8  `} />
+      <div className={`text-xs ${OutfitFont.className} `}>{label}</div>
+    </div>
   );
 };
 

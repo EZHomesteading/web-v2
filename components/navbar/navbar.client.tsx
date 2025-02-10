@@ -1,7 +1,7 @@
-import Logo from "@/components/navbar/Logo";
-import UserMenu from "./UserMenu";
+import UserMenu from "./menu";
 import FindListingsComponent from "@/components/listings/search-listings";
 import { NavUser } from "@/actions/getUser";
+import Logo from "./Logo";
 
 interface NavbarProps {
   user?: NavUser;
@@ -9,7 +9,7 @@ interface NavbarProps {
   isMarketPage?: boolean;
   // isChat?: boolean;
   isHome?: boolean;
-  uniqueUrl: string;
+  // uniqueUrl?: string;
   className: string;
   harvestMessages:
     | {
@@ -26,7 +26,7 @@ const Navbar = ({
   isMarketPage = false,
   className,
   // canReceivePayouts,
-  uniqueUrl,
+  // uniqueUrl,
   harvestMessages,
 }: NavbarProps) => {
   return (
@@ -57,7 +57,7 @@ const Navbar = ({
           >
             <UserMenu
               user={user}
-              uniqueUrl={uniqueUrl}
+              // uniqueUrl={uniqueUrl}
               harvestMessages={harvestMessages}
             />
           </div>

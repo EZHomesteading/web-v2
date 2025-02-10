@@ -1,6 +1,5 @@
 "use client";
 //my listings page
-import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FinalListing } from "@/actions/getListings";
 import { AlertCircle } from "lucide-react";
 import { UserInfo } from "next-auth";
+import Toast from "@/components/ui/toast";
 
 interface ListingsClientProps {
   canReceivePayouts: boolean;
@@ -52,11 +52,11 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
       axios
         .delete(`/api/listing/listings/${id}`)
         .then(() => {
-          toast.success("Listing deleted");
+          Toast({ message: "Listing deleted" });
           router.refresh();
         })
         .catch((error) => {
-          toast.error(error?.response?.data?.error);
+          Toast({ message: error?.response?.data?.error });
         })
         .finally(() => {
           setDeletingId("");

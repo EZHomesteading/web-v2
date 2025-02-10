@@ -1,4 +1,3 @@
-import React from "react";
 import {
   PiCalendarCheckThin,
   PiChatCircleThin,
@@ -12,6 +11,7 @@ import {
 import { CiSettings } from "react-icons/ci";
 import UserInfoCard from "../_components/user-info-card";
 import MenuCard from "../_components/menu-card";
+
 const menuItems = [
   {
     title: "To-Dos",

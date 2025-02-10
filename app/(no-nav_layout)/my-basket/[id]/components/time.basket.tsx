@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { outfitFont } from "@/components/fonts";
-import Wheel from "../../../../(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/wheel";
+import { OutfitFont } from "@/components/fonts";
+import Wheel from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/wheel";
 import { DeliveryPickupToggleMode } from "../../../../(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 interface TimePickerProps {
   value: string;
@@ -71,7 +71,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, mode }) => {
   };
   return (
     <div
-      className={`${outfitFont.className} 
+      className={`${OutfitFont.className} 
         
        flex flex-col items-center w-full`}
     >

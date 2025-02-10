@@ -6,7 +6,7 @@ import { orderMethod } from "@prisma/client";
 import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import SetCustomPickupDeliveryCalendar from "./calendar.listing";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 const DateOverlay = ({
   errorType,
@@ -87,7 +87,7 @@ const DateOverlay = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className={`fixed inset-2 m-auto  bg-white rounded-lg px-4 h-calc(100vw-.5rem) md:max-h-[28rem] max-w-2xl zmax w-calc(100vw-.5rem) border p-0 ${outfitFont.className}`}
+              className={`fixed inset-2 m-auto  bg-white rounded-lg px-4 h-calc(100vw-.5rem) md:max-h-[28rem] max-w-2xl zmax w-calc(100vw-.5rem) border p-0 ${OutfitFont.className}`}
             >
               <div className="relative h-full bg-white rounded-3xl flex flex-col  pt-14">
                 <div className={`flex flex-col justify-start `}>

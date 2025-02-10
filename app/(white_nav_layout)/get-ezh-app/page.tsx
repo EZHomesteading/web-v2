@@ -6,7 +6,7 @@ import { FaLinux } from "react-icons/fa";
 import PwaInstall from "./pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
-import Navbar from "../../../components/navbar/Navbar";
+import Navbar from "../../../components/navbar/navbar";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 
 import { NavUser } from "@/actions/getUser";

@@ -1,44 +1,50 @@
-import mongoose from 'mongoose';
-import connectMongoose from '@/lib/mongoose';
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import mongoose from "mongoose";
+import connectMongoose from "@/lib/mongoose";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {
     await connectMongoose();
     const { searchParams } = new URL(req.url);
-    const lat = parseFloat(searchParams.get('lat') || '0');
-    const lng = parseFloat(searchParams.get('lng') || '0');
-    const radius = parseInt(searchParams.get('radius') || '10000');
+    const lat = parseFloat(searchParams.get("lat") || "0");
+    const lng = parseFloat(searchParams.get("lng") || "0");
+    const radius = parseInt(searchParams.get("radius") || "10000");
 
     const geoQuery = {
       coordinates: {
         $near: {
           $geometry: {
-            type: 'Point',
-            coordinates: [lng, lat]
+            type: "Point",
+            coordinates: [lng, lat],
           },
-          $maxDistance: radius
-        }
-      }
+          $maxDistance: radius,
+        },
+      },
     };
-    
-    const nearbyLocations = await mongoose.models.Location.find(geoQuery).select('_id').lean().exec();
-console.log(nearbyLocations)
+
+    const nearbyLocations = await mongoose.models.Location.find(geoQuery)
+      .select("_id")
+      .lean()
+      .exec();
     if (!nearbyLocations || nearbyLocations.length === 0) {
       return NextResponse.json({ count: 0 }, { status: 404 });
     }
-    const locationIds = nearbyLocations.map((location) => location._id as string);
+    const locationIds = nearbyLocations.map(
+      (location) => location._id as string
+    );
 
     const listingsCount = await prisma.listing.count({
       where: {
-        locationId: { in: locationIds }
-      }
+        locationId: { in: locationIds },
+      },
     });
-    console.log(listingsCount)
     return NextResponse.json({ count: listingsCount });
   } catch (error) {
-    return NextResponse.json({ message: 'Internal server error', error: String(error) }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error", error: String(error) },
+      { status: 500 }
+    );
   } finally {
     await prisma.$disconnect();
   }

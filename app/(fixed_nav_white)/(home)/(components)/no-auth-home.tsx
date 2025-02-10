@@ -4,7 +4,7 @@ import Image from "next/image";
 import homebg from "@/public/images/website-images/vegetables_bg.webp";
 import homebg3 from "@/public/images/website-images/home-bg-3.jpg";
 import homebg2 from "@/public/images/website-images/farmers-market-home.jpg";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { PiArrowRightThin } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import AskZipModal from "./AskZipModal";
@@ -23,6 +23,7 @@ const footerNavigation = {
     { name: "Settings", href: "/dashboard/account-settings/general" },
   ],
 };
+
 interface Props {
   user: any;
 }
@@ -51,12 +52,12 @@ const Home = ({ user }: Props) => {
         <div
           className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%]`}
         >
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <header className="!text-black">
               <div
-                className={`${outfitFont.className} text-green-600 text-[3rem] sm:text-[4rem] 2xl:text-[5rem] font-extrabold tracking-tight`}
+                className={`${OutfitFont.className} text-green-600 text-2xl font-extrabold tracking-tight`}
               >
-                {!user ? "Welcome" : `Welcome, ${user.name}`}
+                {user && `Welcome, ${user.name}`}
               </div>
               <p className="text-lg 2xl:text-3xl font-medium text-black drop-shadow-md">
                 Easily Find
@@ -176,7 +177,7 @@ const Home = ({ user }: Props) => {
           </section>
         </div>
         <div
-          className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%]`}
+          className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[60%] sm:pt-[10%]`}
         >
           <section
             className={`bg-white sm:w-[30rem] sm:h-[30rem] rounded-lg relative`}
@@ -188,7 +189,7 @@ const Home = ({ user }: Props) => {
               className="object-cover rounded-lg shadow-xl"
             />
           </section>
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <div
               id="h2"
               className="2xl:text-5xl text-sm font-bold tracking-tight mb-2 outfit"
@@ -211,12 +212,12 @@ const Home = ({ user }: Props) => {
         <div
           className={`flex flex-col sm:flex-row px-2 items-center justify-evenly w-full pt-[30%] sm:pt-[10%] pb-40`}
         >
-          <section className={`${outfitFont.className}`}>
+          <section className={`${OutfitFont.className}`}>
             <div
               id="h3"
               className="2xl:text-5xl text-sm font-bold tracking-tight"
             >
-              <h1 className={outfitFont.className}>Become an EZH Producer</h1>
+              <h1 className={OutfitFont.className}>Become an EZH Producer</h1>
               <ul className="2xl:text-lg text-sm font-medium mb-2">
                 <li>Never let your homegrown produce go to waste again</li>
                 <li>

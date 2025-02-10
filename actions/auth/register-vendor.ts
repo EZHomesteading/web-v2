@@ -32,7 +32,6 @@ export const register = async (
 
   const user = await prisma.user.create({
     data: {
-      firstName,
       name,
       email,
       phoneNumber,

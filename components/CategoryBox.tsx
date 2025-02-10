@@ -4,7 +4,7 @@ import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { IconType } from "react-icons";
-import { o } from "../selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { OutfitFont } from "./fonts";
 
 interface CategoryBoxProps {
   icon: IconType;
@@ -63,7 +63,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     >
       <Icon size={25} />
 
-      <div className={`${o.className} font-medium text-[8px] sm:text-sm`}>
+      <div
+        className={`${OutfitFont.className} font-medium text-[8px] sm:text-sm`}
+      >
         {label}
       </div>
     </div>

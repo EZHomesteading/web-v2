@@ -13,20 +13,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CardWrapper } from "../login/card-wrapper-login";
+import { CardWrapper } from "../login/auth-card-wrapper";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { register } from "@/actions/auth/register";
 import { useSearchParams } from "next/navigation";
 import PasswordInput from "./password-input";
-import { Zilla_Slab } from "next/font/google";
-
-const zilla = Zilla_Slab({
-  display: "swap",
-  weight: "400",
-  subsets: ["latin"],
-});
+import { OutfitFont } from "@/components/fonts";
 
 const RegisterForm = () => {
   const searchParams = useSearchParams();
@@ -75,18 +69,18 @@ const RegisterForm = () => {
     });
   };
 
-  useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      console.log("Form values changed:", value);
-      console.log("Changed field:", name);
-      console.log("Type of change:", type);
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+  // useEffect(() => {
+  //   const subscription = form.watch((value, { name, type }) => {
+  //     console.log("Form values changed:", value);
+  //     console.log("Changed field:", name);
+  //     console.log("Type of change:", type);
+  //   });
+  //   return () => subscription.unsubscribe();
+  // }, [form]);
 
   return (
     <>
-      <div className="flex items-top justify-center">
+      <div className={`${OutfitFont.className} flex items-top justify-center`}>
         <CardWrapper
           backButtonLabel="Already have an account?"
           backButtonHref="/auth/login"
@@ -95,7 +89,7 @@ const RegisterForm = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-2 flex flex-col items-center"
+              className="flex flex-col items-center"
             >
               {!showFullForm ? (
                 <>
@@ -109,9 +103,9 @@ const RegisterForm = () => {
                           <Input
                             {...field}
                             disabled={isPending}
-                            placeholder="john.doe@example.com"
+                            placeholder="johnnyappleseed@gmail.com"
                             type="email"
-                            className="w-full"
+                            className={`w-full `}
                           />
                         </FormControl>
                         <FormMessage />
@@ -121,12 +115,12 @@ const RegisterForm = () => {
 
                   <Button
                     type="button"
-                    className={`${zilla.className} w-[280px] sm:w-[350px]`}
+                    className={`mt-4 w-[280px] sm:w-[350px]`}
                     onClick={handleContinueWithEmail}
                   >
                     Continue with Email
                   </Button>
-                  <div className={`${zilla.className}`}>OR</div>
+                  <div className={`${OutfitFont.className} pt-3`}>OR</div>
                 </>
               ) : (
                 <>
@@ -199,7 +193,7 @@ const RegisterForm = () => {
                   <Button
                     disabled={isPending}
                     type="submit"
-                    className="w-[280px] sm:w-[350px]"
+                    className="w-[280px] sm:w-[350px] mt-2"
                   >
                     Create an account
                   </Button>

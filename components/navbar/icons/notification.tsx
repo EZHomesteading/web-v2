@@ -7,7 +7,7 @@ import { FaComment } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { PiBellThin } from "react-icons/pi";
 import { navBuyOrder, navSellOrder } from "order-types";
-import { outfitFont } from "../../fonts";
+import { OutfitFont } from "../../fonts";
 
 interface Props {
   bOrders?: navBuyOrder[];
@@ -85,13 +85,13 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
         <SheetTrigger className="pb-2 hover:cursor-pointer relative flex flex-col items-center">
           <PiBellThin className={`h-8 w-8  bell-icon`} />
           <div
-            className={`${outfitFont.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
+            className={`${OutfitFont.className} font-extralight  absolute top-[1px] right-[-5px] text-green bg-red-400 text-white rounded-full w-4 p-[1px] text-xs`}
           >
             {notifications.length}
           </div>
 
           <div
-            className={`text-xs pb-2 font-medium sm:pb-0 ${outfitFont.className}`}
+            className={`text-xs pb-2 font-medium sm:pb-0 ${OutfitFont.className}`}
           >
             Alerts
           </div>

@@ -7,7 +7,7 @@ import Image from "next/image";
 import homebg from "@/public/images/website-images/ezh-bg5.jpg";
 import { useRouter } from "next/navigation";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;
@@ -44,7 +44,7 @@ const ProducerHome = ({ user, canReceivePayouts }: Props) => {
       </div>
       <header className="py-12 z-[3]">
         <h1 className="2xl:text-5xl text-3xl font-bold tracking-tight f">
-          <div className={`${outfitFont.className} `}>
+          <div className={`${OutfitFont.className} `}>
             <span className="text-green-200 tracking font-medium">
               Ready to get started
             </span>

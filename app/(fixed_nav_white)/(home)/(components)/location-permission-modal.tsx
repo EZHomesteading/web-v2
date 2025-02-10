@@ -1,15 +1,9 @@
 "use client";
-import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
 import Draggable from "react-draggable";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { OutfitFont } from "@/components/fonts";
 
 const LocationPermissionPopup = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -58,7 +52,7 @@ const LocationPermissionPopup = () => {
         ref={nodeRef}
         style={{ opacity }}
         className={`
-          ${outfit.className}
+          ${OutfitFont.className}
           fixed top-10 left-2 bg-green-100 text-black px-4 py-2 rounded-xl 
           border-[1px] border-slate-500 shadow-md z-50 cursor-move hover:cursor-pointer
           transition-opacity duration-300 ease-in-out

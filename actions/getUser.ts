@@ -497,6 +497,7 @@ const getUserStore = async (params: IStoreParams): Promise<any | null> => {
           select: {
             id: true,
             displayName: true,
+            address: true,
           },
         },
       },
@@ -550,7 +551,19 @@ const GetStoreByLocation = async (params: IStoreLocationParams) => {
         location: true,
       },
     });
-    return listings;
+    if (listings.length === 0) {
+      return { listings: [], user: null, location: null };
+    }
+    const { user, location } = listings[0];
+
+    return {
+      listings: listings.map((listing) => {
+        const { user, location, ...listingData } = listing;
+        return listingData;
+      }),
+      user,
+      location,
+    };
   } catch (error) {
     console.error(error);
   }
@@ -564,7 +577,6 @@ const getCurrentUser = async () => {
         where: {
           id: session?.user?.id,
         },
-        // include: { cart: true },
       });
 
       if (!user) {

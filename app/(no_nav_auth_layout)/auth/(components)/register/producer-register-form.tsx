@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CardWrapper } from "@/app/(no_nav_auth_layout)/auth/(components)/login/card-wrapper-login";
+import { CardWrapper } from "@/app/(no_nav_auth_layout)/auth/(components)/login/auth-card-wrapper";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
@@ -59,10 +59,11 @@ export const ProducerRegisterForm = () => {
     <CardWrapper
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
+      className={`mb-4`}
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-2">
             <>
               <FormField
                 control={form.control}
@@ -75,7 +76,6 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Johnny"
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -93,7 +93,6 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Appleseed Farm"
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -112,7 +111,6 @@ export const ProducerRegisterForm = () => {
                         disabled={isPending}
                         placeholder="jappleseedfarms@example.com"
                         type="email"
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,7 +138,6 @@ export const ProducerRegisterForm = () => {
                         defaultCountry="US"
                         countrySelectProps={{ disabled: true }}
                         maxLength={14}
-                        className="font-light"
                       />
                     </FormControl>
                     <FormMessage />
@@ -164,7 +161,6 @@ export const ProducerRegisterForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="******"
-                        className="font-light"
                         type={showPassword ? "text" : "password"}
                       />
                     </FormControl>

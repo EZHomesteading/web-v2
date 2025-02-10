@@ -14,7 +14,7 @@ import {
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import ListingHead from "@/components/listings/ListingHead";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import Link from "next/link";
 import {
   PiArrowLeftThin,
@@ -88,7 +88,7 @@ export default async function ListingPage({
       <>
         <div
           id="modal-root"
-          className={`w-full max-w-5xl relative mx-auto ${outfitFont.className}`}
+          className={`w-full max-w-5xl relative mx-auto ${OutfitFont.className}`}
         >
           <div className={`fixed top-0 w-full max-w-5xl z-10 bg-white`}>
             <div

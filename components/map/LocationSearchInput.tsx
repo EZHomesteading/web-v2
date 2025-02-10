@@ -10,7 +10,6 @@ interface LocationSearchInputProps {
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
   onLocationSelect: (latLng: google.maps.LatLngLiteral) => void;
-  apiKey: string;
   className?: string;
   showIcon?: boolean;
 }
@@ -19,7 +18,6 @@ const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
   address,
   setAddress,
   onLocationSelect,
-  apiKey,
   className,
   showIcon = true,
 }) => {

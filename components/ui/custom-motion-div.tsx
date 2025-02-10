@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 import ReactDOM from "react-dom";
 interface p {
@@ -42,7 +42,7 @@ const MotionDiv = ({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
-                className={`fixed inset-0 flex items-center justify-center zmax ${className} ${outfitFont.className}`}
+                className={`fixed inset-0 flex items-center justify-center zmax ${className} ${OutfitFont.className}`}
               >
                 <div className="relative bg-white rounded-3xl flex flex-col w-full h-full">
                   <button

@@ -4,9 +4,11 @@ import Avatar from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 import Link from "next/link";
+
 interface p {
   sellerNav?: boolean;
 }
+
 const UserInfoCard = ({ sellerNav = false }: p) => {
   const user = useCurrentUser();
   const link = sellerNav ? `/store/${user?.url}` : `/profile/${user?.id}`;

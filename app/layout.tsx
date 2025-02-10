@@ -7,9 +7,11 @@ import SearchModal from "../components/modals/SearchModal";
 import CartModal from "../components/modals/cart-modal";
 import { Metadata } from "next";
 import { Viewport } from "next";
+
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
 };
+
 export const metadata: Metadata = {
   title:
     "EZHomesteading - Fresh, Local, Organic Produce | Virtual Farmer's Market",
@@ -31,6 +33,15 @@ export const metadata: Metadata = {
     type: "website",
   },
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "EZHomesteading",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default async function RootLayout({

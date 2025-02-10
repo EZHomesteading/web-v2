@@ -82,6 +82,15 @@ export const ResetSchema = z.object({
   }),
 });
 
+export const ResetPasswordSchema = z.object({
+  newPassword: z.string().min(4, {
+    message: "Minimum 4 characters required",
+  }),
+  confirmNewPassword: z
+    .string()
+    .min(4, { message: "Minimum 4 characters required" }),
+});
+
 export const LoginSchema = z.object({
   email: z.string().min(1, {
     message: "Email or username is required",
@@ -91,7 +100,6 @@ export const LoginSchema = z.object({
   }),
   code: z.optional(z.string()),
 });
-
 export const RegisterVendorSchema = z
   .object({
     firstName: z.string().min(1, {

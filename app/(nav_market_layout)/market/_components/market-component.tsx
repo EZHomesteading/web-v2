@@ -1,10 +1,7 @@
 //render market product cards on server, with toggle cart buttons
-import Container from "@/components/Container";
-import ClientOnly from "@/components/client/ClientOnly";
 import Link from "next/link";
-import SessionStorageManager from "@/components/sessionStorageManager";
 import { UserInfo } from "next-auth";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
@@ -42,6 +39,7 @@ export interface MarketListing {
     name: string;
   };
 }
+
 interface ShopProps {
   listings: MarketListing[];
   user?: UserInfo;
@@ -52,6 +50,7 @@ interface ShopProps {
   isPageOutOfRange: boolean;
   pageNumbers: number[];
   currentPage: number;
+  basketItemIds: string[];
 }
 
 const Shop = ({
@@ -62,6 +61,7 @@ const Shop = ({
   isPageOutOfRange,
   pageNumbers,
   currentPage,
+  basketItemIds,
 }: ShopProps) => {
   let imageCount = 0;
   return (
@@ -78,6 +78,7 @@ const Shop = ({
                 key={index}
                 listing={listing}
                 imageCount={imageCount}
+                basketItemIds={basketItemIds}
               />
             ))}
           </MarketGrid>
@@ -87,7 +88,7 @@ const Shop = ({
         <>
           {isPageOutOfRange && (
             <div
-              className={`flex justify-center items-end my-4 ${outfitFont.className}`}
+              className={`flex justify-center items-end my-4 ${OutfitFont.className}`}
             >
               <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
                 {pageNumbers.map((pageNumber, index) => (

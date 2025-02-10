@@ -6,7 +6,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { UserInfo } from "next-auth";
-import { outfitFont, workFont } from "@/components/fonts";
+import { OutfitFont, WorkFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
 import AvailabilityScore from "./availabilityScore";
@@ -17,6 +17,14 @@ interface ListingCardProps {
   listing: MarketListing;
   user?: UserInfo;
   imageCount: number;
+  basketItemIds?: string[];
+}
+
+interface StoreLocationCardProps {
+  listing: MarketListing;
+  user?: UserInfo;
+  imageCount: number;
+  location?: any;
 }
 
 const StarRating = ({
@@ -120,14 +128,18 @@ interface ScoreResult {
   };
 }
 
-const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
+const MarketCard = ({
+  listing,
+  imageCount,
+  user,
+  basketItemIds,
+}: ListingCardProps) => {
   const handleCartUpdate = (inCart: boolean, quantity: number) => {
     console.log(
       `Cart updated: ${inCart ? "Added" : "Removed"} ${quantity} items`
     );
   };
   const locHours = listing?.location?.hours;
-  //console.log(locHours);
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
   ): ScoreResult {
@@ -152,7 +164,6 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
       return date.toISOString().split("T")[0];
     });
 
-    // Filter hours to only include next 7 days
     const relevantHours = hours.filter((hour) => {
       const hourDate = new Date(hour.date).toISOString().split("T")[0];
       return next7Days.includes(hourDate);
@@ -161,7 +172,6 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
     let workingmanScore = 0;
     let retireeScore = 0;
 
-    // Calculate coverage percentage for each time period
     next7Days.forEach((date) => {
       const dayHours = relevantHours.find(
         (h) => new Date(h.date).toISOString().split("T")[0] === date
@@ -173,41 +183,35 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       const isSunday = dayOfWeek === 0;
 
-      // Skip if no time slots
       if (!dayHours.timeSlots || dayHours.timeSlots.length === 0) return;
 
-      // Working person coverage (4 PM - 8 PM)
       const workingCoverage = calculateTimeSlotCoverage(
         dayHours.timeSlots,
-        960, // 4 PM
-        1200 // 8 PM
+        960,
+        1200
       );
 
-      // Retiree coverage (10 AM - 8 PM)
       const retireeCoverage = calculateTimeSlotCoverage(
         dayHours.timeSlots,
-        600, // 10 AM
-        1200 // 8 PM
+        600,
+        1200
       );
 
-      // Apply weekend modifiers
       const weekendModifier = isWeekend ? (isSunday ? 0.3 : 0.1) : 1;
 
       workingmanScore += workingCoverage * weekendModifier;
       retireeScore += retireeCoverage * weekendModifier;
     });
 
-    // Convert to 1-3 scale
     const normalizeScore = (score: number): number => {
-      const maxPossibleScore = 7; // perfect coverage for all 7 days
+      const maxPossibleScore = 7;
       const normalized = (score / maxPossibleScore) * 3;
-      return Math.max(1, Math.min(3, Math.ceil(normalized))); // Round up instead of rounding down
+      return Math.max(1, Math.min(3, Math.ceil(normalized)));
     };
 
     const finalWorkingmanScore = normalizeScore(workingmanScore);
     const finalRetireeScore = normalizeScore(retireeScore);
 
-    // Calculate combined score (rounded up)
     const combinedScore = Math.ceil(
       (finalWorkingmanScore + finalRetireeScore) / 2
     );
@@ -228,7 +232,6 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
     const targetHours = targetEnd - targetStart;
 
     timeSlots.forEach((slot) => {
-      // Calculate overlap
       const overlapStart = Math.max(slot.open, targetStart);
       const overlapEnd = Math.min(slot.close, targetEnd);
       if (overlapEnd > overlapStart) {
@@ -236,12 +239,12 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
       }
     });
 
-    return Math.min(1, totalCoverage); // Cap at 1 (100% coverage)
+    return Math.min(1, totalCoverage);
   }
+
   const scores = calculateAvailabilityScores(locHours);
-  // console.log(scores);
   return (
-    <div>
+    <div className={`relative`}>
       <Link
         href={`/listings/${listing.id}`}
         prefetch={true}
@@ -251,7 +254,7 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
           <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
             <Carousel className="h-full w-full relative rounded-lg z-0">
               <CarouselContent className="h-full z-0">
-                {listing.imageSrc.map((src, index) => (
+                {listing?.imageSrc.map((src, index) => (
                   <CarouselItem
                     key={index}
                     className="flex items-center justify-center relative aspect-square h-full"
@@ -281,22 +284,19 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
               )}
             </Carousel>
           </div>
-          <div className="mt-2 w-full">
-            <h3 className={`${outfitFont.className} text-lg font-semibold`}>
-              {listing.title}
-            </h3>
-            <h2 className={`${outfitFont.className} text-md font-semibold`}>
-              Sold by: {listing.location?.displayName || listing.user.name}
+          <div className={`mt-1 w-full ${OutfitFont.className}`}>
+            <h3 className={`font-semibold`}>{listing.title}</h3>
+            <h2 className={`text-xs font-normal`}>
+              {listing.location?.displayName}
+              {/* // || listing.user.name} */}
             </h2>
-            <p
-              className={`${workFont.className} text-xs font-light text-neutral-500`}
-            >
+            <p className={` text-xs font-light text-neutral-500`}>
               {listing?.location?.address[1]}, {listing?.location?.address[2]}
             </p>
 
             <div className="flex items-center justify-between mt-2 w-full">
               <div
-                className={`${workFont.className} text-sm flex items-center gap-1`}
+                className={`${WorkFont.className} text-sm flex items-center gap-1`}
               >
                 <span className="font-semibold">${listing.price}</span>
                 <span className="font-light">
@@ -305,14 +305,14 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
               </div>
 
               <StarRating
-                value={listing.rating.length - 1}
+                value={listing?.rating?.length - 1}
                 size={20}
                 color="#000"
               />
             </div>
 
             <div className="flex flex-col gap-1 mt-2">
-              {listing.location?.hours.pickup?.length === 0 ? (
+              {listing.location?.hours?.pickup?.length === 0 ? (
                 <div className="text-red-500 font-medium flex items-center text-xs">
                   <Clock size={14} className="mr-1" />{" "}
                   <span className="font-medium capitalize">
@@ -322,7 +322,7 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
               ) : (
                 <AvailabilityScore scores={scores} type="pickup" />
               )}
-              {listing.location?.hours.delivery?.length === 0 ? (
+              {listing.location?.hours?.delivery?.length === 0 ? (
                 <div className="text-red-500 font-medium flex items-center text-xs">
                   <Clock size={14} className="mr-1" />{" "}
                   <span className="font-medium capitalize">
@@ -350,5 +350,77 @@ const MarketCard = ({ listing, imageCount, user }: ListingCardProps) => {
     </div>
   );
 };
+const StoreLocationCard = ({
+  location,
+  listing,
+  imageCount,
+}: StoreLocationCardProps) => {
+  return (
+    <Link
+      href={`/listings/${listing.id}`}
+      prefetch={true}
+      className="block w-full cursor-pointer group mx-auto !z-0"
+    >
+      <div className="flex flex-col relative w-full z-0">
+        <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
+          <Carousel className="h-full w-full relative rounded-lg z-0">
+            <CarouselContent className="h-full z-0">
+              {listing.imageSrc.map((src, index) => (
+                <CarouselItem
+                  key={index}
+                  className="flex items-center justify-center relative aspect-square h-full"
+                >
+                  <Image
+                    src={src}
+                    alt={`Image ${index + 1} of ${listing.title}`}
+                    loading={imageCount++ < 9 ? "eager" : "lazy"}
+                    fill
+                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
+                    sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
+                    placeholder="blur"
+                    blurDataURL="/images/website-images/grey.jpg"
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {listing.imageSrc.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {listing.imageSrc.map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                  />
+                ))}
+              </div>
+            )}
+          </Carousel>
+        </div>
 
-export { MarketGrid, MarketCard, StarRating };
+        <div className="mt-2 w-full">
+          <h3 className={`${OutfitFont.className} text-lg font-semibold`}>
+            {listing.title}
+          </h3>
+          <p
+            className={`${WorkFont.className} text-xs font-light text-neutral-500`}
+          >
+            {location?.address[1]}, {location?.address[2]}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mt-1 w-full">
+          <div className={`${WorkFont.className} text-xs`}>
+            <span className="font-semibold">${listing.price}</span>
+            <span className="font-light pl-1">per {listing.quantityType}</span>
+          </div>
+
+          <StarRating
+            value={listing.rating.length - 1}
+            size={20}
+            color="#000"
+          />
+        </div>
+      </div>
+    </Link>
+  );
+};
+export { StoreLocationCard, MarketGrid, MarketCard, StarRating };

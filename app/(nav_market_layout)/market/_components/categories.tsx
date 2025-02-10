@@ -31,7 +31,7 @@ import { MdOutlineSolarPower } from "react-icons/md";
 import { UserRole } from "@prisma/client";
 import Container from "@/components/Container";
 import Filters from "./filter.client";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 export const categories = [
   {
@@ -127,7 +127,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
     >
       <Icon size={25} />
       <div
-        className={`${outfitFont.className} font-light text-xs whitespace-nowrap text-center`}
+        className={`${OutfitFont.className} font-light text-xs whitespace-nowrap text-center`}
       >
         {label}
       </div>
@@ -246,7 +246,7 @@ const Categories = ({ role }: Props) => {
   return (
     <Container>
       <div
-        className={`${outfitFont.className} flex items-center justify-center`}
+        className={`${OutfitFont.className} flex items-center justify-center`}
       >
         <Filters role={role} />
         <div className="w-full overflow-x-auto">
