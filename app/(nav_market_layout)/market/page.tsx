@@ -48,7 +48,9 @@ const ShopPage = async ({
   // const { listings = [], totalItems = 0 } = response || {};
   const totalItems = response.totalCount;
   const listings = response.items;
-
+  for (let i = 0; i < listings.length; i++) {
+    console.log(listings[i]?.imageSrc);
+  }
   let user = await getCurrentUser();
   let basketItemIds: string[] = [];
   if (user?.id) {

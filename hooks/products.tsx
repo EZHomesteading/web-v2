@@ -7,7 +7,8 @@ const defaultProducts = [
   {
     title: "Red Delicious Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/red-delicious-apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTFcXXcKhjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Strawberries",
@@ -37,7 +38,8 @@ const defaultProducts = [
   {
     title: "Blood Oranges",
     subCategory: "fruit",
-    photo: "/images/product-images/blood-orange.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTp6Y2x8d9SINi678cjxKFPUGvJAL5BMuoD2rd",
   },
   {
     title: "Baby Spinach",
@@ -47,7 +49,8 @@ const defaultProducts = [
   {
     title: "Elk",
     subCategory: "",
-    photo: "/images/product-images/Elk.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTmLMrm5Zs13dmAu2Er0O4NahJMWDoKB98jVXL",
   },
   {
     title: "Cherry Tomatoes",
@@ -307,242 +310,290 @@ const defaultProducts = [
   {
     title: "Fuji Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/fuji-apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTorm9C3AeD5vwIsRJETMAdHgtQXkKU6YVfWF2",
   },
   {
     title: "Gala Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/gala-apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTUnreGcNWlVtTh5EJkzqLpCZjBbxe6aHN7FIU",
   },
   {
     title: "Honeycrisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/honey-crisp-apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTB8QDlC2XnTxSiDvbZjpG1WC3HahOwdsIgcqM",
   },
   {
     title: "Golden Delicious Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/golden-delicious-apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTXyvDwf1ZlPTBCc8o5R7HaKbJ1e60qySmgdsn",
   },
   {
     title: "Pink Lady Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "McIntosh Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Braeburn Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Jonagold Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Cortland Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Empire Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Arkansas Black Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Rome Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Ambrosia Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Jazz Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Cameo Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Opal Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Winesap Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Mutsu Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "York Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Pink Pearl Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Liberty Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Ginger Gold Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Paula Red Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Northern Spy Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Gravenstein Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Jonathan Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "SunCrisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Crimson Crisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "EverCrisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "SnowSweet Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Snowdrift Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "SweeTango Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Wine Crisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Ruby Frost Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Autumn Glory Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Cosmic Crisp Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Smitten Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Kiku Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Envy Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Snapdragon Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Pacific Rose Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Kanzi Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Ambri Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "SweeTango Tango Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "SweeTango Zester Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Sweetie Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Sweetie Pie Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Sweetie Treat Apples",
     subCategory: "fruit",
-    photo: "/images/product-images/apple.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTheOEz3U1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Anjou Pears",
@@ -792,7 +843,8 @@ const defaultProducts = [
   {
     title: "Valencia Oranges",
     subCategory: "fruit",
-    photo: "/images/product-images/valencia_orange.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTw2l2lsYz6ixTYWHnrfbqAUeFEo0ayIwJS7Cd",
   },
   {
     title: "Cara Cara Oranges",
@@ -1022,7 +1074,8 @@ const defaultProducts = [
   {
     title: "Imperator Carrots",
     subCategory: "vegetables",
-    photo: "/images/product-images/imperator-carrot.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTUpc8Q0NWlVtTh5EJkzqLpCZjBbxe6aHN7FIU",
   },
   {
     title: "Chantenay Carrots",
@@ -1232,7 +1285,8 @@ const defaultProducts = [
   {
     title: "Bloomsdale Spinach",
     subCategory: "herbs",
-    photo: "/images/product-images/bloomsdale-spinach.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTG8COCGSY4pcS7n6ZNtE1X3rdPWCKBGV0DFvR",
   },
   {
     title: "Savoy Spinach",
@@ -1327,102 +1381,122 @@ const defaultProducts = [
   {
     title: "Calabrese Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/calabrese-broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTIEyukvWcSemfvbr2tjniyBOkxdMhpA3TNCZV",
   },
   {
     title: "Sprouting Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Romanesco Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Purple Sprouting Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Broccolini",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Broccoflower",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Baby Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Purple Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "White Sprouting Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Belstar Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Green Magic Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Imperial Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Paragon Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Arcadia Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Green Goliath Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Marathon Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Packman Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Belstar Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Green Magic Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Imperial Broccoli",
     subCategory: "vegetables",
-    photo: "/images/product-images/broccoli.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9sAWLrFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Concord Grapes",
@@ -1542,7 +1616,8 @@ const defaultProducts = [
   {
     title: "Armenian Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/armeniancucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT1i3jjUKmbfnTYMO4djAx0tFRsD3HVCZSPzkJ",
   },
   {
     title: "English Telegraph Cucumbers",
@@ -1557,132 +1632,158 @@ const defaultProducts = [
   {
     title: "Lemon Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Japanese Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Kirby Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Marketmore Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "National Pickling Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Straight Eight Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Bush Crop Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Parisian Pickling Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Burpless Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "DivA Hybrid Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Marketmore 76 Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Sweet Success Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Sumter Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Sweet Slice Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Tasty Green Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Picklebush Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Miniature White Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Mexican Sour Gherkin Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Passandra Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Dasher II Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Fanfare Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Cucino Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Greensleeves Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Socrates Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Regal Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "Patio Snacker Cucumbers",
     subCategory: "vegetables",
-    photo: "/images/product-images/cucumber.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
     title: "PineApples",
@@ -1867,7 +1968,7 @@ const defaultProducts = [
   {
     title: "Blueberries",
     subCategory: "fruit",
-    photo: "/images/product-images/blueberry.webp",
+    photo: "UE11RVNWlVtTuSS4j7h3aelANkQ0YFV1t7cfXOTDZBEPhodK",
   },
   {
     title: "Raspberries",
@@ -1892,7 +1993,8 @@ const defaultProducts = [
   {
     title: "Acai Berries",
     subCategory: "fruit",
-    photo: "/images/product-images/acai-berry.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTDtxwuzpAV7xKFpgtvkOU3rEBhW8Q4TcDlPfa",
   },
   {
     title: "Elderberries",
@@ -1907,7 +2009,8 @@ const defaultProducts = [
   {
     title: "Huckleberries",
     subCategory: "fruit",
-    photo: "/images/product-images/huckleberry.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTtsdBJZOYaK5ATsRnvJUOeVu4WoE72yNw1thS",
   },
   {
     title: "Salmonberries",
@@ -1927,7 +2030,8 @@ const defaultProducts = [
   {
     title: "White Mulberries",
     subCategory: "fruit",
-    photo: "/images/product-images/whtmul.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTh0urqMU1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Beautyberries",
@@ -1997,7 +2101,8 @@ const defaultProducts = [
   {
     title: "Olallieberries",
     subCategory: "fruit",
-    photo: "/images/product-images/olallie.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTp5mJWd9SINi678cjxKFPUGvJAL5BMuoD2rdV",
   },
   {
     title: "Thimbleberries",
@@ -2022,7 +2127,8 @@ const defaultProducts = [
   {
     title: "Buffaloberries",
     subCategory: "fruit",
-    photo: "/images/product-images/buffb.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTU1g4IY5NWlVtTh5EJkzqLpCZjBbxe6aHN7FI",
   },
   {
     title: "Salal Berries",
@@ -2107,7 +2213,8 @@ const defaultProducts = [
   {
     title: "Parsley",
     subCategory: "herbs",
-    photo: "/images/product-images/parsley.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTvPZY3gszcFGt4Z3WOCIKHXEJaBQgsDhefm2lhttps://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTvPZY3gszcFGt4Z3WOCIKHXEJaBQgsDhefm2l",
   },
   {
     title: "Mint",
@@ -2147,17 +2254,20 @@ const defaultProducts = [
   {
     title: "Borage",
     subCategory: "herbs",
-    photo: "/images/product-images/borage.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTJzp92Om4zV16Mi5jwaFU0AsnGmEHPBIZbkQC",
   },
   {
     title: "Culantro",
     subCategory: "herbs",
-    photo: "/images/product-images/cullantro.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTJzdGe6X4zV16Mi5jwaFU0AsnGmEHPBIZbkQC",
   },
   {
     title: "Lemongrass",
     subCategory: "herbs",
-    photo: "/images/product-images/lemongrass.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT9MgwOpFD6XqN0xo5scPCmdMAEuIvBQpJ2iSO",
   },
   {
     title: "Lavender",
@@ -2167,7 +2277,8 @@ const defaultProducts = [
   {
     title: "Fennel",
     subCategory: "herbs",
-    photo: "/images/product-images/fennel.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTAo4IJL9o9eCtsOPrlIRcVM4hqvE0KLkYjGBw",
   },
   {
     title: "Tarragon",
@@ -2187,7 +2298,8 @@ const defaultProducts = [
   {
     title: "Savory",
     subCategory: "herbs",
-    photo: "/images/product-images/savory.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTkJTY4uixXmSMD2shFNwi1WaIZqAJjvpc9yOt",
   },
   {
     title: "Bay Leaf",
@@ -2307,7 +2419,8 @@ const defaultProducts = [
   {
     title: "JackFruits",
     subCategory: "fruit",
-    photo: "/images/product-images/jackFruits.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTy9IOyXHk57cnToxHl2QPYZAmCLw4gBez3tdV",
   },
   {
     title: "Rambutan",
@@ -2352,7 +2465,8 @@ const defaultProducts = [
   {
     title: "Feijoa",
     subCategory: "fruit",
-    photo: "/images/product-images/feijoa.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTHqdnQnonEDz41CSAg6Xdm8kqZuljwx9ypRMI",
   },
   {
     title: "Chayote",
@@ -2487,17 +2601,20 @@ const defaultProducts = [
   {
     title: "Potato",
     subCategory: "vegetables",
-    photo: "/images/product-images/potat.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTz2PraijBqQlo0PsXn2YM3pZtFTxu6WzhVHEr",
   },
   {
     title: "Sweet Potato",
     subCategory: "vegetables",
-    photo: "/images/product-images/yam.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT28XURDtbOReTLEhXHSVqnsADZa4c0BiGIF3J",
   },
   {
     title: "Yam",
     subCategory: "vegetables",
-    photo: "/images/product-images/yam.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT28XURDtbOReTLEhXHSVqnsADZa4c0BiGIF3J",
   },
   {
     title: "Cassava",
@@ -2587,7 +2704,8 @@ const defaultProducts = [
   {
     title: "Garlic",
     subCategory: "vegetables",
-    photo: "/images/product-images/garlic.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/39dcdbfa-e9b8-4c0b-9a34-ea3cb87bdb5c-kq1umq.webp",
   },
   {
     title: "Onion",
@@ -2602,7 +2720,8 @@ const defaultProducts = [
   {
     title: "Scallion",
     subCategory: "vegetables",
-    photo: "/images/product-images/scallion.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT3OdfSuGAckdxoXtm3gyfUjGsuRIOp2DC47wY",
   },
   {
     title: "Chives",
@@ -2887,97 +3006,116 @@ const defaultProducts = [
   {
     title: "Butternut Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Acorn Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Spaghetti Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Yellow Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Delicata Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Kabocha Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Hubbard Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Buttercup Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Carnival Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Pattypan Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Crookneck Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Straightneck Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Sweet Dumpling Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Golden Nugget Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Hubbard Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Tromboncino Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Tatume Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Calabaza Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Banana Squash",
     subCategory: "fruit",
-    photo: "/images/product-images/squash.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTYlFAOYkTHxwClNOdV63419mY8u5BqGXfJhbz",
   },
   {
     title: "Dill Pickles",
@@ -2997,12 +3135,14 @@ const defaultProducts = [
   {
     title: "Bell Peppers",
     subCategory: "vegetables",
-    photo: "/images/product-images/bellpep.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTzZ7QcMjBqQlo0PsXn2YM3pZtFTxu6WzhVHEr",
   },
   {
     title: "Jalapeno Peppers",
     subCategory: "vegetables",
-    photo: "/images/product-images/jalapeno.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTv4qFwrzcFGt4Z3WOCIKHXEJaBQgsDhefm2lT",
   },
   {
     title: "Habanero Peppers",
@@ -3032,7 +3172,8 @@ const defaultProducts = [
   {
     title: "Chipotle Peppers",
     subCategory: "vegetables",
-    photo: "/images/product-images/chipotlepep.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTwqvUlzYz6ixTYWHnrfbqAUeFEo0ayIwJS7Cd",
   },
   {
     title: "Serrano Peppers",
@@ -3042,7 +3183,8 @@ const defaultProducts = [
   {
     title: "Banana Peppers",
     subCategory: "vegetables",
-    photo: "/images/product-images/bananapep.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTm6l3aVZs13dmAu2Er0O4NahJMWDoKB98jVXL",
   },
   {
     title: "Thai Chili Peppers",
@@ -3197,7 +3339,8 @@ const defaultProducts = [
   {
     title: "Pork",
     subCategory: "pork",
-    photo: "/images/product-images/pork.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT0qdHGhyd3fVz95JLWZ40IgvQrYGHkiCEDXSp",
   },
   {
     title: "Chicken",
@@ -3242,7 +3385,8 @@ const defaultProducts = [
   {
     title: "Goose",
     subCategory: "alternative-meats",
-    photo: "/images/product-images/goose.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTyeEiv0Hk57cnToxHl2QPYZAmCLw4gBez3tdV",
   },
   {
     title: "Pheasant",
@@ -3252,7 +3396,8 @@ const defaultProducts = [
   {
     title: "Wild Boar",
     subCategory: "alternative-meats",
-    photo: "/images/product-images/boar.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTMFpLjFBzuDFPk76EciKO0NjqyY8U3S9V4vwd",
   },
   {
     title: "Emu",
@@ -3267,7 +3412,8 @@ const defaultProducts = [
   {
     title: "Alligator",
     subCategory: "alternative-meats",
-    photo: "/images/product-images/Alligator.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT1gt9ujCKmbfnTYMO4djAx0tFRsD3HVCZSPzk",
   },
   {
     title: "Frog",
@@ -3292,7 +3438,8 @@ const defaultProducts = [
   {
     title: "Heavy Whipping Cream",
     subCategory: "milks",
-    photo: "/images/product-images/cream.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTh9WcliU1kYUR5jdlaSIEqsJ9hZMbCFW3uprV",
   },
   {
     title: "Cheese",
@@ -3322,7 +3469,8 @@ const defaultProducts = [
   {
     title: "Almonds",
     subCategory: "nuts",
-    photo: "/images/product-images/almond.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtT1gPcU1KmbfnTYMO4djAx0tFRsD3HVCZSPzkJ",
   },
   {
     title: "Walnuts",
@@ -3352,22 +3500,26 @@ const defaultProducts = [
   {
     title: "Baguette",
     subCategory: "breads",
-    photo: "/images/product-images/baguette.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTd1BYJbI4us0JNPxzTCW7QIVoFcHwGBL3Une2",
   },
   {
     title: "Sourdough",
     subCategory: "breads",
-    photo: "/images/product-images/sourdough.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTwx4ZTuLYz6ixTYWHnrfbqAUeFEo0ayIwJS7C",
   },
   {
     title: "Whole Wheat",
     subCategory: "breads",
-    photo: "/images/product-images/whole_wheat.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTp6T7iGd9SINi678cjxKFPUGvJAL5BMuoD2rd",
   },
   {
     title: "Rye Bread",
     subCategory: "breads",
-    photo: "/images/product-images/rye_bread.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTmQUoIyZs13dmAu2Er0O4NahJMWDoKB98jVXL",
   },
   {
     title: "Ciabatta",
@@ -3457,12 +3609,14 @@ const defaultProducts = [
   {
     title: "Cookies",
     subCategory: "baked-goods",
-    photo: "/images/product-images/cookies.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTJf9Hfw4zV16Mi5jwaFU0AsnGmEHPBIZbkQCl",
   },
   {
     title: "Cake",
     subCategory: "pastries",
-    photo: "/images/product-images/cake.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTzYzEAvjBqQlo0PsXn2YM3pZtFTxu6WzhVHEr",
   },
   {
     title: "Hybrid Tomatoes",
