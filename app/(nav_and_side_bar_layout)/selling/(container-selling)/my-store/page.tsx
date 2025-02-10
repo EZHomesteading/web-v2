@@ -5,9 +5,8 @@ import { currentUser } from "@/lib/auth";
 import { GetListingsByUserId } from "@/actions/getListings";
 import ListingsClient from "./ListingsClient";
 import { getUserWithSellOrders } from "@/actions/getUser";
-import { parse } from "json5";
 import Stripe from "stripe";
-
+import { parse } from "json5";
 function processOrderQuantities(orders: any) {
   const quantityMap = new Map();
 
@@ -40,14 +39,8 @@ const PropertiesPage = async () => {
     return <EmptyState title="Unauthorized" subtitle="Please login" />;
   }
   const seller = await getUserWithSellOrders({ userId: user?.id });
-  const orders = seller?.sellerOrders.filter(
-    (order) =>
-      // ![0, 4, 7, 9, 12, 15, 17, 18, 19, 20, 21, 22].includes(order.status)
-      order.status
-  );
-  // console.log(orders);
+  const orders = seller?.sellerOrders.filter((order) => order.status);
   const orderQuantities = processOrderQuantities(orders);
-  // console.log(orderQuantities);
   const userId = user.id;
   const listings = await GetListingsByUserId({ userId });
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

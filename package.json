@@ -67,6 +67,7 @@
     "framer-motion": "^11.3.19",
     "fs": "0.0.1-security",
     "fuse.js": "^7.0.0",
+    "json5": "^2.2.3",
     "leaflet": "^1.9.3",
     "linkedom": "^0.18.5",
     "lodash": "^4.17.21",

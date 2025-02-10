@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Hours, Location } from "@prisma/client";
 import WeelkyScheduleChart from "../weekly-schedule-chart";
 import { Button } from "@/components/ui/button";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
 import OnboardContainer from "../onboard.container";
 
@@ -265,7 +265,7 @@ const StepEight: React.FC<StepSevenProps> = ({
         ]}
       />
       <div
-        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${outfitFont.className}`}
+        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${OutfitFont.className}`}
       >
         {/* months section */}
         <div className="flex flex-col mb-3">

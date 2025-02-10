@@ -119,10 +119,9 @@ const getUserWithSellOrders = async (params: Params) => {
           select: {
             id: true,
             userId: true,
-            // listingIds: true,
             sellerId: true,
             pickupDate: true,
-            quantity: true,
+            items: true,
             totalPrice: true,
             status: true,
             createdAt: true,

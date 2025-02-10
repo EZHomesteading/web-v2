@@ -117,7 +117,6 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
         </div>
       ) : (
         <div className=" px-5">
-          {" "}
           <div className="flex-none ">
             <Heading
               title="My Listings"
@@ -166,7 +165,6 @@ const ListingsClient: React.FC<ListingsClientProps> = ({
             xl:grid-cols-5
             2xl:grid-cols-6
             gap-8
-            
           "
           >
             {listingMap.map((listing: FinalListing) => (

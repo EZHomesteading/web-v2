@@ -254,14 +254,14 @@ const MarketCard = ({
           <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
             <Carousel className="h-full w-full relative rounded-lg z-0">
               <CarouselContent className="h-full z-0">
-                {listing?.imageSrc.map((src, index) => (
+                {listing?.imageSrc?.map((src, index) => (
                   <CarouselItem
                     key={index}
                     className="flex items-center justify-center relative aspect-square h-full"
                   >
                     <Image
                       src={src}
-                      alt={`Image ${index + 1} of ${listing.title}`}
+                      alt={`Image ${index + 1} of ${listing?.title}`}
                       loading={imageCount++ < 9 ? "eager" : "lazy"}
                       fill
                       className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
@@ -272,7 +272,7 @@ const MarketCard = ({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {listing.imageSrc.length > 1 && (
+              {listing?.imageSrc?.length > 1 && (
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
                   {listing.imageSrc.map((_, index) => (
                     <div
