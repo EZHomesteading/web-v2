@@ -21,10 +21,9 @@ import { FormSuccess } from "@/components/form-success";
 import axios from "axios";
 import { toast } from "sonner";
 import { OutfitFont } from "@/components/fonts";
-import { GetApiUrl } from "@/utils/get-url";
 import Toast from "@/components/ui/toast";
 
-export const ResetForm = () => {
+export const ResetForm = ({ apiUrl }: { apiUrl: string }) => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -37,7 +36,6 @@ export const ResetForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
-    const apiUrl = GetApiUrl();
     try {
       const res = await axios.get(
         `${apiUrl}/send-pw-reset-email?email=${values.email}`
