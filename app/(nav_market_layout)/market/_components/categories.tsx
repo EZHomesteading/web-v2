@@ -56,7 +56,6 @@ export const categories = [
   },
 ];
 
-// Subcategories
 export const unprocessedProduce = [
   { label: "Fruits", icon: CiApple, url: "fruit" },
   { label: "Vegetables", icon: GiTomato, url: "vegetables" },
@@ -140,7 +139,6 @@ interface Props {
 }
 
 const Categories = ({ role }: Props) => {
-  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -246,7 +244,7 @@ const Categories = ({ role }: Props) => {
   return (
     <Container>
       <div
-        className={`${OutfitFont.className} flex items-center justify-center`}
+        className={`${OutfitFont.className} flex items-center justify-center `}
       >
         <Filters role={role} />
         <div className="w-full overflow-x-auto">

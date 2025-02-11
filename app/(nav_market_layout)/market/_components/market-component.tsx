@@ -68,7 +68,9 @@ const Shop = ({
     <>
       {emptyState || (
         <>
-          <div className={`sticky top-20 w-full border-b pb-2 bg-white z-10`}>
+          <div
+            className={`sticky top-20 w-full border-b pb-2 bg-white z-content`}
+          >
             <Categories />
           </div>
           <MarketGrid>

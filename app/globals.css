@@ -495,3 +495,12 @@ body::-webkit-scrollbar {
   }
 }
 
+.z-dropdown {
+  z-index: 50; 
+}
+.z-navigation {
+  z-index: 40; 
+}
+.z-content {
+  z-index: 30;
+}

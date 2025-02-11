@@ -345,7 +345,7 @@ const SearchLocation = ({ apiKey }: p) => {
         {({ getInputProps, suggestions, getSuggestionItemProps }) => (
           <div className="relative w-full sm:w-1/2 sm:mb-0">
             <PiMapTrifoldThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
-            <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+            <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm select-none">
               Where
             </div>
 
@@ -368,7 +368,7 @@ const SearchLocation = ({ apiKey }: p) => {
               })}
             />
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute mt-1 text-black shadow-lg zmax max-w-full rounded-xl py-3 bg-white border ">
+              <div className="absolute mt-1 text-black shadow-lg z-dropdown max-w-full rounded-xl py-3 bg-white border ">
                 {suggestions.map((suggestion, index) => {
                   const className = suggestion.active
                     ? "cursor-pointer bg-gray-200"
@@ -397,7 +397,7 @@ const SearchLocation = ({ apiKey }: p) => {
       </PlacesAutocomplete>
       <div className="relative w-full sm:w-1/2 border-l-[1px]">
         <PiBasketThin className="absolute text-black z-50 left-2 top-1/2 transform -translate-y-1/2 text-2xl" />
-        <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm">
+        <div className="absolute text-gray-600 z-50 left-9 top-2 font-medium transform text-sm select-none">
           What
         </div>
         <input
@@ -417,13 +417,12 @@ const SearchLocation = ({ apiKey }: p) => {
           }}
           onBlur={() => {
             setFocus({ ...focus, right: false });
-            // Use setTimeout to allow click events on suggestions to fire before hiding
             setTimeout(() => setShowListingSuggestions(false), 200);
           }}
           tabIndex={0}
         />
         {showListingSuggestions && items.length > 0 && (
-          <div className="absolute bg-white max-w-[910px] h-auto w-full zmax left-0 top-16 rounded-xl border py-3">
+          <div className="absolute bg-white max-w-[910px] h-auto w-full left-0 top-16 rounded-xl border py-3">
             {items.slice(0, 5).map((item: Listing) => (
               <div
                 className="p-1 cursor-pointer hover:bg-gray-200"
@@ -448,7 +447,7 @@ const SearchLocation = ({ apiKey }: p) => {
       <button
         className={`${
           address !== "" && "!hidden"
-        } absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full zmax ${
+        } absolute top-full mt-2 py-1 px-4 bg-white border-[1px] h-12 rounded-lg text-grey w-full ${
           focus.left ? "visible" : "hidden"
         }`}
         onMouseDown={handleNearMeClick}

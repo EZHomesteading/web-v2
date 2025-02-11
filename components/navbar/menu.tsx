@@ -32,7 +32,7 @@ type ComponentItem = {
 };
 
 interface Props {
-  user?: NavUser;
+  user?: NavUser | null;
   // uniqueUrl: string;
   harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
 }

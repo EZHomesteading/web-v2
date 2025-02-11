@@ -82,7 +82,7 @@ const StarRating = ({
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
-    <div className="w-full px-4 mx-auto max-w-[1920px] !z-0 mb-20 ">
+    <div className="w-full px-4 mx-auto max-w-[1920px] z-content mb-20 ">
       <div
         className="
         pt-[6.5rem]

@@ -10,7 +10,7 @@ interface ContainerProps {
 const Container: React.FC<ContainerProps> = ({ style, children }) => {
   return (
     <div
-      className="min-w-screen mx-auto xl:px-20 md:px-10 sm:px-2 px-4"
+      className="min-w-screen mx-auto xl:px-20 md:px-10 sm:px-2 px-4 z-navigation"
       style={style}
     >
       {children}
