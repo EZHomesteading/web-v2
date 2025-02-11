@@ -15,15 +15,11 @@ export async function GetMarketListingsV2(
     ...(searchParams?.q && { q: searchParams.q }),
   });
 
-  const apiUrl = GetApiUrl();
-  console.log(apiUrl);
+  const apiUrl = process.env.API_URL;
   try {
-    const response = await fetch(
-      `https://ezhomesteading.up.railway.app/market?${params.toString()}`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const response = await fetch(`${apiUrl}/market?${params.toString()}`, {
+      next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch market listings");
