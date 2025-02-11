@@ -48,7 +48,7 @@ const ShopPage = async ({
   const response = await GetMarketListingsV2(searchParams, page, perPage);
   const totalItems = response.totalCount;
   const listings = response.items;
-
+  console.log(listings);
   // const response = await getMarketListings(searchParams, page, perPage);
   // const { listings = [], totalItems = 0 } = response || {};
 
@@ -60,7 +60,6 @@ const ShopPage = async ({
     );
     basketItemIds = temp?.items;
   }
-  console.log(basketItemIds);
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;
@@ -74,7 +73,9 @@ const ShopPage = async ({
       pageNumbers.push(i);
     }
   }
-
+  if (totalItems === 0) {
+    return <EmptyState />;
+  }
   return (
     <MarketComponent
       listings={listings as unknown as MarketListing[]}

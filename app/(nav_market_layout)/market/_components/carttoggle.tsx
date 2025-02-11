@@ -43,7 +43,7 @@ const CartToggle = ({
     initialQuantity: minOrder || 1,
   });
   const isInBasket = basketItemIds
-    .map((item) => item.listingId)
+    ?.map((item) => item.listingId)
     .includes(listingId);
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {

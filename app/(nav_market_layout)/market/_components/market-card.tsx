@@ -285,7 +285,8 @@ const MarketCard = ({
               {listing.location?.displayName || listing?.user?.name}
             </h2>
             <p className={` text-xs font-light text-neutral-500`}>
-              {listing?.location?.address[1]}, {listing?.location?.address[2]}
+              {listing?.location?.address?.[1]},{" "}
+              {listing?.location?.address?.[2]}
             </p>
 
             <div className="flex items-center justify-between mt-2 w-full">
