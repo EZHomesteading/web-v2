@@ -2,7 +2,6 @@ import { currentUser } from "@/lib/auth";
 import CreateClient from "./components/CreateClient";
 import type { Viewport } from "next";
 import CreatePopup from "../../(white_nav_layout)/info-modals/create-info-modal";
-import Stripe from "stripe";
 import { getUserLocations } from "@/actions/getUser";
 
 export const viewport: Viewport = {
@@ -21,7 +20,7 @@ const Page = async ({
     return null;
   }
   const locations = await getUserLocations({ userId: user?.id });
-  let defaultId = "";
+  let defaultId: string = "";
   if (searchParams) {
     let defaultLocation = locations?.find((loc) => loc.id === searchParams.id);
     if (defaultLocation) {
@@ -30,7 +29,7 @@ const Page = async ({
   }
   return (
     <div>
-      {user ? (
+      {user && (
         <>
           <CreateClient
             defaultId={defaultId}
@@ -40,8 +39,6 @@ const Page = async ({
           />
           <CreatePopup />
         </>
-      ) : (
-        <></>
       )}
     </div>
   );

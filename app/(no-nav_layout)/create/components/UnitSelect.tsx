@@ -22,7 +22,9 @@ const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
         placeholder="Unit"
         options={getAll()}
         value={value}
-        onChange={(value) => onChange(value as QuantityTypeValue)}
+        onChange={(value: QuantityTypeValue) =>
+          onChange(value as QuantityTypeValue)
+        }
         formatOptionLabel={(option: any) => (
           <div className="rounded-lg text-black">{option.label}</div>
         )}
@@ -37,28 +39,28 @@ const UnitSelect: React.FC<ProductSelectProps> = ({ value, onChange }) => {
           dropdownIndicator: () => "hidden",
         }}
         styles={{
-          control: (base) => ({
+          control: (base: any) => ({
             ...base,
             color: "black",
           }),
-          singleValue: (base) => ({
+          singleValue: (base: any) => ({
             ...base,
             color: "black",
           }),
-          input: (base) => ({
+          input: (base: any) => ({
             ...base,
             color: "black",
           }),
-          option: (base) => ({
+          option: (base: any) => ({
             ...base,
             color: "black",
           }),
-          placeholder: (base) => ({
+          placeholder: (base: any) => ({
             ...base,
             color: "black",
           }),
         }}
-        theme={(theme) => ({
+        theme={(theme: any) => ({
           ...theme,
           borderRadius: 10,
           colors: {

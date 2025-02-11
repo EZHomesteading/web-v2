@@ -54,7 +54,6 @@ const NewLocHoursClient = ({
     selectedMonths?: number[];
   }>({});
   const [progress, setProgress] = useState(0);
-  console.log(formData);
   const updateFormData = useCallback(
     (newData: Partial<{ location: LocationObj }>) => {
       setFormData((prevData) => {
@@ -72,7 +71,6 @@ const NewLocHoursClient = ({
     },
     []
   );
-  useEffect(() => {}, [formData.location]);
   const updateFormDataMonths = useCallback(
     (newData: Partial<{ selectedMonths: number[] }>) => {
       setFormData((prevData) => {

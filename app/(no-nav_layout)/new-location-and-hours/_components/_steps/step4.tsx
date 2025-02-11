@@ -5,7 +5,7 @@ import {
   PiCarProfileThin,
   PiStorefrontThin,
 } from "react-icons/pi";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 
 import OnboardContainer from "../onboard.container";
 
@@ -91,7 +91,7 @@ const StepFour: React.FC<StepFiveProps> = ({
               changeStyle(index);
             }}
             className={`${
-              outfitFont.className
+              OutfitFont.className
             } flex flex-col items-justify-start text-start p-4 w-full max-w-[306.88px] sm:min-w-[402.88px] rounded-xl min-h-[134px]  border transition ${
               selectedOption == option.value
                 ? "bg-black text-white"
@@ -110,7 +110,7 @@ const StepFour: React.FC<StepFiveProps> = ({
                   key={idx}
                   className={` ${
                     selectedOption.includes(option.label) && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
+                  } mt-2 text-sm text-neutral-600 ${ZillaFont.className} `}
                 >
                   {line}
                 </p>

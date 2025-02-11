@@ -207,7 +207,6 @@ const StepThree: React.FC<StepThreeProps> = ({
             />
 
             <div className="relative ">
-              {" "}
               <Input
                 {...commonInputProps}
                 id="minOrder"

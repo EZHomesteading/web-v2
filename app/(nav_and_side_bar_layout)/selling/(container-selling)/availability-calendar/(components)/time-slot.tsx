@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Wheel from "./wheel";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface TimePickerProps {
   top?: boolean;
@@ -84,7 +84,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <div
-      className={`${outfitFont.className} ${
+      className={`${OutfitFont.className} ${
         !isOpen && "hover:cursor-not-allowed text-neutral-600"
       } flex flex-col items-center w-full`}
     >

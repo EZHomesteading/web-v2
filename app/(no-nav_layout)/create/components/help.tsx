@@ -10,16 +10,9 @@ import ezhOrganicRating from "@/public/images/info/ezhOrganicRating.jpg";
 import titleNotFound from "@/public/images/website-images/stepOneTitle404.jpg";
 import minOrder from "@/public/images/info/minOrder.jpg";
 import addPhotos from "@/public/images/how-to/takePhotos.jpg";
-import { Outfit, Zilla_Slab } from "next/font/google";
 import Link from "next/link";
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
-const zilla = Zilla_Slab({
-  subsets: ["latin"],
-  weight: ["300"],
-});
+import { OutfitFont, ZillaFont } from "@/components/fonts";
+
 interface p {
   step: number;
   role: string;
@@ -36,7 +29,7 @@ const Help = ({ step, role }: p) => {
 
       <SheetContent
         side={isMdOrLarger ? "right" : "bottom"}
-        className={`${outfit.className} h-[70vh] md:h-full pt-4 px-3 sheet w-screen md:w-1/3 2xl:w-1/5`}
+        className={`${OutfitFont.className} h-[70vh] md:h-full pt-4 px-3 sheet w-screen md:w-1/3 2xl:w-1/5`}
       >
         <Heading title="Help In This Section" />
         {step === 2 && (
@@ -59,7 +52,7 @@ const Help = ({ step, role }: p) => {
                   <div>
                     <h1 className="text-sm">How do I add a title?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -87,7 +80,7 @@ const Help = ({ step, role }: p) => {
                       I don't see my item in the seach
                     </h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       2 min read
                     </p>
@@ -117,7 +110,7 @@ const Help = ({ step, role }: p) => {
                   <div>
                     <h1 className="text-sm">What is a Minimum Order?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -144,7 +137,7 @@ const Help = ({ step, role }: p) => {
                     <div>
                       <h1 className="text-sm">What is Set out Time?</h1>
                       <p
-                        className={`${zilla.className} text-xs text-neutral-600`}
+                        className={`${ZillaFont.className} text-xs text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -171,7 +164,7 @@ const Help = ({ step, role }: p) => {
                     <div>
                       <h1 className="text-sm">What Does Delivery Time Mean?</h1>
                       <p
-                        className={`${zilla.className} text-xs text-neutral-600`}
+                        className={`${ZillaFont.className} text-xs text-neutral-600`}
                       >
                         2 min read
                       </p>
@@ -202,7 +195,7 @@ const Help = ({ step, role }: p) => {
                   <div>
                     <h1 className="text-sm">What Does Shelf Life Mean?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -233,7 +226,7 @@ const Help = ({ step, role }: p) => {
                   <div>
                     <h1 className="text-sm">What is the EZH Organic Rating?</h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>
@@ -271,7 +264,7 @@ const Help = ({ step, role }: p) => {
                         : "How to add Photos on Mobile"}
                     </h1>
                     <p
-                      className={`${zilla.className} text-xs text-neutral-600`}
+                      className={`${ZillaFont.className} text-xs text-neutral-600`}
                     >
                       1 min read
                     </p>

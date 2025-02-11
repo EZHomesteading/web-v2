@@ -1,16 +1,11 @@
 "use client";
 
-import { Outfit } from "next/font/google";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Draggable from "react-draggable";
 import { useRouter } from "next/navigation";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { OutfitFont } from "@/components/fonts";
 
 const CreatePopup = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -60,7 +55,7 @@ const CreatePopup = () => {
         ref={nodeRef}
         style={{ opacity }}
         className={`
-          ${outfit.className}
+          ${OutfitFont.className}
           fixed top-20 left-2 bg-white text-black px-6 py-4 rounded-xl 
           border-[1px] border-slate-300 shadow-lg z-50 cursor-move
           transition-opacity duration-300 ease-in-out max-w-md

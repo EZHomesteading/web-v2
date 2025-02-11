@@ -1,5 +1,5 @@
 import React from "react";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 
 interface SectionLayoutProps {
   title?: string;
@@ -20,7 +20,7 @@ const OnboardContainer = ({
 }: SectionLayoutProps) => {
   return (
     <div
-      className={`${outfitFont.className} flex flex-col justify-start h-full w-full ${className} !select-none mb-6`}
+      className={`${OutfitFont.className} flex flex-col justify-start h-full w-full ${className} !select-none mb-6`}
     >
       <div className="flex flex-col items-center w-full ">
         <div
@@ -35,7 +35,7 @@ const OnboardContainer = ({
             {descriptions.map((description, index) => (
               <div
                 key={index}
-                className={`${zillaFont.className} text-sm text-gray-500 flex items-center font-normal `}
+                className={`${ZillaFont.className} text-sm text-gray-500 flex items-center font-normal `}
               >
                 {description}
               </div>
