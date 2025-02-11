@@ -57,6 +57,7 @@ const ShopPage = async ({
     );
     basketItemIds = temp?.items;
   }
+  console.log(basketItemIds);
   const totalPages = Math.ceil(totalItems / perPage);
   const prevPage = page - 1 > 0 ? page - 1 : 1;
   const nextPage = page + 1;

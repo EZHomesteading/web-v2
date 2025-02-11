@@ -74,7 +74,7 @@ const Shop = ({
             <Categories />
           </div>
           <MarketGrid>
-            {listings.map((listing, index) => (
+            {listings?.map((listing, index) => (
               <MarketCard
                 user={user}
                 key={index}

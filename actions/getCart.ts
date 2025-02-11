@@ -2,7 +2,7 @@ import axios from "axios";
 
 async function Get(params: string) {
   try {
-    const apiUrl = process.env.API_URL as string;
+    const apiUrl = process.env.API_URL!;
     const response = await axios.get(`${apiUrl}/${params}`);
     return response.data;
   } catch (error) {
