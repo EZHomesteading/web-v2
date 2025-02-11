@@ -1,11 +1,9 @@
-import { getNavUser, NavUser } from "@/actions/getUser";
+import { getNavUser } from "@/actions/getUser";
 import { OutfitFont } from "@/components/fonts";
 import FindListingsComponent from "@/components/listings/search-listings";
 import Logo from "@/components/navbar/Logo";
 import UserMenu from "@/components/navbar/menu";
-import Navbar from "@/components/navbar/navbar.server";
 import { Viewport } from "next";
-import { Suspense } from "react";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
