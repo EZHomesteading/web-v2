@@ -13,8 +13,6 @@ interface p {
   isMarketPage?: boolean;
 }
 
-const apiKey = process.env.MAPS_KEY as string;
-
 export default async function Navbar({
   user,
   className = "bg-inherit",
@@ -47,9 +45,7 @@ export default async function Navbar({
     <>
       <NavbarClient
         user={user}
-        apiKey={apiKey}
         // canReceivePayouts={canReceivePayouts}
-        isMarketPage={isMarketPage}
         // uniqueUrl={uniqueUrl}
         harvestMessages={[]} //harvestMessages
         className={className}
