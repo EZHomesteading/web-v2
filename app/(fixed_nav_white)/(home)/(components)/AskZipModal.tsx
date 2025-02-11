@@ -82,6 +82,7 @@ const AskZipModal = ({ isOpen, onClose }: AskZipModalProps) => {
         lat: coords.lat.toString(),
         lng: coords.lng.toString(),
         radius: "20",
+        zip: zipCode,
       });
 
       onClose();
