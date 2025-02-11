@@ -48,7 +48,6 @@ const ShopPage = async ({
   const response = await GetMarketListingsV2(searchParams, page, perPage);
   const totalItems = response.totalCount;
   const listings = response.items;
-  console.log(listings);
   // const response = await getMarketListings(searchParams, page, perPage);
   // const { listings = [], totalItems = 0 } = response || {};
 

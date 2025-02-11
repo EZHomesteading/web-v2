@@ -38,7 +38,7 @@ const Home = ({ user }: Props) => {
       openAskZipModal();
     } else {
       router.push(
-        `/market?lat=${user.locations[0].coordinates[1]}&lng=${user.locations[0].coordinates[0]}`
+        `/market?lat=${user.locations[0].coordinates[1]}&lng=${user.locations[0].coordinates[0]}&radius=20`
       );
     }
   };

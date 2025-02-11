@@ -16,7 +16,7 @@ import debounce from "debounce";
 import { PiBasketThin, PiMapTrifoldThin } from "react-icons/pi";
 import Fuse from "fuse.js";
 import { OutfitFont } from "../fonts";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 type Listing = {
   title: string;
@@ -50,17 +50,18 @@ const getLatLngFromAddress = async (address: string) => {
 const SearchLocation = ({ apiKey }: p) => {
   const [focus, setFocus] = useState({ left: false, right: false });
   const [address, setAddress] = useState("");
-  const params = useParams();
+  const params = useSearchParams();
   const validateZipCode = (zip: string): boolean => {
     const zipRegex = /^\d{5}$/;
     return zipRegex.test(zip);
   };
+
   useEffect(() => {
-    if (params?.zip) {
-      const zipValue = Array.isArray(params.zip) ? params.zip[0] : params.zip;
-      const isValidZip = validateZipCode(params?.zip.toString());
+    const zip = params?.get("zip");
+    if (zip) {
+      const isValidZip = validateZipCode(zip);
       if (isValidZip) {
-        setAddress(zipValue);
+        setAddress(zip);
       } else {
         console.warn("Invalid zip code format in URL");
         setAddress("");
