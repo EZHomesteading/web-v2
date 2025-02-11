@@ -290,7 +290,7 @@ const Home = ({ user }: Props) => {
 
           <div className="border-t border-gray-800 py-10">
             <p className="text-sm">
-              Copyright &copy; 2024 EZ Homesteading All Rights Reserved
+              Copyright &copy; 2025 EZHomesteading All Rights Reserved
             </p>
           </div>
         </div>
