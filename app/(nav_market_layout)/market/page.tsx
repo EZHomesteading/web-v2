@@ -9,6 +9,9 @@ import { getMarketListings } from "@/actions/getMarketListings";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
 import { Get } from "@/actions/getCart";
 import { GetMarketListingsV2 } from "@/actions/getMarketListingsV2";
+import { useState } from "react";
+import { MarketGrid } from "./_components/market-card";
+import { SkeletonCard } from "./_components/skeleton-card";
 
 export interface ShopProps {
   userId?: string;
@@ -50,10 +53,10 @@ const ShopPage = async ({
   // const { listings = [], totalItems = 0 } = response || {};
 
   let user = await getCurrentUser();
-  let basketItemIds: string[] = [];
+  let basketItemIds: any[] = [];
   if (user?.id) {
     const temp = await Get(
-      `get-many?collection=BasketItem&key=userId&value=${user?.id}`
+      `get-many?collection=BasketItem&key=userId&value=${user?.id}&fields=listingId`
     );
     basketItemIds = temp?.items;
   }
@@ -71,17 +74,11 @@ const ShopPage = async ({
       pageNumbers.push(i);
     }
   }
+
   return (
     <MarketComponent
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
-      emptyState={
-        listings?.length === 0 ? (
-          <ClientOnly>
-            <EmptyState showReset />
-          </ClientOnly>
-        ) : null
-      }
       totalPages={totalPages}
       prevPage={prevPage}
       nextPage={nextPage}

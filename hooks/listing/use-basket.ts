@@ -5,7 +5,8 @@ import axios from "axios";
 import { Hours, orderMethod } from "@prisma/client";
 import Toast from "@/components/ui/toast";
 
-interface props {
+// Define clear interfaces for our types
+interface BasketProps {
   listingId: string;
   user?: any | null;
   initialQuantity?: number;
@@ -17,29 +18,15 @@ export const useBasket = ({
   user,
   initialQuantity = 1,
   hours,
-}: props) => {
+}: BasketProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(initialQuantity);
-  const [isInBasket, setIsInBasket] = useState(false);
-  let initialOrderMethod: orderMethod = orderMethod.PICKUP;
 
+  let initialOrderMethod: orderMethod = orderMethod.PICKUP;
   if (!hours?.pickup && hours?.delivery) {
     initialOrderMethod = orderMethod.DELIVERY;
   }
-
-  const checkExistingItem = useCallback(async () => {
-    if (!user) return null;
-
-    try {
-      const response = await axios.get(`/api/basket/check/${listingId}`);
-      setIsInBasket(!!response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error checking basket:", error);
-      return null;
-    }
-  }, [listingId, user]);
 
   const addToBasket = useCallback(
     async (status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE") => {
@@ -52,13 +39,13 @@ export const useBasket = ({
 
       setIsLoading(true);
       try {
-        await axios.post(`/api/basket/items`, {
+        const res = await axios.post(`/api/basket/items`, {
           listingId,
           quantity,
           status,
           initialOrderMethod: initialOrderMethod,
         });
-        setIsInBasket(true);
+        console.log(res.data);
         Toast({ message: "Saved new basket item" });
         router.refresh();
       } catch (error: any) {
@@ -69,7 +56,7 @@ export const useBasket = ({
         setIsLoading(false);
       }
     },
-    [user, listingId, quantity, router]
+    [user, listingId, quantity, router, initialOrderMethod]
   );
 
   const removeFromBasket = useCallback(async () => {
@@ -77,13 +64,7 @@ export const useBasket = ({
 
     setIsLoading(true);
     try {
-      const item = await checkExistingItem();
-      if (!item?.id) {
-        throw new Error("Item not found");
-      }
-
-      await axios.delete(`/api/basket/items/${item.id}`);
-      setIsInBasket(false);
+      await axios.delete(`/api/basket/items/${listingId}`);
       Toast({ message: "Basket item removed" });
       router.refresh();
     } catch (error: any) {
@@ -94,30 +75,28 @@ export const useBasket = ({
     } finally {
       setIsLoading(false);
     }
-  }, [user, checkExistingItem, router]);
+  }, [user, listingId, router]);
 
   const toggleBasket = useCallback(
     async (
       e: React.MouseEvent<HTMLButtonElement>,
+      isInBasket: boolean,
       status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE"
     ) => {
       e.stopPropagation();
-
       if (isInBasket) {
         await removeFromBasket();
       } else {
         await addToBasket(status);
       }
     },
-    [isInBasket, removeFromBasket, addToBasket]
+    [removeFromBasket, addToBasket]
   );
 
   return {
     isLoading,
     quantity,
     setQuantity,
-    isInBasket,
-    checkExistingItem,
     addToBasket,
     removeFromBasket,
     toggleBasket,

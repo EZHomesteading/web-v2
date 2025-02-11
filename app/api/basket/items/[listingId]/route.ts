@@ -1,10 +1,10 @@
-// app/api/basket/items/[itemId]/route.ts
+// app/api/basket/items/[listingId]/route.ts
 import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import prisma from "@/lib/prismadb";
 
 interface IParams {
-  itemId: string;
+  listingId: string;
 }
 
 export async function DELETE(
@@ -17,16 +17,15 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { itemId } = params;
+    const { listingId } = params;
 
-    if (!itemId) {
+    if (!listingId) {
       return new NextResponse("Item ID is required", { status: 400 });
     }
 
-    // Only fetch the minimal data needed to verify ownership
     const basketItem = await prisma.basketItem.findFirst({
       where: {
-        id: itemId,
+        listingId: listingId,
         basket: {
           userId: user.id,
         },
@@ -41,19 +40,20 @@ export async function DELETE(
       return new NextResponse("Item not found", { status: 404 });
     }
 
-    // Delete in transaction to ensure atomicity
     await prisma.$transaction(async (tx) => {
-      // Delete the item
-      await tx.basketItem.delete({
-        where: { id: itemId },
+      await tx.basketItem.deleteMany({
+        where: {
+          listingId,
+          basket: {
+            userId: user.id,
+          },
+        },
       });
 
-      // Check remaining items count
       const remainingCount = await tx.basketItem.count({
         where: { basketId: basketItem.basketId },
       });
 
-      // If no items remain, delete the group
       if (remainingCount === 0) {
         await tx.basket.delete({
           where: { id: basketItem.basketId },
@@ -63,8 +63,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[WISHLIST_DELETE]", error);
+    console.error("[BASKET_DELETE]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
-

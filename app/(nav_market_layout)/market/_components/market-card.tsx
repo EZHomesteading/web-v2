@@ -17,7 +17,7 @@ interface ListingCardProps {
   listing: MarketListing;
   user?: UserInfo;
   imageCount: number;
-  basketItemIds?: string[];
+  basketItemIds: any[];
 }
 
 interface StoreLocationCardProps {
@@ -134,11 +134,6 @@ const MarketCard = ({
   user,
   basketItemIds,
 }: ListingCardProps) => {
-  const handleCartUpdate = (inCart: boolean, quantity: number) => {
-    console.log(
-      `Cart updated: ${inCart ? "Added" : "Removed"} ${quantity} items`
-    );
-  };
   const locHours = listing?.location?.hours;
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
@@ -341,14 +336,15 @@ const MarketCard = ({
         user={user}
         initialQuantity={listing.minOrder}
         stock={listing.stock}
+        basketItemIds={basketItemIds}
         minOrder={listing.minOrder}
         quantityType="item"
         price={listing.price}
-        onCartUpdate={handleCartUpdate}
       />
     </div>
   );
 };
+
 const StoreLocationCard = ({
   location,
   listing,

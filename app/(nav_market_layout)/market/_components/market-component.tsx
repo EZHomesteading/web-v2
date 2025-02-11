@@ -5,6 +5,8 @@ import { OutfitFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
+import ClientOnly from "@/components/client/ClientOnly";
+import EmptyState from "@/components/EmptyState";
 interface DayHours {
   date: string;
   timeSlots: TimeSlot[];
@@ -43,20 +45,18 @@ export interface MarketListing {
 interface ShopProps {
   listings: MarketListing[];
   user?: UserInfo;
-  emptyState: React.ReactNode;
   totalPages: number;
   prevPage: number;
   nextPage: number;
   isPageOutOfRange: boolean;
   pageNumbers: number[];
   currentPage: number;
-  basketItemIds: string[];
+  basketItemIds: any[];
 }
 
 const Shop = ({
   listings,
   user,
-  emptyState,
   totalPages,
   isPageOutOfRange,
   pageNumbers,
@@ -66,7 +66,11 @@ const Shop = ({
   let imageCount = 0;
   return (
     <>
-      {emptyState || (
+      {listings?.length === 0 ? (
+        <ClientOnly>
+          <EmptyState showReset />
+        </ClientOnly>
+      ) : (
         <>
           <div
             className={`sticky top-20 w-full border-b pb-2 bg-white z-content`}

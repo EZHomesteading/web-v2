@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         quantity: true,
       },
     });
-
+    console.log(basketItem);
     return NextResponse.json(basketItem);
   } catch (error) {
     console.error("[WISHLIST_POST]", error);
