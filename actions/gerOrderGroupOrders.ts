@@ -23,8 +23,10 @@ export async function getOrderGroupWithOrders(ordergroupId: string) {
       select: {
         id: true,
         pickupDate: true,
+
         location: {
           select: {
+            user: { select: { name: true } },
             displayName: true,
             coordinates: true,
             address: true,
@@ -35,7 +37,8 @@ export async function getOrderGroupWithOrders(ordergroupId: string) {
 
     const mappedOrders: OrderMap[] = orders.map((order) => ({
       id: order.id,
-      pickupDate: order.pickupDate,
+      pickupDate: order.pickupDate || new Date(),
+      name: order.location?.user.name,
       location: order.location
         ? {
             displayName: order.location.displayName || "",

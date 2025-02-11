@@ -104,7 +104,7 @@ const NotificationIcon = ({ bOrders, sOrders, harvestMessages }: Props) => {
               href={`/chat/${notification.conversationId}`}
             >
               <SheetTrigger
-                className={`${outfitFont.className} border-neutral-200 border-b-[1px] min-w-full`}
+                className={`${OutfitFont.className} border-neutral-200 border-b-[1px] min-w-full`}
               >
                 <div className="relative">
                   <div className="flex justify-start items-center text-start text-white bg-slate-500 pl-2 py-3">

@@ -281,7 +281,7 @@ const RouteOptimizer = ({
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
-    <div className="relative h-[calc(100vh-64px)]">
+    <div className="fixed inset-0 w-full h-full">
       <Card className="absolute top-4 left-4 z-10 w-96">
         <CardHeader>
           <CardTitle className={OutfitFont.className}>Route Overview</CardTitle>
@@ -307,7 +307,7 @@ const RouteOptimizer = ({
               </label>
 
               {useCustomEndLocation && (
-                <div className="space-y-2">
+                <div>
                   <Label>End Location Address</Label>
                   <Autocomplete
                     onLoad={(autocomplete) => {
@@ -357,16 +357,16 @@ const RouteOptimizer = ({
               </Button>
             </div>
             {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md space-y-4">
+              <div className="p-2 bg-slate-100 rounded-md ">
                 <div className="border-b pb-2">
                   <p className={`${OutfitFont.className} font-medium text-lg`}>
                     Route Details
                   </p>
-                  <div className="mt-2 space-y-1 text-sm text-gray-600">
+                  <div className="space-y-1 text-sm text-gray-600">
                     <p className={`${OutfitFont.className} font-medium`}>
                       Start Location:
                     </p>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 ">
                       {startLocationAddress}
                     </p>
                     <p>
@@ -405,27 +405,23 @@ const RouteOptimizer = ({
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <p className={`${OutfitFont.className} font-medium`}>
-                    Stops:
-                  </p>
+                <div>
+                  <p className={`${OutfitFont.className} font-medium`}>Stops</p>
                   {optimizedRoute.map((order, index) => (
                     <div
                       key={order.id}
                       className="flex flex-col space-y-1 pb-2 border-b last:border-b-0"
                     >
-                      <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {index + 1}. {order.location.displayName}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Pickup Time:</span>
-                          <span className="text-blue-600 font-medium">
-                            {formatTime(order.pickupDate)}
-                          </span>
-                        </div>
+                      <div className="flex flex-col gap-0.5"></div>
+                      <div className="flex justify-between text-sm text-gray-600">
+                        {" "}
+                        <span>
+                          {" "}
+                          {index + 1}. {order.location.displayName}Pickup Time:
+                        </span>
+                        <span className="text-blue-600 font-medium">
+                          {formatTime(order.pickupDate)}
+                        </span>
                       </div>
 
                       <div className="text-sm text-gray-600 pl-6 space-y-0.5">
@@ -494,6 +490,51 @@ const RouteOptimizer = ({
                       </div>
                     </div>
                   )}
+                  {!useCustomEndLocation && routeSegments.length > 0 && (
+                    <div className="flex flex-col space-y-1 pb-2 border-t pt-2">
+                      <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">Return to Start:</span>
+                        </div>
+
+                        <div className="text-sm text-gray-600 space-y-0.5 mt-1">
+                          <div className="flex justify-between">
+                            <span>Travel time from last stop:</span>
+                            <span>
+                              {formatDuration(
+                                routeSegments[routeSegments.length - 1]
+                                  .travelTime
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Distance from last stop:</span>
+                            <span>
+                              {metersToMiles(
+                                routeSegments[routeSegments.length - 1].distance
+                              ).toFixed(1)}{" "}
+                              miles
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Estimated Return Time:</span>
+                            <span className="text-green-600 font-medium">
+                              {formatTime(
+                                new Date(
+                                  optimizedRoute[
+                                    optimizedRoute.length - 1
+                                  ].pickupDate.getTime() +
+                                    routeSegments[routeSegments.length - 1]
+                                      .travelTime *
+                                      1000
+                                )
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -555,6 +596,14 @@ const RouteOptimizer = ({
         {orders.map((order) => (
           <React.Fragment key={order.id}>
             <MarkerF
+              label={{
+                text: order.location.displayName || order.name || "NO NAME SET",
+                className: "marker-label",
+                color: "black",
+                fontFamily: "Arial",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
               position={
                 new google.maps.LatLng(
                   order.location.coordinates[1],
@@ -564,6 +613,8 @@ const RouteOptimizer = ({
               icon={{
                 url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
                 scaledSize: new google.maps.Size(32, 32),
+                // To move the label up, adjust the anchor point of the icon
+                labelOrigin: new google.maps.Point(16, -10), // x: center of icon, y: above icon
               }}
             />
             <OverlayView

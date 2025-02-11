@@ -39,6 +39,7 @@ const CheckoutPage = async () => {
       baskets={detailedBaskets}
       userId={session.user.id}
       userLoc={userLoc || null}
+      userEmail={session.user.email}
     />
   );
 };

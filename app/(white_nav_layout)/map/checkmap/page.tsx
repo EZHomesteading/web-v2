@@ -7,7 +7,8 @@ import LocationProvider from "./location-provider";
 
 export type OrderMap = {
   id: string;
-  pickupDate: Date | null;
+  pickupDate: Date;
+  name: string | undefined;
   location: {
     displayName: string;
     coordinates: number[];
