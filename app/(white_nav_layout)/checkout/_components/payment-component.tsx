@@ -1,6 +1,6 @@
 "use client";
 
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Button } from "@/components/ui/button";
 import {
   PaymentElement,
@@ -9,8 +9,10 @@ import {
 } from "@stripe/react-stripe-js";
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useState } from "react";
-
-export default function PaymentComponent() {
+interface PaymentFormProps {
+  userEmail: string;
+}
+export default function PaymentComponent({ userEmail }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState("");
@@ -47,13 +49,17 @@ export default function PaymentComponent() {
       type: "tabs",
       defaultCollapsed: false,
     },
+    defaultValues: {
+      billingDetails: {
+        email: userEmail, // Use the email from props
+      },
+    },
   };
-
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={paymentElementOptions} />
       <Button
-        className={`${outfitFont.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
+        className={`${OutfitFont.className} hover:bg-green-900 text-black w-full hover:text-white shadow-md hover:shadow-lg bg-green-300 mt-2`}
         disabled={isLoading || !stripe || !elements}
         id="submit"
       >

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
@@ -19,6 +19,7 @@ interface CheckoutFormProps {
   baskets: any[];
   userId: string;
   userLoc: any;
+  userEmail: string;
 }
 const MobilePriceSummary = ({ formattedTotal }: { formattedTotal: number }) => {
   return (
@@ -77,6 +78,7 @@ export default function CheckoutForm({
   baskets,
   userId,
   userLoc,
+  userEmail,
 }: CheckoutFormProps) {
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -150,7 +152,7 @@ export default function CheckoutForm({
   if (isLoading) {
     return (
       <div
-        className={`${outfitFont.className} flex items-center justify-center h-screen`}
+        className={`${OutfitFont.className} flex items-center justify-center h-screen`}
       >
         <p className="text-xl">Loading checkout...</p>
       </div>
@@ -160,7 +162,7 @@ export default function CheckoutForm({
   if (error) {
     return (
       <div
-        className={`${outfitFont.className} flex items-center justify-center h-screen`}
+        className={`${OutfitFont.className} flex items-center justify-center h-screen`}
       >
         <p className="text-xl text-red-500">{error}</p>
       </div>
@@ -183,7 +185,7 @@ export default function CheckoutForm({
 
         <section
           aria-labelledby="summary-heading"
-          className={`${outfitFont.className} bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16`}
+          className={`${OutfitFont.className} bg-gray-50 px-4 pb-10 pt-16 sm:px-6 lg:col-start-2 lg:row-start-1 lg:bg-transparent lg:px-0 lg:pb-16`}
         >
           <div className="mx-auto max-w-lg lg:max-w-none">
             <h2
@@ -296,10 +298,10 @@ export default function CheckoutForm({
           <div className="mx-auto max-w-lg lg:max-w-none">
             {clientSecret ? (
               <Elements options={{ clientSecret }} stripe={stripePromise}>
-                <PaymentComponent />
+                <PaymentComponent userEmail={userEmail} />
               </Elements>
             ) : (
-              <div className={`${outfitFont.className} text-center`}>
+              <div className={`${OutfitFont.className} text-center`}>
                 <p className="text-xl">
                   Payment processing is being set up. Please wait...
                 </p>

@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
 import { formatTime } from "./utils";
 // Import the separated functions and types
@@ -773,7 +773,7 @@ const RouteOptimizer = ({
                                     </div>
                                   )}
                                   <span
-                                    className={`${outfitFont.className} font-medium truncate`}
+                                    className={`${OutfitFont.className} font-medium truncate`}
                                   >
                                     {index + 1}.{" "}
                                     {location.displayName || location.user.name}
@@ -854,7 +854,7 @@ const RouteOptimizer = ({
             </StrictMode>
             <div className="space-y-2">
               <label
-                className={`${outfitFont.className} flex items-center gap-2`}
+                className={`${OutfitFont.className} flex items-center gap-2`}
               >
                 <Switch
                   checked={useCustomStartLocation}
@@ -913,7 +913,7 @@ const RouteOptimizer = ({
                 </div>
               )}
               <label
-                className={`${outfitFont.className} flex items-center gap-2`}
+                className={`${OutfitFont.className} flex items-center gap-2`}
               >
                 <Switch
                   checked={useCustomEndLocation}
@@ -1440,14 +1440,14 @@ const RouteOptimizer = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle
-              className={`${outfitFont.className} ${
+              className={`${OutfitFont.className} ${
                 modalState.variant === "destructive" ? "text-red-600" : ""
               }`}
             >
               {modalState.title}
             </DialogTitle>
           </DialogHeader>
-          <div className={outfitFont.className}>{modalState.description}</div>
+          <div className={OutfitFont.className}>{modalState.description}</div>
         </DialogContent>
       </Dialog>
     </div>

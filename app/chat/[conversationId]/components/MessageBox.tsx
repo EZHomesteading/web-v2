@@ -47,7 +47,7 @@ import {
   Hours,
   MessageOption,
 } from "chat-types";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 
 import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
@@ -121,11 +121,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   const container = clsx("flex flex-grow  items-start mt-4 gap-2 py-2 px-4");
   const body = clsx("flex  flex-col");
   const message = clsx(
-    `text-xs md:text-sm w-fit font-light ${outfitFont.className}`,
+    `text-xs md:text-sm w-fit font-light ${OutfitFont.className}`,
     data.image ? "rounded-md p-0" : " "
   );
   const notMessage = clsx(
-    `text-xs md:text-sm w-fit ${outfitFont.className}`,
+    `text-xs md:text-sm w-fit ${OutfitFont.className}`,
     isOwn ? ` ` : ``,
     data.image ? "rounded-md p-0" : " "
   );
@@ -393,7 +393,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
 
         <div className={body}>
           <div
-            className={`flex justify-start items-start gap-x-2 ${outfitFont.className} `}
+            className={`flex justify-start items-start gap-x-2 ${OutfitFont.className} `}
           >
             <div className="flex items-center gap-x-2">
               {data.sender.name}
@@ -555,11 +555,11 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={`${outfitFont.className} rounded-t-md w-[300px] p-0`}
+              className={`${OutfitFont.className} rounded-t-md w-[300px] p-0`}
             >
               <div>
                 <h3
-                  className={`${zillaFont.className} text-md rounded-t-md bg-[#F1EFE7] lg:text-md font-semibold pt-2 px-4`}
+                  className={`${ZillaFont.className} text-md rounded-t-md bg-[#F1EFE7] lg:text-md font-semibold pt-2 px-4`}
                 >
                   Your Response Options
                 </h3>

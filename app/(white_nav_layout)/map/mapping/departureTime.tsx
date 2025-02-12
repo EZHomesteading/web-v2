@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface DepartureTimePickerProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ const DepartureTimePicker = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className={outfitFont.className}>
+          <DialogTitle className={OutfitFont.className}>
             Set Departure Time
           </DialogTitle>
         </DialogHeader>

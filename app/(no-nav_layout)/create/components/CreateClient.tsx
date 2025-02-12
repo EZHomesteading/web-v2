@@ -102,7 +102,6 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
     setImageSrc([]); // Clear the imageSrc array
     setValue("imageSrc", []); // Clear the imageSrc in the form state
   };
-  console.log(locations?.length);
   const handleCheckboxChange = (checked: boolean, index: number) => {
     setRating((prevRating) => {
       let newRating = [...prevRating];

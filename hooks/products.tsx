@@ -2,7 +2,8 @@ const defaultProducts = [
   {
     title: "Beefsteak Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/beefsteak-tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTBuFIao2XnTxSiDvbZjpG1WC3HahOwdsIgcqM",
   },
   {
     title: "Red Delicious Apples",
@@ -75,232 +76,278 @@ const defaultProducts = [
   {
     title: "San Marzano Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Brandywine Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Green Zebra Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Cherokee Purple Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Yellow Pear Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Black Krim Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Amish Paste Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Celebrity Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Early Girl Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Big Boy Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Sun Gold Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Sweet Million Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Mortgage Lifter Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Pineapple Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Supersweet 100 Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Black Cherry Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Campari Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Kumato Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Principe Borghese Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Rutgers Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Paul Robeson Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Arkansas Traveler Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Persimmon Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Costoluto Genovese Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Striped German Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Golden Jubilee Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Green Giant Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Orange Wellington Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Pink Brandywine Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Red Currant Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Snow White Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Yellow Brandywine Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Black Pineapple Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Blondkopfchen Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Caspian Pink Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "German Johnson Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Hillbilly Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Indigo Rose Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Japanese Black Trifele Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Kellogg's Breakfast Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Marianna's Peace Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Old German Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Purple Calabash Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Rose de Berne Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Tigerella Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Valencia Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
   {
     title: "Granny Smith Apples",
@@ -598,7 +645,8 @@ const defaultProducts = [
   {
     title: "Anjou Pears",
     subCategory: "fruit",
-    photo: "/images/product-images/anjou-pear.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTz0IxdZjBqQlo0PsXn2YM3pZtFTxu6WzhVHEr",
   },
   {
     title: "Bartlett Pears",
@@ -3621,7 +3669,8 @@ const defaultProducts = [
   {
     title: "Hybrid Tomatoes",
     subCategory: "fruit vegetables",
-    photo: "/images/product-images/tomato.webp",
+    photo:
+      "https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTF1GXgohjNDAYBg3P92aF48UbH5zqyx0dtsXW",
   },
 ];
 
