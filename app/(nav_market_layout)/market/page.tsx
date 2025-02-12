@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { getCurrentUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
 import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
-import EmptyState from "@/components/EmptyState";
 
 export interface ShopProps {
   userId?: string;
@@ -42,7 +41,7 @@ const ShopPage = async ({
   const apiUrl = process.env.API_URL;
 
   let user = await getCurrentUser();
-  let basketItemIds: Array<{ listingId: string; id: string }> = [];
+  let basketItemIds: any = [];
 
   if (user?.id) {
     const res = await fetch(
@@ -61,11 +60,12 @@ const ShopPage = async ({
   const res = await fetch(`${apiUrl}/market?${params.toString()}`);
   const data = await res.json();
   const listings = data.items;
+
   return (
     <MarketComponent
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
-      basketItemIds={basketItemIds}
+      basketItemIds={basketItemIds?.items || []}
     />
   );
 };
