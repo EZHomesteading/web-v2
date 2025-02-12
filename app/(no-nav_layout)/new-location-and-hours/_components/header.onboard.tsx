@@ -1,4 +1,4 @@
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { useState, useEffect } from "react";
 import { getFulfillmentText } from "./_steps/step5";
 
@@ -28,7 +28,7 @@ const OnboardHeader = ({ fulfillmentStyle, street, formDataStreet }: p) => {
     <div
       className={`
         sticky top-0 w-full flex justify-center bg-white z-100 ${
-          outfitFont.className
+          OutfitFont.className
         }
         transition-[padding] duration-300 ease-in-out
         ${isAtTop ? "pt-8" : "pt-4"}

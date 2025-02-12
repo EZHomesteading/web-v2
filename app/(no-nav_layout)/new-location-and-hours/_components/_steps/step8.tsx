@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Hours, Location } from "@prisma/client";
 import WeelkyScheduleChart from "../weekly-schedule-chart";
 import { Button } from "@/components/ui/button";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
 import OnboardContainer from "../onboard.container";
+import AvailabilityScore from "@/app/(nav_market_layout)/market/_components/availabilityScore";
+import { Clock } from "lucide-react";
 
 interface StepSevenProps {
   location?: LocationObj;
@@ -20,6 +22,35 @@ interface StepSevenProps {
   onDayChange: (selectedDays: string[]) => void;
   onFinish: (hours: Hours, type: string) => void;
   fulfillmentStyle?: string;
+}
+interface TimeSlot {
+  open: number; // Hour in 24-hour format
+  close: number; // Hour in 24-hour format
+}
+
+interface DayHours {
+  date: string;
+  timeSlots: TimeSlot[];
+  capacity: number;
+}
+
+interface LocationHours {
+  [key: string]: DayHours[] | undefined;
+  pickup?: DayHours[];
+  delivery?: DayHours[];
+}
+
+interface ScoreResult {
+  pickup: {
+    workingmanScore: number;
+    retireeScore: number;
+    combinedScore: number;
+  };
+  delivery: {
+    workingmanScore: number;
+    retireeScore: number;
+    combinedScore: number;
+  };
 }
 
 const StepEight: React.FC<StepSevenProps> = ({
@@ -218,7 +249,124 @@ const StepEight: React.FC<StepSevenProps> = ({
       }
     }
   };
+  function calculateAvailabilityScores(
+    hours: LocationHours | null | undefined
+  ): ScoreResult {
+    if (!hours) {
+      return {
+        pickup: { workingmanScore: 1, retireeScore: 1, combinedScore: 1 },
+        delivery: { workingmanScore: 1, retireeScore: 1, combinedScore: 1 },
+      };
+    }
 
+    return {
+      pickup: calculateServiceScores(hours.pickup || []),
+      delivery: calculateServiceScores(hours.delivery || []),
+    };
+  }
+  function calculateServiceScores(hours: DayHours[]) {
+    const today = new Date();
+    const next7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(date.getDate() + i);
+      return date.toISOString().split("T")[0];
+    });
+
+    const relevantHours = hours.filter((hour) => {
+      const hourDate = new Date(hour.date).toISOString().split("T")[0];
+      return next7Days.includes(hourDate);
+    });
+
+    let workingmanScore = 0;
+    let retireeScore = 0;
+
+    next7Days.forEach((date) => {
+      const dayHours = relevantHours.find(
+        (h) => new Date(h.date).toISOString().split("T")[0] === date
+      );
+
+      if (!dayHours) return;
+
+      const dayOfWeek = new Date(date).getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const isSunday = dayOfWeek === 0;
+
+      if (!dayHours.timeSlots || dayHours.timeSlots.length === 0) return;
+
+      const workingCoverage = calculateTimeSlotCoverage(
+        dayHours.timeSlots,
+        960,
+        1200
+      );
+
+      const retireeCoverage = calculateTimeSlotCoverage(
+        dayHours.timeSlots,
+        600,
+        1200
+      );
+
+      const weekendModifier = isWeekend ? (isSunday ? 0.3 : 0.1) : 1;
+
+      workingmanScore += workingCoverage * weekendModifier;
+      retireeScore += retireeCoverage * weekendModifier;
+    });
+
+    const normalizeScore = (score: number): number => {
+      const maxPossibleScore = 7;
+      const normalized = (score / maxPossibleScore) * 3;
+      return Math.max(1, Math.min(3, Math.ceil(normalized)));
+    };
+
+    const finalWorkingmanScore = normalizeScore(workingmanScore);
+    const finalRetireeScore = normalizeScore(retireeScore);
+
+    const combinedScore = Math.ceil(
+      (finalWorkingmanScore + finalRetireeScore) / 2
+    );
+
+    return {
+      workingmanScore: finalWorkingmanScore,
+      retireeScore: finalRetireeScore,
+      combinedScore,
+    };
+  }
+  function calculateTimeSlotCoverage(
+    timeSlots: TimeSlot[],
+    targetStart: number,
+    targetEnd: number
+  ): number {
+    let totalCoverage = 0;
+    const targetHours = targetEnd - targetStart;
+
+    timeSlots.forEach((slot) => {
+      const overlapStart = Math.max(slot.open, targetStart);
+      const overlapEnd = Math.min(slot.close, targetEnd);
+      if (overlapEnd > overlapStart) {
+        totalCoverage += (overlapEnd - overlapStart) / targetHours;
+      }
+    });
+
+    return Math.min(1, totalCoverage);
+  }
+
+  const scores = calculateAvailabilityScores(location?.hours);
+
+  const getColor = (score: number) => {
+    switch (score) {
+      case 3:
+        return "text-green-500";
+      case 2:
+        return "text-yellow-500";
+      case 1:
+        return "text-red-500";
+      default:
+        return "text-gray-300";
+    }
+  };
+  const pickupScore = scores["pickup"].combinedScore;
+  const deliveryScore = scores["delivery"].combinedScore;
+  const pickupColor = getColor(scores["pickup"].combinedScore);
+  const deliveryColor = getColor(scores["delivery"].combinedScore);
   // const renderButton = () => {
   //   const getButtonConfig = () => {
   //     switch (fulfillmentStyle) {
@@ -264,8 +412,48 @@ const StepEight: React.FC<StepSevenProps> = ({
           "You will be able to edit specific days later in settings",
         ]}
       />
+      <div className="flex flex-col w-50 items-center justify-center gap-1 mt-2">
+        {location?.hours?.pickup?.length === 0 ? (
+          <div className="text-red-500 font-medium flex items-center text-xs">
+            <Clock size={14} className="mr-1" />{" "}
+            <span className="font-medium capitalize">No Pickup Hours</span>
+          </div>
+        ) : (
+          <AvailabilityScore scores={scores} type="pickup" />
+        )}
+        {location?.hours?.delivery?.length === 0 ? (
+          <div className="text-red-500 font-medium flex items-center text-xs">
+            <Clock size={14} className="mr-1" />{" "}
+            <span className="font-medium capitalize">No Delivery Hours</span>
+          </div>
+        ) : (
+          <AvailabilityScore scores={scores} type="delivery" />
+        )}
+        {location?.hours?.pickup?.length === 0 ? null : (
+          <div className={`flex items-center text-md  w-[80%] ${pickupColor}`}>
+            {pickupScore === 1
+              ? "Your pickup availability might not fit most peoples schedules. While we understand that the best part of having your own store is that you get to choose the hours, we reccomend having a more broad schedule prioritizing times that most people are off work. Generally the hours of 4pm to 8pm for the average working individual, bonus points for catering to the retired population during the hours of around 10 am to 8 pm."
+              : pickupScore === 2
+              ? "Your pickup availability is pretty good, but it could be better. While we understand that the best part of having your own store is that you get to choose the hours, we reccomend having a more broad schedule prioritizing times that most people are off work. Generally the hours of 4pm to 8pm for the average working individual, bonus points for catering to the retired population during the hours of around 10 am to 8 pm."
+              : pickupScore === 3
+              ? "You have fantastic pickup availability, if you keep these hours whenever you have produce you will maximise sales!"
+              : "ERROR"}
+          </div>
+        )}
+        {location?.hours?.delivery?.length === 0 ? null : (
+          <div className={`flex items-center text-md w-[80%] ${deliveryColor}`}>
+            {deliveryScore === 1
+              ? "Your delivery availability might not fit most peoples schedules.While we understand that the best part of having your own store is that you get to choose the hours, we reccomend having a more broad schedule prioritizing times that most people are off work. Generally the hours of 4pm to 8pm for the average working individual, bonus points for catering to the retired population during the hours of around 10 am to 8 pm."
+              : deliveryScore === 2
+              ? "Your delivery availability is pretty good, but it could be better. While we understand that the best part of having your own store is that you get to choose the hours, we reccomend having a more broad schedule prioritizing times that most people are off work. Generally the hours of 4pm to 8pm for the average working individual, bonus points for catering to the retired populationj during the hours of around 10 am to 8 pm.."
+              : deliveryScore === 3
+              ? "You have fantastic delivery availability, if you keep these hours whenever you have produce you will maximise sales!"
+              : "ERROR"}
+          </div>
+        )}
+      </div>
       <div
-        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${outfitFont.className}`}
+        className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${OutfitFont.className}`}
       >
         {/* months section */}
         <div className="flex flex-col mb-3">
