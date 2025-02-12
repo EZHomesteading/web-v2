@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import Wheel from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/wheel";
 
 interface TimePickerProps {
@@ -90,7 +90,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <div
-      className={`${outfitFont.className} ${
+      className={`${OutfitFont.className} ${
         !isOpen && "hover:cursor-not-allowed text-neutral-600"
       } flex flex-col items-center w-full`}
     >

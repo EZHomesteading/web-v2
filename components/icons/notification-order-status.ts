@@ -56,7 +56,7 @@ const statusTextMap: Record<
 };
 
 export const getStatusText = (
-  statusNumber: number,
+  statusNumber: string,
   isSeller: boolean,
   sName: string,
   bName: string

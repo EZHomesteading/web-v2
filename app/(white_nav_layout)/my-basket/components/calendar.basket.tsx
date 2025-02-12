@@ -20,7 +20,7 @@ import {
   daysOfWeek,
   week_day_mmm_dd_yy_time,
 } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-functions-calendar";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import {
   CalendarDayCart,
   DeliveryPickupToggleMode,
@@ -274,7 +274,7 @@ const SetCustomPickupDeliveryCalendar = ({
       <div
         key={month}
         data-month={format(new Date(year, month), "MMM yyyy")}
-        className={`sm:px-1 ${outfitFont.className}`}
+        className={`sm:px-1 ${OutfitFont.className}`}
       >
         <div className="text-lg font-semibold mb-2 w-fit">
           {format(new Date(year, month), "MMM yyyy")}

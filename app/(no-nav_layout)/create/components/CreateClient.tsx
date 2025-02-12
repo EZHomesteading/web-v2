@@ -26,7 +26,7 @@ import StepFour from "./steps/step4";
 import StepFive from "./steps/step5";
 import StepSix from "./steps/step6";
 import { Location } from "@prisma/client";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 import { Label } from "@/components/ui/label";
 import Help from "./help";
 import CreateHeader from "./header.create";
@@ -615,7 +615,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
   const progress = ((step - 1) / 7) * 100;
 
   return (
-    <div className={`min-h-screen ${outfitFont.className}`}>
+    <div className={`min-h-screen ${OutfitFont.className}`}>
       <div className="w-full fixed top-0 left-0 zmax">
         <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
         {step > 0 && (
@@ -774,7 +774,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                     </div>
                     <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                       <ul>
-                        <li className={`${outfitFont.className}`}></li>{" "}
+                        <li className={`${OutfitFont.className}`}></li>{" "}
                         {locations && locations[0]?.address.length === 4 ? (
                           <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
                         ) : (
@@ -812,7 +812,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                       </div>
                       <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                         <ul>
-                          <li className={`${outfitFont.className}`}></li>{" "}
+                          <li className={`${OutfitFont.className}`}></li>{" "}
                           {locations && locations[1]?.address.length === 4 ? (
                             <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
                           ) : (
@@ -851,7 +851,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                       </div>
                       <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                         <ul>
-                          <li className={`${outfitFont.className}`}></li>{" "}
+                          <li className={`${OutfitFont.className}`}></li>{" "}
                           {locations && locations[2]?.address.length === 4 ? (
                             <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
                           ) : (
@@ -986,7 +986,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                       </div>
                       <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                         <ul>
-                          <li className={`${outfitFont.className}`}></li>{" "}
+                          <li className={`${OutfitFont.className}`}></li>{" "}
                           {locations && locations[0]?.address.length === 4 ? (
                             <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
                           ) : (
@@ -1019,7 +1019,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                         <div className="text-xl ">Use My Second Location</div>
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
-                            <li className={`${outfitFont.className}`}></li>{" "}
+                            <li className={`${OutfitFont.className}`}></li>{" "}
                             {locations && locations[1]?.address.length === 4 ? (
                               <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
                             ) : (
@@ -1053,7 +1053,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
                         <div className="text-xl ">Use My Third Location</div>
                         <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                           <ul>
-                            <li className={`${outfitFont.className}`}></li>{" "}
+                            <li className={`${OutfitFont.className}`}></li>{" "}
                             {locations && locations[2]?.address.length === 4 ? (
                               <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
                             ) : (
