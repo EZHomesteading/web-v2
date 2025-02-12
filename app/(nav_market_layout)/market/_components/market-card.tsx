@@ -10,7 +10,7 @@ import { OutfitFont, WorkFont } from "@/components/fonts";
 import { MarketListing } from "./market-component";
 import Link from "next/link";
 import AvailabilityScore from "./availabilityScore";
-import CartToggle from "./carttoggle";
+import CartToggle from "./cart-toggle";
 import { Clock } from "lucide-react";
 
 interface ListingCardProps {

@@ -4,14 +4,6 @@ import Toast from "@/components/ui/toast";
 import Link from "next/link";
 import { PiBasketThin } from "react-icons/pi";
 
-export interface CartItem {
-  listingId: string;
-  quantity: number;
-  price: number;
-  quantityType: string;
-  timestamp: string;
-}
-
 interface User {
   id: string;
   name: string | null;
@@ -25,7 +17,7 @@ interface CartToggleProps {
   initialQuantity?: number;
   stock?: number;
   minOrder?: number;
-  basketItemIds?: any[];
+  basketItemIds?: Array<{ listingId: string; id: string }> | null;
   quantityType?: string;
   price: number;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
@@ -42,15 +34,10 @@ const CartToggle = ({
     user,
     initialQuantity: minOrder || 1,
   });
-  if (!basketItemIds) {
-    return (
-      <div className="absolute top-3 right-3">
-        <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
-      </div>
-    );
-  }
+
   const isInBasket =
-    basketItemIds?.map((item) => item.listingId)?.includes(listingId) || false;
+    Array.isArray(basketItemIds) &&
+    basketItemIds.some((item) => item?.listingId === listingId);
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {

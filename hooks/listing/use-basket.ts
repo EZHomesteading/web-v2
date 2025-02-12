@@ -39,13 +39,12 @@ export const useBasket = ({
 
       setIsLoading(true);
       try {
-        const res = await axios.post(`/api/basket/items`, {
+        await axios.post(`/api/basket/items`, {
           listingId,
           quantity,
           status,
           initialOrderMethod: initialOrderMethod,
         });
-        console.log(res.data);
         Toast({ message: "Saved new basket item" });
         router.refresh();
       } catch (error: any) {

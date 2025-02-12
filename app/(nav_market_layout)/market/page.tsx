@@ -42,7 +42,8 @@ const ShopPage = async ({
   const apiUrl = process.env.API_URL;
 
   let user = await getCurrentUser();
-  let basketItemIds: basket[] = [{ listingId: "1", id: "1" }];
+  let basketItemIds: Array<{ listingId: string; id: string }> = [];
+
   if (user?.id) {
     const res = await fetch(
       `${apiUrl}/get-many?collection=BasketItem&key=userId&value=${user?.id}&fields=listingId`
