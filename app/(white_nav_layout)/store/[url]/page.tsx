@@ -3,7 +3,7 @@ import { UserInfo } from "next-auth";
 import { auth } from "@/auth";
 import Avatar from "@/components/Avatar";
 import { OutfitFont } from "@/components/fonts";
-import { MarketCard } from "@/app/(nav_market_layout)/market/_components/market-card";
+import { MarketCard } from "@/app/(nav_market_layout)/market/(components)/store-card";
 import { Bio } from "./bio";
 import Link from "next/link";
 import {

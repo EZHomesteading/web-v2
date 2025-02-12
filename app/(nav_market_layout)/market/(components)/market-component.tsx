@@ -1,9 +1,10 @@
 //render market product cards on server, with toggle cart buttons
 import { UserInfo } from "next-auth";
-import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
 import EmptyState from "@/components/EmptyState";
 import { UserRole } from "@prisma/client";
+import { MarketCard, MarketGrid } from "./market-components";
+import { request } from "http";
 
 interface DayHours {
   date: string;
@@ -44,9 +45,10 @@ interface ShopProps {
   listings: MarketListing[];
   user?: UserInfo;
   basketItemIds: any[];
+  params?: string;
 }
 
-const Shop = ({ listings, user, basketItemIds }: ShopProps) => {
+const Shop = ({ params, listings, user, basketItemIds }: ShopProps) => {
   let imageCount = 0;
   return (
     <>
@@ -64,6 +66,7 @@ const Shop = ({ listings, user, basketItemIds }: ShopProps) => {
               listing={listing}
               imageCount={imageCount}
               basketItemIds={basketItemIds}
+              params={params}
             />
           ))}
         </MarketGrid>

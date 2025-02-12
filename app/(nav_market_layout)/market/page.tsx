@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { getCurrentUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
-import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
+import { MarketListing } from "@/app/(nav_market_layout)/market/(components)/market-component";
 
 export interface ShopProps {
   userId?: string;
@@ -23,7 +23,8 @@ export interface ShopProps {
 }
 
 const MarketComponent = dynamic(
-  () => import("@/app/(nav_market_layout)/market/_components/market-component"),
+  () =>
+    import("@/app/(nav_market_layout)/market/(components)/market-component"),
   {
     ssr: true,
   }
@@ -66,6 +67,7 @@ const ShopPage = async ({
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
       basketItemIds={basketItemIds?.items || []}
+      params={params.toString()}
     />
   );
 };

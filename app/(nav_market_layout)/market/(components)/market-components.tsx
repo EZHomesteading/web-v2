@@ -1,84 +1,17 @@
-"use client";
+import { UserInfo } from "next-auth";
+import { MarketListing } from "./market-component";
 import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { UserInfo } from "next-auth";
-import { OutfitFont, WorkFont } from "@/components/fonts";
-import { MarketListing } from "./market-component";
-import Link from "next/link";
+import { OutfitFont } from "@/components/fonts";
 import AvailabilityScore from "./availabilityScore";
 import CartToggle from "./cart-toggle";
 import { Clock } from "lucide-react";
-
-interface ListingCardProps {
-  listing: MarketListing;
-  user?: UserInfo;
-  imageCount: number;
-  basketItemIds: any[];
-}
-
-interface StoreLocationCardProps {
-  listing: MarketListing;
-  user?: UserInfo;
-  imageCount: number;
-  location?: any;
-}
-
-const StarRating = ({
-  value,
-  size = 20,
-  color = "#000",
-}: {
-  value: number;
-  size?: number;
-  color?: string;
-}) => {
-  const totalStars = 4;
-  const roundedValue = Math.round(value * 2) / 2;
-
-  return (
-    <div className="flex">
-      {[...Array(totalStars)].map((_, index) => {
-        const filled = index < roundedValue;
-        const halfFilled = !filled && index < Math.ceil(roundedValue);
-
-        return (
-          <span
-            key={index}
-            className="inline-block"
-            style={{ width: size, height: size }}
-          >
-            {halfFilled ? (
-              <svg
-                viewBox="0 0 24 24"
-                fill={color}
-                style={{ width: size, height: size }}
-              >
-                <path
-                  d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z"
-                  clipPath="inset(0 50% 0 0)"
-                />
-              </svg>
-            ) : (
-              <svg
-                viewBox="0 0 24 24"
-                fill={filled ? color : "none"}
-                stroke={color}
-                strokeWidth="2"
-                style={{ width: size, height: size }}
-              >
-                <path d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z" />
-              </svg>
-            )}
-          </span>
-        );
-      })}
-    </div>
-  );
-};
+import Link from "next/link";
+import { GiConsoleController } from "react-icons/gi";
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
@@ -98,9 +31,17 @@ const MarketGrid = ({ children }: { children: any }) => {
     </div>
   );
 };
+interface MarketCardProps {
+  listing: MarketListing;
+  user?: UserInfo;
+  imageCount: number;
+  basketItemIds: any[];
+  params?: string;
+}
+
 interface TimeSlot {
-  open: number; // Hour in 24-hour format
-  close: number; // Hour in 24-hour format
+  open: number;
+  close: number;
 }
 
 interface DayHours {
@@ -133,7 +74,8 @@ const MarketCard = ({
   imageCount,
   user,
   basketItemIds,
-}: ListingCardProps) => {
+  params,
+}: MarketCardProps) => {
   const locHours = listing?.location?.hours;
   function calculateAvailabilityScores(
     hours: LocationHours | null | undefined
@@ -241,7 +183,7 @@ const MarketCard = ({
   return (
     <div className={`relative`}>
       <Link
-        href={`/listings/${listing.id}`}
+        href={`/listings/${listing.id}${params && `?${params}`}`}
         prefetch={true}
         className="block w-full cursor-pointer group mx-auto !z-0"
       >
@@ -290,9 +232,7 @@ const MarketCard = ({
             </p>
 
             <div className="flex items-center justify-between mt-2 w-full">
-              <div
-                className={`${WorkFont.className} text-sm flex items-center gap-1`}
-              >
+              <div className={`text-sm flex items-center gap-1`}>
                 <span className="font-semibold">${listing.price}</span>
                 <span className="font-light">
                   per {listing.quantityType ? listing.quantityType : "item"}
@@ -345,78 +285,56 @@ const MarketCard = ({
     </div>
   );
 };
+const StarRating = ({
+  value,
+  size = 20,
+  color = "#000",
+}: {
+  value: number;
+  size?: number;
+  color?: string;
+}) => {
+  const totalStars = 4;
+  const roundedValue = Math.round(value * 2) / 2;
 
-const StoreLocationCard = ({
-  location,
-  listing,
-  imageCount,
-}: StoreLocationCardProps) => {
   return (
-    <Link
-      href={`/listings/${listing.id}`}
-      prefetch={true}
-      className="block w-full cursor-pointer group mx-auto !z-0"
-    >
-      <div className="flex flex-col relative w-full z-0">
-        <div className="relative overflow-hidden rounded-xl w-full z-0 aspect-square">
-          <Carousel className="h-full w-full relative rounded-lg z-0">
-            <CarouselContent className="h-full z-0">
-              {listing.imageSrc.map((src, index) => (
-                <CarouselItem
-                  key={index}
-                  className="flex items-center justify-center relative aspect-square h-full"
-                >
-                  <Image
-                    src={src}
-                    alt={`Image ${index + 1} of ${listing.title}`}
-                    loading={imageCount++ < 9 ? "eager" : "lazy"}
-                    fill
-                    className="object-cover rounded-md hover:scale-105 transition-transform duration-200 !z-0"
-                    sizes="(max-width: 540px) 100vw, (max-width: 768px) 50vw, (max-width: 1000px) 33.33vw, (max-width: 1280px) 25vw, 20vw"
-                    placeholder="blur"
-                    blurDataURL="/images/website-images/grey.jpg"
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {listing.imageSrc.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {listing.imageSrc.map((_, index) => (
-                  <div
-                    key={index}
-                    className="w-2 h-2 rounded-full bg-white opacity-90 hover:opacity-100 transition-opacity duration-200 cursor-pointer"
-                  />
-                ))}
-              </div>
-            )}
-          </Carousel>
-        </div>
+    <div className="flex">
+      {[...Array(totalStars)].map((_, index) => {
+        const filled = index < roundedValue;
+        const halfFilled = !filled && index < Math.ceil(roundedValue);
 
-        <div className="mt-2 w-full">
-          <h3 className={`${OutfitFont.className} text-lg font-semibold`}>
-            {listing.title}
-          </h3>
-          <p
-            className={`${WorkFont.className} text-xs font-light text-neutral-500`}
+        return (
+          <span
+            key={index}
+            className="inline-block"
+            style={{ width: size, height: size }}
           >
-            {location?.address[1]}, {location?.address[2]}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-1 w-full">
-          <div className={`${WorkFont.className} text-xs`}>
-            <span className="font-semibold">${listing.price}</span>
-            <span className="font-light pl-1">per {listing.quantityType}</span>
-          </div>
-
-          <StarRating
-            value={listing.rating.length - 1}
-            size={20}
-            color="#000"
-          />
-        </div>
-      </div>
-    </Link>
+            {halfFilled ? (
+              <svg
+                viewBox="0 0 24 24"
+                fill={color}
+                style={{ width: size, height: size }}
+              >
+                <path
+                  d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z"
+                  clipPath="inset(0 50% 0 0)"
+                />
+              </svg>
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                fill={filled ? color : "none"}
+                stroke={color}
+                strokeWidth="2"
+                style={{ width: size, height: size }}
+              >
+                <path d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z" />
+              </svg>
+            )}
+          </span>
+        );
+      })}
+    </div>
   );
 };
-export { StoreLocationCard, MarketGrid, MarketCard, StarRating };
+export { MarketCard, MarketGrid, StarRating };
