@@ -456,42 +456,7 @@ const GetListingsByIds = async (params: Params) => {
     throw new Error(error);
   }
 };
-// const getListingSlug = async (params:IParams) => {
-//   try {
-//     const { listingId } = params;
-//     if (listingId?.length !== 24) {
-//       return null;
-//     }
-//     const listing = await prisma.listing.findUnique({
-//       where: {
-//         id: listingId,
-//       },
-//       include: {
-//         user: {
-//           select: {
-//             id: true,
-//             name: true,
-//             createdAt: true,
-//             updatedAt: true,
-//             emailVerified: true,
-//             role: true,
-//             url: true,
-//             SODT: true,
-//           },
-//         },
-//         location: true,
-//       },
-//     });
 
-//     if (!listing) {
-//       return null;
-//     }
-//     return listing;
-//   } catch (error: any) {
-//     console.error(error);
-//     throw new Error(error);
-//   }
-// }
 // get a single listing by id
 export async function getUnique(params: { id?: string }) {
   try {
@@ -611,51 +576,7 @@ export async function getListingByIdMetaData(params: { listingId?: string }) {
     return null;
   }
 }
-// get a single listing by id
-const getListingByIdUpdate = async (params: IParams) => {
-  try {
-    const { listingId } = params;
 
-    const listing = await prisma.listing.findUnique({
-      where: {
-        id: listingId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            createdAt: true,
-            updatedAt: true,
-            emailVerified: true,
-            role: true,
-            url: true,
-            locations: true,
-          },
-        },
-        location: true,
-      },
-    });
-
-    if (!listing) {
-      return null;
-    }
-
-    return {
-      ...listing,
-      createdAt: listing.createdAt.toString(),
-      user: {
-        ...listing.user,
-        createdAt: listing.user.createdAt.toString(),
-        updatedAt: listing.user.updatedAt.toString(),
-        emailVerified: listing.user.emailVerified?.toString() || null,
-      },
-    };
-  } catch (error: any) {
-    console.error(error);
-    throw new Error(error);
-  }
-};
 const GetListingsByUserId = async (params: IListingsOrderParams) => {
   try {
     const { userId } = params;
@@ -713,35 +634,14 @@ const GetListingsByOrderId = async (params: IListingsOrderParams) => {
       include: { user: { select: { id: true } }, location: true },
     });
 
-    // const safeListings = listings.map(async (listing: any) => {
-    //   const location = (await getUserLocation2(listing)) as unknown as Location;
-    //   const Listing: FinalListing = listing as unknown as FinalListing;
-    //   return {
-    //     ...Listing,
-    //     location,
-    //     createdAt: listing.createdAt.toISOString(),
-    //   };
-    // });
-    // let resolvedSafeListings = await Promise.all(safeListings);
-    // resolvedSafeListings = await Promise.all(
-    //   filterListingsByLocation(resolvedSafeListings)
-    // );
-    // resolvedSafeListings = await Promise.all(
-    //   filternullhours(resolvedSafeListings)
-    // );
     return { listings: listings };
   } catch (error: any) {
     throw new Error(error);
   }
 };
 
-export {
-  GetListingsByIds,
-  // GetListingsMarket,
-  GetListingsByOrderId,
-  GetListingsByUserId,
-  getListingByIdUpdate,
-};
+export { GetListingsByIds, GetListingsByOrderId, GetListingsByUserId };
+
 export interface IListingsParams {
   lat?: string;
   lng?: string;
@@ -758,7 +658,4 @@ export interface IListingsParams {
 }
 export interface Params {
   listingIds: string[];
-}
-interface IParams {
-  listingId?: string;
 }

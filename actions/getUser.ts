@@ -1,11 +1,7 @@
 import prisma from "@/lib/prismadb";
-import { Hours, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { Location } from "@prisma/client";
-
-interface p {
-  role: UserRole;
-}
 
 interface Params {
   userId?: string;
@@ -86,7 +82,7 @@ const getUserWithBuyOrders = async (params: Params) => {
             // listingIds: true,
             sellerId: true,
             pickupDate: true,
-            quantity: true,
+            items: true,
             totalPrice: true,
             status: true,
             createdAt: true,
@@ -155,8 +151,8 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
             userId: true,
             // listingIds: true,
             sellerId: true,
+            items: true,
             pickupDate: true,
-            quantity: true,
             totalPrice: true,
             status: true,
             createdAt: true,
@@ -172,7 +168,7 @@ const getUserWithOrders = async ({ userId }: { userId?: string }) => {
             // listingIds: true,
             sellerId: true,
             pickupDate: true,
-            quantity: true,
+            items: true,
             totalPrice: true,
             status: true,
             createdAt: true,
@@ -198,14 +194,6 @@ interface User {
   url: string | null;
   createdAt: Date;
 }
-interface User1 {
-  id: string;
-  name: string;
-  fullName: { first: string | null } | null;
-  image: string | null;
-  createdAt: Date;
-}
-
 interface Review {
   id: string;
   reviewerId: string;
@@ -353,58 +341,6 @@ const getFavCardUser = async (params: Params): Promise<FavCardUser | null> => {
   }
 };
 
-// export type FinalListingShop = {
-//   id: string;
-//   title: string;
-//   price: number;
-//   stock: number;
-//   rating: number[];
-//   quantityType: string | null;
-//   createdAt: string;
-//   location: Location;
-//   imageSrc: string[];
-//   subCategory: string;
-//   minOrder: number | null;
-//   user: {
-//     id: string;
-//     name: string;
-//     role: UserRole;
-//   };
-// };
-
-// export type StoreData = {
-//   user: User1 & {
-//     listings: FinalListingShop[];
-//   };
-//   reviews: any[];
-// };
-interface GetUserLocationParams {
-  userId: string;
-  index: number;
-}
-const getUserLocations = async ({
-  userId,
-}: {
-  userId?: string;
-}): Promise<Location[] | null> => {
-  if (!userId) {
-    return null;
-  }
-  try {
-    const locations = await prisma.location.findMany({
-      where: {
-        userId: userId,
-      },
-    });
-
-    return locations;
-  } catch (error) {
-    console.error("Error fetching user location:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Unknown error occurred"
-    );
-  }
-};
 export interface BasketLocation {
   id: string;
   coordinates: number[] | null;
@@ -442,15 +378,6 @@ const getUserLocationsBasket = async (): Promise<BasketLocation[] | null> => {
     );
   }
 };
-
-// function filternullhours(listings: FinalListingShop[]) {
-//   return listings.filter(
-//     (listing: FinalListingShop) =>
-//       listing.location.hours !== undefined &&
-//       listing.location.hours !== null &&
-//       listing.location.hours !== "null"
-//   );
-// }
 
 // Update the getUserStore function
 const getUserStore = async (params: IStoreParams): Promise<any | null> => {
@@ -756,6 +683,5 @@ export {
   getRoleGate,
   getUserLocationsBasket,
   getRole,
-  getUserLocations,
   GetStoreByLocation,
 };

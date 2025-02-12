@@ -22,13 +22,7 @@ export async function getLocationsById(locationIds: string[]): Promise<{
     const url = new URL(`/api/locations`, `${protocol}://${host}`);
     url.searchParams.set("ids", locationIds.join(","));
 
-    // Log the URL being called
-    console.log("Fetching from URL:", url.toString());
-
     const response = await authenticatedFetch(url.toString());
-
-    // Log the response status
-    console.log("Response status:", response.status);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch locations: ${response.status}`);
