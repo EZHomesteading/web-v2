@@ -43,14 +43,7 @@ const ShopPage = async ({
 
   let user = await getCurrentUser();
   let basketItemIds: any = [];
-
-  if (user?.id) {
-    const res = await fetch(
-      `${apiUrl}/get-many?collection=BasketItem&key=userId&value=${user?.id}&fields=listingId`
-    );
-    basketItemIds = await res.json();
-  }
-
+  let listings: MarketListing[] = [];
   const params = new URLSearchParams({
     ...(searchParams?.lat && { lat: searchParams.lat }),
     ...(searchParams?.lng && { lng: searchParams.lng }),
@@ -58,15 +51,24 @@ const ShopPage = async ({
     ...(searchParams?.q && { q: searchParams.q }),
   });
 
-  const res = await fetch(`${apiUrl}/market?${params.toString()}`);
-  const data = await res.json();
-  const listings = data.items;
+  const requests = [
+    user?.id
+      ? fetch(
+          `${apiUrl}/get-many?collection=BasketItem&key=userId&value=${user.id}&fields=listingId`
+        ).then((res) => res.json())
+      : Promise.resolve([]),
+    fetch(`${apiUrl}/market?${params.toString()}`).then((res) => res.json()),
+  ];
+  const [basketItems, marketData] = await Promise.all(requests);
+
+  basketItemIds = basketItems.items;
+  listings = marketData.items;
 
   return (
     <MarketComponent
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
-      basketItemIds={basketItemIds?.items || []}
+      basketItemIds={basketItemIds || []}
       params={params.toString()}
     />
   );
