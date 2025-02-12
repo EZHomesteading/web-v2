@@ -52,7 +52,7 @@ import { OutfitFont, ZillaFont } from "@/components/fonts";
 import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
-import DateTimePicker from "./customtimemodal";
+//import DateTimePicker from "./customtimemodal";
 
 interface MessageBoxProps {
   listings: ChatListing[];
@@ -81,10 +81,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   otherUserRole,
   stripeAccountId,
 }) => {
-  const [validTime, setValidTime] = useState<string>("(select your time)");
+  //const [validTime, setValidTime] = useState<string>("(select your time)");
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [customTimeOpen, setCustomTimeOpen] = useState(false);
+  //const [customTimeOpen, setCustomTimeOpen] = useState(false);
   const [HarvestOpen, setHarvestOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -169,12 +169,13 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     let message = "";
     if (status === "SELLER_ACCEPTED" && order?.fulfillmentType === "PICKUP") {
       message = `Yes, That time works, Your order will be ready at that time. at ${order?.location?.address[0]}, ${order?.location?.address[1]}, ${order?.location?.address[2]}. ${order?.location?.address[3]}.`;
-    } else if (
-      (order?.fulfillmentType === "PICKUP" &&
-        status === "SELLER_RESCHEDULED") ||
-      status === "BUYER_RESCHEDULED"
-    ) {
-      message = `No, that time does not work. Does ${validTime} work instead?`;
+      // } else if (
+      //   (order?.fulfillmentType === "PICKUP" &&
+      //     status === "SELLER_RESCHEDULED") ||
+      //   status === "BUYER_RESCHEDULED"
+      // ) {
+      //   message = `No, that time does not work. Does ${validTime} work instead?`;
+      // }
     } else if (status === "BUYER_ACCEPTED") {
       message =
         "That works, I will be there to pick up the item at the specified time.";
@@ -183,11 +184,12 @@ const MessageBox: React.FC<MessageBoxProps> = ({
     } else if (status === "COMPLETED") {
       message =
         "Fantastic, this order has been marked as completed, feel free to delete this chat. If you do not delete this chat it will be automatically deleted after 72 hours";
-    } else if (
-      order?.fulfillmentType === "DELIVERY" &&
-      status === "SELLER_RESCHEDULED"
-    ) {
-      message = `I can deliver these items to you at ${validTime}, does that work?`;
+      // }
+      //  else if (
+      //   order?.fulfillmentType === "DELIVERY" &&
+      //   status === "SELLER_RESCHEDULED"
+      // ) {
+      //   message = `I can deliver these items to you at ${validTime}, does that work?`;
     } else if (
       status === "SELLER_ACCEPTED" &&
       order?.fulfillmentType === "DELIVERY"
@@ -238,7 +240,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         order.fulfillmentType,
         user.role,
         isSeller,
-        setCustomTimeOpen,
+        // setCustomTimeOpen,
         setCancelOpen,
         setDisputeOpen
 
@@ -314,33 +316,33 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
   const [isProcessingTime, setIsProcessingTime] = useState(false);
 
-  useEffect(() => {
-    // Only proceed with submission if we're processing a time selection
-    if (isProcessingTime && validTime !== "(select your time)") {
-      const submitOrder = async () => {
-        if (user.id === order?.sellerId) {
-          await onSubmit("SELLER_RESCHEDULED");
-        } else {
-          await onSubmit("BUYER_RESCHEDULED");
-        }
-        setIsProcessingTime(false);
-      };
-      submitOrder();
-    }
-  }, [validTime, isProcessingTime]);
-  console.log(order?.location);
-  const handleSelect = async (date: string, time: string) => {
-    setIsProcessingTime(true);
-    const dateObj = new Date(`${date}T${time}`);
-    const formattedTime = formatTime(dateObj);
+  // useEffect(() => {
+  //   // Only proceed with submission if we're processing a time selection
+  //   if (isProcessingTime && validTime !== "(select your time)") {
+  //     const submitOrder = async () => {
+  //       if (user.id === order?.sellerId) {
+  //         await onSubmit("SELLER_RESCHEDULED");
+  //       } else {
+  //         await onSubmit("BUYER_RESCHEDULED");
+  //       }
+  //       setIsProcessingTime(false);
+  //     };
+  //     submitOrder();
+  //   }
+  // }, [validTime, isProcessingTime]);
+  // console.log(order?.location);
+  // const handleSelect = async (date: string, time: string) => {
+  //   setIsProcessingTime(true);
+  //   const dateObj = new Date(`${date}T${time}`);
+  //   const formattedTime = formatTime(dateObj);
 
-    setSelectedDate(date);
-    setSelectedTime(time);
-    setValidTime(formattedTime);
-  };
+  //   setSelectedDate(date);
+  //   setSelectedTime(time);
+  //   setValidTime(formattedTime);
+  // };
   return (
     <div>
-      <DateTimePicker
+      {/* <DateTimePicker
         selectedDate={selectedDate}
         selectedTime={selectedTime}
         onSelect={handleSelect}
@@ -348,7 +350,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         onClose={() => setCustomTimeOpen(false)}
         hours={order?.location?.hours ?? null}
         type={order?.fulfillmentType?.toLowerCase() as "pickup" | "delivery"}
-      />
+      /> */}
       <CancelModal
         isOpen={cancelOpen}
         onClose={() => setCancelOpen(false)}
@@ -517,7 +519,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 variant={
                   (notOwn &&
                     data.messageOrder !== "IN_TRANSIT" &&
-                    data.messageOrder !== "SELLER_PREPARING") ||
+                    data.messageOrder !== "SELLER_PREPARING" &&
+                    data.messageOrder !== "SELLER_ACCEPTED" &&
+                    data.messageOrder !== "REFUNDED") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "SELLER_ACCEPTED")
@@ -531,7 +535,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
                 style={
                   (notOwn &&
                     data.messageOrder !== "IN_TRANSIT" &&
-                    data.messageOrder !== "SELLER_PREPARING") ||
+                    data.messageOrder !== "SELLER_PREPARING" &&
+                    data.messageOrder !== "SELLER_ACCEPTED" &&
+                    data.messageOrder !== "REFUNDED") ||
                   (isOwn && data.messageOrder === "IN_TRANSIT") ||
                   (isOwn && data.messageOrder === "SELLER_PREPARING") ||
                   (isOwn && data.messageOrder === "SELLER_ACCEPTED")
@@ -541,7 +547,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               >
                 {(notOwn &&
                   data.messageOrder !== "IN_TRANSIT" &&
-                  data.messageOrder !== "SELLER_PREPARING") ||
+                  data.messageOrder !== "SELLER_PREPARING" &&
+                  data.messageOrder !== "SELLER_ACCEPTED" &&
+                  data.messageOrder !== "REFUNDED") ||
                 (isOwn && data.messageOrder === "IN_TRANSIT") ||
                 (isOwn && data.messageOrder === "SELLER_PREPARING") ||
                 (isOwn && data.messageOrder === "SELLER_ACCEPTED") ? (

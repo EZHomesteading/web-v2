@@ -70,23 +70,23 @@ const DisputeModal = ({
       images: image ? [image] : [],
       reason,
       explanation: comments,
-      status: 1,
+      status: "DISPUTED",
     };
     try {
       await axios.post("/api/chat/dispute", data);
       axios.post("/api/useractions/checkout/update-order", {
         orderId: orderId,
-        status: 23,
+        status: "DISPUTED",
       });
       await axios.post("/api/chat/messages", {
         message: `${data.images[0]}`,
-        messageOrder: "img",
+        messageOrder: "IMG",
         conversationId: conversationId,
         otherUserId: otherUserId,
       });
       await axios.post("/api/chat/messages", {
         message: `I am disputing this order because: ${data.explanation}`,
-        messageOrder: "1.6",
+        messageOrder: "DISPUTED",
         conversationId: conversationId,
         otherUserId: otherUserId,
       });

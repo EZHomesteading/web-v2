@@ -30,7 +30,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     axios.post("/api/useractions/checkout/update-order", {
       conversationId: null,
       orderId: orderId,
-      status: 19,
+      status: "COMPLETED",
       completedAt: new Date(),
     });
     axios

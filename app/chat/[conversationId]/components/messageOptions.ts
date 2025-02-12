@@ -12,7 +12,7 @@ export const getMessageOptions = (
   fulfillmentType: fulfillmentType,
   userRole: UserRole,
   isSeller: boolean,
-  setCustomTimeOpen: (open: boolean) => void,
+  // setCustomTimeOpen: (open: boolean) => void,
   setCancelOpen: (open: boolean) => void,
   setDisputeOpen: (open: boolean) => void,
 
@@ -35,23 +35,23 @@ export const getMessageOptions = (
             label: "Send Delivery Time Offer",
             status: OrderStatus.SELLER_RESCHEDULED,
           },
-          ...(dateTime
-            ? [
-                {
-                  icon: PiCalendarPlusLight,
-                  label: "Set Different Time",
-                  status: OrderStatus.SELLER_RESCHEDULED,
-                  onClick: () => setCustomTimeOpen?.(true),
-                },
-              ]
-            : [
-                {
-                  icon: PiCalendarPlusLight,
-                  label: "Set Delivery Time",
-                  status: OrderStatus.SELLER_RESCHEDULED,
-                  onClick: () => setCustomTimeOpen?.(true),
-                },
-              ]),
+          // ...(dateTime
+          //   ? [
+          //       {
+          //         icon: PiCalendarPlusLight,
+          //         label: "Set Different Time",
+          //         status: OrderStatus.SELLER_RESCHEDULED,
+          //         onClick: () => setCustomTimeOpen?.(true),
+          //       },
+          //     ]
+          //   : [
+          //       {
+          //         icon: PiCalendarPlusLight,
+          //         label: "Set Delivery Time",
+          //         status: OrderStatus.SELLER_RESCHEDULED,
+          //         onClick: () => setCustomTimeOpen?.(true),
+          //       },
+          //     ]),
           {
             icon: PiCalendarXLight,
             label: "Cancel Order",
@@ -67,28 +67,28 @@ export const getMessageOptions = (
           label: "Agree to Time",
           status: OrderStatus.SELLER_ACCEPTED,
         },
-        {
-          icon: PiCalendarBlankLight,
-          label: "Propose New Time",
-          status: OrderStatus.SELLER_RESCHEDULED,
-        },
-        ...(dateTime
-          ? [
-              {
-                icon: PiCalendarPlusLight,
-                label: "Set New Reschedule Time",
-                status: OrderStatus.SELLER_RESCHEDULED,
-                onClick: () => setCustomTimeOpen?.(true),
-              },
-            ]
-          : [
-              {
-                icon: PiCalendarPlusLight,
-                label: "Reschedule Time",
-                status: OrderStatus.SELLER_RESCHEDULED,
-                onClick: () => setCustomTimeOpen?.(true),
-              },
-            ]),
+        // {
+        //   icon: PiCalendarBlankLight,
+        //   label: "Propose New Time",
+        //   status: OrderStatus.SELLER_RESCHEDULED,
+        // },
+        // ...(dateTime
+        //   ? [
+        //       {
+        //         icon: PiCalendarPlusLight,
+        //         label: "Set New Reschedule Time",
+        //         status: OrderStatus.SELLER_RESCHEDULED,
+        //         onClick: () => setCustomTimeOpen?.(true),
+        //       },
+        //     ]
+        //   : [
+        //       {
+        //         icon: PiCalendarPlusLight,
+        //         label: "Reschedule Time",
+        //         status: OrderStatus.SELLER_RESCHEDULED,
+        //         onClick: () => setCustomTimeOpen?.(true),
+        //       },
+        //     ]),
         {
           icon: PiCalendarXLight,
           label: "Cancel Order",
@@ -178,37 +178,37 @@ export const getMessageOptions = (
               : "Agree to Time",
           status: OrderStatus.BUYER_ACCEPTED,
         },
-        ...(dateTime
-          ? [
-              {
-                icon: PiCalendarBlankLight,
-                label:
-                  fulfillmentType === "DELIVERY"
-                    ? "Send Delivery Time Offer"
-                    : "Send Reschedule Offer",
-                status: OrderStatus.BUYER_RESCHEDULED,
-              },
-              {
-                icon: PiCalendarPlusLight,
-                label:
-                  fulfillmentType === "DELIVERY"
-                    ? "Set Different Time"
-                    : "Set New Reschedule Time",
-                onClick: () => setCustomTimeOpen?.(true),
-                status: OrderStatus.BUYER_RESCHEDULED,
-              },
-            ]
-          : [
-              {
-                icon: PiCalendarPlusLight,
-                label:
-                  fulfillmentType === "DELIVERY"
-                    ? "Set Delivery Time"
-                    : "Reschedule Time",
-                onClick: () => setCustomTimeOpen?.(true),
-                status: OrderStatus.BUYER_RESCHEDULED,
-              },
-            ]),
+        // ...(dateTime
+        //   ? [
+        //       {
+        //         icon: PiCalendarBlankLight,
+        //         label:
+        //           fulfillmentType === "DELIVERY"
+        //             ? "Send Delivery Time Offer"
+        //             : "Send Reschedule Offer",
+        //         status: OrderStatus.BUYER_RESCHEDULED,
+        //       },
+        //       {
+        //         icon: PiCalendarPlusLight,
+        //         label:
+        //           fulfillmentType === "DELIVERY"
+        //             ? "Set Different Time"
+        //             : "Set New Reschedule Time",
+        //         onClick: () => setCustomTimeOpen?.(true),
+        //         status: OrderStatus.BUYER_RESCHEDULED,
+        //       },
+        //     ]
+        //   : [
+        //       {
+        //         icon: PiCalendarPlusLight,
+        //         label:
+        //           fulfillmentType === "DELIVERY"
+        //             ? "Set Delivery Time"
+        //             : "Reschedule Time",
+        //         onClick: () => setCustomTimeOpen?.(true),
+        //         status: OrderStatus.BUYER_RESCHEDULED,
+        //       },
+        //     ]),
       ];
     }
 
