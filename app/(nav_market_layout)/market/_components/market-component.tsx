@@ -1,12 +1,10 @@
 //render market product cards on server, with toggle cart buttons
-import Link from "next/link";
 import { UserInfo } from "next-auth";
-import { OutfitFont } from "@/components/fonts";
-import { UserRole } from "@prisma/client";
 import { MarketGrid, MarketCard } from "./market-card";
 import Categories from "./categories";
-import ClientOnly from "@/components/client/ClientOnly";
 import EmptyState from "@/components/EmptyState";
+import { UserRole } from "@prisma/client";
+
 interface DayHours {
   date: string;
   timeSlots: TimeSlot[];
@@ -45,75 +43,30 @@ export interface MarketListing {
 interface ShopProps {
   listings: MarketListing[];
   user?: UserInfo;
-  totalPages: number;
-  prevPage: number;
-  nextPage: number;
-  isPageOutOfRange: boolean;
-  pageNumbers: number[];
-  currentPage: number;
   basketItemIds: any[];
 }
 
-const Shop = ({
-  listings,
-  user,
-  totalPages,
-  isPageOutOfRange,
-  pageNumbers,
-  currentPage,
-  basketItemIds,
-}: ShopProps) => {
+const Shop = ({ listings, user, basketItemIds }: ShopProps) => {
   let imageCount = 0;
   return (
     <>
-      {listings?.length === 0 ? (
-        <ClientOnly>
-          <EmptyState showReset />
-        </ClientOnly>
+      <div className={`sticky top-20 w-full border-b pb-2 bg-white z-content`}>
+        <Categories />
+      </div>
+      {!listings ? (
+        <EmptyState showReset />
       ) : (
-        <>
-          <div
-            className={`sticky top-20 w-full border-b pb-2 bg-white z-content`}
-          >
-            <Categories />
-          </div>
-          <MarketGrid>
-            {listings?.map((listing, index) => (
-              <MarketCard
-                user={user}
-                key={index}
-                listing={listing}
-                imageCount={imageCount}
-                basketItemIds={basketItemIds}
-              />
-            ))}
-          </MarketGrid>
-        </>
-      )}
-      {totalPages > 1 && (
-        <>
-          {isPageOutOfRange && (
-            <div
-              className={`flex justify-center items-end my-4 ${OutfitFont.className}`}
-            >
-              <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-4">
-                {pageNumbers.map((pageNumber, index) => (
-                  <Link
-                    key={index}
-                    className={
-                      currentPage === pageNumber
-                        ? "bg-emerald-900 fw-bold px-2 rounded-md text-white"
-                        : "hover:bg-emerald-800 hover:text-white px-1 rounded-md"
-                    }
-                    href={`?page=${pageNumber}`}
-                  >
-                    {pageNumber}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+        <MarketGrid>
+          {listings?.map((listing, index) => (
+            <MarketCard
+              user={user}
+              key={index}
+              listing={listing}
+              imageCount={imageCount}
+              basketItemIds={basketItemIds}
+            />
+          ))}
+        </MarketGrid>
       )}
     </>
   );

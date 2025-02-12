@@ -384,7 +384,6 @@ const SearchLocation = ({ apiKey }: p) => {
                 },
                 onBlur: () => {
                   setFocus({ ...focus, left: false });
-                  // Use setTimeout to allow click events on suggestions to fire before hiding
                   setTimeout(() => setShowSuggestions(false), 200);
                 },
               })}

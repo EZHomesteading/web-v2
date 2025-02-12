@@ -25,7 +25,7 @@ interface CartToggleProps {
   initialQuantity?: number;
   stock?: number;
   minOrder?: number;
-  basketItemIds: any[];
+  basketItemIds?: any[];
   quantityType?: string;
   price: number;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
@@ -34,7 +34,7 @@ interface CartToggleProps {
 const CartToggle = ({
   listingId,
   user,
-  basketItemIds,
+  basketItemIds = [],
   minOrder,
 }: CartToggleProps) => {
   const { isLoading, toggleBasket } = useBasket({
@@ -42,16 +42,23 @@ const CartToggle = ({
     user,
     initialQuantity: minOrder || 1,
   });
-  const isInBasket = basketItemIds
-    ?.map((item) => item.listingId)
-    .includes(listingId);
+  if (!basketItemIds) {
+    return (
+      <div className="absolute top-3 right-3">
+        <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+      </div>
+    );
+  }
+  const isInBasket =
+    basketItemIds?.map((item) => item.listingId)?.includes(listingId) || false;
+
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
       Toast({
         message: "Please sign in to add items to your basket",
         details: (
           <Link
-            href="/auth/login"
+            href={`/auth/login?callbackUrl=/listings/${listingId}`}
             className={`text-sky-400 underline font-light`}
           >
             Sign in here

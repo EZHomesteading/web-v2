@@ -2,13 +2,9 @@ import { ShopProps } from "@/app/(nav_market_layout)/market/page";
 import { GetApiUrl } from "@/utils/get-url";
 
 export async function GetMarketListingsV2(
-  searchParams?: ShopProps["searchParams"],
-  page = 1,
-  perPage = 36
+  searchParams?: ShopProps["searchParams"]
 ) {
   const params = new URLSearchParams({
-    page: String(page),
-    perPage: String(perPage),
     ...(searchParams?.lat && { lat: searchParams.lat }),
     ...(searchParams?.lng && { lng: searchParams.lng }),
     ...(searchParams?.radius && { radius: searchParams.radius }),
