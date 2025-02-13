@@ -1,6 +1,6 @@
 import { getNavUser } from "@/actions/getUser";
 import { OutfitFont } from "@/components/fonts";
-import FindListingsComponent from "@/components/listings/search-listings";
+import FindListingsComponent from "@/components/listings/v2.search-listings";
 import Logo from "@/components/navbar/Logo";
 import UserMenu from "@/components/navbar/menu";
 import { Viewport } from "next";

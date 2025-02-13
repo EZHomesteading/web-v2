@@ -16,7 +16,6 @@ export const getUserById = async (id: string) => {
       where: { id },
       include: { locations: true },
     });
-
     return user;
   } catch {
     return null;

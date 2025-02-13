@@ -18,6 +18,7 @@ export interface ShopProps {
     ra?: string;
     pr?: string;
     category?: string;
+    zip?: string;
     subcategory?: string;
   };
 }
@@ -51,6 +52,7 @@ const ShopPage = async ({
     ...(searchParams?.category && { category: searchParams.category }),
     ...(searchParams?.subcategory && { subcategory: searchParams.subcategory }),
     ...(searchParams?.q && { q: searchParams.q }),
+    ...(searchParams?.zip && { zip: searchParams.zip }),
   });
 
   const requests = [

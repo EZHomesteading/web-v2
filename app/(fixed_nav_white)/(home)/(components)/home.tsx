@@ -38,7 +38,7 @@ const Home = ({ user }: Props) => {
       openAskZipModal();
     } else {
       router.push(
-        `/market?lat=${user.locations[0].coordinates[1]}&lng=${user.locations[0].coordinates[0]}&radius=20`
+        `/market?lat=${user.locations[0].coordinates[1]}&lng=${user.locations[0].coordinates[0]}&radius=20&location=${user?.locations[0]?.address[1]}%2C%20${user?.locations[0]?.address[2]}`
       );
     }
   };
@@ -71,7 +71,7 @@ const Home = ({ user }: Props) => {
                     </span>
                     {index < 2 && (
                       <span className="text-xl font-semibold text-black drop-shadow-lg">
-                        ,{" "}
+                        ,
                       </span>
                     )}
                     {index === 2 && (

@@ -31,8 +31,8 @@ const Filters = ({ role }: Props) => {
   const searchParams = useSearchParams();
 
   let r = searchParams?.get("radius")
-    ? parseInt(searchParams.get("radius") || "")
-    : null;
+    ? parseInt(searchParams.get("radius") || "20")
+    : 20;
 
   let lat = searchParams?.get("lat");
   let lng = searchParams?.get("lng");
