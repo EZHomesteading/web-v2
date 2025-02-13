@@ -74,7 +74,7 @@ const Filters = ({ role }: Props) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className={`fixed h-[450px] inset-y-32 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-2rem) sm:max-w-xl px-4 py-6 z-50 ${OutfitFont.className}`}
+              className={`fixed max-h-[450px] overflow-y-auto inset-y-28 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-2rem) sm:max-w-xl p-3  z-50 ${OutfitFont.className}`}
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-semibold">Filters</h2>
@@ -124,7 +124,7 @@ const Filters = ({ role }: Props) => {
                 <Select>
                   <SelectTrigger className={`font-medium`}>
                     <SelectValue
-                      placeholder="Sort by Rating"
+                      placeholder="Sort by EZH Organic Rating"
                       className={`font-medium`}
                     />
                   </SelectTrigger>
