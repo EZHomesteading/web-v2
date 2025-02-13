@@ -42,7 +42,7 @@ const SendMessageComponent = ({ user, listing, locations }: p) => {
             </button>
           </DrawerTrigger>
           <DrawerContent
-            className={`rounded-t-xl px-2 h-[90vh] ${OutfitFont.className}`}
+            className={`rounded-t-xl px-2 h-[75vh] ${OutfitFont.className}`}
           >
             <SendMessageSection
               listing={listing}

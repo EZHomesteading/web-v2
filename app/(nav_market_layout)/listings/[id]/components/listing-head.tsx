@@ -1,5 +1,9 @@
 import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 interface ListingHeadProps {
   listing: any;
 }
@@ -46,14 +50,6 @@ const ListingHead = ({ listing }: ListingHeadProps) => {
             </div>
           )}
         </Carousel>
-
-        <div
-          className="
-            absolute
-            top-5
-            right-5
-          "
-        />
       </div>
     </>
   );

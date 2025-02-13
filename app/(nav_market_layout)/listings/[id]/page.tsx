@@ -1,7 +1,6 @@
 //listing page server side layout, getting users and their carts to display toggle cart options.
 import { getUnique } from "@/actions/getListings";
 import { getFollows } from "@/actions/getFollow";
-import ListingHead from "@/components/listings/ListingHead";
 import { OutfitFont } from "@/components/fonts";
 import Link from "next/link";
 import {
@@ -14,6 +13,8 @@ import { auth } from "@/auth";
 import Avatar from "@/components/Avatar";
 import SendMessageComponent from "./components/send-message-component";
 import { getUserLocations } from "@/actions/getLocations";
+import ListingMap from "@/components/map/listing-map";
+import ListingHead from "./components/listing-head";
 
 export default async function ListingPage({
   params,
@@ -22,6 +23,7 @@ export default async function ListingPage({
   params: { id: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+  const apiKey = process.env.MAPS_KEY!;
   const marketCallback =
     searchParams &&
     `${new URLSearchParams(searchParams as Record<string, string>).toString()}`;
@@ -72,7 +74,7 @@ export default async function ListingPage({
           id="modal-root"
           className={`w-full max-w-5xl relative mx-auto ${OutfitFont.className}`}
         >
-          <div className={`fixed top-0 w-full max-w-5xl z-10 bg-white`}>
+          <div className={`fixed top-0 w-full max-w-5xl z-50 bg-white`}>
             <div
               className={`h-16  flex justify-between items-center w-full  pr-2 lg:pr-0 pl-1 lg:pl-0`}
             >
@@ -101,7 +103,6 @@ export default async function ListingPage({
           <div className={`pt-16 -2  `}>
             <ListingHead listing={listing} />
           </div>
-
           <div
             className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 px-2 lg:px-0 mt-2 sm:space-x-2`}
           >
@@ -166,11 +167,19 @@ export default async function ListingPage({
                     </li>
                   ))}
                 </ul>
-                <div className={`h-[50vh]`}>{listing.description}</div>
+                <div className={`h-[20vh]`}>{listing.description}</div>
               </div>
             </div>
-            <div className={`col-span-1 lg:col-span-2 relative`}>
+            <div className={`col-span-1 lg:col-span-2 relative z-20`}>
               <SendMessageComponent listing={listing} locations={locations} />
+            </div>
+          </div>
+          <div className={`w-5xl mb-40 px-4 sm:px-0 relative`}>
+            <ListingMap location={listing.location} apiKey={apiKey} />
+            <div
+              className={`absolute bottom-5 translate-x-1/2 right-1/2 p-2 shadow-md transform border  bg-white rounded-full w-4xl text-xs sm:w-fit text-center`}
+            >
+              Exact location revealed after purchase if you're picking up
             </div>
           </div>
         </div>
@@ -182,7 +191,10 @@ export default async function ListingPage({
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <h1 className="text-xl font-bold">Something went wrong!</h1>
-          <p className="mt-2">Please try again later.</p>
+          <p className="mt-2">
+            This listing may not exist anymore or is missing some required field
+            for you to purchase.
+          </p>
         </div>
       </div>
     );

@@ -1,35 +1,7 @@
 //action to get listings based on search params in the market pages.
 import prisma from "@/lib/prismadb";
-import { Location, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import axios from "axios";
-
-export type FinalListing = {
-  id: string;
-  title: string;
-  price: number;
-  stock: number;
-  rating: number[];
-  reports: number | null;
-  SODT: number | null;
-  quantityType: string | null;
-  shelfLife: number;
-  harvestFeatures: boolean | null;
-  projectedStock: number | null;
-  harvestDates: string[];
-  createdAt: Date;
-  location: Location | null;
-  keyWords: string[];
-  imageSrc: string[];
-  userId: string;
-  subCategory: string;
-  minOrder: number | null;
-  review: boolean | null;
-  user: {
-    id: string;
-    name: string;
-    role: UserRole;
-  };
-};
 
 export type FinalListing1 = {
   id: string;
