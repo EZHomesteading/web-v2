@@ -11,7 +11,16 @@ interface ToastProps {
   messageClassName?: string;
   duration?: number;
   iconClassName?: string;
+  position?: Position;
 }
+
+type Position =
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right"
+  | "top-center"
+  | "bottom-center";
 
 const Toast = ({
   message,
@@ -22,6 +31,7 @@ const Toast = ({
   subtitleClassName,
   duration = 4000,
   iconClassName,
+  position = "bottom-right",
 }: ToastProps) => {
   const toastContent = (
     <div className={`${OutfitFont.className} flex items-center gap-2`}>
@@ -39,16 +49,16 @@ const Toast = ({
 
   switch (type) {
     case "success":
-      toast.success(toastContent, { duration: duration });
+      toast.success(toastContent, { duration: duration, position: position });
       break;
     case "info":
-      toast.info(toastContent, { duration: duration });
+      toast.info(toastContent, { duration: duration, position: position });
       break;
     case "warning":
-      toast.warning(toastContent, { duration: duration });
+      toast.warning(toastContent, { duration: duration, position: position });
       break;
     default:
-      toast.error(toastContent, { duration: duration });
+      toast.error(toastContent, { duration: duration, position: position });
       break;
   }
 };

@@ -8,10 +8,9 @@ import {
 } from "@/components/ui/carousel";
 import { OutfitFont } from "@/components/fonts";
 import AvailabilityScore from "./availabilityScore";
-import CartToggle from "./cart-toggle";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-import { GiConsoleController } from "react-icons/gi";
+import MarketCartToggle from "./market-cart-toggle";
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
@@ -271,7 +270,7 @@ const MarketCard = ({
           </div>
         </div>
       </Link>
-      <CartToggle
+      <MarketCartToggle
         listing={listing}
         listingId={listing.id}
         user={user}

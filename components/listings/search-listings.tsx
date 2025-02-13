@@ -125,6 +125,7 @@ const SearchLocation = ({ apiKey }: p) => {
     if (formState) {
       setLocation(formState.location);
       setLatLng(formState.latLng);
+      setAddress(formState.address);
     }
   }, []);
 
@@ -135,7 +136,7 @@ const SearchLocation = ({ apiKey }: p) => {
       distance: 100,
       ignoreLocation: true,
       shouldSort: true,
-      minMatchCharLength: 2,
+      minMatchCharLength: 3,
     };
     return new Fuse<Listing>(allListings, options);
   }, [allListings]);
@@ -156,7 +157,7 @@ const SearchLocation = ({ apiKey }: p) => {
       if (latLng) {
         lat = latLng.lat.toString();
         lng = latLng.lng.toString();
-        radius = 32.2;
+        radius = 20;
       } else if (location) {
         const geoData = await getLatLngFromAddress(location);
         radius = 20;
@@ -171,8 +172,6 @@ const SearchLocation = ({ apiKey }: p) => {
         ...(lat ? { lat: lat.toString() } : {}),
         ...(lng ? { lng: lng.toString() } : {}),
         ...(radius ? { radius: radius.toString() } : {}),
-        ...{ p: "true" },
-        ...{ c: "true" },
       };
 
       const url = qs.stringifyUrl(
@@ -183,16 +182,13 @@ const SearchLocation = ({ apiKey }: p) => {
         { skipNull: true }
       );
       sessionStorage.removeItem("formState");
-      const saveFormState = () => {
-        const formState = {
-          location,
-          latLng,
-        };
-        sessionStorage.setItem("formState", JSON.stringify(formState));
+      const formState = {
+        location,
+        latLng,
+        address,
       };
-      saveFormState();
+      sessionStorage.setItem("formState", JSON.stringify(formState));
       router.push(url);
-      setSearchQuery("");
       setLocation(location);
       setLatLng(latLng);
     } catch (error) {

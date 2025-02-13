@@ -1,6 +1,6 @@
 "use client";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import useMediaQuery from "@/hooks/media-query";
 import SendMessageSection from "./send-messge-section";
 import { UserInfo } from "next-auth";
@@ -24,8 +24,8 @@ const SendMessageComponent = ({ user, listing, locations }: p) => {
           user={user}
         />
       ) : (
-        <Sheet>
-          <SheetTrigger asChild>
+        <Drawer>
+          <DrawerTrigger asChild>
             <button
               className={`fixed bottom-0 w-screen h-20 bg-white border-t`}
             >
@@ -40,18 +40,17 @@ const SendMessageComponent = ({ user, listing, locations }: p) => {
                 </div>
               </div>
             </button>
-          </SheetTrigger>
-          <SheetContent
-            side="bottom"
-            className={`rounded-t-xl py-16 px-2 ${OutfitFont.className}`}
+          </DrawerTrigger>
+          <DrawerContent
+            className={`rounded-t-xl px-2 h-[90vh] ${OutfitFont.className}`}
           >
             <SendMessageSection
               listing={listing}
               locations={locations}
               user={user}
             />
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       )}
     </>
   );

@@ -12,10 +12,8 @@ import {
 } from "@/types/create.types";
 import { Progress } from "@/components/ui/progress";
 import axios from "axios";
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Outfit } from "next/font/google";
 import { QuantityTypeValue } from "./UnitSelect";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { addDays, format } from "date-fns";
@@ -298,25 +296,22 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
 
       router.push("/selling/my-store");
 
-      toast.success("Listing created successfully!");
+      Toast({ message: "Listing created successfully!" });
     } catch (error) {
       console.error("Error in the overall process:", error);
       if (error instanceof Error) {
         console.error("Error message:", error.message);
       }
-      toast.error(
-        "An error occurred while creating the listing. Please try again or contact support.",
-        { duration: 3000, position: "bottom-center" }
-      );
+      Toast({
+        message:
+          "An error occurred while creating the listing. Please try again or contact support.",
+      });
     } finally {
       setIsLoading(false);
     }
   };
   const showError = (message: string) => {
-    toast.error(message, {
-      duration: 2000,
-      position: "bottom-center",
-    });
+    Toast({ message: message, position: "bottom-center" });
   };
 
   const checkField = (
