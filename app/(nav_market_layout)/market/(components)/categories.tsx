@@ -52,7 +52,7 @@ export const categories = [
   {
     label: "Deli",
     icon: GiMilkCarton,
-    url: "dairy-meats",
+    url: "dairy-meat",
   },
 ];
 
@@ -147,8 +147,8 @@ const Categories = ({ role }: Props) => {
   const [showSubcategories, setShowSubcategories] = useState(false);
 
   useEffect(() => {
-    const cat = searchParams?.get("cat") ?? null;
-    const subcat = searchParams?.get("subcat") ?? null;
+    const cat = searchParams?.get("category") ?? null;
+    const subcat = searchParams?.get("subcategory") ?? null;
     setCategory(cat);
     setSubcategory(subcat);
     setShowSubcategories(!!cat && !subcat);
@@ -164,8 +164,8 @@ const Categories = ({ role }: Props) => {
       if (clickedCategory) {
         const updatedParams = {
           ...currentParams,
-          cat: clickedUrl,
-          subcat: undefined,
+          category: clickedUrl,
+          subcategory: undefined,
         };
         setCategory(clickedUrl);
         setSubcategory(null);
@@ -176,8 +176,8 @@ const Categories = ({ role }: Props) => {
       } else {
         const updatedParams = {
           ...currentParams,
-          cat: category,
-          subcat: clickedUrl,
+          category: category,
+          subcategory: clickedUrl,
         };
         setSubcategory(clickedUrl);
         router.push(`/market?${qs.stringify(updatedParams)}`, {
