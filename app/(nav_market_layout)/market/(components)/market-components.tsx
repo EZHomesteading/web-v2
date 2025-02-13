@@ -229,7 +229,6 @@ const MarketCard = ({
               {listing?.location?.address?.[1]},{" "}
               {listing?.location?.address?.[2]}
             </p>
-
             <div className="flex items-center justify-between mt-2 w-full">
               <div className={`text-sm flex items-center gap-1`}>
                 <span className="font-semibold">${listing.price}</span>
@@ -237,14 +236,12 @@ const MarketCard = ({
                   per {listing.quantityType ? listing.quantityType : "item"}
                 </span>
               </div>
-
               <StarRating
                 value={listing?.rating?.length - 1}
                 size={20}
                 color="#000"
               />
             </div>
-
             <div className="flex flex-col gap-1 mt-2">
               {listing.location?.hours?.pickup?.length === 0 ? (
                 <div className="text-red-500 font-medium flex items-center text-xs">
@@ -280,6 +277,7 @@ const MarketCard = ({
     </div>
   );
 };
+
 const StarRating = ({
   value,
   size = 20,

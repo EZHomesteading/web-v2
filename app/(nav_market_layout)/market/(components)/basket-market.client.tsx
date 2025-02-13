@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import MarketBasketToggle from "./market-cart-toggle";
+import MarketBasketToggle from "./v2.basket.toggle";
 import { UserInfo } from "next-auth";
 
 interface ClientBasketButtonProps {
