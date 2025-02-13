@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
         location: {
           select: {
             displayName: true,
+            hours: true,
             image: true,
             user: {
               select: {

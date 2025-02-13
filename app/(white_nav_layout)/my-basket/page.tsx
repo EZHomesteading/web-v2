@@ -27,7 +27,7 @@ const BasketPage = async () => {
   const detailedBaskets = (await Promise.all(detailedBasketsPromises)).filter(
     Boolean
   );
-  // const userLoc = await getUserLocations({ userId: session.user.id });
+  const userLoc = await getUserLocations({ userId: session.user.id });
 
   return (
     <DetailedBasketGrid
@@ -36,7 +36,7 @@ const BasketPage = async () => {
       userLocs={userLocs}
       mk={mk}
       userId={session.user.id}
-      userLoc={userLocs ? userLocs[0] : null}
+      userLoc={userLoc}
     />
   );
 };
