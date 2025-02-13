@@ -23,7 +23,7 @@ interface CartToggleProps {
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
 }
 
-const CartToggle = ({
+const MarketCartToggle = ({
   listingId,
   user,
   basketItemIds = [],
@@ -84,4 +84,4 @@ const CartToggle = ({
   );
 };
 
-export default CartToggle;
+export default MarketCartToggle;
