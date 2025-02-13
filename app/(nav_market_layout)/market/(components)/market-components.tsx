@@ -10,8 +10,7 @@ import { OutfitFont } from "@/components/fonts";
 import AvailabilityScore from "./availabilityScore";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-import MarketCartToggle from "./market-cart-toggle";
-import ClientCartButton from "./cart-button.client";
+import ClientBasketButton from "./basket-market.client";
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
@@ -271,7 +270,7 @@ const MarketCard = ({
           </div>
         </div>
       </Link>
-      <ClientCartButton
+      <ClientBasketButton
         listing={listing}
         user={user}
         isInitiallyInBasket={basketItemIds.some(

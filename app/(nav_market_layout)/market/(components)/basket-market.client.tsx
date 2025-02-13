@@ -1,24 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import MarketCartToggle from "./market-cart-toggle";
+import MarketBasketToggle from "./market-cart-toggle";
 import { UserInfo } from "next-auth";
 
-interface ClientCartButtonProps {
+interface ClientBasketButtonProps {
   user: UserInfo | undefined;
   listing: any;
   isInitiallyInBasket: boolean;
 }
 
-const ClientCartButton = ({
+const ClientBasketButton = ({
   listing,
   user,
   isInitiallyInBasket,
-}: ClientCartButtonProps) => {
+}: ClientBasketButtonProps) => {
   const [isInBasket, setIsInBasket] = useState(isInitiallyInBasket);
 
   return (
-    <MarketCartToggle
+    <MarketBasketToggle
       listing={listing}
       user={user}
       isInBasket={isInBasket}
@@ -27,4 +27,4 @@ const ClientCartButton = ({
   );
 };
 
-export default ClientCartButton;
+export default ClientBasketButton;
