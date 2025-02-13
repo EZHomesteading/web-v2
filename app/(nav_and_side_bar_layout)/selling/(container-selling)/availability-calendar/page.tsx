@@ -1,9 +1,10 @@
 import React from "react";
-import { getUserLocations } from "@/actions/getUser";
+
 import { auth } from "@/auth";
 import Calendar from "./(components)/calendar";
 import { Location } from "@prisma/client";
 import SelectDefaultLoc from "./(components)/select-default-loc";
+import { getUserLocations } from "@/actions/getLocations";
 
 interface EditLocationPageProps {
   params: { id: string };

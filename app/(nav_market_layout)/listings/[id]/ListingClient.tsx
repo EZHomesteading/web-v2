@@ -1,18 +1,20 @@
 "use client";
-
+import Toast from "@/components/ui/toast";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { addDays } from "date-fns";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
-import ListingData from "./components/ListingData";
+//import ListingData from "./components/ListingData";
 import ListingMap from "@/components/map/listing-map";
 import { FinalListing } from "@/actions/getListings";
 import { UserInfo } from "next-auth";
 import { Loader2 } from "lucide-react";
 import { useBasket } from "@/hooks/listing/use-basket";
+import HoursWarningModal from "../../market/(components)/cartHoursWarning";
 
 interface ListingClientProps {
-  listing: FinalListing & { description: string };
+  listing: any;
   user?: any;
   following:
     | {
@@ -23,6 +25,8 @@ interface ListingClientProps {
     | null
     | undefined;
   apiKey?: string;
+
+  basketItemIds?: Array<{ listingId: string; id: string }> | null;
 }
 
 const ListingClient: React.FC<ListingClientProps> = ({
@@ -30,30 +34,51 @@ const ListingClient: React.FC<ListingClientProps> = ({
   user,
   following,
   apiKey,
+  basketItemIds = [],
 }) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const {
-    isLoading: isListLoading,
-    checkExistingItem,
-    isInBasket,
-    quantity,
+    isLoading,
+    toggleBasket,
+    showWarning,
+    setShowWarning,
+    incompatibleDays,
+    addToBasket,
   } = useBasket({
     listingId: listing.id,
     user,
     initialQuantity: listing.minOrder || 1,
+    hours: listing?.location?.hours,
+    basketItemIds,
   });
+  const listingId = listing.id;
+  const isInBasket =
+    Array.isArray(basketItemIds) &&
+    basketItemIds.some((item) => item?.listingId === listingId);
 
-  useEffect(() => {
-    const initializeBasketState = async () => {
-      if (user) {
-        await checkExistingItem();
-      }
-      setIsInitialized(true);
-    };
+  const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!user) {
+      Toast({
+        message: "Please sign in to add items to your basket",
+        details: (
+          <Link
+            href={`/auth/login?callbackUrl=/listings/${listingId}`}
+            className={`text-sky-400 underline font-light`}
+          >
+            Sign in here
+          </Link>
+        ),
+      });
+      return;
+    }
 
-    initializeBasketState();
-  }, [user, checkExistingItem]);
+    try {
+      await toggleBasket(e, isInBasket, "ACTIVE");
+    } catch (error) {
+      Toast({ message: "Failed to update basket" });
+    }
+  };
 
   const adjustedListing = {
     ...listing,
@@ -63,7 +88,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         : null,
   };
 
-  if (!isInitialized || isListLoading) {
+  if (!isInitialized || isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-12 w-12 animate-spin text-gray-900" />
@@ -86,14 +111,14 @@ const ListingClient: React.FC<ListingClientProps> = ({
           </div>
         </div>
         <div className="w-full lg:w-1/3 sm:px-2 ">
-          <ListingData
+          {/* <ListingData
             hours={listing.location?.hours}
             listingId={adjustedListing.id}
             user={user}
             product={adjustedListing}
             sodt={[listing.SODT]}
             rating={listing.rating}
-          />
+          /> */}
           {apiKey && (
             <div className="mt-5">
               <ListingMap location={listing.location} apiKey={apiKey} />
@@ -101,6 +126,16 @@ const ListingClient: React.FC<ListingClientProps> = ({
           )}
         </div>
       </div>
+      <HoursWarningModal
+        isOpen={showWarning}
+        onClose={() => setShowWarning(false)}
+        onConfirm={() => {
+          setShowWarning(false);
+          addToBasket("ACTIVE");
+        }}
+        incompatibleDays={incompatibleDays}
+        type={listing?.location?.hours?.pickup ? "pickup" : "delivery"}
+      />
     </div>
   );
 };

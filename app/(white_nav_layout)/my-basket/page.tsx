@@ -36,7 +36,7 @@ const BasketPage = async () => {
       userLocs={userLocs}
       mk={mk}
       userId={session.user.id}
-      userLoc={userLoc || null}
+      userLoc={userLoc}
     />
   );
 };
