@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { UserRole } from "@prisma/client";
 import { OutfitFont } from "@/components/fonts";
+import { XIcon } from "lucide-react";
 
 interface Props {
   role?: UserRole;
@@ -36,7 +37,6 @@ const Filters = ({ role }: Props) => {
   let lat = searchParams?.get("lat");
   let lng = searchParams?.get("lng");
 
-  console.log(r);
   const [radius, setRadius] = useState(r);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -47,7 +47,7 @@ const Filters = ({ role }: Props) => {
     router.push(`/market?${params.toString()}`);
     setIsOpen(false);
   };
-  console.log(radius);
+
   return (
     <>
       <button
@@ -74,13 +74,11 @@ const Filters = ({ role }: Props) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className={`fixed inset-y-40 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-1rem) sm:max-w-xl px-4 py-6 z-50 ${OutfitFont.className}`}
+              className={`fixed h-[450px] inset-y-32 inset-x-2 sm:inset-x-10 xl:inset-x-20  bg-white rounded-lg shadow-lg flex flex-col w-calc(100vw-2rem) sm:max-w-xl px-4 py-6 z-50 ${OutfitFont.className}`}
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-semibold">Filters</h2>
-                <button onClick={() => setIsOpen(false)}>
-                  <FiltersIcon />
-                </button>
+                <XIcon onClick={() => setIsOpen(false)} />
               </div>
 
               {!role || role !== UserRole.CONSUMER ? (
