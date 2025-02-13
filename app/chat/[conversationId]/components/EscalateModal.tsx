@@ -26,10 +26,10 @@ const EscalateModal: React.FC<ConfirmModalProps> = ({
 
   const onDelete = useCallback(() => {
     setIsLoading(true);
-    const data = { orderId, status: 0 };
+    const data = { orderId, status: "DISPUTE_UNDER_REVIEW" };
     axios.post("/api/useractions/checkout/update-order", {
       orderId: orderId,
-      status: 24,
+      status: "DISPUTE_UNDER_REVIEW",
     });
     axios
       .post(`/api/chat/dispute/updateDispute/`, data)

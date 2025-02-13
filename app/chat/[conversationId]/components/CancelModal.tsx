@@ -1,5 +1,5 @@
 "use client";
-//modal that handles order cancellation(need to add logic to start refun process dependent on step the order is cancelled)
+//modal that handles order cancellation(need to add logic to start refun process dependent on step the order is canceled)
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import axios from "axios";
@@ -38,7 +38,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   };
 
   const onDelete = async () => {
-    //early return if the user ahs not entered a message, tell the user why
+    //early return if the user has not entered a message, tell the user why
     if (text === "") {
       Toast({ message: "No message entered" });
       return;
@@ -52,13 +52,13 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     if (isSeller === true) {
       axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
-        status: 4,
+        status: "CANCELED",
         completedAt: new Date(),
       });
     } else {
       axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
-        status: 12,
+        status: "CANCELED",
         completedAt: new Date(),
       });
     }
@@ -72,7 +72,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
     axios
       .post("/api/chat/updateListingOnCancel", { order: order })
       .then(() => {
-        //sependent on who cancelled, set order status appropriately.
+        //sependent on who canceled, set order status appropriately.
         if (session.data?.user.id === order?.sellerId) {
           //if seller cancels
           if (session.data?.user.role === "COOP") {
@@ -80,7 +80,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
             axios
               .post("/api/useractions/checkout/update-order", {
                 orderId: order?.id,
-                status: 4,
+                status: "CANCELED",
                 completedAt: new Date(),
               })
               .then(() => {
@@ -92,7 +92,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
             axios
               .post("/api/useractions/checkout/update-order", {
                 orderId: order?.id,
-                status: 12,
+                status: "CANCELED",
                 completedAt: new Date(),
               })
               .then(() => {
@@ -112,7 +112,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               axios
                 .post("/api/useractions/checkout/update-order", {
                   orderId: order?.id,
-                  status: 7,
+                  status: "CANCELED",
                   completedAt: new Date(),
                 })
                 .then(() => {
@@ -124,7 +124,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
               axios
                 .post("/api/useractions/checkout/update-order", {
                   orderId: order?.id,
-                  status: 15,
+                  status: "CANCELED",
                   completedAt: new Date(),
                 })
                 .then(() => {
@@ -137,7 +137,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
             axios
               .post("/api/useractions/checkout/update-order", {
                 orderId: order?.id,
-                status: 7,
+                status: "CANCELED",
                 completedAt: new Date(),
               })
               .then(() => {

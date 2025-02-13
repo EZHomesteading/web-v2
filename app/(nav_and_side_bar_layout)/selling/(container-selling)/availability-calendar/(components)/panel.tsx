@@ -18,7 +18,7 @@ import {
 import { Location } from "@prisma/client";
 import Link from "next/link";
 import SetDefaultButton from "./set-default-button";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -229,7 +229,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const basePanel: PanelProps = {
     content: (
-      <div className={`${outfitFont.className} flex justify-center w-full`}>
+      <div className={`${OutfitFont.className} flex justify-center w-full`}>
         <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
           {!panelSide && (
             <Button
@@ -415,7 +415,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent
-                className={`${outfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
+                className={`${OutfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
               >
                 <>
                   <div className="text-2xl">Are you sure?</div>
