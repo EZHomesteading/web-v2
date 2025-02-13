@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     // Check for existing group with minimal data
     let basketGroup = await prisma.basket.findFirst({
       where: {
-        userId: user.id,
+        userId: user?.id,
         locationId: listing.locationId,
         status: status,
       },
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     if (!basketGroup) {
       basketGroup = await prisma.basket.create({
         data: {
-          userId: user.id,
+          userId: user?.id,
           locationId: listing.locationId,
           status: status,
           orderMethod: initialOrderMethod,
@@ -56,6 +56,7 @@ export async function POST(request: Request) {
     const basketItem = await prisma.basketItem.create({
       data: {
         basketId: basketGroup.id,
+        userId: user?.id,
         listingId,
         quantity,
         price: listing.price,
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
         quantity: true,
       },
     });
-
+    console.log(basketItem);
     return NextResponse.json(basketItem);
   } catch (error) {
     console.error("[WISHLIST_POST]", error);

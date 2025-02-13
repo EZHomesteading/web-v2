@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import getActiveBaskets from "@/actions/basket/get/active";
 import getUnique from "@/actions/basket/get/unique";
 import CheckoutForm from "./_components/checkout-form";
-import { getUserLocations } from "@/actions/getUser";
+import { getUserLocations } from "@/actions/getLocations";
 
 const CheckoutPage = async () => {
   const session = await auth();
@@ -13,15 +13,12 @@ const CheckoutPage = async () => {
     redirect("/auth/login");
   }
 
-  // Get the basic basket info first
   const { baskets: basicBaskets } = await getActiveBaskets();
 
-  // Don't proceed to checkout if no baskets
   if (!basicBaskets || basicBaskets.length === 0) {
     redirect("/market-baskets");
   }
 
-  // Get detailed info for each basket
   const detailedBasketsPromises = basicBaskets.map(async (basket) => {
     const { basket: detailedBasket } = await getUnique({ id: basket.id });
     return detailedBasket;
@@ -31,7 +28,6 @@ const CheckoutPage = async () => {
     Boolean
   );
 
-  // Get user location data
   const userLoc = await getUserLocations({ userId: session.user.id });
 
   return (

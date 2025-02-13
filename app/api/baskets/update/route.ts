@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
         time_type: time_type,
       },
     });
-    console.log(updatedBasket);
     return NextResponse.json(updatedBasket);
   } catch (error) {
     console.error("Error updating basket:", error);

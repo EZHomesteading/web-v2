@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { IconType } from "react-icons";
 import { OutfitFont } from "@/components/fonts";
 import { IoIosMenu } from "react-icons/io";
+import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
 
 type MenuIconItem = IconItem | ComponentItem;
 
@@ -32,43 +33,36 @@ type ComponentItem = {
 };
 
 interface Props {
-  user?: NavUser;
-  // uniqueUrl: string;
+  user?: NavUser | null;
   harvestMessages?: { conversationId: string; lastMessageAt: Date }[];
+  drawerClassName?: string;
 }
-interface p {
-  image: string | null | undefined;
-}
-const UserMenu: React.FC<Props> = ({ user, harvestMessages }) => {
+
+const UserMenu: React.FC<Props> = ({
+  drawerClassName,
+  user,
+  harvestMessages,
+}) => {
   const router = useRouter();
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
   const isMdOrLarger = useMediaQuery("(min-width: 640px)");
   const pathname = usePathname();
   const selling = pathname?.startsWith("/selling");
   const MenuIcon = () => {
     return (
       <>
-        <>
+        {isMdOrLarger ? (
           <PopoverTrigger>
             <MenuWrapper icon={IoIosMenu} label="Menu" />
           </PopoverTrigger>
-        </>
+        ) : (
+          <DrawerTrigger>
+            <MenuWrapper icon={IoIosMenu} label="Menu" />
+          </DrawerTrigger>
+        )}
       </>
     );
   };
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setShowInstallBtn(true);
-    };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    return () =>
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-  }, []);
   const handleCreateClick = async () => {
     if (user?.role === UserRole.CONSUMER) {
       try {
@@ -190,111 +184,115 @@ const UserMenu: React.FC<Props> = ({ user, harvestMessages }) => {
 
   return (
     <>
-      <Popover>
-        {renderIcons()}
-        <MenuIcon />
-        <PopoverContent
-          className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
-          align="end"
-          alignOffset={0}
-        >
-          {user ? (
-            <>
-              {selling ? (
-                <>
-                  <MenuItem
-                    label="Today's Obligations"
-                    onClick={() => router.push("/selling/todays-obligations")}
-                  />
-                </>
-              ) : (
-                <>
-                  <MenuItem
-                    label="Market"
-                    onClick={() => router.push("/market")}
-                  />
-                  <MenuItem label="Map" onClick={() => router.push("/map")} />
-                </>
-              )}
-              <MenuItem label="Messages" onClick={() => router.push("/chat")} />
+      {isMdOrLarger ? (
+        <Popover>
+          {renderIcons()}
+          <MenuIcon />
+          <PopoverContent
+            className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
+            align="end"
+            alignOffset={0}
+          >
+            {user ? (
+              <>
+                {selling ? (
+                  <>
+                    <MenuItem
+                      label="Today's Obligations"
+                      onClick={() => router.push("/selling/todays-obligations")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <MenuItem
+                      label="Market"
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem label="Map" onClick={() => router.push("/map")} />
+                  </>
+                )}
+                <MenuItem
+                  label="Messages"
+                  onClick={() => router.push("/chat")}
+                />
 
-              {selling ? (
-                <>
-                  <MenuItem
-                    label="Sale Orders"
-                    onClick={() =>
-                      router.push("/orders?type=sales&status=active")
-                    }
-                  />
-                  <div className={`border-t w-full my-2`} />
-                  <MenuItem
-                    label="My Listings"
-                    onClick={() => router.push("selling/my-store")}
-                  />
-                  <MenuItem
-                    label="Create New Listing"
-                    onClick={() => router.push("/create")}
-                  />
-                  <div className={`border-t w-full my-2`} />
-                  <MenuItem
-                    label="Store Settings"
-                    onClick={() => router.push("/selling/my-store/settings")}
-                  />
-                  <MenuItem
-                    label="Locations & Hours"
-                    onClick={() =>
-                      router.push("/selling/availability-calendar")
-                    }
-                  />
-                  <div className={`border-t w-full my-2`} />
-                  <MenuItem
-                    label="Switch to Buying"
-                    onClick={() => router.push("/account")}
-                  />
-                </>
-              ) : (
-                <>
-                  <div className={`border-t w-full my-2`} />
-                  <MenuItem
-                    label="Purchase Orders"
-                    onClick={() =>
-                      router.push("/orders?type=purchases&status=active")
-                    }
-                  />
-                  <MenuItem
-                    label="My Basket"
-                    onClick={() => router.push("/my-basket")}
-                  />
-                  <MenuItem
-                    label="Account"
-                    onClick={() => router.push("/account")}
-                  />
-                  <div className={`border-t w-full my-2`} />
-                  <MenuItem
-                    label="Switch to Selling"
-                    onClick={() => router.push("/selling")}
-                  />
-                </>
-              )}
+                {selling ? (
+                  <>
+                    <MenuItem
+                      label="Sale Orders"
+                      onClick={() =>
+                        router.push("/orders?type=sales&status=active")
+                      }
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="My Listings"
+                      onClick={() => router.push("selling/my-store")}
+                    />
+                    <MenuItem
+                      label="Create New Listing"
+                      onClick={() => router.push("/create")}
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Store Settings"
+                      onClick={() => router.push("/selling/my-store/settings")}
+                    />
+                    <MenuItem
+                      label="Locations & Hours"
+                      onClick={() =>
+                        router.push("/selling/availability-calendar")
+                      }
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Switch to Buying"
+                      onClick={() => router.push("/account")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Purchase Orders"
+                      onClick={() =>
+                        router.push("/orders?type=purchases&status=active")
+                      }
+                    />
+                    <MenuItem
+                      label="My Basket"
+                      onClick={() => router.push("/my-basket")}
+                    />
+                    <MenuItem
+                      label="Account"
+                      onClick={() => router.push("/account")}
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Switch to Selling"
+                      onClick={() => router.push("/selling")}
+                    />
+                  </>
+                )}
 
-              <div className="block sm:hidden">
-                <MenuItem label="Home" onClick={() => router.push("/")} />
-              </div>
-              {user?.role === "CONSUMER" && (
-                <div>
-                  <MenuItem
-                    label="Become a Co-Op"
-                    onClick={() => router.push("/auth/become-a-co-op")}
-                  />
-                  <MenuItem
-                    label="Become a Producer"
-                    onClick={() => router.push("/auth/become-a-producer")}
-                  />
+                <div className="block sm:hidden">
+                  <MenuItem label="Home" onClick={() => router.push("/")} />
                 </div>
-              )}
-              <div className={`border-t my-2`} />
-              <MenuItem label="Sign Out" onClick={() => signOut()} />
-              {/* {showInstallBtn &&
+                {user?.role === "CONSUMER" && (
+                  <div>
+                    <MenuItem
+                      label="Become a Co-Op"
+                      onClick={() => router.push("/auth/become-a-co-op")}
+                    />
+                    <MenuItem
+                      label="Become a Producer"
+                      onClick={() => router.push("/auth/become-a-producer")}
+                    />
+                  </div>
+                )}
+                <div className={`border-t my-2`} />
+                <MenuItem label="Sign Out" onClick={() => signOut()} />
+                {/* {showInstallBtn &&
                 !window.matchMedia("(display-mode: standalone)").matches && (
                   <Button
                     className="w-full"
@@ -303,79 +301,269 @@ const UserMenu: React.FC<Props> = ({ user, harvestMessages }) => {
                     Install EZH App
                   </Button>
                 )} */}
-            </>
-          ) : (
-            <>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <MenuItem onClick={() => {}} label="Sign Up" />
-                </SheetTrigger>
-                <SheetContent
-                  className={`${OutfitFont.className} min-h-screen w-screen `}
-                >
-                  <div className="h-full flex flex-col items-center justify-center px-10">
-                    <ul className="w-full max-w-3xl">
-                      {[
-                        {
-                          href: "/auth/register",
-                          text: "Sign Up",
-                          icon: iconMap.CiUser,
-                        },
-                        {
-                          href: "/auth/register-co-op",
-                          text: ["Become a co-op &", "sell to anyone"],
-                          icon: iconMap.IoStorefrontOutline,
-                        },
-                        {
-                          href: "/auth/register-producer",
-                          text: ["Become a grower &", "sell only to co-ops"],
-                          icon: iconMap.GiFruitTree,
-                        },
-                      ].map((item, index) => (
-                        <li
-                          key={item.href}
-                          className={`w-full ${
-                            index === 1 &&
-                            "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
-                          }`}
-                        >
-                          <Link
-                            href={item.href}
-                            className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+              </>
+            ) : (
+              <>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <MenuItem onClick={() => {}} label="Sign Up" />
+                  </SheetTrigger>
+                  <SheetContent
+                    className={`${OutfitFont.className} min-h-screen w-screen `}
+                  >
+                    <div className="h-full flex flex-col items-center justify-center px-10">
+                      <ul className="w-full max-w-3xl">
+                        {[
+                          {
+                            href: "/auth/register",
+                            text: "Sign Up",
+                            icon: iconMap.CiUser,
+                          },
+                          {
+                            href: "/auth/register-co-op",
+                            text: ["Become a co-op &", "sell to anyone"],
+                            icon: iconMap.IoStorefrontOutline,
+                          },
+                          {
+                            href: "/auth/register-producer",
+                            text: ["Become a grower &", "sell only to co-ops"],
+                            icon: iconMap.GiFruitTree,
+                          },
+                        ].map((item, index) => (
+                          <li
+                            key={item.href}
+                            className={`w-full ${
+                              index === 1 &&
+                              "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
+                            }`}
                           >
-                            <div className="flex flex-col">
-                              {Array.isArray(item.text)
-                                ? item.text.map((line, i) => (
-                                    <div key={i}>{line}</div>
-                                  ))
-                                : item.text}
-                            </div>
-                            <item.icon className="text-4xl sm:text-7xl" />
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="pt-10 text-xs  text-center">
-                      You can switch your account type to either seller role at
-                      any time
+                            <Link
+                              href={item.href}
+                              className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+                            >
+                              <div className="flex flex-col">
+                                {Array.isArray(item.text)
+                                  ? item.text.map((line, i) => (
+                                      <div key={i}>{line}</div>
+                                    ))
+                                  : item.text}
+                              </div>
+                              <item.icon className="text-4xl sm:text-7xl" />
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="pt-10 text-xs  text-center">
+                        You can switch your account type to either seller role
+                        at any time
+                      </div>
                     </div>
+                  </SheetContent>
+                </Sheet>
+                <MenuItem
+                  label="Sign In"
+                  onClick={() => {
+                    let callbackUrl = window.location.href;
+                    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+                    router.push(
+                      `/auth/login?callbackUrl=${encodedCallbackUrl}`
+                    );
+                  }}
+                />
+                <MenuItem
+                  label="Market"
+                  onClick={() => router.push("/market")}
+                />
+                <MenuItem label="Map" onClick={() => router.push("/map")} />
+              </>
+            )}
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Drawer>
+          {renderIcons()}
+          <MenuIcon />
+          <DrawerContent
+            className={`${OutfitFont.className} pb-2 ${drawerClassName}`}
+          >
+            {user ? (
+              <>
+                {selling ? (
+                  <>
+                    <MenuItem
+                      label="Today's Obligations"
+                      onClick={() => router.push("/selling/todays-obligations")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <MenuItem
+                      label="Market"
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem label="Map" onClick={() => router.push("/map")} />
+                  </>
+                )}
+                <MenuItem
+                  label="Messages"
+                  onClick={() => router.push("/chat")}
+                />
+
+                {selling ? (
+                  <>
+                    <MenuItem
+                      label="Sale Orders"
+                      onClick={() =>
+                        router.push("/orders?type=sales&status=active")
+                      }
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="My Listings"
+                      onClick={() => router.push("selling/my-store")}
+                    />
+                    <MenuItem
+                      label="Create New Listing"
+                      onClick={() => router.push("/create")}
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Store Settings"
+                      onClick={() => router.push("/selling/my-store/settings")}
+                    />
+                    <MenuItem
+                      label="Locations & Hours"
+                      onClick={() =>
+                        router.push("/selling/availability-calendar")
+                      }
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Switch to Buying"
+                      onClick={() => router.push("/account")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Purchase Orders"
+                      onClick={() =>
+                        router.push("/orders?type=purchases&status=active")
+                      }
+                    />
+                    <MenuItem
+                      label="My Basket"
+                      onClick={() => router.push("/my-basket")}
+                    />
+                    <MenuItem
+                      label="Account"
+                      onClick={() => router.push("/account")}
+                    />
+                    <div className={`border-t w-full my-2`} />
+                    <MenuItem
+                      label="Switch to Selling"
+                      onClick={() => router.push("/selling")}
+                    />
+                  </>
+                )}
+
+                <div className="block sm:hidden">
+                  <MenuItem label="Home" onClick={() => router.push("/")} />
+                </div>
+                {user?.role === "CONSUMER" && (
+                  <div>
+                    <MenuItem
+                      label="Become a Co-Op"
+                      onClick={() => router.push("/auth/become-a-co-op")}
+                    />
+                    <MenuItem
+                      label="Become a Producer"
+                      onClick={() => router.push("/auth/become-a-producer")}
+                    />
                   </div>
-                </SheetContent>
-              </Sheet>
-              <MenuItem
-                label="Sign In"
-                onClick={() => {
-                  let callbackUrl = window.location.href;
-                  const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-                  router.push(`/auth/login?callbackUrl=${encodedCallbackUrl}`);
-                }}
-              />
-              <MenuItem label="Market" onClick={() => router.push("/market")} />
-              <MenuItem label="Map" onClick={() => router.push("/map")} />
-            </>
-          )}
-        </PopoverContent>
-      </Popover>
+                )}
+                <div className={`border-t my-2`} />
+                <MenuItem label="Sign Out" onClick={() => signOut()} />
+              </>
+            ) : (
+              <>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <MenuItem onClick={() => {}} label="Sign Up" />
+                  </SheetTrigger>
+                  <SheetContent
+                    className={`${OutfitFont.className} min-h-screen w-screen `}
+                  >
+                    <div className="h-full flex flex-col items-center justify-center px-10">
+                      <ul className="w-full max-w-3xl">
+                        {[
+                          {
+                            href: "/auth/register",
+                            text: "Sign Up",
+                            icon: iconMap.CiUser,
+                          },
+                          {
+                            href: "/auth/register-co-op",
+                            text: ["Become a co-op &", "sell to anyone"],
+                            icon: iconMap.IoStorefrontOutline,
+                          },
+                          {
+                            href: "/auth/register-producer",
+                            text: ["Become a grower &", "sell only to co-ops"],
+                            icon: iconMap.GiFruitTree,
+                          },
+                        ].map((item, index) => (
+                          <li
+                            key={item.href}
+                            className={`w-full ${
+                              index === 1 &&
+                              "border-t-[1px] border-b-[1px] my-10 py-10 border-black"
+                            }`}
+                          >
+                            <Link
+                              href={item.href}
+                              className="flex items-center justify-between w-full hover:text-neutral-600 hover:italic"
+                            >
+                              <div className="flex flex-col">
+                                {Array.isArray(item.text)
+                                  ? item.text.map((line, i) => (
+                                      <div key={i}>{line}</div>
+                                    ))
+                                  : item.text}
+                              </div>
+                              <item.icon className="text-4xl sm:text-7xl" />
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="pt-10 text-xs  text-center">
+                        You can switch your account type to either seller role
+                        at any time
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+                <MenuItem
+                  label="Sign In"
+                  onClick={() => {
+                    let callbackUrl = window.location.href;
+                    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+                    router.push(
+                      `/auth/login?callbackUrl=${encodedCallbackUrl}`
+                    );
+                  }}
+                />
+                <MenuItem
+                  label="Market"
+                  onClick={() => router.push("/market")}
+                />
+                <MenuItem label="Map" onClick={() => router.push("/map")} />
+              </>
+            )}
+          </DrawerContent>
+        </Drawer>
+      )}
     </>
   );
 };

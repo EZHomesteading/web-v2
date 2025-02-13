@@ -1,18 +1,6 @@
 //listing page server side layout, getting users and their carts to display toggle cart options.
 import { getUnique } from "@/actions/getListings";
-import { Key, Suspense } from "react";
-import ClientOnly from "@/components/client/ClientOnly";
-import { getCurrentUser, getUserLocations } from "@/actions/getUser";
 import { getFollows } from "@/actions/getFollow";
-import SessionStorageManager from "@/components/sessionStorageManager";
-import { FinalListing } from "@/actions/getListings";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import ListingHead from "@/components/listings/ListingHead";
 import { OutfitFont } from "@/components/fonts";
 import Link from "next/link";
@@ -23,15 +11,20 @@ import {
   PiInfoThin,
 } from "react-icons/pi";
 import { auth } from "@/auth";
-import ListingClient from "./ListingClient";
 import Avatar from "@/components/Avatar";
 import SendMessageComponent from "./components/send-message-component";
+import { getUserLocations } from "@/actions/getLocations";
 
 export default async function ListingPage({
   params,
+  searchParams,
 }: {
   params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+  const marketCallback =
+    searchParams &&
+    `${new URLSearchParams(searchParams as Record<string, string>).toString()}`;
   const session = await auth();
   try {
     const [listing, locations, following] = await Promise.all([
@@ -74,17 +67,6 @@ export default async function ListingPage({
     );
 
     return (
-      // <ClientOnly>
-      //   <Suspense fallback={<div>Loading...</div>}>
-      //     <SessionStorageManager />
-      //     <ListingClient
-      //       user={session?.user}
-      //       listing={listing as FinalListing & { description: string }}
-      //       following={following}
-      //       apiKey={process.env.MAPS_KEY}
-      //     />
-      //   </Suspense>
-      // </ClientOnly>
       <>
         <div
           id="modal-root"
@@ -96,7 +78,7 @@ export default async function ListingPage({
             >
               <div className={`flex items-center justify-start space-x-3 `}>
                 <Link
-                  href={`/market`}
+                  href={`/market${marketCallback && `?${marketCallback}`}`}
                   prefetch={true}
                   className={`rounded-full border text-black p-3`}
                 >

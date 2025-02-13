@@ -8,7 +8,7 @@ import {
 import Image from "next/image";
 import { workFont } from "@/components/fonts";
 import PriceBreakdown from "./price-breakdown";
-import { StarRating } from "@/app/(nav_market_layout)/market/_components/market-card";
+import { StarRating } from "@/app/(nav_market_layout)/market/(components)/store-card";
 import BasketCounter from "./quantity-set.basket";
 import { item } from "./server.basket";
 

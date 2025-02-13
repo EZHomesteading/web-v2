@@ -1,11 +1,11 @@
 //onboarding parent element
 import { Viewport } from "next";
 import authCache from "@/auth-cache";
-import { getUserLocations } from "@/actions/getUser";
 import Link from "next/link";
 import { OutfitFont } from "@/components/fonts";
 import { Location } from "@prisma/client";
 import NewLocHours from "@/app/(no-nav_layout)/new-location-and-hours/_components/new-loc-hours.client";
+import { getUserLocations } from "@/actions/getLocations";
 
 export const viewport: Viewport = {
   themeColor: "#fff",

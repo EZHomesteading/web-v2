@@ -30,7 +30,7 @@ import { BiError } from "react-icons/bi";
 import { UserInfo } from "next-auth";
 import { outfitFont, workFont } from "@/components/fonts";
 import { UserRole } from "@prisma/client";
-import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
+import { MarketListing } from "@/app/(nav_market_layout)/market/(components)/market-component";
 
 interface ListingCardProps {
   data: MarketListing;

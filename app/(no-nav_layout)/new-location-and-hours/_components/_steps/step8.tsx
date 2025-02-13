@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { Hours, Location } from "@prisma/client";
+import { Hours } from "@prisma/client";
 import WeelkyScheduleChart from "../weekly-schedule-chart";
 import { Button } from "@/components/ui/button";
 import { OutfitFont } from "@/components/fonts";
 import { LocationObj } from "location-types";
 import OnboardContainer from "../onboard.container";
-import AvailabilityScore from "@/app/(nav_market_layout)/market/_components/availabilityScore";
 import { Clock } from "lucide-react";
+import AvailabilityScore from "@/app/(nav_market_layout)/market/(components)/availabilityScore";
 
 interface StepSevenProps {
   location?: LocationObj;

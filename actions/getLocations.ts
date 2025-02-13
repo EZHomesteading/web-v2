@@ -3,8 +3,9 @@ import { auth } from "@/auth";
 import { authenticatedFetch } from "@/lib/api-utils";
 import { Location } from "@prisma/client";
 import { headers } from "next/headers";
+import prisma from "@/lib/prisma";
 
-export async function getLocationsById(locationIds: string[]): Promise<{
+async function getLocationsById(locationIds: string[]): Promise<{
   locations: Location[];
 }> {
   try {
@@ -22,13 +23,7 @@ export async function getLocationsById(locationIds: string[]): Promise<{
     const url = new URL(`/api/locations`, `${protocol}://${host}`);
     url.searchParams.set("ids", locationIds.join(","));
 
-    // Log the URL being called
-    console.log("Fetching from URL:", url.toString());
-
     const response = await authenticatedFetch(url.toString());
-
-    // Log the response status
-    console.log("Response status:", response.status);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch locations: ${response.status}`);
@@ -45,3 +40,33 @@ export async function getLocationsById(locationIds: string[]): Promise<{
     };
   }
 }
+
+interface GetUserLocationParams {
+  userId: string;
+  index: number;
+}
+const getUserLocations = async ({
+  userId,
+}: {
+  userId?: string;
+}): Promise<Location[] | null> => {
+  if (!userId) {
+    return null;
+  }
+  try {
+    const locations = await prisma.location.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return locations;
+  } catch (error) {
+    console.error("Error fetching user location:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
+  }
+};
+
+export { getLocationsById, getUserLocations };

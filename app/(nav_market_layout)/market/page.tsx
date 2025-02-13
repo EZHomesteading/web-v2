@@ -1,14 +1,8 @@
 // market server side layout with search parameters for grabbing data
-
 import dynamic from "next/dynamic";
-import EmptyState from "@/components/EmptyState";
-import ClientOnly from "@/components/client/ClientOnly";
 import { getCurrentUser } from "@/actions/getUser";
 import { UserInfo } from "next-auth";
-import { getMarketListings } from "@/actions/getMarketListings";
-import { MarketListing } from "@/app/(nav_market_layout)/market/_components/market-component";
-import { Get } from "@/actions/getCart";
-import { GetMarketListingsV2 } from "@/actions/getMarketListingsV2";
+import { MarketListing } from "@/app/(nav_market_layout)/market/(components)/market-component";
 
 export interface ShopProps {
   userId?: string;
@@ -29,67 +23,53 @@ export interface ShopProps {
 }
 
 const MarketComponent = dynamic(
-  () => import("@/app/(nav_market_layout)/market/_components/market-component"),
+  () =>
+    import("@/app/(nav_market_layout)/market/(components)/market-component"),
   {
     ssr: true,
   }
 );
 
+interface basket {
+  listingId: string;
+  id: string;
+}
 const ShopPage = async ({
   searchParams,
 }: {
   searchParams?: ShopProps["searchParams"];
 }) => {
-  const page = Math.max(1, parseInt(searchParams?.page ?? "1"));
-  const perPage = 36;
- // const response = await GetMarketListingsV2(searchParams, page, perPage);
-  const response = await getMarketListings(searchParams, page, perPage);
+  const apiUrl = process.env.API_URL;
 
-  const { listings = [], totalItems = 0 } = response || {};
-  // const totalItems = response.totalCount;
-  // const listings = response.items;
-  for (let i = 0; i < listings.length; i++) {
-    console.log(listings[i]?.imageSrc);
-  }
   let user = await getCurrentUser();
-  let basketItemIds: string[] = [];
-  if (user?.id) {
-    const temp = await Get(
-      `get-many?collection=BasketItem&key=userId&value=${user?.id}`
-    );
-    basketItemIds = temp?.items;
-  }
-  const totalPages = Math.ceil(totalItems / perPage);
-  const prevPage = page - 1 > 0 ? page - 1 : 1;
-  const nextPage = page + 1;
-  const isPageOutOfRange = page > totalPages;
+  let basketItemIds: any = [];
+  let listings: MarketListing[] = [];
+  const params = new URLSearchParams({
+    ...(searchParams?.lat && { lat: searchParams.lat }),
+    ...(searchParams?.lng && { lng: searchParams.lng }),
+    ...(searchParams?.radius && { radius: searchParams.radius }),
+    ...(searchParams?.q && { q: searchParams.q }),
+  });
 
-  const pageNumbers = [];
-  const offsetNumber = 1003;
+  const requests = [
+    user?.id
+      ? fetch(
+          `${apiUrl}/get-many?collection=BasketItem&key=userId&value=${user.id}&fields=listingId`
+        ).then((res) => res.json())
+      : Promise.resolve([]),
+    fetch(`${apiUrl}/market?${params.toString()}`).then((res) => res.json()),
+  ];
+  const [basketItems, marketData] = await Promise.all(requests);
 
-  for (let i = page - offsetNumber; i <= page + offsetNumber; i++) {
-    if (i >= 1 && i <= totalPages) {
-      pageNumbers.push(i);
-    }
-  }
+  basketItemIds = basketItems.items;
+  listings = marketData.items;
+
   return (
     <MarketComponent
       listings={listings as unknown as MarketListing[]}
       user={user as unknown as UserInfo}
-      emptyState={
-        listings.length === 0 ? (
-          <ClientOnly>
-            <EmptyState showReset />
-          </ClientOnly>
-        ) : null
-      }
-      totalPages={totalPages}
-      prevPage={prevPage}
-      nextPage={nextPage}
-      isPageOutOfRange={isPageOutOfRange}
-      pageNumbers={pageNumbers}
-      currentPage={page}
-      basketItemIds={basketItemIds}
+      basketItemIds={basketItemIds || []}
+      params={params.toString()}
     />
   );
 };

@@ -1,13 +1,9 @@
 "use client";
 //modal to confirm that user wants to delete that chat, should only be able to delete if messages are at a finalised state such as completed or cancelled.
-import React, { useCallback, useState } from "react";
+import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { FiAlertTriangle } from "react-icons/fi";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import Modal from "@/components/modals/chatmodals/Modal";
 import Button from "@/components/modals/chatmodals/Button";
-import { toast } from "react-hot-toast";
 
 interface ConfirmModalProps {
   isOpen?: boolean;

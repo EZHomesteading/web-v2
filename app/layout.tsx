@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import { Toaster } from "../components/ui/sonner";
 import "@/app/globals.css";
 import ClientOnly from "../components/client/ClientOnly";
-import SearchModal from "../components/modals/SearchModal";
-import CartModal from "../components/modals/cart-modal";
 import { Metadata } from "next";
 import { Viewport } from "next";
 
@@ -32,16 +30,6 @@ export const metadata: Metadata = {
     url: "https://www.ezhomesteading.com/",
     type: "website",
   },
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "EZHomesteading",
-  },
-  other: {
-    "apple-mobile-web-app-capable": "yes",
-    "mobile-web-app-capable": "yes",
-  },
 };
 
 export default async function RootLayout({
@@ -54,10 +42,6 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="en">
         <body>
-          <ClientOnly>
-            <SearchModal />
-            <CartModal />
-          </ClientOnly>
           <main>{children}</main>
           <Toaster theme="dark" />
         </body>
