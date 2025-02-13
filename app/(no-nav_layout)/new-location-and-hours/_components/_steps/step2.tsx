@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { PiPlantThin, PiStorefrontThin } from "react-icons/pi";
 import { UserInfo } from "next-auth";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 import OnboardContainer from "../onboard.container";
 
 interface p {
@@ -99,7 +99,7 @@ const StepTwo = ({ user, updateFormData, selectedRole }: p) => {
               setSelectedIndex(index);
             }}
             className={`${
-              outfitFont.className
+              OutfitFont.className
             } flex flex-col shadow-md items-justify-start text-start p-4 w-full max-w-[306.88px] sm:max-w-[402.88px] rounded-xl min-h-[134px] sm:h-fit border transition ${
               selectedIndex === index
                 ? "bg-black text-white"
@@ -118,7 +118,7 @@ const StepTwo = ({ user, updateFormData, selectedRole }: p) => {
                   key={idx}
                   className={` ${
                     selectedIndex === index && " text-white"
-                  } mt-2 text-sm text-neutral-600 ${zillaFont.className} `}
+                  } mt-2 text-sm text-neutral-600 ${ZillaFont.className} `}
                 >
                   {line}
                 </p>

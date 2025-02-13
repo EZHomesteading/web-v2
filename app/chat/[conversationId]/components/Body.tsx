@@ -110,6 +110,7 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "DISPUTED" ||
       lastMessage.messageOrder === "READY_FOR_PICKUP" ||
       lastMessage.messageOrder === "DELIVERED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID"
     ) {
       setCancel(false);
@@ -127,6 +128,7 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "IN_TRANSIT" ||
       lastMessage.messageOrder === "SELLER_PREPARING" ||
       lastMessage.messageOrder === "DISPUTED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "SCHEDULE_CONFIRMED_PAID"
     ) {
       setDispute(false);
@@ -151,6 +153,16 @@ const Body: React.FC<BodyProps> = ({
       setReview(true);
       setConfirm(true);
       setRefund(false);
+    }
+  }),
+    [order, messages];
+  useEffect(() => {
+    if (
+      lastMessage.messageOrder === "COMPLETED" ||
+      lastMessage.messageOrder === "CANCELED" ||
+      lastMessage.messageOrder === "REFUNDED"
+    ) {
+      setReview(true);
     }
   }),
     [order, messages];
@@ -280,7 +292,7 @@ const Body: React.FC<BodyProps> = ({
         paymentId={order?.paymentIntentId}
       />
       <div
-        className={`${outfit.className} h-6 mt-[50px] sm:mt-[114px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
+        className={`${outfit.className} h-6 mt-[50px] sm:mt-[-1px] px-10 w-full border-b-[1px] lg:max-w-[calc(100%-320px)] z-[10] bg-[#F1EFE7]  fixed flex justify-between items-center`}
       >
         <div className="flex items-center gap-x-1 text-xs text-neutral-600 pl-3">
           <div>
@@ -412,7 +424,7 @@ const Body: React.FC<BodyProps> = ({
               </Button>
             ) : (
               <div className="flex flex-col items-center justify-center space-y-1 w-full ">
-                <Sheet>
+                {/* <Sheet>
                   <SheetTrigger asChild>
                     <Button className="w-full flex items-center gap-x-2 justify-between font-light text-sm">
                       <div>View Hours</div> <IoStorefront />
@@ -422,18 +434,22 @@ const Body: React.FC<BodyProps> = ({
                   <SheetContent className="flex flex-col items-center justify-center border-none sheet h-screen w-screen">
                     {/* <HoursDisplay
                       coOpHours={order.location.hours as ExtendedHours}
-                    /> */}
+                    /> 
                   </SheetContent>
-                </Sheet>
+                </Sheet> */}
 
-                <Button
-                  onClick={() =>
-                    router.push(`/map/checkmap?orderGroupId=${orderGroupId}`)
-                  }
-                  className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
-                >
-                  <div>Get Directions</div> <IoMapOutline />
-                </Button>
+                {lastMessage.messageOrder === "COMPLETED" ||
+                lastMessage.messageOrder === "CANCELED" ||
+                lastMessage.messageOrder === "REFUNDED" ? null : (
+                  <Button
+                    onClick={() =>
+                      router.push(`/map/checkmap?orderGroupId=${orderGroupId}`)
+                    }
+                    className="w-full flex items-center gap-x-2 justify-between font-light text-sm"
+                  >
+                    <div>Get Directions</div> <IoMapOutline />
+                  </Button>
+                )}
 
                 <Button
                   onClick={() => router.push(`/store/${otherUser?.url}`)}

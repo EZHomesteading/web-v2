@@ -26,7 +26,7 @@ const Form: React.FC<MessageFormProps> = ({ otherUsersId }) => {
     setValue("message", "", { shouldValidate: true });
     axios.post("/api/chat/messages", {
       message: data.message,
-      messageOrder: "1.6",
+      messageOrder: "DISPUTED",
       conversationId: conversationId,
       otherUserId: otherUsersId,
     });

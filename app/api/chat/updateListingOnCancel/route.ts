@@ -1,24 +1,46 @@
-//route to update only listing stock when an order is cancelled
-import { getListingById } from "@/actions/getListings";
+import { getListingByIdUpdate } from "@/actions/getListings";
 import prisma from "@/lib/prismadb";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { order } = body;
-  const quantities = JSON.parse(order.quantity);
-  quantities.map(async (item: { id: string; quantity: number }) => {
-    const listing = await getListingById({ listingId: item.id });
-    if (!listing) {
-      return "no listing with that ID";
+  try {
+    const body = await request.json();
+    const { order } = body;
+
+    if (!order || !order.items || !Array.isArray(order.items)) {
+      return NextResponse.json(
+        { error: "Invalid order data" },
+        { status: 400 }
+      );
     }
-    const listings = await prisma.listing.update({
-      where: { id: item.id },
-      data: {
-        stock: listing.stock + item.quantity,
-      },
-    });
-    return NextResponse.json(listing);
-  });
-  return NextResponse.json("listing quantities Updated");
+
+    // Use Promise.all to handle multiple updates correctly
+    await Promise.all(
+      order.items.map(async (item: any) => {
+        const listing = await getListingByIdUpdate({
+          listingId: item.listing.id,
+        });
+
+        if (!listing) {
+          console.error(`No listing found for ID: ${item.listing.id}`);
+          return;
+        }
+
+        return prisma.listing.update({
+          where: { id: item.listing.id },
+          data: {
+            stock: listing.stock + item.quantity,
+          },
+        });
+      })
+    );
+
+    return NextResponse.json({ message: "Listing quantities updated" });
+  } catch (error) {
+    console.error("Error in updateListingOnCancel:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

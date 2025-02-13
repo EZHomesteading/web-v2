@@ -33,20 +33,20 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
 
   const onDelete = useCallback(async () => {
     setIsLoading(true);
-    const data = { orderId, status: 2 };
+    const data = { orderId, status: "REFUNDED" };
     axios.post("/api/stripe/refund-payment", {
       paymentId: paymentId,
     });
     axios.post(`/api/chat/dispute/updateDispute/`, data);
     axios.post("/api/useractions/checkout/update-order", {
       orderId: orderId,
-      status: 22,
+      status: "REFUNDED",
       completedAt: new Date(),
     });
     axios
       .post("/api/chat/messages", {
         message: `I have Refunded you the full amount of $${orderAmount}, this order is marked as cancelled. Feel free to Delete this chat.`,
-        messageOrder: "1.1",
+        messageOrder: "REFUNDED",
         conversationId: conversationId,
         otherUserId: otherUserId,
       })
