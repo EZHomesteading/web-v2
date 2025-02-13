@@ -5,7 +5,6 @@ import axios from "axios";
 import { Hours, orderMethod } from "@prisma/client";
 import Toast from "@/components/ui/toast";
 
-// Define clear interfaces for our types
 interface BasketProps {
   listingId: string;
   user?: any | null;
@@ -46,7 +45,6 @@ export const useBasket = ({
           initialOrderMethod: initialOrderMethod,
         });
         Toast({ message: "Saved new basket item" });
-        router.refresh();
       } catch (error: any) {
         Toast({
           message: error.response?.data?.message || "Something went wrong",
@@ -65,7 +63,6 @@ export const useBasket = ({
     try {
       await axios.delete(`/api/basket/items/${listingId}`);
       Toast({ message: "Basket item removed" });
-      router.refresh();
     } catch (error: any) {
       console.error("Remove error:", error);
       Toast({

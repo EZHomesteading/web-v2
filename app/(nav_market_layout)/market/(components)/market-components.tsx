@@ -11,6 +11,7 @@ import AvailabilityScore from "./availabilityScore";
 import { Clock } from "lucide-react";
 import Link from "next/link";
 import MarketCartToggle from "./market-cart-toggle";
+import ClientCartButton from "./cart-button.client";
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
@@ -270,16 +271,12 @@ const MarketCard = ({
           </div>
         </div>
       </Link>
-      <MarketCartToggle
+      <ClientCartButton
         listing={listing}
-        listingId={listing.id}
         user={user}
-        initialQuantity={listing.minOrder}
-        stock={listing.stock}
-        basketItemIds={basketItemIds}
-        minOrder={listing.minOrder}
-        quantityType="item"
-        price={listing.price}
+        isInitiallyInBasket={basketItemIds.some(
+          (item) => item?.listingId === listing.id
+        )}
       />
     </div>
   );

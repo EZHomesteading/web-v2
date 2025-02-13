@@ -11,33 +11,24 @@ interface User {
 }
 
 interface CartToggleProps {
-  listingId: string;
   listing: any;
   user: User | null | undefined;
-  initialQuantity?: number;
-  stock?: number;
-  minOrder?: number;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
-  quantityType?: string;
-  price: number;
-  onCartUpdate?: (inCart: boolean, quantity: number) => void;
+  isInBasket: boolean;
+  onBasketUpdate: (newIsInBasket: boolean) => void;
 }
 
 const MarketCartToggle = ({
-  listingId,
+  listing,
   user,
-  basketItemIds = [],
-  minOrder,
+  isInBasket,
+  onBasketUpdate,
 }: CartToggleProps) => {
+  const listingId = listing?.id;
   const { isLoading, toggleBasket } = useBasket({
     listingId,
     user,
-    initialQuantity: minOrder || 1,
+    initialQuantity: listing?.minOrder || 1,
   });
-
-  const isInBasket =
-    Array.isArray(basketItemIds) &&
-    basketItemIds.some((item) => item?.listingId === listingId);
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
@@ -56,8 +47,10 @@ const MarketCartToggle = ({
     }
 
     try {
+      onBasketUpdate(!isInBasket);
       await toggleBasket(e, isInBasket, "ACTIVE");
     } catch (error) {
+      onBasketUpdate(isInBasket);
       Toast({ message: "Failed to update basket" });
     }
   };
