@@ -30,10 +30,6 @@ const MarketComponent = dynamic(
   }
 );
 
-interface basket {
-  listingId: string;
-  id: string;
-}
 const ShopPage = async ({
   searchParams,
 }: {

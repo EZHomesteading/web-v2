@@ -57,6 +57,7 @@ const MarketCartToggle = ({
     basketItemIds.some((item) => item?.listingId === listingId);
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(minOrder);
     if (!user) {
       Toast({
         message: "Please sign in to add items to your basket",

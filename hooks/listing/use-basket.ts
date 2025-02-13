@@ -192,7 +192,10 @@ export const useBasket = ({
   }, [hours, initialOrderMethod, fetchActiveBaskets]);
 
   const addToBasket = useCallback(
-    async (status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE") => {
+    async (
+      status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE",
+      newQuantity?: number
+    ) => {
       if (!user) {
         router.push(
           `/auth/login?callbackUrl=${encodeURIComponent(window.location.href)}`
@@ -204,7 +207,7 @@ export const useBasket = ({
       try {
         await axios.post(`/api/basket/items`, {
           listingId,
-          quantity,
+          quantity: newQuantity || quantity,
           status,
           initialOrderMethod: initialOrderMethod,
         });
@@ -220,7 +223,6 @@ export const useBasket = ({
     },
     [user, listingId, quantity, router, initialOrderMethod]
   );
-
   const removeFromBasket = useCallback(async () => {
     if (!user) return;
 
@@ -239,34 +241,63 @@ export const useBasket = ({
     }
   }, [user, listingId, router]);
 
+  const updateQuantity = useCallback(
+    async (newQuantity: number) => {
+      if (!user) return;
+
+      setIsLoading(true);
+      try {
+        await axios.patch(`/api/basket/items/${listingId}`, {
+          quantity: newQuantity,
+        });
+        setQuantity(newQuantity);
+        router.refresh();
+      } catch (error: any) {
+        Toast({
+          message: error.response?.data?.message || "Failed to update quantity",
+        });
+        // Revert quantity on error
+        setQuantity(quantity);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user, listingId, router, quantity]
+  );
+
   const toggleBasket = useCallback(
     async (
       e: React.MouseEvent<HTMLButtonElement>,
       isInBasket: boolean,
-      status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE"
+      status: "ACTIVE" | "SAVED_FOR_LATER" = "ACTIVE",
+      newQuantity?: number
     ) => {
       e.stopPropagation();
       if (isInBasket) {
         await removeFromBasket();
       } else {
-        //console.log("Toggle basket called - checking hours compatibility");
+        if (newQuantity && newQuantity !== quantity) {
+          setQuantity(newQuantity);
+        }
         const incompatibleDates = await checkHoursCompatibility();
-        //console.log("Incompatible dates found:", incompatibleDates);
-
         const incompatibleResults = incompatibleDates.filter(
           (date) => !date.compatible
         );
         if (incompatibleResults.length > 0) {
-          //console.log("Setting warning state");
           setIncompatibleDays(incompatibleDates);
           setShowWarning(true);
         } else {
-          // console.log("No incompatible dates - adding to basket");
           await addToBasket(status);
         }
       }
     },
-    [removeFromBasket, addToBasket, checkHoursCompatibility]
+    [
+      removeFromBasket,
+      addToBasket,
+      checkHoursCompatibility,
+      quantity,
+      setQuantity,
+    ]
   );
 
   return {
@@ -279,5 +310,6 @@ export const useBasket = ({
     showWarning,
     setShowWarning,
     incompatibleDays,
+    updateQuantity,
   };
 };
