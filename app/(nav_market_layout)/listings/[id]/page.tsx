@@ -107,10 +107,12 @@ export default async function ListingPage({
           >
             <div className={`col-span-1 lg:col-span-3 `}>
               <div className={` `}>
-                <div className={` text-3xl block sm:hidden font-medium `}>
+                <div
+                  className={` text-xl sm:text-3xl block sm:hidden font-medium `}
+                >
                   {listing.title}
                 </div>
-                <div className={`text-2xl mt-[-5px]`}>
+                <div className={`text-sm sm:text-2xl mt-[-5px]`}>
                   {listing.location?.address[1]}, {listing.location?.address[2]}
                 </div>
                 <div

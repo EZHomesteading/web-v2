@@ -41,7 +41,7 @@ export const CardWrapper = ({
 
   return (
     <div
-      className={`flex grow flex-col pt-10 w-full min-h-screen px-5 ${className}`}
+      className={`flex grow flex-col pt-10 w-full min-h-screen ${className}`}
     >
       <Link
         className="flex justify-center items-center hover:cursor-pointer"

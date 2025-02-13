@@ -20,6 +20,10 @@ const Page = async ({
     return null;
   }
   const locations = await getUserLocations({ userId: user?.id });
+  const res = await fetch(
+    `${process.env.API_URL}/get-many?collection=Location&key=userId&value=${user?.id}`
+  );
+  const locations2 = await res.json();
   let defaultId: string = "";
   if (searchParams) {
     let defaultLocation = locations?.find((loc) => loc.id === searchParams.id);

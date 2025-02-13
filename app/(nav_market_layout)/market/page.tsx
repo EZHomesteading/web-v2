@@ -17,8 +17,8 @@ export interface ShopProps {
     s?: string;
     ra?: string;
     pr?: string;
-    cat?: string;
-    subcat?: string;
+    category?: string;
+    subcategory?: string;
   };
 }
 
@@ -48,6 +48,8 @@ const ShopPage = async ({
     ...(searchParams?.lat && { lat: searchParams.lat }),
     ...(searchParams?.lng && { lng: searchParams.lng }),
     ...(searchParams?.radius && { radius: searchParams.radius }),
+    ...(searchParams?.category && { category: searchParams.category }),
+    ...(searchParams?.subcategory && { subcategory: searchParams.subcategory }),
     ...(searchParams?.q && { q: searchParams.q }),
   });
 

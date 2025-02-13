@@ -53,6 +53,7 @@ const getUserLocations = async ({
   if (!userId) {
     return null;
   }
+
   try {
     const locations = await prisma.location.findMany({
       where: {
@@ -62,7 +63,6 @@ const getUserLocations = async ({
 
     return locations;
   } catch (error) {
-    console.error("Error fetching user location:", error);
     throw new Error(
       error instanceof Error ? error.message : "Unknown error occurred"
     );

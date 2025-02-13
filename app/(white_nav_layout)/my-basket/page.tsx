@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import getActiveBaskets from "@/actions/basket/get/active";
-import { getUserLocations, getUserLocationsBasket } from "@/actions/getUser";
+import { getUserLocationsBasket } from "@/actions/getUser";
 import getUnique from "@/actions/basket/get/unique";
 import DetailedBasketGrid from "./components/DetailedBasketGrid";
+import { getUserLocations } from "@/actions/getLocations";
 
 const BasketPage = async () => {
   const session = await auth();
