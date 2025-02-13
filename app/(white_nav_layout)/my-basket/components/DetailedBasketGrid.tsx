@@ -70,7 +70,7 @@ interface DetailedBasketGridProps {
   userLocs: BasketLocation[] | null;
   mk: string | undefined;
   userId: string;
-  userLoc: any;
+  userLoc: any | null;
 }
 
 interface DetailedBasketCardProps {
