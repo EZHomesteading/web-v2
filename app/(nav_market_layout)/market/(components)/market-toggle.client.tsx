@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { UserInfo } from "next-auth";
-import MarketCartToggle from "./market-cart-toggle";
+import MarketCartToggle from "./v2.market-cart-toggle";
 
 interface ClientBasketButtonProps {
   user: UserInfo | undefined;
@@ -22,7 +22,7 @@ const ClientBasketButton = ({
       listing={listing}
       user={user}
       isInBasket={isInBasket}
-      onBasketUpdate={(newIsInBasket: boolean) => setIsInBasket(newIsInBasket)}
+      // onBasketUpdate={(newIsInBasket: boolean) => setIsInBasket(newIsInBasket)}
     />
   );
 };

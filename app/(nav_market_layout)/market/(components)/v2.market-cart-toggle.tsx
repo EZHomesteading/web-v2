@@ -23,9 +23,15 @@ interface CartToggleProps {
   user: User | null | undefined;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
   isInBasket: boolean;
+  //   onBasketUpdate: (newState: boolean) => void;
 }
 
-const MarketCartToggle = ({ user, listing, isInBasket }: CartToggleProps) => {
+const MarketCartToggle = ({
+  user,
+  listing,
+  isInBasket,
+}: //   onBasketUpdate,
+CartToggleProps) => {
   const {
     isLoading,
     toggleBasket,
@@ -88,6 +94,7 @@ const MarketCartToggle = ({ user, listing, isInBasket }: CartToggleProps) => {
         isOpen={showWarning}
         onClose={() => setShowWarning(false)}
         onConfirm={() => {
+          //   onBasketUpdate(!isInBasket);
           setShowWarning(false);
           addToBasket("ACTIVE");
         }}
