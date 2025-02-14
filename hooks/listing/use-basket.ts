@@ -28,28 +28,6 @@ interface BasketProps {
   basketItemIds?: Array<{ listingId: string; id: string }> | null;
 }
 
-const hasOverlappingHours = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
-  return slot1.open < slot2.close && slot2.open < slot1.close;
-};
-
-const findCompatibleSlots = (
-  dayHours1: DayHours | undefined,
-  dayHours2: DayHours | undefined
-): boolean => {
-  if (!dayHours1?.timeSlots?.length || !dayHours2?.timeSlots?.length) {
-    return false;
-  }
-
-  for (const slot1 of dayHours1.timeSlots) {
-    for (const slot2 of dayHours2.timeSlots) {
-      if (hasOverlappingHours(slot1, slot2)) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
 const getHoursForMethod = (
   hours: LocationHours | null | undefined,
   method: orderMethod
@@ -63,7 +41,6 @@ export const useBasket = ({
   user,
   initialQuantity = 1,
   hours,
-  basketItemIds = null,
 }: BasketProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,9 +48,6 @@ export const useBasket = ({
   const [showWarning, setShowWarning] = useState(false);
   const [incompatibleDays, setIncompatibleDays] = useState<
     Array<{ date: string; compatible: boolean; overlapHours: number }>
-  >([]);
-  const [existingBasketHours, setExistingBasketHours] = useState<
-    LocationHours[]
   >([]);
 
   let initialOrderMethod: orderMethod = orderMethod.PICKUP;
@@ -212,7 +186,6 @@ export const useBasket = ({
           initialOrderMethod: initialOrderMethod,
         });
         Toast({ message: "Saved new basket item" });
-        router.refresh();
       } catch (error: any) {
         Toast({
           message: error.response?.data?.message || "Something went wrong",
@@ -230,7 +203,6 @@ export const useBasket = ({
     try {
       await axios.delete(`/api/basket/items/${listingId}`);
       Toast({ message: "Basket item removed" });
-      router.refresh();
     } catch (error: any) {
       console.error("Remove error:", error);
       Toast({

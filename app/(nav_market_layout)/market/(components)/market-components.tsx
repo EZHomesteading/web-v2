@@ -10,7 +10,7 @@ import { OutfitFont } from "@/components/fonts";
 import AvailabilityScore from "./availabilityScore";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-import MarketCartToggle from "./market-cart-toggle";
+import MarketCartToggle from "./v2.market-cart-toggle";
 
 const MarketGrid = ({ children }: { children: any }) => {
   return (
@@ -272,14 +272,10 @@ const MarketCard = ({
       </Link>
       <MarketCartToggle
         listing={listing}
-        listingId={listing.id}
         user={user}
-        initialQuantity={listing.minOrder}
-        stock={listing.stock}
-        basketItemIds={basketItemIds}
-        minOrder={listing.minOrder}
-        quantityType="item"
-        price={listing.price}
+        isInBasket={basketItemIds.some(
+          (item) => item?.listingId === listing.id
+        )}
       />
     </div>
   );
