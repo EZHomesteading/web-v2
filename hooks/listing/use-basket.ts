@@ -25,7 +25,7 @@ interface BasketProps {
   user?: any | null;
   initialQuantity?: number;
   hours?: LocationHours | null;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
+  onBasketUpdate: (newState: boolean) => void;
 }
 
 const getHoursForMethod = (
@@ -41,6 +41,7 @@ export const useBasket = ({
   user,
   initialQuantity = 1,
   hours,
+  onBasketUpdate,
 }: BasketProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -186,6 +187,7 @@ export const useBasket = ({
           initialOrderMethod: initialOrderMethod,
         });
         Toast({ message: "Saved new basket item" });
+        onBasketUpdate(true);
       } catch (error: any) {
         Toast({
           message: error.response?.data?.message || "Something went wrong",
@@ -203,7 +205,7 @@ export const useBasket = ({
     try {
       await axios.delete(`/api/basket/items/${listingId}`);
       Toast({ message: "Basket item removed" });
-      router.refresh();
+      onBasketUpdate(false);
     } catch (error: any) {
       console.error("Remove error:", error);
       Toast({
@@ -248,6 +250,7 @@ export const useBasket = ({
       e.stopPropagation();
       if (isInBasket) {
         await removeFromBasket();
+        onBasketUpdate(false);
       } else {
         if (newQuantity && newQuantity !== quantity) {
           setQuantity(newQuantity);
@@ -261,6 +264,7 @@ export const useBasket = ({
           setShowWarning(true);
         } else {
           await addToBasket(status);
+          onBasketUpdate(true);
         }
       }
     },

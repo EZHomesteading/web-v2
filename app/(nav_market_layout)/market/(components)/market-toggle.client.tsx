@@ -22,7 +22,7 @@ const ClientBasketButton = ({
       listing={listing}
       user={user}
       isInBasket={isInBasket}
-      // onBasketUpdate={(newIsInBasket: boolean) => setIsInBasket(newIsInBasket)}
+      onBasketUpdate={(newIsInBasket: boolean) => setIsInBasket(newIsInBasket)}
     />
   );
 };

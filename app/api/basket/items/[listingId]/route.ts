@@ -11,6 +11,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: IParams }
 ) {
+  console.log("ENTERED DELETE");
   try {
     const user = await currentUser();
     if (!user) {

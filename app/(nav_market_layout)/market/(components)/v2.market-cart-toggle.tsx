@@ -23,15 +23,15 @@ interface CartToggleProps {
   user: User | null | undefined;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
   isInBasket: boolean;
-  //   onBasketUpdate: (newState: boolean) => void;
+  onBasketUpdate: (newState: boolean) => void;
 }
 
 const MarketCartToggle = ({
   user,
   listing,
   isInBasket,
-}: //   onBasketUpdate,
-CartToggleProps) => {
+  onBasketUpdate,
+}: CartToggleProps) => {
   const {
     isLoading,
     toggleBasket,
@@ -44,6 +44,7 @@ CartToggleProps) => {
     user,
     initialQuantity: listing?.minOrder || 1,
     hours: listing?.location?.hours,
+    onBasketUpdate: onBasketUpdate,
   });
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -94,7 +95,6 @@ CartToggleProps) => {
         isOpen={showWarning}
         onClose={() => setShowWarning(false)}
         onConfirm={() => {
-          //   onBasketUpdate(!isInBasket);
           setShowWarning(false);
           addToBasket("ACTIVE");
         }}
