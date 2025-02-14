@@ -24,6 +24,13 @@ export async function GET(req: NextRequest) {
       where: {
         userId: session.user.id,
         status: basketStatus.ACTIVE,
+        location: {
+          user: {
+            id: {
+              not: undefined,
+            },
+          },
+        },
       },
       select: {
         id: true,
