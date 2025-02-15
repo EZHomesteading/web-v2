@@ -26,16 +26,14 @@ const Navbar = ({
   return (
     <>
       <div
-        className={`fixed bottom-0 left-0 right-0 lg:top-0 border-t lg:border-t-none p-2 z-1 ${className} w-screen h-20 `}
+        className={`fixed bottom-0 left-0 right-0 md:top-0 border-t md:border-t-none p-2 z-1 ${className} w-screen h-20 `}
       >
         <div
-          className={`flex items-center justify-evenly lg:justify-between w-full px-4 h-fit`}
+          className={`flex items-center justify-evenly md:justify-between w-full px-4 h-fit`}
         >
-          <div className={`hidden lg:block max-w-[25%] w-full`}>
-            <Logo />
-          </div>
+          <Logo />
           <div
-            className={`flex items-center w-full justify-evenly lg:justify-end gap-x-3 lg:pt-2`}
+            className={`flex items-center w-full justify-evenly md:justify-end gap-x-3`}
           >
             <UserMenu
               user={user}

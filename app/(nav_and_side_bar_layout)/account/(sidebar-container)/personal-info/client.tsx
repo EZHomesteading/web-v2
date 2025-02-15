@@ -1,11 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import LocationSearchInput from "@/components/map/LocationSearchInputSettings";
 import AccountCard from "./account-card";
 import Input from "./input";
@@ -22,24 +21,29 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import { UserInfo } from "next-auth";
+import { Location } from "@prisma/client";
 
 interface PageProps {
   apiKey: string;
+  user?: UserInfo;
+  locations: Location[] | null;
+  location?: Location;
 }
 
-const Page: React.FC<PageProps> = ({ apiKey }) => {
-  const user = useCurrentUser();
+const Page: React.FC<PageProps> = ({ apiKey, user, locations, location }) => {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
   const [image, setImage] = useState<string | undefined>(user?.image);
   const [address, setAddress] = useState("");
   const [addressFields, setAddressFields] = useState<AddressFields>({
-    street: user?.location?.[0]?.address?.[0] || "",
-    city: user?.location?.[0]?.address?.[1] || "",
-    state: user?.location?.[0]?.address?.[2] || "",
-    zip: user?.location?.[0]?.address?.[3] || "",
-    apt: user?.location?.[0]?.address?.[4] || "",
+    street: locations?.[0]?.address?.[0] || "",
+    city: locations?.[0]?.address?.[1] || "",
+    state: locations?.[0]?.address?.[2] || "",
+    zip: locations?.[0]?.address?.[3] || "",
+    apt: locations?.[0]?.address?.[4] || "",
   });
 
   const truncateAddress = (address: string, maxLength: number = 60) => {
@@ -117,9 +121,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
 
     let geoData = null;
     if (fullAddress.trim() !== ", , , ") {
-      console.log("Calling getLatLngFromAddress with:", fullAddress);
       geoData = await getLatLngFromAddress(fullAddress);
-      console.log("Geo data received:", geoData);
     }
 
     const formData = {
@@ -133,10 +135,10 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
               type: "Point",
               coordinates: [geoData.lng, geoData.lat],
               address: [data.street, data.city, data.state, data.zip],
-              hours: user?.location?.[0]?.hours || null,
+              hours: locations?.[0]?.hours || null,
             },
           }
-        : user?.location,
+        : locations,
     };
 
     try {
@@ -167,13 +169,13 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
     setEditingCard(null);
     reset();
     if (editingCard === "Address") {
-      setAddress(user?.location?.[0]?.address?.join(", ") || "");
+      setAddress(locations?.[0]?.address?.join(", ") || "");
       setAddressFields({
-        street: user?.location?.[0]?.address?.[0] || "",
+        street: locations?.[0]?.address?.[0] || "",
         apt: "",
-        city: user?.location?.[0]?.address?.[1] || "",
-        state: user?.location?.[0]?.address?.[2] || "",
-        zip: user?.location?.[0]?.address?.[3] || "",
+        city: locations?.[0]?.address?.[1] || "",
+        state: locations?.[0]?.address?.[2] || "",
+        zip: locations?.[0]?.address?.[3] || "",
       });
     }
   };
@@ -187,13 +189,15 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
         toast.error(error?.response?.data?.error);
       })
       .finally(() => {
-        location.replace("/");
+        router.replace("/");
       });
   };
   return (
     <>
-      <div className="flex flex-col ">
-        <h2 className="text-2xl font-medium pb-0">Personal Info</h2>
+      <div className="mb-20 flex flex-col md:w-1/2">
+        <h2 className="text-2xl font-medium pb-0 md:pl-8 px-1">
+          Personal Info
+        </h2>
 
         <AccountCard
           title="Username"

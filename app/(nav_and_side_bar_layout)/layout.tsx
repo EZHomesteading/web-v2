@@ -13,9 +13,11 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     <>
       <Navbar
         user={user as unknown as NavUser}
-        className={`sheet zmax md:h-20 h-24 border-t-none`}
+        className={`sheet zmax md:h-20 h-24 border-t-none `}
       />
-      <div className={`${OutfitFont.className} sheet border-t md:pt-20 pt-16`}>
+      <div
+        className={`${OutfitFont.className} sheet min-h-screen overflow-y-auto`}
+      >
         {children}
       </div>
     </>

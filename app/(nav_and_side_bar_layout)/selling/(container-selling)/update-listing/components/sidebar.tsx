@@ -26,7 +26,7 @@ import { usePathname } from "next/navigation";
 import { CiSettings } from "react-icons/ci";
 import { OutfitFont } from "@/components/fonts";
 interface SidebarProps {
-  nav: string;
+  nav?: string;
 }
 interface NavigationItem {
   name: string;
@@ -188,7 +188,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
       <div
         className={`hidden ${
           OutfitFont.className
-        } sm:block border-r border-t z-50 relative h-full select-none ${
+        } md:block border-r border-t z-50 relative h-screen overflow-none select-none ${
           isCollapsed ? "w-[3.51rem]" : "w-64"
         } transition-width duration-300`}
       >

@@ -14,7 +14,7 @@ const Logo = () => {
   return (
     <Link
       href={href}
-      className={`select-none hover:cursor-pointer text-xs sm:text-sm md:text-md lg:text-lg font-bold tracking-tight mb-2 ${OutfitFont.className} font-light hover:text-green-800`}
+      className={`select-none hover:cursor-pointer md:block hidden font-bold tracking-tight mb-2 ${OutfitFont.className} font-light hover:text-green-800`}
     >
       EZHomesteading
     </Link>
