@@ -68,8 +68,8 @@ const menuItems = [
 
 const SellerHome = () => {
   return (
-    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-2 lg:pt-20 pb-24 md:pb-0 select-none">
-      <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
+    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-2 lg:pt-20 pb-24 md:pb-0">
+      <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto min-h-screen overflow-y-auto">
         <UserInfoCard sellerNav={true} />
         {menuItems.map((item, index) => (
           <MenuCard

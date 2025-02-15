@@ -278,13 +278,6 @@ const MarketCard = ({
           (item) => item?.listingId === listing.id
         )}
       />
-      {/* <MarketCartToggle
-        isInBasket={basketItemIds.some(
-          (item) => item?.listingId === listing.id
-        )}
-        user={user}
-        listing={listing}
-      /> */}
     </div>
   );
 };

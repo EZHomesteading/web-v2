@@ -28,6 +28,7 @@ interface CartToggleProps {
   quantityType?: string;
   price: number;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
+  onBasketUpdate: (newState: boolean) => void;
 }
 
 const MarketCartToggle = ({
@@ -36,6 +37,7 @@ const MarketCartToggle = ({
   basketItemIds = [],
   minOrder,
   listing,
+  onBasketUpdate,
 }: CartToggleProps) => {
   const {
     isLoading,
@@ -49,7 +51,7 @@ const MarketCartToggle = ({
     user,
     initialQuantity: minOrder || 1,
     hours: listing?.location?.hours,
-    basketItemIds,
+    onBasketUpdate: onBasketUpdate,
   });
 
   const isInBasket =
