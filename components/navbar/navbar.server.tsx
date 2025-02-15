@@ -10,14 +10,9 @@ import { NavUser } from "@/actions/getUser";
 interface p {
   user?: NavUser;
   className?: string;
-  isMarketPage?: boolean;
 }
 
-export default async function Navbar({
-  user,
-  className = "bg-inherit",
-  isMarketPage = false,
-}: p) {
+export default async function Navbar({ user, className = "bg-inherit" }: p) {
   // let uniqueUrl = "";
   // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   //   apiVersion: "2023-10-16",
@@ -47,7 +42,7 @@ export default async function Navbar({
         user={user}
         // canReceivePayouts={canReceivePayouts}
         // uniqueUrl={uniqueUrl}
-        harvestMessages={[]} //harvestMessages
+        harvestMessages={[]}
         className={className}
       />
     </>

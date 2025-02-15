@@ -10,12 +10,15 @@ export const viewport: Viewport = {
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
-    <div
-      className={`${OutfitFont.className} sheet min-h-screen overflow-y-auto w-full`}
-    >
-      <Navbar user={user as unknown as NavUser} />
-      {children}
-    </div>
+    <>
+      <Navbar
+        user={user as unknown as NavUser}
+        className={`sheet zmax md:h-20 h-24 border-t-none`}
+      />
+      <div className={`${OutfitFont.className} sheet border-t md:pt-20 pt-16`}>
+        {children}
+      </div>
+    </>
   );
 };
 

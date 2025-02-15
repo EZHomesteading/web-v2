@@ -2,7 +2,6 @@ import {
   PiCalendarCheckThin,
   PiChatCircleThin,
   PiClipboardTextThin,
-  PiClockCountdownThin,
   PiHandCoinsThin,
   PiLightbulbThin,
   PiMoneyThin,
@@ -15,13 +14,7 @@ import MenuCard from "../_components/menu-card";
 const menuItems = [
   {
     title: "To-Dos",
-    name: "Today's Obligations",
-    href: "/selling/todays-obligations",
-    icon: <PiClockCountdownThin className="h8w8" />,
-    showDiv: false,
-  },
-  {
-    name: "Orders",
+    name: "Sale Orders",
     icon: <PiClipboardTextThin className="h8w8" />,
     href: "/orders",
   },
@@ -38,7 +31,7 @@ const menuItems = [
     href: "/selling/my-store/settings",
   },
   {
-    name: "Availability Calendar",
+    name: "My Locations & Availability",
     icon: <PiCalendarCheckThin className="h8w8" />,
     href: "/selling/availability-calendar",
   },

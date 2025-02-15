@@ -199,7 +199,7 @@ const LocationSelector = ({
         asChild
         className={`${
           inPanel
-            ? "w-full bg-inherit flex items-center justify-start py-8 shadow-md mt-6 rounded-xl"
+            ? "w-full bg-inherit flex items-center justify-start py-8 shadow-md rounded-xl"
             : "rounded-full bg-inherit "
         } `}
       >

@@ -1,15 +1,19 @@
 import Link from "next/link";
 import { PiArrowLeftThin } from "react-icons/pi";
-// being used in /account and /selling
+
 const BackArrow = ({ nav = "buy" }: { nav?: string }) => {
   let link = "/account";
   if (nav === "sell") link = "/selling";
   return (
-    <div className="absolute md:hidden  h-12 w-12 top-0 left-3">
-      <Link href={link} className="hover:cursor-pointer">
-        <PiArrowLeftThin className="z-10 h-12 w-12 " />
-      </Link>
-    </div>
+    <Link
+      href={link}
+      className="absolute md:hidden top-3 left-3 hover:cursor-pointer w-full"
+    >
+      <div className={`flex items-center rounded-sm py-2 px-3 w-full border`}>
+        <PiArrowLeftThin className="text-sm" />
+        <h1>Back</h1>
+      </div>
+    </Link>
   );
 };
 

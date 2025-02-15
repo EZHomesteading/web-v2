@@ -27,12 +27,12 @@ import {
   convertTimeStringToMinutes,
   createDateKey,
   daysOfWeek,
-  updateUserHours,
 } from "./helper-functions-calendar";
 import { usePathname } from "next/navigation";
 import { RiArrowDownSLine } from "react-icons/ri";
 import axios from "axios";
 import { OutfitFont } from "@/components/fonts";
+import Toast from "@/components/ui/toast";
 
 interface p {
   location?: Location;
@@ -278,7 +278,7 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
       <div
         key={month}
         data-month={format(new Date(year, month), "MMM yyyy")}
-        className="sm:px-1"
+        className={`pl-1`}
       >
         <div
           className="text-2xl font-normal mb-4 px-2 cursor-pointer underline w-fit"
@@ -314,9 +314,10 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
                 return;
               }
               if (checkOverlap(allTimeSlots)) {
-                toast.error(
-                  "Cannot add another set of hours because existing time slots overlap."
-                );
+                Toast({
+                  message:
+                    "Cannot add another set of hours because existing time slots overlap.",
+                });
                 return;
               }
               const newPanelIndex = panelStack.length;
@@ -359,7 +360,7 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
               />
             </div>
           ))}
-          <div className="flex items-center justify-evenly space-x-2 mt-4 mb-8 w-full">
+          <div className="flex items-center justify-evenly space-x-2 mt-4 w-full">
             <Button className="w-2/5" onClick={handleSaveChanges}>
               Save Changes
             </Button>
