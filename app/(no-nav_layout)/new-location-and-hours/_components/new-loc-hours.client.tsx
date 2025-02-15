@@ -20,6 +20,7 @@ import OnboardHeader from "./header.onboard";
 import { UserInfo } from "next-auth";
 import { LocationObj } from "location-types";
 import { OutfitFont } from "@/components/fonts";
+import Toast from "@/components/ui/toast";
 
 interface Props {
   user: UserInfo;
@@ -79,7 +80,7 @@ const NewLocHoursClient = ({
           JSON.stringify(prevData.selectedMonths) ===
             JSON.stringify(newData.selectedMonths)
         ) {
-          return prevData; // No change, return the same object
+          return prevData;
         }
         return {
           ...prevData,
@@ -110,12 +111,12 @@ const NewLocHoursClient = ({
 
   const handleNext = async () => {
     try {
-      // 3 not 1000
       if (step === 3 && !formData.locationId) {
         if (locations && locations?.length > 3) {
-          toast.error(
-            "You already have the maximum number of locations. Sending you to Add a Product page."
-          );
+          Toast({
+            message:
+              "You already have the maximum number of locations. Sending you to Add a Product page.",
+          });
           router.push("/create");
           return;
         }
@@ -136,7 +137,6 @@ const NewLocHoursClient = ({
           }));
         }
       } else if (step === 7 && formData.locationId) {
-        // Save the updated hours
         if (formData.location?.hours) {
           setUser((prevUser: any) => ({
             ...prevUser,
@@ -148,7 +148,7 @@ const NewLocHoursClient = ({
       }
       console.log(formData.location);
       setStep((prevStep) => prevStep + 1);
-      setProgress((prevProgress) => prevProgress + 14.28); // 100 / 7 steps
+      setProgress((prevProgress) => prevProgress + 14.28);
     } catch (error) {
       console.error(`Error updating data for step ${step}:`, error);
       toast.error("An error occurred while saving your data.");
@@ -164,7 +164,7 @@ const NewLocHoursClient = ({
       handleStep7Back();
     }
     setStep((prevStep) => prevStep - 1);
-    setProgress((prevProgress) => prevProgress - 14.28); // 100 / 7 steps
+    setProgress((prevProgress) => prevProgress - 14.28);
   };
   const handleStep6Complete = (days: string[]) => {
     setSelectedDays([]);
@@ -186,7 +186,6 @@ const NewLocHoursClient = ({
   const handleStep7Back = () => {
     console.log(selectedDays);
     setPrevSelectedDays((prevDays) => {
-      // Filter out any days that are in selectedDays
       return prevDays.filter((day) => !selectedDays.includes(day));
     });
     setSelectedDays([]);
@@ -222,7 +221,7 @@ const NewLocHoursClient = ({
       );
 
       if (response.data) {
-        toast.success("Location hours updated successfully!");
+        Toast({ message: "Location hours updated successfully!" });
         setSelectedDays([]);
         setPrevSelectedDays([]);
         setIsEdit(false);
@@ -247,7 +246,9 @@ const NewLocHoursClient = ({
         setPrevHours(hours);
         setStep(5);
       } else {
-        toast.error("Failed to update location hours. Please try again.");
+        Toast({
+          message: "Failed to update location hours. Please try again.",
+        });
       }
     } catch (error) {
       console.error("Error updating location hours:", error);

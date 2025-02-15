@@ -228,7 +228,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const basePanel: PanelProps = {
     content: (
       <div
-        className={`${OutfitFont.className} flex justify-center w-full pt-2`}
+        className={`${OutfitFont.className} flex justify-center w-full pt-2 mb-40`}
       >
         <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
           {!panelSide && (
@@ -247,7 +247,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           <div className="flex flex-col justify-between">
             <LocationSelector
               id={id}
-              panelSide={panelSide}
               address={location?.address}
               locations={locations}
               pathname={pathname}
@@ -354,39 +353,48 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 Edit Address
               </button>
             )}
+            <button
+              className="w-full my-2 border py-4 rounded-sm bg-sky-200 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light "
+              onClick={() => {
+                setShowEditAddress(true);
+              }}
+            ></button>
           </div>
 
           {pathname !== "/selling/availability-calendar/new-location" && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button className="text-md sm:text-xl font-light w-full my-2 border py-4 rounded-sm text-white justify-center text-center flex relative bg-red-500/80">
+            <>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  asChild
+                  className="text-md sm:text-xl font-light w-full my-2 border py-4 rounded-sm text-white justify-center text-center flex relative bg-red-500/80"
+                >
                   Delete Location
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent
-                className={`${OutfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
-              >
-                <>
-                  <div className="text-2xl">Are you sure?</div>
-                  <div className="text-sm">
-                    Once a location is deleted, all listings with its location
-                    will also be lost. Please move any listings you do not want
-                    to lose to a different locaiton.
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <Button
-                      className="bg-red-500/80 text-white"
-                      onClick={handleDeleteLocation}
-                    >
-                      Delete
-                    </Button>
-                    <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                      Cancel
-                    </AlertDialogCancel>
-                  </div>
-                </>
-              </AlertDialogContent>
-            </AlertDialog>
+                </AlertDialogTrigger>
+                <AlertDialogContent
+                  className={`${OutfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
+                >
+                  <>
+                    <div className="text-2xl">Are you sure?</div>
+                    <div className="text-sm">
+                      Once a location is deleted, all listings with its location
+                      will also be lost. Please move any listings you do not
+                      want to lose to a different locaiton.
+                    </div>
+                    <div className="flex items-center justify-between w-full">
+                      <Button
+                        className="bg-red-500/80 text-white"
+                        onClick={handleDeleteLocation}
+                      >
+                        Delete
+                      </Button>
+                      <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                        Cancel
+                      </AlertDialogCancel>
+                    </div>
+                  </>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
           <div className="sheet border-t h-20 fixed bottom-0 w-96">
             <Link

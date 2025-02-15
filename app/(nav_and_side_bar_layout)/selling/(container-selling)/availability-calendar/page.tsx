@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import Calendar from "./(components)/calendar";
 import { Location } from "@prisma/client";
 import SelectDefaultLoc from "./(components)/select-default-loc";
-import { getUserLocations } from "@/actions/getLocations";
 
 interface EditLocationPageProps {
   params: { id: string };
@@ -20,7 +19,7 @@ export default async function EditLocationPage({
 
   const userId = session?.user?.id;
   const res = await fetch(
-    `${process.env.API_URL}/get-many?collection=Location&key=userId&value=${userId}&fields=address,coordinates,isDefault,id,userId,displayName`
+    `${process.env.API_URL}/get-many?collection=Location&key=userId&value=${userId}&fields=address,coordinates,isDefault,id,userId,displayName,hours`
   );
   const data = await res.json();
   locations = data.items;

@@ -168,8 +168,8 @@ const StepThree: React.FC<Props> = ({
                     fill="currentColor"
                     strokeWidth="0"
                     viewBox="0 0 256 256"
-                    height="40px"
-                    width="40px"
+                    height="20px"
+                    width="20px"
                     xmlns="http://www.w3.org/2000/svg"
                     className="absolute left-3 bottom-1/2 transform translate-y-1/2"
                   >
@@ -179,7 +179,7 @@ const StepThree: React.FC<Props> = ({
                     {...getInputProps({
                       placeholder: "Search by address, city, zip, and state",
                       className:
-                        "peer w-full p-4 pt-6 font-light border-2 rounded-full transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-16",
+                        "peer w-full font-bold text-sm border rounded-full transition disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none pl-10 py-4 pr-2",
                     })}
                   />
 

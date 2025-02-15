@@ -135,7 +135,6 @@ const DeliveryPickupToggle = ({
 };
 interface LocationSelectorProps {
   id?: string;
-  panelSide: boolean;
   address: any;
   locations: Location[];
   pathname: string | null;
@@ -144,7 +143,6 @@ interface LocationSelectorProps {
 
 const LocationSelector = ({
   id,
-  panelSide,
   address,
   locations,
   pathname,
@@ -157,7 +155,6 @@ const LocationSelector = ({
   };
   let activeAddress;
   activeAddress = address ? address[0] : "New Location";
-  console.log(pathname);
   const menuItems = locations.map((location: Location, idx: number) => (
     <DropdownMenuRadioItem
       key={idx}
@@ -230,7 +227,9 @@ const LocationSelector = ({
           value={id}
           onValueChange={(value) => {
             if (value === "new") {
-              router.push("/new-location-and-hours");
+              router.push(
+                "/new-location-and-hours?/selling/availability-calendar"
+              );
             } else {
               router.push(`/selling/availability-calendar/${value}`);
             }
