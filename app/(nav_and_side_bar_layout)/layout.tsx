@@ -10,11 +10,11 @@ export const viewport: Viewport = {
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getNavUser();
   return (
-    <div className={`${OutfitFont.className} `}>
-      <div className={`sheet min-h-screen w-full`}>
-        <Navbar user={user as unknown as NavUser} />
-        {children}
-      </div>
+    <div
+      className={`${OutfitFont.className} sheet min-h-screen overflow-y-auto w-full`}
+    >
+      <Navbar user={user as unknown as NavUser} />
+      {children}
     </div>
   );
 };

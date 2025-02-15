@@ -16,7 +16,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       </div>
       <BackArrow nav="sell" />
       <div
-        className={`sm:pt-0 pt-10 w-full mb-8 bg-inherit min-h-screen relative ${OutfitFont.className} `}
+        className={`sm:pt-0 pt-10 w-full mb-8 bg-inherit min-h-screen relative`}
       >
         {children}
       </div>

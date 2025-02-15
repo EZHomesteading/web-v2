@@ -140,12 +140,6 @@ const UserMenu: React.FC<Props> = ({
     ];
 
     if (user) {
-      // if (!isCartEmpty) {
-      //   icons.push({
-      //     key: "cart",
-      //     component: <CartIcon key="cart" cart={user.cart} />,
-      //   });
-      // }
       if (hasNotifications) {
         icons.push({
           key: "alerts",
@@ -195,22 +189,11 @@ const UserMenu: React.FC<Props> = ({
           >
             {user ? (
               <>
-                {selling ? (
-                  <>
-                    <MenuItem
-                      label="Today's Obligations"
-                      onClick={() => router.push("/selling/todays-obligations")}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <MenuItem
-                      label="Market"
-                      onClick={() => router.push("/market")}
-                    />
-                    <MenuItem label="Map" onClick={() => router.push("/map")} />
-                  </>
-                )}
+                <MenuItem
+                  label="Market"
+                  onClick={() => router.push("/market")}
+                />
+                <MenuItem label="Map" onClick={() => router.push("/map")} />
                 <MenuItem
                   label="Messages"
                   onClick={() => router.push("/chat")}

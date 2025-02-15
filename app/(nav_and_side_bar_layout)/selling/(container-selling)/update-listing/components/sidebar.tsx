@@ -106,13 +106,6 @@ const conNav: NavigationItem[] = [
 ];
 const vendorNav: NavigationItem[] = [
   {
-    name: "Today's Obligations",
-    href: "/selling/todays-obligations",
-    icon: PiClockCountdownThin,
-    current: false,
-    div: false,
-  },
-  {
     name: "Orders",
     icon: PiClipboardTextThin,
     href: "/orders",
