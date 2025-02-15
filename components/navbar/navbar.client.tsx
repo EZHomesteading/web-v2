@@ -1,5 +1,4 @@
 import UserMenu from "./menu";
-import FindListingsComponent from "@/components/listings/search-listings";
 import { NavUser } from "@/actions/getUser";
 import Logo from "./Logo";
 
@@ -26,7 +25,7 @@ const Navbar = ({
   return (
     <>
       <div
-        className={`fixed bottom-0 left-0 right-0 md:top-0 border-t md:border-t-none p-2 z-1 ${className} w-screen h-20 `}
+        className={`fixed bottom-0 left-0 right-0 md:top-0 border-t md:border-none py-3 z-1 w-screen h-20 ${className}`}
       >
         <div
           className={`flex items-center justify-evenly md:justify-between w-full px-4 h-fit`}
