@@ -6,11 +6,10 @@ import { FaLinux } from "react-icons/fa";
 import PwaInstall from "./pwa";
 import { BsWindows } from "react-icons/bs";
 import { useEffect, useState } from "react";
-import Navbar from "../../../components/navbar/navbar";
 import { useCurrentUser } from "@/hooks/user/use-current-user";
 
 import { NavUser } from "@/actions/getUser";
-import { outfitFont, zillaFont } from "@/components/fonts";
+import { OutfitFont, ZillaFont } from "@/components/fonts";
 
 enum DEVICE {
   ANDROID = "Android",
@@ -96,7 +95,7 @@ const Page = () => {
   );
 
   const WindowsComponent = () => (
-    <div className={`${zillaFont.className} text-lg`}>
+    <div className={`${ZillaFont.className} text-lg`}>
       <PwaInstall />
     </div>
   );
@@ -118,16 +117,16 @@ const Page = () => {
     <div className="bg grid grid-cols-1 lg:grid-cols-5 pt-[5%] px-4 min-h-screen relative">
       <div className="lg:col-span-1 hidden lg:block"></div>
       <div className="col-span-3 lg:col-span-2 xl:col-span-2">
-        <h2 className={`${outfitFont.className} pt-10 lg:text-5xl text-2xl`}>
+        <h2 className={`${OutfitFont.className} pt-10 lg:text-5xl text-2xl`}>
           Get the EZ Homesteading App
         </h2>
         <div>
-          <div className={`${zillaFont.className} lg:text-xl mb-1`}>
+          <div className={`${ZillaFont.className} lg:text-xl mb-1`}>
             The user experience on the app is significantly better
           </div>
 
           <ul
-            className={`${zillaFont.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
+            className={`${ZillaFont.className} text-[.75rem] lg:text-lg list-disc lg:mx-8 my-5`}
           >
             <li>Full screen display</li>
             <li className="list-sqaure">
@@ -144,11 +143,11 @@ const Page = () => {
             <div className="grid grid-cols-2 2xl:grid-cols-1">
               <Card className="grid-row-1 2xl:grid-col-1 sheet shadow-md">
                 <CardHeader
-                  className={`${outfitFont.className} text-7xl font-semibold`}
+                  className={`${OutfitFont.className} text-7xl font-semibold`}
                 >
                   90%
                 </CardHeader>
-                <CardContent className={`${outfitFont.className} text-2xl`}>
+                <CardContent className={`${OutfitFont.className} text-2xl`}>
                   Browser Support
                 </CardContent>
               </Card>
@@ -156,7 +155,7 @@ const Page = () => {
             </div>
             <Card className="sheet 2xl:grid-col-3 grid-row-1 shadow-md 2xl:w-[700px]">
               <CardHeader
-                className={`${outfitFont.className} text-3xl font-semibold`}
+                className={`${OutfitFont.className} text-3xl font-semibold`}
               >
                 Compatible With
               </CardHeader>
@@ -184,7 +183,7 @@ const Page = () => {
               </CardContent>
             </Card>
           </div>
-          <h2 className={`${outfitFont.className} text-5xl`}>
+          <h2 className={`${OutfitFont.className} text-5xl`}>
             Installation Guide
           </h2>
           {device === DEVICE.ANDROID && <AndroidComponent />}

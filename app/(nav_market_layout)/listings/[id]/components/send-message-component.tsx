@@ -4,7 +4,6 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import useMediaQuery from "@/hooks/media-query";
 import SendMessageSection from "./send-messge-section";
 import { UserInfo } from "next-auth";
-import { Location } from "@prisma/client";
 import { OutfitFont } from "@/components/fonts";
 import { useBasket } from "@/hooks/listing/use-basket";
 import Toast from "@/components/ui/toast";
@@ -15,18 +14,17 @@ import { useState } from "react";
 interface SendMessageComponentProps {
   listing: any;
   user?: UserInfo;
-  locations: Location[] | null;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
+  isInitiallyInBasket: boolean;
 }
 
 const SendMessageComponent = ({
   user,
   listing,
-  locations,
-  basketItemIds = [],
+  isInitiallyInBasket,
 }: SendMessageComponentProps) => {
   const over_640px = useMediaQuery("(min-width: 640px)");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isInBasket, setIsInBasket] = useState(isInitiallyInBasket);
 
   const {
     isLoading,
@@ -40,12 +38,8 @@ const SendMessageComponent = ({
     user,
     initialQuantity: listing.minOrder || 1,
     hours: listing?.location?.hours,
-    basketItemIds,
+    onBasketUpdate: (newIsInBasket: boolean) => setIsInBasket(newIsInBasket),
   });
-
-  const isInBasket =
-    Array.isArray(basketItemIds) &&
-    basketItemIds.some((item) => item?.listingId === listing.id);
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -77,10 +71,12 @@ const SendMessageComponent = ({
     <>
       {over_640px ? (
         <SendMessageSection
-          locations={locations}
           listing={listing}
           user={user}
-          basketItemIds={basketItemIds}
+          onBasketUpdate={(newIsInBasket: boolean) =>
+            setIsInBasket(newIsInBasket)
+          }
+          isInBasket={isInBasket}
         />
       ) : (
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -114,9 +110,11 @@ const SendMessageComponent = ({
           >
             <SendMessageSection
               listing={listing}
-              locations={locations}
               user={user}
-              basketItemIds={basketItemIds}
+              onBasketUpdate={(newIsInBasket: boolean) =>
+                setIsInBasket(newIsInBasket)
+              }
+              isInBasket={isInBasket}
             />
           </DrawerContent>
         </Drawer>

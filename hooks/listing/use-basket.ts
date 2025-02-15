@@ -216,29 +216,25 @@ export const useBasket = ({
     }
   }, [user, listingId, router]);
 
-  const updateQuantity = useCallback(
-    async (newQuantity: number) => {
-      if (!user) return;
+  const updateQuantity = async (newQuantity: number) => {
+    if (!user) return;
 
-      setIsLoading(true);
-      try {
-        await axios.patch(`/api/basket/items/${listingId}`, {
-          quantity: newQuantity,
-        });
-        setQuantity(newQuantity);
-        router.refresh();
-      } catch (error: any) {
-        Toast({
-          message: error.response?.data?.message || "Failed to update quantity",
-        });
-        // Revert quantity on error
-        setQuantity(quantity);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, listingId, router, quantity]
-  );
+    setIsLoading(true);
+    try {
+      await axios.post(`/api/basket/items`, {
+        listingId: listingId,
+        quantity: newQuantity,
+      });
+      setQuantity(newQuantity);
+    } catch (error: any) {
+      Toast({
+        message: error.response?.data?.message || "Failed to update quantity",
+      });
+      setQuantity(quantity);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleBasket = useCallback(
     async (

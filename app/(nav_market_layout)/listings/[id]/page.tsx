@@ -65,30 +65,19 @@ export default async function ListingPage({
     const inverseRatings = possibleRatings.filter(
       (index) => index !== 0 && !applicableRatings.includes(index)
     );
-    const apiUrl = process.env.API_URL;
 
     let basketItemIds = [];
-
     if (session?.user?.id) {
       try {
         const response = await fetch(
           `${process.env.API_URL}/get-many?collection=BasketItem&key=userId&value=${session.user.id}&fields=listingId,id`
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch basket items");
-        }
-
         const data = await response.json();
-
-        // Transform the API response into the expected format
-        basketItemIds = data.items.map((item: any) => ({
-          listingId: item.listingId,
-          id: item.id,
-        }));
+        basketItemIds = data.items;
+        console.log(basketItemIds);
       } catch (error) {
         console.error("Error fetching basket items:", error);
-        basketItemIds = [];
       }
     }
     return (
@@ -123,10 +112,7 @@ export default async function ListingPage({
               </div>
             </div>
           </div>
-          <div className={`pt-16 -2  `}>
-            <ListingHead listing={listing} />
-          </div>
-
+          <ListingHead listing={listing} />
           <div
             className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 px-2 lg:px-0 mt-2 sm:space-x-2`}
           >
@@ -197,9 +183,10 @@ export default async function ListingPage({
             <div className={`col-span-1 lg:col-span-2 relative`}>
               <SendMessageComponent
                 listing={listing}
-                locations={locations}
                 user={session?.user}
-                basketItemIds={basketItemIds}
+                isInitiallyInBasket={basketItemIds.some(
+                  (item: any) => item?.listingId === listing.id
+                )}
               />
             </div>
           </div>

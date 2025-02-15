@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Location } from "@prisma/client";
 import { UserInfo } from "next-auth";
 import { useState, useEffect } from "react";
 import Toast from "@/components/ui/toast";
@@ -12,11 +11,16 @@ import HoursWarningModal from "@/app/(nav_market_layout)/market/(components)/car
 interface p {
   listing: any;
   user?: UserInfo;
-  locations: Location[] | null;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
+  onBasketUpdate: (newState: boolean) => void;
+  isInBasket: boolean;
 }
 
-const SendMessageSection = ({ listing, user, locations, basketItemIds }: p) => {
+const SendMessageSection = ({
+  isInBasket,
+  listing,
+  user,
+  onBasketUpdate,
+}: p) => {
   const [quantity, setQuantity] = useState(listing.minOrder || 1);
 
   const {
@@ -32,14 +36,9 @@ const SendMessageSection = ({ listing, user, locations, basketItemIds }: p) => {
     user,
     initialQuantity: quantity,
     hours: listing?.location?.hours,
-    basketItemIds,
+    onBasketUpdate: onBasketUpdate,
   });
 
-  const isInBasket =
-    Array.isArray(basketItemIds) &&
-    basketItemIds.some((item) => item?.listingId === listing.id);
-
-  // Handle quantity changes
   const handleQuantityChange = (newValue: string) => {
     const parsedValue = parseInt(newValue, 10);
     const validValue = Math.min(
@@ -78,36 +77,36 @@ const SendMessageSection = ({ listing, user, locations, basketItemIds }: p) => {
     }
   };
 
-  // Update quantity in basket when component mounts or basket state changes
-  useEffect(() => {
-    if (isInBasket) {
-      updateQuantity(quantity);
-    }
-  }, [isInBasket, quantity]);
+  // useEffect(() => {
+  //   if (isInBasket) {
+  //     updateQuantity(quantity);
+  //   }
+  // }, [isInBasket, quantity]);
 
   return (
     <>
       <div className="border shadow-sm mt-3 rounded-md h-fit pb-6 pt-2 px-2">
         <div className="text-xl font-semibold">Add to your Basket</div>
-        <p className="pb-4">
+        <p className={`${!isInBasket && "pb-4"}`}>
           ${listing.price} per {listing.quantityType}
         </p>
-
-        <div className="p-0 relative hover:cursor-pointer rounded-md border border-custom h-14">
-          <div className="absolute top-1 text-xs text-neutral-700 left-1 font-medium">
-            Quantity
+        {!isInBasket && (
+          <div className="p-0 relative hover:cursor-pointer rounded-md border border-custom h-14">
+            <div className="absolute top-1 text-xs text-neutral-700 left-1 font-medium">
+              Quantity
+            </div>
+            <Input
+              className="w-full focus-visible:ring-0 border-none p-8 pl-2 font-semibold"
+              type="number"
+              maxLength={6}
+              max={listing?.stock}
+              inputMode="numeric"
+              min={listing.minOrder || 1}
+              value={quantity}
+              onChange={(e) => handleQuantityChange(e.target.value)}
+            />
           </div>
-          <Input
-            className="w-full focus-visible:ring-0 border-none p-8 pl-2 font-semibold"
-            type="number"
-            maxLength={6}
-            max={listing?.stock}
-            inputMode="numeric"
-            min={listing.minOrder || 1}
-            value={quantity}
-            onChange={(e) => handleQuantityChange(e.target.value)}
-          />
-        </div>
+        )}
         <button
           onClick={handleToggleBasket}
           disabled={isLoading}
@@ -116,7 +115,9 @@ const SendMessageSection = ({ listing, user, locations, basketItemIds }: p) => {
           }`}
         >
           {isInBasket
-            ? "Remove from Basket"
+            ? `Remove ${quantity ? quantity : 0} ${
+                listing?.quantityType
+              } from Basket`
             : `Add ${quantity ? quantity : 0} ${
                 listing?.quantityType
               } to Basket`}
