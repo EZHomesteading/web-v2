@@ -45,15 +45,20 @@ const SendMessageSection = ({
     onBasketUpdate: onBasketUpdate,
   });
 
-  const handleQuantityChange = (newValue: string) => {
-    const parsedValue = parseInt(newValue, 10);
-    const validValue = Math.min(
-      Math.max(parsedValue, listing.minOrder || 1),
-      listing?.stock || Infinity
-    );
-    setQuantity(validValue);
-    if (isInBasket) {
-      updateQuantity(validValue);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (newValue === "" || /^\d*$/.test(newValue)) {
+      setQuantity(newValue);
+
+      if (newValue !== "" && parseInt(newValue) > listing.stock) {
+        setQuantity(listing.stock.toString());
+      }
+    }
+  };
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (quantity === "") {
+      setQuantity("0");
     }
   };
 
@@ -75,10 +80,19 @@ const SendMessageSection = ({
       });
       return;
     }
-    if (!quantity) {
+
+    if (!quantity || typeof quantity === "string") {
       Toast({ message: "Quantity must be greater than 0" });
       return;
     }
+
+    if (quantity < listing.minOrder) {
+      Toast({
+        message: `Quantity must be ${listing.minOrder} ${listing.quantityType} or more`,
+      });
+      return;
+    }
+
     try {
       await toggleBasket(e, isInBasket, "ACTIVE", quantity);
     } catch (error) {
@@ -93,34 +107,30 @@ const SendMessageSection = ({
   // }, [isInBasket, quantity]);
 
   const handleIncrement = () => {
-    if (quantity < listing.stock) {
-      setQuantity(quantity + 1);
-    }
+    const newQuantity = Math.min(quantity + 1, listing.stock);
+    setQuantity(newQuantity);
   };
 
   const handleDecrement = () => {
-    if (quantity > listing.minOrder) {
-      setQuantity(quantity - 1);
-    }
+    const newQuantity = Math.max(quantity - 1, 0);
+    setQuantity(newQuantity);
   };
 
   return (
     <>
       <div className="border shadow-sm mt-3 rounded-md h-fit pb-6 pt-2 px-2">
         <div className="text-xl font-semibold">Add to your Basket</div>
-        <p className={`${!isInBasket && "pb-4"}`}>
-          ${listing.price} per {listing.quantityType}
+        <p className={`${!isInBasket && "pb-4"} flex items-center gap-x-1`}>
+          ${listing.price} per {listing.quantityType}{" "}
+          <div className={`h-1 w-1 rounded-full bg-black`} />
+          {listing.minOrder || 1} {listing.quantityType || ""} Minimum Order
         </p>
         {!isInBasket && (
-          // <div className="absolute top-1 text-xs text-neutral-700 left-1 font-medium">
-          //             Quantity
-          //          </div>
-
           <div className="flex items-center justify-center space-x-4 relative">
             <button
               onClick={handleDecrement}
               className="p-1 hover:bg-gray-100 rounded-full transition-colors borderBlack border-[2px]"
-              disabled={quantity <= listing.minOrder}
+              disabled={quantity <= 0}
             >
               <PiMinusBold className="text-xl" />
             </button>
@@ -132,18 +142,18 @@ const SendMessageSection = ({
                 inputMode="numeric"
                 className="w-16 text-center border-none focus:outline-none relative focus:ring-0 text-3xl font-bold"
                 value={quantity}
-                onChange={(e) => handleQuantityChange(e.target.value)}
+                onChange={handleChange}
                 onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                min={listing.minOrder}
-                max={listing.stock}
+                onBlur={handleBlur}
                 maxLength={6}
               />
               {!isFocused && (
-                <PiPencilThin
-                  onClick={handleFocusClick}
-                  className={`absolute right-1 bottom-0 bg-white rounded-full border hover:cursor-pointer`}
-                />
+                <div>
+                  <PiPencilThin
+                    onClick={handleFocusClick}
+                    className={`absolute right-1 bottom-0 bg-white rounded-full border hover:cursor-pointer`}
+                  />
+                </div>
               )}
             </div>
             <button
@@ -171,9 +181,11 @@ const SendMessageSection = ({
               } to Basket`}
         </button>
 
-        <div className="text-xs text-center mt-3">
-          You will not be charged at this time
-        </div>
+        {!isInBasket && (
+          <div className="text-xs text-center mt-3">
+            You will not be charged at this time
+          </div>
+        )}
       </div>
       <HoursWarningModal
         isOpen={showWarning}
