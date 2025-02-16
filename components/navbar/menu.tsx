@@ -183,9 +183,9 @@ const UserMenu: React.FC<Props> = ({
           {renderIcons()}
           <MenuIcon />
           <PopoverContent
-            className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
+            className={`${OutfitFont.className} mb-3 w-screen sm:rounded-xl h-[calc(100vh-80px)] sm:h-fit py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] zmax`}
             align="end"
-            alignOffset={0}
+            alignOffset={-2}
           >
             {user ? (
               <>
@@ -357,7 +357,7 @@ const UserMenu: React.FC<Props> = ({
           {renderIcons()}
           <MenuIcon />
           <DrawerContent
-            className={`${OutfitFont.className} pb-2 ${drawerClassName}`}
+            className={`${OutfitFont.className} pb-2 h-[75vh] ${drawerClassName}`}
           >
             {user ? (
               <>
