@@ -2,15 +2,15 @@
 
 import Avatar from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
+import { UserInfo } from "next-auth";
 import Link from "next/link";
 
 interface p {
   sellerNav?: boolean;
+  user?: UserInfo;
 }
 
-const UserInfoCard = ({ sellerNav = false }: p) => {
-  const user = useCurrentUser();
+const UserInfoCard = ({ sellerNav = false, user }: p) => {
   const link = sellerNav ? `/store/${user?.url}` : `/profile/${user?.id}`;
   const link2 = sellerNav ? `/account` : `/selling`;
   return (

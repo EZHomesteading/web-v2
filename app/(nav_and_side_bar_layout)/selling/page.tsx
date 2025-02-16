@@ -10,6 +10,7 @@ import {
 import { CiSettings } from "react-icons/ci";
 import UserInfoCard from "../_components/user-info-card";
 import MenuCard from "../_components/menu-card";
+import { auth } from "@/auth";
 
 const menuItems = [
   {
@@ -59,11 +60,12 @@ const menuItems = [
   },
 ];
 
-const SellerHome = () => {
+const SellerHome = async () => {
+  const session = await auth();
   return (
     <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-2 lg:pt-20 pb-24 md:pb-0">
       <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
-        <UserInfoCard sellerNav={true} />
+        <UserInfoCard sellerNav={true} user={session?.user} />
         {menuItems.map((item, index) => (
           <MenuCard
             key={index}
