@@ -17,7 +17,7 @@ const MenuCard = ({ title = "", href, icon, name, showDiv = false }: p) => {
         href={href}
         className={` ${
           title && "pt-3"
-        } flex items-center hover:cursor-pointer hover:text-white justify-between pb-3`}
+        } flex items-center hover:cursor-pointer mr-8 md:mr-0  hover:text-white justify-between pb-3`}
       >
         <div className="flex items-center">
           <div>{icon}</div>
