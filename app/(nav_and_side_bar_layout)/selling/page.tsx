@@ -63,7 +63,7 @@ const menuItems = [
 const SellerHome = async () => {
   const session = await auth();
   return (
-    <div className="relative h-full w-full touch-pan-y">
+    <div className="relative h-screen w-full touch-pan-y ">
       <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40 pt-2 md:pt-20 pb-24 md:pb-0 overflow-y-auto">
         <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
           <UserInfoCard sellerNav={true} user={session?.user} />

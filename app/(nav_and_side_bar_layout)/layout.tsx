@@ -16,7 +16,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         className={`sheet zmax md:h-20 h-24 border-t-none `}
       />
       <div
-        className={`${OutfitFont.className} sheet min-h-screen overflow-y-auto`}
+        className={`${OutfitFont.className} sheet min-h-screen`}
+        style={{ width: "100%", overflow: "visible" }}
       >
         {children}
       </div>
