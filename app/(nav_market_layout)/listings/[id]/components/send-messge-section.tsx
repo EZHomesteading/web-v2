@@ -7,6 +7,7 @@ import Toast from "@/components/ui/toast";
 import Link from "next/link";
 import { useBasket } from "@/hooks/listing/use-basket";
 import HoursWarningModal from "@/app/(nav_market_layout)/market/(components)/cartHoursWarning";
+import { PiMinusBold, PiPencilThin, PiPlusBold } from "react-icons/pi";
 
 interface p {
   listing: any;
@@ -69,7 +70,10 @@ const SendMessageSection = ({
       });
       return;
     }
-
+    if (!quantity) {
+      Toast({ message: "Quantity must be greater than 0" });
+      return;
+    }
     try {
       await toggleBasket(e, isInBasket, "ACTIVE", quantity);
     } catch (error) {
@@ -83,6 +87,18 @@ const SendMessageSection = ({
   //   }
   // }, [isInBasket, quantity]);
 
+  const handleIncrement = () => {
+    if (quantity < listing.stock) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (quantity > listing.minOrder) {
+      setQuantity(quantity - 1);
+    }
+  };
+
   return (
     <>
       <div className="border shadow-sm mt-3 rounded-md h-fit pb-6 pt-2 px-2">
@@ -91,20 +107,37 @@ const SendMessageSection = ({
           ${listing.price} per {listing.quantityType}
         </p>
         {!isInBasket && (
-          <div className="p-0 relative hover:cursor-pointer rounded-md border border-custom h-14">
-            <div className="absolute top-1 text-xs text-neutral-700 left-1 font-medium">
-              Quantity
-            </div>
-            <Input
-              className="w-full focus-visible:ring-0 border-none p-8 pl-2 font-semibold"
+          // <div className="absolute top-1 text-xs text-neutral-700 left-1 font-medium">
+          //             Quantity
+          //          </div>
+
+          <div className="flex items-center justify-center space-x-4 relative">
+            <button
+              onClick={handleDecrement}
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors borderBlack border-[2px]"
+              disabled={quantity <= listing.minOrder}
+            >
+              <PiMinusBold className="text-xl" />
+            </button>
+
+            <input
               type="number"
-              maxLength={6}
-              max={listing?.stock}
               inputMode="numeric"
-              min={listing.minOrder || 1}
+              className="w-16 text-center border-none focus:outline-none relative focus:ring-0 text-3xl font-bold"
               value={quantity}
               onChange={(e) => handleQuantityChange(e.target.value)}
+              min={listing.minOrder}
+              max={listing.stock}
+              maxLength={6}
             />
+            <PiPencilThin className={`absolute bottom-1`} />
+            <button
+              onClick={handleIncrement}
+              className="p-1 hover:bg-gray-100 !border-black border-[2px] rounded-full transition-colors"
+              disabled={quantity >= listing.stock}
+            >
+              <PiPlusBold className="text-xl" />
+            </button>
           </div>
         )}
         <button
