@@ -10,7 +10,7 @@ import {
   PiUserThin,
 } from "react-icons/pi";
 import MenuCard from "../_components/menu-card";
-import { SellAccountToggle, UserInfoCard } from "../_components/user-info-card";
+import UserInfoCard from "../_components/user-info-card";
 import { auth } from "@/auth";
 
 const menuItems = [
@@ -70,22 +70,23 @@ const menuItems = [
 const AccountHome = async () => {
   const session = await auth();
   return (
-    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-2 md:pt-20 pb-24 md:pb-0 min-h-screen overflow-y-auto relative">
-      <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
-        <UserInfoCard user={session?.user} />
-        {menuItems.map((item, index) => (
-          <MenuCard
-            key={index}
-            name={item.name}
-            icon={item.icon}
-            href={item.href}
-            showDiv={item.showDiv}
-            title={item.title}
-          />
-        ))}
+    <div className="relative h-screen w-full touch-pan-y">
+      <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40  pb-24 md:pb-0 overflow-y-auto">
+        <div className="relative w-full md:w-2/3 2xl:w-1/2 mx-auto">
+          <UserInfoCard user={session?.user} />
+          {menuItems.map((item, index) => (
+            <MenuCard
+              key={index}
+              title={item.title}
+              name={item.name}
+              icon={item.icon}
+              href={item.href}
+              showDiv={item.showDiv}
+            />
+          ))}
+          <div className="pb-32" />
+        </div>
       </div>
-      <div className={`h-[50vh]`} />
-      <SellAccountToggle user={session?.user} />
     </div>
   );
 };

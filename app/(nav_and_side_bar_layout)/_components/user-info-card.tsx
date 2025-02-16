@@ -1,9 +1,7 @@
 "use client";
 
 import Avatar from "@/components/Avatar";
-import { Button } from "@/components/ui/button";
-import { UserRole } from "@prisma/client";
-import { User, UserInfo } from "next-auth";
+import { UserInfo } from "next-auth";
 import Link from "next/link";
 
 interface p {
@@ -13,14 +11,24 @@ interface p {
 
 const UserInfoCard = ({ sellerNav = false, user }: p) => {
   const link = sellerNav ? `/store/${user?.url}` : `/profile/${user?.id}`;
+  const link2 = sellerNav ? `/account` : `/selling`;
   return (
-    <>
+    <div className={`sticky top-0 py-1 md:top-20 w-full md:mb-20 sheet`}>
       <div className="flex justify-between items-center">
         <div className="text-3xl">
           {sellerNav ? "Seller Menu" : "Main Menu"}
         </div>
+        {user?.role !== "CONSUMER" && (
+          <Link
+            href={link2}
+            className={` bg-emerald-700 text-white rounded-full px-4 py-2 text-md font-medium
+                 `}
+          >
+            {sellerNav ? "Switch to Buying" : "Switch to Selling"}
+          </Link>
+        )}
       </div>
-      <div className="flex items-center justify-between py-6">
+      <div className="flex items-center justify-between mt-1">
         <div className="flex items-center justify-start">
           <Avatar image={user?.image} h={`12`} />
           <Link href={link}>
@@ -34,39 +42,14 @@ const UserInfoCard = ({ sellerNav = false, user }: p) => {
             </div>
           </Link>
         </div>
-        <Link href={link} className=" text-neutral-700">
-          <Button className="bg-inherit text-xs p-1" variant={`outline`}>
-            View {sellerNav ? `Store` : `Profile`}
-          </Button>
-        </Link>
-      </div>{" "}
-    </>
-  );
-};
-
-const SellAccountToggle = ({
-  user,
-  sellerNav = false,
-}: {
-  user?: UserInfo;
-  sellerNav?: boolean;
-}) => {
-  const link2 = sellerNav ? `/account` : `/selling`;
-
-  return (
-    <>
-      {user?.role !== UserRole.CONSUMER && (
         <Link
-          href={link2}
-          className={` 
-             bg-emerald-800 text-white rounded-full animated-gradient-text transition-colors py-3 px-6 fixed bottom-32 translate-x-1/2 transform right-1/2 text-md font-medium
-          `}
+          href={link}
+          className=" text-neutral-700 border rounded-full py-2 text-sm w-24 text-center font-medium !border-neutral-700"
         >
-          {sellerNav ? "Switch to Buying" : "Switch to Selling"}
+          View {sellerNav ? `Store` : `Profile`}
         </Link>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
-
-export { SellAccountToggle, UserInfoCard };
+export default UserInfoCard;

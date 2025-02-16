@@ -64,7 +64,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
       </div>
       {isEditing && (
         <div
-          className={`pl-8 ${
+          className={`md:pl-8 ${
             showAvatar ? `flex items-center justify-start` : `mt-2`
           }`}
         >

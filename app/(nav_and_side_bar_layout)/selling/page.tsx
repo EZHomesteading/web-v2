@@ -8,7 +8,7 @@ import {
   PiStorefrontThin,
 } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
-import { SellAccountToggle, UserInfoCard } from "../_components/user-info-card";
+import UserInfoCard from "../_components/user-info-card";
 import MenuCard from "../_components/menu-card";
 import { auth } from "@/auth";
 
@@ -63,9 +63,9 @@ const menuItems = [
 const SellerHome = async () => {
   const session = await auth();
   return (
-    <div className="relative h-screen w-full touch-pan-y ">
-      <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40 pt-2 md:pt-20 pb-24 md:pb-0 overflow-y-auto">
-        <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
+    <div className="relative h-screen w-full touch-pan-y">
+      <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40  pb-24 md:pb-0 overflow-y-auto">
+        <div className="relative w-full md:w-2/3 2xl:w-1/2 mx-auto">
           <UserInfoCard sellerNav={true} user={session?.user} />
           {menuItems.map((item, index) => (
             <MenuCard
@@ -80,7 +80,6 @@ const SellerHome = async () => {
           <div className="pb-32" />
         </div>
       </div>
-      <SellAccountToggle sellerNav={true} user={session?.user} />
     </div>
   );
 };
