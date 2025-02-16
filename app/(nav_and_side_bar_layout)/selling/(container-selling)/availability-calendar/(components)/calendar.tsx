@@ -395,14 +395,13 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
 
   const renderCalendarContent = () => (
     <>
-      <div className={`sticky top-0 z-40 w-full ${OutfitFont.className}`}>
+      <div className={`sticky top-0 z-10 w-full ${OutfitFont.className}`}>
         <div
           className="flex justify-start sm:justify-end items-center gap-px sm:px-3 pt-2 px-1 overflow-x-auto scrollbar-hide gap-x-1 flex-nowrap"
           style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}
         >
           <LocationSelector
             id={id}
-            panelSide={panelSide}
             address={location?.address}
             locations={locations}
             pathname={pathname}

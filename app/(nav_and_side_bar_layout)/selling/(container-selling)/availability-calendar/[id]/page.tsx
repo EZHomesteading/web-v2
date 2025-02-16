@@ -22,6 +22,7 @@ export default async function EditLocationPage({
   const data = await res.json();
   locations = data.items;
   const location = locations.find((loc) => loc.id === locationId);
+  console.log(location?.displayName);
 
   if (location?.userId !== userId) {
     return (

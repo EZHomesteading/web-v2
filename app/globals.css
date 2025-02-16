@@ -298,6 +298,9 @@
 .zmax {
   z-index: 9999 !important;
 }
+.zmid {
+  z-index: 5000 !important;
+}
 .z {
   z-index: 100 !important;
 }
@@ -335,6 +338,9 @@ button:focus {
 }
 .authlayouttext {
   color: #ced9bb !important;
+}
+.textMd {
+  font-size: 16px !important;
 }
 .h8w8 {
   height: 2rem;

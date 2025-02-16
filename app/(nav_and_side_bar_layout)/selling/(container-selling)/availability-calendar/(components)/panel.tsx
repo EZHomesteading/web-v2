@@ -2,7 +2,14 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionStyle } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PiCalendarBlankThin } from "react-icons/pi";
+import {
+  PiCalendarBlankThin,
+  PiMapPin,
+  PiPencilBold,
+  PiPlus,
+  PiPlusBold,
+  PiTrash,
+} from "react-icons/pi";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { LocationSelector } from "./helper-components-calendar";
@@ -19,6 +26,8 @@ import Link from "next/link";
 import SetDefaultButton from "./set-default-button";
 import { OutfitFont } from "@/components/fonts";
 import ListingMap from "@/components/map/listing-map";
+import Toast from "@/components/ui/toast";
+import Alert from "@/components/ui/custom-alert";
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -60,6 +69,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     state: "",
     zip: "",
   });
+  const [displayName, setDisplayName] = useState(location?.displayName);
   const [geoResult, setGeoResult] = useState<{
     lat: number;
     lng: number;
@@ -90,10 +100,11 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const userRole = useCurrentRole();
 
   const handleSaveAddress = async () => {
-    if (locations.length === 3) {
-      toast.error("Sellers are restricted to three locations for now");
+    if (locations.length >= 5) {
+      Toast({ message: "Sellers may have up to five locations" });
       return;
     }
+
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
     const newGeoResult = await getLatLngFromAddress(fullAddress);
     setGeoResult(newGeoResult);
@@ -209,7 +220,6 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
 
   const handleDeleteLocation = async () => {
     try {
-      console.log("location id", location?.id);
       const response = await axios.delete(
         "/api/useractions/update/location-hours/delete-location",
         {
@@ -217,7 +227,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
         }
       );
       if (response.status === 200) {
-        toast.success("Store Location deleted");
+        Toast({ message: "Store location deleted" });
         window.location.replace("/selling/availability-calendar");
       }
     } catch (error) {
@@ -225,10 +235,77 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     }
   };
 
+  async function updateDisplayName() {
+    const validCharPattern = /^[A-Za-z0-9\-._~' ]+$/;
+
+    if (!displayName) {
+      Toast({
+        message: "Please enter a display name",
+      });
+      return;
+    }
+
+    if (displayName?.length < 1) {
+      Toast({ message: "Display name must be at least 1 character long" });
+      return;
+    }
+
+    if (displayName.length > 40) {
+      Toast({
+        message: "Display name cannot exceed 40 characters",
+        details: <>Current name is {displayNameLength} characters</>,
+      });
+
+      return;
+    }
+
+    if (!validCharPattern.test(displayName)) {
+      Toast({
+        message:
+          "Display name can only contain letters, numbers, dashes, periods, underscores, spaces, apostrophes, and tildes",
+      });
+      return;
+    }
+
+    try {
+      const dataToSend = {
+        location: [
+          {
+            ...location,
+            displayName: displayName,
+          },
+        ],
+        locationId: location?.id,
+      };
+
+      const response = await axios.post(
+        "/api/useractions/update/location-hours",
+        dataToSend
+      );
+
+      if (response.status === 200) {
+        const newLocation = response.data.locations?.[0];
+        const locationId = newLocation?.id;
+        Toast({ message: "Updated Location Display Name" });
+        if (locationId) {
+          router.replace(`/selling/availability-calendar/${locationId}`);
+        } else {
+          router.replace(`/selling/availability-calendar`);
+        }
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error updating address:", error.response?.data);
+      } else {
+        console.error("Error updating address:", error);
+      }
+    }
+  }
+  const displayNameLength = displayName?.length;
   const basePanel: PanelProps = {
     content: (
       <div
-        className={`${OutfitFont.className} flex justify-center w-full pt-2 mb-40`}
+        className={`${OutfitFont.className} flex justify-center w-full pt-2`}
       >
         <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
           {!panelSide && (
@@ -236,16 +313,15 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               onClick={() => {
                 setIsBasePanelOpen(false);
               }}
-              className="w-full mb-2 border py-8 justify-between flex relative"
+              className="w-full px-2 sm:px-4 mb-2 text-base font-medium border py-8 justify-between flex relative"
             >
-              <div className="text-md sm:text-xl font-light">
-                View Calendar & Edit Hours
-              </div>
-              <PiCalendarBlankThin size={40} className="absolute right-1" />
+              <div>View Calendar & Edit Hours</div>
+              <PiCalendarBlankThin className="absolute right-1 top-5 h-6 w-6" />
             </Button>
           )}
           <div className="flex flex-col justify-between">
             <LocationSelector
+              displayName={location?.displayName}
               id={id}
               address={location?.address}
               locations={locations}
@@ -253,34 +329,76 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             />
           </div>
 
-          {location?.id && (
-            <>
-              {!location?.isDefault && userId && (
-                <SetDefaultButton
-                  street={location?.address[0]}
-                  userId={userId}
-                  locationId={location?.id}
-                  className="w-full my-2 border py-8 justify-center text-center flex relative hover:bg-white bg-inherit text-black text-md sm:text-xl font-light"
-                  title="Set as Default Location"
+          <div className="mt-2 mb-32 relative">
+            <Link
+              className="!text-base  font-medium w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black shadow-md"
+              href={`/create?id=${location?.id}`}
+            >
+              Create New Listing at this Location
+              <PiPlusBold className={`absolute right-1 top-5 h-6 w-6`} />
+            </Link>
+            <div className={`relative`}>
+              <ListingMap
+                apiKey={mk}
+                lat={geoResult?.lat || location?.coordinates[1] || 38}
+                lng={geoResult?.lng || location?.coordinates[0] || -84}
+              />
+            </div>
+            <Alert
+              alertTriggerText="Edit Display Name"
+              alertTriggerClassName="bg-inherit hover:text-white text-black !border-black !text-base font-semibold justify-start px-2 sm:px-4  !text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black"
+              headingText="New Location Display Name"
+              headingClassName="text-sm"
+              subtitleText=""
+              confirmButtonText="Save"
+              confirmButtonClassName="hover:bg-inherit text-black hover:text-white"
+              cancelButtonText="Cancel"
+              onClick={updateDisplayName}
+              icon={
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  className={`h-6 w-6 absolute right-1 top-5`}
+                  viewBox="0 0 1024 1024"
+                  fillRule="evenodd"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g>
+                    <path
+                      d="M33.713 640c1.994 0 3.988-.2 5.982-.498l168.19-29.508c1.994-.399 3.888-1.296 5.284-2.792l423.915-423.875a9.927 9.927 0 0 0 0-14.056L470.888 2.891C468.994.997 466.5 0 463.809 0s-5.184.997-7.078 2.891L32.816 426.766c-1.495 1.496-2.393 3.29-2.791 5.284L.514 600.224c-1.894 11.066 1.495 21.932 9.372 29.807 6.58 6.48 14.954 9.969 23.827 9.969m51.743-85.433 15.653-88.922 362.7-362.667 73.278 73.271-362.7 362.667zM486.826 455.928c27.691-14.812 57.293-20.852 85.545-15.519 32.365 6.11 59.72 26.534 78.96 59.406 29.974 51.211 21.642 102.332-18.484 144.254-17.577 18.364-41.07 35.013-69.996 50.297l-.293.152.848.26c13.153 3.956 27.085 6.1 41.54 6.21l1.174.005c61.068 0 100.981-22.104 125.285-67.876 9.325-17.56 31.119-24.237 48.679-14.913 17.56 9.325 24.237 31.119 14.912 48.68-37.285 70.218-102.092 106.109-188.876 106.109-47.687 0-91.94-15.03-128.188-41.368l-1.056-.774-1.36.473c-46.18 15.996-98.732 29.945-155.37 41.932l-2.239.472c-48.571 10.217-97.257 18.377-139.154 23.957-19.709 2.625-37.813-11.224-40.438-30.932-2.625-19.709 11.224-37.813 30.932-40.438 40.196-5.353 87.126-13.22 133.84-23.045 42.799-9.002 83.011-19.134 119.357-30.342l.234-.074-.436-.693c-16.464-26.452-25.857-55.432-26.142-83.24l-.007-1.303c0-49.907 39.555-104.315 90.733-131.69m72.188 55.231c-10.74-2.027-24.099.699-38.228 8.257-29.546 15.804-52.693 47.643-52.693 68.202 0 18.206 8.889 40.146 24.71 59.736l.238.293 1.223-.514c39.17-16.581 68.483-34.271 85.929-52.186l.64-.663c18.735-19.573 21.386-35.842 8.36-58.1-9.059-15.475-19.03-22.92-30.18-25.025"
+                      transform="translate(112 112)"
+                    ></path>
+                  </g>
+                </svg>
+              }
+            >
+              <div className="relative ">
+                <input
+                  type="text"
+                  value={displayName || ""}
+                  className={`overflow-x-auto w-full text-center bg-inherit text-sm py-8 font-bold rounded-lg focus:outline-none focus:ring-0 ${
+                    displayNameLength && displayNameLength > 30
+                      ? "!text-sm"
+                      : displayNameLength && displayNameLength > 20
+                      ? "!text-[1rem]"
+                      : displayNameLength && displayNameLength > 20
+                      ? "text-xl"
+                      : "!text-2xl"
+                  }`}
+                  placeholder="Display Name"
+                  onChange={(e) => setDisplayName(e.target.value)}
                 />
-              )}
-            </>
-          )}
-
-          <div className="mt-2 relative">
-            <ListingMap
-              apiKey={mk}
-              lat={geoResult?.lat || location?.coordinates[1] || 38}
-              lng={geoResult?.lng || location?.coordinates[0] || -84}
-            />
+              </div>
+            </Alert>
             {showEditAddress ? (
               <>
-                <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-sm">
+                <div className="w-full mt-2 rounded-t-xl rounded-b-xl bg-inherit ring-transparent shadow-md">
                   <>
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-full border-x border-t bg-inherit rounded-t-xl text-2xl px-3 pb-5 pt-7 font-bold"
+                        className="w-full border-x border-t !border-black  bg-inherit rounded-t-xl text-2xl px-3 pb-5 pt-7 font-bold"
                         onChange={(e) =>
                           handleAddressChange("street", e.target.value)
                         }
@@ -292,7 +410,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-full border-x border-t bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        className="w-full border-x border-t !border-black bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
                         onChange={(e) =>
                           handleAddressChange("city", e.target.value)
                         }
@@ -304,7 +422,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-full border-t border-x bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        className="w-full border-t border-x bg-inherit !border-black text-2xl px-3 pb-5 pt-7 font-bold"
                         onChange={(e) =>
                           handleAddressChange("state", e.target.value)
                         }
@@ -316,7 +434,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-full rounded-b-xl border bg-inherit text-2xl px-3 pb-5 pt-7 font-bold"
+                        className="w-full rounded-b-xl border bg-inherit  !border-black text-2xl px-3 pb-5 pt-7 font-bold"
                         onChange={(e) =>
                           handleAddressChange("zip", e.target.value)
                         }
@@ -325,84 +443,59 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                         Zip Code
                       </div>
                     </div>
-                    <Button
-                      className="w-full bg-slate-500 px-5 py-7 mt-2 text-3xl font-extralight shadow-md"
-                      onClick={handleSaveAddress}
-                    >
-                      Save Changes
-                    </Button>
                   </>
                 </div>
-                <Button
-                  className="w-full px-5 py-7 mt-2 text-3xl font-extralight bg-inherit shadow-md"
-                  variant={`outline`}
-                  onClick={() => {
-                    setShowEditAddress(false);
-                  }}
-                >
-                  Cancel
-                </Button>
+                <div className={`flex items-center justify-center gap-x-2`}>
+                  <button
+                    className="!text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm text-center px-2 sm:px-4 relative bg-inherit text-black hover:text-white !border-black"
+                    onClick={() => {
+                      setShowEditAddress(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="!text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm text-center px-2 sm:px-4 relative bg-inherit text-black hover:text-white !border-black"
+                    onClick={handleSaveAddress}
+                  >
+                    Save Changes
+                  </button>
+                </div>
               </>
             ) : (
               <button
-                className="w-full my-2 border py-4 rounded-sm bg-sky-200 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light "
+                className="!text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black"
                 onClick={() => {
                   setShowEditAddress(true);
                 }}
               >
                 Edit Address
+                <PiMapPin className={`absolute right-1 top-5 h-6 w-6`} />
               </button>
+            )}{" "}
+            {!location?.isDefault && (
+              <SetDefaultButton
+                street={location?.address[0]}
+                userId={userId}
+                locationId={location?.id}
+                className="!text-base  font-medium w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black shadow-md"
+                title="Set as Default Location"
+              />
             )}
-            <button
-              className="w-full my-2 border py-4 rounded-sm bg-sky-200 justify-center text-center flex relative bg-inherit text-black text-md sm:text-xl font-light "
-              onClick={() => {
-                setShowEditAddress(true);
-              }}
-            ></button>
-          </div>
-
-          {pathname !== "/selling/availability-calendar/new-location" && (
-            <>
-              <AlertDialog>
-                <AlertDialogTrigger
-                  asChild
-                  className="text-md sm:text-xl font-light w-full my-2 border py-4 rounded-sm text-white justify-center text-center flex relative bg-red-500/80"
-                >
-                  Delete Location
-                </AlertDialogTrigger>
-                <AlertDialogContent
-                  className={`${OutfitFont.className} sheet p-3 h-64 w-72 rounded-xl border`}
-                >
-                  <>
-                    <div className="text-2xl">Are you sure?</div>
-                    <div className="text-sm">
-                      Once a location is deleted, all listings with its location
-                      will also be lost. Please move any listings you do not
-                      want to lose to a different locaiton.
-                    </div>
-                    <div className="flex items-center justify-between w-full">
-                      <Button
-                        className="bg-red-500/80 text-white"
-                        onClick={handleDeleteLocation}
-                      >
-                        Delete
-                      </Button>
-                      <AlertDialogCancel className="bg-inherit border h-9 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                        Cancel
-                      </AlertDialogCancel>
-                    </div>
-                  </>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          )}
-          <div className="sheet border-t h-20 fixed bottom-0 w-96">
-            <Link
-              className="text-md sm:text-xl font-light w-full my-2 border py-4 rounded-sm justify-center text-center flex relative bg-inherit text-black hover:bg-white"
-              href={`/create?id=${location?.id}`}
-            >
-              Add Listing at this Location
-            </Link>
+            <p className={`text-red-500 text-center text-sm mt-10`}>
+              Danger Zone
+            </p>
+            <Alert
+              alertTriggerText="Delete Location"
+              headingText="Are you sure?"
+              alertTriggerClassName="!text-base  font-medium w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative text-black hover:text-white !border-black shadow-md"
+              subtitleText="Once this location is deleted, all listings at this location will also be lost. Please move any listings you do not want to lose to a different locaiton."
+              confirmButtonText="Delete"
+              confirmButtonClassName={`shadow-md`}
+              cancelButtonText="Cancel"
+              onClick={handleDeleteLocation}
+              icon={<PiTrash className={`absolute right-1 top-5 h-6 w-6`} />}
+            />
           </div>
         </div>
       </div>
@@ -441,7 +534,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             {allPanels.map((panel, index) => (
               <motion.div
                 key={index}
-                className={`sheet border-l overflow-y-auto ${
+                className={`sheet border-l overflow-y-auto px-6 z mb-2 pt-6  ${
                   panelSide ? "w-96" : "fixed bottom-0 left-0 right-0"
                 }`}
                 style={getPanelStyle(index)}
@@ -450,18 +543,16 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 exit={panelSide ? { x: 384, y: index } : { y: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                <div className={`px-3 relative `}>
-                  {index > 0 && (
-                    <button
-                      onClick={panel.onClose}
-                      className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                      aria-label="Close panel"
-                    >
-                      <X size={24} />
-                    </button>
-                  )}
-                  {panel.content}
-                </div>
+                {index > 0 && (
+                  <button
+                    onClick={panel.onClose}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                    aria-label="Close panel"
+                  >
+                    <X size={24} />
+                  </button>
+                )}
+                {panel.content}
               </motion.div>
             ))}
           </motion.div>

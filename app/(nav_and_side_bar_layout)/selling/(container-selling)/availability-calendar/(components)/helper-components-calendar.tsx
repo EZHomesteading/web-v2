@@ -139,6 +139,7 @@ interface LocationSelectorProps {
   locations: Location[];
   pathname: string | null;
   inPanel?: boolean;
+  displayName?: string | null;
 }
 
 const LocationSelector = ({
@@ -147,19 +148,18 @@ const LocationSelector = ({
   locations,
   pathname,
   inPanel = true,
+  displayName,
 }: LocationSelectorProps) => {
   const router = useRouter();
 
   const formatAddress = (address: string[]): string => {
     return address.join(", ");
   };
-  let activeAddress;
-  activeAddress = address ? address[0] : "New Location";
   const menuItems = locations.map((location: Location, idx: number) => (
     <DropdownMenuRadioItem
       key={idx}
       value={location.id}
-      className={`${OutfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
+      className={`${OutfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-sm font-medium truncate max-w-[326px] py-4 flex items-center justify-start`}
     >
       <div
         className={`rounded-full border p-[.4rem] ml-1 mr-2  ${
@@ -172,12 +172,23 @@ const LocationSelector = ({
         }`}
       >
         <div className="rounded-full border bg-white p-1"></div>
-      </div>{" "}
-      {formatAddress(location.address)}
+      </div>
+      {location?.displayName ? (
+        <div className={`flex flex-col items-start`}>
+          <p>{location?.displayName}</p>
+          <p className={`text-neutral-500 text-xs`}>
+            {formatAddress(location.address)}
+          </p>
+        </div>
+      ) : (
+        <p className={`font-medium text-sm`}>
+          {formatAddress(location.address)}
+        </p>
+      )}
     </DropdownMenuRadioItem>
   ));
 
-  if (locations.length < 3) {
+  if (locations.length < 5) {
     menuItems.push(
       <DropdownMenuRadioItem
         key={`new`}
@@ -185,7 +196,7 @@ const LocationSelector = ({
         className={`${OutfitFont.className} hover:cursor-pointer w-full min-w-[326px] text-xl font-light truncate max-w-[326px] py-4 flex items-center justify-start`}
       >
         <CiCirclePlus className="text-[1.6rem] ml-1 mr-2" />
-        Add New Location & Hours
+        <p className={`font-medium text-sm`}>Add New Location & Hours</p>
       </DropdownMenuRadioItem>
     );
   }
@@ -196,33 +207,41 @@ const LocationSelector = ({
         asChild
         className={`${
           inPanel
-            ? "w-full bg-inherit flex items-center justify-start py-8 shadow-md rounded-xl"
-            : "rounded-full bg-inherit "
+            ? "w-full bg-inherit flex items-center justify-start py-8 shadow-md rounded-sm !border-black hover:text-white"
+            : "rounded-full bg-inherit"
         } `}
       >
         <Button
           variant="outline"
           className={`relative select-none hover:bg-inherit ${
-            inPanel ? "rounded-md" : "rounded-full"
-          } mr-1 text-xs sm:text-sm flex items-center justify-start bg-inherit px-2 sm:px-4`}
+            inPanel ? "rounded-sm text-md" : "rounded-full"
+          } flex items-center justify-start bg-inherit px-2 sm:px-4`}
         >
-          <div
-            className={`truncate max-w-[87%] text-start select-none ${
-              inPanel ? "text-xl" : "text-sm"
-            }`}
-          >
-            {activeAddress}
-          </div>
+          {inPanel && displayName ? (
+            <div className={`w-full flex flex-col items-start`}>
+              <p>{displayName}</p>
+              <p
+                className={`truncate max-w-[87%] text-start text-neutral-700 text-xs`}
+              >
+                {address[0]}
+              </p>
+            </div>
+          ) : (
+            <div className={`truncate max-w-[87%] text-start `}>
+              {address[0]}
+            </div>
+          )}
+
           {!inPanel && <div className="border-r h-full pl-1" />}
 
           <RiArrowDownSLine
             className={`${
-              inPanel ? "absolute right-0 top-3 h-10 w-10" : "h-6 w-6"
+              inPanel ? "absolute right-0 top-4 h-8 w-8" : "h-6 w-6"
             } `}
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-[326px] w-full">
+      <DropdownMenuContent className="min-w-[326px] w-full zmax">
         <DropdownMenuRadioGroup
           value={id}
           onValueChange={(value) => {

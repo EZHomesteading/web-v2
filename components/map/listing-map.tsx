@@ -125,15 +125,15 @@ const ListingMap = ({ height, lat, lng, apiKey }: MapProps) => {
     <>
       <APIProvider apiKey={apiKey}>
         <div
-          className="rounded-xl overflow-hidden"
+          className="rounded-sm overflow-hidden"
           style={{ height: height || "400px" }}
           ref={mapRef}
         ></div>
         <div
-          className={`absolute sm:top-2 sm:right-2 top-2 right-6 rounded-md shadow-md`}
+          className={`absolute sm:top-2 sm:right-2 top-2 right-6 rounded-md shadow-md `}
         >
           <div
-            className={`flex flex-col bg-white p-3 rounded-md border   gap-y-2`}
+            className={`flex flex-col bg-white p-3 rounded-sm border   gap-y-2`}
           >
             <PiMagnifyingGlassPlusThin
               size={25}
@@ -142,7 +142,7 @@ const ListingMap = ({ height, lat, lng, apiKey }: MapProps) => {
                 setZoom((prevZoom) => Math.min(prevZoom + 1, MAX_ZOOM))
               }
             />
-            <hr className={`w-full border-[1px]`} />
+            <hr className={`w-full border-t`} />
             <PiMagnifyingGlassMinusThin
               className={`hover:cursor-pointer`}
               onClick={() =>

@@ -6,9 +6,9 @@ import { Prisma, UserRole } from "@prisma/client";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    //console.log("Received body:", JSON.stringify(body, null, 2));
 
-    const { address, coordinates, role, hours } = body.location[0] || {};
+    const { address, coordinates, role, hours, displayName } =
+      body.location[0] || {};
 
     if (!Array.isArray(coordinates) || !Array.isArray(address)) {
       return NextResponse.json(
@@ -25,12 +25,12 @@ export async function POST(request: Request) {
     let updatedLocation;
 
     const { locationId, isDefault } = body;
+    console.log(displayName, "display name from server body");
 
     if (locationId) {
-      //console.log("Updating hours for existing location");
       updatedLocation = await prisma.location.update({
         where: { id: locationId },
-        data: { hours },
+        data: { hours: hours, displayName: displayName },
       });
     } else {
       const locationCount = await prisma.location.count({
@@ -45,13 +45,11 @@ export async function POST(request: Request) {
           address,
           role: role || UserRole.PRODUCER,
           isDefault: locationCount === 0 || isDefault,
+          displayName: displayName,
         },
       });
     }
 
-    //console.log("Location updated or created:", updatedLocation);
-
-    //console.log("Sending response:", JSON.stringify(updatedLocation, null, 2));
     return NextResponse.json(updatedLocation);
   } catch (error) {
     console.error("Detailed error in API route:", error);

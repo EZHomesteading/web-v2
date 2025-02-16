@@ -2,6 +2,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PiCheckFat } from "react-icons/pi";
 
 const SetDefaultButton = ({
   userId,
@@ -12,8 +13,8 @@ const SetDefaultButton = ({
 }: {
   userId?: string;
   title?: string;
-  locationId: string;
-  street: string;
+  locationId?: string;
+  street?: string;
   className?: string;
 }) => {
   const handleSetDefault = async () => {
@@ -30,9 +31,10 @@ const SetDefaultButton = ({
   };
 
   return (
-    <Button className={`${className}`} onClick={handleSetDefault}>
+    <button className={`${className}`} onClick={handleSetDefault}>
       {title ? <>{title}</> : <>{street}</>}
-    </Button>
+      <PiCheckFat className={`absolute right-1 top-5 h-6 w-6`} />
+    </button>
   );
 };
 
