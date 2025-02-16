@@ -14,6 +14,11 @@ import { auth } from "@/auth";
 import Avatar from "@/components/Avatar";
 import SendMessageComponent from "./components/send-message-component";
 import { getUserLocations } from "@/actions/getLocations";
+import { Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#fff",
+};
 
 export default async function ListingPage({
   params,
