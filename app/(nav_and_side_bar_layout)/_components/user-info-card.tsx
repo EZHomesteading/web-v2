@@ -2,7 +2,8 @@
 
 import Avatar from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
-import { UserInfo } from "next-auth";
+import { UserRole } from "@prisma/client";
+import { User, UserInfo } from "next-auth";
 import Link from "next/link";
 
 interface p {
@@ -12,28 +13,12 @@ interface p {
 
 const UserInfoCard = ({ sellerNav = false, user }: p) => {
   const link = sellerNav ? `/store/${user?.url}` : `/profile/${user?.id}`;
-  const link2 = sellerNav ? `/account` : `/selling`;
   return (
-    <div>
+    <>
       <div className="flex justify-between items-center">
         <div className="text-3xl">
           {sellerNav ? "Seller Menu" : "Main Menu"}
         </div>
-        {user?.role !== "CONSUMER" && (
-          <Link href={link2}>
-            <Button
-              className={` ${
-                user?.role === "COOP"
-                  ? "bg-blue-700 text-white rounded-full "
-                  : user?.role === "PRODUCER"
-                  ? "bg-emerald-700 text-white rounded-full animated-gradient-text transition-colors"
-                  : "hidden"
-              }`}
-            >
-              {sellerNav ? "Switch to Buying" : "Switch to Selling"}
-            </Button>
-          </Link>
-        )}
       </div>
       <div className="flex items-center justify-between py-6">
         <div className="flex items-center justify-start">
@@ -54,38 +39,34 @@ const UserInfoCard = ({ sellerNav = false, user }: p) => {
             View {sellerNav ? `Store` : `Profile`}
           </Button>
         </Link>
-      </div>
-      {/* <style jsx global>{`
-        @keyframes gradientMove {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-        .animated-gradient-text {
-          background-image: linear-gradient(
-            to right,
-            #4ade80,
-            #22d3ee,
-            #60a5fa,
-            #22d3ee,
-            #4ade80
-          );
-          background-size: 200% auto;
-          color: transparent;
-          background-color: black;
-          -webkit-background-clip: text;
-          background-clip: text;
-          animation: gradientMove 6s linear infinite;
-          font-weight: bold;
-        }
-      `}</style> */}
-    </div>
+      </div>{" "}
+    </>
   );
 };
-export default UserInfoCard;
+
+const SellAccountToggle = ({
+  user,
+  sellerNav = false,
+}: {
+  user?: UserInfo;
+  sellerNav?: boolean;
+}) => {
+  const link2 = sellerNav ? `/account` : `/selling`;
+
+  return (
+    <>
+      {user?.role !== UserRole.CONSUMER && (
+        <Link
+          href={link2}
+          className={` 
+             bg-emerald-800 text-white rounded-full animated-gradient-text transition-colors py-3 px-6 fixed bottom-32 translate-x-1/2 transform right-1/2 text-md font-medium
+          `}
+        >
+          {sellerNav ? "Switch to Buying" : "Switch to Selling"}
+        </Link>
+      )}
+    </>
+  );
+};
+
+export { SellAccountToggle, UserInfoCard };
