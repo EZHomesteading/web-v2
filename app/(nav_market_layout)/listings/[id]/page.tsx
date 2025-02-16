@@ -1,6 +1,5 @@
 //listing page server side layout, getting users and their carts to display toggle cart options.
 import { getUnique } from "@/actions/getListings";
-import { getFollows } from "@/actions/getFollow";
 import ListingHead from "@/components/listings/ListingHead";
 import { OutfitFont } from "@/components/fonts";
 import Link from "next/link";
@@ -13,8 +12,8 @@ import {
 import { auth } from "@/auth";
 import Avatar from "@/components/Avatar";
 import SendMessageComponent from "./components/send-message-component";
-import { getUserLocations } from "@/actions/getLocations";
 import { Viewport } from "next";
+import Page404 from "@/app/[...not_found]/page";
 
 export const viewport: Viewport = {
   themeColor: "#fff",
@@ -32,11 +31,7 @@ export default async function ListingPage({
     `${new URLSearchParams(searchParams as Record<string, string>).toString()}`;
   const session = await auth();
   try {
-    const [listing, locations, following] = await Promise.all([
-      getUnique({ id: params.id }),
-      getUserLocations({ userId: session?.user?.id }),
-      getFollows(),
-    ]);
+    const listing = await getUnique({ id: params.id });
     const ratingMeanings: { [key: number]: string } = {
       1: "Not Genetically Modified",
       2: "No Inorganic Fertilizers",
@@ -52,20 +47,13 @@ export default async function ListingPage({
     };
 
     if (!listing) {
-      return (
-        <div className="flex h-screen items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold">404</h1>
-            <div className="my-4 h-1 w-16 bg-gray-300 mx-auto"></div>
-            <h2 className="text-xl">This page could not be found.</h2>
-          </div>
-        </div>
-      );
+      return <Page404 />;
     }
 
     const applicableRatings = listing.rating.filter(
       (index: number) => index !== 0 && index in ratingMeanings
     );
+
     const possibleRatings = [1, 2, 3, 4];
     const inverseRatings = possibleRatings.filter(
       (index) => index !== 0 && !applicableRatings.includes(index)
@@ -80,11 +68,11 @@ export default async function ListingPage({
 
         const data = await response.json();
         basketItemIds = data.items;
-        console.log(basketItemIds);
       } catch (error) {
         console.error("Error fetching basket items:", error);
       }
     }
+
     return (
       <>
         <div

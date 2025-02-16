@@ -1,8 +1,7 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { UserInfo } from "next-auth";
-import { useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Toast from "@/components/ui/toast";
 import Link from "next/link";
 import { useBasket } from "@/hooks/listing/use-basket";
@@ -23,6 +22,12 @@ const SendMessageSection = ({
   onBasketUpdate,
 }: p) => {
   const [quantity, setQuantity] = useState(listing.minOrder || 1);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFocusClick = () => {
+    inputRef.current?.focus();
+  };
 
   const {
     isLoading,
@@ -120,17 +125,27 @@ const SendMessageSection = ({
               <PiMinusBold className="text-xl" />
             </button>
 
-            <input
-              type="number"
-              inputMode="numeric"
-              className="w-16 text-center border-none focus:outline-none relative focus:ring-0 text-3xl font-bold"
-              value={quantity}
-              onChange={(e) => handleQuantityChange(e.target.value)}
-              min={listing.minOrder}
-              max={listing.stock}
-              maxLength={6}
-            />
-            <PiPencilThin className={`absolute bottom-1`} />
+            <div className={`relative`}>
+              <input
+                ref={inputRef}
+                type="number"
+                inputMode="numeric"
+                className="w-16 text-center border-none focus:outline-none relative focus:ring-0 text-3xl font-bold"
+                value={quantity}
+                onChange={(e) => handleQuantityChange(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                min={listing.minOrder}
+                max={listing.stock}
+                maxLength={6}
+              />
+              {!isFocused && (
+                <PiPencilThin
+                  onClick={handleFocusClick}
+                  className={`absolute right-1 bottom-0 bg-white rounded-full border hover:cursor-pointer`}
+                />
+              )}
+            </div>
             <button
               onClick={handleIncrement}
               className="p-1 hover:bg-gray-100 !border-black border-[2px] rounded-full transition-colors"

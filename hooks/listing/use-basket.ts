@@ -186,7 +186,9 @@ export const useBasket = ({
           status,
           initialOrderMethod: initialOrderMethod,
         });
-        Toast({ message: "Saved new basket item" });
+        Toast({
+          message: `Added to baskets`,
+        });
         onBasketUpdate(true);
       } catch (error: any) {
         Toast({
