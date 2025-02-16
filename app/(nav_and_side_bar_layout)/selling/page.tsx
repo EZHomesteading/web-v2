@@ -63,8 +63,8 @@ const menuItems = [
 const SellerHome = async () => {
   const session = await auth();
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1 px-2 sm:px-6 md:px-2 lg:px-40 pt-2 md:pt-20 pb-24 md:pb-0 overflow-y-auto">
+    <div className="relative h-full w-full touch-pan-y">
+      <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40 pt-2 md:pt-20 pb-24 md:pb-0 overflow-y-auto">
         <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
           <UserInfoCard sellerNav={true} user={session?.user} />
           {menuItems.map((item, index) => (
@@ -77,9 +77,10 @@ const SellerHome = async () => {
               showDiv={item.showDiv}
             />
           ))}
+          <div className="pb-32" />
         </div>
-        <SellAccountToggle sellerNav={true} user={session?.user} />
-      </main>
+      </div>
+      <SellAccountToggle sellerNav={true} user={session?.user} />
     </div>
   );
 };
