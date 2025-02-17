@@ -2,7 +2,7 @@ import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { UserRole, basketStatus } from "@prisma/client";
+import {  basketStatus } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
