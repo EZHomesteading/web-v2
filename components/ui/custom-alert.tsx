@@ -23,6 +23,7 @@ interface p {
   confirmButtonClassName?: string;
   icon?: ReactNode;
   children?: ReactNode;
+  cancelButtonClassName?: string;
 }
 
 export default function Alert({
@@ -35,6 +36,7 @@ export default function Alert({
   subtitleText,
   subtitleClassName,
   cancelButtonText,
+  cancelButtonClassName,
   confirmButtonClassName,
   confirmButtonText,
   children,
@@ -80,7 +82,12 @@ export default function Alert({
         {children}
         <div className="flex items-center h-16 mt-auto justify-between w-full border-t !border-black">
           <AlertDialogCancel asChild>
-            <button className="w-1/2 hover:cursor-pointer hover:text-white h-full rounded-bl-xl">
+            <button
+              className={cn(
+                "w-1/2 hover:cursor-pointer hover:text-white h-full rounded-bl-xl",
+                cancelButtonClassName
+              )}
+            >
               {cancelButtonText}
             </button>
           </AlertDialogCancel>

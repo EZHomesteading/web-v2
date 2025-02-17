@@ -1,12 +1,16 @@
 "use client";
 import { OutfitFont } from "@/components/fonts";
 import Alert from "@/components/ui/custom-alert";
+import { cn } from "@/lib/utils";
 import { Location } from "@prisma/client";
 import { UserInfo } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { CiApple, CiHome } from "react-icons/ci";
+import { GiRopeCoil } from "react-icons/gi";
+import { LuBeef } from "react-icons/lu";
 import { PiArrowRight } from "react-icons/pi";
 
 type ListingFormData = {
@@ -67,8 +71,6 @@ export default function CreateClient({
       case 1:
         return (
           <LocationStep
-            formData={formData}
-            updateFormData={updateFormData}
             locs={locs}
             selectedLoc={selectedLoc}
             setSelectedLoc={setSelectedLoc}
@@ -80,21 +82,28 @@ export default function CreateClient({
         );
       case 3:
         return (
-          <DetailsStep formData={formData} updateFormData={updateFormData} />
+          <SubCategoryStep
+            formData={formData}
+            updateFormData={updateFormData}
+          />
         );
       case 4:
         return (
-          <QualitiesStep formData={formData} updateFormData={updateFormData} />
+          <DetailsStep formData={formData} updateFormData={updateFormData} />
         );
       case 5:
         return (
-          <ShelfLifeStep formData={formData} updateFormData={updateFormData} />
+          <QualitiesStep formData={formData} updateFormData={updateFormData} />
         );
       case 6:
         return (
-          <RatingStep formData={formData} updateFormData={updateFormData} />
+          <ShelfLifeStep formData={formData} updateFormData={updateFormData} />
         );
       case 7:
+        return (
+          <RatingStep formData={formData} updateFormData={updateFormData} />
+        );
+      case 8:
         return (
           <ImagesStep formData={formData} updateFormData={updateFormData} />
         );
@@ -123,7 +132,7 @@ export default function CreateClient({
 
       <div className="absolute top-20 bottom-20 left-0 right-0">
         <div className="h-full flex flex-col justify-center items-center md:my-16">
-          <div className="w-full overflow-y-auto bg-white min-h-full fade-in sm:px-20 px-6 pb-12 md:pb-0 max-w-6xl md:my-16 over">
+          <div className="overflow-y-auto bg-white min-h-full sm:px-20 px-6 pb-12 md:pb-0 max-w-6xl md:my-16 flex items-center w-full flex-col">
             {renderStep()}
           </div>
         </div>
@@ -142,15 +151,11 @@ export default function CreateClient({
 }
 
 const LocationStep = ({
-  formData,
   locs,
-  updateFormData,
   setSelectedLoc,
   selectedLoc,
 }: {
   locs: Location[];
-  formData: ListingFormData;
-  updateFormData: (field: keyof ListingFormData, value: any) => void;
   setSelectedLoc: Dispatch<SetStateAction<Location | undefined>>;
   selectedLoc?: Location;
 }) => {
@@ -234,7 +239,105 @@ const CategoryStep = ({
   formData: ListingFormData;
   updateFormData: (field: keyof ListingFormData, value: any) => void;
 }) => {
-  return <></>;
+  type Category = {
+    icon: ReactNode;
+    title: string;
+    description: string;
+    value: string;
+  };
+  const categories: Category[] = [
+    {
+      icon: <CiApple size={40} />,
+      title: "Unprocessed Produce",
+      description: "Apples, Peaches & Tomatoes",
+      value: "unprocessed-produce",
+    },
+    {
+      icon: <CiHome size={40} />,
+      title: "Homemade",
+      description: "Apple Pie & Beeswax Candles",
+      value: "homemade",
+    },
+    {
+      icon: <GiRopeCoil size={40} />,
+      title: "Durables",
+      description: "Canned Food & Solar Panels",
+      value: "durables",
+    },
+    {
+      icon: <LuBeef size={40} />,
+      title: "Dairy & Meat",
+      description: "Milk Shares & Free-Range Chicken",
+      value: "dairy-meat",
+    },
+  ];
+  return (
+    <div className="fade-in flex flex-col items-center w-full">
+      <Heading
+        title="Select a Category"
+        subtitle="Which of these best describes your listing"
+      />
+      {categories.map((category: Category) => (
+        <CategoryCard
+          key={category.value}
+          icon={category.icon}
+          title={category.title}
+          description={category.description}
+          onClick={() => updateFormData("category", category.value)}
+          className={`${
+            formData.category === category.value && "bg-black text-white"
+          }`}
+        />
+      ))}
+    </div>
+  );
+};
+
+const CategoryCard = ({
+  icon,
+  title,
+  description,
+  onClick,
+  className,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  onClick?: () => void;
+  className?: string;
+}) => (
+  <button
+    className={cn(
+      "max-w-xl w-full h-28 py-2 hover:cursor-pointer shadow-md hover:!border-black rounded-md border px-3 mb-3",
+      className
+    )}
+    onClick={onClick}
+  >
+    <div className="h-full rounded-md flex flex-row items-center justify-between space-x-2">
+      <div className="flex flex-col items-start">
+        <div className="text-lg font-normal">{title}</div>
+        <div className="text-sm text-gray-600 font-light">{description}</div>
+      </div>
+      <div className="flex-shrink-0">{icon}</div>
+    </div>
+  </button>
+);
+
+const SubCategoryStep = ({
+  formData,
+  updateFormData,
+}: {
+  formData: ListingFormData;
+  updateFormData: (field: keyof ListingFormData, value: any) => void;
+}) => {
+  return (
+    <div className="fade-in flex flex-col items-center w-full">
+      <Heading
+        title="Select a Subcategory"
+        subtitle="Which of these best describes your listing"
+      />
+    </div>
+  );
 };
 
 const DetailsStep = ({
@@ -302,15 +405,17 @@ const Header = ({ loc }: { loc?: Location }) => {
             />
           }
           alertTriggerClassName="bg-white border-none h-fit w-fit"
-          alertContentClassName="px-2"
+          subtitleClassName="mt-6 px-2"
+          alertContentClassName=""
           headingText="Are you sure?"
           onClick={() => {
             router.push("/");
           }}
-          subtitleClassName="mt-6"
           subtitleText="If you leave this page & return home, you will lose your progress creating this listing."
           confirmButtonText="I'm Sure"
           cancelButtonText="Cancel"
+          cancelButtonClassName="hover:text-black"
+          confirmButtonClassName="hover:bg-white"
           alertTriggerText=""
         />
         {loc?.address[0]}
@@ -318,6 +423,7 @@ const Header = ({ loc }: { loc?: Location }) => {
     </div>
   );
 };
+
 const Heading = ({ title, subtitle }: { title: string; subtitle?: string }) => {
   return (
     <div className={`text-start md:text-center  max-w-sm w-full pb-2`}>
@@ -326,6 +432,7 @@ const Heading = ({ title, subtitle }: { title: string; subtitle?: string }) => {
     </div>
   );
 };
+
 const Footer = ({
   step,
   setStep,
@@ -341,6 +448,9 @@ const Footer = ({
   isLastStep: boolean;
   formData: ListingFormData;
 }) => {
+  function nextButtonDisabled() {
+    return false;
+  }
   return (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t z-10 flex items-center justify-between px-6">
       <button
@@ -355,7 +465,7 @@ const Footer = ({
         {!isLastStep ? (
           <button
             onClick={() => setStep((prev) => prev + 1)}
-            disabled={!canProceed}
+            disabled={!nextButtonDisabled}
             className="px-4 font-medium  py-2 bg-black text-white rounded disabled:opacity-50"
           >
             Next
