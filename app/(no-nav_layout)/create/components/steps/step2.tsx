@@ -134,7 +134,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
 
   return (
     <div className="flex justify-center items-start min-h-screen w-full ">
-      <div className="flex flex-col gap-5 fade-in pt-20 w-full max-w-[500px] px-4">
+      <div className="flex flex-col gap-5 fade-in  w-full max-w-[500px] px-4">
         <div className="relative">
           {subcategory === "custom" ? (
             <div>

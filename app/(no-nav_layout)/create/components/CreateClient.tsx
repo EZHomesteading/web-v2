@@ -207,7 +207,7 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
       )
     );
   };
-
+  console.log("sub cat", subCategory);
   //geocoding from autocompleted adress inputs
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
@@ -566,23 +566,47 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
       setStep(2);
     }
   }, []);
+  const showBackButton = step > 2;
 
+  const buttonText = step === 7 ? "Finish" : "Next";
+
+  function nextButtonDisabled() {
+    if (step === 1 && !selectedLoc) {
+      return true;
+    }
+    if (step === 2 && (!category || !subCategory)) {
+      return true;
+    }
+    if (step === 3 && (!title || !description)) {
+      return true;
+    }
+    return false;
+  }
   return (
-    <div className={`min-h-screen ${OutfitFont.className}`}>
-      <div className="w-full fixed top-0 left-0 zmax">
+    <div
+      className={`mt-16 h-full min-h-[calc(100vh-4rem)] overflow-y-auto ${OutfitFont.className}`}
+    >
+      {/* header */}
+      <div className="w-full fixed top-0 left-0 zmid">
         <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
         {step > 0 && (
           <CreateHeader setStep={setStep} street={selectedLoc?.address[0]} />
         )}
       </div>
-      {step === 1 && (
-        <div className="w-full flex items-center justify-center px-2">
-          <div className="min-h-screen fade-in flex flex-col items-center w-full">
+      {/* content container */}
+      <div className={``}>
+        {step === 1 && (
+          <div className="fade-in flex flex-col items-center w-full">
             {locations && locations.length >= 1 ? (
               <>
-                <Label className="text-xl pt-20 w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
-                  Select a Selling Location
-                </Label>
+                <div className={` text-center max-w-sm w-full pb-2`}>
+                  <p className={`font-semibold text-lg`}>
+                    Set a Selling Location
+                  </p>
+                  <p className={`font-medium text-sm text-gray-600`}>
+                    Where are you selling this listing from?
+                  </p>
+                </div>
                 <section className={`flex flex-col gap-y-3 w-full max-w-sm`}>
                   {locations.map((location: Location) => (
                     <button
@@ -625,7 +649,7 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
               </>
             ) : (
               <div>
-                <p className={`pt-20 max-w-sm text-center text-sm`}>
+                <p className={` max-w-sm text-center text-sm`}>
                   You have no elidgable selling locations. This occurs when you
                   have no locations that are marked for selling or no locations
                   in general. Creating a selling location is free and takes only
@@ -649,79 +673,94 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
               </div>
             )}
           </div>
-        </div>
-      )}
-      {step === 2 && (
-        <StepOne
-          handlePrevious={handlePrevious}
-          step={step}
-          subCategory={subCategory}
-          setSubCategory={setSubCategory}
-          category={category}
-          setCategory={setCategory}
-        />
-      )}
-      {step === 3 && (
-        <StepTwo
-          setReview={setReview}
-          title={title}
-          setValue={setValue}
-          setTitle={setTitle}
-          setImageSrc={setImageSrc}
-          description={description}
-          setDescription={setDescription}
-          tag={tag}
-          setTag={setTag}
-          tags={tags}
-          setTags={setTags}
-          buildKeyWords={buildKeyWords}
-          isLoading={isLoading}
-          subcat={subCategory}
-          onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
-        />
-      )}
-      {step === 4 && (
-        <StepThree
-          role={formLocationRole}
-          title={formTitle}
-          quantityType={quantityType}
-          setQuantityType={setQuantityType}
-          postSODT={postSODT}
-          handleSODTCheckboxChange={handleSODTCheckboxChange}
-          usersodt={user?.SODT ?? null}
-          commonInputProps={commonInputProps}
-          inputProps={inputProps}
-          projectHarvest={projectHarvest}
-          handleProjectHarvestCheckboxChange={
-            handleProjectHarvestCheckboxChange
-          }
-          setValue={setValue}
-        />
-      )}
-      {step === 5 && (
-        <StepFour
-          nonPerishable={nonPerishable}
-          handleNonPerishableCheckboxChange={handleNonPerishableCheckboxChange}
-          shelfLifeDays={shelfLifeDays}
-          shelfLifeWeeks={shelfLifeWeeks}
-          shelfLifeMonths={shelfLifeMonths}
-          shelfLifeYears={shelfLifeYears}
-          setCustomValue={setCustomValue}
-          expiryDate={expiryDate}
-        />
-      )}
-      {step === 6 && (
-        <StepFive
-          checkbox1Checked={checkbox1Checked}
-          checkbox2Checked={checkbox2Checked}
-          checkbox3Checked={checkbox3Checked}
-          checkbox4Checked={checkbox4Checked}
-          certificationChecked={certificationChecked}
-          handleCheckboxChange={handleCheckboxChange}
-          handleCertificationCheckboxChange={handleCertificationCheckboxChange}
-        />
-      )}
-      {step > 2 && (
+        )}
+        {step === 2 && (
+          <StepOne
+            handlePrevious={handlePrevious}
+            step={step}
+            subCategory={subCategory}
+            setSubCategory={setSubCategory}
+            category={category}
+            setCategory={setCategory}
+          />
+        )}
+        {step === 3 && (
+          <StepTwo
+            setReview={setReview}
+            title={title}
+            setValue={setValue}
+            setTitle={setTitle}
+            setImageSrc={setImageSrc}
+            description={description}
+            setDescription={setDescription}
+            tag={tag}
+            setTag={setTag}
+            tags={tags}
+            setTags={setTags}
+            buildKeyWords={buildKeyWords}
+            isLoading={isLoading}
+            subcat={subCategory}
+            onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
+          />
+        )}
+        {step === 4 && (
+          <StepThree
+            role={formLocationRole}
+            title={formTitle}
+            quantityType={quantityType}
+            setQuantityType={setQuantityType}
+            postSODT={postSODT}
+            handleSODTCheckboxChange={handleSODTCheckboxChange}
+            usersodt={user?.SODT ?? null}
+            commonInputProps={commonInputProps}
+            inputProps={inputProps}
+            projectHarvest={projectHarvest}
+            handleProjectHarvestCheckboxChange={
+              handleProjectHarvestCheckboxChange
+            }
+            setValue={setValue}
+          />
+        )}
+        {step === 5 && (
+          <StepFour
+            nonPerishable={nonPerishable}
+            handleNonPerishableCheckboxChange={
+              handleNonPerishableCheckboxChange
+            }
+            shelfLifeDays={shelfLifeDays}
+            shelfLifeWeeks={shelfLifeWeeks}
+            shelfLifeMonths={shelfLifeMonths}
+            shelfLifeYears={shelfLifeYears}
+            setCustomValue={setCustomValue}
+            expiryDate={expiryDate}
+          />
+        )}
+        {step === 6 && (
+          <StepFive
+            checkbox1Checked={checkbox1Checked}
+            checkbox2Checked={checkbox2Checked}
+            checkbox3Checked={checkbox3Checked}
+            checkbox4Checked={checkbox4Checked}
+            certificationChecked={certificationChecked}
+            handleCheckboxChange={handleCheckboxChange}
+            handleCertificationCheckboxChange={
+              handleCertificationCheckboxChange
+            }
+          />
+        )}
+        {step === 7 && (
+          <StepSix
+            imageSrc={imageSrc}
+            setImageSrc={setImageSrc}
+            imageStates={imageStates}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+            handleClick={handleClick}
+          />
+        )}
+      </div>
+      {/* footer */}
+      {showBackButton && (
         <Button
           onClick={handlePrevious}
           className="fixed bottom-6 left-5 text-xl hover:cursor-pointer"
@@ -729,45 +768,14 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
           Back
         </Button>
       )}
-      {step === 7 && locations && locations[0] !== null && (
-        <>
-          <Button
-            onClick={handleNext}
-            className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-          >
-            Finish
-          </Button>
-        </>
-      )}
-      {step < 7 && locations && locations.length >= 1 && (
-        <Button
-          onClick={handleNext}
-          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
-      {step === 2 && category && (
-        <Button
-          onClick={handleNext}
-          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
-      <div className="w-full absolute top-0 left-0 z-50">
-        <Progress value={progress} className="h-[6px] bg-gray-200" />
-      </div>
-      {step === 7 && (
-        <StepSix
-          imageSrc={imageSrc}
-          setImageSrc={setImageSrc}
-          imageStates={imageStates}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
-          handleClick={handleClick}
-        />
-      )}
+
+      <Button
+        onClick={handleNext}
+        className={`fixed bottom-6 right-5 text-xl hover:cursor-pointer`}
+        disabled={nextButtonDisabled()}
+      >
+        {buttonText}
+      </Button>
       <Help step={step} role={user?.role} />
     </div>
   );
