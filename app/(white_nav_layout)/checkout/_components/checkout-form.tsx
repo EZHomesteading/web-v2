@@ -21,6 +21,13 @@ interface CheckoutFormProps {
   userLoc: any;
   userEmail: string;
 }
+
+interface PaymentIntentData {
+  clientSecret: string;
+  basketId: string;
+  totalAmount: number;
+}
+
 const MobilePriceSummary = ({ formattedTotal }: { formattedTotal: number }) => {
   return (
     <Popover className="fixed inset-x-0 bottom-0 flex flex-col-reverse text-sm font-medium text-gray-900 lg:hidden">
@@ -74,17 +81,17 @@ const MobilePriceSummary = ({ formattedTotal }: { formattedTotal: number }) => {
     </Popover>
   );
 };
+
 export default function CheckoutForm({
   baskets,
   userId,
   userLoc,
   userEmail,
 }: CheckoutFormProps) {
-  const [clientSecret, setClientSecret] = useState("");
+  const [paymentIntents, setPaymentIntents] = useState<PaymentIntentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate totals for all items across all baskets
   const calculateTotals = () => {
     return baskets.reduce((acc, basket) => {
       const basketTotal = basket.items.reduce(
@@ -99,50 +106,62 @@ export default function CheckoutForm({
   const formattedTotal = Round(total, 2);
 
   useEffect(() => {
-    const fetchPaymentIntent = async () => {
+    const fetchPaymentIntents = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Calculate totals per seller
-        const basketTotals = baskets.reduce((acc: any, basket) => {
-          const sellerId = basket.items[0]?.listing.userId;
-          if (!acc[sellerId]) {
-            acc[sellerId] = 0;
-          }
+        const intents: PaymentIntentData[] = [];
+
+        for (const basket of baskets) {
           const basketTotal = basket.items.reduce(
             (sum: number, item: any) =>
               sum + item.listing.price * item.quantity * 100,
             0
           );
-          acc[sellerId] += basketTotal;
-          return acc;
-        }, {});
 
-        const response = await axios.post("/api/stripe/create-payment-intent", {
-          totalSum: total * 100,
-          basketTotals,
-          userId,
-          basketIds: baskets.map((basket) => basket.id),
-          userLoc,
-          orderGroupId: new URLSearchParams(window.location.search).get(
-            "orderGroupId"
-          ),
-        });
+          const sellerId = basket.items[0]?.listing.userId;
+          const basketTotals = { [sellerId]: basketTotal };
 
-        setClientSecret(response.data.clientSecret);
+          const response = await axios.post(
+            "/api/stripe/create-payment-intent",
+            {
+              totalSum: basketTotal,
+              basketTotals,
+              userId,
+              basketIds: [basket.id],
+              userLoc,
+              orderGroupId: new URLSearchParams(window.location.search).get(
+                "orderGroupId"
+              ),
+              metadata: {
+                basketId: basket.id,
+              },
+            }
+          );
+
+          intents.push({
+            clientSecret: response.data.clientSecret,
+            basketId: basket.id,
+            totalAmount: basketTotal,
+          });
+        }
+
+        setPaymentIntents(intents);
       } catch (error) {
-        console.error("Error fetching payment intent:", error);
-        setError("Failed to load checkout. Please try refreshing the page.");
+        console.error("Error creating payment intents:", error);
+        setError(
+          "Failed to initialize checkout. Please try refreshing the page."
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     if (baskets.length > 0) {
-      fetchPaymentIntent();
+      fetchPaymentIntents();
     }
-  }, [baskets, total, userId, userLoc]);
+  }, [baskets, userId, userLoc]);
 
   function Round(value: number, precision: number) {
     var multiplier = Math.pow(10, precision || 0);
@@ -168,7 +187,7 @@ export default function CheckoutForm({
       </div>
     );
   }
-  console.log(baskets);
+
   return (
     <div className="">
       <div
@@ -195,110 +214,104 @@ export default function CheckoutForm({
               Order summary
             </h2>
 
-            <ul
-              role="list"
-              className="divide-y divide-gray-200 text-sm font-medium text-gray-900"
-            >
-              {/* Inside the OrderSummaryCard, replace the existing ul with: */}
-              {/* Inside the OrderSummaryCard, replace the existing ul with: */}
-              <div className="space-y-8">
-                {baskets.map((basket) => (
-                  <div key={basket.id} className="space-y-4">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-baseline gap-4">
-                        <h3 className="text-base font-semibold">
-                          {basket.location.displayName ||
-                            basket.location.user.name}
-                        </h3>
-                        <span className="text-sm text-gray-600">
-                          $
-                          {basket.items
-                            .reduce(
-                              (sum: number, item: any) =>
-                                sum + item.listing.price * item.quantity,
-                              0
-                            )
-                            .toFixed(2)}
-                        </span>
-                      </div>
-
-                      {/* Show Pickup/Delivery Time */}
-                      <div className="text-sm text-gray-600">
-                        {basket.orderMethod === "PICKUP" &&
-                        basket.pickupDate ? (
-                          <div className="text-xs sm:text-sm">
-                            Pickup set for{" "}
-                            {formatDate(new Date(basket.pickupDate))}
-                          </div>
-                        ) : basket.orderMethod === "DELIVERY" &&
-                          basket.deliveryDate ? (
-                          <div className="text-xs sm:text-sm">
-                            Delivery scheduled for{" "}
-                            {formatDate(new Date(basket.deliveryDate))}
-                          </div>
-                        ) : (
-                          <div className="text-xs sm:text-sm text-yellow-600">
-                            No pickup/delivery time set
-                          </div>
-                        )}
-                      </div>
+            <div className="space-y-8">
+              {baskets.map((basket) => (
+                <div key={basket.id} className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-baseline gap-4">
+                      <h3 className="text-base font-semibold">
+                        {basket.location.displayName ||
+                          basket.location.user.name}
+                      </h3>
+                      <span className="text-sm text-gray-600">
+                        $
+                        {basket.items
+                          .reduce(
+                            (sum: number, item: any) =>
+                              sum + item.listing.price * item.quantity,
+                            0
+                          )
+                          .toFixed(2)}
+                      </span>
                     </div>
 
-                    <ul className="divide-y divide-gray-100">
-                      {basket.items.map((item: any) => (
-                        <li key={item.id} className="flex py-4 gap-4">
-                          <div className="h-20 w-20 flex-none relative">
-                            <Image
-                              src={item.listing.imageSrc[0]}
-                              alt={item.listing.title}
-                              fill
-                              className="rounded-md object-cover"
-                              sizes="80px"
-                              priority={true}
-                            />
-                          </div>
-                          <div className="flex flex-1 flex-col">
-                            <div className="flex justify-between gap-4">
-                              <div>
-                                <h4 className="font-medium">
-                                  {item.listing.title}
-                                </h4>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  {item.quantity}{" "}
-                                  {item.listing.quantityType ||
-                                    item.listing.subCategory}
-                                </p>
-                              </div>
-                              <p className="text-sm font-medium">
-                                $
-                                {(item.quantity * item.listing.price).toFixed(
-                                  2
-                                )}
+                    <div className="text-sm text-gray-600">
+                      {basket.orderMethod === "PICKUP" && basket.pickupDate ? (
+                        <div className="text-xs sm:text-sm">
+                          Pickup set for{" "}
+                          {formatDate(new Date(basket.pickupDate))}
+                        </div>
+                      ) : basket.orderMethod === "DELIVERY" &&
+                        basket.deliveryDate ? (
+                        <div className="text-xs sm:text-sm">
+                          Delivery scheduled for{" "}
+                          {formatDate(new Date(basket.deliveryDate))}
+                        </div>
+                      ) : (
+                        <div className="text-xs sm:text-sm text-yellow-600">
+                          No pickup/delivery time set
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <ul className="divide-y divide-gray-100">
+                    {basket.items.map((item: any) => (
+                      <li key={item.id} className="flex py-4 gap-4">
+                        <div className="h-20 w-20 flex-none relative">
+                          <Image
+                            src={item.listing.imageSrc[0]}
+                            alt={item.listing.title}
+                            fill
+                            className="rounded-md object-cover"
+                            sizes="80px"
+                            priority={true}
+                          />
+                        </div>
+                        <div className="flex flex-1 flex-col">
+                          <div className="flex justify-between gap-4">
+                            <div>
+                              <h4 className="font-medium">
+                                {item.listing.title}
+                              </h4>
+                              <p className="mt-1 text-sm text-gray-500">
+                                {item.quantity}{" "}
+                                {item.listing.quantityType ||
+                                  item.listing.subCategory}
                               </p>
                             </div>
+                            <p className="text-sm font-medium">
+                              ${(item.quantity * item.listing.price).toFixed(2)}
+                            </p>
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </ul>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
 
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base">Total</dt>
               <dd className="text-base">${formattedTotal}</dd>
             </div>
-
-            <MobilePriceSummary formattedTotal={formattedTotal} />
           </div>
         </section>
 
         <div className="px-4 pb-36 pt-16 sm:px-6 lg:col-start-1 lg:row-start-1 lg:px-0 lg:pb-16">
           <div className="mx-auto max-w-lg lg:max-w-none">
-            {clientSecret ? (
-              <Elements options={{ clientSecret }} stripe={stripePromise}>
-                <PaymentComponent userEmail={userEmail} />
+            {paymentIntents.length > 0 ? (
+              <Elements
+                options={{
+                  clientSecret: paymentIntents[0].clientSecret,
+                }}
+                stripe={stripePromise}
+              >
+                <PaymentComponent
+                  userEmail={userEmail}
+                  paymentIntents={paymentIntents}
+                />
               </Elements>
             ) : (
               <div className={`${OutfitFont.className} text-center`}>
@@ -310,9 +323,12 @@ export default function CheckoutForm({
           </div>
         </div>
       </div>
+
+      <MobilePriceSummary formattedTotal={formattedTotal} />
     </div>
   );
 }
+
 const formatDate = (date: Date) => {
   const days = [
     "Sunday",

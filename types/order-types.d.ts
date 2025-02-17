@@ -1,8 +1,10 @@
+import { OrderStatus } from "@prisma/client";
+
 declare module "order-types" {
   type navSellOrder = {
     id: string;
     conversationId: string | null;
-    status: string;
+    status: OrderStatus;
     updatedAt: Date;
     seller: {
       name: string;
@@ -15,7 +17,7 @@ declare module "order-types" {
   type navBuyOrder = {
     id: string;
     conversationId: string | null;
-    status: string;
+    status: OrderStatus;
     updatedAt: Date;
     seller: {
       name: string;

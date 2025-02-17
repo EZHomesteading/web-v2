@@ -2,7 +2,7 @@ import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import {  basketStatus } from "@prisma/client";
+import { basketStatus } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -18,9 +18,16 @@ const sesClient = new SESClient({
   },
 });
 
-async function handleBasketProcessing(buyerId: string, PID: string) {
-  const baskets = await prisma.basket.findMany({
+async function handleBasketProcessing(
+  buyerId: string,
+  paymentIntent: Stripe.PaymentIntent
+) {
+  // Get the basketId from the payment intent metadata
+  const basketId = paymentIntent.metadata.basketId;
+
+  const basket = await prisma.basket.findFirst({
     where: {
+      id: basketId,
       userId: buyerId,
       status: basketStatus.ACTIVE,
     },
@@ -63,94 +70,72 @@ async function handleBasketProcessing(buyerId: string, PID: string) {
     },
   });
 
-  const createdOrders = [];
-
-  for (const basket of baskets) {
-    // Use a transaction to ensure data consistency
-    const order = await prisma.$transaction(async (tx) => {
-      const totalPrice = basket.items.reduce(
-        (acc, item) => acc + item.quantity * item.price,
-        0
-      );
-
-      // Create order
-      const newOrder = await tx.order.create({
-        data: {
-          userId: buyerId,
-          locationId: basket.location.id,
-          proposedLoc: basket.proposedLoc,
-          paymentIntentId: PID,
-          sellerId: basket.location.user.id,
-          pickupDate: basket.pickupDate ? new Date(basket.pickupDate) : null,
-          items: basket.items,
-          totalPrice,
-          status: "BUYER_PROPOSED_TIME",
-          fulfillmentType: basket.orderMethod,
-          fee: { site: totalPrice * 0.06 },
-        },
-        include: {
-          buyer: true,
-          seller: true,
-        },
-      });
-
-      // Update stock levels
-      await Promise.all(
-        basket.items.map((item) =>
-          tx.listing.update({
-            where: { id: item.listing.id },
-            data: { stock: item.listing.stock - item.quantity },
-          })
-        )
-      );
-
-      // Delete the basket
-      await tx.basket.delete({
-        where: { id: basket.id },
-      });
-
-      return newOrder;
-    });
-
-    createdOrders.push(order);
+  if (!basket) {
+    throw new Error(`Basket ${basketId} not found`);
   }
 
-  return createdOrders;
-}
+  // Use a transaction to ensure data consistency
+  const order = await prisma.$transaction(async (tx) => {
+    const totalPrice = basket.items.reduce(
+      (acc, item) => acc + item.quantity * item.price,
+      0
+    );
 
-async function createConversationAndNotify(order: any) {
-  // Check if a conversation already exists between these users
-  const existingConversation = await prisma.conversation.findFirst({
-    where: {
-      AND: [
-        { participantIds: { has: order.buyer.id } },
-        { participantIds: { has: order.seller.id } },
-      ],
-    },
-  });
-
-  let conversation;
-  if (existingConversation) {
-    conversation = existingConversation;
-    // Update the order with existing conversation ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { conversationId: existingConversation.id },
-    });
-  } else {
-    // Create new conversation if none exists
-    conversation = await prisma.conversation.create({
+    // Create order
+    const newOrder = await tx.order.create({
       data: {
-        participantIds: [order.buyer.id, order.seller.id],
+        userId: buyerId,
+        locationId: basket.location.id,
+        proposedLoc: basket.proposedLoc,
+        paymentIntentId: paymentIntent.id,
+        sellerId: basket.location.user.id,
+        pickupDate: basket.pickupDate ? new Date(basket.pickupDate) : null,
+        items: basket.items,
+        totalPrice,
+        status: "BUYER_PROPOSED_TIME",
+        fulfillmentType: basket.orderMethod,
+        fee: { site: totalPrice * 0.06 },
+      },
+      include: {
+        buyer: true,
+        seller: true,
       },
     });
 
-    // Update order with new conversation ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { conversationId: conversation.id },
+    // Update stock levels
+    await Promise.all(
+      basket.items.map((item) =>
+        tx.listing.update({
+          where: { id: item.listing.id },
+          data: { stock: item.listing.stock - item.quantity },
+        })
+      )
+    );
+
+    // Delete the basket
+    await tx.basket.delete({
+      where: { id: basket.id },
     });
-  }
+
+    return newOrder;
+  });
+
+  return order;
+}
+
+async function createConversationAndNotify(order: any) {
+  // Create new conversation for each order
+  const conversation = await prisma.conversation.create({
+    data: {
+      participantIds: [order.buyer.id, order.seller.id],
+    },
+  });
+
+  // Update order with new conversation ID
+  await prisma.order.update({
+    where: { id: order.id },
+    data: { conversationId: conversation.id },
+  });
 
   // Format ordered items
   const items = order.items;
@@ -334,7 +319,6 @@ async function createConversationAndNotify(order: any) {
         sender: true,
       },
     });
-
     // Send push notification
     try {
       if (order.seller.subscriptions) {
@@ -393,25 +377,26 @@ export async function POST(request: NextRequest) {
 
   if (event.type === "payment_intent.succeeded") {
     try {
-      const pi = event.data.object.metadata;
-      const buyerId = pi.userId;
-      const PID = event.data.object.id;
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      const buyerId = paymentIntent.metadata.userId;
+      const orderGroupId = paymentIntent.metadata.orderGroupId;
 
-      const createdOrders = await handleBasketProcessing(buyerId, PID);
+      // Process this specific payment intent's basket
+      const createdOrder = await handleBasketProcessing(buyerId, paymentIntent);
 
-      // Process conversations and notifications sequentially
-      for (const order of createdOrders) {
-        await createConversationAndNotify(order);
-      }
+      // Process conversation and notification
+      await createConversationAndNotify(createdOrder);
 
       // Update order group if it exists
-      if (pi.orderGroupId) {
+      if (orderGroupId) {
         await prisma.orderGroup.update({
           where: {
-            id: pi.orderGroupId.replace(/['"]+/g, ""),
+            id: orderGroupId.replace(/['"]+/g, ""),
           },
           data: {
-            orderids: createdOrders.map((order) => order.id.toString()),
+            orderids: {
+              push: createdOrder.id.toString(),
+            },
           },
         });
       }
