@@ -76,7 +76,7 @@ const StepNine = ({
           <h2 className="text-xl font-normal text-center mb-3">
             Month Schedule
           </h2>
-          <div className="rounded-lg px-0 sm:px-8 pt-1">
+          <div className="rounded-lg px-0 sm:px-8">
             <div className="flex flex-col items-center">
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {months.map((month, index) => (

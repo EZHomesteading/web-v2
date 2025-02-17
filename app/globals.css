@@ -298,6 +298,9 @@
 .zmax {
   z-index: 9999 !important;
 }
+.zmid {
+  z-index: 5000 !important;
+}
 .z {
   z-index: 100 !important;
 }
@@ -336,6 +339,9 @@ button:focus {
 .authlayouttext {
   color: #ced9bb !important;
 }
+.textMd {
+  font-size: 16px !important;
+}
 .h8w8 {
   height: 2rem;
   width: 2rem;
@@ -347,6 +353,11 @@ button:focus {
 .popover,
 .bg {
   background-color: #e3eac9 !important;
+}
+@media (min-width: 1160px) {
+  .custom-breakpoint {
+    padding-top: 1.5rem; 
+  }
 }
 .popover {
   border: none !important;
@@ -503,4 +514,8 @@ body::-webkit-scrollbar {
 }
 .z-content {
   z-index: 30;
+}
+
+.borderBlack {
+  border-color: #000 !important ;
 }

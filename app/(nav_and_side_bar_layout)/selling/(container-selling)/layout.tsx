@@ -2,7 +2,6 @@
 import Sidebar from "./update-listing/components/sidebar";
 import { Viewport } from "next";
 import BackArrow from "../../_components/back-arrow";
-import { OutfitFont } from "@/components/fonts";
 
 export const viewport: Viewport = {
   themeColor: "#ced9bb",
@@ -10,16 +9,10 @@ export const viewport: Viewport = {
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className={`${OutfitFont.className} flex flex-row h-full`}>
-      <div className="sheet sm:pt-20 border-t border-r-[1px] border-neutral-300">
-        <Sidebar nav="sell" />
-      </div>
+    <div className={`flex md:flex-row flex-col md:pt-20 pt-16 border-t`}>
+      <Sidebar nav="sell" />
       <BackArrow nav="sell" />
-      <div
-        className={`sm:pt-0 pt-10 w-full mb-8 bg-inherit min-h-screen relative ${OutfitFont.className} `}
-      >
-        {children}
-      </div>
+      <div className={` w-full border-t`}>{children}</div>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import React from "react";
-import { getUserLocations } from "@/actions/getUser";
 import { auth } from "@/auth";
 import Calendar from "../(components)/calendar";
 import { Location } from "@prisma/client";
@@ -17,17 +16,13 @@ export default async function EditLocationPage({
   let locations: Location[] = [];
 
   const userId = session?.user?.id;
-  if (userId) {
-    try {
-      locations =
-        (await getUserLocations({
-          userId: userId,
-        })) || [];
-    } catch (error) {
-      console.error("Error fetching location:", error);
-    }
-  }
+  const res = await fetch(
+    `${process.env.API_URL}/get-many?collection=Location&key=userId&value=${userId}&fields=address,coordinates,isDefault,id,userId,displayName,hours`
+  );
+  const data = await res.json();
+  locations = data.items;
   const location = locations.find((loc) => loc.id === locationId);
+  console.log(location?.displayName);
 
   if (location?.userId !== userId) {
     return (
@@ -37,18 +32,16 @@ export default async function EditLocationPage({
     );
   }
 
-  const mk = process.env.MAPS_KEY;
+  const mk = process.env.MAPS_KEY!;
   return (
     <>
-      {mk && (
-        <Calendar
-          location={location}
-          id={locationId}
-          mk={mk}
-          locations={locations}
-          userId={session?.user?.id}
-        />
-      )}
+      <Calendar
+        location={location}
+        id={locationId}
+        mk={mk}
+        locations={locations}
+        userId={session?.user?.id}
+      />
     </>
   );
 }

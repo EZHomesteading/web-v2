@@ -12,10 +12,9 @@ import {
 } from "@/types/create.types";
 import { Progress } from "@/components/ui/progress";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuantityTypeValue } from "./UnitSelect";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { addDays, format } from "date-fns";
 import StepOne from "./steps/step1";
 import StepTwo from "./steps/step2";
@@ -23,21 +22,22 @@ import StepThree from "./steps/step3";
 import StepFour from "./steps/step4";
 import StepFive from "./steps/step5";
 import StepSix from "./steps/step6";
-import { Location } from "@prisma/client";
+import { Location, UserRole } from "@prisma/client";
 import { OutfitFont } from "@/components/fonts";
 import { Label } from "@/components/ui/label";
 import Help from "./help";
 import CreateHeader from "./header.create";
 import Toast from "@/components/ui/toast";
+import Link from "next/link";
+import { PiArrowRight } from "react-icons/pi";
 
 interface Props {
-  defaultId: string;
-  locations: Location[] | null;
-  user: UserInfo;
-  index: number;
+  defaultLocation?: Location;
+  locations: Location[];
+  user?: UserInfo;
 }
 
-const CreateClient = ({ user, index, locations, defaultId }: Props) => {
+const CreateClient = ({ user, locations, defaultLocation }: Props) => {
   const [rating, setRating] = useState<number[]>([]);
   const [certificationChecked, setCertificationChecked] = useState(false);
   //checkbox usestates
@@ -46,15 +46,13 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
   const [checkbox3Checked, setCheckbox3Checked] = useState(false);
   const [checkbox4Checked, setCheckbox4Checked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(index);
+  const [step, setStep] = useState(1);
   const [quantityType, setQuantityType] = useState<
     QuantityTypeValue | undefined
   >(undefined);
 
   const router = useRouter();
-  const [clicked, setClicked] = useState(false);
-  const [clicked1, setClicked1] = useState(false);
-  const [clicked2, setClicked2] = useState(false);
+
   const [category, setCategory] = useState<Category>("");
   const [subCategory, setSubCategory] = useState<SubCategory>("");
   const [projectHarvest, setProjectHarvest] = useState(true);
@@ -63,10 +61,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  let usersodt = null;
-  if (user.SODT && user.SODT !== null) {
-    usersodt = user.SODT;
-  }
+
   const {
     register,
     setValue,
@@ -75,10 +70,10 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      sodt: usersodt,
+      sodt: user?.SODT,
       category: "",
       subCategory: "",
-      locationId: "",
+      locationId: defaultLocation?.id,
       locationRole: "",
       stock: "",
       projectedStock: "",
@@ -96,6 +91,9 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
       harvestDates: [],
     },
   });
+
+  const [selectedLoc, setSelectedLoc] = useState(defaultLocation);
+
   const handleCustomTitleSet = () => {
     setImageSrc([]); // Clear the imageSrc array
     setValue("imageSrc", []); // Clear the imageSrc in the form state
@@ -145,7 +143,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
     });
   };
   const [review, setReview] = useState(false);
-  const formLocation = watch("locationId");
+  const formLocationId = watch("locationId");
   const formLocationRole = watch("locationRole");
   const subcat = watch("subCategory");
   const formTitle = watch("title");
@@ -210,7 +208,6 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
     );
   };
 
-  //geocoding from autocompleted adress inputs
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));
@@ -286,9 +283,6 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
         )
       );
 
-      setClicked(false);
-      setClicked1(false);
-      setClicked2(false);
       setRating([]);
       setTags([]);
       setCertificationChecked(false);
@@ -310,66 +304,28 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
       setIsLoading(false);
     }
   };
-  const showError = (message: string) => {
-    Toast({ message: message, position: "bottom-center" });
+  const showError = (message: string, details?: ReactNode) => {
+    Toast({ message: message, position: "bottom-center", details: details });
   };
 
   const checkField = (
     condition: boolean | undefined,
-    errorMessage: string
+    errorMessage: string,
+    errorDetails?: ReactNode
   ): boolean => {
     if (condition) {
-      showError(errorMessage);
+      showError(errorMessage, errorDetails);
       return true;
     }
     return false;
   };
-  useEffect(() => {
-    if (defaultId != "") {
-      locations?.map((location, index) => {
-        if (location.id === defaultId) {
-          console.log("Found default location at index:", index);
 
-          switch (index) {
-            case 0:
-              setClicked(true);
-              setClicked1(false);
-              setClicked2(false);
-              setValue("locationId", defaultId);
-              setValue("locationRole", location.role);
-              break;
-            case 1:
-              setClicked(false);
-              setClicked1(true);
-              setClicked2(false);
-              setValue("locationId", defaultId);
-              setValue("locationRole", location.role);
-              break;
-            case 2:
-              setClicked(false);
-              setClicked1(false);
-              setClicked2(true);
-              setValue("locationId", defaultId);
-              setValue("locationRole", location.role);
-              break;
-            default:
-              break;
-          }
-          setStep(2);
-        }
-      });
-    }
-  }, []);
   const handleNext = async () => {
     const errors = {
       1: [
         {
-          condition: () => locations?.[0] === null,
-          message: "Please Set a default location in your store settings",
-        },
-        {
-          condition: () => formLocation === null || "" || undefined,
-          message: "Please Set a location",
+          condition: () => !formLocationId || formLocationId.length !== 24,
+          message: "Please set a location",
         },
       ],
       2: [
@@ -532,11 +488,7 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
       }
     }
   };
-  // {
-  //   if (locations && locations[0] === null) {
-  //     setValue("locationId", null);
-  //   }
-  // }
+
   function filterAndAppendWords(inputString: string) {
     // List of common words to filter out
     const commonWords = new Set([
@@ -605,261 +557,209 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
 
   const progress = ((step - 1) / 7) * 100;
 
+  useEffect(() => {
+    if (defaultLocation) {
+      setValue("locationId", defaultLocation.id);
+      setValue("locationRole", defaultLocation.role);
+      setSelectedLoc(defaultLocation);
+      setStep(2);
+    }
+  }, []);
+  const showBackButton = step > 2;
+
+  const buttonText = step === 7 ? "Finish" : "Next";
+
+  function nextButtonDisabled() {
+    if (step === 1 && !selectedLoc) {
+      return true;
+    }
+    if (step === 2 && (!category || !subCategory)) {
+      return true;
+    }
+    if (step === 3 && (!title || !description)) {
+      return true;
+    }
+    return false;
+  }
   return (
-    <div className={`min-h-screen ${OutfitFont.className}`}>
-      <div className="w-full fixed top-0 left-0 zmax">
+    <div
+      className={`mt-16 h-full min-h-[calc(100vh-4rem)] overflow-y-auto ${OutfitFont.className}`}
+    >
+      {/* header */}
+      <div className="w-full fixed top-0 left-0 zmid">
         <Progress value={progress} className="w-full h-[6px] bg-gray-200" />
         {step > 0 && (
-          <CreateHeader
-            setStep={setStep}
-            street={
-              clicked && locations
-                ? locations[0].address[0]
-                : clicked1 && locations
-                ? locations[1].address[0]
-                : clicked2 && locations
-                ? locations[2].address[0]
-                : null
-            }
-          />
+          <CreateHeader setStep={setStep} street={selectedLoc?.address[0]} />
         )}
-      </div>{" "}
-      {step === 1 && locations && locations[0] !== null && (
-        <div className="w-full flex items-center justify-center px-2">
-          <div className="min-h-screen fade-in flex flex-col items-center w-full">
-            <Label className="text-xl pt-20 w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
-              Select a Selling Location
-            </Label>
-
-            {locations === null ||
-            locations === undefined ||
-            ((locations[0] === null || locations[0] === undefined) &&
-              (locations[1] === null || locations[1] === undefined) &&
-              (locations[2] === null || locations[2] === undefined)) ? (
-              <Card
-                className={""}
-                onClick={() => {
-                  router.replace("/new-location-and-hours");
-                }}
-              >
-                <CardContent>
-                  <CardHeader className="pt-2 sm:pt-6">
-                    <div className="text-start">
-                      <div className="text-xl sm:text-2xl font-bold">
-                        You have no addresses set. Please set this up before
-                        creating a listing. Click Here to set up Store Locations
-                      </div>
-                    </div>
-                  </CardHeader>
-                </CardContent>
-              </Card>
+      </div>
+      {/* content container */}
+      <div className={``}>
+        {step === 1 && (
+          <div className="fade-in flex flex-col items-center w-full">
+            {locations && locations.length >= 1 ? (
+              <>
+                <div className={` text-center max-w-sm w-full pb-2`}>
+                  <p className={`font-semibold text-lg`}>
+                    Set a Selling Location
+                  </p>
+                  <p className={`font-medium text-sm text-gray-600`}>
+                    Where are you selling this listing from?
+                  </p>
+                </div>
+                <section className={`flex flex-col gap-y-3 w-full max-w-sm`}>
+                  {locations.map((location: Location) => (
+                    <button
+                      className={`w-full border !border-k relative py-8 rounded-sm shadow-md ${
+                        formLocationId === location?.id && "bg-black text-white"
+                      }`}
+                      onClick={() => {
+                        setValue("locationId", location?.id);
+                        setValue("locationRole", location.role);
+                        setSelectedLoc(location);
+                      }}
+                      key={location?.id}
+                    >
+                      {location?.displayName ? (
+                        <div>
+                          <p className={`text-base font-medium `}>
+                            {location?.displayName}
+                          </p>
+                          <p className={`text-xs text-neutral-700 font-medium`}>
+                            {location?.address[0]}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className={`text-base font-medium `}>
+                          {location?.address[0]}
+                        </p>
+                      )}
+                    </button>
+                  ))}
+                  {locations?.length < 5 && (
+                    <Link
+                      href={`/new-location-and-hours`}
+                      className={`text-gray-500 w-full border !border-k relative py-8 rounded-sm shadow-md text-base font-medium text-center
+                    `}
+                    >
+                      Create New Selling Location
+                    </Link>
+                  )}
+                </section>
+              </>
             ) : (
-              <div className="flex flex-col justify-evenly gap-2 pt-4 w-full max-w-md">
-                {locations.length >= 1 && (
-                  <Card
-                    className={
-                      clicked
-                        ? "bg-black text-white shadow-sm"
-                        : "shadow-sm hover:cursor-pointer"
-                    }
-                    onClick={() => {
-                      if (locations) {
-                        setClicked(true);
-                        setClicked1(false);
-                        setClicked2(false);
-                        setValue("locationId", locations[0].id);
-                        setValue("locationRole", locations[0].role);
-                      }
-                    }}
-                  >
-                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                      <div className="text-start">
-                        <div className="text-xl font-normal">
-                          Use My Default Address
-                        </div>
-                      </div>
-                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                        <ul>
-                          <li className={`${OutfitFont.className}`}></li>{" "}
-                          {locations && locations[0]?.address.length === 4 ? (
-                            <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
-                          ) : (
-                            <li>Full Address not available</li>
-                          )}
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-                {locations.length >= 2 && (
-                  <Card
-                    className={
-                      clicked1
-                        ? "bg-black text-white shadow-sm"
-                        : "shadow-sm hover:cursor-pointer"
-                    }
-                    onClick={() => {
-                      if (locations) {
-                        setClicked1(true);
-                        setClicked(false);
-                        setClicked2(false);
-                        setValue("locationId", locations[1].id);
-                        setValue("locationRole", locations[1].role);
-                      }
-                    }}
-                  >
-                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                      <div className="text-start">
-                        <div className="text-xl ">Use My Second Location</div>
-                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                          <ul>
-                            <li className={`${OutfitFont.className}`}></li>{" "}
-                            {locations && locations[1]?.address.length === 4 ? (
-                              <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
-                            ) : (
-                              <li>Full Address not available</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-                {locations.length === 3 && (
-                  <Card
-                    className={
-                      clicked2
-                        ? "bg-black text-white shadow-sm"
-                        : "shadow-sm hover:cursor-pointer"
-                    }
-                    onClick={() => {
-                      if (locations) {
-                        setClicked2(true);
-                        setClicked1(false);
-                        setClicked(false);
-                        setValue("locationId", locations[2].id);
-                        setValue("locationRole", locations[2].role);
-                      }
-                    }}
-                  >
-                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                      <div className="text-start">
-                        <div className="text-xl ">Use My Third Location</div>
-                        <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                          <ul>
-                            <li className={`${OutfitFont.className}`}></li>{" "}
-                            {locations && locations[2]?.address.length === 4 ? (
-                              <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
-                            ) : (
-                              <li>Full Address not available</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-                {locations.length < 3 && (
-                  <Card
-                    className={
-                      clicked2
-                        ? "bg-black text-white shadow-sm"
-                        : "shadow-sm hover:cursor-pointer"
-                    }
-                    onClick={() => {
-                      router.push("/new-location-and-hours");
-                    }}
-                  >
-                    <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                      <div className="text-start">
-                        <div className="text-xl ">
-                          Create a{" "}
-                          {locations.length === 1
-                            ? "Second Location?"
-                            : locations.length === 2
-                            ? "Third Location?"
-                            : "Location"}{" "}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+              <div>
+                <p className={` max-w-sm text-center text-sm`}>
+                  You have no elidgable selling locations. This occurs when you
+                  have no locations that are marked for selling or no locations
+                  in general. Creating a selling location is free and takes only
+                  a couple of minutes.
+                </p>
+                <Link
+                  href={`/new-location-and-hours`}
+                  className={`items-center border p-4 shadow-md text-base sm:text-xl group font-medium rounded-full flex justify-between !border-black absolute top-1/3 right-1/2 transform translate-x-1/2 w-full max-w-[350px]`}
+                >
+                  Create a new Selling Location
+                  <PiArrowRight
+                    className={`text-xl ml-3 hover:translate-x-3  duration-300 group-hover:translate-x-2`}
+                  />
+                </Link>
+                <Link
+                  href={`/`}
+                  className={`absolute top-[43%] right-1/2 transform translate-x-1/2 underline`}
+                >
+                  Home
+                </Link>
               </div>
             )}
           </div>
-        </div>
-      )}
-      {step === 2 && (
-        <StepOne
-          handlePrevious={handlePrevious}
-          step={step}
-          subCategory={subCategory}
-          setSubCategory={setSubCategory}
-          category={category}
-          setCategory={setCategory}
-        />
-      )}
-      {step === 3 && (
-        <StepTwo
-          setReview={setReview}
-          title={title}
-          setValue={setValue}
-          setTitle={setTitle}
-          setImageSrc={setImageSrc}
-          description={description}
-          setDescription={setDescription}
-          tag={tag}
-          setTag={setTag}
-          tags={tags}
-          setTags={setTags}
-          buildKeyWords={buildKeyWords}
-          isLoading={isLoading}
-          subcat={subCategory}
-          onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
-        />
-      )}
-      {step === 4 && (
-        <StepThree
-          role={formLocationRole}
-          title={formTitle}
-          quantityType={quantityType}
-          setQuantityType={setQuantityType}
-          postSODT={postSODT}
-          handleSODTCheckboxChange={handleSODTCheckboxChange}
-          usersodt={user.SODT ?? null}
-          commonInputProps={commonInputProps}
-          inputProps={inputProps}
-          projectHarvest={projectHarvest}
-          handleProjectHarvestCheckboxChange={
-            handleProjectHarvestCheckboxChange
-          }
-          setValue={setValue}
-        />
-      )}
-      {step === 5 && (
-        <StepFour
-          nonPerishable={nonPerishable}
-          handleNonPerishableCheckboxChange={handleNonPerishableCheckboxChange}
-          shelfLifeDays={shelfLifeDays}
-          shelfLifeWeeks={shelfLifeWeeks}
-          shelfLifeMonths={shelfLifeMonths}
-          shelfLifeYears={shelfLifeYears}
-          setCustomValue={setCustomValue}
-          expiryDate={expiryDate}
-        />
-      )}
-      {step === 6 && (
-        <StepFive
-          checkbox1Checked={checkbox1Checked}
-          checkbox2Checked={checkbox2Checked}
-          checkbox3Checked={checkbox3Checked}
-          checkbox4Checked={checkbox4Checked}
-          certificationChecked={certificationChecked}
-          handleCheckboxChange={handleCheckboxChange}
-          handleCertificationCheckboxChange={handleCertificationCheckboxChange}
-        />
-      )}
-      {step > 2 && (
+        )}
+        {step === 2 && (
+          <StepOne
+            handlePrevious={handlePrevious}
+            step={step}
+            subCategory={subCategory}
+            setSubCategory={setSubCategory}
+            category={category}
+            setCategory={setCategory}
+          />
+        )}
+        {step === 3 && (
+          <StepTwo
+            setReview={setReview}
+            title={title}
+            setValue={setValue}
+            setTitle={setTitle}
+            setImageSrc={setImageSrc}
+            description={description}
+            setDescription={setDescription}
+            tag={tag}
+            setTag={setTag}
+            tags={tags}
+            setTags={setTags}
+            buildKeyWords={buildKeyWords}
+            isLoading={isLoading}
+            subcat={subCategory}
+            onCustomTitleSet={handleCustomTitleSet} // Pass this new prop
+          />
+        )}
+        {step === 4 && (
+          <StepThree
+            role={formLocationRole}
+            title={formTitle}
+            quantityType={quantityType}
+            setQuantityType={setQuantityType}
+            postSODT={postSODT}
+            handleSODTCheckboxChange={handleSODTCheckboxChange}
+            usersodt={user?.SODT ?? null}
+            commonInputProps={commonInputProps}
+            inputProps={inputProps}
+            projectHarvest={projectHarvest}
+            handleProjectHarvestCheckboxChange={
+              handleProjectHarvestCheckboxChange
+            }
+            setValue={setValue}
+          />
+        )}
+        {step === 5 && (
+          <StepFour
+            nonPerishable={nonPerishable}
+            handleNonPerishableCheckboxChange={
+              handleNonPerishableCheckboxChange
+            }
+            shelfLifeDays={shelfLifeDays}
+            shelfLifeWeeks={shelfLifeWeeks}
+            shelfLifeMonths={shelfLifeMonths}
+            shelfLifeYears={shelfLifeYears}
+            setCustomValue={setCustomValue}
+            expiryDate={expiryDate}
+          />
+        )}
+        {step === 6 && (
+          <StepFive
+            checkbox1Checked={checkbox1Checked}
+            checkbox2Checked={checkbox2Checked}
+            checkbox3Checked={checkbox3Checked}
+            checkbox4Checked={checkbox4Checked}
+            certificationChecked={certificationChecked}
+            handleCheckboxChange={handleCheckboxChange}
+            handleCertificationCheckboxChange={
+              handleCertificationCheckboxChange
+            }
+          />
+        )}
+        {step === 7 && (
+          <StepSix
+            imageSrc={imageSrc}
+            setImageSrc={setImageSrc}
+            imageStates={imageStates}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+            handleClick={handleClick}
+          />
+        )}
+      </div>
+      {/* footer */}
+      {showBackButton && (
         <Button
           onClick={handlePrevious}
           className="fixed bottom-6 left-5 text-xl hover:cursor-pointer"
@@ -867,224 +767,14 @@ const CreateClient = ({ user, index, locations, defaultId }: Props) => {
           Back
         </Button>
       )}
-      {step === 7 && locations && locations[0] !== null && (
-        <>
-          <Button
-            onClick={handleNext}
-            className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-          >
-            Finish
-          </Button>
-        </>
-      )}
-      {/* {step === 2 && locations && locations[0] !== null && defaultId && (
-        <div className="w-fit inline-flex items-center justify-center whitespace-nowrap  fixed  bottom-20 right-1/2 translate-x-1/2 px-2">
-          {locations === null ||
-          locations === undefined ||
-          ((locations[0] === null || locations[0] === undefined) &&
-            (locations[1] === null || locations[1] === undefined) &&
-            (locations[2] === null || locations[2] === undefined)) ? (
-            <Card
-              className={""}
-              onClick={() => {
-                router.replace("/new-location-and-hours");
-              }}
-            >
-              <CardContent>
-                <CardHeader className="pt-2 sm:pt-6">
-                  <div className="text-start">
-                    <div className="text-md sm:text-2xl font-bold">
-                      You have no addresses set. Please set this up before
-                      creating a listing. Click Here to set up Store Locations
-                    </div>
-                  </div>
-                </CardHeader>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="flex flex-row justify-evenly gap-2 pt-4 w-full max-w-4xl">
-              {locations.length >= 1 && (
-                <Card
-                  className={
-                    clicked
-                      ? "bg-black text-white shadow-sm"
-                      : "shadow-sm hover:cursor-pointer"
-                  }
-                  onClick={() => {
-                    if (locations) {
-                      setClicked(true);
-                      setClicked1(false);
-                      setClicked2(false);
-                      setValue("locationId", locations[0].id);
-                      setValue("locationRole", locations[0].role);
-                    }
-                  }}
-                >
-                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                    <div className="text-start">
-                      <div className="text-md sm:text-2xl font-bold">
-                        {clicked
-                          ? "Using Default Address"
-                          : "Use My Default Address"}
-                      </div>
-                    </div>
-                    <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                      <ul>
-                        <li className={`${OutfitFont.className}`}></li>{" "}
-                        {locations && locations[0]?.address.length === 4 ? (
-                          <li className="text-xs">{`${locations[0]?.address[0]}, ${locations[0]?.address[1]}, ${locations[0]?.address[2]}, ${locations[0]?.address[3]}`}</li>
-                        ) : (
-                          <li>Full Address not available</li>
-                        )}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              {locations.length >= 2 && (
-                <Card
-                  className={
-                    clicked1
-                      ? "bg-black text-white shadow-sm"
-                      : "shadow-sm hover:cursor-pointer"
-                  }
-                  onClick={() => {
-                    if (locations) {
-                      setClicked1(true);
-                      setClicked(false);
-                      setClicked2(false);
-                      setValue("locationId", locations[1].id);
-                      setValue("locationRole", locations[1].role);
-                    }
-                  }}
-                >
-                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                    <div className="text-start">
-                      <div className="text-md sm:text-2xl font-bold">
-                        {" "}
-                        {clicked1
-                          ? "Using Second Address"
-                          : "Use My Second Address"}
-                      </div>
-                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                        <ul>
-                          <li className={`${OutfitFont.className}`}></li>{" "}
-                          {locations && locations[1]?.address.length === 4 ? (
-                            <li className="text-xs">{`${locations[1]?.address[0]}, ${locations[1]?.address[1]}, ${locations[1]?.address[2]}, ${locations[1]?.address[3]}`}</li>
-                          ) : (
-                            <li>Full Address not available</li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              {locations.length === 3 && (
-                <Card
-                  className={
-                    clicked2
-                      ? "bg-black text-white shadow-sm"
-                      : "shadow-sm hover:cursor-pointer"
-                  }
-                  onClick={() => {
-                    if (locations) {
-                      setClicked2(true);
-                      setClicked1(false);
-                      setClicked(false);
-                      setValue("locationId", locations[2].id);
-                      setValue("locationRole", locations[2].role);
-                    }
-                  }}
-                >
-                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                    <div className="text-start">
-                      <div className="text-md sm:text-2xl font-bold">
-                        {" "}
-                        {clicked1
-                          ? "Using Third Address"
-                          : "Use My Third Address"}
-                      </div>
-                      <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
-                        <ul>
-                          <li className={`${OutfitFont.className}`}></li>{" "}
-                          {locations && locations[2]?.address.length === 4 ? (
-                            <li className="text-xs">{`${locations[2]?.address[0]}, ${locations[2]?.address[1]}, ${locations[2]?.address[2]}, ${locations[2]?.address[3]}`}</li>
-                          ) : (
-                            <li>Full Address not available</li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              {locations.length < 3 && (
-                <Card
-                  className={
-                    clicked2
-                      ? "bg-black text-white shadow-sm"
-                      : "shadow-sm hover:cursor-pointer"
-                  }
-                  onClick={() => {
-                    router.push("/new-location-and-hours");
-                  }}
-                >
-                  <CardContent className="pt-2 sm:pt-6 flex flex-col items-start justify-center">
-                    <div className="text-start">
-                      <div className="text-md sm:text-2xl font-bold">
-                        Create a{" "}
-                        {locations.length === 1
-                          ? "Second Location?"
-                          : locations.length === 2
-                          ? "Third Location?"
-                          : "Location"}{" "}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          )}
-        </div>
-      )} */}
-      {step < 7 && step !== 1 && (
-        <Button
-          onClick={handleNext}
-          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
-      {step === 1 && (
-        <Button
-          onClick={handleNext}
-          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
-      {step === 2 && category && (
-        <Button
-          onClick={handleNext}
-          className="fixed bottom-6 right-5 text-xl hover:cursor-pointer"
-        >
-          Next
-        </Button>
-      )}
-      <div className="w-full absolute top-0 left-0 z-50">
-        <Progress value={progress} className="h-[6px] bg-gray-200" />
-      </div>
-      {step === 7 && (
-        <StepSix
-          imageSrc={imageSrc}
-          setImageSrc={setImageSrc}
-          imageStates={imageStates}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
-          handleClick={handleClick}
-        />
-      )}
+
+      <Button
+        onClick={handleNext}
+        className={`fixed bottom-6 right-5 text-xl hover:cursor-pointer`}
+        disabled={nextButtonDisabled()}
+      >
+        {buttonText}
+      </Button>
       <Help step={step} role={user?.role} />
     </div>
   );

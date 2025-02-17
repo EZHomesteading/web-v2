@@ -2,7 +2,6 @@ import {
   PiCalendarCheckThin,
   PiChatCircleThin,
   PiClipboardTextThin,
-  PiClockCountdownThin,
   PiHandCoinsThin,
   PiLightbulbThin,
   PiMoneyThin,
@@ -11,17 +10,12 @@ import {
 import { CiSettings } from "react-icons/ci";
 import UserInfoCard from "../_components/user-info-card";
 import MenuCard from "../_components/menu-card";
+import { auth } from "@/auth";
 
 const menuItems = [
   {
     title: "To-Dos",
-    name: "Today's Obligations",
-    href: "/selling/todays-obligations",
-    icon: <PiClockCountdownThin className="h8w8" />,
-    showDiv: false,
-  },
-  {
-    name: "Orders",
+    name: "Sale Orders",
     icon: <PiClipboardTextThin className="h8w8" />,
     href: "/orders",
   },
@@ -38,7 +32,7 @@ const menuItems = [
     href: "/selling/my-store/settings",
   },
   {
-    name: "Availability Calendar",
+    name: "My Locations & Availability",
     icon: <PiCalendarCheckThin className="h8w8" />,
     href: "/selling/availability-calendar",
   },
@@ -66,21 +60,25 @@ const menuItems = [
   },
 ];
 
-const SellerHome = () => {
+const SellerHome = async () => {
+  const session = await auth();
   return (
-    <div className="px-2 sm:px-6 md:px-2 lg:px-40 pt-2 lg:pt-20 pb-24 md:pb-0 select-none">
-      <div className="w-full md:w-2/3 2xl:w-1/2 mx-auto">
-        <UserInfoCard sellerNav={true} />
-        {menuItems.map((item, index) => (
-          <MenuCard
-            key={index}
-            title={item.title}
-            name={item.name}
-            icon={item.icon}
-            href={item.href}
-            showDiv={item.showDiv}
-          />
-        ))}
+    <div className="relative h-screen w-full touch-pan-y">
+      <div className="absolute inset-0 px-2 sm:px-6 md:px-2 lg:px-40  pb-24 md:pb-0 overflow-y-auto">
+        <div className="relative w-full md:w-2/3 2xl:w-1/2 mx-auto">
+          <UserInfoCard sellerNav={true} user={session?.user} />
+          {menuItems.map((item, index) => (
+            <MenuCard
+              key={index}
+              title={item.title}
+              name={item.name}
+              icon={item.icon}
+              href={item.href}
+              showDiv={item.showDiv}
+            />
+          ))}
+          <div className="pb-32" />
+        </div>
       </div>
     </div>
   );

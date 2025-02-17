@@ -4,6 +4,7 @@ import Toast from "@/components/ui/toast";
 import Link from "next/link";
 import { PiBasketThin } from "react-icons/pi";
 import HoursWarningModal from "./cartHoursWarning";
+import { useState } from "react";
 
 interface User {
   id: string;
@@ -18,25 +19,17 @@ interface DateCompatibility {
 }
 
 interface CartToggleProps {
-  listingId: string;
   listing: any;
   user: User | null | undefined;
-  initialQuantity?: number;
-  stock?: number;
-  minOrder?: number;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
-  quantityType?: string;
-  price: number;
   onCartUpdate?: (inCart: boolean, quantity: number) => void;
+  isInBasket: boolean;
   onBasketUpdate: (newState: boolean) => void;
 }
 
 const MarketCartToggle = ({
-  listingId,
   user,
-  basketItemIds = [],
-  minOrder,
   listing,
+  isInBasket,
   onBasketUpdate,
 }: CartToggleProps) => {
   const {
@@ -47,16 +40,12 @@ const MarketCartToggle = ({
     incompatibleDays,
     addToBasket,
   } = useBasket({
-    listingId,
+    listingId: listing?.id,
     user,
-    initialQuantity: minOrder || 1,
+    initialQuantity: listing?.minOrder || 1,
     hours: listing?.location?.hours,
     onBasketUpdate: onBasketUpdate,
   });
-
-  const isInBasket =
-    Array.isArray(basketItemIds) &&
-    basketItemIds.some((item) => item?.listingId === listingId);
 
   const handleToggleBasket = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!user) {
@@ -64,7 +53,7 @@ const MarketCartToggle = ({
         message: "Please sign in to add items to your basket",
         details: (
           <Link
-            href={`/auth/login?callbackUrl=/listings/${listingId}`}
+            href={`/auth/login?callbackUrl=/listings/${listing?.Id}`}
             className={`text-sky-400 underline font-light`}
           >
             Sign in here

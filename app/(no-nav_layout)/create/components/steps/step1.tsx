@@ -151,10 +151,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onClick,
 }) => (
   <Card
-    className="w-[100%] h-full hover:cursor-pointer hover:shadow-md shadow-sm"
+    className="w-[100%] h-full hover:cursor-pointer shadow-md hover:!border-black rounded-md"
     onClick={onClick}
   >
-    <CardContent className="rounded-lg h-full py-4  flex flex-row items-center justify-between space-x-4">
+    <CardContent className=" h-full py-4 rounded-md flex flex-row items-center justify-between space-x-4">
       <div className="flex flex-col">
         <div className="text-lg font-light">{title}</div>
         <div className="text-sm text-gray-600 font-extralight">
@@ -173,15 +173,12 @@ const SubCategoryCard: React.FC<SubCategoryCardProps> = ({
   icon,
 }) => (
   <Card
-    className={`w-full ${
-      isSelected ? "bg-black text-white shadow-md" : "shadow-sm"
+    className={`w-full rounded-md shadow-md hover:cursor-pointer min-h-[66px] ${
+      isSelected && "bg-black text-white "
     }`}
     onClick={onClick}
   >
-    <CardContent
-      className={`rounded-md p-4 flex justify-between items-center
-    ${isSelected ? "" : ""}`}
-    >
+    <CardContent className={`rounded-xl p-4 flex justify-between items-center`}>
       <div className="text-lg font-extralight">{capitalizeWords(title)}</div>
       <div className="mb-1">{subCategoryIcons[title]}</div>
     </CardContent>
@@ -278,21 +275,15 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
   handlePrevious,
   setSubCategory,
 }) => {
-  if (step !== 2) return null;
-  const [NotSureOpen, setNotSureOpen] = useState(false);
   return (
-    <div className="flex pt-20 justify-center items-start min-h-screen w-full">
-      {/* <NotSureModal
-        isOpen={NotSureOpen}
-        onClose={() => setNotSureOpen(false)}
-      /> */}
+    <div className="flex  justify-center items-start min-h-screen w-full">
       <div className="flex flex-col gap-5 fade-in  w-full max-w-[700px] px-4">
-        <Label className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
+        <p className="text-xl w-full font-light m-0 !leading-0 mb-2 px-2 text-center">
           Select a {category !== "" ? <>Subcategory</> : <>Category</>} for your
           Product
-        </Label>
+        </p>
         <div className="w-full px-2">
-          {category === "" ? (
+          {!category ? (
             <CategorySelection
               category={category}
               setCategory={setCategory}
@@ -313,12 +304,6 @@ const ProductCategorySelection: React.FC<ProductCategorySelectionProps> = ({
           )}
         </div>
       </div>
-      {/* <Button
-        onClick={() => setNotSureOpen(true)}
-        className="fixed top-[65%] left-1/2 -translate-x-1/2  text-white font-medium"
-      >
-        Not Sure?
-      </Button> */}
     </div>
   );
 };

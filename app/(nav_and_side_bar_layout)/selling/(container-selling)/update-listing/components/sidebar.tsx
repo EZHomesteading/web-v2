@@ -24,8 +24,9 @@ import Link from "next/link";
 import { Outfit } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { CiSettings } from "react-icons/ci";
+import { OutfitFont } from "@/components/fonts";
 interface SidebarProps {
-  nav: string;
+  nav?: string;
 }
 interface NavigationItem {
   name: string;
@@ -34,10 +35,7 @@ interface NavigationItem {
   current: boolean;
   div: boolean;
 }
-const o = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+
 const conNav: NavigationItem[] = [
   {
     name: "Personal Info",
@@ -105,13 +103,6 @@ const conNav: NavigationItem[] = [
   },
 ];
 const vendorNav: NavigationItem[] = [
-  {
-    name: "Today's Obligations",
-    href: "/selling/todays-obligations",
-    icon: PiClockCountdownThin,
-    current: false,
-    div: false,
-  },
   {
     name: "Orders",
     icon: PiClipboardTextThin,
@@ -196,12 +187,14 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
     <>
       <div
         className={`hidden ${
-          o.className
-        } sm:block z-50 relative h-full select-none ${
-          isCollapsed ? "w-[2.8rem]" : "w-64"
+          OutfitFont.className
+        } md:block border-r border-t z-50 relative h-screen overflow-none select-none ${
+          isCollapsed ? "w-[3.51rem]" : "w-64"
         } transition-width duration-300`}
       >
-        <div className="flex grow flex-col gap-y-6 px-6">
+        <div
+          className={`flex grow flex-col ${isCollapsed ? "items-center" : ""}`}
+        >
           <nav className="flex flex-2 flex-col">
             <ul role="list" className="flex flex-2 flex-col gap-y-3 relative">
               {navigationItems.map((item) => (
@@ -212,7 +205,7 @@ const Sidebar = ({ nav = "buy" }: SidebarProps) => {
                       pathname === item.href
                         ? "text-white"
                         : "text-gray-401 hover:text-white font-light",
-                      "group flex gap-x-4 rounded-md p-2 text-sm leading-6 t",
+                      "group flex gap-x-4  p-2 text-sm leading-6 t",
                       isCollapsed ? "justify-end" : "items-center",
                       item.div ? "border-b-[1px] pb-4" : ""
                     )}

@@ -25,30 +25,8 @@ interface BasketProps {
   user?: any | null;
   initialQuantity?: number;
   hours?: LocationHours | null;
-  basketItemIds?: Array<{ listingId: string; id: string }> | null;
+  onBasketUpdate: (newState: boolean) => void;
 }
-
-const hasOverlappingHours = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
-  return slot1.open < slot2.close && slot2.open < slot1.close;
-};
-
-const findCompatibleSlots = (
-  dayHours1: DayHours | undefined,
-  dayHours2: DayHours | undefined
-): boolean => {
-  if (!dayHours1?.timeSlots?.length || !dayHours2?.timeSlots?.length) {
-    return false;
-  }
-
-  for (const slot1 of dayHours1.timeSlots) {
-    for (const slot2 of dayHours2.timeSlots) {
-      if (hasOverlappingHours(slot1, slot2)) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
 
 const getHoursForMethod = (
   hours: LocationHours | null | undefined,
@@ -63,7 +41,7 @@ export const useBasket = ({
   user,
   initialQuantity = 1,
   hours,
-  basketItemIds = null,
+  onBasketUpdate,
 }: BasketProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,9 +49,6 @@ export const useBasket = ({
   const [showWarning, setShowWarning] = useState(false);
   const [incompatibleDays, setIncompatibleDays] = useState<
     Array<{ date: string; compatible: boolean; overlapHours: number }>
-  >([]);
-  const [existingBasketHours, setExistingBasketHours] = useState<
-    LocationHours[]
   >([]);
 
   let initialOrderMethod: orderMethod = orderMethod.PICKUP;
@@ -211,8 +186,10 @@ export const useBasket = ({
           status,
           initialOrderMethod: initialOrderMethod,
         });
-        Toast({ message: "Saved new basket item" });
-        router.refresh();
+        Toast({
+          message: `Added to baskets`,
+        });
+        onBasketUpdate(true);
       } catch (error: any) {
         Toast({
           message: error.response?.data?.message || "Something went wrong",
@@ -230,7 +207,7 @@ export const useBasket = ({
     try {
       await axios.delete(`/api/basket/items/${listingId}`);
       Toast({ message: "Basket item removed" });
-      router.refresh();
+      onBasketUpdate(false);
     } catch (error: any) {
       console.error("Remove error:", error);
       Toast({
@@ -241,29 +218,25 @@ export const useBasket = ({
     }
   }, [user, listingId, router]);
 
-  const updateQuantity = useCallback(
-    async (newQuantity: number) => {
-      if (!user) return;
+  const updateQuantity = async (newQuantity: number) => {
+    if (!user) return;
 
-      setIsLoading(true);
-      try {
-        await axios.patch(`/api/basket/items/${listingId}`, {
-          quantity: newQuantity,
-        });
-        setQuantity(newQuantity);
-        router.refresh();
-      } catch (error: any) {
-        Toast({
-          message: error.response?.data?.message || "Failed to update quantity",
-        });
-        // Revert quantity on error
-        setQuantity(quantity);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [user, listingId, router, quantity]
-  );
+    setIsLoading(true);
+    try {
+      await axios.post(`/api/basket/items`, {
+        listingId: listingId,
+        quantity: newQuantity,
+      });
+      setQuantity(newQuantity);
+    } catch (error: any) {
+      Toast({
+        message: error.response?.data?.message || "Failed to update quantity",
+      });
+      setQuantity(quantity);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleBasket = useCallback(
     async (
@@ -275,6 +248,7 @@ export const useBasket = ({
       e.stopPropagation();
       if (isInBasket) {
         await removeFromBasket();
+        onBasketUpdate(false);
       } else {
         if (newQuantity && newQuantity !== quantity) {
           setQuantity(newQuantity);
@@ -288,6 +262,7 @@ export const useBasket = ({
           setShowWarning(true);
         } else {
           await addToBasket(status);
+          onBasketUpdate(true);
         }
       }
     },

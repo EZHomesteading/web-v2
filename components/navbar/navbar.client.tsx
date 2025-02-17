@@ -1,10 +1,10 @@
 import UserMenu from "./menu";
-import FindListingsComponent from "@/components/listings/search-listings";
 import { NavUser } from "@/actions/getUser";
 import Logo from "./Logo";
+import { cn } from "@/lib/utils";
 
 interface NavbarProps {
-  user?: NavUser;
+  user: NavUser | null;
   // uniqueUrl?: string;
   // canReceivePayouts,
   className: string;
@@ -26,16 +26,17 @@ const Navbar = ({
   return (
     <>
       <div
-        className={`fixed bottom-0 left-0 right-0 lg:top-0 border-t lg:border-t-none  border-custom p-2 z-1 ${className} w-screen h-20 `}
+        className={cn(
+          "fixed bottom-0 left-0 right-0 md:top-0 border-t py-3 z-1 w-screen h-20",
+          className
+        )}
       >
         <div
-          className={`flex items-center justify-evenly lg:justify-between w-full px-4 h-fit`}
+          className={`flex items-center justify-evenly md:justify-between w-full px-4 h-fit`}
         >
-          <div className={`hidden lg:block max-w-[25%] w-full`}>
-            <Logo />
-          </div>
+          <Logo />
           <div
-            className={`flex items-center w-full justify-evenly lg:justify-end gap-x-3 lg:pt-2`}
+            className={`flex items-center w-full justify-evenly md:justify-end gap-x-3`}
           >
             <UserMenu
               user={user}

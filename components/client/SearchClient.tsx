@@ -158,7 +158,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
         loadOptions={loadOptions}
         onKeyDown={handleKeyDown}
         formatOptionLabel={(option: FormattedProduct) => (
-          <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-3 zmax">
             <div>{option.label}</div>
           </div>
         )}

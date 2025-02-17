@@ -140,12 +140,6 @@ const UserMenu: React.FC<Props> = ({
     ];
 
     if (user) {
-      // if (!isCartEmpty) {
-      //   icons.push({
-      //     key: "cart",
-      //     component: <CartIcon key="cart" cart={user.cart} />,
-      //   });
-      // }
       if (hasNotifications) {
         icons.push({
           key: "alerts",
@@ -189,33 +183,12 @@ const UserMenu: React.FC<Props> = ({
           {renderIcons()}
           <MenuIcon />
           <PopoverContent
-            className={`${OutfitFont.className} mb-1 w-screen sm:h-fit  sm:rounded-xl rounded-none h-[calc(100vh-70px)] py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] `}
+            className={`${OutfitFont.className} mb-3 w-screen sm:rounded-xl h-[calc(100vh-80px)] sm:h-fit py-3 border-y-[1px] border-x-none sm:w-80 md:w-[14rem] zmax`}
             align="end"
-            alignOffset={0}
+            alignOffset={-2}
           >
             {user ? (
               <>
-                {selling ? (
-                  <>
-                    <MenuItem
-                      label="Today's Obligations"
-                      onClick={() => router.push("/selling/todays-obligations")}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <MenuItem
-                      label="Market"
-                      onClick={() => router.push("/market")}
-                    />
-                    <MenuItem label="Map" onClick={() => router.push("/map")} />
-                  </>
-                )}
-                <MenuItem
-                  label="Messages"
-                  onClick={() => router.push("/chat")}
-                />
-
                 {selling ? (
                   <>
                     <MenuItem
@@ -223,6 +196,10 @@ const UserMenu: React.FC<Props> = ({
                       onClick={() =>
                         router.push("/orders?type=sales&status=active")
                       }
+                    />
+                    <MenuItem
+                      label="Messages"
+                      onClick={() => router.push("/chat")}
                     />
                     <div className={`border-t w-full my-2`} />
                     <MenuItem
@@ -252,6 +229,15 @@ const UserMenu: React.FC<Props> = ({
                   </>
                 ) : (
                   <>
+                    <MenuItem label="Map" onClick={() => router.push("/map")} />
+                    <MenuItem
+                      label="Market"
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem
+                      label="Messages"
+                      onClick={() => router.push("/chat")}
+                    />
                     <div className={`border-t w-full my-2`} />
                     <MenuItem
                       label="Purchase Orders"
@@ -264,7 +250,7 @@ const UserMenu: React.FC<Props> = ({
                       onClick={() => router.push("/my-basket")}
                     />
                     <MenuItem
-                      label="Account"
+                      label="My Account"
                       onClick={() => router.push("/account")}
                     />
                     <div className={`border-t w-full my-2`} />
@@ -274,10 +260,6 @@ const UserMenu: React.FC<Props> = ({
                     />
                   </>
                 )}
-
-                <div className="block sm:hidden">
-                  <MenuItem label="Home" onClick={() => router.push("/")} />
-                </div>
                 {user?.role === "CONSUMER" && (
                   <div>
                     <MenuItem
@@ -292,15 +274,6 @@ const UserMenu: React.FC<Props> = ({
                 )}
                 <div className={`border-t my-2`} />
                 <MenuItem label="Sign Out" onClick={() => signOut()} />
-                {/* {showInstallBtn &&
-                !window.matchMedia("(display-mode: standalone)").matches && (
-                  <Button
-                    className="w-full"
-                    onClick={() => router.push("/get-ezh-app")}
-                  >
-                    Install EZH App
-                  </Button>
-                )} */}
               </>
             ) : (
               <>
@@ -384,31 +357,10 @@ const UserMenu: React.FC<Props> = ({
           {renderIcons()}
           <MenuIcon />
           <DrawerContent
-            className={`${OutfitFont.className} pb-2 ${drawerClassName}`}
+            className={`${OutfitFont.className} pb-2 h-[75vh] ${drawerClassName}`}
           >
             {user ? (
               <>
-                {selling ? (
-                  <>
-                    <MenuItem
-                      label="Today's Obligations"
-                      onClick={() => router.push("/selling/todays-obligations")}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <MenuItem
-                      label="Market"
-                      onClick={() => router.push("/market")}
-                    />
-                    <MenuItem label="Map" onClick={() => router.push("/map")} />
-                  </>
-                )}
-                <MenuItem
-                  label="Messages"
-                  onClick={() => router.push("/chat")}
-                />
-
                 {selling ? (
                   <>
                     <MenuItem
@@ -416,6 +368,10 @@ const UserMenu: React.FC<Props> = ({
                       onClick={() =>
                         router.push("/orders?type=sales&status=active")
                       }
+                    />
+                    <MenuItem
+                      label="Messages"
+                      onClick={() => router.push("/chat")}
                     />
                     <div className={`border-t w-full my-2`} />
                     <MenuItem
@@ -445,6 +401,15 @@ const UserMenu: React.FC<Props> = ({
                   </>
                 ) : (
                   <>
+                    <MenuItem label="Map" onClick={() => router.push("/map")} />
+                    <MenuItem
+                      label="Market"
+                      onClick={() => router.push("/market")}
+                    />
+                    <MenuItem
+                      label="Messages"
+                      onClick={() => router.push("/chat")}
+                    />
                     <div className={`border-t w-full my-2`} />
                     <MenuItem
                       label="Purchase Orders"
@@ -457,7 +422,7 @@ const UserMenu: React.FC<Props> = ({
                       onClick={() => router.push("/my-basket")}
                     />
                     <MenuItem
-                      label="Account"
+                      label="My Account"
                       onClick={() => router.push("/account")}
                     />
                     <div className={`border-t w-full my-2`} />
@@ -467,10 +432,6 @@ const UserMenu: React.FC<Props> = ({
                     />
                   </>
                 )}
-
-                <div className="block sm:hidden">
-                  <MenuItem label="Home" onClick={() => router.push("/")} />
-                </div>
                 {user?.role === "CONSUMER" && (
                   <div>
                     <MenuItem

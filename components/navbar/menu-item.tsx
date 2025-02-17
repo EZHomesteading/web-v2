@@ -10,9 +10,9 @@ const MenuItem = ({ onClick, label }: MenuItemProps) => {
       className={`
         p-2
         hover:cursor-pointer
-        font-light
+        font-normal
         w-full
-        text-xl
+        text-md
         text-start
        `}
     >

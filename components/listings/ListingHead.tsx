@@ -13,14 +13,11 @@ const ListingHead = ({ listing }: ListingHeadProps) => {
           h-[60vh]
           overflow-hidden 
           relative
-          lg:rounded-md
+          pt-16
         "
       >
-        <Carousel
-          className={`sm:rounded-md
-          `}
-        >
-          <CarouselContent className="h-[60vh] lg:rounded-md ">
+        <Carousel>
+          <CarouselContent className="h-[60vh]">
             {listing.imageSrc.map((_: any, index: number) => (
               <CarouselItem
                 key={index}
@@ -29,7 +26,7 @@ const ListingHead = ({ listing }: ListingHeadProps) => {
                 <Image
                   src={listing.imageSrc[index]}
                   fill
-                  className="object-cover w-full lg:rounded-md lg:border"
+                  className="object-cover w-full lg:border"
                   alt={listing.title}
                 />
               </CarouselItem>

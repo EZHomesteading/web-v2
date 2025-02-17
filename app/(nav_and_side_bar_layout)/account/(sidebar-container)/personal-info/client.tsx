@@ -1,45 +1,41 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import LocationSearchInput from "@/components/map/LocationSearchInputSettings";
 import AccountCard from "./account-card";
 import Input from "./input";
 import { Button } from "@/components/ui/button";
 import { UploadButton } from "@/utils/uploadthing";
 import { FormValues, AddressFields } from "../../../../../types/address.types";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+import { UserInfo } from "next-auth";
+import { Location } from "@prisma/client";
+import Alert from "@/components/ui/custom-alert";
+import Toast from "@/components/ui/toast";
 
 interface PageProps {
   apiKey: string;
+  user?: UserInfo;
+  locations: Location[] | null;
+  location?: Location;
 }
 
-const Page: React.FC<PageProps> = ({ apiKey }) => {
-  const user = useCurrentUser();
+const Page: React.FC<PageProps> = ({ apiKey, user, location }) => {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const [editingCard, setEditingCard] = useState<string | null>(null);
   const [image, setImage] = useState<string | undefined>(user?.image);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(location?.address?.join(", ") || "");
   const [addressFields, setAddressFields] = useState<AddressFields>({
-    street: user?.location?.[0]?.address?.[0] || "",
-    city: user?.location?.[0]?.address?.[1] || "",
-    state: user?.location?.[0]?.address?.[2] || "",
-    zip: user?.location?.[0]?.address?.[3] || "",
-    apt: user?.location?.[0]?.address?.[4] || "",
+    street: location?.address?.[0] || "",
+    city: location?.address?.[1] || "",
+    state: location?.address?.[2] || "",
+    zip: location?.address?.[3] || "",
+    apt: location?.address?.[4] || "",
   });
 
   const truncateAddress = (address: string, maxLength: number = 60) => {
@@ -113,34 +109,48 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    const fullAddress = `${data.street}, ${data.city}, ${data.state}, ${data.zip}`;
-
-    let geoData = null;
-    if (fullAddress.trim() !== ", , , ") {
-      console.log("Calling getLatLngFromAddress with:", fullAddress);
-      geoData = await getLatLngFromAddress(fullAddress);
-      console.log("Geo data received:", geoData);
-    }
-
     const formData = {
       image,
       name: data.name,
       email: data.email,
       phoneNumber: data.phoneNumber,
-      location: geoData
-        ? {
-            0: {
-              type: "Point",
-              coordinates: [geoData.lng, geoData.lat],
-              address: [data.street, data.city, data.state, data.zip],
-              hours: user?.location?.[0]?.hours || null,
-            },
-          }
-        : user?.location,
     };
-
     try {
       await axios.post("/api/useractions/update", formData);
+      setEditingCard(null);
+    } catch (error) {
+      toast.error("Failed to update account details");
+      console.error("Update error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmitLoc: SubmitHandler<FormValues> = async (data) => {
+    setIsLoading(true);
+
+    const geoData = await getLatLngFromAddress(address);
+
+    const addressArray = [
+      addressFields.street,
+      addressFields.city,
+      addressFields.state,
+      addressFields.zip,
+      addressFields.apt,
+    ];
+
+    const formData = {
+      address: addressArray,
+      locationId: location?.id,
+      coordinates: [geoData?.lat, geoData?.lng],
+      hours: location?.hours || null,
+      role: location?.role || "COOP",
+      isDefault: location?.isDefault,
+      displayname: location?.displayName,
+    };
+    console.log(formData);
+    try {
+      await axios.post("/api/useractions/update/location-hours", formData);
       setEditingCard(null);
     } catch (error) {
       toast.error("Failed to update account details");
@@ -167,13 +177,13 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
     setEditingCard(null);
     reset();
     if (editingCard === "Address") {
-      setAddress(user?.location?.[0]?.address?.join(", ") || "");
+      setAddress(location?.address?.join(", ") || "");
       setAddressFields({
-        street: user?.location?.[0]?.address?.[0] || "",
+        street: location?.address?.[0] || "",
         apt: "",
-        city: user?.location?.[0]?.address?.[1] || "",
-        state: user?.location?.[0]?.address?.[2] || "",
-        zip: user?.location?.[0]?.address?.[3] || "",
+        city: location?.address?.[1] || "",
+        state: location?.address?.[2] || "",
+        zip: location?.address?.[3] || "",
       });
     }
   };
@@ -181,19 +191,21 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
     axios
       .delete(`/api/auth/register/${user?.id}`)
       .then(() => {
-        toast.success("Your account has been deleted");
+        Toast({ message: "Your account has been deleted" });
       })
       .catch((error) => {
         toast.error(error?.response?.data?.error);
       })
       .finally(() => {
-        location.replace("/");
+        router.replace("/");
       });
   };
   return (
     <>
-      <div className="flex flex-col ">
-        <h2 className="text-2xl font-medium pb-0">Personal Info</h2>
+      <div className="mb-20 flex flex-col md:w-1/2">
+        <h2 className="text-2xl font-medium pb-0 md:pl-8 px-1">
+          Personal Info
+        </h2>
 
         <AccountCard
           title="Username"
@@ -253,7 +265,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
           />
         </AccountCard>
         <AccountCard
-          title="Address"
+          title="Primary Address"
           info={
             truncateAddress(
               `${watchedFields.street}${
@@ -263,7 +275,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
               }`
             ) || "No Address Saved"
           }
-          onSave={handleSubmit(onSubmit)}
+          onSave={handleSubmit(onSubmitLoc)}
           isEditing={editingCard === "Address"}
           onEditStart={() => handleEditStart("Address")}
           onEditCancel={handleEditCancel}
@@ -300,14 +312,6 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
                 errors={errors}
                 required
               />
-              <Input
-                id="zip"
-                label="ZIP Code"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required
-              />
             </div>
           </>
         </AccountCard>
@@ -321,7 +325,6 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
           onEditCancel={() => setEditingCard(null)}
           isDisabled={editingCard !== null && editingCard !== "Image"}
         >
-          {" "}
           <UploadButton
             endpoint="imageUploader"
             onClientUploadComplete={(res: { url: string }[]) => {
@@ -339,7 +342,7 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
             }}
           />
         </AccountCard>
-        <AccountCard
+        {/* <AccountCard
           title="Password"
           info="**********"
           onSave={() => {}}
@@ -382,37 +385,22 @@ const Page: React.FC<PageProps> = ({ apiKey }) => {
               Change Password
             </Button>
           </div>
-        </AccountCard>
-
-        <div className="pt-8 pb-20 flex justify-center">
-          <AlertDialog>
-            <AlertDialogTrigger className="h-9 px-4 py-2 text-white bg-red-500 rounded-md w-fit">
-              Delete Account
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-black rounded-lg px-4 py-4 w-fit ">
-              <AlertDialogHeader className="text-3xl">
-                Are you sure?
-              </AlertDialogHeader>
-              <AlertDialogDescription className="text-white pt-2">
-                We cannot recover a user after it has been deleted, this is
+        </AccountCard> */}
+        <p className={`text-center mt-10 text-red-500 underline`}>
+          Danger Zone
+        </p>
+        <Alert
+          alertTriggerText="Delete Account"
+          headingText="Are you sure?"
+          subtitleText="We cannot recover a user after it has been deleted, this is
                 irreversible. All information related to this account will be
-                deleted permanently.
-              </AlertDialogDescription>
-
-              <AlertDialogFooter className="flex items-center justify-start gap-x-5 pt-3">
-                <AlertDialogAction
-                  className="shadow-none bg-red-600 text-3xl hover:bg-red-700 text-md"
-                  onClick={onDelete}
-                >
-                  Yes, I&apos;m sure
-                </AlertDialogAction>
-                <AlertDialogCancel className=" shadow-none bg-green-600 text-3xl hover:bg-green-700 text-md text-white border-none hover:text-white m-0">
-                  Nevermind
-                </AlertDialogCancel>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+                deleted permanently."
+          cancelButtonText="Cancel"
+          confirmButtonText="Delete my Account"
+          alertContentClassName="px-1"
+          alertTriggerClassName="w-80 mx-auto mb-10 py-2"
+          onClick={onDelete}
+        />
       </div>
     </>
   );

@@ -40,7 +40,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
         isDisabled ? "opacity-50 pointer-events-none" : "opacity-100"
       }`}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start md:pl-8 px-2">
         <div>
           <div className="text-md font-normal">{title}</div>
           {!isEditing && !showAvatar && (
@@ -64,7 +64,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
       </div>
       {isEditing && (
         <div
-          className={`${
+          className={`md:pl-8 ${
             showAvatar ? `flex items-center justify-start` : `mt-2`
           }`}
         >
