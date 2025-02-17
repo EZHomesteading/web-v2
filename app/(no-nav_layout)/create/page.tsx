@@ -15,6 +15,9 @@ const Page = async ({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
   const session = await auth();
+  if (!session) {
+    window.location.replace("/");
+  }
   let locations = await getUserLocations({ userId: session?.user?.id });
 
   locations = locations?.filter((loc) => loc.role !== UserRole.CONSUMER); // i hate javascript

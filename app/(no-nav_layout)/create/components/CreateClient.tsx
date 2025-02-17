@@ -592,6 +592,7 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
                       onClick={() => {
                         setValue("locationId", location?.id);
                         setValue("locationRole", location.role);
+                        setSelectedLoc(location);
                       }}
                       key={location?.id}
                     >
@@ -614,12 +615,10 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
                   {locations?.length < 5 && (
                     <Link
                       href={`/new-location-and-hours`}
-                      className={`w-full border !border-k relative py-8 rounded-sm shadow-md 
+                      className={`text-gray-500 w-full border !border-k relative py-8 rounded-sm shadow-md text-base font-medium text-center
                     `}
                     >
-                      <p className={`text-base font-medium text-center`}>
-                        Create New Selling Location
-                      </p>
+                      Create New Selling Location
                     </Link>
                   )}
                 </section>
