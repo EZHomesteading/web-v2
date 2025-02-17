@@ -104,6 +104,8 @@ const Body: React.FC<BodyProps> = ({
     if (
       lastMessage.messageOrder === "BUYER_ACCEPTED" ||
       lastMessage.messageOrder === "PICKED_UP" ||
+      lastMessage.messageOrder === "CANCELED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "COMPLETED" ||
       lastMessage.messageOrder === "IN_TRANSIT" ||
       lastMessage.messageOrder === "SELLER_PREPARING" ||
@@ -124,6 +126,8 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "SELLER_RESCHEDULED" ||
       lastMessage.messageOrder === "BUYER_RESCHEDULED" ||
       lastMessage.messageOrder === "BUYER_ACCEPTED" ||
+      lastMessage.messageOrder === "CANCELED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "COMPLETED" ||
       lastMessage.messageOrder === "IN_TRANSIT" ||
       lastMessage.messageOrder === "SELLER_PREPARING" ||
