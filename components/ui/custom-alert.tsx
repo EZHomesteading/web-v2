@@ -28,7 +28,7 @@ interface p {
 export default function Alert({
   onClick,
   alertTriggerText,
-  alertContentClassName,
+  alertContentClassName = "sheet",
   alertTriggerClassName,
   headingText,
   headingClassName,
@@ -60,7 +60,7 @@ export default function Alert({
       </AlertDialogTrigger>
       <AlertDialogContent
         className={cn(
-          `${OutfitFont.className} sheet pt-3 h-64 w-80 rounded-xl border shadow-xl !border-black zmax`,
+          `${OutfitFont.className} bg-white pt-3 h-64 w-80 rounded-xl border shadow-xl !border-black zmax`,
           alertContentClassName
         )}
       >
