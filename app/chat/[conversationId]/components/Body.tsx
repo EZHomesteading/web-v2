@@ -245,6 +245,7 @@ const Body: React.FC<BodyProps> = ({
     <div className="flex-1 overflow-y-auto">
       {user.id === order?.sellerId ? (
         <CancelModal
+          orderGroupId={orderGroupId}
           isOpen={cancelOpen}
           onClose={() => setCancelOpen(false)}
           order={order}
@@ -255,6 +256,7 @@ const Body: React.FC<BodyProps> = ({
         />
       ) : (
         <CancelModal
+          orderGroupId={orderGroupId}
           isOpen={cancelOpen}
           onClose={() => setCancelOpen(false)}
           order={order}
@@ -283,6 +285,7 @@ const Body: React.FC<BodyProps> = ({
         orderId={order?.id}
       />
       <RefundModal
+        orderGroupId={orderGroupId}
         isOpen={refundOpen}
         onClose={() => setRefundOpen(false)}
         orderId={order?.id}
