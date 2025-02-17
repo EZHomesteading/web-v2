@@ -207,8 +207,7 @@ const CreateClient = ({ user, locations, defaultLocation }: Props) => {
       )
     );
   };
-  console.log("sub cat", subCategory);
-  //geocoding from autocompleted adress inputs
+
   const onSubmit: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     setIsLoading(true);
     const formattedPrice = parseFloat(parseFloat(data.price).toFixed(2));

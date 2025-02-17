@@ -8,7 +8,7 @@ import NavbarClient from "@/components/navbar/navbar.client";
 import { NavUser } from "@/actions/getUser";
 
 interface p {
-  user?: NavUser;
+  user: NavUser | null;
   className?: string;
 }
 

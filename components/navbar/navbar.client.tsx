@@ -1,9 +1,10 @@
 import UserMenu from "./menu";
 import { NavUser } from "@/actions/getUser";
 import Logo from "./Logo";
+import { cn } from "@/lib/utils";
 
 interface NavbarProps {
-  user?: NavUser;
+  user: NavUser | null;
   // uniqueUrl?: string;
   // canReceivePayouts,
   className: string;
@@ -25,7 +26,10 @@ const Navbar = ({
   return (
     <>
       <div
-        className={`fixed bottom-0 left-0 right-0 md:top-0 border-t md:border-none py-3 z-1 w-screen h-20 ${className}`}
+        className={cn(
+          "fixed bottom-0 left-0 right-0 md:top-0 border-t py-3 z-1 w-screen h-20",
+          className
+        )}
       >
         <div
           className={`flex items-center justify-evenly md:justify-between w-full px-4 h-fit`}

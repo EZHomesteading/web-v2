@@ -15,10 +15,16 @@ const SettingPage = async () => {
   );
   const data = await res.json();
   locations = data.items;
-  console.log(locations);
   const location = locations.find((loc) => loc.isDefault === true);
 
-  return <Page apiKey={apiKey} locations={locations} user={session?.user} />;
+  return (
+    <Page
+      apiKey={apiKey}
+      locations={locations}
+      user={session?.user}
+      location={location}
+    />
+  );
 };
 
 export default SettingPage;
