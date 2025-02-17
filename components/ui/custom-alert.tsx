@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+"use client";
+import { ReactNode, useState } from "react";
 import { OutfitFont } from "../fonts";
 import {
   AlertDialog,
@@ -39,8 +40,15 @@ export default function Alert({
   children,
   icon,
 }: p) {
+  const [open, setOpen] = useState(false);
+  function handleConfirm() {
+    if (onClick) {
+      onClick();
+    }
+    setOpen(false);
+  }
   return (
-    <AlertDialog>
+    <AlertDialog onOpenChange={setOpen} open={open}>
       <AlertDialogTrigger
         className={cn(
           "text-md sm:text-xl font-light w-full my-2 border py-4 rounded-sm text-white justify-center text-center flex relative bg-red-500/80",
@@ -82,7 +90,7 @@ export default function Alert({
               "w-1/2 hover:cursor-pointer hover:bg-red-400 text-red-600 h-full rounded-br-xl",
               confirmButtonClassName
             )}
-            onClick={onClick}
+            onClick={handleConfirm}
           >
             {confirmButtonText}
           </button>

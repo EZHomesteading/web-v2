@@ -15,7 +15,7 @@ import { OutfitFont, ZillaFont } from "@/components/fonts";
 
 interface p {
   step: number;
-  role: string;
+  role?: string;
 }
 const Help = ({ step, role }: p) => {
   const isMdOrLarger = useMediaQuery("(min-width: 768px)");

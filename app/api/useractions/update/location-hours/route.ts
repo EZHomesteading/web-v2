@@ -25,7 +25,6 @@ export async function POST(request: Request) {
     let updatedLocation;
 
     const { locationId, isDefault } = body;
-    console.log(displayName, "display name from server body");
 
     if (locationId) {
       updatedLocation = await prisma.location.update({

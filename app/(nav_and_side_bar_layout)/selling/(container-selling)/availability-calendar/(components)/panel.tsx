@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   PiCalendarBlankThin,
   PiMapPin,
-  PiPencilBold,
+  PiMapTrifold,
   PiPlus,
   PiPlusBold,
   PiTrash,
@@ -15,12 +15,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { LocationSelector } from "./helper-components-calendar";
 import { useCurrentRole } from "@/hooks/user/use-current-role";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Location } from "@prisma/client";
 import Link from "next/link";
 import SetDefaultButton from "./set-default-button";
@@ -28,6 +22,7 @@ import { OutfitFont } from "@/components/fonts";
 import ListingMap from "@/components/map/listing-map";
 import Toast from "@/components/ui/toast";
 import Alert from "@/components/ui/custom-alert";
+
 export interface PanelProps {
   content: ReactNode;
   onClose: () => void;
@@ -70,11 +65,12 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
     zip: "",
   });
   const [displayName, setDisplayName] = useState(location?.displayName);
+  const [validDisplayName, setValidDisplayName] = useState(displayName);
   const [geoResult, setGeoResult] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
-
+  const [showMap, setShowMap] = useState(false);
   const handleAddressChange = (field: string, value: string) => {
     setAddress((prev) => ({ ...prev, [field]: value }));
   };
@@ -284,14 +280,8 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
       );
 
       if (response.status === 200) {
-        const newLocation = response.data.locations?.[0];
-        const locationId = newLocation?.id;
         Toast({ message: "Updated Location Display Name" });
-        if (locationId) {
-          router.replace(`/selling/availability-calendar/${locationId}`);
-        } else {
-          router.replace(`/selling/availability-calendar`);
-        }
+        setValidDisplayName(response.data.displayName);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -304,10 +294,12 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
   const displayNameLength = displayName?.length;
   const basePanel: PanelProps = {
     content: (
-      <div
-        className={`${OutfitFont.className} flex justify-center w-full pt-2`}
-      >
-        <div className={`w-full sm:w-2/3 md:w-1/2 ${panelSide && "!w-full"}`}>
+      <div className={` flex justify-center w-full pt-2`}>
+        <div
+          className={`w-full sm:w-2/3 md:w-1/2 relative h-full ${
+            panelSide && "!w-full"
+          }`}
+        >
           {!panelSide && (
             <Button
               onClick={() => {
@@ -321,29 +313,23 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
           )}
           <div className="flex flex-col justify-between">
             <LocationSelector
-              displayName={location?.displayName}
+              displayName={validDisplayName}
               id={id}
               address={location?.address}
               locations={locations}
               pathname={pathname}
             />
           </div>
-
+          <button
+            className="!text-base font-medium shadow-md relative flex justify-between w-full mt-2 border py-5 rounded-sm px-2 sm:px-4 bg-inherit text-black hover:text-white !border-black"
+            onClick={() => {
+              router.push(`/create?id=${location?.id}`);
+            }}
+          >
+            Create Listing at this Location
+            <PiPlus className={`absolute right-1 top-5 h-6 w-6`} />
+          </button>
           <div className="mt-2 mb-32 relative">
-            <Link
-              className="!text-base  font-medium w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black shadow-md"
-              href={`/create?id=${location?.id}`}
-            >
-              Create New Listing at this Location
-              <PiPlusBold className={`absolute right-1 top-5 h-6 w-6`} />
-            </Link>
-            <div className={`relative`}>
-              <ListingMap
-                apiKey={mk}
-                lat={geoResult?.lat || location?.coordinates[1] || 38}
-                lng={geoResult?.lng || location?.coordinates[0] || -84}
-              />
-            </div>
             <Alert
               alertTriggerText="Edit Display Name"
               alertTriggerClassName="bg-inherit hover:text-white text-black !border-black !text-base font-semibold justify-start px-2 sm:px-4  !text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black"
@@ -472,7 +458,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 Edit Address
                 <PiMapPin className={`absolute right-1 top-5 h-6 w-6`} />
               </button>
-            )}{" "}
+            )}
             {!location?.isDefault && (
               <SetDefaultButton
                 street={location?.address[0]}
@@ -482,7 +468,27 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
                 title="Set as Default Location"
               />
             )}
-            <p className={`text-red-500 text-center text-sm mt-10`}>
+            <button
+              className="!text-base font-medium shadow-md w-full my-2 border py-5 rounded-sm justify-between px-2 sm:px-4 flex relative bg-inherit text-black hover:text-white !border-black"
+              onClick={() => {
+                setShowMap(!showMap);
+              }}
+            >
+              {!showMap ? "View Location on" : "Hide"} Map
+              <PiMapTrifold className={`absolute right-1 top-5 h-6 w-6`} />
+            </button>
+            {showMap && (
+              <div className={`relative`}>
+                <ListingMap
+                  apiKey={mk}
+                  lat={geoResult?.lat || location?.coordinates[1] || 38}
+                  lng={geoResult?.lng || location?.coordinates[0] || -84}
+                  scrollWheel={false}
+                  gestureHandling="none"
+                />
+              </div>
+            )}
+            <p className={`text-red-500 text-center text-sm mt-3`}>
               Danger Zone
             </p>
             <Alert
@@ -496,7 +502,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
               onClick={handleDeleteLocation}
               icon={<PiTrash className={`absolute right-1 top-5 h-6 w-6`} />}
             />
-          </div>
+          </div>{" "}
         </div>
       </div>
     ),
@@ -534,7 +540,7 @@ const StackingPanelLayout: React.FC<StackingPanelLayoutProps> = ({
             {allPanels.map((panel, index) => (
               <motion.div
                 key={index}
-                className={`sheet border-l overflow-y-auto px-6 z mb-2 pt-6  ${
+                className={`sheet border-l overflow-y-auto px-6 z mb-2 pt-6 md:pt-20 xl:pt-6 ${
                   panelSide ? "w-96" : "fixed bottom-0 left-0 right-0"
                 }`}
                 style={getPanelStyle(index)}

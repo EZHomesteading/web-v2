@@ -41,17 +41,13 @@ async function getLocationsById(locationIds: string[]): Promise<{
   }
 }
 
-interface GetUserLocationParams {
-  userId: string;
-  index: number;
-}
 const getUserLocations = async ({
   userId,
 }: {
   userId?: string;
-}): Promise<Location[] | null> => {
+}): Promise<Location[] | []> => {
   if (!userId) {
-    return null;
+    return [];
   }
 
   try {
@@ -63,9 +59,7 @@ const getUserLocations = async ({
 
     return locations;
   } catch (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Unknown error occurred"
-    );
+    return [];
   }
 };
 

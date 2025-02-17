@@ -13,9 +13,18 @@ interface MapProps {
   lng: number;
   apiKey: string;
   height?: string;
+  scrollWheel?: boolean;
+  gestureHandling?: string;
 }
 
-const ListingMap = ({ height, lat, lng, apiKey }: MapProps) => {
+const ListingMap = ({
+  scrollWheel = true,
+  gestureHandling = "greedy",
+  height,
+  lat,
+  lng,
+  apiKey,
+}: MapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [zoom, setZoom] = useState(12);
@@ -43,14 +52,15 @@ const ListingMap = ({ height, lat, lng, apiKey }: MapProps) => {
         clickableIcons: false,
         zoom: zoom,
         fullscreenControl: false,
-        zoomControl: false,
+        zoomControl: scrollWheel,
         keyboardShortcuts: false,
+        scrollwheel: scrollWheel,
         mapTypeControl: false,
         maxZoom: MAX_ZOOM,
         minZoom: MIN_ZOOM,
         mapTypeId: "roadmap",
         disableDoubleClickZoom: true,
-        gestureHandling: "greedy",
+        gestureHandling: gestureHandling,
       };
 
       const newMap = new Map(mapRef.current as HTMLDivElement, mapOptions);
@@ -139,14 +149,14 @@ const ListingMap = ({ height, lat, lng, apiKey }: MapProps) => {
               size={25}
               className={`hover:cursor-pointer`}
               onClick={() =>
-                setZoom((prevZoom) => Math.min(prevZoom + 1, MAX_ZOOM))
+                setZoom((prevZoom) => Math.min(prevZoom + 0.5, MAX_ZOOM))
               }
             />
             <hr className={`w-full border-t`} />
             <PiMagnifyingGlassMinusThin
               className={`hover:cursor-pointer`}
               onClick={() =>
-                setZoom((prevZoom) => Math.max(prevZoom - 1, MIN_ZOOM))
+                setZoom((prevZoom) => Math.max(prevZoom - 0.5, MIN_ZOOM))
               }
               size={25}
             />

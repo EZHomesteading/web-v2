@@ -1,11 +1,12 @@
-import { currentUser } from "@/lib/auth";
 import CreateClient from "./components/CreateClient";
 import type { Viewport } from "next";
 import CreatePopup from "../../(white_nav_layout)/info-modals/create-info-modal";
 import { getUserLocations } from "@/actions/getLocations";
+import { auth } from "@/auth";
+import { UserRole } from "@prisma/client";
 
 export const viewport: Viewport = {
-  themeColor: "rgb(255,255,255)",
+  themeColor: "#fff",
 };
 
 const Page = async ({
@@ -13,38 +14,24 @@ const Page = async ({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  const user = await currentUser();
-  let index = 1;
+  const session = await auth();
+  let locations = await getUserLocations({ userId: session?.user?.id });
 
-  if (!user?.id) {
-    return null;
-  }
-  const locations = await getUserLocations({ userId: user?.id });
-  const res = await fetch(
-    `${process.env.API_URL}/get-many?collection=Location&key=userId&value=${user?.id}`
+  locations = locations?.filter((loc) => loc.role !== UserRole.CONSUMER); // i hate javascript
+
+  const defaultLocation = locations?.find(
+    (loc) => loc?.id === searchParams?.id && loc.role !== UserRole.CONSUMER
   );
-  const locations2 = await res.json();
-  let defaultId: string = "";
-  if (searchParams) {
-    let defaultLocation = locations?.find((loc) => loc.id === searchParams.id);
-    if (defaultLocation) {
-      defaultId = defaultLocation.id;
-    }
-  }
+
   return (
-    <div>
-      {user && (
-        <>
-          <CreateClient
-            defaultId={defaultId}
-            index={index}
-            user={user}
-            locations={locations}
-          />
-          <CreatePopup />
-        </>
-      )}
-    </div>
+    <>
+      <CreateClient
+        user={session?.user}
+        locations={locations}
+        defaultLocation={defaultLocation}
+      />
+      <CreatePopup />
+    </>
   );
 };
 export default Page;

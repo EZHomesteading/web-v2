@@ -354,6 +354,11 @@ button:focus {
 .bg {
   background-color: #e3eac9 !important;
 }
+@media (min-width: 1160px) {
+  .custom-breakpoint {
+    padding-top: 1.5rem; 
+  }
+}
 .popover {
   border: none !important;
   width: 20rem !important;
