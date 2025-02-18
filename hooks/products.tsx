@@ -1834,32 +1834,32 @@ const defaultProducts = [
       "https://ruhn2hhuu8.ufs.sh/f/https://ruhn2hhuu8.ufs.sh/f/UE11RVNWlVtTTVZP8PTakhdpB7DiweAVGP4N9qnvjMZ8LgFO",
   },
   {
-    title: "PineApples",
+    title: "Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },
   {
-    title: "Smooth Cayenne PineApples",
+    title: "Smooth Cayenne Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },
   {
-    title: "Red Spanish PineApples",
+    title: "Red Spanish Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },
   {
-    title: "Sugarloaf PineApples",
+    title: "Sugarloaf Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },
   {
-    title: "Hilo PineApples",
+    title: "Hilo Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },
   {
-    title: "Pernambuco PineApples",
+    title: "Pernambuco Pineapple",
     subCategory: "fruit",
     photo: "/images/product-images/pineapple.webp",
   },

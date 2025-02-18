@@ -7,11 +7,30 @@ import { UserInfo } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { CiApple, CiHome } from "react-icons/ci";
 import { GiRopeCoil } from "react-icons/gi";
 import { LuBeef } from "react-icons/lu";
 import { PiArrowRight } from "react-icons/pi";
+import {
+  CapitalizeWords,
+  FilterAndAppendWords,
+  isValidCategory,
+  KeywordInput,
+  SubCategories,
+  SubCategoryIcons,
+  TitleCase,
+} from "./helpers";
+import useProducts, { FormattedProduct } from "@/hooks/use-product";
+import { Checkbox } from "@/components/ui/checkbox";
+import SearchClient from "@/components/client/SearchClient";
+import { Textarea } from "@/components/ui/textarea";
 
 type ListingFormData = {
   title: string;
@@ -30,6 +49,7 @@ type ListingFormData = {
   harvestDates?: string[];
   keyWords: string[];
   harvestType?: string;
+  review: boolean;
 };
 
 const initialFormData: ListingFormData = {
@@ -45,6 +65,7 @@ const initialFormData: ListingFormData = {
   SODT: 0,
   shelfLife: 0,
   keyWords: [],
+  review: false,
 };
 
 export default function CreateClient({
@@ -89,7 +110,11 @@ export default function CreateClient({
         );
       case 4:
         return (
-          <DetailsStep formData={formData} updateFormData={updateFormData} />
+          <DetailsStep
+            formData={formData}
+            updateFormData={updateFormData}
+            tempVarSubCategory={formData.subCategory}
+          />
         );
       case 5:
         return (
@@ -122,29 +147,51 @@ export default function CreateClient({
     }
   };
 
+  function validSubCategoryWithinCategory(formData: ListingFormData) {
+    if (!isValidCategory(formData.category)) {
+      return false;
+    }
+    return SubCategories[formData.category].includes(formData.subCategory);
+  }
+
   const validate = () => {
+    if (step === 1 && !selectedLoc) {
+      return false;
+    }
+    if (step === 2 && !formData.category) {
+      return false;
+    }
+    if (
+      step === 3 &&
+      (!formData.subCategory || !validSubCategoryWithinCategory(formData)) // basically i want the user to be able to go back but they cant select sub cat of fruit then go back to category and select durable then becuase theyve technically selected a subcategory, they can click next
+    ) {
+      return false;
+    }
     return true;
   };
 
   return (
     <div className={`relative min-h-screen ${OutfitFont.className}`}>
       <Header loc={selectedLoc} />
-
       <div className="absolute top-20 bottom-20 left-0 right-0">
-        <div className="h-full flex flex-col justify-center items-center md:my-16">
-          <div className="overflow-y-auto bg-white min-h-full sm:px-20 px-6 pb-12 md:pb-0 max-w-6xl md:my-16 flex items-center w-full flex-col">
-            {renderStep()}
+        <div className="h-full flex flex-col justify-center items-center">
+          <div className="overflow-y-auto bg-white min-h-full flex justify-center w-full md:my-20 md:px-20 px-6">
+            <div
+              className={`max-w-6xl w-full mb-6 flex justify-center ${
+                step !== 4 && "md:my-20"
+              }`}
+            >
+              {renderStep()}
+            </div>
           </div>
         </div>
       </div>
-
       <Footer
         step={step}
         setStep={setStep}
         canProceed={validate()}
         onSubmit={handleSubmit}
         isLastStep={step === 7}
-        formData={formData}
       />
     </div>
   );
@@ -170,7 +217,7 @@ const LocationStep = ({
           <section className={`flex flex-col gap-y-3 w-full max-w-lg`}>
             {locs.map((loc: Location) => (
               <button
-                className={`w-full border !border-k relative h-24 rounded-sm shadow-md ${
+                className={`w-full border !border-k relative h-28 rounded-sm shadow-md ${
                   selectedLoc?.id === loc?.id && "bg-black text-white"
                 }`}
                 onClick={() => {
@@ -195,8 +242,7 @@ const LocationStep = ({
             {locs?.length < 5 && (
               <Link
                 href={`/new-location-and-hours`}
-                className={`text-gray-500 w-full border !border-k relative py-8 rounded-sm shadow-md text-base font-medium text-center
-            `}
+                className={`!border-k h-28 text-gray-500 w-full border !border-k relative py-8 rounded-sm shadow-md text-base font-medium text-center flex items-center justify-center`}
               >
                 Create New Selling Location
               </Link>
@@ -215,7 +261,6 @@ const LocationStep = ({
             href={`/new-location-and-hours`}
             className={`items-center border p-4 shadow-md text-base sm:text-xl group font-medium rounded-full flex justify-between !border-black absolute top-1/3 right-1/2 transform translate-x-1/2 w-full max-w-[350px]`}
           >
-            Create a new Selling Location
             <PiArrowRight
               className={`text-xl ml-3 hover:translate-x-3  duration-300 group-hover:translate-x-2`}
             />
@@ -330,24 +375,227 @@ const SubCategoryStep = ({
   formData: ListingFormData;
   updateFormData: (field: keyof ListingFormData, value: any) => void;
 }) => {
+  if (!isValidCategory(formData?.category)) {
+    return null;
+  }
   return (
     <div className="fade-in flex flex-col items-center w-full">
       <Heading
         title="Select a Subcategory"
         subtitle="Which of these best describes your listing"
       />
+      <div className={`grid grid-cols-2 w-full gap-2 max-w-2xl`}>
+        {SubCategories[formData.category].map((sub) => (
+          <SubCategoryCard
+            key={sub}
+            value={sub.replace("-", " ")}
+            className={`${
+              formData.subCategory === sub && "bg-black text-white"
+            }`}
+            onClick={() => updateFormData("subCategory", sub)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
+interface SubCategoryProps {
+  value: string;
+  className?: string;
+  onClick: () => void;
+}
+
+const SubCategoryCard = ({ value, onClick, className }: SubCategoryProps) => (
+  <button
+    className={cn(
+      `w-full rounded-md shadow-md hover:cursor-pointer min-h-[66px] border hover:!border-black`,
+      className
+    )}
+    onClick={onClick}
+  >
+    <div className={`rounded-xl p-4 flex justify-between items-center`}>
+      <div className="text-lg font-extralight">{CapitalizeWords(value)}</div>
+      <div className="mb-1">{SubCategoryIcons[value]}</div>
+    </div>
+  </button>
+);
+
 const DetailsStep = ({
   formData,
   updateFormData,
+  tempVarSubCategory,
 }: {
   formData: ListingFormData;
   updateFormData: (field: keyof ListingFormData, value: any) => void;
+  tempVarSubCategory: string;
 }) => {
-  return <></>;
+  const [product, setProduct] = useState<FormattedProduct | null>(null);
+  const { getAll, searchProducts } = useProducts();
+  const [checked, setChecked] = useState(false);
+  const [keyword, setKeyword] = useState("");
+
+  useEffect(() => {
+    if (formData.subCategory === "custom") {
+      setProduct(null);
+    }
+  }, [formData.subCategory]);
+
+  useEffect(() => {
+    setChecked(formData.subCategory === "custom");
+  }, [formData.subCategory]);
+
+  const handleCustomAction = (value: string) => {
+    const titleCasedValue = TitleCase(value);
+    updateFormData("title", titleCasedValue);
+    updateFormData("imageSrc", []);
+    handleCheckboxChange(true);
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setChecked(checked);
+
+    if (checked) {
+      updateFormData("subCategory", "custom");
+      updateFormData("review", true);
+    } else {
+      updateFormData("subCategory", tempVarSubCategory);
+      updateFormData("review", false);
+    }
+  };
+
+  const handleProductChange = (value: FormattedProduct | null) => {
+    setProduct(value);
+    if (value) {
+      updateFormData("title", value.label);
+      updateFormData("imageSrc", value.photo ? [value.photo] : []);
+    } else {
+      updateFormData("title", "");
+      updateFormData("imageSrc", []);
+    }
+  };
+
+  const buildKeyWords = (desc: string) => {
+    const keywordarr = FilterAndAppendWords(desc);
+    const noDupeKeywordArr = Array.from(new Set(keywordarr));
+    updateFormData("keyWords", noDupeKeywordArr);
+  };
+
+  const handleAddTag = () => {
+    if (!keyword.trim()) return;
+    const tagArr = [...formData.keyWords];
+    tagArr.push(keyword);
+    const noDupe = Array.from(new Set(tagArr));
+    updateFormData("keyWords", noDupe);
+    setKeyword("");
+  };
+
+  const handleRemoveKeyword = (index: number) => {
+    const arr = formData.keyWords.splice(index, 1);
+    updateFormData("keyWords", arr);
+  };
+
+  const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
+    if (
+      !/^[a-z]$/.test(e.key.toLowerCase()) &&
+      e.key !== "Backspace" &&
+      e.key !== "Delete"
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <div className="fade-in flex flex-col w-full max-w-xl">
+      <div className={`flex w-full justify-center`}>
+        <Heading
+          title="Name & Describe your Listing"
+          subtitle="Use an existing title or create your own, keywords aren't public"
+        />
+      </div>
+
+      {formData.subCategory === "custom" ? (
+        <>
+          <div className={`w-full`}>
+            <input
+              className="flex min-h-[62px] text-base w-full rounded-sm border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              id="title"
+              placeholder={formData.title ? formData.title : "Custom Title"}
+              maxLength={64}
+              onChange={(e) => {
+                updateFormData("title", e.target.value);
+              }}
+              value={formData.title}
+            />
+            <div className={`flex gap-x-2 mt-4`}>
+              <Checkbox
+                checked={checked}
+                onCheckedChange={(checked: boolean) =>
+                  handleCheckboxChange(checked)
+                }
+                className={``}
+              />
+              <div>
+                <p className={`text-sm font-medium`}>Use a Custom Title</p>
+                <p className={`text-xs font-light text-gray-700`}>
+                  Your title will be reviewed by EZH before the listing is
+                  visible to buyers
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>
+          <SearchClient
+            title={formData.title}
+            subcat={formData.subCategory}
+            value={product}
+            onCustomAction={handleCustomAction}
+            customActionLabel="Create a Custom Title"
+            onChange={handleProductChange}
+            searchProducts={searchProducts}
+            getAll={getAll}
+            className={`w-full`}
+            onCustomTitleSet={() => {}}
+          />
+        </div>
+      )}
+      <hr className={`my-4`} />
+      <Textarea
+        id="description"
+        placeholder="Description"
+        // disabled={isLoading}
+        className="h-[30vh] shadow-sm text-base"
+        maxLength={500}
+        onChange={(e) => {
+          updateFormData("description", e.target.value);
+          buildKeyWords(e.target.value);
+        }}
+        value={formData.description}
+      />
+
+      <hr className={`my-4`} />
+      <KeywordInput
+        keywords={formData.keyWords}
+        onAddKeyword={(keyword) => {
+          const tagArr = [...formData.keyWords];
+          tagArr.push(keyword);
+          const noDupe = Array.from(new Set(tagArr));
+          updateFormData("keyWords", noDupe);
+        }}
+        onRemoveKeyword={(index) => {
+          const tagArr = [...formData.keyWords];
+          tagArr.splice(index, 1);
+          updateFormData("keyWords", tagArr);
+        }}
+      />
+    </div>
+  );
 };
 
 const QualitiesStep = ({
@@ -426,7 +674,7 @@ const Header = ({ loc }: { loc?: Location }) => {
 
 const Heading = ({ title, subtitle }: { title: string; subtitle?: string }) => {
   return (
-    <div className={`text-start md:text-center  max-w-sm w-full pb-2`}>
+    <div className={`text-start md:text-center  max-w-xl w-full pb-2`}>
       <p className={`font-semibold text-2xl`}>{title}</p>
       <p className={`font-medium text-lg text-gray-600`}>{subtitle}</p>
     </div>
@@ -439,24 +687,19 @@ const Footer = ({
   canProceed,
   onSubmit,
   isLastStep,
-  formData,
 }: {
   step: number;
   setStep: Dispatch<SetStateAction<number>>;
   canProceed: boolean;
   onSubmit: () => void;
   isLastStep: boolean;
-  formData: ListingFormData;
 }) => {
-  function nextButtonDisabled() {
-    return false;
-  }
   return (
     <div className="fixed bottom-0 left-0 right-0 h-20 bg-white border-t z-10 flex items-center justify-between px-6">
       <button
         onClick={() => setStep((prev) => Math.max(1, prev - 1))}
         disabled={step === 1}
-        className="px-4 py-2 font-medium bg-gray-100 rounded disabled:opacity-50"
+        className="px-4 py-2 font-medium disabled:opacity-50"
       >
         Back
       </button>
@@ -465,7 +708,7 @@ const Footer = ({
         {!isLastStep ? (
           <button
             onClick={() => setStep((prev) => prev + 1)}
-            disabled={!nextButtonDisabled}
+            disabled={!canProceed}
             className="px-4 font-medium  py-2 bg-black text-white rounded disabled:opacity-50"
           >
             Next

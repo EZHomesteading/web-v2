@@ -11,16 +11,6 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 
-// interface ProductSelectProps {
-//   value: FormattedProduct | null;
-//   subcat: string;
-//   onChange: (value: FormattedProduct | null) => void;
-//   onCustomAction: (value: string) => void;
-//   customActionLabel: string;
-//   searchProducts: (query: string) => FormattedProduct[];
-//   getAll: () => FormattedProduct[];
-// }
-
 interface ProductSelectProps {
   title: string;
   value: FormattedProduct | null;
@@ -31,6 +21,7 @@ interface ProductSelectProps {
   searchProducts: (query: string) => FormattedProduct[];
   getAll: () => FormattedProduct[];
   onCustomTitleSet: () => void; // New prop
+  className?: string;
 }
 
 const SearchClient: React.FC<ProductSelectProps> = ({
@@ -43,6 +34,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
   getAll,
   onCustomTitleSet,
   title,
+  className,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedOption, setSelectedOption] = useState<FormattedProduct | null>(
@@ -139,15 +131,15 @@ const SearchClient: React.FC<ProductSelectProps> = ({
 
   const handleUseCustomTitle = () => {
     onCustomAction(customTitleInput);
-    onCustomTitleSet();
+    onCustomTitleSet && onCustomTitleSet();
     setIsModalOpen(false);
   };
 
   return (
-    <div>
+    <>
       <AsyncSelect
         ref={selectRef}
-        placeholder={title ? title : "Enter A Product Name"}
+        placeholder={"Custom Title"}
         isClearable
         cacheOptions
         defaultOptions
@@ -167,9 +159,9 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           IndicatorSeparator: () => null,
         }}
         classNames={{
-          control: () => "p-2 shadow-sm h-[62px]",
-          input: () => "text-md text-black",
-          option: () => "text-xs",
+          control: () => `h-[62px] p-2 shadow-sm text-black ${className}`,
+          input: () => "text-base text-black",
+          option: () => "text-xs hover:bg-gray-100 hover:cursor-pointer",
         }}
         theme={(theme) => ({
           ...theme,
@@ -198,7 +190,7 @@ const SearchClient: React.FC<ProductSelectProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

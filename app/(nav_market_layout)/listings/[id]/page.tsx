@@ -95,14 +95,17 @@ export default async function ListingPage({
                   {listing.title}
                 </div>
               </div>
-              <div
+              <Link
+                href={`/my-basket`}
                 className={`flex  hover:cursor-pointer justify-start items-start space-x-1`}
               >
                 <div>
                   <PiBasketThin className="text-2xl" />
                 </div>
-                <div className={`text-md underline font-normal`}>Save</div>
-              </div>
+                <div className={`text-md underline font-normal`}>
+                  My Baskets
+                </div>
+              </Link>
             </div>
           </div>
           <ListingHead listing={listing} />

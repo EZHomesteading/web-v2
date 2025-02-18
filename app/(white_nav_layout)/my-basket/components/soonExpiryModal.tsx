@@ -1,15 +1,10 @@
 "use client";
 
+import { OutfitFont } from "@/components/fonts";
 import Modal from "@/components/modals/chatmodals/Modal";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 
-import { Outfit } from "next/font/google";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
 interface CustomTimeProps {
   isOpen?: boolean;
   onClose: () => void;
@@ -26,7 +21,7 @@ const SoonExpiryModal: React.FC<CustomTimeProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div
-        className={`${outfit.className} flex flex-col justify-between h-full`}
+        className={`${OutfitFont.className} flex flex-col justify-between h-full`}
       >
         <div>
           {expiryArr.map((expiryObj: any) => {
