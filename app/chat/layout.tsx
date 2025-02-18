@@ -22,7 +22,7 @@ export default async function ConversationsLayout({
     <div className="min-h-screen bg-chat">
       <Navbar user={navUser as unknown as NavUser} />
 
-      <div className={`pt-32`}>
+      <div className={`sm:pt-16 md:pt-32`}>
         {/* pt subject to change */}
         <ConversationList
           title="Messages"

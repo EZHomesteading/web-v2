@@ -538,7 +538,7 @@ const Body: React.FC<BodyProps> = ({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="pb-[100px] sm:pb-[150px]"></div>
+      <div className={`pb-12 sm:pb-0`}></div>
       {messages.map((message, i) => (
         <MessageBox
           messagesLength={messages.length}

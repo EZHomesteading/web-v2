@@ -1,17 +1,8 @@
 "use client";
 //header component for chat pages, simply displays some information about the chat.
 import Link from "next/link";
-import useOtherUser from "@/hooks/messenger/useOtherUser";
 import { HiChevronLeft } from "react-icons/hi";
-import { FullConversationType } from "@/types";
-import { useRouter } from "next/navigation";
-import { Order, Reviews } from "@prisma/client";
-import { Outfit } from "next/font/google";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { OutfitFont } from "@/components/fonts";
 
 interface HeaderProps {
   name: string;
@@ -21,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ name }) => {
   return (
     <>
       <div
-        className={`${outfit.className} h-12 w-full lg:max-w-[calc(100%-320px)] pt-1 sm:mt-[-49px]  z-[10] bg-[#F1EFE7]  fixed 
+        className={`${OutfitFont.className} h-12 w-full lg:max-w-[calc(100%-320px)] pt-1 sm:mt-[-49px]  z-[10] bg-[#F1EFE7]  fixed 
         flex 
         border-b-[1px]
         pb-2
