@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
-import toast from "react-hot-toast";
+//import toast from "react-hot-toast";
 import CancelModal from "./CancelModal";
 import { Listing, OrderStatus, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
@@ -66,6 +66,7 @@ interface MessageBoxProps {
   user: ChatUser;
   stripeAccountId?: string | null;
   messagesLength: number;
+  orderGroupId: string | null;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -80,6 +81,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   order,
   otherUserRole,
   stripeAccountId,
+  orderGroupId,
 }) => {
   //const [validTime, setValidTime] = useState<string>("(select your time)");
   const [disputeOpen, setDisputeOpen] = useState(false);
@@ -359,6 +361,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         convoId={order?.conversationId}
         otherUserRole={otherUserRole}
         isSeller={true}
+        orderGroupId={orderGroupId}
       />
       <DisputeModal
         isOpen={disputeOpen}
