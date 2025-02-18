@@ -104,6 +104,8 @@ const Body: React.FC<BodyProps> = ({
     if (
       lastMessage.messageOrder === "BUYER_ACCEPTED" ||
       lastMessage.messageOrder === "PICKED_UP" ||
+      lastMessage.messageOrder === "CANCELED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "COMPLETED" ||
       lastMessage.messageOrder === "IN_TRANSIT" ||
       lastMessage.messageOrder === "SELLER_PREPARING" ||
@@ -124,6 +126,8 @@ const Body: React.FC<BodyProps> = ({
       lastMessage.messageOrder === "SELLER_RESCHEDULED" ||
       lastMessage.messageOrder === "BUYER_RESCHEDULED" ||
       lastMessage.messageOrder === "BUYER_ACCEPTED" ||
+      lastMessage.messageOrder === "CANCELED" ||
+      lastMessage.messageOrder === "REFUNDED" ||
       lastMessage.messageOrder === "COMPLETED" ||
       lastMessage.messageOrder === "IN_TRANSIT" ||
       lastMessage.messageOrder === "SELLER_PREPARING" ||
@@ -245,6 +249,7 @@ const Body: React.FC<BodyProps> = ({
     <div className="flex-1 overflow-y-auto">
       {user.id === order?.sellerId ? (
         <CancelModal
+          orderGroupId={orderGroupId}
           isOpen={cancelOpen}
           onClose={() => setCancelOpen(false)}
           order={order}
@@ -255,6 +260,7 @@ const Body: React.FC<BodyProps> = ({
         />
       ) : (
         <CancelModal
+          orderGroupId={orderGroupId}
           isOpen={cancelOpen}
           onClose={() => setCancelOpen(false)}
           order={order}
@@ -283,6 +289,7 @@ const Body: React.FC<BodyProps> = ({
         orderId={order?.id}
       />
       <RefundModal
+        orderGroupId={orderGroupId}
         isOpen={refundOpen}
         onClose={() => setRefundOpen(false)}
         orderId={order?.id}

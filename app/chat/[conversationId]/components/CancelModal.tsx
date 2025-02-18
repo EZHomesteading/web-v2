@@ -18,6 +18,7 @@ interface ConfirmModalProps {
   convoId: string | null | undefined;
   otherUserRole: string | undefined;
   isSeller: boolean;
+  orderGroupId: string | null;
 }
 
 const CancelModal: React.FC<ConfirmModalProps> = ({
@@ -28,6 +29,7 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
   convoId,
   otherUserRole,
   isSeller,
+  orderGroupId,
 }) => {
   const session = useSession();
   const router = useRouter();
@@ -62,6 +64,10 @@ const CancelModal: React.FC<ConfirmModalProps> = ({
         completedAt: new Date(),
       });
     }
+    await axios.post("/api/useractions/checkout/remove-order-from-group", {
+      orderGroupId: orderGroupId,
+      orderId: order?.id,
+    });
     //axios post is always the same. post a message with the users input text
     axios.post("/api/chat/messages", {
       message: `I have canceled this item, because: ${text}`,
