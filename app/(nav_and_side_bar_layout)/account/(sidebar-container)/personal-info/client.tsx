@@ -142,13 +142,13 @@ const Page: React.FC<PageProps> = ({ apiKey, user, location }) => {
     const formData = {
       address: addressArray,
       locationId: location?.id,
-      coordinates: [geoData?.lat, geoData?.lng],
+      coordinates: [geoData?.lng, geoData?.lat], // this is backwards
       hours: location?.hours || null,
       role: location?.role || "COOP",
       isDefault: location?.isDefault,
       displayname: location?.displayName,
     };
-    console.log(formData);
+
     try {
       await axios.post("/api/useractions/update/location-hours", formData);
       setEditingCard(null);

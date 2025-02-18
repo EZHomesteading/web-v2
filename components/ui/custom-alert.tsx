@@ -25,7 +25,6 @@ interface p {
   children?: ReactNode;
   cancelButtonClassName?: string;
 }
-
 export default function Alert({
   onClick,
   alertTriggerText,

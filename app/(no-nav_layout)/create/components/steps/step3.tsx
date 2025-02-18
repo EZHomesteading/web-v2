@@ -100,7 +100,7 @@ const StepThree: React.FC<StepThreeProps> = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen fade-in pt-[10%]">
+    <div className="flex flex-col gap-4 min-h-screen fade-in">
       <div className="flex flex-row justify-center items-start gap-2">
         <div className="w-full sm:max-w-[500px] px-4">
           <div className="flex flex-col ">

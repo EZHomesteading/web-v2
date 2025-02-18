@@ -1,16 +1,13 @@
 import { getUserLocations } from "@/actions/getLocations";
 import { auth } from "@/auth";
 import { UserRole } from "@prisma/client";
-import CreateClient from "./create-client";
+import CreateClient from "./create.client";
 const CreatesPage = async ({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
   const session = await auth();
-  if (!session) {
-    window.location.replace("/");
-  }
   let locations = await getUserLocations({ userId: session?.user?.id });
 
   locations = locations?.filter((loc) => loc.role !== UserRole.CONSUMER); // i hate javascript
