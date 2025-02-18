@@ -8,7 +8,7 @@ import StepOne from "./step1";
 import StepTwo from "./step2";
 
 import { toast } from "sonner";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 
 interface Props {
   user: UserInfo;
@@ -51,7 +51,7 @@ const StripeSetup = ({ user }: Props) => {
           className={`fixed bottom-0 left-0 w-full bg-white lg:bg-transparent border-t lg:border-none z`}
         >
           <div
-            className={`flex justify-between px-4 py-2 ${outfitFont.className} `}
+            className={`flex justify-between px-4 py-2 ${OutfitFont.className} `}
           >
             {step > 1 && (
               <Button onClick={handlePrevious} variant="outline">

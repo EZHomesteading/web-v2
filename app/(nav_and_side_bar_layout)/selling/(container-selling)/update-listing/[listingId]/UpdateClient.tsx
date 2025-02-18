@@ -38,7 +38,7 @@ import UnitSelect, {
   QuantityTypeValue,
 } from "@/app/(no-nav_layout)/create/components/UnitSelect";
 import { HoverButton } from "@/components/ui/hover-btn";
-import { outfitFont } from "@/components/fonts";
+import { OutfitFont } from "@/components/fonts";
 type Month =
   | "Jan"
   | "Feb"
@@ -794,7 +794,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
                               <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                                 <ul>
                                   <li
-                                    className={`${outfitFont.className}`}
+                                    className={`${OutfitFont.className}`}
                                   ></li>{" "}
                                   {listing.user.locations &&
                                   listing.user.locations[0]?.address.length ===
@@ -835,7 +835,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
                                 <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                                   <ul>
                                     <li
-                                      className={`${outfitFont.className}`}
+                                      className={`${OutfitFont.className}`}
                                     ></li>{" "}
                                     {listing.user.locations &&
                                     listing.user.locations[1]?.address
@@ -877,7 +877,7 @@ const UpdateClient = ({ listing }: UpdateListingProps) => {
                                 <div className="font-light text-neutral-500 mt-2 md:text-xs text-[.7rem]">
                                   <ul>
                                     <li
-                                      className={`${outfitFont.className}`}
+                                      className={`${OutfitFont.className}`}
                                     ></li>{" "}
                                     {listing.user.locations &&
                                     listing.user.locations[2]?.address

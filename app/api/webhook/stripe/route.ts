@@ -165,81 +165,81 @@ async function createConversationAndNotify(order: any) {
       ? `${order.buyer.location[2]?.address[0]}, ${order.buyer.location[2]?.address[1]}, ${order.buyer.location[2]?.address[2]}. ${order.buyer.location[2]?.address[3]}`
       : "this user has no locations set"
   } during my open hours. My hours can be viewed in More Options.`;
-
+  await fetch(`${process.env.API_URL}/new-order?email=${order.seller.email}`);
   // Send email notification if enabled
-  if (order.seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
-    const emailParams = {
-      Destination: {
-        ToAddresses: [order.seller.email || "shortzach396@gmail.com"],
-      },
-      Message: {
-        Body: {
-          Html: {
-            Data: `
-              <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
-                <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
-                  <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
-                    <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
-                    <span>EZHomesteading</span>
-                  </header>
-                  <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${
-                    order.seller.name
-                  }</h1>
-                  <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
-                    order.buyer.name
-                  }</p>
+  // if (order.seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
+  //   const emailParams = {
+  //     Destination: {
+  //       ToAddresses: [order.seller.email || "shortzach396@gmail.com"],
+  //     },
+  //     Message: {
+  //       Body: {
+  //         Html: {
+  //           Data: `
+  //             <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
+  //               <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
+  //                 <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
+  //                   <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
+  //                   <span>EZHomesteading</span>
+  //                 </header>
+  //                 <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${
+  //                   order.seller.name
+  //                 }</h1>
+  //                 <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
+  //                   order.buyer.name
+  //                 }</p>
 
-                  <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
-                  <div style="margin-bottom: 8px;">
-                    <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
-                    <ul style="font-size: 14px;">
-                      ${titles
-                        .split(", ")
-                        .map((item) => `<li>${item}</li>`)
-                        .join("")}
-                    </ul>
-                  </div>
-                  <div style="margin-bottom: 8px;">
-                    <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
-                    <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
-                    <p style="font-size: 14px;">$${order.totalPrice.toFixed(
-                      2
-                    )}</p>
-                  </div>
+  //                 <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
+  //                 <div style="margin-bottom: 8px;">
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
+  //                   <ul style="font-size: 14px;">
+  //                     ${titles
+  //                       .split(", ")
+  //                       .map((item) => `<li>${item}</li>`)
+  //                       .join("")}
+  //                   </ul>
+  //                 </div>
+  //                 <div style="margin-bottom: 8px;">
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
+  //                   <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
+  //                 </div>
+  //                 <div>
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
+  //                   <p style="font-size: 14px;">$${order.totalPrice.toFixed(
+  //                     2
+  //                   )}</p>
+  //                 </div>
 
-                  <a href="https://ezhomesteading.com/chat/${
-                    conversation.id
-                  }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
-                    <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-                      Go to conversation
-                    </button>
-                  </a>
-                  <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
-                    <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-                      Go to sell orders
-                    </button>
-                  </a>
-                </div>
-              </div>
-            `,
-          },
-        },
-        Subject: {
-          Data: "New Order Received",
-        },
-      },
-      Source: "disputes@ezhomesteading.com",
-    };
+  //                 <a href="https://ezhomesteading.com/chat/${
+  //                   conversation.id
+  //                 }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
+  //                   <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+  //                     Go to conversation
+  //                   </button>
+  //                 </a>
+  //                 <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
+  //                   <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+  //                     Go to sell orders
+  //                   </button>
+  //                 </a>
+  //               </div>
+  //             </div>
+  //           `,
+  //         },
+  //       },
+  //       Subject: {
+  //         Data: "New Order Received",
+  //       },
+  //     },
+  //     Source: "disputes@ezhomesteading.com",
+  //   };
 
-    try {
-      await sesClient.send(new SendEmailCommand(emailParams));
-    } catch (error) {
-      console.error("Error sending email to the seller:", error);
-    }
-  }
+  //   try {
+  //     await sesClient.send(new SendEmailCommand(emailParams));
+  //   } catch (error) {
+  //     console.error("Error sending email to the seller:", error);
+  //   }
+  // }
 
   // Create message and send notifications based on fulfillment type
   if (order.fulfillmentType === "PICKUP") {

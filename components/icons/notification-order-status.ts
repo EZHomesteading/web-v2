@@ -13,14 +13,14 @@ const statusTextMap: Record<OrderStatus, (params: StatusTextParams) => string> =
     [OrderStatus.PAYMENT_FAILED]: ({ isSeller, bName }) =>
       isSeller ? `You have a new order from ${bName}` : ``,
 
-    [OrderStatus.BUYER_PROPOSED_TIME]: ({ isSeller, sName }) =>
+    [OrderStatus.BUYER_PROPOSED_TIME]: ({ isSeller, sName, bName }) =>
       isSeller
-        ? ``
+        ? `You have a new order from ${bName}. Waiting on your responce`
         : `Waiting for ${sName} to confirm, reschedule, or deny your order.`,
 
     [OrderStatus.SELLER_ACCEPTED]: ({ isSeller, sName }) =>
       isSeller
-        ? ``
+        ? `You have accepted this pickup time`
         : `${sName} accepted your pick up time and is preparing your order`,
 
     [OrderStatus.SELLER_RESCHEDULED]: ({ isSeller, bName }) =>
@@ -35,10 +35,14 @@ const statusTextMap: Record<OrderStatus, (params: StatusTextParams) => string> =
     [OrderStatus.SCHEDULE_CONFIRMED]: () => ``,
 
     [OrderStatus.READY_FOR_PICKUP]: ({ isSeller, sName }) =>
-      isSeller ? `` : `Your order from ${sName} is ready for pickup`,
+      isSeller
+        ? `You have set this order as ready for pickup`
+        : `Your order from ${sName} is ready for pickup`,
 
     [OrderStatus.PICKED_UP]: ({ isSeller, bName }) =>
-      isSeller ? `${bName} has picked up their order` : ``,
+      isSeller
+        ? `${bName} has picked up their order`
+        : `You have picked up this order`,
 
     [OrderStatus.SELLER_PROPOSED_DELIVERY_FEE]: ({ isSeller, sName }) =>
       isSeller ? `` : `${sName} has accepted your drop off time`,
@@ -48,20 +52,24 @@ const statusTextMap: Record<OrderStatus, (params: StatusTextParams) => string> =
 
     [OrderStatus.SELLER_PREPARING]: ({ isSeller, sName }) =>
       isSeller
-        ? `A new order has been created.`
-        : `${sName} has canceled your order`,
+        ? `You are preparing this order`
+        : `${sName} is preparing your order`,
 
     [OrderStatus.SELLER_PREPARING_EXPIRED]: ({ isSeller, bName }) =>
       isSeller ? `${bName} has proposed a new drop off time` : ``,
 
     [OrderStatus.IN_TRANSIT]: ({ isSeller, bName }) =>
-      isSeller ? `${bName} has canceled their order` : ``,
+      isSeller ? `You are transporting this roder` : `Your orde ris on the way`,
 
     [OrderStatus.DELIVERED]: ({ isSeller, sName }) =>
-      isSeller ? `` : `${sName} has dropped off your order, please confirm`,
+      isSeller
+        ? `You have dropped off this order, awaiting confirmation`
+        : `${sName} has dropped off your order, please confirm`,
 
     [OrderStatus.DELIVERY_CONFIRMED]: ({ isSeller, bName }) =>
-      isSeller ? `${bName} confirmed your drop off, please leave a review` : ``,
+      isSeller
+        ? `${bName} confirmed your drop off, please leave a review`
+        : `You have confirmed this order, please leave a review`,
 
     [OrderStatus.COMPLETED]: ({ isSeller, bName, sName }) =>
       isSeller
