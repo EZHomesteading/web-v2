@@ -539,9 +539,9 @@ const RouteOptimizer = ({
           >
             Close
           </Button>
-          <Button onClick={() => calculateSimpleRoute()}>
+          {/* <Button onClick={() => calculateSimpleRoute()}>
             Create Route Without Time Constraints
-          </Button>
+          </Button> */}
         </DialogFooter>
       </div>,
       "destructive"

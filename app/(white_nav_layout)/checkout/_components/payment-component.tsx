@@ -87,7 +87,7 @@ export default function PaymentComponent({
 
       // If there's only one payment, redirect now
       if (paymentIntents.length === 1) {
-        window.location.href = `${window.location.origin}/dashboard/orders/buyer`;
+        window.location.href = `${window.location.origin}/`;
         return;
       }
 
