@@ -92,7 +92,7 @@ const MarketCard = ({
       delivery: calculateServiceScores(hours.delivery || []),
     };
   }
-
+  console.log(listing);
   function calculateServiceScores(hours: DayHours[]) {
     const today = new Date();
     const next7Days = Array.from({ length: 7 }, (_, i) => {
