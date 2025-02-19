@@ -3,7 +3,6 @@ import { UserInfo } from "next-auth";
 import { auth } from "@/auth";
 import Avatar from "@/components/Avatar";
 import { OutfitFont } from "@/components/fonts";
-import { MarketCard } from "@/app/(nav_market_layout)/market/(components)/store-card";
 import { Bio } from "./bio";
 import Link from "next/link";
 import {
@@ -12,6 +11,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { MarketCard } from "@/app/(nav_market_layout)/market/(components)/market-components";
 
 interface StorePageProps {
   params: {
@@ -36,6 +36,19 @@ const StorePage = async ({ params }: StorePageProps) => {
         </div>
       </>
     );
+  }
+
+  let basketItemIds: any[] = [];
+  if (session) {
+    try {
+      const res = await fetch(
+        `${process.env.API_URL}/get-many?collection=BasketItem&key=userId&value=${session.user?.id}`
+      );
+      const data = await res.json();
+      basketItemIds = data.items;
+    } catch (error) {
+      console.error(error);
+    }
   }
   const numLocs = store?.user?.locations?.length;
   return (
@@ -104,44 +117,49 @@ const StorePage = async ({ params }: StorePageProps) => {
             <p className={`text-bold ${OutfitFont.className}`}>Follow</p>
           </button>
         </div>
-        {/* {store?.user?.locations?.length > 1 && ( */}
-        <Drawer>
-          <DrawerTrigger asChild>
-            <button
-              className={`bg-slate-300 border-none zmax shadow-md text-xl rounded-full text-black p-3 ${OutfitFont.className} fixed bottom-[100px] right-1/2 transform translate-x-1/2`}
+        {store?.user?.locations?.length > 1 && (
+          <Drawer>
+            <DrawerTrigger asChild>
+              <button
+                className={`bg-slate-300 border-none zmax shadow-md text-xl rounded-full text-black p-3 ${OutfitFont.className} fixed bottom-[100px] right-1/2 transform translate-x-1/2`}
+              >
+                Location Filter
+              </button>
+            </DrawerTrigger>
+            <DrawerContent
+              className={`h-[30vh] text-xl border border-grey ${OutfitFont.className} zmax`}
             >
-              Location Filter
-            </button>
-          </DrawerTrigger>
-          <DrawerContent
-            className={`h-[30vh] text-xl border border-grey ${OutfitFont.className} zmax`}
-          >
-            <DrawerTitle className={`text-center  pt-3`}>
-              Select Location
-            </DrawerTitle>
-            <div className={`p-4`}>
-              {store.user?.locations.map((location: any, index: number) => (
-                <Link
-                  href={`/store/${url}/${location.id}`}
-                  className={`flex items-center justify-center gap-x-2 text-sm`}
-                  key={index}
-                >
-                  {location.displayName || `Location ${index + 1}`}
-                  <div
-                    className={`w-1 h-1 rouded-full bg-black rounded-full`}
-                  />
-                  <p>
-                    {location?.address[1]}, {location?.address[2]}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </DrawerContent>
-        </Drawer>
-        {/* )} */}
+              <DrawerTitle className={`text-center  pt-3`}>
+                Select Location
+              </DrawerTitle>
+              <div className={`p-4`}>
+                {store.user?.locations.map((location: any, index: number) => (
+                  <Link
+                    href={`/store/${url}/${location.id}`}
+                    className={`flex items-center justify-center gap-x-2 text-sm`}
+                    key={index}
+                  >
+                    {location.displayName || `Location ${index + 1}`}
+                    <div
+                      className={`w-1 h-1 rouded-full bg-black rounded-full`}
+                    />
+                    <p>
+                      {location?.address[1]}, {location?.address[2]}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </DrawerContent>
+          </Drawer>
+        )}
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {store.user?.listings.map((listing: any, index: number) => (
-            <MarketCard listing={listing} imageCount={index} key={index} />
+            <MarketCard
+              listing={listing}
+              imageCount={index}
+              key={index}
+              basketItemIds={basketItemIds}
+            />
           ))}
         </div>
       </div>
