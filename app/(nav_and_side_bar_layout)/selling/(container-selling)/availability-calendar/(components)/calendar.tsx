@@ -12,7 +12,7 @@ import {
   CustomSwitch,
   CalendarDay,
   LocationSelector,
-} from "./helper-components-calendar";
+} from "./helper-components-calendar-old";
 import { PiGearThin } from "react-icons/pi";
 import {
   Availability,
@@ -411,7 +411,6 @@ const Calendar = ({ location, id, mk, locations, userId }: p) => {
             panelSide={panelSide}
             onModeChange={handleDeliveryPickupModeChange}
             mode={deliveryPickupMode}
-            basket={null}
           />
           <Button
             onClick={() => {

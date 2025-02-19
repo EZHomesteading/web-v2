@@ -17,6 +17,7 @@ interface ConfirmModalProps {
   conversationId: string | null | undefined;
   otherUserId: string | undefined;
   paymentId: string | null | undefined;
+  orderGroupId: string | null;
 }
 
 const RefundModal: React.FC<ConfirmModalProps> = ({
@@ -27,6 +28,7 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
   conversationId,
   otherUserId,
   paymentId,
+  orderGroupId,
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +44,10 @@ const RefundModal: React.FC<ConfirmModalProps> = ({
       orderId: orderId,
       status: "REFUNDED",
       completedAt: new Date(),
+    });
+    await axios.post("/api/useractions/checkout/remove-order-from-group", {
+      orderGroupId: orderGroupId,
+      orderId: orderId,
     });
     axios
       .post("/api/chat/messages", {

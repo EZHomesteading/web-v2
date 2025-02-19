@@ -9,7 +9,7 @@ import {
   Hours,
   orderMethod,
 } from "@prisma/client";
-import { DeliveryPickupToggleMode } from "@/app/(nav_and_side_bar_layout)/selling/(container-selling)/availability-calendar/(components)/helper-components-calendar";
+import { DeliveryPickupToggleMode } from "@/app/(white_nav_layout)/my-basket/components/helper-components-calendar";
 import SetCustomPickupDeliveryCalendar from "./calendar.basket";
 import {
   formatDateToMMMDDAtHourMin,

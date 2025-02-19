@@ -2,7 +2,7 @@ import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import {  basketStatus } from "@prisma/client";
+import { basketStatus } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -18,9 +18,16 @@ const sesClient = new SESClient({
   },
 });
 
-async function handleBasketProcessing(buyerId: string, PID: string) {
-  const baskets = await prisma.basket.findMany({
+async function handleBasketProcessing(
+  buyerId: string,
+  paymentIntent: Stripe.PaymentIntent
+) {
+  // Get the basketId from the payment intent metadata
+  const basketId = paymentIntent.metadata.basketId;
+
+  const basket = await prisma.basket.findFirst({
     where: {
+      id: basketId,
       userId: buyerId,
       status: basketStatus.ACTIVE,
     },
@@ -63,94 +70,72 @@ async function handleBasketProcessing(buyerId: string, PID: string) {
     },
   });
 
-  const createdOrders = [];
-
-  for (const basket of baskets) {
-    // Use a transaction to ensure data consistency
-    const order = await prisma.$transaction(async (tx) => {
-      const totalPrice = basket.items.reduce(
-        (acc, item) => acc + item.quantity * item.price,
-        0
-      );
-
-      // Create order
-      const newOrder = await tx.order.create({
-        data: {
-          userId: buyerId,
-          locationId: basket.location.id,
-          proposedLoc: basket.proposedLoc,
-          paymentIntentId: PID,
-          sellerId: basket.location.user.id,
-          pickupDate: basket.pickupDate ? new Date(basket.pickupDate) : null,
-          items: basket.items,
-          totalPrice,
-          status: "BUYER_PROPOSED_TIME",
-          fulfillmentType: basket.orderMethod,
-          fee: { site: totalPrice * 0.06 },
-        },
-        include: {
-          buyer: true,
-          seller: true,
-        },
-      });
-
-      // Update stock levels
-      await Promise.all(
-        basket.items.map((item) =>
-          tx.listing.update({
-            where: { id: item.listing.id },
-            data: { stock: item.listing.stock - item.quantity },
-          })
-        )
-      );
-
-      // Delete the basket
-      await tx.basket.delete({
-        where: { id: basket.id },
-      });
-
-      return newOrder;
-    });
-
-    createdOrders.push(order);
+  if (!basket) {
+    throw new Error(`Basket ${basketId} not found`);
   }
 
-  return createdOrders;
-}
+  // Use a transaction to ensure data consistency
+  const order = await prisma.$transaction(async (tx) => {
+    const totalPrice = basket.items.reduce(
+      (acc, item) => acc + item.quantity * item.price,
+      0
+    );
 
-async function createConversationAndNotify(order: any) {
-  // Check if a conversation already exists between these users
-  const existingConversation = await prisma.conversation.findFirst({
-    where: {
-      AND: [
-        { participantIds: { has: order.buyer.id } },
-        { participantIds: { has: order.seller.id } },
-      ],
-    },
-  });
-
-  let conversation;
-  if (existingConversation) {
-    conversation = existingConversation;
-    // Update the order with existing conversation ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { conversationId: existingConversation.id },
-    });
-  } else {
-    // Create new conversation if none exists
-    conversation = await prisma.conversation.create({
+    // Create order
+    const newOrder = await tx.order.create({
       data: {
-        participantIds: [order.buyer.id, order.seller.id],
+        userId: buyerId,
+        locationId: basket.location.id,
+        proposedLoc: basket.proposedLoc,
+        paymentIntentId: paymentIntent.id,
+        sellerId: basket.location.user.id,
+        pickupDate: basket.pickupDate ? new Date(basket.pickupDate) : null,
+        items: basket.items,
+        totalPrice,
+        status: "BUYER_PROPOSED_TIME",
+        fulfillmentType: basket.orderMethod,
+        fee: { site: totalPrice * 0.06 },
+      },
+      include: {
+        buyer: true,
+        seller: true,
       },
     });
 
-    // Update order with new conversation ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { conversationId: conversation.id },
+    // Update stock levels
+    await Promise.all(
+      basket.items.map((item) =>
+        tx.listing.update({
+          where: { id: item.listing.id },
+          data: { stock: item.listing.stock - item.quantity },
+        })
+      )
+    );
+
+    // Delete the basket
+    await tx.basket.delete({
+      where: { id: basket.id },
     });
-  }
+
+    return newOrder;
+  });
+
+  return order;
+}
+
+async function createConversationAndNotify(order: any) {
+  // Create new conversation for each order
+  const conversation = await prisma.conversation.create({
+    data: {
+      participantIds: [order.buyer.id, order.seller.id],
+    },
+  });
+
+  // Update order with new conversation ID
+  await prisma.order.update({
+    where: { id: order.id },
+    data: { conversationId: conversation.id },
+  });
 
   // Format ordered items
   const items = order.items;
@@ -180,81 +165,81 @@ async function createConversationAndNotify(order: any) {
       ? `${order.buyer.location[2]?.address[0]}, ${order.buyer.location[2]?.address[1]}, ${order.buyer.location[2]?.address[2]}. ${order.buyer.location[2]?.address[3]}`
       : "this user has no locations set"
   } during my open hours. My hours can be viewed in More Options.`;
-
+  await fetch(`${process.env.API_URL}/new-order?email=${order.seller.email}`);
   // Send email notification if enabled
-  if (order.seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
-    const emailParams = {
-      Destination: {
-        ToAddresses: [order.seller.email || "shortzach396@gmail.com"],
-      },
-      Message: {
-        Body: {
-          Html: {
-            Data: `
-              <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
-                <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
-                  <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
-                    <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
-                    <span>EZHomesteading</span>
-                  </header>
-                  <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${
-                    order.seller.name
-                  }</h1>
-                  <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
-                    order.buyer.name
-                  }</p>
+  // if (order.seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
+  //   const emailParams = {
+  //     Destination: {
+  //       ToAddresses: [order.seller.email || "shortzach396@gmail.com"],
+  //     },
+  //     Message: {
+  //       Body: {
+  //         Html: {
+  //           Data: `
+  //             <div style="width: 100%; display: flex; font-family: 'Outfit', sans-serif; color: white; box-sizing: border-box;">
+  //               <div style="display: flex; flex-direction: column; background-color: #ced9bb; padding: 16px; border-radius: 8px; width: 100%; max-width: 320px; box-sizing: border-box;">
+  //                 <header style="font-size: 24px; display: flex; flex-direction: row; align-items: center; margin-bottom: 16px; width: 100%;">
+  //                   <img src="https://i.ibb.co/TB7dMtk/ezh-logo-no-text.png" alt="EZHomesteading Logo" width="50" height="50" style="margin-right: 8px;" />
+  //                   <span>EZHomesteading</span>
+  //                 </header>
+  //                 <h1 style="font-size: 20px; margin-bottom: 8px;">Hi, ${
+  //                   order.seller.name
+  //                 }</h1>
+  //                 <p style="font-size: 14px; margin-bottom: 16px;">You have a new order from ${
+  //                   order.buyer.name
+  //                 }</p>
 
-                  <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
-                  <div style="margin-bottom: 8px;">
-                    <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
-                    <ul style="font-size: 14px;">
-                      ${titles
-                        .split(", ")
-                        .map((item) => `<li>${item}</li>`)
-                        .join("")}
-                    </ul>
-                  </div>
-                  <div style="margin-bottom: 8px;">
-                    <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
-                    <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
-                    <p style="font-size: 14px;">$${order.totalPrice.toFixed(
-                      2
-                    )}</p>
-                  </div>
+  //                 <p style="font-size: 18px; margin-bottom: 8px;">Order Details:</p>
+  //                 <div style="margin-bottom: 8px;">
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Items:</p>
+  //                   <ul style="font-size: 14px;">
+  //                     ${titles
+  //                       .split(", ")
+  //                       .map((item) => `<li>${item}</li>`)
+  //                       .join("")}
+  //                   </ul>
+  //                 </div>
+  //                 <div style="margin-bottom: 8px;">
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Pickup Date:</p>
+  //                   <p style="font-size: 14px;">${order.pickupDate.toLocaleString()}</p>
+  //                 </div>
+  //                 <div>
+  //                   <p style="font-size: 16px; margin-bottom: 4px;">Order Total:</p>
+  //                   <p style="font-size: 14px;">$${order.totalPrice.toFixed(
+  //                     2
+  //                   )}</p>
+  //                 </div>
 
-                  <a href="https://ezhomesteading.com/chat/${
-                    conversation.id
-                  }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
-                    <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-                      Go to conversation
-                    </button>
-                  </a>
-                  <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
-                    <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
-                      Go to sell orders
-                    </button>
-                  </a>
-                </div>
-              </div>
-            `,
-          },
-        },
-        Subject: {
-          Data: "New Order Received",
-        },
-      },
-      Source: "disputes@ezhomesteading.com",
-    };
+  //                 <a href="https://ezhomesteading.com/chat/${
+  //                   conversation.id
+  //                 }" style="text-decoration: none; margin-bottom: 8px; width: 100%;">
+  //                   <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+  //                     Go to conversation
+  //                   </button>
+  //                 </a>
+  //                 <a href="https://ezhomesteading.com/dashboard/orders/seller" style="text-decoration: none; width: 100%;">
+  //                   <button style="background-color: #64748b; border-radius: 9999px; padding: 8px 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); color: #ffffff; width: 100%; text-align: center;">
+  //                     Go to sell orders
+  //                   </button>
+  //                 </a>
+  //               </div>
+  //             </div>
+  //           `,
+  //         },
+  //       },
+  //       Subject: {
+  //         Data: "New Order Received",
+  //       },
+  //     },
+  //     Source: "disputes@ezhomesteading.com",
+  //   };
 
-    try {
-      await sesClient.send(new SendEmailCommand(emailParams));
-    } catch (error) {
-      console.error("Error sending email to the seller:", error);
-    }
-  }
+  //   try {
+  //     await sesClient.send(new SendEmailCommand(emailParams));
+  //   } catch (error) {
+  //     console.error("Error sending email to the seller:", error);
+  //   }
+  // }
 
   // Create message and send notifications based on fulfillment type
   if (order.fulfillmentType === "PICKUP") {
@@ -334,7 +319,6 @@ async function createConversationAndNotify(order: any) {
         sender: true,
       },
     });
-
     // Send push notification
     try {
       if (order.seller.subscriptions) {
@@ -393,25 +377,26 @@ export async function POST(request: NextRequest) {
 
   if (event.type === "payment_intent.succeeded") {
     try {
-      const pi = event.data.object.metadata;
-      const buyerId = pi.userId;
-      const PID = event.data.object.id;
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      const buyerId = paymentIntent.metadata.userId;
+      const orderGroupId = paymentIntent.metadata.orderGroupId;
 
-      const createdOrders = await handleBasketProcessing(buyerId, PID);
+      // Process this specific payment intent's basket
+      const createdOrder = await handleBasketProcessing(buyerId, paymentIntent);
 
-      // Process conversations and notifications sequentially
-      for (const order of createdOrders) {
-        await createConversationAndNotify(order);
-      }
+      // Process conversation and notification
+      await createConversationAndNotify(createdOrder);
 
       // Update order group if it exists
-      if (pi.orderGroupId) {
+      if (orderGroupId) {
         await prisma.orderGroup.update({
           where: {
-            id: pi.orderGroupId.replace(/['"]+/g, ""),
+            id: orderGroupId.replace(/['"]+/g, ""),
           },
           data: {
-            orderids: createdOrders.map((order) => order.id.toString()),
+            orderids: {
+              push: createdOrder.id.toString(),
+            },
           },
         });
       }

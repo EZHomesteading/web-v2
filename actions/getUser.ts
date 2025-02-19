@@ -1,5 +1,5 @@
 import prisma from "@/lib/prismadb";
-import { UserRole } from "@prisma/client";
+import { OrderStatus, UserRole } from "@prisma/client";
 import authCache from "@/auth-cache";
 import { Location } from "@prisma/client";
 
@@ -530,7 +530,7 @@ export interface NavUser {
   buyerOrders: {
     id: string;
     conversationId: string | null;
-    status: string;
+    status: OrderStatus;
     updatedAt: Date;
     seller: { name: string } | null;
     buyer: { name: string } | null;
@@ -538,7 +538,7 @@ export interface NavUser {
   sellerOrders: {
     id: string;
     conversationId: string | null;
-    status: string;
+    status: OrderStatus;
     updatedAt: Date;
     buyer: { name: string } | null;
     seller: { name: string } | null;

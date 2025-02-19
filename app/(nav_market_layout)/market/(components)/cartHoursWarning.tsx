@@ -50,16 +50,14 @@ const HoursWarningModal = ({
                 >
                   <span>
                     {new Date(day.date).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "long",
+                      weekday: "short",
+                      month: "short",
                       day: "numeric",
                     })}
                   </span>
                   <span className="text-sm">
                     {day.compatible
-                      ? `${Math.floor(day.overlapHours)}h ${Math.round(
-                          (day.overlapHours % 1) * 60
-                        )}m overlap`
+                      ? `${Math.floor(day.overlapHours)}h overlap`
                       : "No compatible hours"}
                   </span>
                 </li>
