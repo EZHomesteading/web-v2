@@ -142,7 +142,7 @@ const MarketCard = ({
 
     const normalizeScore = (score: number): number => {
       const maxPossibleScore = 7;
-      const normalized = (score / maxPossibleScore) * 3;
+      const normalized = (score / maxPossibleScore) * 4;
       return Math.max(1, Math.min(3, Math.ceil(normalized)));
     };
 
