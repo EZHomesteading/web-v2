@@ -82,6 +82,21 @@ export const useBasket = ({
     //console.log("Current hours:", hours);
     //console.log("Initial order method:", initialOrderMethod);
 
+    // Format time (minutes since midnight) to a user-friendly string
+    const formatTimeString = (totalMinutes: number) => {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      // Convert to 12-hour format with am/pm
+      const period = hours >= 12 ? "pm" : "am";
+      const displayHours = hours % 12 || 12;
+
+      // Only include minutes if non-zero
+      return minutes === 0
+        ? `${displayHours}${period}`
+        : `${displayHours}:${minutes.toString().padStart(2, "0")}${period}`;
+    };
+
     // Fetch fresh basket hours when checking compatibility
     const existingHours = await fetchActiveBaskets();
     //console.log("Fetched basket hours:", existingHours);
@@ -110,6 +125,7 @@ export const useBasket = ({
       date: string;
       compatible: boolean;
       overlapHours: number;
+      overlapTimeRange?: string;
     }[] = [];
 
     next7Days.forEach((date) => {
@@ -122,6 +138,7 @@ export const useBasket = ({
       // });
 
       let minOverlapHours = Infinity;
+      let bestOverlapRange: { start: number; end: number } | null = null;
 
       const hasIncompatibleHours = existingHours.some((basketHours: any) => {
         const basketMethodHours = getHoursForMethod(
@@ -138,6 +155,8 @@ export const useBasket = ({
 
         // Calculate overlap duration
         let maxOverlap = 0;
+        let bestRange: { start: number; end: number } | null = null;
+
         if (currentDayHours?.timeSlots && basketDayHours?.timeSlots) {
           for (const slot1 of currentDayHours.timeSlots) {
             for (const slot2 of basketDayHours.timeSlots) {
@@ -145,20 +164,41 @@ export const useBasket = ({
               const overlapEnd = Math.min(slot1.close, slot2.close);
               if (overlapEnd > overlapStart) {
                 const overlapDuration = (overlapEnd - overlapStart) / 60; // Convert to hours
-                maxOverlap = Math.max(maxOverlap, overlapDuration);
+                if (overlapDuration > maxOverlap) {
+                  maxOverlap = overlapDuration;
+                  bestRange = { start: overlapStart, end: overlapEnd };
+                }
               }
             }
           }
         }
 
-        minOverlapHours = Math.min(minOverlapHours, maxOverlap);
+        if (maxOverlap < minOverlapHours) {
+          minOverlapHours = maxOverlap;
+          bestOverlapRange = bestRange;
+        }
+
         return maxOverlap < 2; // Less than 2 hours overlap is considered incompatible
       });
+
+      // Create time range string if we have valid overlap
+      let overlapTimeRange: string | undefined = undefined;
+      if (bestOverlapRange && minOverlapHours > 0) {
+        // Type assertion to help TypeScript understand the structure
+        const { start, end } = bestOverlapRange as {
+          start: number;
+          end: number;
+        };
+        overlapTimeRange = `${formatTimeString(start)}-${formatTimeString(
+          end
+        )}`;
+      }
 
       dateCompatibility.push({
         date,
         compatible: !hasIncompatibleHours,
         overlapHours: minOverlapHours === Infinity ? 0 : minOverlapHours,
+        overlapTimeRange,
       });
     });
 

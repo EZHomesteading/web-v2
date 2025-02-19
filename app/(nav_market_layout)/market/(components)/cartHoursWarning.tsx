@@ -14,7 +14,30 @@ interface DateCompatibility {
   date: string;
   compatible: boolean;
   overlapHours: number;
+  overlapTimeRange?: string;
 }
+
+// Helper function to calculate time range string from the overlapHours data
+const calculateTimeRangeFromBasketData = (
+  incompatibleDays: DateCompatibility[]
+) => {
+  return incompatibleDays.map((day) => {
+    // This is just a placeholder - in the actual implementation,
+    // you would use the actual start and end times from the useBasket hook
+    if (!day.compatible) return day;
+    if (day.overlapTimeRange) return day;
+
+    // This function would be integrated with the actual time slot calculation
+    // in the useBasket hook to generate accurate time ranges
+    return {
+      ...day,
+      overlapTimeRange:
+        day.overlapHours > 0
+          ? `${Math.floor(day.overlapHours)}h window`
+          : "No overlap",
+    };
+  });
+};
 
 const HoursWarningModal = ({
   isOpen,
@@ -29,6 +52,9 @@ const HoursWarningModal = ({
   incompatibleDays: DateCompatibility[];
   type: "pickup" | "delivery";
 }) => {
+  // Process the incompatible days to add time ranges if not already present
+  const processedDays = calculateTimeRangeFromBasketData(incompatibleDays);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -41,7 +67,7 @@ const HoursWarningModal = ({
             Here's the {type} hours compatibility with other items in your cart
             for the next 7 days:
             <ul className="mt-2 space-y-2">
-              {incompatibleDays.map((day, index) => (
+              {processedDays.map((day, index) => (
                 <li
                   key={index}
                   className={`flex justify-between items-center ${
@@ -57,7 +83,9 @@ const HoursWarningModal = ({
                   </span>
                   <span className="text-sm">
                     {day.compatible
-                      ? `${Math.floor(day.overlapHours)}h overlap`
+                      ? day.overlapTimeRange
+                        ? `Overlaps ${day.overlapTimeRange}`
+                        : `${Math.floor(day.overlapHours)}h overlap`
                       : "No compatible hours"}
                   </span>
                 </li>
