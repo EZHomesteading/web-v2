@@ -64,6 +64,7 @@ interface RandomizedLocation {
 type ExtendedLocation = Location & { user?: { name: string } };
 
 const RouteOptimizer = ({
+  isOpen,
   setEndLoc,
   setStartLoc,
   initialTime,
@@ -642,7 +643,9 @@ const RouteOptimizer = ({
       }
     }
   }, [isLoaded, initialLocation, customStartLocation]);
-
+  useEffect(() => {
+    calculateRoute();
+  }, [isOpen]);
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
@@ -1164,7 +1167,7 @@ const RouteOptimizer = ({
         key={mapKey}
         onLoad={onMapLoad}
         onZoomChanged={onZoomChanged}
-        mapContainerClassName="w-full h-full"
+        mapContainerClassName="w-full h-full rounded-xl"
         center={userLocation ?? undefined}
         zoom={12}
         options={{
@@ -1450,6 +1453,26 @@ const RouteOptimizer = ({
           <div className={OutfitFont.className}>{modalState.description}</div>
         </DialogContent>
       </Dialog>
+      <Card className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-fit rounded-xl z-50 bg-white">
+        <div className="flex gap-4 justify-center items-center p-2">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-green-600"></div>
+            <span>Open</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+            <span>Closing Soon</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-red-600"></div>
+            <span>Closed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-red-600 shadow-[0_0_0_3px_#16a34a]"></div>
+            <span>Opening Soon</span>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };
