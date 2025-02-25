@@ -9,19 +9,35 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 interface TransferData {
   total: number;
-  stripeAccountId: string;
+  paymentId: string;
   orderId: string;
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { total, stripeAccountId, orderId } = body as TransferData;
-
+  const { total, paymentId, orderId } = body as TransferData;
+  async function getPaymentIntent(paymentIntentId: string) {
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        paymentIntentId
+      );
+      console.log(paymentIntent);
+      return paymentIntent;
+    } catch (error) {
+      console.error("Error retrieving payment intent:", error);
+      throw error;
+    }
+  }
+  const paymentIntent = await getPaymentIntent(paymentId);
+  console.log(paymentIntent);
   const order = await getOrderByIdTransfer({ orderId: orderId });
-
+  console.log(order);
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
-  } else if (order.seller && order.seller.stripeAccountId !== stripeAccountId) {
+  } else if (
+    order.seller &&
+    order.seller.stripeAccountId !== paymentIntent?.metadata.sellerStripeID
+  ) {
     return NextResponse.json(
       { error: "Invalid Stripe account" },
       { status: 400 }
@@ -32,7 +48,7 @@ export async function POST(request: NextRequest) {
     const transfer = await stripe.transfers.create({
       amount: total,
       currency: "usd",
-      destination: stripeAccountId,
+      destination: paymentIntent?.metadata.sellerStripeID,
       description: "Transfer to vendor",
     });
 
