@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 
-export const goFetchMiddleWare = async (
+export const goFetchMiddleware = async (
   endpoint: string,
   options: RequestInit = {}
 ) => {
