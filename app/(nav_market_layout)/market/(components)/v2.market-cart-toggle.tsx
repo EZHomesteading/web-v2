@@ -39,8 +39,10 @@ const MarketCartToggle = ({
     setShowWarning,
     incompatibleDays,
     addToBasket,
+    isFirstItemInCart, // Add this from the updated useBasket hook
   } = useBasket({
     listingId: listing?.id,
+    address: listing.location.address,
     user,
     initialQuantity: listing?.minOrder || 1,
     hours: listing?.location?.hours,
@@ -53,7 +55,7 @@ const MarketCartToggle = ({
         message: "Please sign in to add items to your basket",
         details: (
           <Link
-            href={`/auth/login?callbackUrl=/listings/${listing?.Id}`}
+            href={`/auth/login?callbackUrl=/listings/${listing?.id}`} // Fixed potential typo: listing?.Id -> listing?.id
             className={`text-sky-400 underline font-light`}
           >
             Sign in here
@@ -64,6 +66,7 @@ const MarketCartToggle = ({
     }
 
     try {
+      console.log("Toggling basket, current state:", { isInBasket });
       await toggleBasket(e, isInBasket, "ACTIVE");
     } catch (error) {
       Toast({ message: "Failed to update basket" });
@@ -91,16 +94,22 @@ const MarketCartToggle = ({
         </button>
       </div>
 
-      <HoursWarningModal
-        isOpen={showWarning}
-        onClose={() => setShowWarning(false)}
-        onConfirm={() => {
-          setShowWarning(false);
-          addToBasket("ACTIVE");
-        }}
-        incompatibleDays={incompatibleDays}
-        type={listing?.location?.hours?.pickup ? "pickup" : "delivery"}
-      />
+      {/* Only render modal when showWarning is true for better state management */}
+      {showWarning && (
+        <HoursWarningModal
+          isOpen={showWarning}
+          onClose={() => setShowWarning(false)}
+          onConfirm={() => {
+            setShowWarning(false);
+            addToBasket("ACTIVE");
+          }}
+          incompatibleDays={incompatibleDays}
+          type={
+            listing?.location?.hours?.pickup?.length > 0 ? "pickup" : "delivery"
+          }
+          isFirstItem={isFirstItemInCart} // Pass the isFirstItem flag from useBasket
+        />
+      )}
     </>
   );
 };

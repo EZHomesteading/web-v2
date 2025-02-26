@@ -92,7 +92,7 @@ const MarketCard = ({
       delivery: calculateServiceScores(hours.delivery || []),
     };
   }
-
+  console.log(listing);
   function calculateServiceScores(hours: DayHours[]) {
     const today = new Date();
     const next7Days = Array.from({ length: 7 }, (_, i) => {
@@ -142,7 +142,7 @@ const MarketCard = ({
 
     const normalizeScore = (score: number): number => {
       const maxPossibleScore = 7;
-      const normalized = (score / maxPossibleScore) * 3;
+      const normalized = (score / maxPossibleScore) * 4;
       return Math.max(1, Math.min(3, Math.ceil(normalized)));
     };
 

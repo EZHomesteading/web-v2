@@ -8,8 +8,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
-  const { totalSum, userId, orderTotals, body, email, orderId, orderGroupId } =
-    await request.json();
+  const {
+    totalSum,
+    userId,
+    orderTotals,
+    body,
+    email,
+    orderId,
+    orderGroupId,
+    sellerStripeID,
+  } = await request.json();
 
   try {
     if (orderId === null) {
@@ -28,9 +36,8 @@ export async function POST(request: NextRequest) {
       description: JSON.stringify(body),
       metadata: {
         userId,
-        orderTotals: JSON.stringify(orderTotals),
         orderGroupId: JSON.stringify(orderGroupId),
-        orderId,
+        sellerStripeID,
       },
       receipt_email: email,
     });

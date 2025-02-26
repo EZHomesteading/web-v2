@@ -10,6 +10,7 @@ import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import PaymentComponent from "./payment-component";
 import axios from "axios";
+import { getUserById } from "@/actions/getUser";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -120,9 +121,19 @@ export default function CheckoutForm({
             0
           );
 
-          const sellerId = basket.items[0]?.listing.userId;
+          const sellerId = basket.location.user.id;
           const basketTotals = { [sellerId]: basketTotal };
+          const sellerResponse = await fetch(`/api/users/${sellerId}`);
 
+          if (!sellerResponse.ok) {
+            throw new Error(
+              `Failed to fetch user: ${sellerResponse.statusText}`
+            );
+          }
+
+          const seller = await sellerResponse.json();
+          const sellerStripeID = seller?.stripeAccountId;
+          console.log(sellerStripeID);
           const response = await axios.post(
             "/api/stripe/create-payment-intent",
             {
@@ -131,6 +142,7 @@ export default function CheckoutForm({
               userId,
               basketIds: [basket.id],
               userLoc,
+              sellerStripeID,
               orderGroupId: new URLSearchParams(window.location.search).get(
                 "orderGroupId"
               ),

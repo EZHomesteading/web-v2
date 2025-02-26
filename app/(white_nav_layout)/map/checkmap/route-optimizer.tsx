@@ -52,6 +52,7 @@ const RouteOptimizer = ({
       setEndLocation(new google.maps.LatLng(endLoc[0], endLoc[1]));
     }
   }, [isLoaded, startLoc, endLoc]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [zoom, setZoom] = useState(12);
   const [optimizedRoute, setOptimizedRoute] = useState<OrderMap[]>([]);
   const [routeSegments, setRouteSegments] = useState<RouteSegment[]>([]);
@@ -75,7 +76,9 @@ const RouteOptimizer = ({
   const metersToMiles = (meters: number): number => {
     return meters * 0.000621371;
   };
-
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -282,263 +285,290 @@ const RouteOptimizer = ({
 
   return (
     <div className="fixed inset-0 w-full h-full">
-      <Card className="absolute top-4 left-4 z-10 w-96">
-        <CardHeader>
-          <CardTitle className={OutfitFont.className}>Route Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)]">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label
-                className={`${OutfitFont.className} flex items-center gap-2`}
+      <Card className="absolute top-4 left-4 z-10 w-[85vw] md:w-[350px] lg:w-96 pt-2 max-h-[calc(100vh-100px)] rounded-lg overflow-hidden">
+        <CardContent className="overflow-y-auto max-h-[calc(100vh-128px-2rem)] p-2 ">
+          {isCollapsed ? (
+            <Button
+              className="w-full text-sm  md:text-base"
+              onClick={toggleCollapse}
+            >
+              {" "}
+              Open Overview
+            </Button>
+          ) : (
+            <div>
+              {" "}
+              <Button
+                className="w-full mb-4 text-sm md:text-base"
+                onClick={toggleCollapse}
               >
-                <Switch
-                  checked={useCustomEndLocation}
-                  onCheckedChange={(checked) => {
-                    setUseCustomEndLocation(checked);
-                    if (!checked) {
-                      setEndLocation(null);
-                      setCustomEndLocation(null);
-                      setAddressSearch("");
-                    }
-                  }}
-                />
-                <span>Different End Location</span>
-              </label>
-
-              {useCustomEndLocation && (
-                <div>
-                  <Label>End Location Address</Label>
-                  <Autocomplete
-                    onLoad={(autocomplete) => {
-                      searchBoxRef.current = autocomplete;
-                    }}
-                    onPlaceChanged={() => {
-                      if (searchBoxRef.current) {
-                        const place = searchBoxRef.current.getPlace();
-                        onPlaceSelected(place);
-                      }
-                    }}
-                    options={{
-                      componentRestrictions: { country: "us" },
-                      fields: ["formatted_address", "geometry", "name"],
-                      types: ["address"],
-                    }}
+                {" "}
+                Collapse Overview
+              </Button>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    className={`${OutfitFont.className} flex items-center gap-2`}
                   >
-                    <Input
-                      type="text"
-                      placeholder="Enter an address..."
-                      className="w-full"
-                      value={addressSearch}
-                      onChange={(e) => setAddressSearch(e.target.value)}
+                    <Switch
+                      checked={useCustomEndLocation}
+                      onCheckedChange={(checked) => {
+                        setUseCustomEndLocation(checked);
+                        if (!checked) {
+                          setEndLocation(null);
+                          setCustomEndLocation(null);
+                          setAddressSearch("");
+                        }
+                      }}
                     />
-                  </Autocomplete>
+                    <span>Different End Location</span>
+                  </label>
+
+                  {useCustomEndLocation && (
+                    <div>
+                      <Label>End Location Address</Label>
+                      <Autocomplete
+                        onLoad={(autocomplete) => {
+                          searchBoxRef.current = autocomplete;
+                        }}
+                        onPlaceChanged={() => {
+                          if (searchBoxRef.current) {
+                            const place = searchBoxRef.current.getPlace();
+                            onPlaceSelected(place);
+                          }
+                        }}
+                        options={{
+                          componentRestrictions: { country: "us" },
+                          fields: ["formatted_address", "geometry", "name"],
+                          types: ["address"],
+                        }}
+                      >
+                        <Input
+                          type="text"
+                          placeholder="Enter an address..."
+                          className="w-full"
+                          value={addressSearch}
+                          onChange={(e) => setAddressSearch(e.target.value)}
+                        />
+                      </Autocomplete>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <div className="flex gap-2">
-              <Button
-                className="flex-1"
-                onClick={calculateRoute}
-                disabled={orders.length === 0}
-              >
-                Calculate Route
-              </Button>
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    onClick={calculateRoute}
+                    disabled={orders.length === 0}
+                  >
+                    Calculate Route
+                  </Button>
 
-              <Button
-                className="flex items-center gap-2"
-                onClick={openInMaps}
-                disabled={optimizedRoute.length === 0}
-                variant="outline"
-              >
-                <Navigation className="w-4 h-4" />
-                Open in Maps
-              </Button>
-            </div>
-            {optimizedRoute.length > 0 && (
-              <div className="p-2 bg-slate-100 rounded-md ">
-                <div className="border-b pb-2">
-                  <p className={`${OutfitFont.className} font-medium text-lg`}>
-                    Route Details
-                  </p>
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p className={`${OutfitFont.className} font-medium`}>
-                      Start Location:
-                    </p>
-                    <p className="text-sm text-gray-600 ">
-                      {startLocationAddress}
-                    </p>
-                    <p>
-                      Suggested Departure time:{" "}
-                      {routeSegments[0]
-                        ? new Date(
-                            optimizedRoute[0].pickupDate.getTime() -
-                              routeSegments[0].travelTime * 1000 -
-                              300000
-                          ).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                        : "N/A"}
-                    </p>
-                    <p>
-                      Total Distance:{" "}
-                      {metersToMiles(
-                        routeSegments.reduce(
-                          (acc, segment) => acc + segment.distance,
-                          0
-                        )
-                      ).toFixed(1)}{" "}
-                      miles
-                    </p>
-                    <p>
-                      Total Travel Time:{" "}
-                      {formatDuration(
-                        routeSegments.reduce(
-                          (acc, segment) => acc + segment.travelTime,
-                          0
-                        )
+                  <Button
+                    className="flex items-center gap-2"
+                    onClick={openInMaps}
+                    disabled={optimizedRoute.length === 0}
+                    variant="outline"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Open in Maps
+                  </Button>
+                </div>
+                {optimizedRoute.length > 0 && (
+                  <div className="p-2 bg-slate-100 rounded-md ">
+                    <div className="border-b pb-2">
+                      <p
+                        className={`${OutfitFont.className} font-medium text-lg`}
+                      >
+                        Route Details
+                      </p>
+                      <div className="space-y-1 text-sm text-gray-600">
+                        <p className={`${OutfitFont.className} font-medium`}>
+                          Start Location:
+                        </p>
+                        <p className="text-sm text-gray-600 ">
+                          {startLocationAddress}
+                        </p>
+                        <p>
+                          Suggested Departure time:{" "}
+                          {routeSegments[0]
+                            ? new Date(
+                                optimizedRoute[0].pickupDate.getTime() -
+                                  routeSegments[0].travelTime * 1000 -
+                                  300000
+                              ).toLocaleTimeString("en-US", {
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                            : "N/A"}
+                        </p>
+                        <p>
+                          Total Distance:{" "}
+                          {metersToMiles(
+                            routeSegments.reduce(
+                              (acc, segment) => acc + segment.distance,
+                              0
+                            )
+                          ).toFixed(1)}{" "}
+                          miles
+                        </p>
+                        <p>
+                          Total Travel Time:{" "}
+                          {formatDuration(
+                            routeSegments.reduce(
+                              (acc, segment) => acc + segment.travelTime,
+                              0
+                            )
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className={`${OutfitFont.className} font-medium`}>
+                        Stops
+                      </p>
+                      {optimizedRoute.map((order, index) => (
+                        <div
+                          key={order.id}
+                          className="flex flex-col space-y-1 pb-2 border-b last:border-b-0"
+                        >
+                          <div className="flex flex-col gap-0.5"></div>
+                          <div className="flex justify-between text-sm text-gray-600">
+                            {" "}
+                            <span>
+                              {" "}
+                              {index + 1}. {order.location.displayName}Pickup
+                              Time:
+                            </span>
+                            <span className="text-blue-600 font-medium">
+                              {formatTime(order.pickupDate)}
+                            </span>
+                          </div>
+
+                          <div className="text-sm text-gray-600 pl-6 space-y-0.5">
+                            {routeSegments[index] && (
+                              <>
+                                <div className="flex justify-between">
+                                  <span>
+                                    {index === 0
+                                      ? "Travel Time from start:"
+                                      : "Travel Time from last stop:"}
+                                  </span>
+                                  <span>
+                                    {formatDuration(
+                                      routeSegments[index].travelTime
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Distance from last stop:</span>
+                                  <span>
+                                    {metersToMiles(
+                                      routeSegments[index].distance
+                                    ).toFixed(1)}{" "}
+                                    miles
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* End Location Display (if different from start) */}
+                      {useCustomEndLocation && customEndLocation && (
+                        <div className="flex flex-col space-y-1 pb-2 border-t pt-2">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                Final Destination:
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600">
+                              {addressSearch}
+                            </p>
+                            {routeSegments[routeSegments.length - 1] && (
+                              <div className="text-sm text-gray-600 space-y-0.5 mt-1">
+                                <div className="flex justify-between">
+                                  <span>Travel time from last stop:</span>
+                                  <span>
+                                    {formatDuration(
+                                      routeSegments[routeSegments.length - 1]
+                                        .travelTime
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Distance from last stop:</span>
+                                  <span>
+                                    {metersToMiles(
+                                      routeSegments[routeSegments.length - 1]
+                                        .distance
+                                    ).toFixed(1)}{" "}
+                                    miles
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       )}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className={`${OutfitFont.className} font-medium`}>Stops</p>
-                  {optimizedRoute.map((order, index) => (
-                    <div
-                      key={order.id}
-                      className="flex flex-col space-y-1 pb-2 border-b last:border-b-0"
-                    >
-                      <div className="flex flex-col gap-0.5"></div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        {" "}
-                        <span>
-                          {" "}
-                          {index + 1}. {order.location.displayName}Pickup Time:
-                        </span>
-                        <span className="text-blue-600 font-medium">
-                          {formatTime(order.pickupDate)}
-                        </span>
-                      </div>
-
-                      <div className="text-sm text-gray-600 pl-6 space-y-0.5">
-                        {routeSegments[index] && (
-                          <>
-                            <div className="flex justify-between">
-                              <span>
-                                {index === 0
-                                  ? "Travel Time from start:"
-                                  : "Travel Time from last stop:"}
-                              </span>
-                              <span>
-                                {formatDuration(
-                                  routeSegments[index].travelTime
-                                )}
+                      {!useCustomEndLocation && routeSegments.length > 0 && (
+                        <div className="flex flex-col space-y-1 pb-2 border-t pt-2">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                Return to Start:
                               </span>
                             </div>
-                            <div className="flex justify-between">
-                              <span>Distance from last stop:</span>
-                              <span>
-                                {metersToMiles(
-                                  routeSegments[index].distance
-                                ).toFixed(1)}{" "}
-                                miles
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
 
-                  {/* End Location Display (if different from start) */}
-                  {useCustomEndLocation && customEndLocation && (
-                    <div className="flex flex-col space-y-1 pb-2 border-t pt-2">
-                      <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            Final Destination:
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600">{addressSearch}</p>
-                        {routeSegments[routeSegments.length - 1] && (
-                          <div className="text-sm text-gray-600 space-y-0.5 mt-1">
-                            <div className="flex justify-between">
-                              <span>Travel time from last stop:</span>
-                              <span>
-                                {formatDuration(
-                                  routeSegments[routeSegments.length - 1]
-                                    .travelTime
-                                )}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Distance from last stop:</span>
-                              <span>
-                                {metersToMiles(
-                                  routeSegments[routeSegments.length - 1]
-                                    .distance
-                                ).toFixed(1)}{" "}
-                                miles
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {!useCustomEndLocation && routeSegments.length > 0 && (
-                    <div className="flex flex-col space-y-1 pb-2 border-t pt-2">
-                      <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">Return to Start:</span>
-                        </div>
-
-                        <div className="text-sm text-gray-600 space-y-0.5 mt-1">
-                          <div className="flex justify-between">
-                            <span>Travel time from last stop:</span>
-                            <span>
-                              {formatDuration(
-                                routeSegments[routeSegments.length - 1]
-                                  .travelTime
-                              )}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Distance from last stop:</span>
-                            <span>
-                              {metersToMiles(
-                                routeSegments[routeSegments.length - 1].distance
-                              ).toFixed(1)}{" "}
-                              miles
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Estimated Return Time:</span>
-                            <span className="text-green-600 font-medium">
-                              {formatTime(
-                                new Date(
-                                  optimizedRoute[
-                                    optimizedRoute.length - 1
-                                  ].pickupDate.getTime() +
+                            <div className="text-sm text-gray-600 space-y-0.5 mt-1">
+                              <div className="flex justify-between">
+                                <span>Travel time from last stop:</span>
+                                <span>
+                                  {formatDuration(
                                     routeSegments[routeSegments.length - 1]
-                                      .travelTime *
-                                      1000
-                                )
-                              )}
-                            </span>
+                                      .travelTime
+                                  )}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Distance from last stop:</span>
+                                <span>
+                                  {metersToMiles(
+                                    routeSegments[routeSegments.length - 1]
+                                      .distance
+                                  ).toFixed(1)}{" "}
+                                  miles
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Estimated Return Time:</span>
+                                <span className="text-green-600 font-medium">
+                                  {formatTime(
+                                    new Date(
+                                      optimizedRoute[
+                                        optimizedRoute.length - 1
+                                      ].pickupDate.getTime() +
+                                        routeSegments[routeSegments.length - 1]
+                                          .travelTime *
+                                          1000
+                                    )
+                                  )}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

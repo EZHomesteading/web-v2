@@ -25,6 +25,7 @@ export interface MarketListing {
   quantityType?: string;
   stock: number;
   location: {
+    id: string;
     displayName: string;
     address: string[];
     role: UserRole;

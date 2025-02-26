@@ -156,7 +156,15 @@ export default async function ListingPage({
                       className="text-lg  flex items-center gap-x-1"
                     >
                       <div className={`p-2`}>
-                        <PiCheckThin />
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill={"black"}
+                          stroke={"black"}
+                          strokeWidth="2"
+                          style={{ width: 20, height: 20 }}
+                        >
+                          <path d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z" />
+                        </svg>
                       </div>
                       {ratingMeanings[ratingIndex]}
                     </li>
@@ -167,7 +175,15 @@ export default async function ListingPage({
                       className="text-lg flex items-center gap-x-1"
                     >
                       <div className={`p-2`}>
-                        <PiInfoThin />
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill={"none"}
+                          stroke={"black"}
+                          strokeWidth="2"
+                          style={{ width: 20, height: 20 }}
+                        >
+                          <path d="M12 2L8.5 8.5L2 9.3L7 14.1L5.5 20.5L12 17.5L18.5 20.5L17 14.1L22 9.3L15.5 8.5L12 2Z" />
+                        </svg>
                       </div>
                       {inverseRatingMeanings[ratingIndex]}
                     </li>

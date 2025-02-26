@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import axios from "axios";
-import toast from "react-hot-toast";
+//import toast from "react-hot-toast";
 import CancelModal from "./CancelModal";
 import { Listing, OrderStatus, UserRole } from "@prisma/client";
 import { UploadButton } from "@/utils/uploadthing";
@@ -52,6 +52,7 @@ import { OutfitFont, ZillaFont } from "@/components/fonts";
 import { getMessageOptions } from "./messageOptions";
 import { MessageActions } from "./message-actions";
 import { ImageUpload } from "./imageUpload";
+import { useRouter } from "next/navigation";
 //import DateTimePicker from "./customtimemodal";
 
 interface MessageBoxProps {
@@ -66,6 +67,7 @@ interface MessageBoxProps {
   user: ChatUser;
   stripeAccountId?: string | null;
   messagesLength: number;
+  orderGroupId: string | null;
 }
 
 const MessageBox: React.FC<MessageBoxProps> = ({
@@ -80,8 +82,10 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   order,
   otherUserRole,
   stripeAccountId,
+  orderGroupId,
 }) => {
   //const [validTime, setValidTime] = useState<string>("(select your time)");
+  const router = useRouter();
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   //const [customTimeOpen, setCustomTimeOpen] = useState(false);
@@ -206,24 +210,63 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   // all onsubmit options dependent on messages in chat.
   const trySubmit = async (status: OrderStatus) => {
     const message = await getMessageByStatus(status);
-
-    //coop seller confirms order pickup time
-    await axios.post("/api/chat/messages", {
-      message: message,
-      messageOrder: status,
-      conversationId: convoId,
-      otherUserId: otherUsersId,
-    });
     if (status === "COMPLETED") {
-      await axios.post("/api/useractions/checkout/update-order", {
-        orderId: order?.id,
-        status: status,
-        completedAt: new Date(),
-      });
+      try {
+        // First API call
+        await axios.post("/api/useractions/checkout/update-order", {
+          orderId: order?.id,
+          status: status,
+          completedAt: new Date(),
+        });
+
+        // Second API call (stripe payout)
+        await axios.post("/api/stripe/transfer", {
+          total: order?.totalPrice,
+          paymentId: order?.paymentIntentId,
+          orderId: order?.id,
+        });
+
+        await axios.post("/api/chat/messages", {
+          message: message,
+          messageOrder: status,
+          conversationId: convoId,
+          otherUserId: otherUsersId,
+        });
+      } catch (error) {
+        console.error("Error processing order:", error);
+
+        // You can check for specific error conditions
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            // Unauthorized
+            router.push("/login");
+            return;
+          } else if (error.response?.status === 400) {
+            // Bad request
+            router.push("/selling/my-store");
+            return;
+          } else {
+            // General error
+            router.push("/selling/my-store");
+            return;
+          }
+        } else {
+          // Non-axios error
+          router.push("/selling/my-store");
+          return;
+        }
+      }
+      //coop seller confirms order pickup time
     } else {
       await axios.post("/api/useractions/checkout/update-order", {
         orderId: order?.id,
         status: status,
+      });
+      await axios.post("/api/chat/messages", {
+        message: message,
+        messageOrder: status,
+        conversationId: convoId,
+        otherUserId: otherUsersId,
       });
     }
   };
@@ -359,6 +402,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({
         convoId={order?.conversationId}
         otherUserRole={otherUserRole}
         isSeller={true}
+        orderGroupId={orderGroupId}
       />
       <DisputeModal
         isOpen={disputeOpen}

@@ -43,6 +43,10 @@ const CheckoutButton = ({
     basket.items.some((item: any) => item.listing.stock <= 0)
   );
 
+  const hasNotEnoughStock = baskets.some((basket) =>
+    basket.items.some((item: any) => item.listing.stock <= item.quantity)
+  );
+
   const createExpiryArray = () => {
     const expiryArray: AdjustedListing[] = [];
 
@@ -102,7 +106,16 @@ const CheckoutButton = ({
       });
       return;
     }
-
+    if (hasNotEnoughStock) {
+      toast.error(
+        "Some items in your basket do not have enough stock for your order.",
+        {
+          duration: 2000,
+          position: "bottom-right",
+        }
+      );
+      return;
+    }
     // If there are expired or soon-to-expire items, show modal
     if (expiryArr.length > 0) {
       setExpiredArray(expiryArr);
@@ -239,11 +252,27 @@ const CheckoutButton = ({
         expiryArr={expiredArray}
         createOrder={createOrder}
       />
+      {!allTimesSet ? (
+        <div className="text-red-500">
+          You must set delivery/pickup times for all items before proceeding to
+          checkout
+        </div>
+      ) : null}
+      {hasOutOfStock ? (
+        <div className="text-red-500">
+          One or more of the items in your cart are out of stock.
+        </div>
+      ) : hasNotEnoughStock ? (
+        <div className="text-red-500">
+          One or more of the items in your cart do not have enough stock to
+          complete your order.
+        </div>
+      ) : null}
 
       <Button
         className={buttonStyle}
         onClick={handleCheckout}
-        disabled={!allTimesSet || hasOutOfStock}
+        disabled={!allTimesSet || hasOutOfStock || hasNotEnoughStock}
       >
         {buttonText}
       </Button>

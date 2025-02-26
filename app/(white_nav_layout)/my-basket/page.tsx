@@ -37,6 +37,7 @@ const BasketPage = async () => {
       mk={mk}
       userId={session.user.id}
       userLoc={userLoc}
+      userName={session.user.name}
     />
   );
 };
