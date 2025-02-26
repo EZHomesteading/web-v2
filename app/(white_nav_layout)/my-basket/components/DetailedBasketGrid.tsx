@@ -71,6 +71,7 @@ interface DetailedBasketGridProps {
   mk: string | undefined;
   userId: string;
   userLoc: any | null;
+  userName: string;
 }
 
 interface DetailedBasketCardProps {
@@ -115,6 +116,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
   userLoc,
   mk,
   userId,
+  userName,
 }) => {
   return (
     <BasketProvider>
@@ -125,6 +127,7 @@ const DetailedBasketGrid: React.FC<DetailedBasketGridProps> = ({
         userLoc={userLoc}
         mk={mk}
         userId={userId}
+        userName={userName}
       />
     </BasketProvider>
   );
@@ -135,6 +138,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
   mapsKey,
   userLocs,
   userLoc,
+  userName,
   mk,
   userId,
 }) => {
@@ -295,6 +299,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
             open={showLocationModal}
             onClose={() => setShowLocationModal(false)}
             isLoaded={isLoaded}
+            userName={userName}
           />
           <div className="flex flex-col xl:flex-row px-4 xl:px-0 gap-8">
             <div className="w-full xl:w-[65%] pt-6 xl:absolute xl:left-0 justify-start">

@@ -327,6 +327,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   const [locationStatuses, setLocationStatuses] = useState<LocationStatuses>(
     {}
   );
+  const [enteredDate, setEnteredDate] = useState(false);
   const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
   const [showUnavailableDialog, setShowUnavailableDialog] = useState(false);
   const [unavailableLocations, setUnavailableLocations] = useState<
@@ -519,7 +520,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         closesSoon:
           isOpen &&
           selectedDateSchedule?.timeSlots[0] &&
-          selectedDateSchedule.timeSlots[0].close - timeInMinutes <= 30,
+          selectedDateSchedule.timeSlots[0].close - timeInMinutes <= 60,
       };
 
       if (!isOpen) {
@@ -530,7 +531,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         });
       }
     });
-
+    setEnteredDate(true);
     setLocationStatuses(newStatuses);
     if (unavailable.length > 0) {
       setUnavailableLocations(unavailable);
@@ -622,15 +623,41 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
         setPickupTimes={setPickupTimes}
       />
       <Card className="p-4 mb-4">
-        <div className="flex justify-center items-center gap-2">
-          <span>Departing from {initLoc.address}</span>
+        <div className="flex justify-center items-center gap-2 mb-4">
+          <span>
+            {enteredDate
+              ? `If you depart from ${
+                  initLoc.address
+                } on ${getDisplayText()}, circles around
+            sellers indicate their availability at that time.`
+              : `If you depart from ${initLoc.address} right now, circles around
+            sellers indicate their availability. Please choose a departure time${" "}`}
+          </span>
+        </div>
+        <div className="flex justify-between items-center">
+          <button
+            ref={datePickerTriggerRef}
+            onClick={() => setIsDatePickerOpen(true)}
+            className="flex items-center justify-center rounded-full border px-3 py-2 text-sm  hover:bg-gray-50 transition-colors"
+          >
+            {getDisplayText()}
+          </button>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={checkLocationAvailability}
+            className="w-32"
+            disabled={!selectedDate || !selectedTime}
+          >
+            Check Availability
+          </Button>
           <Popover
             open={isChangeLocationOpen}
             onOpenChange={setIsChangeLocationOpen}
           >
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
-                Change
+              <Button variant="outline" size="default">
+                Change Location
               </Button>
             </PopoverTrigger>
             <PopoverContent align="center" className="w-[500px] p-6 shadow-xl">
@@ -653,29 +680,6 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
               </div>
             </PopoverContent>
           </Popover>
-        </div>
-        <div className="flex justify-between items-center">
-          <div className="flex flex-row">
-            <button
-              ref={datePickerTriggerRef}
-              onClick={() => setIsDatePickerOpen(true)}
-              className="flex items-center justify-center rounded-full border px-3 py-2 text-sm  hover:bg-gray-50 transition-colors"
-            >
-              {getDisplayText()}
-            </button>
-            {(!selectedDate || !selectedTime) && (
-              <div className=" text-sm mt-2 pl-2 hover:bg-gray-50 transition-colors">
-                Defaults to current Date and Time
-              </div>
-            )}
-          </div>
-          <Button
-            onClick={checkLocationAvailability}
-            className="w-32"
-            disabled={!selectedDate || !selectedTime}
-          >
-            Check Availability
-          </Button>
         </div>
       </Card>
 

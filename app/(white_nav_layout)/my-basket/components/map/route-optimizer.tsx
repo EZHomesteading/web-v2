@@ -82,6 +82,7 @@ const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
             googleMapsApiKey={googleMapsApiKey}
             initialLocation={initialLocation}
             onClose={onClose}
+            isOpen={isOpen}
             setCartPickupTimes={setPickupTimes}
           />
         </div>

@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
         },
         location: {
           select: {
+            address: true,
             displayName: true,
             hours: true,
             image: true,

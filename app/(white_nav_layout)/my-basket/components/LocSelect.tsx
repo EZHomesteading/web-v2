@@ -16,6 +16,7 @@ interface LocationModalProps {
   open: boolean;
   onClose?: () => void;
   isLoaded: boolean;
+  userName: string;
 }
 
 interface Location {
@@ -28,6 +29,7 @@ const LocationModal: React.FC<LocationModalProps> = ({
   open,
   onClose,
   isLoaded,
+  userName,
 }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(open);
@@ -92,15 +94,23 @@ const LocationModal: React.FC<LocationModalProps> = ({
 
       {/* Modal Container */}
       <div
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] bg-white rounded-lg shadow-xl p-6"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  w-full sm:w-[500px] bg-white rounded-lg shadow-xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoaded ? (
           <div className="space-y-6">
             <div>
-              <h3 className="text-2xl font-semibold mb-2">Set Your Location</h3>
+              <h3 className="text-2xl font-semibold ">Hi {userName},</h3>
+              <h3 className="text-2xl font-semibold mb-2">
+                Please Set Your Location
+              </h3>
               <p className="text-sm text-gray-600">
-                Please enter your address to use our routing features
+                By entering your adress we can minimize your driving and
+                maximize your freedom.
+              </p>
+              <p className="text-sm text-gray-600">
+                By using your location, we can calculate the most optimal route
+                for pickups, or tell sellers how to reach to you.
               </p>
               <p className="text-sm text-gray-600">
                 This will be saved to your profile for use with later orders.

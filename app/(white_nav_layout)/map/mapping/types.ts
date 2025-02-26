@@ -10,6 +10,7 @@ export interface RouteOptimizerProps {
   initialLocation: number[];
   onClose: () => void;
   setCartPickupTimes: any;
+  isOpen: boolean;
 }
 export interface initialLocation {
   lat: number;
