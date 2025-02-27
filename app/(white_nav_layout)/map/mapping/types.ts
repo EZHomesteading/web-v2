@@ -11,6 +11,7 @@ export interface RouteOptimizerProps {
   onClose: () => void;
   setCartPickupTimes: any;
   isOpen: boolean;
+  startDelay: number;
 }
 export interface initialLocation {
   lat: number;

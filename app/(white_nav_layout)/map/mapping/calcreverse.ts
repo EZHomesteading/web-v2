@@ -69,7 +69,8 @@ export const optimizeArrivalTimeRoute = async (
   endLocation: google.maps.LatLng,
   usePickupOrder: boolean = false,
   targetArrivalTime: number,
-  selectedDate: Date
+  selectedDate: Date,
+  startDelay: number
 ): Promise<RouteResult> => {
   const directionsService = new google.maps.DirectionsService();
 
@@ -82,7 +83,10 @@ export const optimizeArrivalTimeRoute = async (
         endLocation,
         targetArrivalTime,
         selectedDate,
-        false
+        false,
+        false,
+        false,
+        startDelay
       );
     }
 
@@ -112,7 +116,9 @@ export const optimizeArrivalTimeRoute = async (
         sortedLocations,
         endLocation,
         targetArrivalTime,
-        selectedDate
+        selectedDate,
+        undefined,
+        startDelay
       );
     }
 
@@ -131,7 +137,9 @@ export const optimizeArrivalTimeRoute = async (
         targetArrivalTime,
         selectedDate,
         false,
-        true
+        true,
+        false,
+        startDelay
       );
 
       const finalResult = await calculateInitialLeg(
@@ -150,7 +158,10 @@ export const optimizeArrivalTimeRoute = async (
         endLocation,
         targetArrivalTime,
         selectedDate,
-        true
+        true,
+        false,
+        false,
+        startDelay
       );
     }
   } catch (error) {
@@ -166,7 +177,8 @@ const optimizeInChunksForArrival = async (
   endLocation: google.maps.LatLng,
   targetArrivalTime: number,
   selectedDate: Date,
-  chunkSize: number = 3
+  chunkSize: number = 3,
+  startDelay: number
 ): Promise<RouteResult> => {
   let currentEnd = endLocation;
   let currentTime = targetArrivalTime;
@@ -192,7 +204,10 @@ const optimizeInChunksForArrival = async (
       currentEnd,
       currentTime,
       selectedDate,
-      true
+      true,
+      false,
+      false,
+      startDelay
     );
 
     finalRoute = [...chunkResult.route, ...finalRoute];
@@ -207,7 +222,10 @@ const optimizeInChunksForArrival = async (
     endLocation,
     targetArrivalTime,
     selectedDate,
-    false
+    false,
+    false,
+    false,
+    startDelay
   );
 };
 
@@ -220,15 +238,18 @@ const calculateRouteWithArrivalTimings = async (
   selectedDate: Date,
   optimize: boolean = false,
   skipStartOptimization: boolean = false,
-  adjustForInitialLeg: boolean = false
+  adjustForInitialLeg: boolean = false,
+  startDelay: number
 ): Promise<RouteResult> => {
-  if (hasTimePassed(targetArrivalTime, selectedDate)) {
+  if (hasTimePassed(targetArrivalTime, selectedDate, startDelay)) {
     throw {
       type: "TIME_PASSED",
-      message: "Target arrival time has already passed",
+      message:
+        "Target arrival time has already passed. Or you are not giving sellers enough notice.",
       details: {
         requestedTime: secondsToTimeString(targetArrivalTime),
         currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        sellerReq: startDelay,
       },
     };
   }
@@ -291,13 +312,15 @@ const calculateRouteWithArrivalTimings = async (
     : targetArrivalTime - initialLegTime;
 
   const startTime = effectiveTargetTime - totalDuration;
-  if (hasTimePassed(startTime, selectedDate)) {
+  if (hasTimePassed(startTime, selectedDate, startDelay)) {
     throw {
       type: "TIME_PASSED",
-      message: "Required start time has already passed",
+      message:
+        "Required start time has already passed. Or you are not giving sellers enough notice.",
       details: {
         requestedTime: secondsToTimeString(startTime),
         currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        sellerReq: startDelay,
       },
     };
   }
@@ -318,7 +341,7 @@ const calculateRouteWithArrivalTimings = async (
 
     currentTime += travelTime;
     const arrivalTime = currentTime;
-    if (hasTimePassed(arrivalTime, selectedDate)) {
+    if (hasTimePassed(arrivalTime, selectedDate, startDelay)) {
       throw {
         type: "TIME_PASSED",
         message: `Arrival time at ${location.displayName} has already passed`,

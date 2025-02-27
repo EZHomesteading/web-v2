@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import CheckoutButton from "./checkoutButton";
 import { useLoadScript } from "@react-google-maps/api";
 import { divIcon } from "leaflet";
+import { find } from "lodash";
 
 // Keep specific types where they're well-defined
 interface ListingType {
@@ -257,7 +258,44 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
     orderMethod: string;
     deliveryDate: Date | null;
   }
+  function findLargestSODT(baskets: any[]): number {
+    // Initialize with 0 in case there are no eligible items
+    let largestSODT = 0;
 
+    // Helper function to check if a basket's location has pickup hours
+    const hasPickupHours = (basket: any): boolean => {
+      return (
+        basket.location?.hours?.pickup &&
+        Array.isArray(basket.location.hours.pickup) &&
+        basket.location.hours.pickup.length > 0
+      );
+    };
+
+    // Iterate through each basket
+    baskets.forEach((basket) => {
+      // Skip this basket if its location doesn't have pickup hours
+      if (!hasPickupHours(basket)) {
+        return; // Skip to the next basket
+      }
+
+      // Check if basket has items array
+      if (basket.items && Array.isArray(basket.items)) {
+        // Iterate through each item in the basket
+        basket.items.forEach((item: any) => {
+          // Check if the item has a listing with an SODT value
+          if (item.listing && typeof item.listing.SODT === "number") {
+            // Update largestSODT if current SODT is larger
+            largestSODT = Math.max(largestSODT, item.listing.SODT);
+          }
+        });
+      }
+    });
+
+    return largestSODT;
+  }
+
+  const startDelay = findLargestSODT(baskets);
+  console.log(startDelay);
   const OrderSummaryCard = ({ baskets, pickupTimes }: SummaryCard) => {
     const { basketTotals } = useBasket();
 
@@ -322,6 +360,7 @@ const DetailedBasketGridContent: React.FC<DetailedBasketGridProps> = ({
             <div className="w-full xl:w-[35%] xl:fixed xl:right-0 xl:mt-10 xl:top-6 xl:pr-4 pt-6 space-y-6">
               <OrderSummaryCard baskets={baskets} pickupTimes={pickupTimes} />
               <AvailabilityMap
+                startDelay={startDelay}
                 setStartLoc={setStartLoc}
                 setEndLoc={setEndLoc}
                 userLoc={userLoc}
