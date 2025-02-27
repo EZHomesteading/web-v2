@@ -22,6 +22,7 @@ declare module "next-auth" {
     SODT: number;
     role: UserRole;
     canRecievePayouts?: boolean;
+    goToken?: string;
   }
 
   interface Session {
@@ -48,5 +49,6 @@ declare module "next-auth/jwt" {
     openClosedTemplates?: any;
     role: UserRole;
     canRecievePayouts?: boolean;
+    goToken?: string;
   }
 }

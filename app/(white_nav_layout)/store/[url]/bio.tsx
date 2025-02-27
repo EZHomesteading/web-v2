@@ -1,5 +1,6 @@
+"use client";
 import { ReviewWithReviewer } from "@/actions/getUser";
-import { StarRating } from "@/app/(nav_market_layout)/market/(components)/store-card";
+import { StarRating } from "@/app/(nav_market_layout)/market/(components)/market-components";
 import Avatar from "@/components/Avatar";
 import { OutfitFont } from "@/components/fonts";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

@@ -6,6 +6,7 @@ import { getUserById } from "@/data/user";
 import { fullName, Notification, UserRole } from "@prisma/client";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
+import { sign } from "jsonwebtoken";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -44,6 +45,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         session.user.notifications = token.notifications as Notification[];
         session.user.openClosedTemplates = token.openClosedTemplates as any;
         session.user.canRecievePayouts = token.canRecievePayouts as boolean;
+
+        // token to make api calls to go backend
+        session.user.goToken = token.goToken as string;
       }
       return session;
     },
@@ -53,7 +57,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
-
+      const goCompatibleToken = sign(
+        {
+          id: existingUser.id,
+          role: existingUser.role,
+        },
+        process.env.JWT_SECRET!,
+        { expiresIn: "14d" }
+      );
       return {
         ...token,
         id: existingUser.id,
@@ -75,6 +86,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         notifications: existingUser.notifications,
         openClosedTemplates: existingUser.openCloseTemplates,
         canRecievePayouts: existingUser.canRecievePayouts ?? undefined,
+        goToken: goCompatibleToken,
       };
     },
   },

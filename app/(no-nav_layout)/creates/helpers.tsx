@@ -242,6 +242,7 @@ const KeywordInput = ({
       e.preventDefault();
       handleAddTag();
     }
+
     if (
       !/^[a-z]$/.test(e.key.toLowerCase()) &&
       e.key !== "Backspace" &&
