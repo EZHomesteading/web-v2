@@ -67,6 +67,7 @@ interface AvailabilityMapProps {
   mapsKey: string;
   setPickupTimes: any;
   locations: any[];
+  startDelay: number;
 }
 
 const DateTimePicker: React.FC<DateTimePickerProps> = ({
@@ -271,6 +272,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   locations,
   mapsKey,
   setPickupTimes,
+  startDelay,
 }) => {
   // Early return if userLoc is invalid
   if (
@@ -612,6 +614,7 @@ const AvailabilityMap: React.FC<AvailabilityMapProps> = ({
   return (
     <div className="mt-8">
       <RouteOptimizerModal
+        startDelay={startDelay}
         setEndLoc={setEndLoc}
         setStartLoc={setStartLoc}
         selectedTime={createDateFromStrings(selectedDate, selectedTime)}

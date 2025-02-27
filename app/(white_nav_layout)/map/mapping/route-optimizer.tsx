@@ -73,6 +73,7 @@ const RouteOptimizer = ({
   initialLocation,
   onClose,
   setCartPickupTimes,
+  startDelay,
 }: RouteOptimizerProps) => {
   // State Management
   const [departureTimePickerOpen, setDepartureTimePickerOpen] = useState(false);
@@ -336,7 +337,8 @@ const RouteOptimizer = ({
           endLocation || startingPoint,
           usePickupOrder,
           targetTimeInSeconds,
-          selectedDepartureTime
+          selectedDepartureTime,
+          startDelay
         );
       } else {
         optimizedResult = await optimizeTimeRoute(
@@ -345,7 +347,8 @@ const RouteOptimizer = ({
           endLocation || startingPoint,
           usePickupOrder,
           targetTimeInSeconds,
-          selectedDepartureTime
+          selectedDepartureTime,
+          startDelay
         );
       }
 
@@ -502,6 +505,9 @@ const RouteOptimizer = ({
         </div>
       );
     } else if (error.type === "TIME_PASSED") {
+      const earlyTime =
+        timeStringToSeconds(error.details.currentTime) +
+        error.details.sellerReq * 60;
       errorMessage = (
         <div className="space-y-2">
           <p className="text-red-600 font-medium">{error.message}</p>
@@ -510,6 +516,13 @@ const RouteOptimizer = ({
           </p>
           <p className="text-sm text-gray-600">
             Requested Time: {error.details.requestedTime}
+          </p>
+          <p className="text-sm text-gray-600">
+            Sellers request {formatTimeFromMinutes(error.details.sellerReq)}{" "}
+            notice
+          </p>
+          <p className="text-sm text-gray-600">
+            Ealiest possible departure: {secondsToTimeString(earlyTime)}
           </p>
           {error.details.location && (
             <p className="text-sm text-gray-600">
@@ -1549,5 +1562,35 @@ const RouteOptimizer = ({
     </div>
   );
 };
+function formatTimeFromMinutes(totalMinutes: number): string {
+  // Handle negative values
+  if (totalMinutes < 0) {
+    return `${formatTimeFromMinutes(-totalMinutes)} ago`;
+  }
 
+  // Handle zero case
+  if (totalMinutes === 0) {
+    return "0 minutes";
+  }
+
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+  const minutes = Math.floor(totalMinutes % 60);
+
+  const parts = [];
+
+  if (days > 0) {
+    parts.push(`${days} ${days === 1 ? "day" : "days"}`);
+  }
+
+  if (hours > 0) {
+    parts.push(`${hours} ${hours === 1 ? "hour" : "hours"}`);
+  }
+
+  if (minutes > 0 || (days === 0 && hours === 0)) {
+    parts.push(`${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
+  }
+
+  return parts.join(" ");
+}
 export default RouteOptimizer;

@@ -14,6 +14,7 @@ interface RouteOptimizerModalProps {
   setPickupTimes: any;
   setStartLoc: React.Dispatch<React.SetStateAction<any[]>>;
   setEndLoc: React.Dispatch<React.SetStateAction<any[]>>;
+  startDelay: number;
 }
 
 const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
@@ -26,6 +27,7 @@ const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
   initialLocation,
   selectedTime,
   setPickupTimes,
+  startDelay,
 }) => {
   // Handler to prevent closing when clicking outside
   const handleOpenChange = (open: boolean) => {
@@ -75,6 +77,7 @@ const RouteOptimizerModal: React.FC<RouteOptimizerModalProps> = ({
         `}</style>
         <div className="w-full h-full relative">
           <RouteOptimizer
+            startDelay={startDelay}
             setEndLoc={setEndLoc}
             setStartLoc={setStartLoc}
             initialTime={selectedTime}

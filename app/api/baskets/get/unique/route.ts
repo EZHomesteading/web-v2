@@ -51,6 +51,7 @@ export async function GET(
                 imageSrc: true,
                 stock: true,
                 price: true,
+                SODT: true,
                 subCategory: true,
                 minOrder: true,
                 shelfLife: true,
@@ -63,6 +64,7 @@ export async function GET(
         location: {
           select: {
             id: true,
+            SODT: true,
             displayName: true,
             image: true,
             type: true,

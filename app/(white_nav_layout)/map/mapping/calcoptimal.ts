@@ -18,7 +18,8 @@ interface RouteError {
 }
 export const hasTimePassed = (
   timeInSeconds: number,
-  selectedDate: Date
+  selectedDate: Date,
+  startDelay: number
 ): boolean => {
   const now = new Date();
   const timeDate = new Date(selectedDate);
@@ -27,8 +28,8 @@ export const hasTimePassed = (
   const hours = Math.floor(timeInSeconds / 3600);
   const minutes = Math.floor((timeInSeconds % 3600) / 60);
   timeDate.setHours(hours, minutes, 0, 0);
-
-  return timeDate < now;
+  const delayTime = new Date(now.getTime() + startDelay * 60 * 1000);
+  return timeDate < delayTime;
 };
 
 // Utility to get current time in seconds
@@ -57,7 +58,8 @@ export const optimizeTimeRoute = async (
   endLocation: google.maps.LatLng,
   usePickupOrder: boolean = false,
   departureTime: number,
-  selectedDate: Date
+  selectedDate: Date,
+  startDelay: number
 ): Promise<RouteResult> => {
   const directionsService = new google.maps.DirectionsService();
 
@@ -71,7 +73,9 @@ export const optimizeTimeRoute = async (
         endLocation,
         departureTime,
         selectedDate,
-        false
+        false,
+        false,
+        startDelay
       );
     }
 
@@ -98,7 +102,9 @@ export const optimizeTimeRoute = async (
         sortedLocations,
         endLocation,
         departureTime,
-        selectedDate
+        selectedDate,
+        undefined,
+        startDelay
       );
     }
 
@@ -110,7 +116,9 @@ export const optimizeTimeRoute = async (
       endLocation,
       departureTime,
       selectedDate,
-      true
+      true,
+      false,
+      startDelay
     );
   } catch (error) {
     throw error;
@@ -167,7 +175,8 @@ const optimizeInChunks = async (
   endLocation: google.maps.LatLng,
   departureTime: number,
   selectedDate: Date,
-  chunkSize: number = 3
+  chunkSize: number = 5,
+  startDelay: number
 ): Promise<RouteResult> => {
   let currentStart = startLocation;
   let currentTime = departureTime;
@@ -196,7 +205,9 @@ const optimizeInChunks = async (
       chunkEnd,
       currentTime,
       selectedDate,
-      true
+      true,
+      false,
+      startDelay
     );
 
     // Update for next iteration
@@ -213,7 +224,9 @@ const optimizeInChunks = async (
     endLocation,
     departureTime,
     selectedDate,
-    false
+    false,
+    false,
+    startDelay
   );
 };
 
@@ -303,15 +316,18 @@ export const calculateRouteWithTimings = async (
   departureTime: number,
   selectedDate: Date, // Add this parameter
   optimize: boolean = false,
-  skipEndOptimization: boolean = false
+  skipEndOptimization: boolean = false,
+  startDelay: number
 ): Promise<RouteResult> => {
-  if (hasTimePassed(departureTime, selectedDate)) {
+  if (hasTimePassed(departureTime, selectedDate, startDelay)) {
     throw {
       type: "TIME_PASSED",
-      message: "Departure time has already passed",
+      message:
+        "Departure time has already passed. Or you are not giving sellers enough notice.",
       details: {
         requestedTime: secondsToTimeString(departureTime),
         currentTime: secondsToTimeString(getCurrentTimeInSeconds()),
+        sellerReq: startDelay,
       },
     };
   }
@@ -368,7 +384,7 @@ export const calculateRouteWithTimings = async (
 
     const expectedArrival = currentTime + travelTime;
 
-    if (hasTimePassed(expectedArrival, selectedDate)) {
+    if (hasTimePassed(expectedArrival, selectedDate, startDelay)) {
       throw {
         type: "TIME_PASSED",
         message: `Arrival time at ${location.displayName} has already passed`,
