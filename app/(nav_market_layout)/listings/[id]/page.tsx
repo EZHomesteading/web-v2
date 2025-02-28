@@ -197,9 +197,12 @@ export default async function ListingPage({
               <SendMessageComponent
                 listing={listing}
                 user={session?.user}
-                isInitiallyInBasket={basketItemIds.some(
-                  (item: any) => item?.listingId === listing.id
-                )}
+                isInitiallyInBasket={
+                  basketItemIds &&
+                  basketItemIds.some(
+                    (item: any) => item?.listingId === listing?.id
+                  )
+                }
               />
             </div>
           </div>
