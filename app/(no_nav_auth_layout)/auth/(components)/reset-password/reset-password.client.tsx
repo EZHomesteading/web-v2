@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { OutfitFont } from "@/components/fonts";
-import { GetApiUrl } from "@/utils/get-url";
 import Toast from "@/components/ui/toast";
 import { CardWrapper } from "../login/auth-card-wrapper";
 import { useSearchParams } from "next/navigation";
@@ -30,7 +29,7 @@ export const ResetForm = ({ apiUrl }: { apiUrl: string }) => {
 
     try {
       const res = await axios.get(
-        `${apiUrl}/reset-password?password=${newPassword}&token=${t}`
+        `${apiUrl}/resend/reset-password?password=${newPassword}&token=${t}`
       );
       Toast({
         message: res.data.message,
