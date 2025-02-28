@@ -1,7 +1,6 @@
 import prisma from "@/lib/prismadb";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { basketStatus } from "@prisma/client";
 import webPush, { PushSubscription } from "web-push";
 
@@ -10,13 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION as string,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  },
-});
 
 async function handleBasketProcessing(
   buyerId: string,
@@ -165,7 +157,9 @@ async function createConversationAndNotify(order: any) {
       ? `${order.buyer.location[2]?.address[0]}, ${order.buyer.location[2]?.address[1]}, ${order.buyer.location[2]?.address[2]}. ${order.buyer.location[2]?.address[3]}`
       : "this user has no locations set"
   } during my open hours. My hours can be viewed in More Options.`;
-  await fetch(`${process.env.API_URL}/new-order?email=${order.seller.email}`);
+  await fetch(
+    `${process.env.API_URL}/resend/new-order?email=${order.seller.email}`
+  );
   // Send email notification if enabled
   // if (order.seller.notifications?.includes("EMAIL_NEW_ORDERS")) {
   //   const emailParams = {

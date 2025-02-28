@@ -38,7 +38,7 @@ export const ResetForm = ({ apiUrl }: { apiUrl: string }) => {
   const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
     try {
       const res = await axios.get(
-        `${apiUrl}/send-pw-reset-email?email=${values.email}`
+        `${apiUrl}/resend/send-pw-reset-email?email=${values.email}`
       );
       Toast({ message: res.data.message });
     } catch (error) {

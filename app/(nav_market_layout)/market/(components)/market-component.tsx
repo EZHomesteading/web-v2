@@ -4,8 +4,6 @@ import Categories from "./categories";
 import EmptyState from "@/components/EmptyState";
 import { UserRole } from "@prisma/client";
 import { MarketCard, MarketGrid } from "./market-components";
-import { request } from "http";
-
 interface DayHours {
   date: string;
   timeSlots: TimeSlot[];

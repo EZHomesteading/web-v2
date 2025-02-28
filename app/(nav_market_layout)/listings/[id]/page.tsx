@@ -29,6 +29,7 @@ export default async function ListingPage({
   const marketCallback =
     searchParams &&
     `${new URLSearchParams(searchParams as Record<string, string>).toString()}`;
+
   const session = await auth();
   try {
     const listing = await getUnique({ id: params.id });
