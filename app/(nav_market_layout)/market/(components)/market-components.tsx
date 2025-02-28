@@ -229,7 +229,9 @@ const MarketCard = ({
             <p className={` text-xs font-light text-neutral-500`}>
               {address && address.length >= 4
                 ? `${address[1]}, ${address[2]}`
-                : address?.length === 2 && `${address[0]}, ${address[1]}`}
+                : address?.length === 2 &&
+                  address[2]?.length === 2 &&
+                  `${address[0]}, ${address[1]}`}
             </p>
 
             <div className="flex items-center justify-between mt-2 w-full">
