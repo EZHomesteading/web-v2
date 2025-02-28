@@ -92,7 +92,6 @@ const MarketCard = ({
       delivery: calculateServiceScores(hours.delivery || []),
     };
   }
-  console.log(listing);
   function calculateServiceScores(hours: DayHours[]) {
     const today = new Date();
     const next7Days = Array.from({ length: 7 }, (_, i) => {
@@ -180,6 +179,7 @@ const MarketCard = ({
   }
 
   const scores = calculateAvailabilityScores(locHours);
+  const address = listing?.location?.address;
   return (
     <div className={`relative`}>
       <Link
@@ -227,8 +227,9 @@ const MarketCard = ({
               {listing.location?.displayName || listing?.user?.name}
             </h2>
             <p className={` text-xs font-light text-neutral-500`}>
-              {listing?.location?.address?.[1]},{" "}
-              {listing?.location?.address?.[2]}
+              {address && address.length >= 4
+                ? `${address[1]}, ${address[2]}`
+                : address?.length === 2 && `${address[0]}, ${address[1]}`}
             </p>
 
             <div className="flex items-center justify-between mt-2 w-full">
